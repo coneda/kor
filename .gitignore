@@ -14,7 +14,8 @@ public/plugin_assets
 # Configuration
 
 config/kor.yml
-config/kor.*.yml
+config/kor.test.yml
+config/kor.development.yml
 config/database.yml
 config/legal.txt
 config/contact.txt

@@ -1,0 +1,95 @@
+all:
+  
+  host:
+    protocol: http
+    host: example.com
+    port: 80
+  
+  app:
+    welcome_title: "*This text can be configured via the general settings*"
+    welcome_text: "*This text can be configured via the general settings*"
+    current_history_length: 5
+    max_foreground_group_download_size: 10
+    use_blaze: true
+    max_file_upload_size: "100"
+    source_code_url: "http://download.coneda.net/releases/coneda-kor.v{{version}}.tar.gz"
+    
+  maintainer:
+    name: Example Organization
+    mail: "admin@example.com"
+    legal_text: Beispieltext
+    about_text: Beispieltext
+  
+  auth:
+    session_lifetime: 2:00:00
+    publishment_lifetime: 14
+    default_groups: users
+          
+  # google_analytics:
+  #   id: "12345"
+  
+  # piwik:
+  #   url: "https://analytics.example.com"
+  #   id: "1"
+    
+  mail:
+    host: 127.0.0.1
+    port: 25
+    domain: localhost
+    enable_starttls_auto: false
+
+  logging:
+    file: log/kor.log
+    # possible options: debug < info < warn < error < fatal < (all other entries)
+    level: debug
+
+  umask: 0002
+
+  cache_dir: tmp/cache
+  tmp_dir: tmp/kor
+    
+  kind_settings:
+    defaults:
+      dating_label: Datierung
+      name_label: Name
+      distinct_name_label: Eindeutiger Name
+
+  limits:
+    max_file_upload_size: 30
+    max_download_group_size: 80
+  
+  search:
+    entity_name: "Name / Titel / UUID"
+    
+  dev:
+    value_a: default.all
+    value_b: default.all
+    
+            
+test:
+  app:
+    gallery:
+      primary_relations: ['stellt dar']
+      secondary_relations: ['wurde erschaffen von']
+    
+    welcome_title: "Willkommen"
+    welcome_text: "Dies ist eine Testinstallation"
+
+    current_history_length: 5
+    max_foreground_group_download_size: 10
+    
+  maintainer:
+    name: Example Organization
+    mail: admin@example.net
+    
+  dev:
+    value_a: default.env
+    
+  meta_data_profiles:
+    simple:
+      -
+        name: "stellt dar"
+        relations: 
+          - 
+            name: "wurde erschaffen von"
+
