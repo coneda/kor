@@ -26,9 +26,9 @@ describe Medium do
     medium.reload
 
     medium.path(:original).should eql("#{Rails.root}/data/media.test/original/#{medium.ids}/document.txt")
-    medium.path(:icon).should eql("#{Rails.root}/public/media/content_types/text/plain.gif")
+    medium.path(:icon).should eql("#{Rails.root}/public/content_types/text/plain.gif")
     medium.url(:original).should eql("/media/images/original/#{medium.ids}/document.txt?#{medium.document.updated_at}")
-    medium.url(:icon).should eql('/media/content_types/text/plain.gif')
+    medium.url(:icon).should eql('/content_types/text/plain.gif')
     
     medium.update_attributes(:image => File.open("#{Rails.root}/spec/fixtures/image_a.jpg"))
     work_off

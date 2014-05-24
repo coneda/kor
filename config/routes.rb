@@ -100,12 +100,12 @@ Kor::Application.routes.draw do
 
   match '/errors/:action', :controller => 'errors'  
   match '/downloads/:uuid', :to => 'downloads#show'
+  match 'content_types/:content_type_group/:content_type.gif', :to => 'media#dummy', :as => :media_dummy, :content_type => /[a-z0-9\.\-]+/
   
   scope '/media', :controller => 'media' do
     match 'maximize/:id', :action => 'show', :style => 'normal', :as => :maximize_medium
     match 'transform/:id/:transformation', :action => 'transform', :as => :transform_medium
     match ':id', :action => 'view', :as => :view_medium
-    match 'content_types/:content_type_group/:content_type.gif', :action => 'dummy', :as => :media_dummy, :content_type => /[a-z0-9\.\-]+/
     match 'images/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension', :action => 'show', :as => :medium
     match 'download/:style/:id', :action => 'download', :as => :download_medium
   end

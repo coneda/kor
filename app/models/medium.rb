@@ -27,7 +27,7 @@ class Medium < ActiveRecord::Base
   has_attached_file :image,
     :path => "#{media_data_dir}/:style/:id_partition/image.:style_extension",
     :url => "/media/images/:style/:id_partition/image.:style_extension",
-    :default_url => "/media/content_types/:medium_content_type.gif",
+    :default_url => "/content_types/:medium_content_type.gif",
     :styles => {
       :icon => ['80x80>', :jpg],
       :thumbnail => ['140x140>', :jpg],
@@ -204,7 +204,7 @@ class Medium < ActiveRecord::Base
   def self.dummy_path(content_type)
     group, type = content_type.split('/')
   
-    dir = "#{Rails.root}/public/media/content_types"
+    dir = "#{Rails.root}/public/content_types"
     group_dir = "#{dir}/#{group}"
     dummy = "#{group_dir}/#{type}.gif"
     

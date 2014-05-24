@@ -87,7 +87,7 @@ module MediaHelper
     end
 
     def media_dummy_path(content_type)
-      "/media/content_types/#{content_type}.gif"
+      "/content_types/#{content_type}.gif"
     end
 
     def presenters

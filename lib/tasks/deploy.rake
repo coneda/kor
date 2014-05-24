@@ -14,13 +14,6 @@ namespace :kor do
       end
     end
     
-    desc "copy the default content_type files to the public folder unless they exists"
-    task :media_preview do
-      origin = "#{Rails.root}/config/templates/content_types"
-      destination = "#{Rails.root}/public/media"
-      system "cp -a #{origin} #{destination}"
-    end
-
   end
 
 end
