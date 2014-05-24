@@ -1,0 +1,39 @@
+.related_images
+
+  - if !@entity.is_medium? && authorized?(:create) && !Relation.available_relation_names(@entity.kind.id, Kind.medium_kind.id).empty?
+    .title
+      = I18n.t("nouns.related_medium", :count => :other).capitalize_first_letter
+    .highlighted_subtitle
+      = link_to "» " + I18n.t('objects.add', :o => Medium.model_name.human(:count => :other)), 
+        :controller => 'tools', 
+        :action => 'add_media', 
+        :id => @entity.id
+    %br
+  - else  
+    - unless media_relations.empty?
+      .title
+        = I18n.t("nouns.related_medium", :count => :other).capitalize_first_letter
+  
+  - media_relations.each do |relation|
+
+    .subtitle= h(relation.first)
+
+    %table.kor_table.related_media{:cellpadding => "0", :cellspacing => "0"}
+      - relation.last.in_groups_of(1, false).each do |row|
+        %tr
+          - row.each do |relationship|
+            %td.relationship
+              .small_content_panel
+                .commands
+                  - if authorized? :edit, [relationship.from.collection, relationship.to.collection], :required => :any
+                    = link_to kor_command_image('pen'), edit_relationship_path(relationship).to_s
+                    = link_to kor_command_image('x'), relationship, :method => :delete, :data => {:confirm => I18n.t("confirm.delete_relationship")}
+
+                = kor_medium relationship.other_entity(@entity), :style => :thumbnail
+
+                - unless relationship.properties.empty?
+                  .hr
+                  .properties
+                    %ul
+                      - relationship.properties.each do |property|
+                        %li= h(property)

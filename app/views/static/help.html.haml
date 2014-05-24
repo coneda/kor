@@ -1,0 +1,11 @@
+- content_for :title, I18n.t('nouns.help')
+- content_for :content do
+  .text= RedCloth.new(Kor.config['maintainer.help_text']).to_html.html_safe
+
+  - if current_user
+    .hr
+    .subtitle
+      - unless current_user.terms_accepted || current_user == User.guest
+        = link_to I18n.t('commands.accept_terms'), :controller => 'users', :action => 'accept_terms', :id => current_user.id
+      - else
+        = link_to I18n.t('back'), back_save

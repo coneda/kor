@@ -1,0 +1,27 @@
+- content_for :title, Publishment.model_name.human(:count => :other)
+- content_for :commands, link_to(kor_command_image('plus'), new_publishment_path)
+- content_for :content do
+  - if @publishments.empty?
+    = I18n.t('objects.none_found', :o => I18n.t('nouns.publishment', :count => :other) )
+  - else
+    %table.kor_table
+      %tr
+        %th= I18n.t('nouns.name', :count => 1)
+        %th= I18n.t('nouns.link', :count => 1)
+        %th= I18n.t('valid_until')
+        %th
+      
+      - @publishments.each do |p|
+        %tr{:id => "publishment_#{p.id}"}
+          %td.expanding= h(p.name)
+          %td.nowrap
+            = link_to show_publishment_url(:user_id => p.user_id, :uuid => p.uuid), show_publishment_url(:user_id => p.user_id, :uuid => p.uuid)
+
+          %td.nowrap
+            = I18n.l p.valid_until
+            - if p.valid_until <= Time.now
+              (#{I18n.t('expired')})
+
+          %td.nowrap
+            = link_to( kor_command_image('stop_watch'), extend_publishment_path(p) )
+            = link_to( kor_command_image('x'), p, :method => :delete, :data => {:confirm => I18n.t('confirm.delete_publishment')})

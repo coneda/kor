@@ -1,0 +1,105 @@
+%script#entity{:type => 'text/mustache'}
+  .entity
+    .header {{name}}
+    .desc {{kind}}
+    
+%script#side_panel{:type => 'text/mustache'}
+  .panel
+    .logo
+      %img{:src => asset_path('logo.gif')}
+    .version
+      ConedaKOR
+      %span.value {{info.version}}
+    .maintainer
+      maintained by
+      %span.value {{info.maintainer}}
+    .session
+      logged in as
+      .value {{session.user.email}}
+    .navigation
+      %ul
+        %li
+          %a.profile{:href => "#"} Profile
+        %li
+          %a.search{:href => "#"} Search
+        %li
+          %a.new_window{:href => "#"} New window
+        %li
+          %a.logout{:href => "#"} Logout
+    .messages
+          
+    
+%script#login_form{:type => 'text/mustache'}
+  .login{:title => "Login"}
+    %form
+      %ul
+        %li.field
+          %label{:name => 'username'} {{labels.username}}
+          %input{:type => 'test', :name => 'username'}
+        %li.field
+          %label{:name => 'password'} {{labels.password}}
+          %input{:type => 'test', :name => 'password'}
+
+
+%script.mobile_start_page#mobile_start_page{:type => 'text/mustache'}
+  %div{'data-role' => 'header'}
+    ConedaKOR Mobile
+  %div{'data-role' => 'content'}
+    .logo
+      = image_tag 'logo.gif'
+    %p
+      This is ConedaKOR Mobile. At the moment, the full application is not
+      specifically modified to run on mobile devices. This is an effort to
+      migrate more functionality.
+      = link_to 'continue', '#login_form', :class => 'mobile_page_link'
+    
+    %p
+      If you encounter any Problems, please contact 
+      = mail_to 'admin@coneda.net'
+  %div{'data-role' => 'footer'}
+    ©
+    = link_to "Coneda UG", "http://coneda.net"
+
+%script.mobile_page#dimensions_game{:type => 'text/mustache'}
+  %div{'data-role' => 'header'}
+    %p Is id '2D' or '3D'?
+  %div{'data-role' => 'content'}
+    .game_image
+      %img#current_rating_image{'data-indicator-url' => asset_path('loading.gif')}
+  %div{'data-role' => 'footer'}
+    = link_to "2d", "#", 'data-rating-tag' => '2d', :class => 'rating_button'
+    = link_to "3d", "#", 'data-rating-tag' => '3d', :class => 'rating_button'
+    = link_to "Help", "#help", :class => 'mobile_page_link'
+    
+%script.mobile_page#help{:type => 'text/mustache'}
+  %div{'data-role' => 'header'}
+    Help
+  %div{'data-role' => 'content'}
+    Please go ahead and play the game. This is a dummy help message. BTW, how
+    hard can it be?
+  %div{'data-role' => 'footer'}
+    = link_to "Back", '#dimensions_game', :class => 'mobile_page_link'
+      
+%script.mobile_page#login_form{:type => 'text/mustache'}
+  %div{'data-role' => 'content'}
+    %h1 {{i18n.nouns.login}}
+
+    %form.login{:action => '{{routes.api.login_path}}', :method => 'post'}
+      %ul
+        %li.field
+          %label{:name => 'username'} {{i18n.nouns.username.one}}
+          %input{:type => 'text', :name => 'username'}
+        %li.field
+          %label{:name => 'password'} {{i18n.nouns.password.one}}
+          %input{:type => 'password', :name => 'password'}
+        %li.field
+          %button{:value => '{{i18n.verbs.login}}', :type => 'submit'}
+          
+          
+%script.mobile_page#credentials_incorrect{:type => 'text/mustache'}
+  %div{'data-role' => 'content'}
+    %h1 Login failed
+
+    %p
+      Please check your credentials
+      

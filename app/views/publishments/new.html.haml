@@ -1,0 +1,10 @@
+- content_for :form_errors, error_box(:object => @publishment)
+- content_for :normal_title, I18n.t("objects.new", :o => Publishment.model_name.human )
+- content_for :normal_content do
+  = form_for @publishment, :html => { :class => 'kor_form' }, :builder => Stdlib::KorFormBuilder do |f|
+
+    = f.kor_input :name
+    = f.kor_input :group, :control => |
+      f.select(:user_group_id, UserGroup.owned_by(current_user).map{|u| [u.name, u.id]}) |
+
+    = f.kor_submit

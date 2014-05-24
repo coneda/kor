@@ -1,0 +1,4 @@
+- content_for :title, I18n.t('pages.new_media').capitalize_first_letter
+- content_for :content do
+  
+  = render :partial => 'gallery', :locals => {:results => @query.results, :top_left => ''}

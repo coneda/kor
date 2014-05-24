@@ -1,0 +1,20 @@
+production:
+  solr:
+    hostname: localhost
+    port: 9980
+    log_level: WARNING
+    pid_dir: tmp/pids
+
+development:
+  solr:
+    hostname: localhost
+    port: 8982
+    log_level: DEBUG
+    pid_dir: tmp/pids
+
+test:
+  solr:
+    hostname: localhost
+    port: 8981
+    log_level: DEBUG
+    pid_dir: tmp/pids

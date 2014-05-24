@@ -1,0 +1,9 @@
+- content_for :canvas do
+  .layout_panel.wide
+    .layout_panel.top.wide_panel_size
+      = section_panel(:title => yield(:top_title), :commands => yield(:top_commands), :content => yield(:top_content) )
+    .layout_panel.middle.wide_panel_size= yield(:middle_content)
+    .layout_panel.bottom.wide_panel_size
+      = section_panel(:content => yield(:bottom_content) )
+      
+= render :file => 'layouts/application'

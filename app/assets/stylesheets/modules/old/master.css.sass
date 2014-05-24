@@ -1,0 +1,1004 @@
+$background: #1e1e1e
+$highlighed_background: $background + 50
+$text: #bbbbbb
+$highlighted: #ffffff
+$input-text: #ffffff
+$frames: #565656
+$input_background: #252525
+$error_background: #CB1525
+$notice_background: #505050
+$session_background: #333333
+$kor-red: #CB1525
+
+
+/* global */
+
+body
+  margin: 20px
+  background-color: $background
+  font-family: Helvetica, Arial, Geneva, sans-serif
+  font-size: 11px
+  line-height: 15px
+  color: $text
+  &.outside
+    margin-left: 300px
+    margin-top: 100px
+
+img
+  border: 0px
+
+a
+  color: $highlighted
+  text-decoration: none
+  outline: none
+
+ul
+  padding: 0px
+  margin: 0px
+  &.subitems
+    margin-left: 10px
+  list-style-type: none
+
+/* remove images before lists but enable them in the redcloth syntax */
+
+.text-right
+  text-align: right
+
+div.clear_both
+  clear: both
+
+span.text ul
+  list-style-position: inside
+  list-style-type: inherit
+
+ul li
+  &.spacer
+    height: 18px
+  &.small_spacer
+    height: 5px
+
+input, select, checkbox, textarea
+  box-sizing: border-box
+  font-family: arial
+  border: 1px solid $frames
+  background-color: $input_background
+  color: $input_text
+  font-weight: bold
+  outline: none
+  font-size: 11px
+  padding: 2px
+  padding-top: 4px
+  
+textarea.monospace
+  font:
+    family: monospace
+    weight: bold
+  
+select option
+  background-color: $input_background
+
+.focused
+  background-color: $input_background + 14
+
+select
+  padding-left: 0px
+  padding-right: 0px
+
+input
+  &[type=text]
+    padding-left: 4px
+    padding-right: 4px
+  &[type=submit], &[type=button]
+    border: 0px
+    padding-left: 4px
+    padding-right: 4px
+  &[type=radio]
+    position: relative
+    top: 3px
+    margin-left: 20px
+  &[type=radio]:first-child
+    margin-left: 0px
+  &.highlighted_button
+    background-color: $input_background + 65
+    
+textarea
+  font-family: Helvetica, Arial, Geneva, sans-serif
+  font-weight: normal
+  padding-left: 4px
+  padding-right: 4px
+
+table
+  border-spacing: 0px
+  td
+    vertical-align: middle
+  th
+    font-weight: normal
+
+div
+  &.hr
+    background: image-url('dotted_line.gif') top left
+    width: 100%
+    height: 1px
+    margin-top: 12px
+    margin-bottom: 12px
+  &.spacer, &.spacer-1
+    width: 100%
+    height: 1em
+  &.spacer-2
+    height: 2em
+
+.field_with_errors
+  display: block
+  input, textarea, select, button
+    border: 1px solid $kor-red
+
+
+  
+  
+/* Help */
+
+#help_button
+  position: absolute
+  border-color: #ffffff
+  left: 990px
+  top: 102px
+  width: 20px
+  height: 20px
+  
+  .ui-icon
+    margin-left: -5px
+
+  &.ui-state-active.ui-state-hover
+    background: #333
+  
+
+/* message area */
+
+div
+  &#message_area >
+    .errors
+      background-color: $error_background
+      padding: 30px
+      > div.title
+        margin-bottom: 20px
+    .notices
+      background-color: $notice_background
+      padding: 30px
+  &#session_info
+    margin-left: -20px
+    margin-top: -20px
+    border-top: 2px solid $session_background
+    width: 970px
+    text-align: right
+    div.clip
+      table
+        width: 970px
+        border-spacing: 0px
+      td
+        &.positioner
+          width: 1000px
+        &.left
+          background: asset-url('clip_left.gif', 'image') top right
+          height: 22px
+          width: 16px
+        &.center
+          background: asset-url('clip_center.gif', 'image') top
+          height: 22px
+        &.right
+          background: asset-url('clip_right.gif', 'image') top left
+          height: 22px
+          width: 9px
+          border: none
+  &#session_info_content
+    background-color: $session_background
+    padding: 30px
+    padding-left: 20px
+    table
+      display: inline
+      td
+        padding-left: 5px
+        padding-right: 5px
+    img
+      max-width: 30px
+      max-height: 30px
+
+
+/* version */
+
+span.version
+  color: $highlighted
+
+
+/* custom */
+
+.random_entities
+  margin-top: 40px
+
+
+/* header */
+
+div
+  &#header
+    width: 864px
+    padding-right: 30px
+    td.version_info
+      width: 400px
+      text-align: right
+      padding-right: 30px
+
+      #ajax_loading_indicator
+        position: relative
+        margin-top: -5px
+        top: 3px
+        left: -5px
+
+  &#userinfo
+    float: right
+    span
+      &.userinfo
+        padding-left: 20px
+        padding-right: 20px
+      &.username
+        text-decoration: underline
+  &#menu
+    margin-top: 40px
+    float: left
+    width: 180px
+    margin-bottom: 85px
+    li.inactive_item a
+      color: $text
+  &#footer
+    position: relative
+    top: -65px
+    clear: left
+    float: left
+    li.inactive_item a
+      color: $text
+  &.clear_both
+    clear: both
+
+
+/* commands */
+
+img.kor_handle
+  position: relative
+  top: 2px
+  margin-right: 5px
+
+
+form#clipboard_form
+  .kor_medium
+    max-width: 80px
+    max-height: 80px
+
+/* TODO still needed? */
+
+div
+  &.commands
+    img
+      margin-left: 5px
+    text-align: right
+  &.properties li
+    margin-bottom: 5px
+
+
+/* fonts */
+
+.align_right
+  text-align: right
+
+.text
+  font-size: 11px
+  font-family: Helvetica, Arial, Geneva, sans-serif
+  font-weight: normal
+
+.title
+  font-size: 14px
+  line-height: 18px
+  font-weight: bold
+  color: $highlighted
+
+.italic
+  font-style: italic
+
+.title_lineheight
+  line-height: 18px
+
+.subtitle
+  font-weight: bold
+
+.highlighted_subtitle
+  font-weight: bold
+  color: $highlighted
+
+.indented_once
+  margin-left: 20px
+
+.nowrap
+  white-space: nowrap
+  
+.inplace_container
+  a
+    position: relative
+    top: 3px
+    left: 5px
+
+  a img
+    margin-top: -4px
+    
+  span.text
+    margin-left: 6px
+
+  .inplace
+    form
+      display: inline
+      width: 300px
+    
+    input
+      width: 300px
+      margin-top: -5px
+
+// still needed?
+div.auto_complete
+  width: 350px
+  background: #ffffff
+  color: #000000
+  ul
+    border: 1px solid #888
+    margin: 0
+    padding: 0
+    width: 100%
+    list-style-type: none
+    li
+      margin: 0
+      padding: 1px
+      font-size: 10px
+      &.selected
+        background-color: #ffb
+    strong.highlight
+      color: #800
+      margin: 0
+      padding: 0
+      
+#application
+  width: 1100px
+
+table.canvas
+  width: 796px
+  border-spacing: 0px
+
+  > tbody
+    > tr > td
+      padding: 0px
+
+    > tr.top > td.left
+      height: 25px
+      width: 25px
+      background-image: asset-url('canvas/top_left.gif', 'image')
+      
+    > tr.top > td.center
+      background: asset-url("canvas/top.gif", 'image') top left
+      
+    > tr.top > td.right
+      width: 25px
+      background: asset-url('canvas/top_right.gif', 'image') top right no-repeat
+      
+    > tr.middle > td.left
+      background: asset-url("canvas/left.gif", 'image') top left
+      
+    > tr.middle > td.right
+      background: asset-url('canvas/right.gif', 'image') top left
+      
+    > tr.bottom > td.left
+      height: 25px
+      background: asset-url('canvas/bottom_left.gif', 'image') bottom left no-repeat
+      
+    > tr.bottom > td.center
+      background: asset-url('canvas/bottom.gif', 'image') top left
+      
+    > tr.bottom > td.right
+      background: asset-url('canvas/bottom_right.gif', 'image') bottom right no-repeat
+      
+    
+    > tr.middle > td.center
+        
+      background-color: #1e1e1e
+
+      .canvas_inner
+        margin-left: -25px
+            
+            
+      .left.layout_panel
+        border-right: 2px solid #181818
+        min-height: 400px
+        /* positioning */
+        float: left
+        margin-right: -2px
+      .right.layout_panel
+        border-left: 2px solid #181818
+        min-height: 400px
+        /* positioning */
+        float: left
+      .wide.layout_panel
+        min-height: 400px
+      .top.layout_panel
+        border-bottom: 2px solid #181818
+      .middle.layout_panel
+        border-top: 0px
+      .bottom.layout_panel
+        border-top: 2px solid #181818
+        margin-top: -2px
+      .normal_panel_size
+        width: 484px
+      .small_panel_size
+        width: 260px
+      .middle_panel_size
+        width: 372px
+      .wide_panel_size
+        width: 746px
+        clear: both
+      .small_content_panel
+        padding: 10px
+        text-align: center
+        .commands
+          margin-bottom: 10px
+      .content_panel
+        padding: 30px
+        > .title
+          padding-bottom: 20px
+      .section_panel
+        padding: 10px
+        >
+          .header
+            margin-top: 20px
+            margin-bottom: 20px
+            float: left
+            width: 100%
+          .switch
+            margin-top: 10px
+            margin-right: 10px
+            float: right
+          .header >
+            .title
+              float: left
+              margin-left: 20px
+              max-width: 320px
+            .commands
+              float: right
+              margin-right: 20px
+            .type
+              margin-left: 20px
+              clear: both
+          .content
+            margin-right: 20px
+            margin-left: 20px
+            padding-bottom: 20px
+            max-width: 685px
+      .stage_panel
+        background-color: #292929
+
+/* layouts */
+
+.selectable_collection
+  margin: 10px
+  float: left
+
+.kor_form
+  width: 100%
+  > div.title
+    margin-bottom: 20px
+  div
+    &.subtitle
+      margin-bottom: 10px
+    &.form_subsection
+      width: 100%
+      div.sub_content
+        margin-top: 10px
+        margin-left: 10px
+        width: 94%
+  .submit, .reset
+    margin-top: 20px
+    text-align: right
+  ul
+    width: 100%
+  div.form_field
+    margin-bottom: 10px
+    
+    .label
+      margin-right: 5px
+    
+    .value
+      font-weight: bold
+      color: #ffffff
+      
+    .select_collections
+      img
+        position: relative
+        top: 3px
+    
+    input
+      width: 100%
+    input[type=checkbox]
+      position: relative
+      width: auto
+      top: 3px
+    textarea
+      width: 100%
+      height: 200px
+    select
+      width: 100%
+      
+    li img
+      position: relative
+      top: 4px
+      
+  ul li.header
+    float: left
+    margin-bottom: 2px
+    margin-right: 2px
+    width: 100%
+  span.kind_name
+    margin-left: 5px
+
+/* kor_table */
+
+table
+  &.kor_table
+    thead th
+      padding-top: 5px
+      padding-bottom: 5px
+
+    width: 100%
+    border-spacing: 0px
+    tr.highlighted
+      background-color: #626262
+    > tbody > tr >
+      th
+        padding: 5px
+        &.number
+          width: 80px
+      td
+        background-color: #292929
+        border-bottom: 1px solid #1e1e1e
+        border-right: 1px solid #1e1e1e
+        padding: 5px
+        vertical-align: top
+        &.expanding
+          width: 100%
+        &.nowrap
+          white-space: nowrap
+        &.image
+          vertical-align: top
+          text-align: center
+        &.number
+          width: 80px
+      td.commands
+        text-align: right
+    span.kind_name
+      margin-left: 5px
+    th.pagination
+      text-align: right
+      
+  .pagination
+    margin-top: -2px
+    
+    
+  &.kor_frameless_table
+    width: 100%
+    border-spacing: 0px
+    margin-top: 30px
+    margin-bottom: 20px
+    vertical-align: middle
+    
+    tr
+      th
+        vertical-align: top
+        border-bottom: 1px solid #181818
+      td
+        padding-left: 5px
+        padding-right: 5px
+    
+    .result_row:hover
+      background-color: #626262
+    
+.search_result
+  font-weight: bold
+
+  a
+    display: block
+    width: 100%
+    height: 100%
+    
+    .name
+      width: 400px
+    
+  a.kind
+    color: #bbbbbb
+
+
+th
+  padding-left: 5px
+  padding-right: 5px
+
+table.kor_frameless_table tr > td.left, th.left
+  padding-left: 10px
+
+table.kor_frameless_table tr > td.right, th.right
+  padding-right: 30px
+
+table.kor_frameless_table tr >
+  th.title
+    padding-bottom: 20px
+  td
+    border-bottom: 1px solid #181818
+    padding-top: 5px
+    padding-bottom: 5px
+
+/* attachments */
+
+div
+  &.attachments div
+    &.subtitle
+      float: left
+      margin-bottom: 0px
+    &.commands
+      float: right
+  &.attachment
+    padding: 30px
+    padding-left: 15px
+    padding-right: 15px
+    padding-bottom: 10px
+    padding-top: 10px
+    table
+      width: 100%
+      td
+        &.attachment_content
+          padding-right: 30px
+        &.attachment_commands
+          border-left: 1px solid #181818
+          padding-left: 20px
+          text-align: right
+
+.social_bookmarking
+  width: 951px
+  text-align: right
+  img
+    width: 20px
+    height: 20px
+    margin-left: 5px
+
+/************************* login ******************************************** */
+
+div
+  &#login_form_blend
+    background: image-url('login_form_bg.gif') top left
+    height: 424px
+    width: 424px
+    margin: 30px
+  &#password_forgotten
+    margin-top: 20px
+    margin-bottom: 20px
+    text-decoration: underline
+  &.login_footer
+    margin-top: 20px
+    div.version_info
+      margin-bottom: 20px
+
+/************************* exception logs *********************************** */
+
+td.exception_log > span
+  &.timestamp
+  &.kind
+    font-style: italic
+  &.switch
+    padding-left: 10px
+  &.timestamp
+
+div
+  &.exception_log_commands div.pagination
+    display: inline
+    margin-left: 20px
+
+.image_projector img
+  max-width: 686px
+  margin-top: 22px
+    
+/************************* entity ******************************************* */
+
+/* edit action */
+
+.kor_form div
+  &#properties, &#synonyms
+    .subtitle
+      float: left
+    .commands
+      float: right
+      margin-top: -1px
+
+/* index action */
+
+.entity_list
+  width: 100%
+  
+  .title
+    margin: 30px
+    
+  .pagination
+    float: right
+    margin-right: 30px
+    text-align: right
+    
+    input
+      width: 35px
+
+  .count
+    padding: 10px
+    text-align: right
+
+  .message
+    margin-left: 30px
+    font-weight: bold
+    
+  ul
+    border-top: 1px solid #181818
+    margin-bottom: 30px
+    width: 100%
+    
+  li
+    border-bottom: 1px solid #181818
+    width: 100%
+    
+    input
+      margin-top: 1px
+      margin-left: 10px
+      float: left
+    
+    .description
+      margin: 9px
+      margin-top: 0px
+      margin-bottom: 0px
+      float: left
+      
+      .name
+        color: #ffffff
+        font-weight: bold
+    
+      .kind
+        color: #bbbbbb
+        font-style: italic
+        
+    .result_images
+      margin-left: 36px
+      margin-bottom: 10px
+      
+      th
+        padding-top: 5px
+        padding-bottom: 5px
+    
+    > a
+      display: block
+      padding-top: 5px
+      padding-bottom: 5px
+    
+    > a:hover
+      background-color: $highlighed_background
+      
+/* show action */
+
+.relation
+  clear: both
+  margin-bottom: 20px
+  >
+    .subtitle
+      margin-top: 5px
+      margin-bottom: 10px
+      float: left
+    div
+      &.relation_switch
+        padding: 0px
+        padding-left: 10px
+        float: left
+      &.pagination
+        float: right
+        margin-bottom: 5px
+        select
+          min-width: 50px
+          
+.pagination
+  select
+    margin-left: 3px
+    margin-right: 3px
+  img
+    position: relative
+    top: 4px
+    margin-left: 3px
+    margin-right: 3px
+  
+          
+          
+.relationship
+  clear: both
+  margin-bottom: 2px
+  > .header
+    padding: 10px
+    padding-bottom: 7px
+    > .string
+      width: 300px
+      float: left
+  .relationship_switch
+    margin-left: 10px
+  div
+    &.commands
+      float: right
+    &.header_end
+      clear: both
+    &.switched_panel
+      width: 100%
+      div
+        &.properties
+          padding: 10px
+          padding-top: 0px
+        &.hr
+          margin-top: 0px
+      table
+        width: 100%
+      td
+        text-align: center
+        border-top: 1px solid #1e1e1e
+        padding: 15px
+        
+        &.image
+          width: 100px
+          border-right: 1px solid #1e1e1e
+          
+        img.kor_medium
+          width: 80px
+          
+.related_images >
+  .title
+    margin-bottom: 20px
+  .subtitle
+    margin-bottom: 10px
+  .stage_panel
+    margin-bottom: 20px
+    td
+      border: 1px solid #1e1e1e
+      text-align: center
+        
+.viewer
+  img.kor_medium
+    width: 200px
+  .title
+    margin-bottom: 20px
+  
+  .stage_panel
+    padding: 20px
+    text-align: center
+  .commands
+    text-align: center
+    padding-top: 10px
+    padding-bottom: 10px
+  .formats
+    text-align: left
+
+
+.gallery
+  td.gallery_item
+    vertical-align: top
+    width: 140px
+    padding: 15px
+      
+  td.empty
+    background-color: #1e1e1e
+    
+  div.top_left
+    float: left
+    margin-bottom: 10px
+  
+  div.top_right
+    margin-top: 7px
+    margin-bottom: 10px
+    float: right
+    
+  div.bottom_right
+    margin-bottom: 30px
+    float: right
+    
+  > div.hr
+    clear: both
+    
+  div.commands
+    margin-top: 5px
+    margin-right: 5px
+
+
+table.kor_extended_image
+  width: 140px
+  
+  div.image
+    max-width: 140px
+  
+  td.image
+    max-width: 140px
+    height: 145px + 10px + 11px
+    vertical-align: top
+    
+  img.kor_medium
+    max-width: 140px
+    max-height: 140px
+    
+  .content_type
+    margin-top: 5px
+    font-size: 9px
+    font-weight: normal
+
+      
+table.related_media
+  img.kor_medium
+    max-width: 140px
+      
+div.kor_medium_frame
+  display: block
+  float: left
+  position: relative
+
+  >
+    a
+      display: block
+    
+  .button_bar
+    position: absolute
+    top: 2px
+    right: 2px
+    background-color: #1e1e1e
+    padding: 3px
+    padding-bottom: 0px
+
+  .kor_medium[src^='/media/content_types/']
+    opacity: 0.7
+    width: 50px
+  
+/******************************************************************** users * */
+
+div.user_list div
+  &.will_paginate_top
+    margin-top: 7px
+    margin-bottom: 10px
+    float: right
+  &.will_paginate_bottom
+    margin-top: 5px
+    margin-bottom: 30px
+    float: right
+    
+div.user_credit_list
+  ul
+    width: 225px
+    float: left
+    
+    .user
+      margin-bottom: 3px
+      a
+        color: $text
+      a:hover
+        color: $highlighted
+
+  div
+    &.will_paginate_top
+      margin-top: -17px
+      margin-bottom: 10px
+      float: right
+    &.will_paginate_bottom
+      margin-top: 10px
+      margin-bottom: 30px
+      float: right
+
+/******************************************************************** tools * */
+
+table.kor_table.media_merge
+  td
+    padding: 10px
+    vertical-align: top
+  input[type=radio]
+    float: left
+  img
+    margin-left: 10px

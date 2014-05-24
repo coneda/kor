@@ -1,0 +1,16 @@
+- content_for :canvas do
+
+  .layout_panel.left.normal_panel_size
+    <%= section_panel(
+      :title => yield(:form_title),
+      :subtitle => yield(:form_subtitle),
+      :content => yield(:form)
+    )
+
+  .layout_panel.right.small_panel_size
+    = section_panel(
+      :title => yield(:supplement_title),
+      :content => yield(:supplement)
+    )
+
+= render :file => 'layouts/application'

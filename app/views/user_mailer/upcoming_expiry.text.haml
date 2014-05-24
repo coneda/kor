@@ -1,0 +1,7 @@
+#{I18n.t("mailer.messages.hi", :username => h(@user.display_name) )},
+\
+#{I18n.t("mailer.messages.upcoming_expiry", :url => Kor.base_url, :date => @user.expires_at)}
+\
+#{I18n.t("mailer.messages.best_regards")},
+#{Kor.config['maintainer.name']}
+\

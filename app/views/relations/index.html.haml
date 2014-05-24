@@ -1,0 +1,31 @@
+- content_for :title, I18n.t('nouns.relation', :count => :other)
+- content_for :commands, link_to(kor_command_image('plus'), new_relation_path)
+- content_for :content do
+  %table.kor_table.relations
+
+    %colgroup
+      %col{:width => "*"}
+      %col{:width => "*"}
+      %col{:width => "*"}
+      %col{:width => "0"}
+
+    %tr
+      %th.pagination{:colspan => "4"}
+        = will_paginate @relations, :previous_label => '«', :next_label => '»'
+
+    - if @relations.empty?
+      = I18n.t('objects.none_found', :o => I18n.t('nouns.relationship', :count => :other) )
+    - else
+      - @relations.each do |o|
+        %tr{row_identifiers_for(o)}
+          %td
+            = link_to h(o.name), edit_relation_path(o)
+          %td
+            = link_to h(o.reverse_name), edit_relation_path(o)
+          %td
+            = h(o.description)
+          %td{:align => "right"}
+            = o.relationships.count
+          %td.nowrap
+            = link_to kor_command_image('pen'), edit_relation_path(o)
+            = link_to kor_command_image('x'), o, :method => :delete, :data => {:confirm => I18n.t("confirm.delete_relation")}

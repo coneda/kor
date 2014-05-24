@@ -1,0 +1,25 @@
+- content_for :title, Kind.model_name.human(:count => :other)
+- content_for :commands, link_to(kor_command_image('plus'), new_kind_path)
+- content_for :content do
+  %table.kor_table
+    %tr
+      %th= Kind.human_attribute_name('name')
+      %th
+    - @kinds.each do |k|
+      %tr{:id => "kind_#{k.id}"}
+        %td.expanding
+          .name.italic= h(k.name)
+          .schema
+            %strong Schema:
+            = k.fields.map{|f| f.show_label}.join(', ')
+          .services
+            %strong Services:
+            = k.generators.map{|f| f.show_label}.join(', ')
+        %td.nowrap.commands
+          = link_to kor_command_image('globe', :title => "Configure Generators"), kind_generators_path(k)
+          = link_to kor_command_image('three_bars', :title => "Configure fields"), kind_fields_path(k)
+          = link_to kor_command_image('pen'), edit_kind_path(k)
+          - unless k == Kind.medium_kind
+            = link_to kor_command_image('x'), kind_path(k), |
+              :method => :delete, :data => {:confirm => I18n.t('confirm.delete_kind')} |
+

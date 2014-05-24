@@ -1,0 +1,4 @@
+%ul
+  - @entities.each do |e|
+    %li{:value => e.id, :view => authorized?(:view, e.collection), :edit => authorized?(:edit, e.collection)}
+      = h(e.display_name)

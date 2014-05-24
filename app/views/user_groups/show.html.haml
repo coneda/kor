@@ -1,0 +1,14 @@
+- content_for :title, @user_group.name
+- content_for :subtitle, UserGroup.model_name.human
+- content_for :commands do
+  = link_to(kor_command_image('target'), mark_user_group_path(@user_group))
+  - if @user_group.entities.count <= 100
+    = link_to kor_command_image('zip'), download_images_user_group_path(@user_group)
+- content_for :content do
+
+  = render :partial => 'entities/gallery', :locals => { |
+    :top_left => "", |
+    :results => kor_graph.results_from(@entities), |
+    :container => @user_group |
+  } |
+  

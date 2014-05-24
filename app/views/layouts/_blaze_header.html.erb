@@ -1,0 +1,71 @@
+<div id="session_info" ng-show="info">
+
+  <div id="session_info_slide" ng-show="info.session.show_panel">
+    <div id="session_info_content" class="subtitle">
+
+      <div id="session_current_history" ng-show="history_available()">
+        {{'nouns.current_entity' | translate:{count: 'other'} }}
+        <div class="hr"></div>
+        <ul ng-repeat="entity in info.session.current_history">
+          <a href="/mark_as_current/{{entity.id}}" ng-hide="entity.medium_id">
+            {{entity.name}} ({{entity.id}})
+          </a>
+          <a href="/mark_as_current/{{entity.id}}" ng-show="entity.medium_id">
+            <img ng-src="{{entity.medium.url}}">
+          </a>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+  
+  <div class="clip">
+    <table cellpadding="0px" cellspacing="0px">
+      <tr>
+        <td class="positioner"></td>
+        <td class="left"></td>
+        <td 
+          class="commands center subtitle" 
+          ng-click="toggle_session_panel()"
+          ng-bind="'nouns.session' | translate"
+        >
+        </td>
+        <td class="right"></td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="clear_both"></div>
+
+</div>
+
+<div id="header">
+  <div id="userinfo" class="highlighted_subtitle">
+    <table>
+      <tr>
+        <td class="version_info" ng-bind="info.version"></td>
+        <td ng-show="info.session.user">
+          {{'logged_in_as' | translate | capitalize}}
+          <span class="username" ng-hide="info.session.user.name != 'guest'">
+            <%= link_to current_user.display_name_with_credits, edit_self_user_path(current_user) %>
+          </span>
+          <span class="username" ng-hide="info.session.user.name == 'guest'" ng-bind="info.session.user.display_name"></span>
+        </td>
+        <td ng-show="info.session.user.name != 'guest'">
+          <%= image_tag "vertical_dots.gif" %>
+        </td>
+        <td ng-show="info.session.user.name != 'guest'">
+          <a
+            href='/logout'
+            ng-bind="'verbs.logout' | translate | capitalize"
+          >
+          </a>
+        </td>
+      </tr>
+    </table>
+  </div>
+  
+  <%= link_to image_tag("logo.gif"), root_path %>
+  <%= image_tag 'loading.gif', :id => 'ajax_loading_indicator', :style => 'display: none' %>
+</div>
+

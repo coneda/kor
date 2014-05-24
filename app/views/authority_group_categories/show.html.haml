@@ -1,0 +1,22 @@
+- content_for :small_title, AuthorityGroupCategory.model_name.human(:count => :other)
+- content_for :small_subtitle do
+  = I18n.t('in')
+  = link_to I18n.t('nouns.top_level') + " » ", authority_group_categories_path
+  = ancestors_for @authority_group_category
+
+- content_for :small_content do
+  = render(:partial => 'categories', :object => kor_sort(@authority_group_category.children))
+
+- content_for :normal_title, AuthorityGroup.model_name.human(:count => :other)
+- content_for :normal_content, render(:partial => 'groups', :object => @authority_group_category.authority_groups)
+
+- if current_user.authority_group_admin?
+  - content_for :normal_commands do
+    = link_to(kor_command_image('plus'), |
+      new_authority_group_path(:authority_group => { :authority_group_category_id => @authority_group_category.id }), |
+      :title => 'new_group') |
+  - content_for :small_commands do
+    - if current_user.authority_group_admin?
+      = link_to(kor_command_image('plus'), |
+        new_authority_group_category_path(:parent_id => @authority_group_category.id), |
+        :title => 'new_category') |

@@ -1,0 +1,2 @@
+- content_for :normal_title, I18n.t("objects.edit", :o => Relationship.model_name.human(:count => :other))
+- content_for :normal_content, render(:partial => 'form', :object => @relationship)

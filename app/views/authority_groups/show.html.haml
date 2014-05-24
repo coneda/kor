@@ -1,0 +1,21 @@
+- content_for :title, @authority_group.name
+- content_for :subtitle do
+  = AuthorityGroup.model_name.human
+  = I18n.t('in')
+  - if @authority_group.authority_group_category
+    = link_to I18n.t('nouns.top_level') + " » ", authority_group_categories_path
+    = ancestors_for @authority_group.authority_group_category
+  - else
+    = link_to I18n.t('nouns.top_level'), authority_group_categories_path
+  
+- content_for :commands do
+  = link_to(kor_command_image('target'), mark_authority_group_path(@authority_group))
+  = link_to kor_command_image('zip'), download_images_authority_group_path(@authority_group)
+  
+- content_for :content do
+
+  = render :partial => 'entities/gallery', :locals => { |
+    :top_left => "", |
+    :results => kor_graph.results_from(@entities), |
+    :container => @authority_group |
+  } |

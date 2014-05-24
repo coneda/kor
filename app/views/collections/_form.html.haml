@@ -1,0 +1,9 @@
+- content_for :form_errors, error_box(:object => @collection)
+
+= form_for @collection, :html => {:class => 'kor_form'}, :builder => Stdlib::KorFormBuilder do |f|
+  = f.kor_input :name
+  
+  - @collection.policies.each do |policy|
+    = f.kor_input policy, :control => credentials_selector_tag("collection[grants_by_policy][#{policy}][]", :collection => @collection, :policy => policy)
+  
+  = f.kor_submit

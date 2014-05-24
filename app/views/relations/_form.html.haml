@@ -1,0 +1,13 @@
+- content_for :form_errors do
+  = error_box :object => @relation
+
+= form_for @relation, :html => { :class => 'kor_form' }, :builder => Stdlib::KorFormBuilder do |f|
+  = f.hidden_field :lock_version
+
+  = f.kor_input :from_kind_ids, :control => f.select(:from_kind_ids, Kind.for_select, {}, :multiple => true)
+  = f.kor_input :name
+  = f.kor_input :reverse_name
+  = f.kor_input :description
+  = f.kor_input :to_kind_ids, :control => f.select(:to_kind_ids, Kind.for_select, {}, :multiple => true)
+
+  = f.kor_submit :data => {:confirm => I18n.t('confirm.long_time_warning')}

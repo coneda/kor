@@ -1,0 +1,19 @@
+- unless errors.empty?
+  .errors
+    .title= options[:header].capitalize_first_letter
+    %ul
+      - errors.each do |error|
+        %li
+          %span.highlighted_subtitle
+            - unless error[:attribute] == :base
+              - if error[:object].is_a?(Entity) && [:name, :distinct_name].include?(error[:attribute])
+                - if error[:attribute] == :name
+                  = error[:object].kind.name_label
+                - else
+                  = error[:object].kind.distinct_name_label
+              - elsif error[:object].respond_to? :human_attribute_name
+                = error[:object].human_attribute_name(error[:attribute]).capitalize_first_letter
+              - else
+                = error[:object].class.human_attribute_name(error[:attribute]).capitalize_first_letter
+          %span= error[:message]
+      

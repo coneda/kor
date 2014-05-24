@@ -1,0 +1,61 @@
+<% content_for :normal_title, I18n.t("nouns.statistics") %>
+<% content_for :normal_content do %>
+
+  <table class="kor_table">
+    <thead>
+      <tr>
+        <th><strong><%= User.model_name.human :count => :other %></strong></th>
+        <th class="number text-right"><strong><%= User.without_predefined.count %></strong></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><%= I18n.t "logged_in_recently" %></td>
+        <td class="number text-right"><%= User.without_predefined.logged_in_recently.count %></td>
+      </tr>
+      <tr>
+        <td><%= I18n.t "created_in_recently" %></td>
+        <td class="number text-right"><%= User.without_predefined.created_recently.count %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="spacer-1"></div>
+
+  <table class="kor_table">
+    <thead>
+      <tr>
+        <th><strong><%= Entity.model_name.human :count => :other %></strong></th>
+        <th class="number text-right"><strong><%= Entity.count %></strong></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% Entity.includes(:kind).group("kinds.name").count.sort{|x, y| y.last - x.last}.each do |stat| %>
+        <tr>
+          <td><%= stat.first %></td>
+          <td class="number text-right"><%= stat.last %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="spacer-1"></div>
+
+  <table class="kor_table">
+    <thead>
+      <tr>
+        <th><strong><%= Relationship.model_name.human :count => :other %></strong></th>
+        <th class="number text-right"><strong><%= Relationship.count %></strong></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% Relationship.includes(:relation).group("relations.name").count.sort{|x, y| y.last - x.last}.each do |stat| %>
+        <tr>
+          <td><%= stat.first %></td>
+          <td class="number text-right"><%= stat.last %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+<% end %>

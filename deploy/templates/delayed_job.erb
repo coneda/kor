@@ -1,0 +1,66 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          delayed_job
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: coneda-kor delayed_job
+# Description:       coneda-kor delayed_job background worker
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+DIR=/opt/kor/current
+
+start(){
+  log_daemon_msg "starting coneda-kor delayed_job"
+  cd $DIR
+  log_progress_msg
+  su -c "RAILS_ENV=production bundle exec script/delayed_job start" kor > /dev/null 2> /dev/null
+  log_progress_msg
+  log_end_msg 0
+}
+
+stop(){
+  log_daemon_msg "stopping coneda-kor delayed_job"
+  cd $DIR
+  su -c "RAILS_ENV=production bundle exec script/delayed_job stop" kor > /dev/null 2> /dev/null
+  log_progress_msg
+  log_end_msg 0
+}
+
+# Check if Redmine is running
+status(){
+  RUBYPID=`ps aux | grep "delayed_job" | grep -v grep | awk '{print $2}'`
+  if [ "x$RUBYPID" = "x" ]; then
+    echo "* Delayed job is not running"
+  else
+    echo "* Delayed job is running"
+  fi
+}
+
+
+case "$1" in
+  start)
+    start
+    ;;
+  
+  stop)
+    stop
+    ;;
+  
+  status)
+    status
+    ;;
+  
+  restart|force-reload)
+    stop
+    start
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|restart|force-reload|status}"
+    exit 1
+
+esac

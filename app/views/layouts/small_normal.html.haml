@@ -1,0 +1,13 @@
+- content_for :small do
+  = section_panel(:title => yield(:small_title),
+    :subtitle => yield(:small_subtitle),
+    :commands => yield(:small_commands),
+    :content => yield(:small_content))
+
+- content_for :normal do
+  = section_panel(:title => yield(:normal_title),
+    :subtitle => yield(:normal_subtitle),
+    :commands => yield(:normal_commands),
+    :content => yield(:normal_content))
+
+= render :file => 'layouts/small_normal_bare'

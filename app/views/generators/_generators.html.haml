@@ -1,0 +1,8 @@
+%table.kor_table
+  - @generators.each do |generator|
+    - unless generator.new_record?
+      %tr{:id => "generator_#{generator.id}"}
+        %td.expanding= generator.name
+        %td.nowrap
+          = link_to kor_command_image('pen'), edit_kind_generator_path(@kind, generator)
+          = link_to kor_command_image('x'), kind_generator_path(generator, :kind_id => @kind.id), :method => :delete

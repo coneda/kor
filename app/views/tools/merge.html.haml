@@ -1,0 +1,49 @@
+- content_for :normal_title, I18n.t('verbs.merge').capitalize_first_letter
+- content_for :normal_content do
+  = form_for @entity, :url => { :controller => 'tools', :action => 'clipboard_action', :clipboard_action => 'merge' }, :html => {:class => 'kor_form'}, :builder => Stdlib::KorFormBuilder do |f|
+
+    - @entities.each do |e|
+      = hidden_field_tag "entity_ids[]", e.id
+
+    = f.hidden_field :kind_id
+    
+    = f.collection_selector :collection_id
+
+    - unless @entities.first.is_medium?
+      = f.kor_input :name, :control => f.select(:name, @entities.map{|e| e.name}.uniq)
+      = f.kor_input :distinct_name, :control => f.select( :distinct_name, @entities.map{|e| e.distinct_name}.uniq )
+      = f.kor_input :synonyms, :control => f.text_field(:synonyms, :value => @entities.map{|e| e.synonyms}.sum.sort.uniq.join(', '))
+      - if @entity.kind_id && @entity.kind.defines_schema?
+        = fields_for "entity[dataset_attributes]", :builder => Stdlib::KorFormBuilder do |d|
+          - @entity.kind.field_instances(@entity).each do |field|
+            - begin
+              = render :partial => field.class.merge_partial_name, :locals => {:field => field, :entities => @entities}
+            - rescue ActionView::MissingTemplate => e
+              = render :partial => 'fields/merge/base', :locals => {:field => field, :entities => @entities}
+            
+      = f.kor_input :tag_list, :control => f.text_field(:tag_list, :value => @entities.map{|e| e.tag_list}.sum.sort.uniq.join(', '))
+      
+      = attachments 'properties', Entity.human_attribute_name(:properties), form_fields_for_entity_property do
+        - @entities.each do |entity|
+          - entity.properties.each do |p|
+            = attachment form_fields_for_entity_property(p)
+      
+      .hr
+      
+      = f.kor_input :comment, :control => f.text_area(:comment, :value => joined_comments_for(@entities))
+    - else
+      %table.kor_table.media_merge
+        - @entities.in_groups_of(3, false).each do |row|
+          %tr
+            - row.each do |e|
+              %td
+                = f.radio_button :id, e.id
+                = kor_image e.dataset, 'icon'
+    
+    = f.fields_for :external_references do |ex|
+      - WebServices::Dispacher.web_services_for_kind_with_external_reference(@entity.kind).each do |ws|
+        = f.kor_input ws.external_reference_label, :translate => false, :control => ex.select(ws.external_reference, |
+          @entities.map{|e| e.external_references[ws.external_reference]}.uniq |
+        ) |
+      
+    = f.kor_submit

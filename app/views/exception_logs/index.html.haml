@@ -1,0 +1,24 @@
+- content_for :title, I18n.t("nouns.exception_log")
+- content_for :commands do
+  .exception_log_commands
+    = will_paginate(@exception_logs)
+
+- content_for :content do
+  %table.kor_table{:cellpadding => 0, :cellspacing => 0}
+    - if @exception_logs.empty?
+      %tr
+        %td{:colspan => 2}= I18n.t('messages.no_exceptions_recorded')
+    - else
+      - @exception_logs.each do |e|
+        %tr
+          %td.exception_log
+            %span.timestamp= e.created_at
+            %span.kind= e.kind
+            .message= e.message
+            .message= e.uri
+            .message= e.params.inspect
+            .text.backtrace{:style => "display: none;"}
+              = html_escape(e.backtrace).gsub(/[\r\n]+/, "<br>").html_safe
+      %tr
+        %td.left.right.subtitle{:colspan => 2}
+          = link_to 'cleanup', '/exception_logs/cleanup'

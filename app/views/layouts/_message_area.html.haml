@@ -1,0 +1,9 @@
+- if flash[:notice]
+  .notices
+    = kor_error(flash[:notice])
+
+- if flash[:error]
+  .errors
+    = kor_error(flash[:error])
+
+= yield :form_errors

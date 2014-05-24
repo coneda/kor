@@ -1,0 +1,1 @@
+require 'kor_index'

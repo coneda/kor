@@ -1,0 +1,32 @@
+- content_for :normal_title, I18n.t('nouns.new_entity', :count => :other)
+- content_for :normal_commands do
+  = will_paginate @entities,
+    :previous_label => "«",
+    :next_label => "»"
+  
+- content_for :normal_content do
+  = form_tag recent_entities_path, :class => 'kor_form', :builder => Stdlib::KorFormBuilder do
+    = collection_selector_tag(:collection_id, :label => Collection.model_name.human, :policy => :edit)
+    
+    :javascript
+      $('#collection_id').change(function(event){
+        document.location.href = '/entities/recent?collection_id=' + $(this).val();
+      });
+    
+  .hr
+
+  - if @entities.empty?
+    = I18n.t('objects.none_found', :o => I18n.t('nouns.entity', :count => :other) )
+  - else
+    %table.kor_table
+      %tr
+        %th= Entity.human_attribute_name(:display_name)
+        %th= Collection.model_name.human
+        %th= Entity.human_attribute_name(:updater)
+      - @entities.each do |e|
+        %tr
+          %td.subtitle.expanding
+            = link_to h(e.display_name), e
+            = h(e.kind.name)
+          %td.subtitle= e.collection.name
+          %td.subtitle= e.last_updated_by.try(:display_name)

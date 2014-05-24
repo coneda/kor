@@ -1,0 +1,33 @@
+de:
+  help:
+    component_search:
+      component_search: |
+        Die Ein-Feld-Suche gibt bereits bei der Eingabe des Suchbegriffs im Feld 
+        darunter dessen Trefferanzahl und passende Tags an. Mit der Auswahl von 
+        Begriff oder Tag aus dem Vorschlagsfeld startet die Suche.
+        
+        Die Eingabe weitere Begriffe und Tags schränken die Suche weiter ein. 
+        Jeder ausgewählte Begriff kann über das x auch wieder entfernt werden, 
+        um die Suche auszuweiten oder zu modifizieren. Mit dem Befehl 
+        „Zurücksetzen“ startet eine neue Suchanfrage.
+        
+        Über das Menüfeld „Entitätstyp“ lässt sich die Ergebnisliste auf einen 
+        Typ einschränken.
+        
+    entities:
+      index: |
+        In der Expertensuche lassen sich die einzelnen Felder der Entitäten gezielt 
+        abfragen. Mit den „weiteren Kriterien“ können Relationen und verknüpfte 
+        Entitäten in die Suche einbezogen werden.
+        
+        
+    kor_multi_file_upload:
+      form: |
+        Über „Dateien hinzufügen“ können mehrere Dateien ausgewählt werden. Die 
+        ausgewählten Dateien werden in eine Liste aufgenommen, aus der einzlene 
+        Dateien auch wieder entfernt werden können. Der Upload beginnt mit dem 
+        Befehlt „hochladen“.
+        
+        Als Eigene Gruppe kann ein beliebiger Name definiert werden. Die 
+        hochgeladen Dateien werden in dieser Gruppe abgelegt.
+        

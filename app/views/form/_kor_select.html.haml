@@ -1,0 +1,12 @@
+.kor_select{:id => component_id}
+  .all
+    = select_all
+    %span
+      = I18n.t('all')
+      = check_box_label
+  
+  .detailed_select{:style => 'display: none'}
+    = detailed_select
+    
+  :javascript
+    register_kor_select_events('#{component_id}');

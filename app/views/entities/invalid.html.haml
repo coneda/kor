@@ -1,0 +1,11 @@
+- content_for :normal_title, I18n.t('nouns.invalid_entity', :count => :other )
+- content_for :normal_subtitle, I18n.t('nouns.section', :count => 1)
+- content_for :normal_commands, kor_paginate(kor_graph.results_from(@entities))
+- content_for :normal_content do
+  - if @entities.empty?
+    = I18n.t('objects.none_found', :o => I18n.t('nouns.entity', :count => :other) )
+  - else
+    %table.kor_table
+      - @entities.each do |e|
+        %tr
+          %td.subtitle= kor_entity e, :include_kind => true

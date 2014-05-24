@@ -1,0 +1,28 @@
+- @relations.each do |relation|
+  - @counter = (@counter || 0) + 1
+
+  .relation{:id => "relation_#{@counter}"}
+
+    .subtitle= h relation.first
+
+    .relation_switch{:style => "display: none;"}
+      = link_to image_tag('triangle_up.gif'), nil, :class => 'relation_toggle'
+
+    - pagination = capture do
+      - if relation.last.size > 10
+        .pagination
+          = I18n.t('goto', :where => I18n.t('nouns.page', :count => 1))
+          = link_to kor_command_image('pager_left')
+          = select_tag "#{@counter}_name", options_for_select((1..((relation.last.size - 1) / 10 + 1))), :id => nil
+          = link_to kor_command_image('pager_right')
+          = I18n.t 'of', :amount => relation.last.size / 10 + 1
+    
+    = pagination
+    
+    %div{:id => "current_#{@counter}_page"}
+      = render :partial => 'relationships_page', :locals => { |
+        :entity => @entity, |
+        :relationships => relation.last.first(10) |
+      } |
+    
+    = pagination

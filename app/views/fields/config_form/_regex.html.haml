@@ -1,0 +1,2 @@
+= f.fields_for :settings, field.settings do |r|
+  = r.kor_input :regex, :translate => false, :control => r.text_field(:regex, :value => field.settings[:regex])

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+  <body>
+    <table>
+      <tbody>
+        <% (1..@max).to_a.each do |m| %>
+          <tr>
+            <td><h1><%= m %></h1></td>
+          <tr>
+
+          <% @ratings.each do |id, ratings| %>
+            <% if ratings.size == m %>
+              <tr>
+                <td><%= link_to id, entity_path(id), :target => "_blank" %></td>
+                <td>
+                  <%= ratings.map{|r| r.data}.join(', ') %>
+                  <% two = ratings.select{|r| r.data == "2d"}.size %>
+                  <% three = ratings.select{|r| r.data == "3d"}.size %>
+                  <% total = ratings.size %>
+                  <% if total > 1 %>
+                    <% if total == two %>
+                      -> absolute => 2d
+                    <% elsif total == three %>
+                      -> absolute => 3d
+                    <% elsif two > three %>
+                      <% if (two.to_f / three > 3) %>
+                        -> <%= two.to_f / three %> => 2d
+                      <% else %>
+                        -> unconclusive
+                      <% end  %>
+                    <% else %>
+                      <% if (three.to_f / two > 3) %>
+                        -> <%= three.to_f / two %> => 3d
+                      <% else %>
+                        -> unconclusive
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </body>
+</html>

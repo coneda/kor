@@ -1,0 +1,22 @@
+%ul
+  %li= column('UUID', @entity.uuid, :translate => false, :sanitize => false)
+  %li
+    = column('created_at', I18n.l(@entity.created_at))
+    - if @entity.creator
+      = I18n.t("by")
+      %span.highlighted_subtitle= h(@entity.creator.display_name)
+  - unless @entity.created_at == @entity.updated_at
+    %li
+      = column('updated_at', I18n.l(@entity.updated_at))
+      - if @entity.last_updated_by
+        = I18n.t("by")
+        %span.highlighted_subtitle= h(@entity.last_updated_by.display_name)
+  
+  - unless @entity.authority_groups.empty?
+    #{Entity.human_attribute_name(:authority_groups)}:
+    %ul.subitems
+      - @entity.authority_groups.each do |g|
+        %li= authority_group_with_ancestors(g, :link => true).html_safe
+  %li= column(Collection.model_name.human, @entity.collection.name, :translate => false)
+  %li= column(:degree, @entity.degree)
+  

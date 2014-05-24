@@ -1,0 +1,2 @@
+= select_tag 'group_id', options_for_select(UserGroup.latest_first.owned_by(current_user).collect{|t| [t.name.short(35), t.id] })
+Neue Gruppe #{link_to I18n.t('verbs.create'), nil, :class => 'add_user_group'}

@@ -1,0 +1,6 @@
+.attachment
+  %table{:cellspacing => 0, :cellpadding => 0}
+    %tr
+      %td.attachment_content= content
+      %td.attachment_commands
+        = link_to kor_command_image('minus').html_safe, nil, :class => 'attachment_minus'

@@ -1,0 +1,36 @@
+# Directories
+
+.bundle
+log/*
+tmp/*
+data/*
+db/*.sqlite3
+solr/data
+solr/pids
+public/media
+public/plugin_assets
+
+
+# Configuration
+
+config/kor.yml
+config/kor.*.yml
+config/database.yml
+config/legal.txt
+config/contact.txt
+config/kor.app.*
+config/testing.txt
+config/kor.app.yml
+config/kor.app.test.yml
+config/locales/*/help.yml
+config/schema_definitions.yml
+config/sunspot.yml
+config/logrotate.conf
+
+
+# Development
+
+chromedriver.log
+deploy/build
+db/*.sqlite3
+.yardoc

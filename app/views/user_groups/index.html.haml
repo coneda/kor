@@ -1,0 +1,13 @@
+- content_for :normal_title, UserGroup.model_name.human(:count => :other)
+- content_for :normal_commands, link_to(kor_command_image('plus'), new_user_group_path, :title => 'new_user_group')
+- content_for :normal_content do
+  - if @user_groups.empty?
+    = I18n.t('objects.none_found', :o => UserGroup.model_name.human(:count => :other) )
+  - else
+    %table.kor_table
+      - @user_groups.each do |g|
+        %tr.user_group
+          %td.subtitle.expanding= link_to h(g.name), user_group_path(g)
+          %td.nowrap
+            = link_to kor_command_image('pen'), edit_user_group_path(g)
+            = link_to kor_command_image('x'), g, :method => :delete, :data => {:confirm => I18n.t("confirm.delete_user_group")}

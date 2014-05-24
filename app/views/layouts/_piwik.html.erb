@@ -1,0 +1,26 @@
+<% if Kor.config["piwik.url"] %>
+  
+  <script type="text/javascript">
+    var pkBaseURL = "#{Kor.config['piwik.url'] + '/'}";
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+
+  <script type="text/javascript">
+    try {
+      var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", #{Kor.config['piwik.id']});
+      piwikTracker.trackPageView();
+      piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+  </script>
+    
+  <noscript>
+    <p>
+      <img
+        src="<%= Kor.config['piwik.url'] %>/piwik.php?idsite=<%= Kor.config['piwik.id'] %>"
+        alt=""
+        style="border:0"
+      >
+    </p>
+  </noscript>
+
+<% end %>

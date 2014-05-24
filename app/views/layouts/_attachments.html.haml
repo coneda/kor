@@ -1,0 +1,6 @@
+.attachments{:id => id}
+  .subtitle= title.capitalize_first_letter
+  .commands
+    = link_to kor_command_image('plus').html_safe, nil, :class => 'attachment_plus'
+  .clear_both
+  %div= content

@@ -1,0 +1,165 @@
+Feature: Entities
+  In order to manage diverse information
+  As a user
+  I should be able to manage entities
+  
+  
+  Scenario: Invalid entities
+    Given I am logged in as "admin"
+    And 40 invalid entities "Mona Lisa" of kind "Werk" inside collection "default"
+    And I follow "Ungültige Entitäten"
+    Then I should see "gehe zu Seite"
+  
+  Scenario: Search fields
+    Given I am logged in as "admin"
+    When I go to the expert search
+    Then I should see "Datierung"
+
+
+  @javascript
+  Scenario: Show an entity with 12 relationships of the same kind
+    Given I am logged in as "admin"
+    And the entity "Nürnberg" of kind "Ort/Orte"
+    And the entity "Nürnberg" has 12 relationships
+    When I go to the entity page for "Nürnberg"
+    Then I should see element ".pagination input"
+    When I click element "img[alt='Pager_right']" within ".relation"
+    And I follow "Triangle_up" within ".relation"
+    Then I should see /ENDE/ within ".relationships"
+
+
+  @javascript
+  Scenario: Upload a medium
+    Given I am logged in as "admin"
+    When I go to the legacy upload page
+    Then I should see "Medium anlegen"
+    When I attach the file "spec/fixtures/image_a.jpg" to "entity[medium_attributes][document]"
+    And I press "Erstellen"
+    Then there should be "1" "Medium" entity in the database
+    And I should be on the entity page for the last medium
+    And I should see "Medium"
+    
+
+  @javascript
+  Scenario: Create an entity as an unauthorized user
+    Given I am logged in as "john"
+    And the kind "Werk/Werke"
+    When I go to the new "Werk-Entity" page
+    Then I should be on the denied page
+    
+  
+  @javascript
+  Scenario: Create entities with a date, specific information and some synonyms and remove some later
+    Given I am logged in as "admin"
+    And the kind "Werk/Werke"
+    When I go to the root page
+    And I select "Werk" from "new_entity[kind_id]"
+    And I fill in "entity[name]" with "Mona Lisa"
+    
+    And I follow "Plus" within "#datings"
+    And I fill in "datings" attachment "1" with "/1688"
+    And I follow "Plus" within "#properties"
+    And I fill in "properties" attachment "1" with "Alter/12"
+    And I follow "Plus" within "#synonyms"
+    And I fill in "synonyms" attachment "1" with "La Bella"
+    And I follow "Plus" within "#synonyms"
+    And I fill in "synonyms" attachment "2" with "La Gioconde"
+    
+    And I press "Erstellen"
+    Then I should be on the entity page for "Mona Lisa"
+    And I should see "1688"
+    And I should see "Alter"
+    And I should see "12"
+    And I should see "La Bella"
+    And I should see "La Gioconde"
+    
+    When I follow "Pen"
+    And I follow "Minus" within "#synonyms .attachment:first-child"
+    And I press "Speichern"
+    Then I should be on the entity page for "Mona Lisa"
+    And I should see "1688"
+    And I should see "Alter"
+    And I should see "12"
+    And I should not see "La Bella"
+    And I should see "La Gioconde"
+    
+  
+  Scenario: I don't see the select as current link when I have no edit rights for no collection
+    Given I am logged in as "john"
+    And the entity "Mona Lisa" of kind "Werk/Werke"
+    When I go to the entity page for "Mona Lisa"
+    Then I should not see element "img[alt=Select]"
+    
+    
+  Scenario: I see the select link when I have edit rights for any collection
+    Given I am logged in as "admin"
+    And the entity "Mona Lisa" of kind "Werk/Werke"
+    And user "john" is allowed to "edit" collection "Nebensammlung" through credential "Nebenuser"
+    And user "john" is allowed to "view" collection "Default" through credential "Nebenuser"
+    And I am logged in as "john"
+    When I go to the entity page for "Mona Lisa"
+    Then I should see element "img[alt=Select]"
+
+  
+  @javascript
+  Scenario: Edit an entity with only edit and view rights
+    Given the entity "Mona Lisa" of kind "Werk/Werke" inside collection "Nebensammlung"
+    And user "john" is allowed to "view/edit" collection "Nebensammlung" through credential "Nebenuser"
+    And I am logged in as "john"
+    When I go to the entity page for "Mona Lisa"
+    And I follow "Pen"
+    And I fill in "entity[name]" with "La Gioconde"
+    And I press "Speichern"
+    Then I should be on the entity page for "La Gioconde"
+    And I should see "La Gioconde"
+
+
+  Scenario: Try to create an entity with the same name twice (same collection)
+    Given I am logged in as "admin"
+    And the kind "Werk/Werke"
+    And I go to the new "Werk-Entity" page
+    And I fill in "entity[name]" with "Mona Lisa"
+    And I press "Erstellen"
+    When I go to the new "Werk-Entity" page
+    And I fill in "entity[name]" with "Mona Lisa"
+    And I press "Erstellen"
+    Then I should see "Name ist bereits vergeben"
+    
+  
+  Scenario: Try to create an entity with the same name twice (different collections)
+    Given the kind "Werk/Werke"
+    And the collection "side"
+    And user "admin" is allowed to "view/edit/create" collection "side" through credential "can_do_it"
+    And I am logged in as "admin"
+    And I go to the new "Werk-Entity" page
+    And I fill in "entity[name]" with "Mona Lisa"
+    And I press "Erstellen"
+    When I go to the new "Werk-Entity" page
+    And I select "side" from "entity[collection_id]"
+    And I fill in "entity[name]" with "Mona Lisa"
+    And I press "Erstellen"
+    Then I should see "Name ist bereits vergeben"
+  
+ 
+  Scenario: Try to create an entity with the same name within another collection
+    Given the entity "Mona Lisa" of kind "Werk/Werke"
+    And user "john" is allowed to "view/create" collection "Nebensammlung" through credential "Nebenuser"
+    And I am logged in as "john"
+    When I go to the new "Werk-Entity" page
+    And I fill in "entity[name]" with "Mona Lisa"
+    And I press "Erstellen"
+    Then I should see "Konflikt mit Sammlung 'Default'"
+    
+  
+  @javascript
+  Scenario: When paginating relationships, images should have a button bar
+    Given I am logged in as "admin"
+    And the setup "Many relationships with images"
+    When I go to the entity page for "Mona Lisa"
+    When I click element "img[alt='Pager_right']" within ".relation"
+    And I follow "Triangle_up" within ".relationship"
+    And I wait for "1" seconds
+    And I hover element ".relationships .kor_medium_frame"
+    And I click on ".kor_medium_frame .button_bar img[alt=Target]"
+    Then I should see "wurde in die Zwischenablage aufgenommen"
+    

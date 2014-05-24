@@ -1,0 +1,5 @@
+- if AuthorityGroup.count == 0
+  = I18n.t('messages.no_authority_groups')
+  (#{link_to I18n.t('verbs.create'), new_authority_group_path})
+- else
+  = select_tag(:group_id, options_for_select(authority_groups_options))

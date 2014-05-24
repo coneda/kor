@@ -1,0 +1,51 @@
+- content_for :form_errors, error_box(:object => @user)
+
+= form_for @user, :html => { :class => 'kor_form' }, :builder => Stdlib::KorFormBuilder do |f|
+  = f.hidden_field :lock_version
+  = f.kor_input :personal, :control => check_box_tag("user[make_personal]", "1", @user.personal?)
+  = f.kor_input :full_name
+  = f.kor_input :name
+  = f.kor_input :email
+
+  .hr
+
+  = f.kor_input :activation, :control => f.check_box(:active)
+
+  = column(:expires_at, (@user.expires_at ? I18n.l(@user.expires_at) : I18n.t('never')))
+  
+  %ul
+    %li
+      = f.radio_button :extension, :leave_value
+      = I18n.t 'leave_value'
+    %li
+      = f.radio_button :extension, :never
+      = I18n.t 'verbs.does_not_extend'
+    - [ 7,30,180 ].each do |d|
+      %li
+        = f.radio_button :extension, d
+        = I18n.t 'verbs.expires_after_days', :days => d
+    %li
+      = f.radio_button :extension, :custom
+      = I18n.t('verbs.expires_after_days', :days => f.text_field(:custom_extension, :style => 'width: 40px;') ).html_safe
+
+  .hr
+  
+  = f.kor_input :groups, :control => f.collection_select(:group_ids,
+      Credential.non_personal.ordered, :id, :name,
+      { }, { :selected => 1 , :multiple => true }), 
+    :count => :other
+  
+  .hr
+
+  = f.kor_input :admin, :control => f.check_box(:admin)  
+  = f.kor_input :authority_group_admin, :control => f.check_box(:authority_group_admin)
+  = f.kor_input :relation_admin, :control => f.check_box(:relation_admin)
+  = f.kor_input :kind_admin, :control => f.check_box(:kind_admin)
+  = f.kor_input :collection_admin, :control => f.check_box(:collection_admin)
+  = f.kor_input :credential_admin, :control => f.check_box(:credential_admin)
+  = f.kor_input :user_admin, :control => f.check_box(:user_admin)
+  = f.kor_input :developer, :control => f.check_box(:developer)
+  
+  .hr
+
+  = f.kor_submit

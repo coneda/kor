@@ -1,0 +1,24 @@
+- content_for :title, I18n.t('nouns.credit', :count => :other)
+
+- content_for :content do
+  .user_credit_list
+    .will_paginate_top
+      = will_paginate @users, :previous_label => '«', :next_label => '»'
+  
+    .hr
+
+    - if @users.empty?
+      = I18n.t('objects.none_found', :o => I18n.t('nouns.user', :count => :other) )
+    - else
+      - @users.all.in_groups_of(10).each do |g|
+        %ul
+          - g.each do |user|
+            - if user
+              %li.user{'data-user-id' => user.id}
+                %span.highlighted_subtitle= user.e_sum.to_i
+                \-
+                = link_to user.full_name, '#'
+                %ul.details
+    
+    .will_paginate_bottom
+      = will_paginate @users, :previous_label => '«', :next_label => '»'

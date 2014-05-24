@@ -1,0 +1,5 @@
+- content_for :small_title, I18n.t('nouns.field', :count => :other)
+- content_for :small_commands, link_to(kor_command_image('plus'), new_kind_field_path(@kind))
+- content_for :small_content, render(:partial => 'fields')
+
+- content_for :normal_title, I18n.t('nouns.config')

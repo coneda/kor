@@ -1,0 +1,18 @@
+- content_for :form_errors, error_box(:object => @kind)
+
+= form_for @kind, :html => { :class => 'kor_form' }, :builder => Stdlib::KorFormBuilder do |f|
+  = f.hidden_field :lock_version
+
+  = f.kor_input :name
+  = f.kor_input :plural_name
+  = f.kor_input :description, :control => f.text_area(:description)
+  
+  = f.kor_input :web_services, :control => select_tag('kind[settings][web_services]', options_for_select(web_services_for_select, :selected => @kind.web_services), :multiple => true)
+  
+  = kor_input_tag I18n.t("kind_settings.tagging"), :control => check_box_tag("kind[settings][tagging]", "1", @kind.tagging)
+  
+  = kor_input_tag I18n.t("kind_settings.dating_label"), :control => text_field_tag("kind[settings][dating_label]", @kind.dating_label)
+  = kor_input_tag I18n.t("kind_settings.name_label"), :control => text_field_tag("kind[settings][name_label]", @kind.name_label)
+  = kor_input_tag I18n.t("kind_settings.distinct_name_label"), :control => text_field_tag("kind[settings][distinct_name_label]", @kind.distinct_name_label)
+  
+  = f.kor_submit

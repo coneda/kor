@@ -1,0 +1,291 @@
+de:
+  activemodel:
+    errors:
+      template:
+        header: "bei der Eingabe sind Fehler aufgetreten"
+
+      messages:
+        empty: "muss ausgefüllt werden"
+
+
+  activerecord:
+
+    models:
+      field:
+        one: Feld
+        other: Felder
+      generator:
+        one: Generator
+        other: Generatoren
+      tag:
+        one: Tag
+        other: Tags
+      medium:
+        one: Medium
+        other: Medien
+      snapshot:
+        one: Zustand
+        other: Zustände
+      credential:
+        one: Benutzergruppe
+        other: Benutzergruppen
+      collection:
+        one: Sammlung
+        other: Sammlungen
+      entity:
+        one: Entität
+        other: Entitäten
+      entity_dating:
+        one: Datierung
+        other: Datierungsangaben
+      kor_image:
+        one: Abbildung
+        other: Abbildungen
+      credential:
+        one: Benutzergruppe
+        other: Benutzergruppen
+      exception_log:
+        one: Fehlerbericht
+        other: Fehlerberichte
+      kind:
+        one: Entitätstyp
+        other: Entitätstypen
+      property:
+        one: weitere Eigenschaft
+        other: weitere Eigenschaften
+      publishment:
+        one: veröffentlichte Gruppe
+        other: veröffentlichte Gruppen
+        specifier:
+          one: veröffentlicht
+          other: veröffentlichte
+      relation:
+        one: Relation
+        other: Relationen
+      relationship:
+        one: Verknüpfung
+        other: Verknüpfungen
+      synonym:
+        one: Synonym
+        other: Synonyme
+      tag:
+        one: Tag
+        other: Tags
+      authority_group:
+        one: Globale Gruppe
+        other: Globale Gruppen
+        specifier:
+          one: globale
+          other: globale
+      authority_group_category:
+        one: Verzeichnis
+        other: Verzeichnisse
+      user_group:
+        one: Eigene Gruppe
+        other: Eigene Gruppen
+        specifier:
+          one: eigene
+          other: eigene
+      user:
+        one: Benutzer
+        other: Benutzer
+
+    attributes:
+      field:
+        type: Typ
+        name: Name
+        show_label: Attributname bei Entität
+        form_label: Anzeige im Bearbeitenformular
+        search_label: Anzeige im Suchformular
+        show_on_entity: Bei Entität anzeigen
+      generator:
+        name: Name
+        show_label: Attributname bei Entität
+        directive: Generatorvorschrift
+        is_attribute: Bei Entität anzeigen
+      medium:
+        image: Abbildung
+        document: Dokument
+        content_type: Dateityp
+        document_file_name: Dokument
+        file_size: Dateigröße des Originals
+        file_type: Dateityp
+        original: Orginaldatei
+        original_extension: Dateityp des Orginals
+        datahash: Prüfsumme
+      snapshot:
+        comment: Kommentar
+        created_at: erstellt
+        user_id: Benutzer
+      credential:
+        name: Name
+        description: Beschreibung
+      collection:
+        perosnal: benutzereigen
+        name: Name
+        view: Diesen Gruppen das Anzeigen erlauben
+        edit: Diesen Gruppen das Bearbeiten erlauben
+        delete: Diesen Gruppen das Löschen erlauben
+        create: Diesen Gruppen das Erstellen erlauben
+        view_meta: Diesen Gruppen das Anzeigen der Stammdaten erlaubem
+      user:
+        personal: eigene Sammlung
+        username: Benutzername
+        name: Benutzername
+        full_name: vollständiger Name
+        password: Passwort
+        plain_password: Passwort
+        password_confirmation: Passwortwiederholung
+        plain_password_confirmation: Passwortwiederholung
+        email: Email
+        activation: Aktivierung
+        groups: Gruppenzugehörigkeit
+        created_at: erstellt
+        expires_at: läuft aus
+        last_login: zuletzt angemeldet
+        authority_group_admin: Verwaltung von globalen Gruppen
+        kind_admin: Verwaltung von Entitätstypen
+        credential_admin: anlegen und ändern von Benutzergruppen
+        user_admin: Benutzerverwaltung
+        collection_admin: anlegen und ändern von Sammlungen
+        relation_admin: anlegen und ändern von Relationen
+        developer: Entwickler
+        expires_at: läuft aus
+        created_at: erstellt
+        expires_at: läuft aus
+        authority_group_admin: Verwaltung von globalen Gruppen
+        kind_admin: Verwaltung von Entitätstypen
+        credential_admin: anlegen und ändern von Benutzergruppen
+        user_admin: Benutzerverwaltung
+        collection_admin: anlegen und ändern von Sammlungen
+        relation_admin: anlegen und ändern von Relationen
+        developer: Entwickler
+        last_login: letzte Anmeldung
+        home_page: Startseite
+        default_collection_id: Voreingestellte Sammlung
+      entity:
+        display_name: Name
+        updater: aktualisiert von
+        tag_list: Tags
+        content_type: Dateityp
+        collection_id: Sammlung
+        master_data: Stammdaten
+        authority_groups: Globale Gruppen
+        created_at: erstellt
+        updated_at: aktualisiert
+        expires_at: läuft aus
+        last_login: zuletzt angemeldet
+        authority_group_admin: Verwaltung von globalen Gruppen
+        kind_admin: Verwaltung von Entitätstypen
+        credential_admin: anlegen und ändern von Benutzergruppen
+        user_admin: Benutzerverwaltung
+        collection_admin: anlegen und ändern von Sammlungen
+        relation_admin: anlegen und ändern von Relationen
+        developer: Entwickler
+        expires_at: läuft aus
+        created_at: erstellt
+        last_login: letzte Anmeldung
+        home_page: Startseite
+        default_collection: Voreingestellte Sammlung
+        collection_id: Sammlung
+        kind: Entitätstyp
+        name: Name
+        title: Titel
+        uuid: UUID
+        subtype: Typ
+        distinct_name: eindeutiger Name
+        distinct_title: eindeutiger Titel
+        comment: Kommentar
+        properties: weitere Eigenschaften
+        synonyms: Synonyme
+        degree: Grad
+      entity_dating:
+        label: Art der Datierung
+        dating_string: Datierung
+        from_day: von
+        to_day: bis
+      kind:
+        name: Name
+        plural_name: Name im Plural
+        description: Beschreibung
+        dataset_class: Felderweiterungen
+        dataset_profile: Profil für Erweiterungen
+      relation:
+        name: Name
+        reverse_name: Umkehrung
+        description: Beschreibung
+        from_kind_ids: erlaubte Typen auf dieser Seite
+        to_kind_ids: erlaubte Typen auf dieser Seite
+      relationship:
+        property:
+          one: weitere Eigenschaft
+          other: weitere Eigenschaften
+      property:
+        search: weitere Eigenschaft
+        label: zusätzlicher Feldname
+        value: Wert
+      publishment:
+        name: Bezeichnung
+        group: zu veröffentlichende Gruppe
+      kor_image:
+        transit: "Transit"
+        file: Datei
+        datahash: Datei
+      artwork:
+        dimensions: Maße
+        material_technique: Material und Technik
+        subtype: Typ
+      textual:
+        text: Text
+      literature:
+        isbn: ISBN
+        year_of_publication: Publikationsjahr
+        edition: Ausgabe
+        publisher: Verlag
+      user_group:
+        owner: Besitzer
+          
+    errors:
+      template:
+        header: "bei der Eingabe sind Fehler aufgetreten"
+
+      messages:
+        personal_collection_not_empty: "Konnte die persönliche Sammlung nicht löschen, da sie noch Entitäten enthält"
+        template_and_parent: "Es ist entweder nur 'Template' oder die Vaterrolle möglich"
+        needs_value: "benötigen einen Wert"
+        needs_label: "benötigen einen Bezeichner"
+        file_exists: "eine inhaltlich gleiche Datei wurde bereits hochgeladen"
+        file_must_be_set: "eine Datei muss ausgewählt werden"
+        needed_for_disambiguation: "muss zur Unterscheidung angegeben werden (Konflikt mit Sammlung '%{collection}')"
+        inclusion: "ist kein gültiger Wert"
+        exclusion: "ist nicht verfügbar"
+        invalid: "ist ungültig"
+        record_invalid: "ist ungültig"
+        confirmation: "stimmt nicht mit der Bestätigung überein"
+        accepted: "muss akzeptiert werden"
+        empty: "muss ausgefüllt werden"
+        blank: "muss ausgefüllt werden"
+        too_long: "ist zu lang (nicht mehr als %{count} Zeichen)"
+        too_few_elements: "hat zu wenig Elemente (mindestens %{count})"
+        too_short: "ist zu kurz (nicht weniger als %{count} Zeichen)"
+        wrong_length: "hat die falsche Länge (muss genau %{count} Zeichen haben)"
+        taken: "ist bereits vergeben"
+        not_a_number: "ist keine Zahl"
+        greater_than: "muss größer als %{count} sein"
+        greater_than_or_equal_to: "muss größer oder gleich %{count} sein"
+        equal_to: "muss genau %{count} sein"
+        less_than: "muss kleiner als %{count} sein"
+        less_than_or_equal_to: "muss kleiner oder gleich %{count} sein"
+        odd: "muss ungerade sein"
+        even: "muss gerade sein"
+        no_two_images: "Zwei Bilddateien können nicht angehängt werden"
+        defines_non_existent_kind: "definiert ein Feld für einen nicht existierenden Entitätstyp"
+        defines_non_existent_relation: "definiert Verknüpfungen für eine nicht existierende Relation"
+        stale_entity_update: "Die Entität wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
+        stale_user_update: "Der Benutzer wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
+        stale_relation_update: "Die Relation wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
+        stale_relationship_update: "Die Verknüpfung wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
+        needs_medium: "Die Entität kann nicht als Medium erstellt werden ohne entsprechende Datei"
+        needs_file: "Die Entität kann nicht als Medium erstellt werden ohne entsprechende Datei"
+        invalid_words: "kann keine Wörter mit mehr als 30 Buchstaben enthalten"
+        

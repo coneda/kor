@@ -1,0 +1,17 @@
+.viewer
+
+  .title= Medium.model_name.human
+
+  - if @entity.medium.presentable?
+    = kor_medium @entity, :style => :preview, :url => view_medium_path(@entity.medium_id), :buttons => false
+  - else
+    = kor_medium @entity, :style => :preview, :link => false, :buttons => false
+
+  - if authorized? :edit, @entity.collection
+    .commands
+      - Media.transformations(@entity.medium).each do |transformation|
+        - transformation.operations.each do |operation|
+          = link_to_medium_transformation @entity.medium, transformation, operation
+      
+  .formats
+    = formats_for(@entity)

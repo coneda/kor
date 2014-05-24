@@ -1,0 +1,6 @@
+- content_for :canvas do
+
+  .layout_panel.left.small_panel_size= yield :small
+  .layout_panel.right.normal_panel_size= yield :normal
+
+= render :file => 'layouts/application'

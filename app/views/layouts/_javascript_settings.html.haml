@@ -1,0 +1,21 @@
+:javascript
+  var Settings = {
+    flash_session_key: '#{cookies['_session_id']}',
+    medium_kind_id: #{Kind.medium_kind.id},
+    upload_size_limit: #{Kor.config['app.max_file_upload_size'].to_i * 2**20},
+    use_blaze: #{Kor.config['app.use_blaze']}
+  };
+  
+  var I18n = new Object();
+  I18n.translations = {}
+  
+  I18n.store = function(key, translation) {
+    this.translations[key] = translation;
+  }
+  
+  I18n.t = function(key, interpolations) {
+    return this.translations[key];
+  }
+  
+  I18n.store('nouns.term', '#{I18n.t 'nouns.term', :count => 1}');
+  I18n.store('activerecord.errors.template.header', '#{I18n.t 'activerecord.errors.template.header'}');

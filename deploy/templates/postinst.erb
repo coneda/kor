@@ -1,0 +1,41 @@
+#!/bin/bash
+
+chmod +x /etc/init.d/sunspot
+chmod +x /etc/init.d/delayed_job
+
+update-rc.d sunspot defaults
+update-rc.d delayed_job defaults
+
+useradd -m -s /bin/bash kor
+
+if ! gem list bundler -i > /dev/null ; then
+  echo "gem bundler not found, installing ..."
+  gem install bundler --no-ri --no-rdoc
+fi
+
+# if ! gem list passenger -i -v "4.0.29" > /dev/null ; then
+#   echo "gem passenger not found, installing ..."
+#   gem install passenger -v "4.0.29" --no-ri --no-rdoc
+#   passenger-install-apache2-module -a
+#   passenger-install-apache2-module --snippet > /etc/apache2/mods-available/passenger.load
+#   touch /etc/apache2/mods-available/passenger.conf
+# fi
+a2enmod passenger
+service apache2 restart
+
+if ! [ -e /etc/apache2/sites-enabled/kor ] ; then
+  a2ensite kor
+  a2dissite default
+  service apache2 reload
+fi
+
+mkdir -p /opt/kor/shared
+chown -R kor. /opt/kor/shared /opt/kor/current/config.ru
+
+cd /opt/kor/current
+echo "Installing gems with bundler (this may take a few minutes) ..."
+su -c "bundle install --path /opt/kor/shared/bundle --quiet --without development test" kor
+
+su -c "ln -sfn /opt/kor/shared/database.yml /opt/kor/current/config/database.yml" kor
+su -c "ln -sfn /opt/kor/shared/log /opt/kor/current/log" kor
+su -c "ln -sfn /opt/kor/shared/data /opt/kor/current/data" kor

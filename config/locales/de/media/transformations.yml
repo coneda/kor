@@ -1,0 +1,11 @@
+de:
+  media:
+    transformations:
+      image:
+        name: Bildbearbeitung
+        operations:
+          flip: horizontal Spiegeln
+          flop: vertical Spiegeln
+          rotate_cw: im Uhrzeigersinn drehen
+          rotate_ccw: gegen den Uhrzeigersinn drehen
+          rotate_180: um 180 Grad drehen

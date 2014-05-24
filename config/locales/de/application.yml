@@ -1,0 +1,650 @@
+de:
+  general: "allgemein"
+  with_solved_issues_from: "mit gelösten Tickets aus"
+  'yes': "ja"
+  'no': "nein"
+  search_in: "Suche in"
+  goto: "gehe zu %{where}"
+  for_all_users: "aller Benutzer"
+  in: "in"
+  no_selection: "keine Angabe"
+  none: "kein(e)"
+  expired: "abgelaufen"
+  valid_until: "gültig bis"
+  my_properties: "eigene Daten"
+  logged_in_as: "angemeldet als"
+  about: "Impressum"
+  legal: "Nutzungsbedingungen"
+  add_relation_search: "weitere Kriterien"
+  out_of: "%{current} von %{all}"
+  all: "alle"
+  all_none: "alle/keine"
+  as_file: "als Datei"
+  default: "Standard"
+  from: "von"
+  to: "zu"
+  select_only: "wähle nur"
+  back: "zurück"
+  try_again: "erneut versuchen"
+  download_higher_resolution: "in hoher Auflösung %{show} oder %{download}"
+  download_metadata: "Metadaten herunterladen"
+  edit_self: "Profil bearbeiten"
+  never: "nie"
+  leave_value: "keine Änderung"
+  by: "von"
+  done: "fertiggestellt"
+  password_forgotten: "Passwort vergessen"
+  password_forgotten_question: "Passwort vergessen?"
+  password_reset_question: "Neues Passwort anfordern?"
+  password_reset: "Neues Passwort anfordern"
+  password_forgotten_question: "Passwort vergessen?"
+  select_collections: Sammlungen wählen
+  apply: anwenden
+  cancel: abbrechen
+  of: von %{amount}
+  empty_list: "Liste leeren"
+  results_for: Ergebnisse für
+  some_images: Eine Auswahl der zugehörigen Medien
+  edit_personal_collections: persönliche Sammlungen bearbeiten
+  logged_in_recently: "Vor kurzem eingeloggt (<= 30 Tage)"
+  created_recently: "Vor kurzem erstellt (<= 30 Tage)"
+  provided_by: "angeboten durch"
+
+  search_term: 
+    one: Suchbegriff
+    other: Suchbegriffe
+  
+  users:
+    administrator: "Administrator"
+  
+  tagging:
+    placeholder: "zum bearbeiten hier klicken"
+  
+  social_bookmarking:
+    digg: "Auf Digg veröffentlichen"
+    delicious: "Auf Delicous verlinken"
+  
+  kind_settings:
+    dating_label: "Voreingestellte Bezeichnung für Datierungen"
+    distinct_name_label: "Bezeichnung für den eindeutigen Namen"
+    name_label: "Bezeichnung für den Namen"
+    keywords: "Schlagworte"
+    no_keywords: "keine"
+    all_keywords: "freie Eingabe"
+    predefined_keywords: "voreingestellte Liste"
+    tagging: Tagging
+
+  prompts:
+    please_select: "bitte auswählen"
+    please_select_transit: "bitte wählen Sie links einen Transitbereich"
+
+  values:
+    no_name_statements:
+      unknown: "unbekannt"
+      not_available: "nicht verfügbar"
+      empty_name: "ohne Name"
+      enter_name: "eingeben"
+
+  verbs:
+    maximize: maximieren
+    play: "abspielen"
+    enlarge: "vergrößern"
+    upload: "hochladen"
+    save: "sichern"
+    browse: "blättern"
+    show: "anzeigen"
+    reset: "zurücksetzen"
+    login: "anmelden"
+    logout: "abmelden"
+    edit: "bearbeiten"
+    create: "erstellen"
+    update: "speichern"
+    new: "anlegen"
+    delete: "löschen"
+    send: "senden"
+    search: "suchen"
+    choose: "auswählen"
+    merge: "verschmelzen"
+    relate: "verknüpfen"
+    download: "herunterladen"
+    does_not_extend: "läuft nie ab"
+    expires_after_days: "läuft nach %{days} Tagen ab"
+    
+  title_verbs:
+    pen: "bearbeiten"
+    x: "löschen"
+    plus: "hinzufügen"
+    minus: "entfernen"
+    target: "In die Zwischenablage legen"
+    target_hit: "Aus der Zwischenablage entfernen"
+    select: "Als aktuelle Entität auswählen"
+    three_bars: "Anmeldeversuche zurücksetzen"
+    reset_password: "Passwort zurücksetzen/neu generieren"
+    arrows_right: "verschieben"
+    private: "freigaben"
+    public: "Freigabe aufheben"
+    zip: "Gruppe als Zipdatei herunterladen"
+    pager_right: Weiterblättern
+    pager_left: Zurückblättern
+
+  clipboard_actions:
+    choose: "bitte wählen"
+    prepare_merge: "verschmelzen"
+    merge: "verschmelzen"
+    mass_relate: "verknüpfen mit"
+    mass_destroy: "löschen"
+    add_to_authority_group: "einer globalen Gruppe hinzufügen"
+    add_to_user_group: "einer eigenen Gruppe hinzufügen"
+    move_to_collection: "In Sammlung verschieben"
+    
+
+  datings:
+    default:
+      one: Datierung
+      other: Datierungsangaben
+    person:
+      one: Lebensdaten
+      other: Lebensdaten
+
+  config:
+    sections:
+      maintainer: Seitenbetreiber
+      host: Server
+      mail: Email
+      app: Anwendung
+      meta_entities: Vereinfachte Eingabeformulare
+      help: Hilfe
+    help:
+      component_search:
+        component_search: Einfache Suche
+      entities:
+        index: Expertensuche
+        gallery: Neue Abbildungen
+        multi_upload: Multiupload
+      meta_entities:
+        new: Vereinfachte Eingabemaske
+      authentication:
+        form: Login
+      users:
+        edit_self: Profil bearbeiten
+      authority_group_categories:
+        index: Globale Gruppen
+      user_groups:
+        index: Eigene Gruppen
+      tools:
+        clipboard: Zwischenablage
+    values:
+      default_home_page: Standardseite nach dem Login
+      entities: entities
+      relationships: relationship
+      edit_own_content: "Benutzern erlauben, ihre eigenen Inhalte zu bearbeiten"
+      legal_text: Text für die Nutzungsbedingungen
+      about_text: Text für das Impressum
+      help_text: Genereller Hilftetext (/static/help)
+      current_history_length: Anzahl der vorgehaltenen aktuellen Entitäten
+      max_file_upload_size: "Maximale Dateigröße für Uploads"
+      max_foreground_group_download_size: "Maximale Größe für Download von Gruppen im Vordergrund in MB"
+      address: Addresse
+      domain: Domain
+      mail: Mailadresse
+      name: Name
+      protocol: Protokoll
+      host: Server
+      port: Port
+      tls: TLS
+      primary_relationships: "primäre Verknüpfungen"
+      secondary_relationships: "sekundäre Verknüpfungen"
+      sender_name: Name des Absenders
+      sender_address: Absenderadresse
+      welcome_title: "Titel der Willkommensseite"
+      welcome_text: "Text der Willkommensseite"
+
+  pages:
+    new_media: neue Einträge
+    simple_search: einfache Suche
+    expert_search: Expertensuche
+    random_entities: Zufällig ausgewählte Einträge
+    welcome: Standardstartseite
+
+  nouns:
+    agpl: "GNU Affero General Public License Version 3"
+    license:
+      one: Lizenz
+      other: Lizenzen
+    source_code:
+      one: Quelltext
+      other: Quelltexte
+    key:
+      one: Schlüssel
+      other: Schlüssel
+    simple_search: "einfache Suche"
+    hit:
+      one: Treffer
+      other: Treffer
+    credit:
+      one: Punkt
+      other: Punkte
+    mass_upload: Multiupload
+    generator:
+      one: Generator
+      other: Generatoren
+    field:
+      one: Feld
+      other: Felder
+    registration: Registrierung
+    special_input: "spezielle Eingaben"
+    input: Eingabe
+    media_upload: Medienupload
+    term:
+      one: Begriff
+      other: Begriffe
+    enlargement: Vergrößerung
+    select_files: Dateiauswahl
+    file_list: Dateiliste
+    content_type: Dateityp
+    version:
+      one: Version
+      other: Versionen
+    page:
+      one: Seite
+      other: Seiten
+    top_level: obere Ebene
+    help: Hilfe
+    upload_log: "Upload Log"
+    profile:
+      one: Profil
+    label:
+      one: "Bezeichner"
+      other: "Bezeichner"
+    gallery: "Galerie"
+    administration: Administration
+    created_at:
+      one: "erstellt"
+    updated_at:
+      one: "aktualisiert"
+    current_entity:
+      one: "aktuelle Entität"
+      other: "aktuelle Entitäten"
+    session:
+      one: "Sitzung"
+      other: "Sitzungen"
+    new_entity:
+      one: "neue Entität"
+      other: "neue Entitäten"
+    invalid_entity:
+      one: "ungültige Entität"
+      other: "ungültige Entitäten"
+    cache_size:
+      one: "Größe des Caches"
+    image_cache_size:
+      one: "Größe des Bildcaches"
+    public_image_cache_size:
+      one: "Größe des Öffentlichen Bildcaches"
+    explanation:
+      one: "Erklärung"
+      other: "Erklärungen"
+    expires_at: "läuft aus"
+    text:
+      one: "Text"
+      other: "Texte"
+    comment:
+      one: "Kommentar"
+      other: "Kommentare"
+    life_data:
+      one: "Lebensdaten"
+    datahash:
+      one: "Hash"
+      other: "Hashs"
+    megabyte:
+      one: "Megabyte"
+      other: "Megabytes"
+    free_disk_space: "verfügbarer Speicherplatz"
+    link:
+      one: "Verweis"
+      other: "Verweise"
+    publishment:
+      one: "veröffentlichte Gruppe"
+      other: "veröffentlichte Gruppen"
+    invalid:
+      other: "Ungültige"
+    section:
+      one: "technische Gruppe"
+    last_login: "zuletzt angemeldet"
+    entity:
+      one: Entität
+      other: Entitäten
+    maintenance: "Wartungsarbeiten"
+    language_selection: "Sprachauswahl"
+    email:
+      one: "Email"
+    full_name:
+      one: "vollständiger Name"
+    activation:
+      one: "Aktivierung"
+    user:
+      one: "Benutzer"
+      other: "Benutzer"
+    set:
+      one: "Satz"
+      other: "Sätze"
+    file:
+      one: "Datei"
+      other: "Dateien"
+    content: "Inhalt"
+    selection: "Auswahl"
+    action:
+      one: "Aktion"
+      other: "Aktionen"
+    tag:
+      one: "Tag"
+      other: "Tags"
+    transit_category:
+      one: "Transitbereich"
+      other: "Transitbereiche"
+    access_rights: "Benutzerrechte"
+    page: "Seite"
+    login: "Anmeldung"
+    search: "Suche"
+    expert_search: "Expertensuche"
+    search_results: "Suchergebnis"
+    the_target_entity: "die Zielentität"
+    the_source_entity: "die Quellentität"
+    browser: "Browser"
+    user_groups: "eigene Gruppen"
+    group:
+      one: "Gruppe"
+      other: "Gruppen"
+    public_groups: "öffentliche Gruppen"
+    clipboard: "Zwischenablage"
+    file_upload: "Dateiupload"
+    transit:
+      one: "Transit"
+      other: "Transits"
+    user_admin: "Benutzerverwaltung"
+    exception_log: "Fehlerbericht"
+    company_info: "Impressum"
+    service_info: "Nutzungshinweise"
+    kind:
+      one: "Entitätstyp"
+      other: "Entitätstypen"
+    property:
+      one: "spezielle Eigenschaft"
+      other: "spezielle Eigenschaften"
+    relation:
+      one: "Relation"
+      other: "Relationen"
+    reverse_relation:
+      one: "Rückrelation"
+      other: "Rückrelationen"
+    relationship:
+      one: "Verknüpfung"
+      other: "Verknüpfungen"
+    reverse_relationship:
+      one: "Rückverknüpfung"
+      other: "Rückverknüpfungen"
+    related_medium:
+      one: "verknüpftes Medium"
+      other: "verknüpfte Medien"
+    image:
+      one: "Abbildung"
+      other: "Abbildungen"
+    authority_group:
+      one: "globale Gruppe"
+      other: "globale Gruppen"
+    config: Einstellungen
+    user_group:
+      one: "eigene Gruppe"
+      other: "eigene Gruppen"
+    synonym:
+      one: "Synonym"
+      other: "Synonyme"
+    owner:
+      one: "Besitzer"
+    other:
+      other: "Andere"
+    username:
+      one: "Benutzername"
+    password:
+      one: "Passwort"
+    plain_password:
+      one: "Passwort"
+    password_confirmation:
+      one: "Passwort Wiederholung"
+    name:
+      one: "Name"
+      other: "Namen"
+    translated_name:
+      one: "lokalisierter Name"
+    reverse_name:
+      one: "Umkehrung"
+    translated_reverse_name:
+      one: "lokalisierte Umkehrung"
+    prename:
+      one: "Vorname"
+      other: "Vornamen"
+    dating_string:
+      one: "Datierung"
+    dating:
+      one: "Datierung"
+    file_format:
+      one: "Dateiformat"
+      other: "Dateiformate"
+    dimensions:
+      one: "Maße"
+    material:
+      one: "Material"
+    technique:
+      one: "Technik"
+    material_technique:
+      one: "Material und Technik"
+    subtype:
+      one: "Untertyp"
+    width:
+      one: "Breite"
+    height:
+      one: "Höhe"
+    isbn:
+      one: "ISBN"
+    year_of_publication:
+      one: "Erscheinungsjahr"
+    value:
+      one: "Wert"
+      other: "Werte"
+    distinct_name:
+      one: eindeutiger Name
+    display_name:
+      one: "anzeigen als"
+    uuid:
+      one: "UUID"
+    from_id:
+      one: "Quelle"
+    to_id:
+      one: "Ziel"
+    relation_id: "Relation"
+    statistics: "Statistiken"
+    publisher: "Verlag"
+    edition: "Ausgabe"
+    title:
+      one: "Titel"
+    distinct_title:
+      one: "eindeutiger Titel"
+    original: "Original"
+    metadata: Metadaten
+    degree: Anzahl Verknüpfungen (Grad)
+
+
+  objects:
+    download: "%{o} herunterladen"
+    add: "%{o} hinzufügen"
+    none_found: "es wurden keine %{o} gefunden"
+    include: "%{o} einbeziehen"
+    move: "%{o} verschieben"
+    create: "%{o} erstellen"
+    new: "%{o} anlegen"
+    create_success: "%{o} wurde angelegt"
+    edit: "%{o} bearbeiten"
+    update_success: "%{o} wurde abgeändert"
+    delete: "%{o} löschen"
+    destroy_success: "%{o} gelöscht"
+    for: "für %{o}"
+    no_exist: "%{o} existiert nicht"
+    none_available: "es sind keine %{o} vorhanden"
+    marked_entity_success: "Entität %{o} wurde in die Zwischenablage aufgenommen"
+    marked_entities_success: "Die Entitäten wurden in die Zwischenablage aufgenommen"
+    unmarked_entity_success: "Entität %{o} wurde aus der Zwischenablage entfernt"
+    extend_success: "%{o} wurde verlängert bis %{until}"
+    confirm_destroy: "%{o} wirklich löschen?"
+    marked_as_current_success: "Entität %{o} wurde als aktuelle Entität markiert"
+    relate_all_to: "alle ausgewählten Entities werden mit %{o} verknüpft"
+    
+  move_contents_from: Inhalte aus %{o} verschieben
+  
+  will_paginate:
+    next_label: ""
+    previous_label: ""
+
+  image_transformations:
+    flip: "horizontal spiegeln"
+    flop: "vertikal spiegeln"
+    rotate_cw: "im Uhrzeigersinn drehen"
+    rotate_ccw: "gegen den Uhrzeigersinn drehen"
+    rotate_180:  "um 180° drehen"
+
+  commands:
+    accept_terms: "Bedingungen akzeptieren"
+    show: "anzeigen"
+    delete: "löschen"
+    edit: "bearbeiten"
+    create: "erstellen"
+
+  confirm:
+    delete_collection: "Die Sammlung wirklich löschen?"
+    delete_relationship: "Die Verknüpfung wirklich löschen?"
+    delete_relation: "Die Relation wirklich löschen?"
+    delete_entity: "Die Entität wirklich löschen?"
+    delete_entity_with_groups: "Die Entität wirklich löschen? Folgende Globale Gruppen enthalten die Entität: %{authority_groups}"
+    delete_user: "Den Benutzer wirklich löschen?"
+    delete_user_group: "Die eigene Gruppe wirklich löschen?"
+    remove_from_user_group: "Die Entität wirklich aus der eigenen Gruppe entfernen?"
+    delete_authority_group: "Die globale Gruppe wirklich löschen?"
+    delete_authority_group_category: "Die Kategorie wirklich löschen (Alle Unterkategorien gehen verloren, aber alle Entiäten bleiben bestehen)?"
+    remove_from_authority_group: "Die Entitäten wirklich aus der globalen Gruppe entfernen?"
+    delete_kind: "Den Entitätstyp wirklich löschen (WARNUNG: Alle entsprechenden Entitäten gehen verloren)?"
+    reset_clipboard: "Sind Sie sicher, dass Sie die Zwischenablage leeren wollen?"
+    long_time_warning: "Diese Operation kann mehrere Minuten dauern, wollen Sie trotzdem fortfahren?"
+    delete_publishment: "Die veröffentlichte Gruppe wirklich löschen?"
+    
+  prompt:
+    email_for_personal_password_reset: "Bitte geben Sie Ihre Emailadresse ein"
+    
+  mailer:
+    subjects:
+      account_created: "KOR-Zugang angelegt"
+      password_reset: "KOR-Passwort zurückgesetzt"
+      upcoming_expiry: "KOR-Zugang läuft bald ab"
+      download_ready: "KOR-Download steht bereit"
+    messages:
+      hi: "Hallo %{username}"
+      best_regards: "mit freundlichen Grüßen"
+      upcoming_expiry: |
+        Ihr Zugang im KOR-System %{url} läuft am %{date} ab. Bitte setzten Sie
+        sich rechtzeitig mit dem Administrator in Verbindung.
+      account_created: |
+        Im KOR-System %{url} wurde ein Zugang für Sie eingerichtet.
+      password_reset: |
+        Das KOR-System %{url} hat Ihr Passwort erfolgreich zurückgesetzt.
+      new_credentials: |
+        Ihre Zugangsdaten lauten
+        Benutzername: %{username}
+        Passwort: %{password}
+      reset_credentials: |
+        Ihre neuen Zugangsdaten lauten
+        Benutzername: %{username}
+        Passwort: %{password}
+      download_ready: |
+        Das KOR-System %{url} hat einen Download für Sie bereit gestellt. Bitte
+        verwenden Sie den folgenden Link, um die Datei zu beziehen:
+        
+        %{link}
+      
+
+  messages:
+    entities_moved_to_collection: "Die Entitäten wurden in Sammlung '%{o}' verschoben"
+    no_user_groups: "Es sind keine eigenen Gruppen vorhanden"
+    no_authority_groups: "Es sind keine globalen Gruppen vorhanden"
+    swfupload_success: "Der Upload war erfolgreich"
+    none_found: "es wurden keine %{o} gefunden"
+    no_clipboard_action_selected: "Sie haben keine Aktion ausgewählt"
+    following_relationship: "Die folgende Verknüpfung soll angelegt oder erstellt werden"
+    edit_existing_entity: |
+      eine gleichnamige Entität existiert bereits. wollen Sie diese stattdessen
+      %{edit_link} oder %{show_link}?
+    password_reset: "Das Passwort für %{username} wurde zurückgesetzt"
+    login_attempts_reset: "Die Anzahl der Anmeldeversuche für %{username} wurde zurückgesetzt"
+    password_possibly_reset: |
+      Wenn die angegebene Mail Adresse existiert, wurde das zugehörige passwort
+      neu generiert und eine Mail mit neuen Zugangsdaten verschickt.
+    access_denied: |
+      Leider haben Sie nicht die nötigen Zugriffsrechte, um auf diesen Teil der
+      Anwendung zuzugreifen. Möglicherweise ist auch Ihre Sitzung abgelaufen.
+      Bitte melden Sie sich erneut an, um mehr Rechte zu erhalten oder um Ihre
+      Sitzung zu erneuern.
+    maintenance: |
+      Wir führen derzeit Wartungsarbeiten am System durch. Die Anwendung steht
+      daher vorübergehend nicht zur Verfügung. Bitten versuchen Sie es später erneut
+    no_systemgroups: "es sind keine globalen Gruppen vorhanden"
+    no_usergroups: "es sind keine Benutzergruppen vorhanden"
+    exception_ocurred: |
+      Der Zeitpunkt und der Zustand
+      der Anwendung wurden zum Zweck der späteren Nachvollziehbarkeit aufgezeichnet.
+      Bitte kontaktieren Sie bei Bedarf den Administrator dieser Installation von
+      KOR
+    not_found: "Die angefragte Resource konnte nicht gefunden werden"
+    no_exceptions_recorded: "es wurden keine Ausnahmen registriert"
+    no_relations_provided: "Für diese Kombination ist keine Relation vorgesehen"
+
+  notices:
+    creating_zip_file: "Zip-Datei wird erstellt, Sie erhalten eine Email, sobald der Download bereit steht"
+    no_entities_in_group: "In dieser Gruppe befinden sich keine herunterladbaren Entitäten"
+    personal_password_reset_success: |
+      Ihr Passwort wurde neu generiert und an die angegebenen Emaildresse gesendet
+    terms_accepted: "Sie haben die Nutzungsbedingungen akzeptiert"
+    entities_destroyed: "die Entitäten wurden gelöscht"
+    no_entities_in_usergroup: "es befinden sich keine Entitäten in dieser Gruppe"
+    merge_success: "die Entitäten wurden erfolgreich miteinander verschmolzen"
+    upload_success: "Datei wurde erfolgreich übertragen"
+    upload_duplicate: "Die übertragene Abbildung existiert bereits und wurde in die angegebene Gruppe aufgenommen"
+    no_entries_available: "es sind keine Einträge vorhanden"
+    reset_clipboard_success: "die Zwischenablage wurde zurückgesetzt"
+    access_denied: "der Zugriff wurde verweigert"
+    session_expired: "Ihre Sitzung ist abgelaufen"
+    maintenance_done: "die Wartungsarbeiten wurden abgeschlossen"
+    logged_out: "Sie haben sich erfolgreich abgemeldet"
+
+  errors:
+    too_many_entities_for_zip: "Die Gruppe enthält zu viele Abbildungen"
+    collection_not_empty_on_delete: "Die Sammlung '%{name}' kann nicht gelöscht werden, weil sie nicht leer ist"
+    too_many_login_attempts: "Der Benutzer wurde vorübergehend gesperrt, weil zu viele Anmeldeversuche unternommen wurden"
+    date_parsing_failed: "Das angegebene Datum wurde nicht erkannt"
+    personal_password_reset_mail_not_found: "Die angegebene Emailadresse konnte nicht gefunden werden"
+    search_string_too_short: "das Suchwort muss aus mindestens drei Zeichen bestehen"
+    forbidden_clipboard_action: "Sie haben nicht die nötigen Rechte, um diese Aktion auszuführen"
+    merge_failure: "die Verschmelzung der Entitäten konnte nicht durchgeführt werden"
+    destination_not_given: "Sie müssen eine Entität als Ziel auswählen"
+    not_allowed_action: "Sie haben nicht die nötigen Rechte, um diese Aktion durchzuführen"
+    ocurred: "bei der Eingabe sind Fehler aufgetreten"
+    user_or_pass_refused: "der Benutzername oder das Passwort waren falsch"
+    account_inactive: "dieser Zugang wurde deaktiviert"
+    account_expired: "dieser Zugang ist abgelaufen"
+    only_same_kind: "bitte wählen Sie hierzu nur Entitäten vom selbem Typ"
+    exception_ocurred: "ein unerwarteter Fehler ist eingetreten"
+    publishment_expired: "Dieser Link ist abgelaufen"
+    other_collection: "Sie haben keinen Zugriff auf Entität %{id}. Bitte wenden Sie sich an einen Adminstrator"
+
+  labels:
+    relate_to_via: alle Dateien mit "%{to}" verknüpfen über
+
+  meta:
+    description: "Bilddaten mit komplexen Metadaten sinnvoll ablegen und verwalten"
+    author: "Coneda UG (Thorsten Wübbena und Moritz Schepp)"
+    keywords: "Abbildung Bild Archiv Recherche Ontologie Datenbank Entität Relation Verknüpfung"

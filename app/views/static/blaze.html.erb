@@ -1,0 +1,431 @@
+<div class="entities-show" ng-controller="korEntitiesShowCtrl">
+  <div class="layout_panel left normal_panel_size">
+
+    <div class="layout_panel top metadata">
+      <div class="section_panel">
+        <div class="header">
+          <div class="title" ng-bind="entity.display_name"></div>
+          <div class="commands">
+            <a href="/mark_as_current/{{entity.id}}" ng-show="allowed_to_any('edit')">
+              <img alt="Select" class="kor_command_image" src="/assets/select.gif" title="{{'title_verbs.select' | translate}}">
+            </a>
+            <a href="/mark?id={{entity.id}}&amp;mark=mark" ng-hide="in_clipboard()">
+              <img alt="Target" class="kor_command_image" src="/assets/target.gif" title="{{'title_verbs.target' | translate}}">
+            </a>
+            <a href="/mark?id={{entity.id}}&amp;mark=unmark" ng-show="in_clipboard()">
+              <img alt="Target" class="kor_command_image" src="/assets/target_hit.gif" title="{{'title_verbs.target_hit' | translate}}">
+            </a>
+            <a href="/entities/{{entity.id}}/edit" ng-show="allowed_to('edit')">
+              <img alt="Pen" class="kor_command_image" src="/assets/pen.gif" title="{{'verbs.edit' | translate}}">
+            </a>
+            <form method="post" action="/entities/{{entity.id}}">
+              <input type="hidden" name="_method" value="delete" />
+              <a
+                href="/entities/{{entity.id}}" 
+                ng-show="allowed_to('delete')" 
+                data-confirm="{{'objects.confirm_destroy' | translate:{interpolations: {o: 'activerecord.models.entity'} } }}" 
+                data-method="delete" 
+                rel="nofollow" 
+                ng-click="submit($event)"
+              >
+                <img 
+                  alt="X" 
+                  class="kor_command_image" 
+                  src="/assets/x.gif" 
+                  title="{{'verbs.delete' | translate}}"
+                >
+              </a>
+            </form>
+          </div>
+          <div class="type subtitle">
+            <span ng-show="entity.medium_id">
+              <span ng-bind="'activerecord.attributes.medium.original_extension' | translate | capitalize"></span>:
+              <span class="highlighted_subtitle" ng-bind="entity.medium.content_type"></span>
+            </span>
+            <span ng-hide="entity.medium_id" ng-bind="entity.kind.name"></span>
+            <span ng-show="entity.subtype">({{entity.subtype}})</span>
+          </div>
+        </div>
+        <div class="clear_both"></div>
+
+        <div class="content subtitle">
+          <div ng-show="entity.medium_id">
+            <span ng-bind="'activerecord.attributes.medium.file_size' | translate | capitalize"></span>:
+            <span class="highlighted_subtitle" ng-bind="entity.medium.file_size | human_size"></span>
+          </div>
+        
+          <ul>
+            <li class="synonyms" ng-show="entity.synonyms.length > 0">
+              <span ng-bind="'nouns.synonym' | translate:{count: 'other'} | capitalize"></span>:
+              <span class="synonym" ng-repeat="synonym in entity.synonyms">
+                <span class="divider" ng-show="!$first">|</span>
+                <span class="highlighted_subtitle" ng-bind="synonym"></span>
+              </span>
+            </li>
+            <li class="dating" ng-repeat="dating in entity.datings">
+              {{dating.label}}:
+              <span class="highlighted_subtitle" ng-bind="dating.dating_string"></span>
+            </li>
+            <li class="field" ng-repeat="field in visible_entity_fields()">
+              {{field.show_label}}:
+              <span class="highlighted_subtitle" ng-bind="field.value"></span>
+            </li>
+            <li class="spacer" ng-show="visible_entity_fields().length > 0"></li>
+            <li class="property" ng-repeat="property in entity.properties">
+              {{property.label}}:
+              <span class="highlighted_subtitle" ng-bind="property.value"></span>
+            </li>
+            <li class="divider"><div class="hr"></div></li>
+            <li class="comment" ng-show="entity.comment">
+              <span ng-bind="'activerecord.attributes.entity.comment' | translate | capitalize"></span>
+              <pre class="text" ng-bind="entity.comment"></pre>
+              <br />
+            </li>
+            <li class="links">
+              <div class="link" ng-repeat="link in entity.links" ng-show="show_link(link)">
+                <div ng-show="link.header">
+                  <div ng-bind="link.header"></div>
+                  <div class="highlighted_subtitle" ng-repeat="(k, v) in link.links">
+                    &nbsp;&nbsp;
+                    <a href="{{v}}" target="_blank">&raquo; {{k}}</a>
+                  </div>
+                </div>
+                <div ng-hide="link.header">
+                  <a href="{{link[1]}}" target="_blank">&raquo; {{link[0]}}</a>
+                </div>
+              </div>
+              <div class="generator" ng-repeat="generator in entity.generators" ng-bind-html-unsafe="generator">
+              </div>
+            </li>
+            <li class="spacer"></li>
+            <li class="tags" ng-show="entity.kind.tagging">
+              <div class="column inplace_container">
+                Tags: 
+                <span class="highlighted_subtitle inplace" title="Click to edit ...">
+                  <span ng-bind="entity.tags"></span>
+                </span>
+                <a href="#">
+                  <img alt="Plus" class="kor_command_image" src="/assets/plus.gif" title="{{'verbs.add' | translate}}">
+                </a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="layout_panel top">
+      <div class="section_panel relationships">
+        <div class="header">
+          <div class="title" ng-bind="'activerecord.models.relationship' | translate:{count: 'other'} | capitalize"></div>
+          <div class="commands">
+            <a href="/relationships/new?relationship[from_id]={{entity.id}}" ng-show="allowed_to_any('edit')">
+              <img alt="Plus" class="kor_command_image" src="/assets/plus.gif" title="hinzufügen">
+            </a>
+          </div>
+        </div>
+        <div class="clear_both"></div>
+        <div class="content subtitle">
+        
+          <div class="relation" ng-repeat="relation in entity.related">
+            <div class="subtitle" ng-bind="relation.name"></div>
+            
+            <div class="relation_switch">
+              <a href="#" ng-click="switch_relation(relation, $event)">
+                <img alt="Triangle_up" src="/assets/triangle_up.gif" ng-hide="relation.visible">
+                <img alt="Triangle_down" src="/assets/triangle_down.gif" ng-show="relation.visible">
+              </a>
+            </div>
+            
+            <div class="pagination" ng-show="relation.amount > 10">
+              <input type="submit" value="Gehe zu Seite" ng-click="page_relation(relation, relation.page, $event)">
+              <span class="nowrap">
+                <a href="#" ng-show="relation.page != 1" ng-click="page_relation(relation, relation.page * 1 - 1, $event)">
+                  <img alt="Pager_left" class="kor_command_image" src="/assets/pager_left.gif" title="Zurückblättern">
+                </a>
+                <input type="text" ng-model="relation.page">
+                {{'from' | translate}}
+                <span ng-bind="total_relation_pages(relation)"></span>
+                <a href="#" ng-show="relation.page < relation.total_pages" ng-click="page_relation(relation, relation.page * 1 + 1, $event)">
+                  <img alt="Pager_right" class="kor_command_image" src="/assets/pager_right.gif" title="Weiterblättern">
+                </a>
+              </span>
+            </div>
+
+            <div id="page">
+              <div class="relationship stage_panel" id="relationship_{{relationship.id}}" ng-repeat="relationship in relation.relationships">
+              
+                <div class="header">
+                  <div class="string">
+                    <a href="/entities/{{relationship.entity.id}}" ng-bind="relationship.entity.display_name"></a>
+                    <span class="nowrap">
+                      <span class="text italic" ng-bind="relationship.entity.kind.name"></span>
+                      <span class="relationship_switch" ng-show="relationship.total_media > 0">
+                        <a href="#" ng-click="switch_relationship_panel(relationship, false, null, $event)">
+                          <img alt="Triangle_up" src="/assets/triangle_up.gif" ng-hide="relationship.visible">
+                          <img alt="Triangle_down" src="/assets/triangle_down.gif" ng-show="relationship.visible">
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                
+                  <div class="commands">
+                    <a
+                      href="/relationships/{{relationship.id}}/edit"
+                      ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity.collection_id)"
+                    >
+                      <img alt="Pen" class="kor_command_image" src="/assets/pen.gif" title="bearbeiten">
+                    </a>
+                    <a 
+                      href="/relationships/{{relationship.id}}" 
+                      ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity.collection_id)" 
+                      data-confirm="{{'objects.confirm_destroy' | translate:{interpolations: {o: 'activerecord.models.relationship'} } }}" 
+                      data-method="delete" 
+                      rel="nofollow"
+                    >
+                      <img alt="X" class="kor_command_image" src="/assets/x.gif" title="{{'verbs.delete' | translate}}">
+                    </a>
+                  </div>
+                  
+                  <div class="clear_both"></div>
+                  
+                  <div class="properties" ng-show="relationship.properties.length > 0">
+                    <div class="hr"></div>
+                    <ul>
+                      <li ng-repeat="property in relationship.properties" ng-bind="property"></li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="switched_panel" ng-show="relationship.visible">
+                  <div class="pagination" ng-show="relationship.total_media > 12">
+                    <div class="small_frame">
+                      <input type="submit" value="Gehe zu Seite" ng-click="page_deep_media(relationship, relationship.media_page, $event)">
+                      <span class="nowrap">
+                        <a href="#" ng-show="relationship.media_page != 1" ng-click="page_deep_media(relationship, relationship.media_page * 1 - 1, $event)">
+                          <img alt="Pager_left" class="kor_command_image" src="/assets/pager_left.gif" title="Zurückblättern">
+                        </a>
+                        <input type="text" ng-model="relationship.media_page">
+                        {{'from' | translate}}
+                        <span ng-bind="relationship.total_media_pages"></span>
+                        <a href="#" ng-show="relationship.media_page < relationship.total_media_pages" ng-click="page_deep_media(relationship, relationship.media_page * 1 + 1, $event)">
+                          <img alt="Pager_right" class="kor_command_image" src="/assets/pager_right.gif" title="Weiterblättern">
+                        </a>
+                      </span>
+                    </div>
+                  </div>
+                
+                  <table cellpadding="0" cellspacing="0">
+                    <tbody>
+                      <tr class="image_row" ng-repeat="row in relationship.media">
+                        <td class="image" ng-repeat="entity in row">
+                          <div class="kor_medium_frame" id="kor_medium_frame_{{entity.id}}" ng-show="entity">
+                            <a href="/entities/{{entity.id}}">
+                              <img alt="Image" class="kor_medium" ng-src="{{entity.medium.url}}">
+                            </a>
+                            <span class="button_bar" style="display: none">
+                              <a href="/" style="display: none">
+                                <img alt="Target_hit" class="kor_command_image" src="/assets/target_hit.gif" title="Aus der Zwischenablage entfernen">
+                              </a>
+                              <a href="/">
+                                <img alt="Target" class="kor_command_image" src="/assets/target.gif" title="In die Zwischenablage legen">
+                              </a>
+                            </span>
+                          </div>
+                          <div class="clear_both"></div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    
+    <div class="layout_panel processing_data" ng-show="allowed_to('view_meta')">
+      <div class="section_panel">
+        <div class="header">
+          <div class="title" ng-bind="'activerecord.attributes.entity.master_data' | translate | capitalize"></div>
+        </div>
+        <div class="content subtitle">
+          <ul>
+            <li>
+              <span ng-bind="'activerecord.attributes.entity.uuid' | translate | capitalize"></span>:
+              <span class="highlighted_subtitle" ng-bind="entity.uuid"></span>
+            </li>
+            <li>
+              <span ng-bind="'activerecord.attributes.entity.created_at' | translate | capitalize"></span>:
+              <span class="highlighted_subtitle" ng-bind="entity.created_at | strftime:'%Y-%m'"></span>
+              <span ng-show="entity.creator">
+                {{'from' | translate}}
+                <span class="highlighted_subtitle" ng-bind="entity.creator.full_name"></span>
+              </span>
+            </li>
+            <li>
+              <span ng-bind="'activerecord.attributes.entity.updated_at' | translate | capitalize"></span>:
+              <span class="highlighted_subtitle" ng-bind="entity.updated_at"></span>
+              <span ng-show="entity.updater">
+                {{'from' | translate}}
+                <span class="highlighted_subtitle" ng-bind="entity.updater.full_name"></span>
+              </span>
+            </li>
+            <li ng-show="authority_groups().length > 0">
+              {{'activerecord.models.authority_group.other' | translate | capitalize}}:
+              <ul class="subitems">
+                <li ng-repeat="group in authority_groups()">
+                  <span ng-repeat="category in group.ancestry">{{category}} »</span>
+                  <a href="/authority_groups/{{group.id}}" ng-bind="group.name"></a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span ng-bind="'activerecord.models.collection' | translate | capitalize"></span>:
+              
+              <span class="highlighted_subtitle" ng-bind="entity.collection.name"></span>
+            </li>
+            <li>
+              <span ng-bind="'activerecord.attributes.entity.degree' | translate | capitalize"></span>:
+              <span class="highlighted_subtitle" ng-bind="entity.degree"></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="layout_panel right small_panel_size">
+    <div class="content_panel">
+      <div class="viewer" ng-show="entity.medium_id">
+        <div class="title" ng-bind="'activerecord.models.medium' | translate | capitalize"></div>
+        
+        <div class="kor_medium_frame" id="kor_medium_frame_{{entity.id}}">
+          <a href="/media/{{entity.medium.id}}">
+            <img alt="Image" class="kor_medium" ng-src="{{entity.medium.url | image_size:'preview'}}">
+          </a>
+        </div>
+        
+        <div class="commands">
+          <a href="/media/transform/{{entity.medium.id}}/image?operation=flip">
+            <img alt="Flip" src="/assets/media/transformations/image/flip.gif">
+          </a>
+          <a href="/media/transform/{{entity.medium.id}}/image?operation=flop">
+            <img alt="Flop" src="/assets/media/transformations/image/flop.gif">
+          </a>
+          <a href="/media/transform/{{entity.medium.id}}/image?operation=rotate_cw">
+            <img alt="Rotate_cw" src="/assets/media/transformations/image/rotate_cw.gif">
+          </a>
+          <a href="/media/transform/{{entity.medium.id}}/image?operation=rotate_ccw">
+            <img alt="Rotate_ccw" src="/assets/media/transformations/image/rotate_ccw.gif">
+          </a>
+          <a href="/media/transform/{{entity.medium.id}}/image?operation=rotate_180">
+            <img alt="Rotate_180" src="/assets/media/transformations/image/rotate_180.gif">
+          </a>
+        </div>
+        
+        <div class="formats">
+          <a href="/media/{{entity.medium.id}}" ng-bind="'verbs.enlarge' | translate"></a> |
+          <a href="/media/maximize/{{entity.medium.id}}" ng-bind="'verbs.maximize' | translate"></a>
+          <br />
+          <span ng-bind="'verbs.download' | translate"></span>:
+          <br />&nbsp;&nbsp;
+          <a 
+            ng-show="allowed_to('download_originals')"
+            href="/media/download/original/{{entity.medium.id}}" 
+          >
+            {{'nouns.original' | translate}} |
+          </a>
+          <a href="/media/download/normal/{{entity.medium.id}}" ng-bind="'nouns.enlargement' | translate"></a> |
+          <a href="/entities/{{entity.id}}/metadata" ng-bind="'nouns.metadata' | translate"></a>
+        </div>
+        
+      </div>
+      
+      <div class="related_images" ng-hide="entity.medium_id">
+        <div class="title" ng-bind="'nouns.related_medium' | translate:{count: 'other'} | capitalize"></div>
+        
+        <div class="highlighted_subtitle" ng-show="allowed_to_any('create')">
+          <a href="/tools/add_media/{{entity.id}}">» {{'objects.add' | translate:{interpolations: {o: 'activerecord.models.medium.other'} } }}</a>
+        </div>
+        <br>
+        
+        <div class="relation" ng-repeat="relation in entity.related_media">
+          <div class="subtitle" ng-bind="relation.name"></div>
+          
+          <div class="pagination" ng-show="relation.amount > 10">
+            <input type="submit" value="Gehe zu Seite">
+            <span class="nowrap">
+              <a href="#" ng-show="relation.page != 1" ng-click="page_media_relation(relation, relation.page * 1 - 1, $event)">
+                <img alt="Pager_left" class="kor_command_image" src="/assets/pager_left.gif" title="Zurückblättern">
+              </a>
+              <input type="text" ng-model="relation.page">
+              {{'from' | translate}}
+              <span ng-bind="total_relation_pages(relation)"></span>
+              <a href="#" ng-show="relation.page < relation.total_pages" ng-click="page_media_relation(relation, relation.page * 1 + 1, $event)">
+                <img alt="Pager_right" class="kor_command_image" src="/assets/pager_right.gif" title="Weiterblättern">
+              </a>
+            </span>
+          </div>
+          
+          <table cellpadding="0" cellspacing="0" class="kor_table related_media">
+            <tbody>
+              <tr ng-repeat="relationship in relation.relationships">
+                <td class="relationship">
+                  <div class="small_content_panel">
+                  
+                    <div class="commands">
+                      <a
+                        href="/relationships/{{relationship.id}}/edit"
+                        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity.collection_id)"
+                      >
+                        <img alt="Pen" class="kor_command_image" src="/assets/pen.gif" title="{{'verbs.edit' | translate}}">
+                      </a>
+                      <a
+                        href="/relationships/{{relationship.id}}"
+                        data-confirm="{{'objects.confirm_destroy' | translate:{interpolations: {o: 'activerecord.models.relationship'} } }}" 
+                        data-method="delete"
+                        rel="nofollow"
+                      >
+                        <img alt="X" class="kor_command_image" src="/assets/x.gif" title="{{'verbs.delete' | translate}}">
+                      </a>
+                    </div>
+                    
+                    <div class="kor_medium_frame" id="kor_medium_frame_{{relationship.entity.id}}">
+                      <a href="/blaze/{{relationship.entity.id}}">
+                        <img alt="Image" class="kor_medium" ng-src="{{relationship.entity.medium.url}}">
+                      </a>
+                      <span class="button_bar" style="display: none;">
+                        <a href="/" style="display: none">
+                          <img alt="Target_hit" class="kor_command_image" src="/assets/target_hit.gif" title="Aus der Zwischenablage entfernen">
+                        </a>
+                        <a href="/">
+                          <img alt="Target" class="kor_command_image" src="/assets/target.gif" title="In die Zwischenablage legen">
+                        </a>
+                      </span>
+                    </div>
+                    <div style="clear: both"></div>
+                    <div class="hr" ng-show="relationship.properties != []"></div>
+                    <div class="properties" ng-show="relationship.properties != []">
+                      <ul>
+                        <li ng-repeat="property in relationship.properties">
+                          {{property}}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+      </div>
+      
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+- content_for :title, @title
+- content_for :content do
+  = @red_cloth.to_html.html_safe
+
+  - unless @entities.empty?
+    .random_entities
+    = render :partial => 'entities/gallery', :locals => {:top_left => I18n.t('pages.random_entities'), :results => @entities, :top_right => ""}

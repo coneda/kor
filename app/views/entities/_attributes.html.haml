@@ -1,0 +1,65 @@
+- if @entity.is_medium?
+  %ul
+    %li
+      = column(Medium.human_attribute_name(:file_size), (@entity.medium.file_size.to_f / 1024 / 1024).round(2), :translate => false)
+      MB
+      
+- unless @entity.synonyms.empty?
+  %ul
+    %li= column('synonym', synonym_list_for_entity(@entity), :count => :other )
+
+- unless @entity.datings.empty?
+  %ul
+    - @entity.datings.each do |d|
+      %li= column(d.label, d.dating_string, :translate => false )
+      
+- if @entity.kind.defines_schema?
+  %ul
+    - @entity.kind.field_instances(@entity).each do |field|
+      %li
+        - begin
+          = render :partial => field.class.show_partial_name, :locals => {:field => field}
+        - rescue ActionView::MissingTemplate => e
+          = render :partial => 'fields/show/base', :locals => {:field => field}
+        
+- unless @entity.properties.empty?
+  .spacer
+  %ul
+    - @entity.properties.each do |property|
+      %li= column(property['label'], property['value'], :translate => false )
+
+- unless @entity.html_comment.match /^\s*$/
+  = column 'comment', @entity.html_comment, :newline => false, :normal_text_value => true, :separate => true, :sanitize => false
+
+- unless (@entity.kind.web_services || []).empty?
+  .spacer
+  - WebServices::Dispacher.links_for(@entity).each do |l|
+    - if l.is_a?(Array)
+      - if l.last
+        = link_to "&raquo; #{l.first}".html_safe, l.last, :class => 'popup'
+        %br
+    - else
+      - unless l[:links].empty?
+        = l[:header]
+        %br
+        - l[:links].each do |label, link|
+          &nbsp;&nbsp;
+          = link_to "&raquo; #{label.short(50)}".html_safe, link, :class => 'popup', :title => label
+          %br
+          
+- unless @entity.kind.generators.empty?
+  .spacer
+  %ul
+    - @entity.kind.generators.only_attributes.each do |generator|
+      - unless generator.show_label.blank?
+        %li= column generator.show_label, generator.to_html(@entity).html_safe, :translate => false
+      - else
+        = generator.to_html(@entity).html_safe
+    
+          
+.spacer
+- if @entity.kind.tagging && authorized?(:tagging, @entity.collection)
+  = inplace_column Entity.human_attribute_name(:tag_list), @entity.tag_list, :translate => false, :always => true
+- else
+  = column Entity.human_attribute_name(:tag_list), @entity.tag_list, :translate => false
+  

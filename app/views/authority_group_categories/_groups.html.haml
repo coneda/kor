@@ -1,0 +1,11 @@
+%table.kor_table
+  - groups.each do |g|
+    %tr.authority_group{:id => "authority_group_#{g.id}"}
+      %td.expanding= link_to h(g.name), g
+      - if current_user.authority_group_admin?
+        %td.commands.nowrap
+          = link_to kor_command_image('arrows_right'), edit_move_authority_group_path(g)
+          = link_to kor_command_image('pen'), edit_authority_group_path(g)
+          = link_to kor_command_image('x'), authority_group_path(g),
+            :data => {:confirm => I18n.t('confirm.delete_authority_group')},
+            :method => :delete

@@ -1,0 +1,19 @@
+- if entity.blank?
+  = I18n.t 'none'
+- elsif entity.is_medium?
+  .image
+    = kor_medium entity, options
+  .content_type{:title => entity_subtitle(entity, false)}
+    = entity_subtitle(entity, false)
+- else
+  - if options[:link]
+    = link_to options[:url] do
+      %span.entity_name
+        = options[:short] ? name.short(options[:how_short]) : name
+  - else
+    %span.entity_name
+      = options[:short] ? name.short(options[:how_short]) : name
+  
+  - if options[:include_kind]
+    %span.kind_name= h(entity.kind.name)
+    

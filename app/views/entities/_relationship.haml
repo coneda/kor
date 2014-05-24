@@ -1,0 +1,40 @@
+.relationship.stage_panel{:id => "relationship_#{relationship.id}"}
+  .header
+    .string
+      = link_to h(related_entity.display_name), related_entity
+
+      %span.nowrap
+        %span.text.italic
+          = h(related_entity.kind_name)
+
+        - if related_entity.has_images?(current_user) || relationship.has_properties?
+          %span.relationship_switch
+            = link_to image_tag('triangle_up.gif'), nil, :class => 'relationship_toggle'
+
+    .commands
+      - if authorized_for_relationship? relationship, :edit
+        = link_to kor_command_image('pen'), edit_relationship_path(relationship).to_s
+        = link_to kor_command_image('x'), relationship, :method => :delete, :data => {:confirm => I18n.t("confirm.delete_relationship")}
+
+    .clear_both
+
+  - if related_entity.has_images?(current_user) || relationship.has_properties?
+    = javascript_tag "$('#relationship_#{relationship.id}').parents('div.relation').find('div.relation_switch').show();"
+  
+    .switched_panel{:style => "display: none;"}
+      
+      - if relationship.has_properties?
+        .properties
+          .hr
+          %ul
+            - relationship.properties.each do |property|
+              %li= h(property)
+
+      - if related_entity.has_images? current_user
+        %table{:cellspacing => "0", :cellpadding => "0"}
+          - related_entity.images(current_user).in_groups_of(3) do |row|
+            %tr.image_row
+              - row.each do |image|
+                %td{:class => (image == row.last ? 'last_image' : 'image')}
+                  - if image
+                    = kor_medium image, :style => :icon

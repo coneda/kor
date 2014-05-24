@@ -1,0 +1,13 @@
+/opt/kor/current/log/*.log {
+  weekly
+  missingok
+  rotate 52
+  compress
+  delaycompress
+  notifempty
+  create
+  size 100M
+  postrotate
+    touch /opt/kor/current/tmp/restart.txt
+  endscript
+}
