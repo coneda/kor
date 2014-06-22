@@ -7,6 +7,7 @@ describe Medium do
   def work_off(num = 10)
     Delayed::Worker.new.work_off num
     if Delayed::Job.count > 0
+      debugger
       raise "Not all jobs have been processed, please check!"
     end
   end

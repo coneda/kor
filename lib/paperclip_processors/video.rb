@@ -11,7 +11,7 @@ class Paperclip::Video < Paperclip::Processor
   
   def command(pass = 1)
     result = [
-      "ffmpeg -y",
+      "#{executable} -y",
       "-i #{@file.path}",
       "-ar 22050",
       "-ab 128000",
@@ -35,7 +35,7 @@ class Paperclip::Video < Paperclip::Processor
     time = (probe(target).attributes[:duration] * 0.2).to_i
     time_args = "#{time / 60 / 60}:#{(time / 60) % 60}:#{time % 60}"
     
-    "ffmpeg -itsoffset #{time_args} -i #{use_original ? @file.path : target} -vframes 1 #{still_file} 2> /dev/null"
+    "#{executable} -itsoffset #{time_args} -i #{use_original ? @file.path : target} -vframes 1 #{still_file} 2> /dev/null"
   end
   
   def still_file
@@ -78,6 +78,14 @@ class Paperclip::Video < Paperclip::Processor
     end
     
     File.open(target)
+  end
+
+  def executable
+    if system("which avconv > /dev/null 2> /dev/null")
+      "avconv"
+    else
+      "ffmpeg"
+    end
   end
 
 end
