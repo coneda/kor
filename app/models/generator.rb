@@ -24,6 +24,7 @@ class Generator < ActiveRecord::Base
     replace('id'){ entity.id }
     replace('uuid'){ entity.uuid }
     replace('name'){ entity.name }
+    replace('collection_id'){ entity.collection_id }
     replace('fields:[a-z0-9_]+') do |match|
       field_name = match.gsub /fields:/, ''
       field = entity.attachment.schema.where(:name => field_name).first
