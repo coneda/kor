@@ -1,0 +1,1042 @@
+en:
+
+  # General
+
+  general: "general"
+  with_solved_issues_from: "with solved tickets from"
+  'yes': "yes"
+  'no': "no"
+  search_in: "search in"
+  goto: "go to %{where}"
+  for_all_users: "all users"
+  in: "in"
+  no_selection: "not stated"
+  none: "none"
+  expired: "expired"
+  valid_until: "valid until"
+  my_properties: "own data"
+  logged_in_as: "logged in as"
+  about: "imprint"
+  legal: "terms of use"
+  add_relation_search: "additional criteria"
+  out_of: "%{current} out of %{all}"
+  all: "all"
+  all_none: "all/none"
+  as_file: "as file"
+  default: "standard"
+  from: "from"
+  to: "to"
+  select_only: "select only"
+  back: "back"
+  try_again: "retry"
+  download_higher_resolution: "in high resolution %{show} or %{download}"
+  download_metadata: "download metadata"
+  edit_self: "edit profile"
+  never: "never"
+  leave_value: "no changes"
+  by: "by"
+  done: "done"
+  password_forgotten: "password forgotten"
+  password_forgotten_question: "Forgot password?"
+  password_reset_question: "Request new password?"
+  password_reset: "request new password"
+  password_forgotten_question: "Forgot password?"
+  select_collections: select collection
+  apply: apply
+  cancel: cancel
+  of: of %{amount}
+  empty_list: "empty list"
+  results_for: results for
+  some_images: selection of associated media
+  edit_personal_collections: edit personal collections
+  logged_in_recently: "logged in recently (<= 30 days)"
+  created_recently: "created recently (<= 30 days)"
+  provided_by: "provided by"
+
+  search_term:
+    one: search term
+    other: search terms
+
+  users:
+    administrator: "administrator"
+
+  tagging:
+    placeholder: "click here to edit"
+
+  social_bookmarking:
+    digg: "publish on Digg"
+    delicious: "link to Delicious"
+
+  kind_settings:
+    dating_label: "default indication for dating"
+    distinct_name_label: "indication for distinct name"
+    name_label: "description for name"
+    keywords: "key words"
+    no_keywords: "none"
+    all_keywords: "free input"
+    predefined_keywords: "default list"
+    tagging: tagging
+
+  prompts:
+    please_select: "please select"
+    please_select_transit: "please select a transit area on the left"
+
+  values:
+    no_name_statements:
+      unknown: "unknown"
+      not_available: "not available"
+      empty_name: "without name"
+      enter_name: "enter"
+
+  verbs:
+    maximize: maximize
+    play: "play"
+    enlarge: "enlarge"
+    upload: "upload"
+    save: "save"
+    browse: "browse"
+    show: "show"
+    reset: "reset"
+    login: "login"
+    logout: "logout"
+    edit: "edit"
+    create: "create"
+    update: "save"
+    new: "anlegen"
+    delete: "delete"
+    send: "send"
+    search: "search"
+    choose: "select"
+    merge: "merge"
+    relate: "relate"
+    download: "download"
+    does_not_extend: "does not expire"
+    expires_after_days: "expires after %{days} days"
+
+  title_verbs:
+    pen: "edit"
+    x: "delete"
+    plus: "add"
+    minus: "delete"
+    target: "copy to clipboard"
+    target_hit: "remove from clipboard"
+    select: "select as current entity"
+    three_bars: "reset login attempts"
+    reset_password: "reset password/create new password"
+    arrows_right: "move"
+    private: "approvals"
+    public: "undo approval"
+    zip: "download group as zip file"
+    pager_right: page forward
+    pager_left: page back
+
+  clipboard_actions:
+    choose: "please make a choice"
+    prepare_merge: "merge"
+    merge: "merge"
+    mass_relate: "relate with"
+    mass_destroy: "delete"
+    add_to_authority_group: "add to a global group"
+    add_to_user_group: "add to own group"
+    move_to_collection: "move to collection"
+
+  datings:
+    default:
+      one: dating
+      other: datings
+    person:
+      one: biographical information
+      other: biographical information
+
+  config:
+    sections:
+      maintainer: site operator
+      host: server
+      mail: e-mail
+      app: application
+      meta_entities: simple input form
+      help: help
+    help:
+      component_search:
+        component_search: simple search
+      entities:
+        index: expert search
+        gallery: new images
+        multi_upload: multiple upload
+      meta_entities:
+        new: simple input mask
+      authentication:
+        form: login
+      users:
+        edit_self: edit profile
+      authority_group_categories:
+        index: global groups
+      user_groups:
+        index: own search
+      tools:
+        clipboard: clipboard
+    values:
+      default_home_page: default home page after login
+      entities: entities
+      relationships: relationship
+      edit_own_content: "Allow to users to edit own content"
+      legal_text: text for terms of use
+      about_text: text for imprint
+      help_text: general help text (/static/help)
+      current_history_length: Anzahl der vorgehaltenen aktuellen Entitäten
+      max_file_upload_size: "maximum file size for uploads"
+      max_foreground_group_download_size: "maximum download size for foreground groups in MB"
+      address: address
+      domain: domain
+      mail: mail address
+      name: name
+      protocol: protocol
+      host: server
+      port: port
+      tls: TLS
+      primary_relationships: "primary relations"
+      secondary_relationships: "secondary relations"
+      sender_name: name of sender
+      sender_address: sender adress
+      welcome_title: "title of welcome page"
+      welcome_text: "text of welcome page"
+
+  pages:
+    new_media: new entries
+    simple_search: simple search
+    expert_search: expert search
+    random_entities: randomly selected entries
+    welcome: stnadard page
+
+  nouns:
+    agpl: "GNU Affero General Public License Version 3"
+    license:
+      one: license
+      other: licenses
+    source_code:
+      one: source code
+      other: source codes
+    key:
+      one: key
+      other: keys
+    simple_search: "simple search"
+    hit:
+      one: hit
+      other: hits
+    credit:
+      one: point
+      other: points
+    mass_upload: multiple upload
+    generator:
+      one: generator
+      other: generators
+    field:
+      one: field
+      other: fields
+    registration: registration
+    special_input: "special input"
+    input: input
+    media_upload: media upload
+    term:
+      one: terms
+      other: terms
+    enlargement: enlargement
+    select_files: file selection
+    file_list: file list
+    content_type: file type
+    version:
+      one: version
+      other: versions
+    page:
+      one: page
+      other: pages
+    top_level: top level
+    help: help
+    upload_log: "upload log"
+    profile:
+      one: profile
+    label:
+      one: "signifier"
+      other: "signifiers"
+    gallery: "gallery"
+    administration: administration
+    created_at:
+      one: "created"
+    updated_at:
+      one: "updated"
+    current_entity:
+      one: "current entity"
+      other: "current entities"
+    session:
+      one: "session"
+      other: "sessions"
+    new_entity:
+      one: "new entity"
+      other: "new entities"
+    invalid_entity:
+      one: "invalid entity"
+      other: "invalid entities"
+    cache_size:
+      one: "cache size"
+    image_cache_size:
+      one: "size of image cache"
+    public_image_cache_size:
+      one: "size of public image caches"
+    explanation:
+      one: "explanation"
+      other: "explanations"
+    expires_at: "expires at"
+    text:
+      one: "text"
+      other: "texts"
+    comment:
+      one: "comment"
+      other: "comments"
+    life_data:
+      one: "life data"
+    datahash:
+      one: "hash"
+      other: "hashs"
+    megabyte:
+      one: "megabyte"
+      other: "megabytes"
+    free_disk_space: "free disk space"
+    link:
+      one: "link"
+      other: "links"
+    publishment:
+      one: "published group"
+      other: "published groups"
+    invalid:
+      other: "invalid"
+    section:
+      one: "technical group"
+    last_login: "last login"
+    entity:
+      one: entity
+      other: entities
+    maintenance: "maintenance "
+    language_selection: "language selection"
+    email:
+      one: "email"
+    full_name:
+      one: "full name"
+    activation:
+      one: "activation"
+    user:
+      one: "user"
+      other: "user"
+    set:
+      one: "set"
+      other: "sets"
+    file:
+      one: "file"
+      other: "files"
+    content: "content"
+    selection: "selection"
+    action:
+      one: "action"
+      other: "actions"
+    tag:
+      one: "tag"
+      other: "tags"
+    transit_category:
+      one: "transit area"
+      other: "transit areas"
+    access_rights: "user rights"
+    page: "page"
+    login: "login"
+    search: "search"
+    expert_search: "expert search"
+    search_results: "search results"
+    the_target_entity: "the traget entity"
+    the_source_entity: "the source entity"
+    browser: "browser"
+    user_groups: "own groups"
+    group:
+      one: "group"
+      other: "groups"
+    public_groups: "public groups"
+    clipboard: "clipboard"
+    file_upload: "file upload"
+    transit:
+      one: "transit"
+      other: "transits"
+    user_admin: "user administration"
+    exception_log: "error report"
+    company_info: "imprint"
+    service_info: "use notice"
+    kind:
+      one: "entity type"
+      other: "entity types"
+    property:
+      one: "special property"
+      other: "special properties"
+    relation:
+      one: "relation"
+      other: "realtions"
+    reverse_relation:
+      one: "reverse relation"
+      other: "reverse relations"
+    relationship:
+      one: "relation"
+      other: "relations"
+    reverse_relationship:
+      one: "reverse realtion"
+      other: "reverse relations"
+    related_medium:
+      one: "related medium"
+      other: "related media"
+    image:
+      one: "image"
+      other: "images"
+    authority_group:
+      one: "global group"
+      other: "global groups"
+    config: configurations
+    user_group:
+      one: "own group"
+      other: "own groups"
+    synonym:
+      one: "synonym"
+      other: "synonyms"
+    owner:
+      one: "owner"
+    other:
+      other: "other"
+    username:
+      one: "user name"
+    password:
+      one: "password"
+    plain_password:
+      one: "password"
+    password_confirmation:
+      one: "password confirmation"
+    name:
+      one: "name"
+      other: "names"
+    translated_name:
+      one: "localized name"
+    reverse_name:
+      one: "reversal"
+    translated_reverse_name:
+      one: "lokalized reversal"
+    prename:
+      one: "forename"
+      other: "forenames"
+    dating_string:
+      one: "dating"
+    dating:
+      one: "dating"
+    file_format:
+      one: "file format"
+      other: "file formats"
+    dimensions:
+      one: "dimensions"
+    material:
+      one: "material"
+    technique:
+      one: "technique"
+    material_technique:
+      one: "material and technique"
+    subtype:
+      one: "sub type"
+    width:
+      one: "width"
+    height:
+      one: "height"
+    isbn:
+      one: "ISBN"
+    year_of_publication:
+      one: "year of publication"
+    value:
+      one: "value"
+      other: "values"
+    distinct_name:
+      one: distinct name
+    display_name:
+      one: "display as"
+    uuid:
+      one: "UUID"
+    from_id:
+      one: "source"
+    to_id:
+      one: "target"
+    relation_id: "relation"
+    statistics: "statistics"
+    publisher: "publisher"
+    edition: "edition"
+    title:
+      one: "title"
+    distinct_title:
+      one: "distinct title"
+    original: "original"
+    metadata: meta data
+    degree: amount of relations (degree)
+
+
+  objects:
+    download: "%{o} download"
+    add: "%{o} add"
+    none_found: "no %{o} was found"
+    include: "include %{o}"
+    move: "move %{o}"
+    create: "create %{o}"
+    new: "apply %{o}"
+    create_success: "%{o} has been created"
+    edit: "%{o} bearbeiten"
+    update_success: "%{o} has been edited"
+    delete: "delete %{o}"
+    destroy_success: "%{o} has been deleted"
+    for: "for %{o}"
+    no_exist: "%{o} does not exist"
+    none_available: "%{o} is not available"
+    marked_entity_success: "entity %{o} has been copied to the clipboard"
+    marked_entities_success: "the entity has been copied to the clipboard"
+    unmarked_entity_success: "entity %{o} has been removed from the clipboard"
+    extend_success: "%{o} has been extended until %{until}"
+    confirm_destroy: "Do you really want to delete %{o}?"
+    marked_as_current_success: "entity %{o} has been marked as current entity"
+    relate_all_to: "all selected entities will be related with %{o}"
+
+  move_contents_from: move content from %{o}
+
+  will_paginate:
+    next_label: ""
+    previous_label: ""
+
+  image_transformations:
+    flip: "flip horizontally"
+    flop: "flip vertically"
+    rotate_cw: "rotate clockwise"
+    rotate_ccw: "rotate counter clockwise"
+    rotate_180: "rotate 180 degrees"
+
+  commands:
+    accept_terms: "accept terms"
+    show: "display"
+    delete: "delete"
+    edit: "edit"
+    create: "create"
+
+  confirm:
+    delete_collection: "Do you really want to delete this collection?"
+    delete_relationship: "Do you really want to delete this link?"
+    delete_relation: "Do you really want to delete this relation?"
+    delete_entity: "Dou you really want to delete this entity?"
+    delete_entity_with_groups: "Dou you really want to delete this entity? The following global groups contain the entity: %{authority_groups}"
+    delete_user: "Do you really want to delete this user?"
+    delete_user_group: "Do you really want to delete the own group?"
+    remove_from_user_group: "Do you really want to remove this entity from the own group?"
+    delete_authority_group: "Do you really want to delete this global group?"
+    delete_authority_group_category: "Do you really want to delete this category (all sub categories will be lost, all entities will persist)?"
+    remove_from_authority_group: "Do you really want to remove this entity from the global group?"
+    delete_kind: "Do you really want to delete this entity type (WARNING: All correspondent entities entities will be lost)?"
+    reset_clipboard: "Do you really want to empty the clipboard?"
+    long_time_warning: "This operation could take several minutes. Do you want to continue?"
+    delete_publishment: "Do you really want to delete this published group?"
+
+  prompt:
+    email_for_personal_password_reset: "please insert your email address"
+
+  mailer:
+    subjects:
+      account_created: "KOR account has been created"
+      password_reset: "KOR password has been reset"
+      upcoming_expiry: "KOR account expires soon"
+      download_ready: "KOR download is ready"
+    messages:
+      hi: "Hello %{username}"
+      best_regards: "Best regards"
+      upcoming_expiry: |
+        Your KOR-Account %{url} expires at %{date}. 
+        Please contact the administrator to extend your account.
+      account_created: |
+        An Account has been created for you in KOR system %{url}.
+      password_reset: |
+        The KOR system %{url} has reset your password successfully.
+      new_credentials: |
+        your login details are
+        Benutzername: %{username}
+        Passwort: %{password}
+      reset_credentials: |
+        your new login details are
+        Benutzername: %{username}
+        Passwort: %{password}
+      download_ready: |
+        The KOR system %{url} has provided a download four you. Please follow 
+        this link to download the file:
+        
+        %{link}
+      
+  messages:
+    entities_moved_to_collection: "the entity has been moved to collection '%{o}'"
+    no_user_groups: "there are no own groups available"
+    no_authority_groups: "there are no global groups available"
+    swfupload_success: "the upload was successful"
+    none_found: "%{o} not found"
+    no_clipboard_action_selected: "you have not selected an action"
+    following_relationship: "the following link should be applied or created"
+    edit_existing_entity: |
+      Identical entity already exists. Do you want to
+      %{edit_link} or %{show_link} instead?
+    password_reset: "the password %{username} has been reset"
+    login_attempts_reset: "the number of login attempts for %{username} has been reset"
+    password_possibly_reset: |
+      If the entered email address exists, an email with new login details will
+      be sent.
+    access_denied: |
+      Unfortunately you do not have the required rights, to access this part of
+      the application. Probably your session has expired.
+      Please login again, to have more rights or to renew your
+      session.
+    maintenance: |
+      We are currently carrying out maintenance work. Therefore the application
+      is temporary not available. Please try again later.
+    no_systemgroups: "there are no global groups available"
+    no_usergroups: "there are no user groups available"
+    exception_ocurred: |
+      For comprehensibility time and state of the application have been recorded.
+      If required please contact the administrator of KOR.
+    not_found: "the requested resource could not be found"
+    no_exceptions_recorded: "there are no expectations recorded"
+    no_relations_provided: "there is no relation provided for this combination"
+
+  notices:
+    creating_zip_file: "Zip file will be created. You will receive an email as soon as the download is ready."
+    no_entities_in_group: "There are no entities to download in this group"
+    personal_password_reset_success: |
+      A new passowrd has been created and sent to the entered email address.
+    terms_accepted: "you have accepted the terms of use"
+    entities_destroyed: "the entity has been deleted"
+    no_entities_in_usergroup: "there is no entity in this group"
+    merge_success: "the entities have been merged successfully"
+    upload_success: "the file has been transferred successfully"
+    upload_duplicate: "The transferred image already exists. It has been added to the selected group."
+    no_entries_available: "there are no entries available"
+    reset_clipboard_success: "the clipboard has been reset"
+    access_denied: "the access has been denied"
+    session_expired: "your session has expired"
+    maintenance_done: "the maintenance work is completed"
+    logged_out: "you have been logged out successfully"
+
+  errors:
+    too_many_entities_for_zip: "the group contains too many images"
+    collection_not_empty_on_delete: "the collection '%{name}'could not be deleted, because it is not empty"
+    too_many_login_attempts: "due too many login attempts the user has been blocked temporarily"
+    date_parsing_failed: "the entered date could not be identified"
+    personal_password_reset_mail_not_found: "the entered email address could not be found"
+    search_string_too_short: "the search term must contain at least three characters"
+    forbidden_clipboard_action: "you do not have enough rights to perform this action"
+    merge_failure: "the entities could not be merged"
+    destination_not_given: "you have to chose an entity as a target"
+    not_allowed_action: "you do not have enough rights to perform this action"
+    ocurred: "errors occurred in the input"
+    user_or_pass_refused: "user name or password could not be found"
+    account_inactive: "this account has been deactivated"
+    account_expired: "this account has expired"
+    only_same_kind: "please chose only entities of the same type"
+    exception_ocurred: "an unexpected error has occurred"
+    publishment_expired: "this link has expired"
+    other_collection: "You have no access to entity %{id}. Please contact the administrator."
+
+  labels:
+    relate_to_via: relate all files with "%{to}" via
+
+  meta:
+    description: "Store and manage image data with complex metadata reasonably"
+    author: "Coneda UG (Thorsten Wübbena and Moritz Schepp)"
+    keywords: "image picture archive research ontology database entity relation link"
+
+
+  # ActiveModel
+
+  activemodel:
+    errors:
+      template:
+        header: "errors occurred in the input"
+
+      messages:
+        empty: "has to be filled in"
+
+
+  # ActiveRecord
+
+  activerecord:
+
+    models:
+      field:
+        one: field
+        other: fields
+      generator:
+        one: generator
+        other: generators
+      tag:
+        one: tag
+        other: tags
+      medium:
+        one: medium
+        other: media
+      snapshot:
+        one: state
+        other: state
+      credential:
+        one: user group
+        other: user groups
+      collection:
+        one: collection
+        other: collections
+      entity:
+        one: entity
+        other: entities
+      entity_dating:
+        one: dating
+        other: dating information
+      kor_image:
+        one: reproduction
+        other: reproductions
+      credential:
+        one: user group
+        other: user groups
+      exception_log:
+        one: error message
+        other: error messages
+      kind:
+        one: entity type
+        other: entity types
+      property:
+        one: additional property
+        other: additional properties
+      publishment:
+        one: published group
+        other: published groups
+        specifier:
+          one: published
+          other: published
+      relation:
+        one: relation
+        other: relations
+      relationship:
+        one: link
+        other: links
+      synonym:
+        one: synonym
+        other: synonyms
+      tag:
+        one: tag
+        other: tags
+      authority_group:
+        one: global group
+        other: global groups
+        specifier:
+          one: global
+          other: global
+      authority_group_category:
+        one: index
+        other: indices
+      user_group:
+        one: own group
+        other: own groups
+        specifier:
+          one: own
+          other: own
+      user:
+        one: user
+        other: user
+
+    attributes:
+      field:
+        type: type
+        name: name
+        show_label: attribute name on entity
+        form_label: display in edit form
+        search_label: display in search form
+        show_on_entity: show on entity
+      generator:
+        name: name
+        show_label: attribute name on entity
+        directive: generator directive
+        is_attribute: show on entity
+      medium:
+        image: image
+        document: document
+        content_type: file type
+        document_file_name: document
+        file_size: file size of the original
+        file_type: file type
+        original: original file
+        original_extension: file type of the original
+        datahash: hash total
+      snapshot:
+        comment: comment
+        created_at: created at
+        user_id: user
+      credential:
+        name: name
+        description: description
+      collection:
+        perosnal: personal
+        name: name
+        view: allow these groups to display
+        edit: allow these groups to edit
+        delete: allow these groups to delete
+        create: allow these groups to create
+        view_meta: allow these groups to display the master file data
+      user:
+        personal: personal collection
+        username: user name
+        name: user name
+        full_name: full name
+        password: password
+        plain_password: password
+        password_confirmation: repeat password
+        plain_password_confirmation: repeat password
+        email: e-mail
+        activation: activation
+        groups: group membership
+        created_at: created at
+        expires_at: expires at
+        last_login: last login
+        authority_group_admin: administration of global groups
+        kind_admin: administration of entity types
+        credential_admin: create and edit user groups
+        user_admin: user administration
+        collection_admin: create and edit collections
+        relation_admin: create and edit relations
+        developer: developer
+        expires_at: expires at
+        created_at: created at
+        expires_at: expires at
+        authority_group_admin: administration of global groups
+        kind_admin: administration of entity types
+        credential_admin: create and edit user groups
+        user_admin: user administration
+        collection_admin: create and edit collections
+        relation_admin: create and edit relations
+        developer: developer
+        last_login: last login
+        home_page: home page
+        default_collection_id: default collection
+        api_key: API key
+      entity:
+        display_name: name
+        updater: updated by
+        tag_list: tags
+        content_type: file type
+        collection_id: collection
+        master_data: master data file
+        authority_groups: global groups
+        created_at: created at
+        updated_at: updated at
+        expires_at: expires at
+        last_login: last login
+        authority_group_admin: administration of global groups
+        kind_admin: administration of entity types
+        credential_admin: create and edit user groups
+        user_admin: user administration
+        collection_admin: create and edit collections
+        relation_admin: acreate and edit relations
+        developer: developer
+        expires_at: expires at
+        created_at: created at
+        last_login: last login
+        home_page: home page
+        default_collection: default collection
+        collection_id: collection
+        kind: entity type
+        name: name
+        title: title
+        uuid: UUID
+        subtype: type
+        distinct_name: distinguished name
+        distinct_title: distinguished title
+        comment: comment
+        properties: further properties
+        synonyms: synonyms
+        degree: degree
+      entity_dating:
+        label: type of dating
+        dating_string: dating
+        from_day: from
+        to_day: to
+      kind:
+        name: name
+        plural_name: plural name
+        description: description
+        dataset_class: field extension
+        dataset_profile: profile for extensions
+      relation:
+        name: name
+        reverse_name: inversion
+        description: description
+        from_kind_ids: permitted types on this page
+        to_kind_ids: permitted types on this page
+      relationship:
+        property:
+          one: additional property
+          other: additional properties
+      property:
+        search: additional property
+        label: additional field description
+        value: value
+      publishment:
+        name: description
+        group: group to be released
+      kor_image:
+        transit: "transit"
+        file: file
+        datahash: file
+      artwork:
+        dimensions: dimensions
+        material_technique: material and technique
+        subtype: type
+      textual:
+        text: text
+      literature:
+        isbn: ISBN
+        year_of_publication: year of publication
+        edition: edition
+        publisher: publisher
+      user_group:
+        owner: owner
+          
+    errors:
+      template:
+        header: "errors occurred in the input"
+
+      messages:
+        personal_collection_not_empty: "The personal collection could not be deleted because it still contains entities"
+        template_and_parent: "Only 'template' or parent is possible"
+        needs_value: "need a value"
+        needs_label: "need a label"
+        file_exists: "a file with identical content already exists"
+        file_must_be_set: "please select a file"
+        needed_for_disambiguation: "is needed for determination (conflict with collection '%{collection}')"
+        inclusion: "is not a valid value"
+        exclusion: "is not available"
+        invalid: "is invalid"
+        record_invalid: "is invalid"
+        confirmation: "does not agree with confirmation"
+        accepted: "has to be accepted"
+        empty: "has to be filled in"
+        blank: "has to be filled in"
+        too_long: "is too long (not more than %{count} characters)"
+        too_few_elements: "has too few elements (at least %{count})"
+        too_short: "is too short (not less than %{count} characters)"
+        wrong_length: "has the wrong length (must have exact %{count} characters)"
+        taken: "is already taken"
+        not_a_number: "is not a number"
+        greater_than: "has to be greater than %{count}"
+        greater_than_or_equal_to: "has to be greater or equal to %{count}"
+        equal_to: "has to be equal to %{count}"
+        less_than: "has to be less than %{count}"
+        less_than_or_equal_to: "has to be less or equal to %{count}"
+        odd: "has to be odd"
+        even: "has to be even"
+        no_two_images: "you cannot attach two images"
+        defines_non_existent_kind: "defines a non existent entity type"
+        defines_non_existent_relation: "defines a link for a non existent relation"
+        stale_entity_update: "The entity has been edited meanwhile. Please find the new values below"
+        stale_user_update: "The user has been edited meanwhile. Please find the new values below"
+        stale_relation_update: "The relation has been edited meanwhile. Please find the new values below"
+        stale_relationship_update: "The link has been edited meanwhile. Please find the new values below"
+        needs_medium: "Without a relevant file the entity cannot be created as a medium"
+        needs_file: "Without a relevant file the entity cannot be created as a medium"
+        invalid_words: "cannot contain words longer than 30 characters "
+  
+
+  # Mime types
+
+  mimes:
+    image:
+      gif: GIF image
+      jpg: JPG image
+      jpeg: JPEG image
+      png: PNG image
+      tif: TIFF image
+      tiff: TIFF image
+    video:
+      mpeg: MPEG video file
+      quicktime: Apple QuickTime video file
+      x-flv: Adobe Flash video file
+    application:
+      x-keepass: KeepassX Database
+      vnd:
+        oasis:
+          opendocument:
+            spreadsheet: "OpenOffice Spreadsheet"
+
+
+  # Date & time
+
+  date:
+    formats:
+      default: "%d.%m.%Y"
+      short: "%e. %b"
+      long: "%e. %B %Y"
+      only_day: "%e"
+
+    day_names: [Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
+    abbr_day_names: [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
+    month_names: [~, January, February, March, April, May, June, July, August, September, October, November, December]
+    abbr_month_names: [~, Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec]
+    order:
+      - :day
+      - :month
+      - :year
+  
+  time:
+    formats:
+      default: "%d.%m.%Y %H:%M"
+      #default: "%A, %e. %B %Y, %H:%M Uhr"
+      short: "%e. %B, %H:%M Uhr"
+      long: "%A, %e. %B %Y, %H:%M Uhr"
+      time: "%H:%M"
+
+    am: "am"
+    pm: "pm"
+
+
+
+  # Will paginate
+
+  will_paginate:
+    page_gap: "&hellip;"
+
+
+  # Media transformations
+
+  media:
+    transformations:
+      image:
+        name: image processing
+        operations:
+          flip: flip horizontally
+          flop: flip vertically
+          rotate_cw: rotate clockwise
+          rotate_ccw: rotate counter-clockwise
+          rotate_180: rotate 180°
+
+
+  # help
+
+  help:
+    component_search:
+      component_search: |
+        The one-box search shows matching tags and the number of hits as you type. By selecting the suggested term or tag you start the search.
+        
+        You can restrict the search by typing in other terms. To expand or modify the search, every selected term can be deleted by clicking the x. 
+        Start a new search by selecting  
+        „remove“.
+        
+        Narrow down the results according to the entity type in the menu "entity type".
+        
+    entities:
+      index: |
+        The expert search lets you send targeted queries about the fields of entities. Selecting "additional criteria" allows you to include relations and linked entities in your search. 
+        
+        
+    kor_multi_file_upload:
+      form: |
+        Through "add files" you can select multiple files. The selected files will be added to a list, where previously selected files can be deleted. Tp upload the files click "upload".
+        For your own group you can choose any name. You find your uploaded files in this group.

@@ -569,7 +569,6 @@ de:
         
         %{link}
       
-
   messages:
     entities_moved_to_collection: "Die Entitäten wurden in Sammlung '%{o}' verschoben"
     no_user_groups: "Es sind keine eigenen Gruppen vorhanden"
