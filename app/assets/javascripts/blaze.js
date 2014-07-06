@@ -15,3 +15,4 @@
 //= require modules/old/attachments
 //= require modules/old/tagging
 //= require modules/boot
+//= require_tree ./modules/blaze

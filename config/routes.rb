@@ -50,7 +50,7 @@ Kor::Application.routes.draw do
       get 'other_collection'
     end
   end
-  resources :relationships, :except => [:index, :show]  
+  resources :relationships, :except => [:index]
   resources :collections do
     collection do
       get 'edit_personal'

@@ -2,6 +2,20 @@ class RelationshipsController < ApplicationController
 
   layout 'normal_small'
 
+  def show
+    @relationship = Relationship.find(params[:id])
+
+    respond_to do |format|
+      format.json do
+        if authorized_for_relationship? @relationship
+          render :json => @relationship.to_json(:root => false)
+        else
+          render :nothing => true, :status => 403
+        end
+      end
+    end
+  end
+
   def new
     @relationship = Relationship.new(params[:relationship].merge(:to_id => session[:current_entity]))
     
@@ -49,11 +63,24 @@ class RelationshipsController < ApplicationController
     unless authorized_for_relationship? @relationship, :edit
       redirect_to denied_path
     else
-      if @relationship.update_attributes(params[:relationship])
-        flash[:notice] = I18n.t('objects.update_success', :o => I18n.t('nouns.relationship', :count => 1) )
-        redirect_to @relationship.from
-      else
-        render :action => "edit"
+      success = @relationship.update_attributes(params[:relationship])
+
+      respond_to do |format|
+        format.html do
+          if success
+            flash[:notice] = I18n.t('objects.update_success', :o => I18n.t('nouns.relationship', :count => 1) )
+            redirect_to @relationship.from
+          else
+            render :action => "edit"
+          end
+        end
+        format.json do
+          if success
+            render :json => @relationship.to_json(:root => false)
+          else
+            render :nothing => true, :status => 406
+          end
+        end
       end
     end
   rescue ActiveRecord::StaleObjectError

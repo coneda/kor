@@ -6,6 +6,10 @@ class Relationship < ActiveRecord::Base
   belongs_to :from, :class_name => "Entity", :foreign_key => :from_id
   belongs_to :to, :class_name => "Entity", :foreign_key => :to_id
 
+  after_validation do |relationship|
+    relationship.properties = relationship.properties.uniq
+  end
+
   def other_entity(entity)
     from_id == entity.id ?
       to : from
