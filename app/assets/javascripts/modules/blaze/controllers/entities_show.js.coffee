@@ -146,7 +146,10 @@ kor.controller('korEntitiesShowCtrl', [
 
     scope.edit_relationship = (relationship, event) -> 
       event.preventDefault() if event
-      relationship.editing = true
+      if relationship.editing
+        scope.unedit_relationship(relationship)
+      else
+        relationship.editing = true
 
     scope.unedit_relationship = (relationship, event) -> 
       event.preventDefault() if event

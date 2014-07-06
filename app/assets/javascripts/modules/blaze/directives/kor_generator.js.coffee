@@ -11,7 +11,5 @@ kor.directive "korGenerator", [
         http(method: "get", url: url).success (data) ->
           template = c(data)(scope)
           element.html(template)
-        # console.log scope.entity
-        # console.log scope.generator
     }
 ]
