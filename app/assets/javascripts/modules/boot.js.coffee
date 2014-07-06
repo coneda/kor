@@ -1,7 +1,8 @@
-angular.module('kor', []).config([ 
-  "$httpProvider", 
-  (httpProvider) ->
+angular.module('kor', ["ngRoute"]).config([ 
+  "$httpProvider", "$sceProvider",
+  (httpProvider, sp) ->
     #console.log "configuring"
+    sp.enabled(false)
 
     httpProvider.responseInterceptors.push [
       "$q", "korFlash",
@@ -17,6 +18,7 @@ angular.module('kor', []).config([
             response
 
     ]
+
   ]
 ).run([->
   #console.log "running"
@@ -58,7 +60,7 @@ angular.module('kor', []).config([
       row.push r.entity
 
     if row.length > 0
-      row.push null while row.length < 3
+      row.push {} while row.length < 3
       relationship.media.push row
 
     relationship.media_page = page
@@ -181,6 +183,7 @@ angular.module('kor', []).config([
     event.stopPropagation()
 
   korData.initial_load()
+
 ]).service('korFlash', [ ->
   service = {
 

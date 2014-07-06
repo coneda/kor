@@ -18,7 +18,7 @@
             <a href="/entities/{{entity.id}}/edit" ng-show="allowed_to('edit')">
               <img alt="Pen" class="kor_command_image" src="/assets/pen.gif" title="{{'verbs.edit' | translate}}">
             </a>
-            <form method="post" action="/entities/{{entity.id}}">
+            <form method="post" action="{{'/entities/' + entity.id}}">
               <input type="hidden" name="_method" value="delete" />
               <a
                 href="/entities/{{entity.id}}" 
@@ -219,7 +219,7 @@
                     <tbody>
                       <tr class="image_row" ng-repeat="row in relationship.media">
                         <td class="image" ng-repeat="entity in row">
-                          <div class="kor_medium_frame" id="kor_medium_frame_{{entity.id}}" ng-show="entity">
+                          <div class="kor_medium_frame" id="kor_medium_frame_{{entity.id}}" ng-show="entity.id">
                             <a href="/entities/{{entity.id}}">
                               <img alt="Image" class="kor_medium" ng-src="{{entity.medium.url}}">
                             </a>

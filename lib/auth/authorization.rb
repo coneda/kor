@@ -4,11 +4,9 @@ module Auth::Authorization
     result = Grant.where(
       :credential_id => user.groups.map{|c| c.id}, 
       :policy => policies
-    ).group(:collection_id)
+    ).group(:collection_id).count
     
-    result.map do |grant|
-      grant.collection
-    end
+    Collection.where(:id => result.keys).to_a
   end
   
   def self.authorized?(user, policy = :view, collections = Collection.all, options = {})
