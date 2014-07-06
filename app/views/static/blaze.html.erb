@@ -94,8 +94,12 @@
                   <a href="{{link[1]}}" target="_blank">&raquo; {{link[0]}}</a>
                 </div>
               </div>
-              <div class="generator" ng-repeat="generator in entity.generators" ng-bind-html-unsafe="generator">
-              </div>
+              <div
+                class="generator"
+                ng-repeat="generator in entity.generators"
+                kor-generator="generator"
+                kor-entity="entity"
+              ></div>
             </li>
             <li class="spacer"></li>
             <li class="tags" ng-show="entity.kind.tagging">

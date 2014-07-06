@@ -45,11 +45,9 @@ class Api::EntitiesController < Api::ApiController
     hash[:related] = blaze.relations_for(:include_relationships => true)
     hash[:related_media] = blaze.relations_for(:media => true, :include_relationships => true)
     hash[:links] = WebServices::Dispacher.links_for(@entity)
-    hash[:generators] = @entity.kind.generators.only_attributes.map do |generator|
-      generator.to_html(@entity)
-    end.select{|h| !h.blank?}
+    hash[:generators] = @entity.kind.generators.map{|g| g.serializable_hash}
 
-    # TODO: generators (?), auth (tagging)
+    # TODO: auth (tagging)
     
     flash.keep
     render :json => hash

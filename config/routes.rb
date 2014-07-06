@@ -31,7 +31,7 @@ Kor::Application.routes.draw do
   resources :tags, :only => :index
   resources :kinds do
     resources :fields, :except => 'show'
-    resources :generators, :except => 'show'
+    resources :generators
   end
   resources :relations
   resources :entities do
