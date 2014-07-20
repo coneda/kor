@@ -121,13 +121,6 @@ class Relationship < ActiveRecord::Base
     model.uuid = UUIDTools::UUID.random_create.to_s
   end
   
-  after_commit :correct_index
-  
-  def correct_index
-#    Kor::SimpleSearchIndex.new.update_index(from_id, :action => :update, :flush => true, :related => false)
-#    Kor::SimpleSearchIndex.new.update_index(to_id, :action => :update, :flush => true, :related => false)
-  end
-
   
   ########################## properties ########################################
 

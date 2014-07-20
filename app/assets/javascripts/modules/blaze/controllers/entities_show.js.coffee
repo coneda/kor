@@ -165,6 +165,4 @@ kor.controller('korEntitiesShowCtrl', [
       index = relationship.properties.indexOf(property)
       relationship.properties.splice(index, 1) unless index == -1
 
-
-
 ])
