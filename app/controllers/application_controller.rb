@@ -7,11 +7,11 @@ class ApplicationController < ActionController::Base
     :kor_graph,
     :current_user
   
-  before_filter :maintenance, :authentication, :authorization, :legal
+  before_filter :locale, :maintenance, :authentication, :authorization, :legal
   
 
   private
-  
+
     # redirects to the legal page if terms have not been accepted
     def legal
       if !current_user.guest? && !current_user.terms_accepted
@@ -86,6 +86,12 @@ class ApplicationController < ActionController::Base
     
     
   protected
+
+    def locale
+      if current_user && current_user.locale
+        I18n.locale = current_user.locale
+      end
+    end
   
     def authorized?(policy = :view, collections = Collection.all, options = {})
       options.reverse_merge!(:required => :any)

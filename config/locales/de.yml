@@ -818,6 +818,8 @@ de:
         last_login: letzte Anmeldung
         home_page: Startseite
         default_collection_id: Voreingestellte Sammlung
+        api_key: API key
+        locale: Sprache
       entity:
         display_name: Name
         updater: aktualisiert von

@@ -818,6 +818,7 @@ en:
         home_page: home page
         default_collection_id: default collection
         api_key: API key
+        locale: Language
       entity:
         display_name: name
         updater: updated by
