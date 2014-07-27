@@ -35,3 +35,8 @@ chromedriver.log
 deploy/build
 db/*.sqlite3
 .yardoc
+
+
+# Deployment
+
+deploy.config.sh

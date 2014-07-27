@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export HOST="kor@example.con"
+export PORT="22"
+export DEPLOY_TO="/var/www/kor"
+export COMMIT="master"
+export KEEP=5

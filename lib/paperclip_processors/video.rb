@@ -12,7 +12,7 @@ class Paperclip::Video < Paperclip::Processor
   def command(pass = 1)
     result = [
       "#{executable} -y",
-      "-i #{@file.path}",
+      "-i #{original_path}",
       "-ar 22050",
       "-ab 128000",
       "-r 12",
@@ -35,7 +35,7 @@ class Paperclip::Video < Paperclip::Processor
     time = (probe(target).attributes[:duration] * 0.2).to_i
     time_args = "#{time / 60 / 60}:#{(time / 60) % 60}:#{time % 60}"
     
-    "#{executable} -itsoffset #{time_args} -i #{use_original ? @file.path : target} -vframes 1 #{still_file} 2> /dev/null"
+    "#{executable} -itsoffset #{time_args} -i #{use_original ? original_path : target} -vframes 1 #{still_file} 2> /dev/null"
   end
   
   def still_file
@@ -43,13 +43,15 @@ class Paperclip::Video < Paperclip::Processor
   end
   
   def probe(file = nil)
-    @probe = Media::VideoProber.new(file) if file
-    
-    @probe ||= Media::VideoProber.new(@file.path)
+    @probe = Media::VideoProber.new(original_path)
   end
   
   def target
     @target ||= Tempfile.new(rand.to_s).path + '.converted'
+  end
+
+  def original_path
+    @medium.path(:original)
   end
   
   def original_is_flv?
@@ -65,12 +67,10 @@ class Paperclip::Video < Paperclip::Processor
     result = true
   
     # flv conversion
-    unless original_is_flv?
-      FileUtils.mkdir_p File.dirname(target)
-      
-      result &= system command(1)
-      result &= system command(2)
-    end
+    FileUtils.mkdir_p File.dirname(target)
+    
+    result &= system command(1)
+    result &= system command(2)
     
     # still extraction
     if system(still_command) || system(still_command(false))

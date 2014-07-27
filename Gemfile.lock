@@ -17,12 +17,6 @@ PATH
     kor_index (0.0.1)
       rails (~> 3.2.8)
 
-PATH
-  remote: ./plugins/kor_video_player
-  specs:
-    kor_video_player (0.0.1)
-      rails (~> 3.2.8)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -286,7 +280,6 @@ DEPENDENCIES
   json
   kor_api!
   kor_index!
-  kor_video_player!
   machinist (= 1.0.6)
   mime-types (= 1.16)
   mongo

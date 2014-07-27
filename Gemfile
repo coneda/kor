@@ -26,7 +26,6 @@ gem 'system_timer', :platforms => [:ruby_18]
 
 gem 'kor_api', :path => './plugins/kor_api'
 gem 'kor_index', :path => './plugins/kor_index'
-gem 'kor_video_player', :path => './plugins/kor_video_player'
 
 gem "sprockets"
 gem "jquery-rails", "~> 2.2.1"
