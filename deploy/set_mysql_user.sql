@@ -1,0 +1,1 @@
+GRANT ALL ON kor.* TO 'kor'@'localhost' IDENTIFIED BY 'kor';
