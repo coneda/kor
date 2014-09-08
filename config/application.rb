@@ -12,7 +12,6 @@ end
 $: << File.expand_path(File.dirname(__FILE__) + "/../lib")
 require 'kor'
 require 'kor/config'
-require 'flash_session'
 
 module Kor
   class Application < Rails::Application

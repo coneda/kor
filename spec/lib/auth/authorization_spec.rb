@@ -18,5 +18,15 @@ describe Auth::Authorization do
     Auth::Authorization.authorized_collections(@admin, [:view, :edit]).should eql([@main])
     Auth::Authorization.authorized_collections(@admin, [:view, :edit, :approve]).should eql([@main])
   end
+
+  it "should allow to inherit permissions from another user" do
+    hmustermann = FactoryGirl.create :hmustermann
+    jdoe = FactoryGirl.create :jdoe
+    students = FactoryGirl.create :students
+    jdoe.groups << students
+    hmustermann.parent = jdoe
+
+    expect(described_class.groups(hmustermann)).to include(students)
+  end
   
 end

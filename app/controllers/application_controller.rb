@@ -62,7 +62,7 @@ class ApplicationController < ActionController::Base
       if !current_user
         history_store
         redirect_to login_path
-      elsif (session[:expires_at] || Time.now ) <= Time.now && !current_user.guest?
+      elsif session_expired?
         reset_session
         history_store
         flash[:notice] = I18n.t('notices.session_expired')
@@ -77,6 +77,12 @@ class ApplicationController < ActionController::Base
       unless generally_authorized?
         flash[:error] = I18n.t('notices.access_denied')
         redirect_to denied_path
+      end
+    end
+
+    def session_expired?
+      unless current_user.guest?
+        (session[:expires_at] || Time.now) <= Time.now
       end
     end
     

@@ -6,7 +6,9 @@ module Auth::Authentication
   end
   
   def self.authorize(username)
-    User.find_by_name(username, :include => :groups)
+    User.find_by_name(username, :include => :groups) || User.create(
+      :name => username
+    )
   end
   
   def self.login(username, password)

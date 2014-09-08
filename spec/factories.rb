@@ -56,7 +56,18 @@ FactoryGirl.define do
     name 'hmustermann'
     full_name 'Hans Mustermann'
     password 'mustermann'
-  
+
+    factory :hmustermann do
+
+    end
+
+    factory :jdoe do
+      email 'jdoe@coneda.net'
+      name 'jdoe'
+      full_name 'John Doe'
+      password 'jdoe'
+    end
+
     factory :admin do
       email 'admin@coneda.net'
       name 'admin'
@@ -64,6 +75,13 @@ FactoryGirl.define do
       password 'admin'
       
       rating_admin true
+    end
+  end
+
+  factory :credential do
+
+    factory :students do
+      name "students"
     end
   end
   

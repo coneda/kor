@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140503185146) do
+ActiveRecord::Schema.define(:version => 20140908202936) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -432,8 +432,11 @@ ActiveRecord::Schema.define(:version => 20140503185146) do
     t.integer  "collection_id"
     t.integer  "credential_id"
     t.boolean  "rating_admin"
+    t.string   "api_key"
+    t.string   "parent_username"
   end
 
   add_index "users", ["name"], :name => "index_users_on_name", :unique => true
+  add_index "users", ["parent_username"], :name => "index_users_on_parent_username"
 
 end

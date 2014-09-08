@@ -53,7 +53,10 @@ RSpec.configure do |config|
 
     DatabaseCleaner.strategy = :truncation
     DatabaseCleaner.clean
-    Sunspot.remove_all!
+    begin
+      Sunspot.remove_all!
+    rescue => e
+    end
   
     Kor::Attachment.collection.drop
     ActionMailer::Base.deliveries = []

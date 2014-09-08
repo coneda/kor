@@ -49,8 +49,13 @@ class UsersController < ApplicationController
       :order => "#{params[:sort_by]} #{params[:sort_order]}",
       :page => params[:page], :per_page => 10
     )
-    
-    render :layout => 'wide'
+
+    respond_to do |format|
+      format.html {render :layout => 'wide'}
+      format.json do
+        render :json => @users.to_json(:except => [:activation_hash, :password, :api_key])
+      end
+    end
   end
 
   def show

@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
   has_many :ratings, :class_name => 'Api::Rating'
   has_many :engagements, :class_name => 'Api::Engagement'
   
+  belongs_to :parent, :class_name => "User", :foreign_key => :parent_username, :primary_key => :name
   belongs_to :personal_group, :class_name => 'Credential', :foreign_key => :credential_id
   belongs_to :personal_collection, :class_name => 'Collection', :foreign_key => :collection_id
 
@@ -25,11 +26,20 @@ class User < ActiveRecord::Base
   validates_confirmation_of :plain_password
   
   validate :validate_empty_personal_collection
+  validate :validate_existing_parent_user
   
   def validate_empty_personal_collection
     unless make_personal
       if personal_collection
         errors.add :base, :personal_collection_not_empty unless personal_collection.empty?
+      end
+    end
+  end
+
+  def validate_existing_parent_user
+    if self.parent_username.present?
+      unless User.exists?(:name => self.parent_username)
+        errors.add :parent_username, :user_doesnt_exist
       end
     end
   end
@@ -148,6 +158,18 @@ class User < ActiveRecord::Base
   
   def any_admin?
     admin || collection_admin || kind_admin || relation_admin || user_admin || credential_admin || authority_group_admin
+  end
+
+  ["", "collection_", "kind_", "relation_", "user_", "credential_", "authority_group_admin_"].each do |ag|
+    define_method "#{ag}admin".to_sym do
+      key = "#{ag}admin".to_sym
+      self[key] || (self.parent.present? && self.parent[key])
+    end
+
+    define_method "#{ag}admin?".to_sym do
+      key = "#{ag}admin".to_sym
+      self[key] || (self.parent.present? && self.parent[key])
+    end
   end
   
   def self.guest

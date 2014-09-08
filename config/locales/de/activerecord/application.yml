@@ -129,6 +129,7 @@ de:
         create: Diesen Gruppen das Erstellen erlauben
         view_meta: Diesen Gruppen das Anzeigen der Stammdaten erlaubem
       user:
+        parent_username: Berechtigungen erben von
         personal: eigene Sammlung
         username: Benutzername
         name: Benutzername
@@ -288,4 +289,5 @@ de:
         needs_medium: "Die Entität kann nicht als Medium erstellt werden ohne entsprechende Datei"
         needs_file: "Die Entität kann nicht als Medium erstellt werden ohne entsprechende Datei"
         invalid_words: "kann keine Wörter mit mehr als 30 Buchstaben enthalten"
+        user_doesnt_exist: "der Benutzer existiert nicht"
         

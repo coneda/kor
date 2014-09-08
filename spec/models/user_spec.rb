@@ -66,5 +66,21 @@ describe User do
     # one hour later
     u.too_many_login_attempts?.should be_false
   end
-  
+
+  it "should respect inherited global roles" do
+    jdoe = FactoryGirl.create :jdoe, :user_admin => true, :collection_admin => true
+    hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe, :relation_admin => true
+
+    hmustermann = User.last
+    expect(hmustermann.parent_username).to eq("jdoe")
+
+    expect(hmustermann.admin?).to be_false
+    expect(hmustermann.user_admin?).to be_true
+    expect(hmustermann.kind_admin?).to be_false
+    expect(hmustermann.collection_admin?).to be_true
+    expect(hmustermann.credential_admin?).to be_false
+    expect(hmustermann.relation_admin?).to be_true
+    expect(hmustermann.authority_group_admin?).to be_false
+  end
+
 end
