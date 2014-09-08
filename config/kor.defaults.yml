@@ -24,7 +24,7 @@ all:
     session_lifetime: 2:00:00
     publishment_lifetime: 14
     default_groups: users
-          
+
   # google_analytics:
   #   id: "12345"
   
@@ -67,21 +67,27 @@ all:
     
             
 test:
+  auth:
+    sources:
+      example_auth:
+        script: spec/fixtures/auth_script
+        map_to: example_auth 
+
   app:
     gallery:
       primary_relations: ['stellt dar']
       secondary_relations: ['wurde erschaffen von']
-    
+
     welcome_title: "Willkommen"
     welcome_text: "Dies ist eine Testinstallation"
 
     current_history_length: 5
     max_foreground_group_download_size: 10
-    
+
   maintainer:
     name: Example Organization
     mail: admin@example.net
-    
+
   dev:
     value_a: default.env
     

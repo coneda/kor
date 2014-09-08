@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+if ENV["KOR_USERNAME"] == "jdoe" && ENV["KOR_PASSWORD"] == "123456"
+  puts '{
+    "email": "jdoe@coneda.net",
+    "full_name": "John Gustav Doe"
+  }'
+else
+  exit 1
+end
