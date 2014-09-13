@@ -6,8 +6,9 @@ tmp/*
 data/*
 db/*.sqlite3
 solr/data
-solr/pids
 solr/test
+solr/development
+solr/production
 public/media
 public/plugin_assets
 
