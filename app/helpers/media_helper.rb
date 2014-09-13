@@ -107,52 +107,11 @@ module MediaHelper
       end
 
       result['video/x-flv'] = Proc.new do |entity, options|
-        url = entity.medium.content_type == 'video/x-flv' ? entity.medium.url(:original) : entity.medium.url(:flash)
-        lib = javascript_include_tag 'flowplayer.min'
-        container = link_to "", url, :style => "display:block;width:100%;height:400px;margin-top:22px;", :id => 'player'
-        player = javascript_tag "flowplayer('player', '/assets/flowplayer.swf', {
-            clip: {
-              scaling: 'fit',
-              onStart: function(clip) {
-                new_height = $('player').getWidth() / (clip.metaData.width / clip.metaData.height) + 25;
-                $('player').style.height = new_height + 'px';
-              }
-            }
-          });"
-
-        lib + container + player
+        render :partial => "video_player", :locals => {:entity => entity, :options => options}
       end
 
       result['application/x-shockwave-flash'] = Proc.new do |entity, options|
-        o = {
-          :style => "display:block;width:100%;height:400px;margin-top:22px;",
-          :class_id => "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",
-          :width => "100%",
-          :height => "400px",
-          :id => 'flowplayer'
-        }
-
-        params = {
-          :movie => "flowplayer.swf",
-          :quality => "high",
-          :bgcolor =>  '#ffffff',
-          :wmode => 'transparent',
-          :flashvars => 'config={"clip": "#{entity.medium.path(:original)}"}'
-        }
-
-        content_tag 'object', o do
-          params.map do |name, value|
-            content_tag('param', nil, :name => name, :value => value)
-          end.join +
-          content_tag('embed', nil,
-            :type => "application/x-shockwave-flash",
-            :width => '100%',
-            :height => '400px',
-            :wmode => 'transparent',
-            :src => "/plugin_assets/kor_video_player/flash/flowplayer.swf",
-            :flashvars => "config={'clip': {'scaling': 'fit', 'url': '#{entity.medium.url(:original)}'}}"
-          )
-        end
+        render :partial => "video_player", :locals => {:entity => entity, :options => options}
       end
 
       result['video'] = Proc.new do |entity, options|

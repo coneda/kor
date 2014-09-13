@@ -166,10 +166,13 @@ class Kor::Attachment
   # Configuration
   
   def self.config
-    @@config ||= YAML.load_file("#{Rails.root}/config/database.yml")[Rails.env]['mongo'].reverse_merge(
-      'host' => '127.0.0.1',
-      'port' => 27017
-    )
+    @@config ||= begin
+      from_file = YAML.load_file("#{Rails.root}/config/database.yml")[Rails.env]['mongo'] || {}
+      from_file.reverse_merge(
+        'host' => '127.0.0.1',
+        'port' => 27017
+      )
+    end
   end
   
   def self.connection(reconnect = false)

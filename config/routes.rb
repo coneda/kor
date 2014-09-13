@@ -31,7 +31,7 @@ Kor::Application.routes.draw do
   resources :tags, :only => :index
   resources :kinds do
     resources :fields, :except => 'show'
-    resources :generators, :except => 'show'
+    resources :generators
   end
   resources :relations
   resources :entities do
@@ -50,7 +50,7 @@ Kor::Application.routes.draw do
       get 'other_collection'
     end
   end
-  resources :relationships, :except => [:index, :show]  
+  resources :relationships, :except => [:index]
   resources :collections do
     collection do
       get 'edit_personal'

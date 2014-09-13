@@ -64,7 +64,7 @@ class Kor::Blaze
       end
 
       if existing
-
+        existing[:amount] += result[:amount]
       else
         reduced_results << result
       end

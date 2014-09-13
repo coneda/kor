@@ -216,5 +216,5 @@ When /^I click on the player link$/ do
 end
 
 Then /^I should see the video player$/ do
-  page.should have_selector('#player')
+  page.should have_selector('.video-js')
 end

@@ -10,6 +10,11 @@ class GeneratorsController < ApplicationController
   def index
     
   end
+
+  def show
+    @generator = Generator.find(params[:id])
+    render :inline => @generator.directive
+  end
   
   def new
     @generator = Generator.new(params[:generator])
@@ -51,7 +56,7 @@ class GeneratorsController < ApplicationController
   
   protected
     def generally_authorized?
-      current_user.kind_admin?
+      current_user.kind_admin? || (action_name == 'show')
     end
   
 end

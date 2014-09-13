@@ -4,7 +4,8 @@
 //= require modules/vendor/swfobject
 //= require modules/vendor/jquery.uploadify.v2.1.4.min
 //= require jquery_ujs
-//= require angular.min
+//= require angular
+//= require angular-route
 
 //= require modules/web-utils
 
@@ -14,3 +15,4 @@
 //= require modules/old/attachments
 //= require modules/old/tagging
 //= require modules/boot
+//= require_tree ./modules/blaze

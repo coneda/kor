@@ -1,0 +1,5 @@
+kor.service('korFlash', [ ->
+  service = {
+
+  }
+])

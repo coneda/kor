@@ -6,7 +6,9 @@ tmp/*
 data/*
 db/*.sqlite3
 solr/data
-solr/pids
+solr/test
+solr/development
+solr/production
 public/media
 public/plugin_assets
 
@@ -35,3 +37,8 @@ chromedriver.log
 deploy/build
 db/*.sqlite3
 .yardoc
+
+
+# Deployment
+
+deploy.config.sh

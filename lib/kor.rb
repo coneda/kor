@@ -235,7 +235,7 @@ module Kor
 
   # ---------------------------------------------------------------- plugins ---
   def self.plugin_installed?(name)
-    File.exists?("#{Rails.root}/vendor/plugins/#{name}")
+    File.exists?("#{Rails.root}/plugins/#{name}")
   end
 
   def self.plugin_installed(name)

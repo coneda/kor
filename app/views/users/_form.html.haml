@@ -29,6 +29,10 @@
       = I18n.t('verbs.expires_after_days', :days => f.text_field(:custom_extension, :style => 'width: 40px;') ).html_safe
 
   .hr
+
+  = f.kor_input :parent_username
+
+  .hr
   
   = f.kor_input :groups, :control => f.collection_select(:group_ids,
       Credential.non_personal.ordered, :id, :name,

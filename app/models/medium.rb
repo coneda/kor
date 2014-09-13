@@ -1,7 +1,6 @@
 class Medium < ActiveRecord::Base
 
   DelayedPaperclip::Railtie.insert
-#  include DelayedPaperclip::Glue
   
   has_one :entity
 

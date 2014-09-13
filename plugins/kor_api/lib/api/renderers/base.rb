@@ -26,7 +26,7 @@ class Api::Renderers::Base
     options.reverse_merge!(:indent => 2)
   
     if not @builder or options[:force]
-      @builder = Builder::XmlMarkup.new(options)
+      @builder = ::Builder::XmlMarkup.new(options)
       @builder.instruct! if options[:instruct]
     end
     

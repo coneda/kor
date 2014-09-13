@@ -5,30 +5,54 @@ class Media::VideoProber
   end
   
   def probe
-    `ffprobe -show_streams -show_format #{@file} 2> /dev/null`
-  end
-  
-  def streams
-    @streams ||= begin
-      results = []
-    
-      current = nil
-      
-      probe.split("\n").to_a.map{|l| l.strip}.each do |line|
-        if line == '[STREAM]' || line == '[FORMAT]'
-          current = {}
-        elsif line == '[/STREAM]' || line == '[/FORMAT]'
-          results << current
-        else
-          k, v = line.split('=')
-          current[k.to_sym] = v
-        end
-      end
-      
-      results
+    if executable == "avprobe"
+      `avprobe -show_streams -show_format #{@file} 2> /dev/null`
+    else
+      `ffprobe -show_streams -show_format #{@file} 2> /dev/null`
     end
   end
   
+  def streams
+    @streams ||= (executable == "avprobe" ? streams_avprobe : streams_ffmpeg)
+  end
+
+  def streams_ffmpeg
+    results = []
+  
+    current = nil
+    
+    probe.split("\n").to_a.map{|l| l.strip}.each do |line|
+      if line == '[STREAM]' || line == '[FORMAT]'
+        current = {}
+      elsif line == '[/STREAM]' || line == '[/FORMAT]'
+        results << current
+      else
+        k, v = line.split('=')
+        current[k.to_sym] = v
+      end
+    end
+    
+    results
+  end
+
+  def streams_avprobe
+    results = []
+  
+    current = {}
+    
+    probe.split("\n").to_a.map{|l| l.strip}.each do |line|
+      if m = line.match(/^\[[a-z\.0-9]+\]$/)
+        results << current
+        current = {}
+      else
+        k, v = line.split("=")
+        current[(k || "none").to_sym] = v
+      end
+    end
+
+    results
+  end
+
   def video_stream
     @video_stream ||= if video_streams.size == 0
       raise Media::ProcessorException, "there are no video streams"
@@ -123,6 +147,14 @@ class Media::VideoProber
   
   def video_streams
     streams.select{|s| s[:codec_type] == 'video'}
+  end
+
+  def executable
+    if system("which avprobe > /dev/null 2> /dev/null")
+      "avprobe"
+    else
+      "ffprobe"
+    end
   end
   
 end

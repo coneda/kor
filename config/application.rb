@@ -12,7 +12,6 @@ end
 $: << File.expand_path(File.dirname(__FILE__) + "/../lib")
 require 'kor'
 require 'kor/config'
-require 'flash_session'
 
 module Kor
   class Application < Rails::Application
@@ -28,9 +27,6 @@ module Kor
 #    config.autoload_paths += Dir["#{Rails.root}/lib/**/"]
     config.autoload_paths += Dir["#{Rails.root}/middleware/*"]
     
-    # Plugins
-    # config.plugins = Kor.plugin_load_order
-    
     # Force all environments to use the same logger level
     # (by default production uses :info, the others :debug)
     # config.log_level = :debug
@@ -41,15 +37,7 @@ module Kor
     config.time_zone = 'Berlin'
     config.active_record.default_timezone = :utc
   
-    config.middleware.insert_before ActionDispatch::Cookies, FlashSession
-    config.middleware.use "FlashUploadMimeFix"
-    
     File.umask Kor.config['umask']
-  
-    # config.active_record.schema_format = :sql
-  
-    # Activate observers that should always be running
-    # config.active_record.observers = :cacher, :garbage_collector
   
     config.assets.enabled = true
   

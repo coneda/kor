@@ -783,6 +783,7 @@ en:
         create: allow these groups to create
         view_meta: allow these groups to display the master file data
       user:
+        parent_username: inherit permissions from
         personal: personal collection
         username: user name
         name: user name
@@ -943,7 +944,8 @@ en:
         stale_relationship_update: "The link has been edited meanwhile. Please find the new values below"
         needs_medium: "Without a relevant file the entity cannot be created as a medium"
         needs_file: "Without a relevant file the entity cannot be created as a medium"
-        invalid_words: "cannot contain words longer than 30 characters "
+        invalid_words: "cannot contain words longer than 30 characters"
+        user_doesnt_exist: "the user doesn't exist"
   
 
   # Mime types

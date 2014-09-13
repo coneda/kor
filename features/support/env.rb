@@ -32,8 +32,9 @@ Before do |scenario|
   system "rm #{file}" if File.exists?(file)
 
   if scenario.source_tags.any?{|st| st.name == "@solr"}
-    unless File.exists?("#{Rails.root}/tmp/pids/sunspot-solr-#{Rails.env}.pid")
+    unless File.exists?("#{Rails.root}/solr/test/pids/sunspot-solr-test.pid")
       system "bash -c \"RAILS_ENV=test bundle exec rake sunspot:solr:start\""
+      sleep 5
     end
   else
     RSolr::Connection.any_instance.stub(:execute)
