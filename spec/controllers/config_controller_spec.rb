@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ConfigController, :solr => true do
+describe ConfigController do
   include DataHelper
 
   before :each do

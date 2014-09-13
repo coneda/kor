@@ -94,8 +94,8 @@ Feature: Tag search
     And I select "alle" from "kind_id"
     And I fill in "search_terms" with "Landschaft" and select term "Landschaft"
     And I fill in "search_terms" with "Waldmeister" and select term "Waldmeister"
-    Then I should not see "Landschaft" within ".entity_list"
-    And I should not see "Hans" within ".entity_list"
+    Then I should see "Landschaft" within ".entity_list"
+    And I should see "Hans" within ".entity_list"
     
     When I click on ".submit input.reset"
     And I select "alle" from "kind_id"

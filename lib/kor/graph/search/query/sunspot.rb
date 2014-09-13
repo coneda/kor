@@ -45,7 +45,7 @@ class Kor::Graph::Search::Query::Sunspot < Kor::Graph::Search::Query::Base
 
       terms = criteria[:terms].map do |t|
         result = t.gsub /(^.\s+)|(\s+.\s+)|(\s+.$)/, ''
-        "+#{result}"
+        "+*\"#{result}\"*"
       end
 
       terms = terms.map! do |t|

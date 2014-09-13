@@ -1,10 +1,10 @@
 all:
-  
+
   host:
     protocol: http
     host: example.com
     port: 80
-  
+
   app:
     welcome_title: "*This text can be configured via the general settings*"
     welcome_text: "*This text can be configured via the general settings*"
@@ -13,25 +13,25 @@ all:
     use_blaze: true
     max_file_upload_size: "100"
     source_code_url: "http://download.coneda.net/releases/coneda-kor.v{{version}}.tar.gz"
-    
+
   maintainer:
     name: Example Organization
     mail: "admin@example.com"
     legal_text: Beispieltext
     about_text: Beispieltext
-  
+
   auth:
     session_lifetime: 2:00:00
     publishment_lifetime: 14
-    default_groups: users
+    default_groups: []
 
   # google_analytics:
   #   id: "12345"
-  
+
   # piwik:
   #   url: "https://analytics.example.com"
   #   id: "1"
-    
+
   mail:
     host: 127.0.0.1
     port: 25
@@ -47,7 +47,7 @@ all:
 
   cache_dir: tmp/cache
   tmp_dir: tmp/kor
-    
+
   kind_settings:
     defaults:
       dating_label: Datierung
@@ -57,15 +57,15 @@ all:
   limits:
     max_file_upload_size: 30
     max_download_group_size: 80
-  
+
   search:
     entity_name: "Name / Titel / UUID"
-    
+
   dev:
     value_a: default.all
     value_b: default.all
-    
-            
+
+
 test:
   auth:
     sources:
@@ -90,7 +90,7 @@ test:
 
   dev:
     value_a: default.env
-    
+
   meta_data_profiles:
     simple:
       -
