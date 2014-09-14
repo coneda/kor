@@ -170,6 +170,14 @@ class User < ActiveRecord::Base
       key = "#{ag}admin".to_sym
       self[key] || (self.parent.present? && self.parent[key])
     end
+
+    define_method "#{ag}admin=".to_sym do |value|
+      if parent.present? && parent.send("#{ag}admin".to_sym) == !!value
+        self["#{ag}admin".to_sym] = nil
+      else
+        super value
+      end
+    end
   end
   
   def self.guest
@@ -291,6 +299,14 @@ class User < ActiveRecord::Base
 
   def active?
     active
+  end
+
+  def active=(value)
+    if parent.present? && parent.active == !!value
+      self[:active] = nil
+    else
+      super
+    end
   end
 
   def expires_at

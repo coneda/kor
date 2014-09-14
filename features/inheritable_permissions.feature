@@ -29,3 +29,40 @@ Feature: Inheritable permissions
     And I re-login as "hmustermann"
     And "Einstellungen" is expanded
     Then I should see "Relationen"
+
+
+  @javascript
+  Scenario: Inherit permissions, save the user and continue inheriting the value
+    Given I am logged in as "admin"
+    When I go to the users page
+    And I follow "Plus"
+    And I fill in "user[name]" with "jdoe"
+    And I fill in "user[email]" with "jdoe@coneda.net"
+    And I check "user[relation_admin]"
+    And I check "user[active]"
+    And I choose "user_extension_7"
+    And I press "Erstellen"
+    And I follow "Plus"
+    And I fill in "user[full_name]" with "Hans Mustermann"
+    And I fill in "user[name]" with "hmustermann"
+    And I fill in "user[email]" with "hmustermann@coneda.net"
+    And I fill in "user[parent_username]" with "jdoe"
+    And I press "Erstellen"
+
+    Then user "hmustermann@coneda.net" should be active
+    And user "hmustermann@coneda.net" should have the role "relation_admin"
+    And user "hmustermann@coneda.net" should expire at "7.days.from_now"
+
+    When I go to the users page
+    And I follow "Pen" within the row for "user" "hmustermann"
+    And I press "Speichern"
+    And I go to the users page
+    And I follow "Pen" within the row for "user" "jdoe"
+    And I uncheck "user[relation_admin]"
+    And I uncheck "user[active]"
+    And I choose "user_extension_never"
+    And I press "Speichern"
+
+    Then user "hmustermann@coneda.net" should not be active
+    And user "hmustermann@coneda.net" should not have the role "relation_admin"
+    And user "hmustermann@coneda.net" should not expire
