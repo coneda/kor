@@ -5,7 +5,7 @@ module Auth::Authentication
     return true if user
 
     (Kor.config["auth.sources"] || []).each do |method, c|
-      data = `KOR_USERNAME=#{username} KOR_PASSWORD=#{password} #{c["script"]}`
+      data = `sh -c 'KOR_USERNAME=#{username} KOR_PASSWORD=#{password} #{c["script"]}'`
       status = $?.exitstatus
       if status == 0
         return JSON.parse(data).merge(

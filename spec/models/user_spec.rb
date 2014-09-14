@@ -83,4 +83,29 @@ describe User do
     expect(hmustermann.authority_group_admin?).to be_false
   end
 
+  it "should respect inherited activation status" do
+    jdoe = FactoryGirl.create :jdoe, :active => true
+    hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe
+    expect(hmustermann.reload.active).to be_true
+
+    jdoe.update_attributes :active => false
+    expect(hmustermann.reload.active).to be_false
+
+    hmustermann.update_attributes :active => true
+    expect(hmustermann.reload.active).to be_true
+  end
+
+  it "should respect inherited expiry" do
+    time = 2.weeks.from_now
+    time = time.change :usec => 0
+    jdoe = FactoryGirl.create :jdoe, :expires_at => time
+    hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe
+    expect(hmustermann.reload.expires_at).to eq(time)
+
+    time = 3.weeks.from_now
+    time = time.change :usec => 0
+    hmustermann.update_attributes :expires_at => time
+    expect(hmustermann.reload.expires_at).to eq(time)
+  end
+
 end

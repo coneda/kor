@@ -9,12 +9,16 @@
 
 # Settings
 
-./deploy.config.sh
+. ./deploy.config.sh
 
 # Deploy
 
 function deploy {
   setup
+
+  within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop"
+  within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec rake sunspot:solr:stop"
+
   deploy_code
   cleanup
 
@@ -28,11 +32,11 @@ function deploy {
   remote "ln -sfn $SHARED_PATH/log $CURRENT_PATH/log"
   remote "ln -sfn $SHARED_PATH/tmp $CURRENT_PATH/tmp"
   remote "ln -sfn $SHARED_PATH/data $CURRENT_PATH/data"
+  remote "ln -sfn $SHARED_PATH/kor.yml $CURRENT_PATH/config/kor.yml"
 
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake db:migrate"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake assets:precompile"
-  within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake sunspot:solr:stop sunspot:solr:start"
-  within_do $CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop"
+  within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake sunspot:solr:start"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job start"
 
   remote "touch $CURRENT_PATH/tmp/restart.txt"
@@ -46,6 +50,8 @@ function deploy {
 TIMESTAMP=`date +"%Y%m%d%H%M%S"`
 CURRENT_PATH="$DEPLOY_TO/releases/$TIMESTAMP"
 SHARED_PATH="$DEPLOY_TO/shared"
+OLD_CURRENT_PATH="$DEPLOY_TO/current"
+REVISION=`git rev-parse $COMMIT`
 
 RED="\e[0;31m"
 GREEN="\e[0;32m"
@@ -94,6 +100,7 @@ function deploy_code {
 
   remote "mkdir $CURRENT_PATH"
   within_do $CURRENT_PATH "tar xzf ../../deploy.tar.gz"
+  remote "echo $REVISION > $CURRENT_PATH/REVISION"
   remote "rm $DEPLOY_TO/deploy.tar.gz"
   remote "ln -sfn $CURRENT_PATH $DEPLOY_TO/current"
 }

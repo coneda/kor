@@ -276,5 +276,27 @@ class User < ActiveRecord::Base
   def User.password_hash_function(password)
     Digest::SHA1::hexdigest(password)
   end
+
+  def active
+    if self[:active] != nil
+      self[:active]
+    else
+      if parent.present?
+        parent.active
+      else
+        true
+      end
+    end
+  end
+
+  def active?
+    active
+  end
+
+  def expires_at
+    self[:expires_at] || if parent.present?
+      parent[:expires_at]
+    end
+  end
   
 end
