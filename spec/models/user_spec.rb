@@ -2,6 +2,20 @@ require 'spec_helper'
 
 describe User do
 
+  it "should not allow special charactors within the name" do
+    user = User.new :name => "test 01"
+    user.valid?
+    expect(user.errors[:name]).not_to be_empty
+
+    user = User.new :name => "test,01"
+    user.valid?
+    expect(user.errors[:name]).not_to be_empty
+
+    user.name = "test_01"
+    user.valid?
+    expect(user.errors[:name]).to be_empty
+  end
+
   it "should save the plain password in memory" do
     User.new(:password => 'secret').plain_password.should eql("secret")
   end
