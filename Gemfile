@@ -37,6 +37,7 @@ gem "sunspot_solr"
 
 gem 'json'
 gem 'builder'
+gem 'net-ldap'
 
 group :assets do
   gem "therubyracer"

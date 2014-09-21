@@ -2,9 +2,13 @@ require "spec_helper"
 
 describe Auth::Authentication do
 
+  before :each do
+    FactoryGirl.create :ldap_template
+  end
+
   it "should create users when they don't exist" do
     expect(User).to receive(:generate_password).exactly(:once)
-    user = described_class.authorize("jdoe")
+    user = described_class.authorize "jdoe", "email" => "jdoe@coneda.net"
 
     expect(user.name).to eq("jdoe")
   end
@@ -15,8 +19,17 @@ describe Auth::Authentication do
     expect(described_class.login "jdoe", "wrong").to be_false
     expect(described_class.login "jdoe", "123456").to be_true
 
-    expect(User.count).to eq(2)
-    expect(User.last.parent_username).to eq("example_auth")
+    expect(User.count).to eq(3)
+    expect(User.last.parent_username).to eq("ldap")
+  end
+
+  it "should escape double quotes in username and password" do
+    expect(described_class.login "\" echo 'bla' #", "123456").to be_false
+  end
+
+  it "should pass passwords with special characters to external auth scripts" do
+    user = described_class.login "cangoin", "$0.\/@#"
+    expect(user.name).to eq("cangoin")
   end
 
 end
