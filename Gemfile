@@ -1,4 +1,4 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 gem 'rails', '3.2.17'
 
@@ -30,7 +30,7 @@ gem 'kor_index', :path => './plugins/kor_index'
 gem "sprockets"
 gem "jquery-rails", "~> 2.2.1"
 
-gem 'awesome_nested_set', :git => 'http://github.com/galetahub/awesome_nested_set.git'
+gem 'awesome_nested_set', :git => 'https://github.com/galetahub/awesome_nested_set.git'
 
 gem "sunspot_rails"
 gem "sunspot_solr"

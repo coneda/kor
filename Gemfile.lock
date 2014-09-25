@@ -1,6 +1,6 @@
 GIT
-  remote: http://github.com/galetahub/awesome_nested_set.git
-  revision: 6c98d59faf3a9de4dc62ba2e34059189cd4799d4
+  remote: https://github.com/galetahub/awesome_nested_set.git
+  revision: e24ff8b4f0e7e7b707e1850d832b7f91584869af
   specs:
     awesome_nested_set (1.5.0)
       activerecord (>= 3.0.0)
@@ -18,7 +18,7 @@ PATH
       rails (~> 3.2.8)
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     RedCloth (4.2.9)
     actionmailer (3.2.17)
