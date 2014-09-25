@@ -66,3 +66,7 @@ group :test, :development do
   gem 'debugger', :platforms => [:ruby_19, :ruby_20]
   gem 'rcov', :platforms => [:ruby_18]
 end
+
+group :production do
+  gem 'puma'
+end
