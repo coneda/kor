@@ -9,7 +9,7 @@
 
 # Settings
 
-. ./deploy.config.sh
+. ./deploy.config.sh $1
 
 # Deploy
 
@@ -33,6 +33,7 @@ function deploy {
   remote "ln -sfn $SHARED_PATH/tmp $CURRENT_PATH/tmp"
   remote "ln -sfn $SHARED_PATH/data $CURRENT_PATH/data"
   remote "ln -sfn $SHARED_PATH/kor.yml $CURRENT_PATH/config/kor.yml"
+  remote "ln -sfn $SHARED_PATH/kor.app.yml $CURRENT_PATH/config/kor.app.yml"
 
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake db:migrate"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake assets:precompile"
