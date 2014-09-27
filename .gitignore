@@ -5,10 +5,7 @@ log/*
 tmp/*
 data/*
 db/*.sqlite3
-solr/data
-solr/test
-solr/development
-solr/production
+solr
 public/media
 public/plugin_assets
 
@@ -42,3 +39,4 @@ db/*.sqlite3
 # Deployment
 
 deploy.config.sh
+.vagrant

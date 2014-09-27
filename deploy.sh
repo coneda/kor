@@ -28,6 +28,7 @@ function deploy {
   remote "ln -sfn $SHARED_PATH/log $CURRENT_PATH/log"
   remote "ln -sfn $SHARED_PATH/tmp $CURRENT_PATH/tmp"
   remote "ln -sfn $SHARED_PATH/data $CURRENT_PATH/data"
+  remote "ln -sfn $SHARED_PATH/solr $CURRENT_PATH/solr"
 
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake db:migrate"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake assets:precompile"

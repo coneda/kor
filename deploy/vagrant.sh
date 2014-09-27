@@ -12,7 +12,7 @@ function install_standalone {
   apt-get update
   apt-get install -y mysql-server mongodb-10gen
 
-  cat /vagrant/deploy/set_mysql_user.sql | mysql -u root -proot
+  echo "GRANT ALL ON kor.* TO 'kor'@'localhost' IDENTIFIED BY 'kor';" | mysql -u root -proot
 }
 
 function install_requirements {
@@ -26,7 +26,13 @@ function install_deb {
   export DEB_FILENAME="coneda-kor.v$VERSION.deb"
   
   dpkg -i /vagrant/deploy/build/$DEB_FILENAME
-  sh /vagrant/deploy/post-install.sh
+ 
+  su -c "cd /opt/kor/current ; RAILS_ENV=production bundle exec rake db:setup" kor
+  su -c "cd /opt/kor/current ; bundle exec rake assets:precompile" kor
+  su -c "touch /opt/kor/current/tmp/restart.txt" kor
+
+  /etc/init.d/sunspot start
+  /etc/init.d/delayed_job start
 }
 
 function appliance {
@@ -46,6 +52,14 @@ function appliance {
     --output $OVA_FILENAME
 
   chmod 644 $OVA_FILENAME
+}
+
+function checksums {
+  cd deploy/build
+
+  for FILE in `find . -type f -not -iname "*.md5"` ; do
+    md5sum $FILE > $FILE.md5
+  done   
 }
 
 $1
