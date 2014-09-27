@@ -14,7 +14,7 @@ describe UsersController do
   end
   
   it "should allow non user admins to change their profile" do
-    john = User.make
+    john = FactoryGirl.create :jdoe
     session[:user_id] = john.id
   
     put :update_self, :user => {:home_page => '/entities/gallery'}
