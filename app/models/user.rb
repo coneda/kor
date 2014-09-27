@@ -21,6 +21,7 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :email, :allow_blank => false
   validates_presence_of :name
   validates_presence_of :email
+  validates_format_of :name, :allow_blank => true, :with => /\A[a-zA-Z0-9_]+\Z/
   validates_format_of :email, :allow_blank => true, :with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i
   validates_format_of :plain_password, :allow_nil => true, :with => /\A(.{5,30})|\Z/
   validates_confirmation_of :plain_password
@@ -170,6 +171,14 @@ class User < ActiveRecord::Base
       key = "#{ag}admin".to_sym
       self[key] || (self.parent.present? && self.parent[key])
     end
+
+    define_method "#{ag}admin=".to_sym do |value|
+      if parent.present? && parent.send("#{ag}admin".to_sym) == !!value
+        self["#{ag}admin".to_sym] = nil
+      else
+        super value
+      end
+    end
   end
   
   def self.guest
@@ -275,6 +284,36 @@ class User < ActiveRecord::Base
 
   def User.password_hash_function(password)
     Digest::SHA1::hexdigest(password)
+  end
+
+  def active
+    if self[:active] != nil
+      self[:active]
+    else
+      if parent.present?
+        parent.active
+      else
+        true
+      end
+    end
+  end
+
+  def active?
+    active
+  end
+
+  def active=(value)
+    if parent.present? && parent.active == !!value
+      self[:active] = nil
+    else
+      super
+    end
+  end
+
+  def expires_at
+    self[:expires_at] || if parent.present?
+      parent[:expires_at]
+    end
   end
   
 end

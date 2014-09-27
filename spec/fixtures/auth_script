@@ -1,6 +1,20 @@
 #!/usr/bin/env ruby
 
-if ENV["KOR_USERNAME"] == "jdoe" && ENV["KOR_PASSWORD"] == "123456"
+STDERR.puts ENV["KOR_USERNAME_FILE"].inspect
+STDERR.puts ENV["KOR_PASSWORD_FILE"].inspect
+
+username = File.read(ENV["KOR_USERNAME_FILE"])
+password = File.read(ENV["KOR_PASSWORD_FILE"])
+
+STDERR.puts username.inspect
+STDERR.puts password.inspect
+
+if username == "jdoe" && password == "123456"
+  puts '{
+    "email": "jdoe@coneda.net",
+    "full_name": "John Gustav Doe"
+  }'
+elsif password == "$0.\/@#"
   puts '{
     "email": "jdoe@coneda.net",
     "full_name": "John Gustav Doe"

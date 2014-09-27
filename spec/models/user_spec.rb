@@ -2,6 +2,20 @@ require 'spec_helper'
 
 describe User do
 
+  it "should not allow special charactors within the name" do
+    user = User.new :name => "test 01"
+    user.valid?
+    expect(user.errors[:name]).not_to be_empty
+
+    user = User.new :name => "test,01"
+    user.valid?
+    expect(user.errors[:name]).not_to be_empty
+
+    user.name = "test_01"
+    user.valid?
+    expect(user.errors[:name]).to be_empty
+  end
+
   it "should save the plain password in memory" do
     User.new(:password => 'secret').plain_password.should eql("secret")
   end
@@ -81,6 +95,31 @@ describe User do
     expect(hmustermann.credential_admin?).to be_false
     expect(hmustermann.relation_admin?).to be_true
     expect(hmustermann.authority_group_admin?).to be_false
+  end
+
+  it "should respect inherited activation status" do
+    jdoe = FactoryGirl.create :jdoe, :active => true
+    hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe
+    expect(hmustermann.reload.active).to be_true
+
+    jdoe.update_attributes :active => false
+    expect(hmustermann.reload.active).to be_false
+
+    hmustermann.update_attributes :active => true
+    expect(hmustermann.reload.active).to be_true
+  end
+
+  it "should respect inherited expiry" do
+    time = 2.weeks.from_now
+    time = time.change :usec => 0
+    jdoe = FactoryGirl.create :jdoe, :expires_at => time
+    hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe
+    expect(hmustermann.reload.expires_at).to eq(time)
+
+    time = 3.weeks.from_now
+    time = time.change :usec => 0
+    hmustermann.update_attributes :expires_at => time
+    expect(hmustermann.reload.expires_at).to eq(time)
   end
 
 end

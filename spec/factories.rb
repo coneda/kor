@@ -76,6 +76,13 @@ FactoryGirl.define do
       
       rating_admin true
     end
+
+    factory :ldap_template do
+      email 'ldap@coneda.net'
+      name 'ldap'
+      full_name 'LDAP template user'
+      password 'ldap'
+    end
   end
 
   factory :credential do

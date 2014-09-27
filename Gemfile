@@ -1,4 +1,4 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 gem 'rails', '3.2.17'
 
@@ -30,13 +30,14 @@ gem 'kor_index', :path => './plugins/kor_index'
 gem "sprockets"
 gem "jquery-rails", "~> 2.2.1"
 
-gem 'awesome_nested_set', :git => 'http://github.com/galetahub/awesome_nested_set.git'
+gem 'awesome_nested_set', :git => 'https://github.com/galetahub/awesome_nested_set.git'
 
 gem "sunspot_rails"
 gem "sunspot_solr"
 
 gem 'json'
 gem 'builder'
+gem 'net-ldap'
 
 group :assets do
   gem "therubyracer"
@@ -64,4 +65,8 @@ group :test, :development do
   gem 'ruby-debug', :platforms => [:ruby_18]
   gem 'debugger', :platforms => [:ruby_19, :ruby_20]
   gem 'rcov', :platforms => [:ruby_18]
+end
+
+group :production do
+  gem 'puma'
 end

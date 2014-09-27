@@ -428,3 +428,32 @@ Given(/^kind "(.*?)" has web service "(.*?)"$/) do |kind_name, web_service_name|
   kind.settings[:web_services] << web_service_name
   kind.save
 end
+
+Then(/^user "(.*?)" should (not )?be active$/) do |email, n|
+  user = User.where(:email => email).first
+  if n == "not "
+    expect(user.active).to be_false
+  else
+    expect(user.active).to be_true
+  end
+end
+
+Then(/^user "(.*?)" should (not )?have the role "(.*?)"$/) do |email, n, role|
+  user = User.where(:email => email).first
+  if n == "not "
+    expect(user.send role.to_sym).to be_false
+  else
+    expect(user.send role.to_sym).to be_true
+  end
+end
+
+Then(/^user "(.*?)" should expire at "(.*?)"$/) do |email, time_str|
+  user = User.where(:email => email).first
+  time = eval(time_str)
+  expect(user.expires_at).to be_within(1.minute).of(time)
+end
+
+Then(/^user "(.*?)" should not expire$/) do |email|
+  expect(User.where(:email => email).first.expires_at).to be_nil
+end
+

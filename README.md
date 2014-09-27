@@ -8,7 +8,7 @@ domains.
 ## Installation
 
 Please refer to
-[our website](http://coneda.net/pages/download)
+[our website (German)](http://coneda.net/pages/download)
 
 
 ## License

@@ -71,7 +71,7 @@ test:
     sources:
       example_auth:
         script: spec/fixtures/auth_script
-        map_to: example_auth 
+        map_to: ldap
 
   app:
     gallery:

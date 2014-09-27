@@ -1,16 +1,28 @@
+require "tmpdir"
+
 module Auth::Authentication
 
   def self.authenticate(username, password)
     user = User.authenticate username, password
     return true if user
 
-    (Kor.config["auth.sources"] || []).each do |method, c|
-      data = `KOR_USERNAME=#{username} KOR_PASSWORD=#{password} #{c["script"]}`
-      status = $?.exitstatus
-      if status == 0
-        return JSON.parse(data).merge(
-          :parent_username => c["map_to"]
-        )
+    Dir.mktmpdir do |dir|
+      File.open "#{dir}/username.txt", "w" do |f|
+        f.write username
+      end
+      File.open "#{dir}/password.txt", "w" do |f|
+        f.write password
+      end
+
+      (Kor.config["auth.sources"] || []).each do |method, c|
+        command = "bash -c \"KOR_USERNAME_FILE=#{dir}/username.txt KOR_PASSWORD_FILE=#{dir}/password.txt #{c["script"]}\""
+        data = `#{command} 2> /dev/null`
+        status = $?.exitstatus
+        if status == 0
+          return JSON.parse(data).merge(
+            :parent_username => c["map_to"]
+          )
+        end
       end
     end
 
@@ -23,12 +35,14 @@ module Auth::Authentication
     )
 
     if additional_attributes.is_a?(Hash)
-      user.update_attributes additional_attributes
-    else
-      user.save
+      user.assign_attributes additional_attributes
     end
 
-    user
+    if user.save
+      user
+    else
+      nil
+    end
   end
   
   def self.login(username, password)
