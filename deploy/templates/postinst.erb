@@ -23,8 +23,6 @@ if ! [ -e /etc/apache2/sites-enabled/kor ] ; then
 fi
 
 mkdir -p /opt/kor/shared
-cp /opt/kor/current/config/sunspot.yml.example /opt/kor/shared/sunspot.yml
-
 chown -R kor. /opt/kor/shared /opt/kor/current
 
 cd /opt/kor/current

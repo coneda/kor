@@ -39,7 +39,7 @@ function appliance {
   export VERSION=`cat config/version.txt`
   export OVA_FILENAME="deploy/build/coneda-kor.v$VERSION.ova"
 
-  vagrant halt
+  vagrant halt kor
 
   VBoxManage export kor \
     --vsys 0 \

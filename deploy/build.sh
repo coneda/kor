@@ -4,13 +4,13 @@
 deploy/debian.rb
 
 # Set up vm
-vagrant up
+vagrant up kor
 
 # Extract appliance
 deploy/vagrant.sh appliance
 
 # Tear down vm
-vagrant destroy -f
+vagrant destroy kor -f
 
 # Calculate md5 checksums
 deploy/vagrant.sh checksums
