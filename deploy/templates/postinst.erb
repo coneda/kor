@@ -23,6 +23,8 @@ if ! [ -e /etc/apache2/sites-enabled/kor ] ; then
 fi
 
 mkdir -p /opt/kor/shared
+cp /opt/kor/current/config/sunspot.yml.example /opt/kor/shared/sunspot.yml
+
 chown -R kor. /opt/kor/shared /opt/kor/current
 
 cd /opt/kor/current
@@ -30,6 +32,6 @@ echo "Installing gems with bundler (this may take a few minutes) ..."
 su -c "bundle install --path /opt/kor/shared/bundle --quiet --without development test" kor
 
 su -c "ln -sfn /opt/kor/shared/database.yml /opt/kor/current/config/database.yml" kor
+su -c "ln -sfn /opt/kor/shared/sunspot.yml /opt/kor/current/config/sunspot.yml" kor
 su -c "ln -sfn /opt/kor/shared/log /opt/kor/current/log" kor
 su -c "ln -sfn /opt/kor/shared/data /opt/kor/current/data" kor
-su -c "ln -sfn /opt/kor/shared/solr /opt/kor/current/solr" kor

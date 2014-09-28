@@ -60,7 +60,8 @@ class DebianBuilder
       {:tpl => "sunspot", :path => "/etc/init.d/sunspot"},
       {:tpl => "gemrc", :path => "/etc/gemrc"},
       {:tpl => "logrotate", :path => "/etc/logrotate.d/kor"},
-      {:tpl => "cron", :path => "/etc/cron.d/kor"}
+      {:tpl => "cron", :path => "/etc/cron.d/kor"},
+      {:tpl => "sunspot.yml", :path => "/opt/kor/shared/sunspot.yml"}
     ]
   end
 
