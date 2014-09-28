@@ -41,6 +41,8 @@ function appliance {
 
   vagrant halt kor
 
+  VBoxManage sharedfolder remove "kor" --name "vagrant"
+
   VBoxManage export kor \
     --vsys 0 \
     --product "ConedaKOR" \
