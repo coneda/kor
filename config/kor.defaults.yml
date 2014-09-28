@@ -67,6 +67,8 @@ all:
 
 
 test:
+  locale: de
+
   auth:
     sources:
       example_auth:
