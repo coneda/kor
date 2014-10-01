@@ -127,6 +127,10 @@ class Kor::CommandLine
         exif_stats
       end
 
+      if @command == "to-neo4j"
+        to_neo4j
+      end
+
       if @command.nil?
         usage
       end
@@ -237,6 +241,18 @@ class Kor::CommandLine
   def exif_stats
     require "exifr"
     Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
+  end
+
+  def to_neo4j
+    graph = Kor::NeoGraph.new(User.admin)
+    graph.reset!
+
+    Relationship.includes(:from, :to, :relation).limit(100).find_each do |r|
+      p "now #{Time.now} #{r.id}"
+      if !r.to.is_medium? && !r.from.is_medium?
+        graph.create r
+      end
+    end    
   end
 
 end

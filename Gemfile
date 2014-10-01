@@ -16,7 +16,6 @@ gem "parslet"
 gem "exifr", '1.1.1'
 gem "haml"
 gem "sass"
-gem 'httpclient'
 gem 'acts-as-taggable-on', '~> 2.2.2'
 gem 'system_timer', :platforms => [:ruby_18]
 
@@ -34,6 +33,8 @@ gem 'awesome_nested_set', :git => 'https://github.com/galetahub/awesome_nested_s
 
 gem 'oj'
 gem 'jbuilder'
+
+gem 'httpclient'
 
 group :assets do
   gem "therubyracer"
