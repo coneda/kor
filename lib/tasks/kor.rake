@@ -1,5 +1,18 @@
 namespace :kor do
 
+  task :to_neo => :environment do
+    graph = Kor::NeoGraph.new(User.admin)
+
+    graph.reset!
+
+    Relationship.includes(:from, :to, :relation).limit(100).find_each do |r|
+      p "now #{Time.now} #{r.id}"
+      if !r.to.is_medium? && !r.from.is_medium?
+        graph.create r
+      end
+    end
+  end
+
   task :reprocess_images => :environment do
     num = Medium.count
     left = num
