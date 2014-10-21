@@ -1,9 +1,7 @@
 #!/bin/bash
 
-chmod +x /etc/init.d/sunspot
 chmod +x /etc/init.d/delayed_job
 
-update-rc.d sunspot defaults
 update-rc.d delayed_job defaults
 
 useradd -m -s /bin/bash kor
@@ -30,6 +28,5 @@ echo "Installing gems with bundler (this may take a few minutes) ..."
 su -c "bundle install --path /opt/kor/shared/bundle --quiet --without development test" kor
 
 su -c "ln -sfn /opt/kor/shared/database.yml /opt/kor/current/config/database.yml" kor
-su -c "ln -sfn /opt/kor/shared/sunspot.yml /opt/kor/current/config/sunspot.yml" kor
 su -c "ln -sfn /opt/kor/shared/log /opt/kor/current/log" kor
 su -c "ln -sfn /opt/kor/shared/data /opt/kor/current/data" kor

@@ -6,7 +6,7 @@ class Kor::Blaze
   end
 
   def collection_ids
-    @collection_ids ||= Auth::Authorization.authorized_collections(@user).map{|c| c.id}
+    @collection_ids ||= ::Auth::Authorization.authorized_collections(@user).map{|c| c.id}
   end
 
   def relationship_scope(entity = nil)

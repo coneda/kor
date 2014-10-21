@@ -3,19 +3,22 @@ var ComponentSearch = new Object();
 ComponentSearch.results = [];
 
 ComponentSearch.setup = function() {
-  $('#search_terms').keypress(this.autocomplete_enter_key);
-  $('#search_terms').autocomplete({
-    source: this.autocomplete_source,
-    select: this.autocomplete_select,
-    minLength: 3
-  }).data( "autocomplete" )._renderItem = function( ul, item ) {
-		return $( "<li></li>" )
-			.data( "item.autocomplete", item )
-			.append( "<a>" + item.label + "</a>" )
-			.appendTo( ul );
-	};
+  $('#search_terms').
+    keypress(this.autocomplete_enter_key).
+    autocomplete({
+      source: this.autocomplete_source,
+      select: this.autocomplete_select,
+      minLength: 3
+    }).
+    data('uiAutocomplete').
+    _renderItem = function( ul, item ) {
+      return $( "<li></li>" )
+        .data( "item.autocomplete", item )
+        .append( "<a>" + item.label + "</a>" )
+        .appendTo( ul );
+    };
   
-  $('.query_item a').live('click', function(event){
+  $('body').on('click', '.query_item a', function(event){
     $(this).parents('.query_item').remove();
     return ComponentSearch.form_submit();
   });

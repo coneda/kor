@@ -1,3 +1,3 @@
-Given /^sunspot has indexed everything$/ do
-  Entity.solr_reindex
+Given /^everything is indexed$/ do
+  Kor::Elastic.index_all
 end

@@ -1,5 +1,5 @@
 kor.service('korTranslate', ["korData", (korData) ->
-  return {
+  service = {
     translate: (input, options = {}) ->
       try
         options.count ||= 1
@@ -18,6 +18,13 @@ kor.service('korTranslate', ["korData", (korData) ->
           result = result.replace regex, tvalue
           
         result
+      catch error
+        ""
+    localize: (input, format_name = 'default') ->
+      try
+        format = service.translate "date.formats.#{format_name}"
+        result = new FormattedDate(input)
+        result.strftime format
       catch error
         ""
   }

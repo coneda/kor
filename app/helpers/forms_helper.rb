@@ -39,7 +39,8 @@ module FormsHelper
   def collection_selector_tag(name, options = {})
     options.reverse_merge!(
       :label => name,
-      :policy => :view
+      :policy => :view,
+      :html => {}
     )
     options[:collections] ||= authorized_collections(options[:policy])
 
@@ -48,7 +49,7 @@ module FormsHelper
     else
       selected = params[name] || current_user.default_collection_id.to_i
       os = options_from_collection_for_select(options[:collections], :id, :name, selected)
-      kor_input_tag options[:label], :class => Entity, :control => select_tag(name, os)
+      kor_input_tag options[:label], :class => Entity, :control => select_tag(name, os, options[:html])
     end
   end
 

@@ -1,0 +1,115 @@
+<div ng-controller="multi_upload_controller">
+
+  <div class="layout_panel left small_panel_size">
+    <div class="content_panel">
+      <div class="title">
+        <%= I18n.t("objects.new", :o => Medium.model_name.human(:count => :other)) %>
+      </div>
+
+      <form class="kor_form">
+        <%= collection_selector_tag "entity[collection_id]", 
+          :label => Collection.model_name.human, 
+          :policy => :create,
+          :html => {"ng-model" => "file_queue.params.collection_id"}
+        %>
+        <%= kor_input_tag UserGroup.model_name.human,
+          :control => text_field_tag(:user_group_name, nil, "ng-model" => "file_queue.params.user_group_name")
+        %>
+
+        <% if session[:current_entity] %>
+          <% relation_names = Relation.available_relation_names(
+            Kind.medium_kind.id, 
+            Entity.find(session[:current_entity]).kind.id
+          ) %>
+      
+          <% unless relation_names.empty? %>
+            <%= kor_input_tag(
+              I18n.t('labels.relate_to_via', :to => Entity.find(session[:current_entity]).display_name),
+              :control => select_tag(:relation_name, options_for_select([""] + relation_names))
+            ) %>
+          <% else %>
+            <%= I18n.t("messages.no_relations_provided") %>
+          <% end %>
+        <% end %>
+
+        <a kor-fu="file_queue" href="#">» <%= I18n.t("objects.add", :o => I18n.t('nouns.file', :count => :other)) %></a>
+      </form>
+    </div>
+  </div>
+
+  <div class="layout_panel right normal_panel_size">
+    <div class="content_panel">
+      <ul>
+        <li ng-repeat="job in file_queue.jobs()">
+          <div class="pull-right">
+            <a href="#" ng-click="file_queue.remove(job, $event)">x</a>
+          </div>
+          <strong ng-bind="job.name"></strong>
+          <div>
+            {{job.size | human_size}}
+            <span ng-show="job.percent > 0">
+              <span ng-show="job.percent < 100">
+                {{job.percent}}
+              </span>
+              <span ng-show="job.percent == 100">
+                <span ng-show="job.response().success">... done</span>
+                <span ng-show="!job.response().success">
+                  <div ng-repeat="(field, error) in job.response().data.errors">
+                    <span ng-bind="error"></span>
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+        </li>
+      </ul>
+
+      <div class="text-right">
+        <input class="submit" style="" type="button" value="hochladen" ng-click="file_queue.submit($event)">
+        <input class="reset" style="" type="button" value="Liste leeren" ng-click="file_queue.abort($event)">
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<!-- - content_for :small_title, I18n.t("objects.new", :o => Medium.model_name.human(:count => :other))
+- content_for :normal_title, I18n.t('nouns.file_list')
+
+- content_for :normal_content do
+  #files_queue
+  .hr
+  .upload_buttons
+    %input.submit{:type => 'button', :value => I18n.t('verbs.upload'), :style => 'display: none'}
+    %input.reset{:type => 'button', :value => I18n.t('empty_list'), :style => 'display: none'}
+
+- content_for :small_content do
+
+  = form_tag '/nowhere', :class => 'kor_form' do
+    = hidden_field_tag :form_authenticity_token, form_authenticity_token
+  
+    = collection_selector_tag :collection_id, :policy => :create
+    = kor_input_tag UserGroup.model_name.human, :control => text_field_tag(:user_group_name, Time.now.strftime("%d.%m.%Y"))
+
+    - if session[:current_entity]
+      - relation_names = Relation.available_relation_names(Kind.medium_kind.id, Entity.find(session[:current_entity]).kind.id)
+      
+      - unless relation_names.empty?
+        = kor_input_tag I18n.t('labels.relate_to_via', :to => Entity.find(session[:current_entity]).display_name), :control => |
+          select_tag(:relation_name, options_for_select([""] + relation_names) |
+        ) |
+      - else
+        = I18n.t("messages.no_relations_provided")
+        
+    %br
+    
+    = kor_input_tag "» " + I18n.t("objects.add", :o => I18n.t('nouns.file', :count => :other)), :control => file_field_tag(:files, :value => nil, :style => "visibility: hidden")
+
+    :javascript
+      $(document).ready(function(event) {
+        KorMultiFileUpload.setup({
+          'transit_name_input': '#user_group_name'
+        });
+      });
+      
+ -->

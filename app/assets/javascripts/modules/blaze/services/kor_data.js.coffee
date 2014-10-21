@@ -11,6 +11,8 @@ kor.service('korData', ['$rootScope', '$location', '$http', (rootScope, location
       http(method: 'get', url: "/api/1.0/entities/#{id}/show_full").success((data) =>
         this.entity = data
         rootScope.$broadcast "kor-initial-load-complete"
+        if service.info
+          service.fully_loaded = true
       )
       
     deep_media_load: (relationship, page = 1) ->
@@ -47,11 +49,15 @@ kor.service('korData', ['$rootScope', '$location', '$http', (rootScope, location
       http(method: 'get', url: "/api/1.0/info", type: "json").success( (data) =>
         this.info = data
         rootScope.$broadcast "kor-session-load-complete", data
+        if service.entity
+          service.fully_loaded = true
       )
       
     toggle_session_panel: (state) ->
       state = if state then 'show' else 'hide'
       http(method: 'get', url: "/tools/session_info", params: {show: state})
+
+    fully_loaded: false
 
   }
 ])

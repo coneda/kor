@@ -2,32 +2,6 @@
 
 class Entity < ActiveRecord::Base
 
-  searchable :include => [:medium, :kind, :tags] do
-    text :id, :uuid, :medium_hash, :boost => 10
-    text :display_name, :synonyms, :boost => 5
-    text :property_labels, :boost => 2 do
-      properties.map{|p| p['label']}
-    end
-    text :property_values, :boost => 3 do
-      properties.map{|p| p['value']}
-    end
-    text :comment
-    text :related do |entity|
-      ids = Investigator.new.related_entities_for(entity.id).values.flatten.uniq
-      Entity.includes(:kind).find(ids).map do |e|
-        [e.name] + e.synonyms
-      end
-    end
-    
-    string :tags, :multiple => true do |entity|
-      entity.tags.map{|t| t.name}
-    end
-    
-    integer :collection_id, :references => Collection
-    integer :creator_id, :references => User
-    integer :kind_id, :references => Kind
-  end
-  
   # Settings
   
   serialize :external_references
@@ -148,7 +122,6 @@ class Entity < ActiveRecord::Base
   
   # Validation
 
-  validates_associated :medium
   validates_associated :datings
 
   validates_presence_of :kind
@@ -256,9 +229,8 @@ class Entity < ActiveRecord::Base
   after_save :save_id_in_attachment
   after_create :created!
   after_update :save_datings, :updated!
-  before_destroy :destroy_attachment, :mark_kor_destroyed!, :correct_index
-
-  after_commit :correct_index, :unless => :kor_destroyed?
+  before_destroy :destroy_attachment, :mark_kor_destroyed!
+  after_commit :update_elastic
   
   def sanitize_distinct_name
     self.distinct_name = nil if self.distinct_name == ""
@@ -290,15 +262,19 @@ class Entity < ActiveRecord::Base
     @persistence == :destroy
   end
   
-  def correct_index
-#    Kor::SimpleSearchIndex.new.update_index self.id, :action => @persistence, :flush => true
+  def update_elastic
+    if destroyed?
+      Kor::Elastic.drop(self, true)
+    else
+      Kor::Elastic.index(self, true)
+    end
   end
   
   
   # Synonyms
   
   def synonyms
-    get_attachment_value('synonyms', [])
+    get_attachment_value('synonyms', []).uniq
   end
   
   def synonyms=(values)
@@ -532,8 +508,13 @@ class Entity < ActiveRecord::Base
 
 
   #----------------------------------------------------- external references ---
+  # TODO: Nasty hack, remove as soon as MongoDB is out
   def external_references
     self[:external_references] ||= {}
+    self[:external_references].each do |k, v|
+      self[:external_references][k] = v.force_encoding("utf-8")
+    end
+    self[:external_references]
   end
   
   def external_references=(attributes)
@@ -624,6 +605,7 @@ class Entity < ActiveRecord::Base
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :searcheable, lambda { where("kind_id != ?", Kind.medium_kind.id) }
   scope :media, lambda { where("kind_id = ?", Kind.medium_kind.id) }
+  scope :without_media, lambda { where("kind_id != ?", Kind.medium_kind.id) }
   scope :alphabetically, order("name asc, distinct_name asc")
   scope :newest_first, order("created_at DESC")
   scope :globally_identified_by, lambda {|uuid| uuid.blank? ? scoped : where(:uuid => uuid) }

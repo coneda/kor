@@ -60,7 +60,7 @@ class Kor::Graph::Search::Query::Base
   attr_reader :options
   
   def authorized_collection_ids
-    Auth::Authorization.authorized_collections(user).map{|c| c.id}
+    ::Auth::Authorization.authorized_collections(user).map{|c| c.id}
   end
   
   def per_page

@@ -1,8 +1,10 @@
-//= require modules/vendor/jquery-1.7.1.min
-//= require modules/vendor/jquery-ui-1.8.17.custom.min
+//= require jquery
+//= require jquery-ui
 //= require modules/vendor/jquery.jeditable.min
 //= require modules/vendor/swfobject
-//= require modules/vendor/jquery.uploadify.v2.1.4.min
+//= require moxie
+//= require plupload.dev
+//= require plupload.settings
 //= require jquery_ujs
 //= require angular
 //= require angular-route

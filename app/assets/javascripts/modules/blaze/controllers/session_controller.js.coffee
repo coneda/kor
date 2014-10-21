@@ -11,8 +11,7 @@ kor.controller('korSessionCtrl', ['$scope', 'korData', 'korFlash', (scope, korDa
     scope.info.session.show_panel = !scope.info.session.show_panel
     korData.toggle_session_panel scope.info.session.show_panel
     
-  scope.fully_loaded = ->
-    korData.entity && korData.info
+  scope.fully_loaded = -> korData.fully_loaded
 
   scope.flash_error = -> korData.error()
   scope.flash_notice = -> korData.notice()

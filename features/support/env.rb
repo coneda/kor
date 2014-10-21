@@ -31,13 +31,10 @@ Before do |scenario|
   file = "#{Rails.root}/tmp/harmful.txt"
   system "rm #{file}" if File.exists?(file)
 
-  if scenario.source_tags.any?{|st| st.name == "@solr"}
-    unless File.exists?("#{Rails.root}/solr/test/pids/sunspot-solr-test.pid")
-      system "bash -c \"RAILS_ENV=test bundle exec rake sunspot:solr:start\""
-      sleep 5
-    end
+  if scenario.source_tags.any?{|st| st.name == "@elastic"}
+    Kor::Elastic.reset_index
   else
-    RSolr::Connection.any_instance.stub(:execute)
+    allow(Kor::Elastic).to receive(:request).and_return([200, {}, {}])
   end
 end
 

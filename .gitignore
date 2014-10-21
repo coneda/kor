@@ -5,7 +5,6 @@ log/*
 tmp/*
 data/*
 db/*.sqlite3
-solr
 public/media
 public/plugin_assets
 
@@ -24,7 +23,6 @@ config/kor.app.yml
 config/kor.app.test.yml
 config/locales/*/help.yml
 config/schema_definitions.yml
-config/sunspot.yml
 config/logrotate.conf
 
 
@@ -32,6 +30,7 @@ config/logrotate.conf
 
 chromedriver.log
 deploy/build
+deploy/build.boxes
 db/*.sqlite3
 .yardoc
 

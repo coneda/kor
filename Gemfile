@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.17'
+gem 'rails', '3.2.19'
 
 gem 'delayed_paperclip', "= 2.4.5", :require => 'delayed_paperclip/railtie'
 gem "paperclip", "= 2.4.5"
@@ -19,7 +19,7 @@ gem "mongo"
 gem "bson_ext", '1.3.1', :require => false
 gem "haml"
 gem "sass"
-gem 'httparty'
+gem 'httpclient'
 gem 'mime-types', '1.16', :require => 'mime/types'
 gem 'acts-as-taggable-on', '~> 2.2.2'
 gem 'system_timer', :platforms => [:ruby_18]
@@ -28,21 +28,21 @@ gem 'kor_api', :path => './plugins/kor_api'
 gem 'kor_index', :path => './plugins/kor_index'
 
 gem "sprockets"
-gem "jquery-rails", "~> 2.2.1"
+gem "jquery-rails"
+gem 'jquery-ui-rails'
+gem 'angularjs-rails'
+gem 'plupload-rails'
+gem 'coffee-rails'
+gem "sass-rails"
 
 gem 'awesome_nested_set', :git => 'https://github.com/galetahub/awesome_nested_set.git'
 
-gem "sunspot_rails"
-gem "sunspot_solr"
-
-gem 'json'
-gem 'builder'
-gem 'net-ldap'
+gem 'oj'
+gem 'builder' # TODO: remove when XML API is removed
 
 group :assets do
   gem "therubyracer"
-  gem 'coffee-rails'
-  gem "sass-rails"
+
   gem 'uglifier', '>= 1.0.3'
 end
 
@@ -60,11 +60,14 @@ group :test do
   gem 'machinist', '1.0.6', :require => 'machinist/active_record'
 end
 
+group :development do
+  gem 'method_profiler'
+end
+
 group :test, :development do
   gem 'thin'
   gem 'ruby-debug', :platforms => [:ruby_18]
   gem 'debugger', :platforms => [:ruby_19, :ruby_20]
-  gem 'rcov', :platforms => [:ruby_18]
 end
 
 group :production do

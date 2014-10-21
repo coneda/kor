@@ -43,21 +43,12 @@ RSpec.configure do |config|
   end
 
   config.before :each do
-    if example.metadata[:solr]
-      unless File.exists?("#{Rails.root}/solr/test/pids/sunspot-solr-test.pid")
-        system "bash -c \"RAILS_ENV=test bundle exec rake sunspot:solr:start\""
-        sleep 5
-      end
-    else
-      RSolr::Connection.any_instance.stub(:execute)
+    if example.metadata[:elastic]
+      Kor::Elastic.reset_index
     end
 
     DatabaseCleaner.strategy = :truncation
     DatabaseCleaner.clean
-    begin
-      Sunspot.remove_all!
-    rescue => e
-    end
   
     Kor::Attachment.collection.drop
     ActionMailer::Base.deliveries = []

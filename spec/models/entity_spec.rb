@@ -177,5 +177,14 @@ describe Entity do
       'eindeutiger Name ist ungültig'
     ]
   end
+
+  it "should fire elastic updates" do
+    expect(Kor::Elastic).to receive(:index).exactly(2).times
+    expect(Kor::Elastic).to receive(:drop)
+
+    entity = FactoryGirl.create :der_schrei
+    entity.update_attributes :comment => "Some comment"
+    entity.destroy
+  end
   
 end

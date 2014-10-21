@@ -19,7 +19,7 @@ class WebServices::Dispacher
   def self.web_services_for_kind(kind)
     (kind.web_services || []).map do |ws|
       web_service_from_name(ws)
-    end
+    end.select{|ws| ws.present?}
   end
   
   def self.web_services_for_kind_with_external_reference(kind)

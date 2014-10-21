@@ -3,16 +3,16 @@ require 'spec_helper'
 describe Kor::Blaze do
 
   it "should gather relationships in both directions" do
-    k = Factory.create :work
-    r = Factory.create :is_part_of
+    k = FactoryGirl.create :works
+    r = FactoryGirl.create :is_part_of
 
     g = Credential.create :name => "admins"
-    u = Factory.create :admin
+    u = FactoryGirl.create :admin
     u.groups << g
 
-    a = Factory.create :mona_lisa, :kind => k
-    b = Factory.create :der_schrei, :kind => k
-    c = Factory.create :ramirez, :kind => k
+    a = FactoryGirl.create :mona_lisa, :kind => k
+    b = FactoryGirl.create :der_schrei, :kind => k
+    c = FactoryGirl.create :ramirez, :kind => k
 
     Collection.first.grant :view, :to => g
 
@@ -30,17 +30,17 @@ describe Kor::Blaze do
   end
 
   it "should gather symmetric relationships just once in both directions" do
-    k = Factory.create :work
-    r1 = Factory.create :is_related_to
-    r2 = Factory.create :is_related_to
+    k = FactoryGirl.create :works
+    r1 = FactoryGirl.create :relation
+    r2 = FactoryGirl.create :relation
 
     g = Credential.create :name => "admins"
-    u = Factory.create :admin
+    u = FactoryGirl.create :admin
     u.groups << g
 
-    a = Factory.create :mona_lisa, :kind => k
-    b = Factory.create :der_schrei, :kind => k
-    c = Factory.create :ramirez, :kind => k
+    a = FactoryGirl.create :mona_lisa, :kind => k
+    b = FactoryGirl.create :der_schrei, :kind => k
+    c = FactoryGirl.create :ramirez, :kind => k
 
     Collection.first.grant :view, :to => g
 

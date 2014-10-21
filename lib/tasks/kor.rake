@@ -49,5 +49,36 @@ namespace :kor do
     admin.admin!
     puts admin.save
   end
+
+  namespace :index do
+    desc "drop the index"
+    task :drop => :environment do
+      Kor::Elastic.drop_index
+    end
+
+    desc "create the index"
+    task :create => :environment do
+      Kor::Elastic.create_index
+    end
+
+    desc "refresh the elastic index"
+    task :refresh => :environment do
+      ActiveRecord::Base.logger.level = Logger::ERROR
+
+      require "method_profiler"
+
+      # profilers = [
+      #   MethodProfiler.observe(Entity),
+      #   MethodProfiler.observe(Kor::Elastic)
+      # ]
+
+      Kor::Elastic.index_all :full => true, :progress => true
+
+      # profilers.each do |p|
+      #   puts p.report
+      # end
+    end
+
+  end
    
 end

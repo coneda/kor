@@ -19,11 +19,4 @@ describe "WebServices::Links" do
     WebServices::WikipediaLink.link_for(@berlin).should eql('http://de.wikipedia.org/wiki/Spezial:Search?search=Berlin')
   end
   
-  it "should generate coneda information service links" do
-    WebServices::ConedaInformationServiceLink.link_for(@person).should == {
-      "Deutschsprachige Wikipedia"=>"http://tools.wmflabs.org/persondata/redirect/gnd/de/123050936", 
-      "Gemeinsame Normdatei (GND)"=>"http://d-nb.info/gnd/123050936"
-    }
-  end
-  
 end

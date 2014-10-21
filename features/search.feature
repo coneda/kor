@@ -78,10 +78,10 @@ Feature: search
     Then I should see "Isbn"
 
 
-  @javascript @solr
+  @javascript @elastic
   Scenario: Put search results into the clipboard and remove them
     Given the entity "Mona Lisa" of kind "Werk/Werke"
-    And sunspot has indexed everything
+    And everything is indexed
     And I am logged in as "admin"
     When I go to the simple search page
     And I fill in "search_terms" with "Mona" and select term "Mona"

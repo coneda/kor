@@ -15,8 +15,8 @@ Attachments.remove = function(event) {
 }
 
 Attachments.register_expert_search_events = function() {
-  $('.attachment_minus').live('click', Attachments.remove);
-  $('.attachment_plus').live('click', Attachments.add)
+  $(document).on('click', '.attachment_minus', Attachments.remove);
+  $(document).on('click', '.attachment_plus', Attachments.add)
 
   $('#relation_conditions .commands a').click(function(event) {
     var attachments = $(event.currentTarget).parents('div.attachments');

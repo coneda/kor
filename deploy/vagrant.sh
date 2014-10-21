@@ -9,8 +9,11 @@ function install_standalone {
   debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
   debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
 
+  wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
+  echo 'deb http://packages.elasticsearch.org/elasticsearch/1.3/debian stable main' | tee /etc/apt/sources.list.d/elastic.list
+
   apt-get update
-  apt-get install -y mysql-server mongodb-10gen
+  apt-get install -y mysql-server mongodb-10gen elasticsearch
 
   echo "GRANT ALL ON kor.* TO 'kor'@'localhost' IDENTIFIED BY 'kor';" | mysql -u root -proot
 }
@@ -31,7 +34,6 @@ function install_deb {
   su -c "cd /opt/kor/current ; bundle exec rake assets:precompile" kor
   su -c "touch /opt/kor/current/tmp/restart.txt" kor
 
-  /etc/init.d/sunspot start
   /etc/init.d/delayed_job start
 }
 

@@ -132,7 +132,7 @@ class EntitiesController < ApplicationController
   end
   
   def multi_upload
-    render :layout => 'small_normal'
+    render :layout => "blaze"
   end
 
   def edit
@@ -149,14 +149,10 @@ class EntitiesController < ApplicationController
     @entity = Entity.new(:kind_id => params[:entity][:kind_id])
     @entity.attributes = params[:entity]
     
-    necessary_policies = :create
-    
     if authorized?(:create, @entity.collection)
       @entity.creator_id = current_user.id
       
       if @entity.save
-        flash[:notice] = I18n.t('objects.create_success', :o => @entity.display_name)
-        
         if params[:user_group_name]
           transit = UserGroup.owned_by(current_user).find_or_create_by_name(params[:user_group_name])
           transit.add_entities @entity if transit
@@ -167,13 +163,16 @@ class EntitiesController < ApplicationController
         end
         
         respond_to do |format|
-          format.html {redirect_to @entity}
-          format.js {render :json => {:success => true}}
+          format.html do
+            flash[:notice] = I18n.t('objects.create_success', :o => @entity.display_name)
+            redirect_to @entity
+          end
+          format.json {render :json => {:success => true}}
         end
       else
         respond_to do |format|
-          format.js do
-            if @entity.medium && @entity.errors.full_messages.any?{|e| e.match "eine inhaltlich gleiche Datei wurde bereits hochgeladen"}
+          format.json do
+            if @entity.medium && @entity.medium.errors[:datahash].present?
               if params[:user_group_name]
                 transit = UserGroup.owned_by(current_user).find_or_create_by_name(params[:user_group_name])
 
@@ -187,7 +186,7 @@ class EntitiesController < ApplicationController
               end
             end
 
-            render :json => {:success => false, :errors => @entity.simple_errors}, :status => 400
+            render :json => {:success => false, :errors => @entity.errors}, :status => 400
           end
           format.html {render :action => "new", :status => :not_acceptable}
         end

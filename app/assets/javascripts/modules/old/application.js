@@ -4,9 +4,12 @@ var Application = new Object();
 var Kor = new Object();
 
 Application.register_input_focus_events = function() {
-  var inputs = $('input[type=text], input[type=password], textarea');
-  inputs.live('focus', function(event){$(event.currentTarget).addClass('focused');});
-  inputs.live('blur', function(event){$(event.currentTarget).removeClass('focused');});
+  $("body").on("focus", 'input[type=text], input[type=password], textarea', function(event) {
+    $(event.currentTarget).addClass('focused');
+  });
+  $("body").on("blur", 'input[type=text], input[type=password], textarea', function(event) {
+    $(event.currentTarget).removeClass('focused');
+  });
   
   $('div.kor_submit').mouseover(function(event){
     $(this).find('input').addClass('highlighted_button');
@@ -42,7 +45,7 @@ Application.setup_kor_command_image_events = function() {
 }
 
 Application.setup_search_result_events = function() {
-  $('input.put_in_clipboard').live('mouseup', function(event){
+  $("body").on('mouseup', 'input.put_in_clipboard', function(event){
     var checkbox = $(this);
     var checked = checkbox.is(':checked');
     checkbox.attr('checked', !checked);
@@ -60,19 +63,19 @@ Application.setup_search_result_events = function() {
     return false;
   });
   
-  $('input.put_in_clipboard').live('click', function(event){
+  $(document).on('click', 'input.put_in_clipboard', function(event){
     return false;
   });
 }
 
 Application.register_popups = function() {
-  $('a.popup').live('click', function(e) { 
+  $(document).on('click', 'a.popup', function(e) { 
     window.open($(this).attr('href')); 
     e.preventDefault(); 
   });
   
   $('#templates .dialog_popup').dialog({autoOpen: false, width: 200});
-  $('a.dialog_popup').live('click', function(event){
+  $(document).on('click', 'a.dialog_popup', function(event){
     var id = $(this).attr('id');
     $('.dialog_popup.' + id).dialog('open');
     return false;
@@ -374,15 +377,17 @@ ImageQuickButtons.mark = function(action, entity_id) {
 }
 
 ImageQuickButtons.register_events = function() {
-  $('.kor_medium_frame').live('mouseover', function(event) {
+  console.log("registering")
+  $(document).on('mouseover', '.kor_medium_frame', function(event) {
+    console.log("mouseover")
     $(event.currentTarget).find('.button_bar').show();
   });
 
-  $('.kor_medium_frame').live('mouseout', function(event) {
+  $(document).on('mouseout', '.kor_medium_frame', function(event) {
     $(event.currentTarget).find('.button_bar').hide();
   });
   
-  $(".kor_medium_frame .button_bar img[alt=Target]").live('click', function(event) {
+  $(document).on('click', ".kor_medium_frame .button_bar img[alt=Target]", function(event) {
     var cT = $(event.currentTarget).parent();
     var entity_id = cT.parents('.kor_medium_frame').attr('id').split('_').pop();
     
@@ -394,7 +399,7 @@ ImageQuickButtons.register_events = function() {
     return(false);
   });
   
-  $(".kor_medium_frame .button_bar img[alt=Target_hit]").live('click', function(event) {
+  $(document).on('click', ".kor_medium_frame .button_bar img[alt=Target_hit]", function(event) {
     var cT = $(event.currentTarget).parent();
     var entity_id = cT.parents('.kor_medium_frame').attr('id').split('_').pop();
     
@@ -447,7 +452,7 @@ Menu.setup = function() {
 var Panel = new Object();
 
 Panel.setup = function() {
-  $('.relation_toggle').live('click', function(event){
+  $(document).on('click', '.relation_toggle', function(event){
     var relation = $(this).parents('div.relation');
     force = !Panel.toggle_custom_state(relation, 'images_shown');
     relation.find('div.relationship').each( function(i, e){
@@ -463,7 +468,7 @@ Panel.setup = function() {
     return false;
   });
   
-  $('.relationship_toggle').live('click', function(event){
+  $(document).on('click', '.relationship_toggle', function(event){
     var relationship = $(this).parents('div.relationship');
     Panel.toggle_relationship_panel(relationship);
     return false;

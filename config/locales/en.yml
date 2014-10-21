@@ -476,13 +476,13 @@ en:
 
 
   objects:
-    download: "%{o} download"
-    add: "%{o} add"
+    download: "download %{o}"
+    add: "add %{o}"
     none_found: "no %{o} was found"
     include: "include %{o}"
     move: "move %{o}"
     create: "create %{o}"
-    new: "apply %{o}"
+    new: "create %{o}"
     create_success: "%{o} has been created"
     edit: "%{o} bearbeiten"
     update_success: "%{o} has been edited"

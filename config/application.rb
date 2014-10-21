@@ -5,7 +5,7 @@ require 'rails/all'
 # If you have a Gemfile, require the gems listed there, including any gems
 # you've limited to :test, :development, or :production.
 if defined?(Bundler)
-  Bundler.require *Rails.groups(:assets => %w(development test))
+  # Bundler.require *Rails.groups(:assets => %w(development test))
   Bundler.require(:default, :assets, Rails.env)
 end
 
@@ -24,8 +24,6 @@ module Kor
     
     # Autoload paths
     config.autoload_paths += %W(#{Rails.root}/lib)
-#    config.autoload_paths += Dir["#{Rails.root}/lib/**/"]
-    config.autoload_paths += Dir["#{Rails.root}/middleware/*"]
     
     # Force all environments to use the same logger level
     # (by default production uses :info, the others :debug)

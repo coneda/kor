@@ -28,7 +28,7 @@ class Kor::ZipFile
 
   def add(source = nil, opts = {}, &block)
     if block_given?
-      source = Proc.new(&block)
+      source = yield
     else
       source = File.absolute_path(source)
       opts[:as] ||= source.gsub Dir.pwd, ""
@@ -48,7 +48,7 @@ class Kor::ZipFile
       end
       
       add nil, :as => "#{entity.id}.txt" do
-        Export::MetaDataProfile.new('simple').render(entity)
+        {:data => Export::MetaDataProfile.new('simple').render(entity)}
       end
     end
   end
@@ -63,9 +63,9 @@ class Kor::ZipFile
 
         case external
           when String then run "ln -s #{external} #{file}"
-          when Proc
+          when Hash
             File.open "#{file}", "w" do |f|
-              f.write external.call
+              f.write external[:data]
             end
         end
       end
@@ -82,7 +82,7 @@ class Kor::ZipFile
     @files.values.map do |f|
       case f
         when String then File.size(f)
-        when Proc then f.call.size
+        when Hash then f[:data].size
       end
     end.sum
   end
