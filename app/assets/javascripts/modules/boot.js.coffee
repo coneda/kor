@@ -3,7 +3,6 @@ kor = angular.module('kor', ["ngRoute"])
 kor.config([ 
   "$httpProvider", "$sceProvider",
   (httpProvider, sp) ->
-    #console.log "configuring"
     sp.enabled(false)
 
     httpProvider.responseInterceptors.push [
@@ -25,7 +24,7 @@ kor.config([
 )
 
 kor.run([ ->
-  #console.log "running"
+  
 ])
 
 this.kor = kor

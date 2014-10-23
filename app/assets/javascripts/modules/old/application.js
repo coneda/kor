@@ -377,9 +377,7 @@ ImageQuickButtons.mark = function(action, entity_id) {
 }
 
 ImageQuickButtons.register_events = function() {
-  console.log("registering")
   $(document).on('mouseover', '.kor_medium_frame', function(event) {
-    console.log("mouseover")
     $(event.currentTarget).find('.button_bar').show();
   });
 

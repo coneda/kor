@@ -12,7 +12,6 @@ kor.service "relationships_service", [
           relationship.properties = data.properties
 
       update: (relationship) ->
-        console.log(relationship)
         properties = angular.copy(relationship.properties)
         properties.push relationship.new_property
 

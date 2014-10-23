@@ -77,6 +77,11 @@ FactoryGirl.define do
       kind { Kind.find_or_create_by_name "Person" }
     end
 
+    factory :picture do
+      kind { Kind.medium_kind }
+      medium { FactoryGirl.build :medium }
+    end
+
   end
 
   factory :relation do

@@ -246,10 +246,12 @@ class Entity < ActiveRecord::Base
   end
   
   def update_elastic
-    if destroyed?
-      Kor::Elastic.drop self
-    else
-      Kor::Elastic.index self, :full => true
+    unless is_medium?
+      if destroyed?
+        Kor::Elastic.drop self
+      else
+        Kor::Elastic.index self, :full => true
+      end
     end
   end
   

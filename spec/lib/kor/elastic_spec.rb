@@ -217,4 +217,11 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@klaus_mueller])
   end
 
+  it "should not index media" do
+    expect {
+      FactoryGirl.create :picture
+      described_class.index_all
+    }.not_to change{@elastic.search.total}
+  end
+
 end
