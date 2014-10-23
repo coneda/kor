@@ -10,7 +10,7 @@ vagrant up kor
 deploy/vagrant.sh appliance
 
 # Tear down vm
-vagrant destroy kor -f
+# vagrant destroy kor -f
 
 # Calculate md5 checksums
 deploy/vagrant.sh checksums

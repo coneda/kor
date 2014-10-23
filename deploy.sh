@@ -17,7 +17,6 @@ function deploy {
   setup
 
   within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop"
-  within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec rake sunspot:solr:stop"
 
   deploy_code
   cleanup
@@ -28,7 +27,6 @@ function deploy {
   remote "ln -sfn $SHARED_PATH/contact.txt $CURRENT_PATH/config/contact.txt"
   remote "ln -sfn $SHARED_PATH/help.yml $CURRENT_PATH/config/help.yml"
   remote "ln -sfn $SHARED_PATH/legal.txt $CURRENT_PATH/config/legal.txt"
-  remote "ln -sfn $SHARED_PATH/sunspot.yml $CURRENT_PATH/config/sunspot.yml"
   remote "ln -sfn $SHARED_PATH/log $CURRENT_PATH/log"
   remote "ln -sfn $SHARED_PATH/tmp $CURRENT_PATH/tmp"
   remote "ln -sfn $SHARED_PATH/data $CURRENT_PATH/data"
@@ -37,7 +35,6 @@ function deploy {
 
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake db:migrate"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake assets:precompile"
-  within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake sunspot:solr:start"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job start"
 
   remote "touch $CURRENT_PATH/tmp/restart.txt"

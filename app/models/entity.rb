@@ -227,9 +227,8 @@ class Entity < ActiveRecord::Base
   before_validation :generate_uuid, :sanitize_distinct_name
   before_save :generate_uuid, :add_to_user_group, :save_attachment
   after_save :save_id_in_attachment
-  after_create :created!
-  after_update :save_datings, :updated!
-  before_destroy :destroy_attachment, :mark_kor_destroyed!
+  after_update :save_datings
+  before_destroy :destroy_attachment
   after_commit :update_elastic
   
   def sanitize_distinct_name
@@ -246,27 +245,11 @@ class Entity < ActiveRecord::Base
     end
   end
   
-  def updated!
-    @persistence = :update
-  end
-  
-  def created!
-    @persistence = :create
-  end
-  
-  def mark_kor_destroyed!
-    @persistence = :destroy
-  end
-  
-  def kor_destroyed?
-    @persistence == :destroy
-  end
-  
   def update_elastic
     if destroyed?
-      Kor::Elastic.drop(self, true)
+      Kor::Elastic.drop self
     else
-      Kor::Elastic.index(self, true)
+      Kor::Elastic.index self, :full => true
     end
   end
   

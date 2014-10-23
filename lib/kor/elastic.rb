@@ -86,6 +86,8 @@ class Kor::Elastic
   def self.index_all(options = {})
     options.reverse_merge! :full => false, :progress => false
 
+    @cache = {}
+
     total = Entity.without_media.count
     done = 0
 
@@ -279,6 +281,8 @@ class Kor::Elastic
     def self.raw_request(method, path, query = {}, body = nil, headers = {})
       return :disabled if !enabled?
 
+      Rails.logger.info "ELASTIC: #{method} #{path}\n#{body.inspect}"
+
       headers.reverse_merge 'content-type' => 'application/json', 'accept' => 'application/json'
       url = "http://#{config['host']}:#{config['port']}/#{config['index']}#{path}"
       client.request(method, url, query, (body ? JSON.dump(body) : nil), headers)      
@@ -313,9 +317,12 @@ class Kor::Elastic
     end
 
     def self.fetch(*args)
-      @cache ||= {}
-      key = args.map(&:to_s).join('.')
-      @cache[key] ||= yield
+      if @cache.is_a?(Hash)
+        key = args.map(&:to_s).join('.')
+        @cache[key] ||= yield
+      else
+        yield
+      end
     end
 
 end

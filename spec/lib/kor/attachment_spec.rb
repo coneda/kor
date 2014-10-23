@@ -138,4 +138,9 @@ describe Kor::Attachment do
     Kor::Attachment.find_by_synonym("ardo").count.should_not == 0
   end
 
+  it "should have correct attachment values after saving" do
+    entity = FactoryGirl.create :jack, :synonyms => ["The Hammer"]
+    expect(entity.synonyms).to eq(["The Hammer"])
+  end
+
 end

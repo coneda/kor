@@ -80,7 +80,14 @@ describe Kor::Elastic, :elastic => true do
     @works = FactoryGirl.create :works
     @landscape = FactoryGirl.create :landscape, :synonyms => ["Tree on plane", "Nice Tree"]
     @jack = FactoryGirl.create :jack, :synonyms => ["The Oak", "Tree on plane"]
+    
     described_class.index_all
+
+    # This is very nasty, however, there is no better workaround at the moment:
+    # https://github.com/elasticsearch/elasticsearch/issues/1063
+    # sleep 2
+
+    # puts @elastic.search(:query => "\"tree on plane\"").inspect
 
     results = @elastic.search(:query => "\"tree on plane\"")
     expect(results.records.size).to eq(2)

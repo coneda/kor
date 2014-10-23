@@ -65,7 +65,7 @@ namespace :kor do
     task :refresh => :environment do
       ActiveRecord::Base.logger.level = Logger::ERROR
 
-      require "method_profiler"
+      # require "method_profiler"
 
       # profilers = [
       #   MethodProfiler.observe(Entity),

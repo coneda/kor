@@ -15,6 +15,8 @@ function install_standalone {
   apt-get update
   apt-get install -y mysql-server mongodb-10gen elasticsearch
 
+  update-rc.d elasticsearch defaults
+
   echo "GRANT ALL ON kor.* TO 'kor'@'localhost' IDENTIFIED BY 'kor';" | mysql -u root -proot
 }
 
@@ -27,10 +29,14 @@ function install_requirements {
 function install_deb {
   export VERSION=`cat /vagrant/config/version.txt 2> /dev/null`
   export DEB_FILENAME="coneda-kor.v$VERSION.deb"
+
+  update-rc.d elasticsearch defaults
+  service elasticsearch start
   
   dpkg -i /vagrant/deploy/build/$DEB_FILENAME
  
   su -c "cd /opt/kor/current ; RAILS_ENV=production bundle exec rake db:setup" kor
+  su -c "cd /opt/kor/current ; RAILS_ENV=production bundle exec rake kor:index:create" kor
   su -c "cd /opt/kor/current ; bundle exec rake assets:precompile" kor
   su -c "touch /opt/kor/current/tmp/restart.txt" kor
 
