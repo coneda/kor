@@ -24,7 +24,7 @@
       %li.spacer
 
       %li.inactive_item
-        = link_to I18n.t('nouns.group', :count => :other), nil, :class => "menu_toggle"
+        = link_to I18n.t('nouns.group', :count => :other).capitalize, nil, :class => "menu_toggle"
       %li
         %ul.toggling_menu#groups_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_group_menu]}"}
           = navigation_item model_specifier(AuthorityGroup, :other), authority_group_categories_path 
@@ -53,7 +53,7 @@
 
       - if current_user.any_admin?
         %li.inactive_item
-          = link_to I18n.t('nouns.config', :count => :other), nil, :class => "menu_toggle"
+          = link_to I18n.t('nouns.config', :count => :other).capitalize, nil, :class => "menu_toggle"
         %li
           %ul.toggling_menu#config_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_config_menu]}"}
             = navigation_item I18n.t('general'), config_path(:action => 'general') if current_user.admin?
@@ -70,7 +70,6 @@
         %li.spacer
       
       = navigation_item I18n.t('nouns.statistics'), {:controller => 'tools', :action => 'statistics'}
-      = navigation_item I18n.t('nouns.credit', :count => :other), {:controller => 'tools', :action => 'credits', :id => nil}
       
       = navigation_item ExceptionLog.model_name.human, :controller => 'exception_logs' if current_user.developer?
 

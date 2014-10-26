@@ -699,8 +699,8 @@ en:
         one: user group
         other: user groups
       exception_log:
-        one: error message
-        other: error messages
+        one: error report
+        other: error reports
       kind:
         one: entity type
         other: entity types
