@@ -68,13 +68,13 @@
         <input
           class="submit"
           type="button"
-          ng-value="'verbs.upload' | translate"
+          ng-value="'verbs.upload' | translate | capitalize"
           ng-click="file_queue.submit($event)"
         >
         <input
           class="reset"
           type="button"
-          ng-value="'empty_list' | translate"
+          ng-value="'empty_list' | translate | capitalize"
           ng-click="file_queue.abort($event)"
         >
       </div>
