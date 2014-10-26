@@ -133,10 +133,6 @@ class User < ActiveRecord::Base
     end
   end
   
-  def display_name_with_credits
-    credits > 0 ? "#{display_name} (#{credits})" : display_name
-  end
-  
   def display_name
     full_name.blank? ? name : full_name
   end
