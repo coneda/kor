@@ -65,51 +65,20 @@
       </ul>
 
       <div class="text-right">
-        <input class="submit" style="" type="button" value="hochladen" ng-click="file_queue.submit($event)">
-        <input class="reset" style="" type="button" value="Liste leeren" ng-click="file_queue.abort($event)">
+        <input
+          class="submit"
+          type="button"
+          ng-value="'verbs.upload' | translate"
+          ng-click="file_queue.submit($event)"
+        >
+        <input
+          class="reset"
+          type="button"
+          ng-value="'empty_list' | translate"
+          ng-click="file_queue.abort($event)"
+        >
       </div>
     </div>
   </div>
   
 </div>
-
-<!-- - content_for :small_title, I18n.t("objects.new", :o => Medium.model_name.human(:count => :other))
-- content_for :normal_title, I18n.t('nouns.file_list')
-
-- content_for :normal_content do
-  #files_queue
-  .hr
-  .upload_buttons
-    %input.submit{:type => 'button', :value => I18n.t('verbs.upload'), :style => 'display: none'}
-    %input.reset{:type => 'button', :value => I18n.t('empty_list'), :style => 'display: none'}
-
-- content_for :small_content do
-
-  = form_tag '/nowhere', :class => 'kor_form' do
-    = hidden_field_tag :form_authenticity_token, form_authenticity_token
-  
-    = collection_selector_tag :collection_id, :policy => :create
-    = kor_input_tag UserGroup.model_name.human, :control => text_field_tag(:user_group_name, Time.now.strftime("%d.%m.%Y"))
-
-    - if session[:current_entity]
-      - relation_names = Relation.available_relation_names(Kind.medium_kind.id, Entity.find(session[:current_entity]).kind.id)
-      
-      - unless relation_names.empty?
-        = kor_input_tag I18n.t('labels.relate_to_via', :to => Entity.find(session[:current_entity]).display_name), :control => |
-          select_tag(:relation_name, options_for_select([""] + relation_names) |
-        ) |
-      - else
-        = I18n.t("messages.no_relations_provided")
-        
-    %br
-    
-    = kor_input_tag "» " + I18n.t("objects.add", :o => I18n.t('nouns.file', :count => :other)), :control => file_field_tag(:files, :value => nil, :style => "visibility: hidden")
-
-    :javascript
-      $(document).ready(function(event) {
-        KorMultiFileUpload.setup({
-          'transit_name_input': '#user_group_name'
-        });
-      });
-      
- -->
