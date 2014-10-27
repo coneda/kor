@@ -4,19 +4,7 @@ Transform /^table:name,distinct_name,kind,collection/ do |table|
   table
 end
 
-Then /^the following entities should exist:$/ do |table|
-  table.hashes.each do |h|
-    Entity.
-      includes(:collection, :kind).
-      where("collections.name LIKE ?", h[:collection]).
-      where("kinds.name LIKE ?", h[:kind]).
-      where(:name => h[:name]).
-      where(:distinct_name => h[:distinct_name]).
-      count.should == 1
-  end
-end
-
-Then /^user "([^"]*)" should have the following access rights$/ do |user, table|
+Then /^user "([^\"]*)" should have the following access rights$/ do |user, table|
   user = User.find_by_name(user)
   
   results = []
