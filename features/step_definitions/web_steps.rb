@@ -18,9 +18,6 @@
 # * http://elabs.se/blog/15-you-re-cuking-it-wrong
 #
 
-
-require 'uri'
-require 'cgi'
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "selectors"))
 
@@ -31,12 +28,10 @@ module WithinHelpers
 end
 World(WithinHelpers)
 
-# Single-line step scoper
 When /^(.*) within (.+)$/ do |step, parent|
   with_scope(parent) { step step }
 end
 
-# Multi-line step scoper
 When /^(.*) within ([^:]+):$/ do |step, parent, table_or_string|
   with_scope(parent) { step "#{step}:", table_or_string }
 end
@@ -62,21 +57,6 @@ When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |field, quoted, va
   fill_in(field, :with => value)
 end
 
-When /^(?:|I )fill in "([^"]*)" for "([^"]*)"$/ do |value, field|
-  fill_in(field, :with => value)
-end
-
-# Use this to fill in an entire form with data from a table. Example:
-#
-#   When I fill in the following:
-#     | Account Number | 5002       |
-#     | Expiry date    | 2009-11-01 |
-#     | Note           | Nice guy   |
-#     | Wants Email?   |            |
-#
-# TODO: Add support for checkbox, select og option
-# based on naming conventions.
-#
 When /^(?:|I )fill in the following:$/ do |fields|
   fields.rows_hash.each do |name, value|
     step %{I fill in "#{name}" with "#{value}"}
@@ -121,7 +101,7 @@ Then /^(?:|I )should see \/([^\/]*)\/$/ do |regexp|
   end
 end
 
-Then /^(?:|I )should not see "([^"]*)"$/ do |text|
+Then /^(?:|I )should not see "([^\"]*)"$/ do |text|
   if page.respond_to? :should
     page.should have_no_content(text)
   else
@@ -129,62 +109,6 @@ Then /^(?:|I )should not see "([^"]*)"$/ do |text|
   end
 end
 
-Then /^(?:|I )should not see \/([^\/]*)\/$/ do |regexp|
-  regexp = Regexp.new(regexp)
-
-  if page.respond_to? :should
-    page.should have_no_xpath('//*', :text => regexp)
-  else
-    assert page.has_no_xpath?('//*', :text => regexp)
-  end
-end
-
-Then /^the "([^"]*)" field(?: within (.*))? should contain "([^"]*)"$/ do |field, parent, value|
-  with_scope(parent) do
-    field = find_field(field)
-    field_value = (field.tag_name == 'textarea') ? field.text : field.value
-    if field_value.respond_to? :should
-      field_value.should =~ /#{value}/
-    else
-      assert_match(/#{value}/, field_value)
-    end
-  end
-end
-
-Then /^the "([^"]*)" field(?: within (.*))? should not contain "([^"]*)"$/ do |field, parent, value|
-  with_scope(parent) do
-    field = find_field(field)
-    field_value = (field.tag_name == 'textarea') ? field.text : field.value
-    if field_value.respond_to? :should_not
-      field_value.should_not =~ /#{value}/
-    else
-      assert_no_match(/#{value}/, field_value)
-    end
-  end
-end
-
-Then /^the "([^"]*)" checkbox(?: within (.*))? should be checked$/ do |label, parent|
-  with_scope(parent) do
-    field_checked = find_field(label)['checked']
-    if field_checked.respond_to? :should
-      field_checked.should be_true
-    else
-      assert field_checked
-    end
-  end
-end
-
-Then /^the "([^"]*)" checkbox(?: within (.*))? should not be checked$/ do |label, parent|
-  with_scope(parent) do
-    field_checked = find_field(label)['checked']
-    if field_checked.respond_to? :should
-      field_checked.should be_false
-    else
-      assert !field_checked
-    end
-  end
-end
- 
 Then /^(?:|I )should be on (.+)$/ do |page_name|
   expected_uri = URI.parse(path_to(page_name))
   uri = URI.parse(current_url)
@@ -194,23 +118,6 @@ Then /^(?:|I )should be on (.+)$/ do |page_name|
   if expected_uri.fragment
     expect(uri.fragment).to eq(expected_uri.fragment)
   end
-end
-
-Then /^(?:|I )should have the following query string:$/ do |expected_pairs|
-  query = URI.parse(current_url).query
-  actual_params = query ? CGI.parse(query) : {}
-  expected_params = {}
-  expected_pairs.rows_hash.each_pair{|k,v| expected_params[k] = v.split(',')} 
-  
-  if actual_params.respond_to? :should
-    actual_params.should == expected_params
-  else
-    assert_equal expected_params, actual_params
-  end
-end
-
-Then /^show me the page$/ do
-  save_and_open_page
 end
 
 Then /^I should( not)? see element "(.*?)" with text "(.*?)"$/ do |negative, locator, text|

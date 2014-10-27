@@ -1,22 +1,22 @@
-Given /^the user "([^"]*)"$/ do |user|
+Given /^the user "([^\"]*)"$/ do |user|
   unless User.exists? :name => user
     User.make(:name => user, :password => user, :email => "#{user}@example.com")
   end
 end
 
-Given /^the user "([^"]*)" is a "([^"]*)"$/ do |user, role|
+Given /^the user "([^\"]*)" is a "([^\"]*)"$/ do |user, role|
   step "the user \"#{user}\""
   user = User.find_by_name(user)
   user.send("#{role}=".to_sym, true)
   user.save
 end
 
-Given /^the user "([^"]*)" has password "([^"]*)"$/ do |user, password|
+Given /^the user "([^\"]*)" has password "([^\"]*)"$/ do |user, password|
   user = User.find_by_name(user)
   user.update_attributes :password => password, :make_personal => user.personal?, :terms_accepted => true
 end
 
-Given /^the user "([^"]*)" with credential "([^"]*)"$/ do |user, credential|
+Given /^the user "([^\"]*)" with credential "([^\"]*)"$/ do |user, credential|
   step "the credential \"#{credential}\""
   step "the user \"#{user}\""
   user = User.find_by_name(user)

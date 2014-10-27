@@ -52,12 +52,6 @@ Then /^I should see an input with the current date$/ do
   expect(page).to have_field("user_group_name", :with => Time.now.strftime("%d.%m.%Y"))
 end
 
-Then /^I should see the hidden element "([^"]*)"$/ do |selector|
-  page.all(selector).any? do |element|
-    !element.visible?
-  end.should be_true
-end
-
 When /^(?:|I )unselect "([^"]*)" from "([^"]*)"(?: within "([^"]*)")?$/ do |value, field, selector|
   with_scope(selector) do
     unselect(value, :from => field)
@@ -83,23 +77,6 @@ When /^I select "([^"]*)" from the autocomplete$/ do |pattern|
   page.all('li.ui-menu-item a').to_a.find do |anker|
     anker.text.match Regexp.new(pattern)
   end.click
-end
-
-When /^I press the "([^"]*)" key$/ do |key|
-  key = case
-    when 'enter' then 13
-    else
-      raise "undefined key #{key}"
-  end
-
-  page.execute_script("
-    function trigger_key(k) {
-      var event = $.Event('keypress');
-      event.which = k;
-      $(':focus').trigger(event);
-    }
-    trigger_key('#{key}');
-  ")
 end
 
 When /^I send the credential "([^\"]*)"$/ do |attributes|
@@ -134,13 +111,6 @@ end
 
 When /^I send a "([^\"]*)" request to "([^\"]*)" with params "([^\"]*)"$/ do |method, url, params|
   Capybara.current_session.driver.send method.downcase.to_sym, url, eval(params)
-  if page.status_code >= 300 && page.status_code < 400
-    Capybara.current_session.driver.browser.follow_redirect!
-  end
-end
-
-When /^I send a "([^\"]*)" request to path "([^\"]*)" with params "([^\"]*)"$/ do |method, path, params|
-  Capybara.current_session.driver.send method.downcase.to_sym, path_to(path), eval(params)
   if page.status_code >= 300 && page.status_code < 400
     Capybara.current_session.driver.browser.follow_redirect!
   end
@@ -192,14 +162,6 @@ end
 
 When /^I wait for "([^"]*)" seconds?$/ do |num|
   sleep num.to_f
-end
-
-When /^I fill in element "([^"]*)" with index "([^"]*)" with "([^"]*)"$/ do |field, index, value|
-  page.all(field)[index.to_i].set value
-end
-
-Then /^the element "([^"]*)" with index "([^"]*)" should contain "([^"]*)"$/ do |field, index, value|
-  page.all(field)[index.to_i].value.should match(Regexp.new value)
 end
 
 When /^I fill in "([^"]*)" with harmful code$/ do |field_name|

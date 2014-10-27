@@ -1,11 +1,5 @@
 # encoding: utf-8
 
-# Basics
-
-Given /^there is a user named "([^\"]*)"$/ do |name|
-  User.create!(:name => name, :password => name, :email => "#{name}@coneda.net")
-end
-
 Given /^the credential "([^\"]*)"$/ do |name|
   step "the credential \"#{name}\" described by \"\""
 end
@@ -29,22 +23,10 @@ Given /^the kind "([^\"]*)"$/ do |names|
   Kind.find_or_create_by_name(:name => singular, :plural_name => plural)
 end
 
-Given /^the kinds$/ do |table|
-  table.hashes.each do |kind|
-    step "the kind \"#{kind[:name]}/#{kind[:plural_name]}\""
-  end
-end
-
 Given /^the relation "([^\"]*)"$/ do |names|
   name, reverse = names.split('/')
   reverse = name if reverse.blank?
   Relation.create! :name => name, :reverse_name => reverse
-end
-
-Given /^the relations$/ do |table|
-  table.hashes.each do |relation|
-    step "the relation \"#{relation[:name]}/#{relation[:reverse_name]}\""
-  end
 end
 
 Given /^the unprocessed medium "([^"]*)"$/ do |path|
@@ -136,40 +118,8 @@ Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" through cred
   end
 end
 
-Given /^the following access rights$/ do |table|
-  table.hashes.each do |access|
-    step "the collection \"#{access[:collection]}\""
-    collection = Collection.find_by_name(access[:collection])
-    step "the credential \"#{access[:credential]}\""
-    credential = Credential.find_by_name(access[:credential])
-    step "the user \"#{access[:user]}\""
-    user = User.find_by_name(access[:user])
-    
-    user.groups << credential
-    user.save
-  
-    access[:rights].chars.to_a.each do |right|
-      policy = case right
-        when 'r' then :admin_rating
-        when 'v' then :view
-        when 'e' then :edit
-        when 'c' then :create
-        when 'd' then :delete
-        when 'l' then :download_originals
-      end
-      Grant.create :collection => collection, :policy => policy, :credential => credential
-    end
-  end
-end
-
 Given /^user "([^"]*)" is a "([^"]*)"$/ do |user, role|
   User.find_by_name(user).update_attributes role.to_sym => true
-end
-
-Then /^user "([^"]*)" should be in groups "([^"]*)"$/ do |user, groups|
-  user_groups = User.find_by_name(user).groups.map{|g| g.name}
-  groups = groups.split('/')
-  (user_groups & groups).size.should == groups.size
 end
 
 Given /^the (invalid )?entity "([^"]*)" of kind "([^"]*)" inside collection "([^"]*)"$/ do |invalid, entity, kind, collection|
@@ -187,29 +137,8 @@ Given /^(\d+) (invalid )?entities "([^"]*)" of kind "([^"]*)" inside collection 
   end
 end
 
-
-# Attributes
-
 Given /^the entity "([^"]*)" has the synonyms "([^"]*)"$/ do |entity, synonyms|
   Entity.find_by_name(entity).update_attributes :synonyms => synonyms.split('/')
-end
-
-Given /^the entity "([^"]*)" has the tags "([^"]*)"$/ do |entity, tag_list|
-  Entity.find_by_name(entity).update_attributes :tag_list => tag_list
-end
-
-
-# Groups
-
-Given /^there are some authority groups within categories$/ do
-  category_1 = AuthorityGroupCategory.make(:name => "Category 1")
-  category_2 = AuthorityGroupCategory.make(:name => "Category 2")
-  
-  category_2.authority_groups.make(:name => 'Group 1')
-end
-
-Given /^there is one global group in the database$/ do
-  AuthorityGroup.create(:name => 'test_group')
 end
 
 Given /^the authority group "([^"]*)"(?: inside "([^"]+)")?$/ do |name, category_name|
@@ -223,13 +152,6 @@ Given /^the authority group "([^"]*)" contains a medium$/ do |name|
   step "Mona Lisa and a medium as correctly related entities"
   
   AuthorityGroup.find_by_name(name).add_entities Medium.first.entity
-end
-
-Given /^the first medium is inside user group "([^"]*)"$/ do |name|
-  step "the medium \"spec/fixtures/image_a.jpg\""
-  step "the user group \"#{name}\""
-  
-  UserGroup.find_by_name(name).add_entities Entity.last
 end
 
 Given /^the authority group category "([^"]*)"$/ do |name|
@@ -264,39 +186,6 @@ Given /^the user group "([^\"]*)"( published as "[^\"]*")?$/ do |name, pub|
   end
 end
 
-Then /^there should be only one empty authority group category$/ do
-  AuthorityGroup.count.should eql(0)
-  AuthorityGroupCategory.count.should eql(1)
-  AuthorityGroupCategory.first.authority_groups.count.should eql(0)
-end
-
-Given /^a few authority group categories$/ do
-  AGC = AuthorityGroupCategory
-  
-  a = AGC.make(:A)
-  b = AGC.make(:B)
-  c = AGC.make(:C)
-  
-  ba = AGC.make(:BA)
-  bb = AGC.make(:BB)
-  
-  baa = AGC.make(:BAA)
-  bab = AGC.make(:BAB)
-  
-  baa.move_to_child_of(ba)
-  bab.move_to_child_of(ba)
-  
-  ba.move_to_child_of(b)
-  bb.move_to_child_of(b)
-end
-
-
-# Assertions
-
-Then /^there should be ([0-9]+) authority group categories$/ do |num|
-  AuthorityGroupCategory.count.should eql(num.to_i)
-end
-
 Then /^there should be "([^"]*)" "([^"]*)" entity in the database$/ do |num, kind|
   Kind.find_by_name(kind).entities.count.should eql(num.to_i)
 end
@@ -312,10 +201,6 @@ end
 Then /^there should be no "([^"]*)" named "([^"]*)"$/ do |model, name|
   model.classify.constantize.find_by_name(name).should be_nil
 end
-
-
-
-# Combinations
 
 Given /^the relation "([^"]*)" between "([^"]*)" and "([^"]*)"$/ do |relation, from_kind, to_kind|
   step "the kind \"#{from_kind}\""
@@ -362,9 +247,6 @@ Given /^the relationship "(.*?)" "(.*?)" the last medium$/ do |from, name|
   Relationship.relate_and_save(from, name, to)
 end
 
-
-# Setups
-
 Given /^there are "([^"]*)" entities named "([^"]*)" of kind "([^"]*)"$/ do |num, name_pattern, kind|
   step "the kind \"#{kind}\""
   
@@ -400,11 +282,6 @@ Given /^Leonardo, Mona Lisa and a medium as correctly related entities$/ do
   Relationship.relate_once_and_save(leonardo, "hat erschaffen", mona_lisa)
 end
 
-Given /^there are a person and an artwork in the database$/ do
-  @leonardo = Kind.find_by_name('Person').entities.create(:name => 'Leonardo da Vinci')
-  @mona_lisa = Kind.find_by_name('Werk').entities.create(:name => 'Mona Lisa', :dataset => Artwork.new)
-end
-
 Given /^the entity "([^\"]*)" has ([0-9]+) relationships$/ do |name, amount|
   step "the relation \"ist äquivalent zu/ist äquivalent zu\""
   entity = Entity.find_by_name(name)
@@ -416,10 +293,6 @@ Given /^the entity "([^\"]*)" has ([0-9]+) relationships$/ do |name, amount|
   end
   
   Relationship.last.update_attributes :properties => ['ENDE']
-end
-
-Given(/^the meta entities sample configuration$/) do
-  Kor.config.update(YAML.load_file "#{Rails.root}/spec/fixtures/meta_entities_config.yml")
 end
 
 Given(/^kind "(.*?)" has web service "(.*?)"$/) do |kind_name, web_service_name|
