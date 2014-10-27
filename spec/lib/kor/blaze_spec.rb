@@ -72,4 +72,25 @@ describe Kor::Blaze do
     result.first[:relationships][3][:entity_id].should == c.id
   end
 
+  it "should not show media previews for unauthorized media entities" do
+    default = FactoryGirl.create :default
+    media = FactoryGirl.create :media
+    works = FactoryGirl.create :works
+    people = FactoryGirl.create :people
+    medium = FactoryGirl.create :picture, :collection => FactoryGirl.create(:private)
+    mona_lisa = FactoryGirl.create :mona_lisa
+    person = FactoryGirl.create :jack
+    FactoryGirl.create :shows
+    FactoryGirl.create :has_created
+    Relationship.relate_and_save(medium, 'shows', mona_lisa)
+    Relationship.relate_and_save(mona_lisa, 'has been created by', person)
+    admins = FactoryGirl.create :admins
+    Grant.create :credential => admins, :collection => default, :policy => "view"
+    FactoryGirl.create :admin, :groups => [admins]
+
+    blaze = Kor::Blaze.new(User.admin, mona_lisa)
+    expect(blaze.relations_for.first[:name]).to eq("has been created by")
+    expect(blaze.relations_for :media => true).to be_empty
+  end
+
 end

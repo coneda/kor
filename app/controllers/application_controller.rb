@@ -152,9 +152,12 @@ class ApplicationController < ActionController::Base
       )
     end
     
-    def history_store
+    def history_store(url = nil)
+      unless request.url.match(/^.+\/$/)
+        url ||= request.url
+      end
       session[:history] ||= []
-      session[:history] << request.url unless request.url.match(/^.+\/$/)
+      session[:history] << url
       session[:history].shift if session[:history].size > 20
     end
     
@@ -196,4 +199,5 @@ class ApplicationController < ActionController::Base
     def current_entity
       session[:current_entity]
     end
+
 end

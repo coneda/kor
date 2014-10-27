@@ -276,7 +276,7 @@ ComponentSearch.hash_to_result = function(hash) {
   tpl.attr('id', 'entity_' + hash.id);
   tpl.set('input', 'id', '/entity_' + hash.id);
   tpl.set('input', 'name', '/entity_' + hash.id);
-  tpl.set('a', 'href', '/blaze/' + hash.id);
+  tpl.set('a', 'href', '/blaze#/entities/' + hash.id);
   tpl.set('a', 'target', '_blank');
   tpl.fill_in('.name', hash.name);
   tpl.fill_in('.kind', hash.kind);

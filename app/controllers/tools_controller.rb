@@ -8,23 +8,19 @@ class ToolsController < ApplicationController
 
   layout 'normal_small'
 
+
+  def history
+    history_store params[:url]
+    render :nothing => true
+  end
+
+
   ####################### statistics ###########################################
 
   # gathers statistics to be shown to the user
   def statistics
   end
   
-  def credits
-    if params[:id]
-      @user = User.find(params[:id])
-      @engagements = @user.engagements.order('created_at DESC')
-      render :json => @engagements
-    else
-      @users = User.without_predefined.by_credits.paginate(:per_page => 30, :page => params[:page] || 1)
-      render :layout => 'wide'
-    end
-  end
-
 
   ####################### invalid ##############################################
 
@@ -62,7 +58,7 @@ class ToolsController < ApplicationController
       flash[:error] = I18n.t("objects.marked_as_current_failure", :o => entity_name)
     end
 
-    redirect_to :back
+    redirect_to back_save
   end
   
   def add_media
@@ -100,8 +96,8 @@ class ToolsController < ApplicationController
 
     respond_to do |format|
       format.html do 
-        if request.referer && request.referer.match(/\/(blaze|entities)\//)
-          redirect_to :back
+        if request.referer && request.referer.match(/\/blaze/)
+          redirect_to back_save
         else
           redirect_to :controller => 'tools', :action => 'clipboard'
         end
@@ -320,7 +316,7 @@ class ToolsController < ApplicationController
           redirect_to back_save
         end
 
-        redirect_to @target
+        redirect_to web_path(:anchor => entity_path(@target))
       end
     end
   
@@ -339,7 +335,7 @@ class ToolsController < ApplicationController
         
         if @entity
           flash[:notice] = I18n.t('notices.merge_success')
-          redirect_to @entity
+          redirect_to web_path(:anchor => "/entities/#{@entity.id}")
         else
           flash[:error] = I18n.t('errors.merge_failure')
           redirect_to :action => 'clipboard'

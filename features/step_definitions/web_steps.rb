@@ -53,8 +53,8 @@ When /^(?:|I )press "([^"]*)"$/ do |button|
   click_button(button)
 end
 
-When /^(?:|I )follow "([^"]*)"$/ do |link|
-  click_link(link)
+When /^(?:|I )follow "([^"]*)"$/ do |locator|
+  click_link(locator)
 end
 
 When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |field, quoted, value|
@@ -186,11 +186,13 @@ Then /^the "([^"]*)" checkbox(?: within (.*))? should not be checked$/ do |label
 end
  
 Then /^(?:|I )should be on (.+)$/ do |page_name|
-  current_path = URI.parse(current_url).path
-  if current_path.respond_to? :should
-    current_path.should == path_to(page_name)
-  else
-    assert_equal path_to(page_name), current_path
+  expected_uri = URI.parse(path_to(page_name))
+  uri = URI.parse(current_url)
+
+  expect(uri.path).to eq(expected_uri.path)
+
+  if expected_uri.fragment
+    expect(uri.fragment).to eq(expected_uri.fragment)
   end
 end
 

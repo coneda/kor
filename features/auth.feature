@@ -30,7 +30,8 @@ Feature: Authentication and Authorization
     And I press "zurücksetzen"
     Then I should see "konnte nicht gefunden werden"
   
-  
+
+  @javascript  
   Scenario: Login after a session timeout
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "Werk/Werke"

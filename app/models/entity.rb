@@ -680,6 +680,6 @@ class Entity < ActiveRecord::Base
     end
   }
   
-  scope :load_fully, joins(:kind, :collection)
+  scope :load_fully, joins(:kind, :collection).includes(:medium)
   
 end

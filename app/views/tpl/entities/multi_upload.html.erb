@@ -3,7 +3,7 @@
   <div class="layout_panel left small_panel_size">
     <div class="content_panel">
       <div class="title">
-        <%= I18n.t("objects.new", :o => Medium.model_name.human(:count => :other)) %>
+        {{ 'objects.new' | translate:{interpolations: {o: 'activerecord.models.medium.other'} } | capitalize }}
       </div>
 
       <form class="kor_form">
@@ -28,11 +28,13 @@
               :control => select_tag(:relation_name, options_for_select([""] + relation_names), "ng-model" => "file_queue.params.relation_name")
             ) %>
           <% else %>
-            <%= I18n.t("messages.no_relations_provided") %>
+            {{'messages.no_relations_provided' | translate | capitalize}}
           <% end %>
         <% end %>
 
-        <a kor-fu="file_queue" href="#">» <%= I18n.t("objects.add", :o => I18n.t('nouns.file', :count => :other)) %></a>
+        <a kor-fu="file_queue" href="#">
+          » {{ 'objects.add' | translate:{interpolations: {o: 'nouns.file.other'} } | capitalize }}
+        </a>
       </form>
     </div>
   </div>

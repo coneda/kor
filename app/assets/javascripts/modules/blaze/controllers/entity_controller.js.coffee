@@ -1,56 +1,38 @@
-kor.controller('korEntitiesShowCtrl', [
-  '$scope', 'korData', 'relationships_service',
-  (scope, korData, rss) ->
+kor.controller('entity_controller', [
+  '$scope', 'korData', 'relationships_service', '$routeParams', 'entities_service', '$location',
+  (scope, kd, rss, rp, es, l) ->
 
-    scope.$on 'kor-initial-load-complete', ->
-      scope.entity = korData.entity
-      
-    scope.$on 'kor-deep-media-load-complete', (event, relationship, data, page) ->
-      relationship.media = []
-
-      row = []
-      for r in data.relationships
-        if row.length == 3
-          relationship.media.push row
-          row = []
-
-        row.push r.entity
-
-      if row.length > 0
-        row.push {} while row.length < 3
-        relationship.media.push row
-
-      relationship.media_page = page
-      
-    scope.$on 'kor-relation-load-complete', (event, relation, data, page) ->
-      relation.relationships = data.relationships
-      relation.page = page
+    promise = es.show(rp.id)
+    promise.success (data) -> scope.entity = data
+    promise.error (data) -> l.path("/denied")
 
     scope.page_deep_media = (relationship, page = 1, event) ->
-      scope.current_deep_relationship = relationship
-      korData.deep_media_load(relationship, page)
-
       event.preventDefault() if event
 
-    scope.show_link = (link) ->
-      if link.header
-        result = false
+      es.deep_media_load(relationship, page).success (data) ->
+        relationship.media = []
+        row = []
+        for r in data.relationships
+          if row.length == 3
+            relationship.media.push row
+            row = []
+          row.push r.entity
+        if row.length > 0
+          row.push {} while row.length < 3
+          relationship.media.push row
+        relationship.media_page = page
 
-        for k, v of link.links
-          result = true
-
-        result
-      else
-        !!link[1]
-
-      
     scope.page_relation = (relation, page = 1, event) ->
-      korData.relation_load(relation, page)
       event.preventDefault() if event
+      es.relation_load(rp.id, relation, page).success (data) ->
+        relation.relationships = data.relationships
+        relation.page = page
       
     scope.page_media_relation = (relation, page = 1, event) ->
-      korData.media_relation_load(relation, page)
       event.preventDefault() if event
+      es.media_relation_load(rp.id, relation, page).success (data) ->
+        relation.relationships = data.relationships
+        relation.page = page
       
     scope.switch_relation = (relation, event) ->
       for r in relation.relationships
@@ -82,29 +64,29 @@ kor.controller('korEntitiesShowCtrl', [
       event.preventDefault() if event
     
     scope.in_clipboard = ->
-      if korData.info && korData.entity
-        korData.info.session.clipboard ||= []
-        korData.info.session.clipboard.indexOf(korData.entity.id) != -1
+      if kd.info && scope.entity
+        kd.info.session.clipboard ||= []
+        kd.info.session.clipboard.indexOf(scope.entity.id) != -1
       else
         false
         
     scope.allowed_to = (policy, object = null) ->
-      if korData.info && korData.entity
-        object ||= korData.entity.collection_id
-        korData.info.session.user.auth.collections[policy] ||= []
-        korData.info.session.user.auth.collections[policy].indexOf(object) != -1
+      if kd.info && scope.entity
+        object ||= scope.entity.collection_id
+        kd.info.session.user.auth.collections[policy] ||= []
+        kd.info.session.user.auth.collections[policy].indexOf(object) != -1
       else
         false
         
     scope.allowed_to_any = (policy) ->
-      if korData.info
-        korData.info.session.user.auth.collections[policy].length != 0
+      if kd.info
+        kd.info.session.user.auth.collections[policy].length != 0
       else
         false
 
     scope.visible_entity_fields = ->
-      if korData.entity
-        korData.entity.fields.filter (field) ->
+      if scope.entity
+        scope.entity.fields.filter (field) ->
           field.value && field.settings.show_on_entity == "1"
       else
         []
@@ -139,8 +121,6 @@ kor.controller('korEntitiesShowCtrl', [
       event.preventDefault()
       event.stopPropagation()
 
-    korData.initial_load()
-
 
     # Edit relationship
 
@@ -164,5 +144,14 @@ kor.controller('korEntitiesShowCtrl', [
       event.preventDefault() if event
       index = relationship.properties.indexOf(property)
       relationship.properties.splice(index, 1) unless index == -1
+
+    scope.show_link = (link) ->
+      if link.header
+        result = false
+        for k, v of link.links
+          result = true
+        result
+      else
+        !!link[1]
 
 ])

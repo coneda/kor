@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Fields::Regex do
   
   it "should serialize it's settings" do
-    kind = FactoryGirl.create(:kind)
+    kind = FactoryGirl.create(:works)
   
     field = described_class.create(
       :kind_id => kind.id,

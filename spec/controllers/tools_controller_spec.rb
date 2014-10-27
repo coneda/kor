@@ -84,7 +84,7 @@ describe ToolsController do
         :kind_id => Kind.find_by_name('Werk').id,
         :dataset => {:material => 'oil on paper'}
       }
-    response.should redirect_to(:controller => 'entities', :action => 'show', :id => Entity.first.id)
+    expect(response).to redirect_to(web_path(:anchor => "/entities/#{Entity.first.id}"))
 
     Entity.first.name.should eql("Mona Lisa")
     Entity.first.dataset['material'].should eql('oil on paper')
@@ -105,7 +105,7 @@ describe ToolsController do
         :name => 'Mona Lisa', 
         :kind_id => Kind.find_by_name('Werk').id
       }
-    response.should redirect_to(:controller => 'entities', :action => 'show', :id => Entity.first.id)
+      expect(response).to redirect_to(web_path(:anchor => "/entities/#{Entity.first.id}"))
 
     Entity.first.name.should eql("Mona Lisa")
     Entity.first.datings.first.dating_string.should eql("1533")
@@ -139,7 +139,7 @@ describe ToolsController do
     image_a.authority_groups.should include(group_1)
     image_a.authority_groups.should include(group_2)
       
-    response.should redirect_to(:controller => 'entities', :action => 'show', :id => image_a.id)
+    expect(response).to redirect_to(web_path(:anchor => "/entities/#{image_a.id}"))
   end
   
   it "should merge entities while not loosing comments" do

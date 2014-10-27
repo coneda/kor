@@ -9,6 +9,6 @@
       - primary_entities.each do |pe|
         - pe.related(:assume => :primary, :search => :secondary).reject{|se| se.is_medium?}.each do |se|
           %tr
-            %td.subtitle= link_to h(se.display_name), se
+            %td.subtitle= link_to h(se.display_name), web_path(:anchor => entity_path(se))
         %tr
-          %td.text= link_to h(pe.display_name), pe
+          %td.text= link_to h(pe.display_name), web_path(:anchor => entity_path(pe))

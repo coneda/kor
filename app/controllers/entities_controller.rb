@@ -6,7 +6,7 @@ class EntitiesController < ApplicationController
     @entity = viewable_entities.find_by_uuid(params[:uuid])
     
     if @entity
-      redirect_to @entity
+      redirect_to web_path(:anchor => entity_path(@entity))
     else
       not_found
     end
@@ -37,21 +37,6 @@ class EntitiesController < ApplicationController
     )
     
     render :layout => 'wide'
-  end
-  
-  def relationships
-    @entity = Entity.find(params[:id])
-    
-    if authorized?(:view, @entity.collection)
-      gl = @entity.grouped_related_entities(current_user, :view, :media => :no)
-      @relationships = gl[params[:relation_name]][(params[:page].to_i - 1) * 10, 10]
-      render :partial => 'relationships_page', :locals => {
-        :relationships => @relationships,
-        :entity => @entity
-      }
-    else
-      redirect_to denied_path
-    end
   end
   
   def duplicate
@@ -85,7 +70,7 @@ class EntitiesController < ApplicationController
 
   def index
     if params[:query] && @entity = viewable_entities.find_by_uuid(params[:query][:name])
-      redirect_to @entity
+      redirect_to web_path(:anchor => entity_path(@entity))
     else
       @query = kor_graph.search(:attribute,
         :criteria => params[:query],
@@ -93,29 +78,6 @@ class EntitiesController < ApplicationController
       )
 
       render :layout => 'small_normal_bare'
-    end
-  end
-
-  def show
-    @entity = Entity.find(params[:id])
-    
-    if authorized?(:view, @entity.collection)
-      if Kor.config['app']['use_blaze']
-        redirect_to "/blaze/#{params[:id]}", :flash => flash
-        return 0
-      end
-      
-      @relations = @entity.grouped_related_entities(current_user, :view, :media => :no).to_a.sort do |x, y|
-        x.first.downcase <=> y.first.downcase
-      end
-      @media_relations = @entity.grouped_related_entities(current_user, :view, :media => :yes).to_a.sort do |x, y|
-        x.first.downcase <=> y.first.downcase
-      end
-      
-      history_store
-      render :layout => 'normal_small_bare'
-    else
-      redirect_to denied_path
     end
   end
 
@@ -155,6 +117,7 @@ class EntitiesController < ApplicationController
       if @entity.save
         if params[:user_group_name]
           transit = UserGroup.owned_by(current_user).find_or_create_by_name(params[:user_group_name])
+          debugger unless @entity
           transit.add_entities @entity if transit
         end
         
@@ -165,7 +128,7 @@ class EntitiesController < ApplicationController
         respond_to do |format|
           format.html do
             flash[:notice] = I18n.t('objects.create_success', :o => @entity.display_name)
-            redirect_to @entity
+            redirect_to web_path(:anchor => entity_path(@entity))
           end
           format.json {render :json => {:success => true}}
         end
@@ -219,7 +182,7 @@ class EntitiesController < ApplicationController
       if @entity.update_attributes(params[:entity])
         SystemGroup.find_or_create_by_name('invalid').remove_entities @entity
         flash[:notice] = I18n.t( 'objects.update_success', :o => @entity.display_name )
-        redirect_to(@entity)
+        redirect_to web_path(:anchor => entity_path(@entity))
       else
         render :action => "edit"
       end

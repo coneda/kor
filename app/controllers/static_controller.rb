@@ -27,15 +27,8 @@ class StaticController < ApplicationController
   end
   
   def blaze
-    @entity = Entity.find(params[:id])
-    
-    if authorized?(:view, @entity.collection)
-      history_store
-      flash.keep
-      render :layout => 'blaze'
-    else
-      redirect_to denied_path
-    end
+    flash.keep
+    render :layout => 'blaze', :nothing => true
   end
   
 end

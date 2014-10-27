@@ -107,25 +107,6 @@ describe EntitiesController do
   end
 
 
-  # view
-  it "should not show unauthorized entities" do
-    entity = side_entity
-    
-    get :show, :id => entity.id
-    response.should redirect_to(denied_path)
-  end
-  
-  it "should show authorized entities" do
-    set_side_collection_policies :view => [@admins]
-    
-    entity = side_entity
-    
-    get :show, :id => entity.id
-    
-    response.should_not redirect_to(denied_path)
-  end
-  
-  
   # edit
   it "should not allow editing without appropriate authorization" do
     set_side_collection_policies :view => [@admins]
@@ -142,11 +123,8 @@ describe EntitiesController do
   it "should not allow creating entities without appropriate authorization" do
     @main.grants.destroy_all
     
-    get :index
-    response.should_not have_selector("select[name='new_entity[kind_id]']")
-    
     get :new
-    
+    response.should_not have_selector("select[name='new_entity[kind_id]']")
     response.should redirect_to(denied_path)
   end
   
@@ -161,10 +139,7 @@ describe EntitiesController do
   # delete
   it "should not allow deleting entities without appropriate authorization" do
     set_side_collection_policies :view => [@admins]
-  
-    get :show, :id => side_entity.id
-    response.should_not have_selector(".section_panel > .header > -commands img[alt='X']")
-        
+    
     delete :destroy, :id => side_entity.id
     response.should redirect_to(denied_path)
   end
@@ -205,46 +180,8 @@ describe EntitiesController do
   end
   
   
-  # relationships
-  it "should not show relationships to unauthorized entities" do
-    Relation.make(:name => 'hat erschaffen', :reverse_name => 'wurde erschaffen von')
-    
-    Relationship.relate_and_save(side_entity, 'hat erschaffen', main_entity)
-    
-    get :show, :id => main_entity.id
-    response.should_not contain('Leonardo da Vinci')
-  end
-  
-  it "should not show the edit nor delete buttons for unauthorized relationships" do
-    set_side_collection_policies :view => [@admins]
-    set_main_collection_policies :edit => []
-
-    Relation.make(:name => 'hat erschaffen', :reverse_name => 'wurde erschaffen von')
-    relationship = Relationship.relate_and_save(side_entity, 'hat erschaffen', main_entity)
-    
-    get :show, :id => main_entity.id
-    response.should_not have_selector "a[href='#{edit_relationship_path(relationship)}']"
-  end
-  
-  it "should not show media previews for unauthorized media entities" do
-    medium = Entity.make(:medium, 
-      :collection => side_collection,
-      :medium => Medium.make_unsaved
-    )
-    artwork = main_entity
-    person = Entity.make(:kind => @person_kind, :name => 'Leonardo da Vinci')
-    
-    Relation.make(:name => 'stellt dar', :reverse_name => 'wird dargestellt von')
-    Relation.make(:name => 'hat erschaffen', :reverse_name => 'wurde erschaffen von')
-    
-    Relationship.relate_and_save(medium, 'stellt dar', artwork)
-    Relationship.relate_and_save(artwork, 'hat erschaffen', person)
-    
-    get :show, :id => person.id
-    response.should_not have_selector("a[href='#{entity_path(medium)}']")
-  end
-  
   # recent entities
+
   it "should not show the recent entities without edit rights" do
     set_main_collection_policies :edit => []
     
@@ -263,6 +200,7 @@ describe EntitiesController do
   
   
   # invalid entities
+
   it "should not show the invalid entities without delete rights" do
     set_main_collection_policies :delete => []
     
@@ -276,21 +214,23 @@ describe EntitiesController do
     SystemGroup.make(:name => "invalid").add_entities side_entity
 
     get :invalid
-    response.should have_selector("a[href='#{entity_path(side_entity)}']")
+    path = web_path(:anchor => entity_path(side_entity))
+    response.should have_selector("a[href='#{path}']")
   end
   
   
   # menu
+  
   it "should not show links to recent and invalid entities without authorization" do
     set_main_collection_policies :edit => [], :delete => []
   
-    get :index
+    get :new
     response.should_not have_selector("a[href='#{recent_entities_path}']")
     response.should_not have_selector("a[href='#[invalid_entities_path]']")
   end
   
   it "should not show links to recent and invalid entities without authorization" do
-    get :index
+    get :new, :kind_id => Kind.medium_kind.id
     response.should have_selector("a[href='#{recent_entities_path}']")
     response.should have_selector("a[href='#{invalid_entities_path}']")
   end

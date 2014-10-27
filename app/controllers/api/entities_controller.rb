@@ -4,51 +4,35 @@ class Api::EntitiesController < Api::ApiController
 
   def show
     @entity = Entity.
-      where(:collection_id => authorized_collections.map{|c| c.id}).
-      includes(:medium, :kind, :collection, :datings).
+      includes(
+        :medium, :kind, :collection, :datings, :creator, :updater, 
+        :authority_groups => :authority_group_category
+      ).
       find(params[:id])
-      
-    out = @entity.serializable_hash(:include => [:medium, :kind, :collection, :datings])
-    primaries = @entity.related(:assume => :media, :search => :primary)
-    out['primary'] = primaries.map do |e|
-      e.name + "<br />(#{e.uuid})<br />" + e.datings.map do |d|
-        "#{d.label}: #{d.dating_string}"
-      end.join('<br />')
-    end.join(', ')
-    out['secondary'] = primaries.map do |pr| 
-      pr.related(:assume => :primary, :search => :secondary).map do |e|
-        e.name + "<br />(#{e.uuid})<br />" + e.datings.map do |d|
-          "#{d.label}: #{d.dating_string}"
-        end.join('<br />')
-      end
-    end.flatten.join(', ')
-    out['rating_id'] = params[:rating_id]
-      
-    flash.keep
-    render :json => out.as_json
-  end
-  
-  def show_full
-    @entity = Entity.
+
+    if allowed_to?(:view, @entity.collection)
+      @entity = Entity.
       where(:collection_id => authorized_collections.map{|c| c.id}).
       includes(:medium, :kind, :collection, :datings, :creator, :updater, :authority_groups => :authority_group_category).
       find(params[:id])
       
-    hash = @entity.serializable_hash(
-      :include => [:medium, :kind, :collection, :datings, :creator, :updater, :authority_groups],
-      :methods => [:synonyms, :dataset, :degree, :properties, :display_name],
-      :root => false
-    )
-    
-    hash[:fields] = @entity.kind.field_instances(@entity).map{|f| f.serializable_hash}
-    hash[:tags] = @entity.tag_list.join(', ')
-    hash[:related] = blaze.relations_for(:include_relationships => true)
-    hash[:related_media] = blaze.relations_for(:media => true, :include_relationships => true)
-    hash[:links] = WebServices::Dispacher.links_for(@entity)
-    hash[:generators] = @entity.kind.generators.map{|g| g.serializable_hash}
+      hash = @entity.serializable_hash(
+        :include => [:medium, :kind, :collection, :datings, :creator, :updater, :authority_groups],
+        :methods => [:synonyms, :dataset, :degree, :properties, :display_name],
+        :root => false
+      )
+      
+      hash[:fields] = @entity.kind.field_instances(@entity).map{|f| f.serializable_hash}
+      hash[:tags] = @entity.tag_list.join(', ')
+      hash[:related] = blaze.relations_for(:include_relationships => true)
+      hash[:related_media] = blaze.relations_for(:media => true, :include_relationships => true)
+      hash[:links] = WebServices::Dispacher.links_for(@entity)
+      hash[:generators] = @entity.kind.generators.map{|g| g.serializable_hash}
 
-    flash.keep
-    render :json => hash
+      render :json => hash
+    else
+      redirect_to denied_path(:format => request.format.symbol)
+    end
   end
   
   def relationships
@@ -66,7 +50,6 @@ class Api::EntitiesController < Api::ApiController
     }
   end
   
-  
   protected
 
     def current_entity
@@ -83,6 +66,11 @@ class Api::EntitiesController < Api::ApiController
 
     def authorized?
       true
+    end
+
+    def allowed_to?(policy = :view, collections = Collection.all, options = {})
+      options.reverse_merge!(:required => :any)
+      ::Auth::Authorization.authorized? current_user, policy, collections, options
     end
   
 end

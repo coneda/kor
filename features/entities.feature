@@ -10,6 +10,7 @@ Feature: Entities
     And I follow "Ungültige Entitäten"
     Then I should see "gehe zu Seite"
   
+
   Scenario: Search fields
     Given I am logged in as "admin"
     When I go to the expert search
@@ -91,6 +92,7 @@ Feature: Entities
     Then I should not see element "img[alt=Select]"
     
     
+  @javascript  
   Scenario: I see the select link when I have edit rights for any collection
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "Werk/Werke"
@@ -162,4 +164,34 @@ Feature: Entities
     And I hover element ".relationships .kor_medium_frame"
     And I click on ".kor_medium_frame .button_bar img[alt=Target]"
     Then I should see "wurde in die Zwischenablage aufgenommen"
-    
+
+
+  @javascript
+  Scenario: Don't show relationships to unauthorized entities
+    Given the collection "side"
+    And the relation "has created/has been created by"
+    And the entity "Leonardo da Vinci" of kind "Person/People" inside collection "default"
+    And the entity "Mona Lisa" of kind "Work/Works" inside collection "side"
+    And the relationship "Leonardo da Vinci" "has created" "Mona Lisa"
+    Given I am logged in as "admin"
+    When I go to the entity page for "Leonardo da Vinci"
+    Then I should not see "Mona Lisa"
+
+    Given user "admin" is allowed to "view" collection "side" through credential "side_admins"
+    When I go to the entity page for "Leonardo da Vinci"
+    Then I should see "Mona Lisa"
+
+
+  @javascript
+  Scenario: Don't show edit or delete buttons for unauthorized relationships
+    Given the collection "side"
+    And the relation "has created/has been created by"
+    And the entity "Leonardo da Vinci" of kind "Person/People" inside collection "default"
+    And the entity "Mona Lisa" of kind "Work/Works" inside collection "side"
+    And the relationship "Leonardo da Vinci" "has created" "Mona Lisa"
+    Given user "admin" is allowed to "view" collection "side" through credential "side_admins"
+
+    Given I am logged in as "admin"
+    When I go to the entity page for "Leonardo da Vinci"
+    Then I should see "Mona Lisa"
+    And I should not see element "img[title=Pen]" within ".relationship"
