@@ -1,4 +1,4 @@
-<div class="entities-show" ng-controller="korEntitiesShowCtrl">
+<div class="entities-show" ng-controller="entity_controller" ng-cloak="true">
   <div class="layout_panel left normal_panel_size">
 
     <div class="layout_panel top metadata">
@@ -21,7 +21,7 @@
             <form method="post" action="{{'/entities/' + entity.id}}">
               <input type="hidden" name="_method" value="delete" />
               <a
-                href="/entities/{{entity.id}}" 
+                href="/blaze#/entities/{{entity.id}}" 
                 ng-show="allowed_to('delete')" 
                 data-confirm="{{'objects.confirm_destroy' | translate:{interpolations: {o: 'activerecord.models.entity'} } }}" 
                 data-method="delete" 
@@ -124,7 +124,7 @@
           <div class="title" ng-bind="'activerecord.models.relationship' | translate:{count: 'other'} | capitalize"></div>
           <div class="commands">
             <a href="/relationships/new?relationship[from_id]={{entity.id}}" ng-show="allowed_to_any('edit')">
-              <img alt="Plus" class="kor_command_image" src="/assets/plus.gif" title="hinzufügen">
+              <img alt="Plus" class="kor_command_image" src="/assets/plus.gif" title="{{'verbs.add' | translate">
             </a>
           </div>
         </div>
@@ -164,7 +164,7 @@
               >
                 <div class="header">
                   <div class="string">
-                    <a href="/entities/{{relationship.entity.id}}" ng-bind="relationship.entity.display_name"></a>
+                    <a href="/blaze#/entities/{{relationship.entity.id}}" ng-bind="relationship.entity.display_name"></a>
                     <span class="nowrap">
                       <span class="text italic" ng-bind="relationship.entity.kind.name"></span>
                       <span class="relationship_switch" ng-show="relationship.total_media > 0">
@@ -279,7 +279,7 @@
                       <tr class="image_row" ng-repeat="row in relationship.media">
                         <td class="image" ng-repeat="entity in row">
                           <div class="kor_medium_frame" id="kor_medium_frame_{{entity.id}}" ng-show="entity.id">
-                            <a href="/entities/{{entity.id}}">
+                            <a href="/blaze#/entities/{{entity.id}}">
                               <img alt="Image" class="kor_medium" ng-src="{{entity.medium.url}}">
                             </a>
                             <span class="button_bar" style="display: none">
@@ -400,7 +400,7 @@
             {{'nouns.original' | translate}} |
           </a>
           <a href="/media/download/normal/{{entity.medium.id}}" ng-bind="'nouns.enlargement' | translate"></a> |
-          <a href="/entities/{{entity.id}}/metadata" ng-bind="'nouns.metadata' | translate"></a>
+          <a href="/blaze#/entities/{{entity.id}}/metadata" ng-bind="'nouns.metadata' | translate"></a>
         </div>
         
       </div>

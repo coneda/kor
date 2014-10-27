@@ -51,6 +51,7 @@ end
 
 When /^I mark "([^\"]*)" as current entity$/ do |name|
   step "I am on the entity page for \"#{name}\""
+  step "I should see \"#{name}\""
   step "I follow \"Select\""
 end
 

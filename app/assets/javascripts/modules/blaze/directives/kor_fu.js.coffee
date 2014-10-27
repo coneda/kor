@@ -33,9 +33,15 @@ kor.directive "korFu", [
           }
         }
 
-        scope.$on "kor-session-load-complete", ->
+        prefill_fields = ->
           scope.data.params.user_group_name = kt.localize(new Date)
           scope.data.params.collection_id = kd.info.session.user.auth.collections['create'][0]
+          
+
+        if kd.info
+          prefill_fields()
+        else
+          scope.$on "kor-session-load-complete", prefill_fields
 
         uploader.bind "QueueChanged", (up) ->
           scope.$apply_safely()

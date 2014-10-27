@@ -7,7 +7,7 @@ module ApplicationHelper
       :short => false,
       :how_short => 30,
       :link => true,
-      :url => entity_path(entity),
+      :url => web_path(:anchor => entity_path(entity)),
       :style => :icon
     )
 

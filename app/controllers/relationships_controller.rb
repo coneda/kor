@@ -46,7 +46,7 @@ class RelationshipsController < ApplicationController
         rrn = session[:recent_relation_names] || []
         rrn = rrn.unshift params[:relationship][:relation_name]
         session[:recent_relation_names] = rrn.uniq
-        redirect_to @relationship.from
+        redirect_to web_path(:anchor => entity_path(@relationship.from))
       else
         render :action => "new"
       end
@@ -69,7 +69,7 @@ class RelationshipsController < ApplicationController
         format.html do
           if success
             flash[:notice] = I18n.t('objects.update_success', :o => I18n.t('nouns.relationship', :count => 1) )
-            redirect_to @relationship.from
+            redirect_to web_path(:anchor => entity_path(@relationship.from))
           else
             render :action => "edit"
           end
@@ -95,7 +95,7 @@ class RelationshipsController < ApplicationController
       redirect_to denied_path
     else      
       @relationship.destroy
-      redirect_to :back
+      redirect_to back_save
     end
 
   end

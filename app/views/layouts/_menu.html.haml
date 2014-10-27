@@ -40,7 +40,7 @@
           = form_for :new_entity, :url => {:controller => 'entities', :action => 'new'}, :method => :get, :builder => Stdlib::KorFormBuilder do |f|
             = f.kind_selector :kind_id, {:no_selection_name => I18n.t('objects.new', :o => I18n.t('nouns.entity', :count => 1)), :media => true}
         
-        = navigation_item I18n.t('nouns.mass_upload'), :controller => 'entities', :action => 'multi_upload'
+        = navigation_item I18n.t('nouns.mass_upload'), web_path(:anchor => "/entities/multi_upload")
       
         %li.spacer
         

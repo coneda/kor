@@ -18,11 +18,11 @@
     %style{:type => "text/javascript"}
       [ng-cloak] {display: none;}
 
-  %body.blaze_style{'ng-app' => 'kor', 'ng-controller' => 'korSessionCtrl', 'style' => "background-color: #1e1e1e !important"}
+  %body.blaze_style{'ng-app' => 'kor', 'ng-controller' => 'root_controller', 'style' => "background-color: #1e1e1e !important"}
     = render :partial => "layouts/blaze_header"
     = render :partial => "layouts/menu"
     
-    #application{'ng-show' => 'fully_loaded()', 'ng-cloak' => 'true'}
+    #application{'ng-cloak' => 'true'}
       %table.canvas
         %tr.top
           %td.left
@@ -32,7 +32,7 @@
           %td.left
           %td.center
             #message_area.subtitle= render :partial => "layouts/blaze_messages"
-            = yield
+            %div{"ng-view" => true}
           %td.right
         %tr.bottom
           %td.left

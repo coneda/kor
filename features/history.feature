@@ -10,8 +10,8 @@ Feature: History
     And Leonardo, Mona Lisa and a medium as correctly related entities
     When I go to the entity page for "Mona Lisa"
     And I follow "Leonardo da Vinci"
-    And I wait for "2" seconds
-    And I ignore the next confirmation box
+    Then I should see "Leonardo da Vinci"
+    When I ignore the next confirmation box
     And I follow "X" within ".layout_panel.top:first-child"
     Then I should be on the entity page for "Mona Lisa"
   

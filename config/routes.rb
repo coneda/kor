@@ -1,10 +1,6 @@
 Kor::Application.routes.draw do
 
-
-  match '/ratings/summary/new', :to => "api/ratings#summary"
-  match '/ratings/summary/unconclusive', :to => "api/ratings#unconclusive"
-
-  match '/blaze/:id', :to => 'static#blaze', :as => :blaze_entity
+  match '/blaze', :to => 'static#blaze', :as => :web
 
   match '/by_uuid/:uuid', :to => 'entities#by_uuid'
   
@@ -34,7 +30,7 @@ Kor::Application.routes.draw do
     resources :generators
   end
   resources :relations
-  resources :entities do
+  resources :entities, :except => ['show'] do
     collection do
       get 'multi_upload'
       get 'duplicate'
@@ -45,7 +41,6 @@ Kor::Application.routes.draw do
     
     member do
       get 'images'
-      get 'relationships'
       get 'metadata'
       get 'other_collection'
     end
@@ -111,7 +106,7 @@ Kor::Application.routes.draw do
   end
 
   controller 'authentication' do
-    match '/authentication/denied', :action => 'denied', :as => :denied
+    match '/authentication/denied', :action => 'denied', :as => :denied, :format => :html
     match '/authenticate', :action => 'login'
     match '/login', :action => 'form', :as => :login
     match '/logout', :action => 'logout', :as => :logout
@@ -136,6 +131,7 @@ Kor::Application.routes.draw do
     match 'dataset_fields', :action => 'dataset_fields'
     match 'clipboard_action', :action => 'clipboard_action'
     match 'new_clipboard_action', :action => 'new_clipboard_action'
+    match 'history', :action => 'history', :via => "post"
     
     match 'add_media/:id', :action => 'add_media'
   end
@@ -147,22 +143,30 @@ Kor::Application.routes.draw do
     match 'help', :action => 'help'
   end
   
-  namespace 'api' do
+  namespace 'api', :format => :json do
     scope ':version', :version => /[0-9\.]+/, :defaults => {:version => '1.0'} do
       match 'login', :to => 'public#login', :via => :post
       match 'logout', :to => 'public#logout', :via => :get
       match 'info', :to => 'public#info', :via => :get
-      #match 'log', :to => 'public#log', :via => :post
       
       resources :entities, :only => :show do
         member do
-          get :show_full
           get :relationships
           get :deep_media
         end
       end
       resources :ratings, :except => [:edit, :update]
     end
+  end
+
+  scope "tpl", :module => "tpl" do
+    resources :entities, :only => [:show] do
+      collection do
+        get :multi_upload
+      end
+    end
+
+    match "denied", :action => "denied"
   end
 
 end

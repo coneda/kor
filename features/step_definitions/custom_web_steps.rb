@@ -44,12 +44,12 @@ Then /^I should see "([^"]*)" before "([^"]*)"$/ do |preceeding, following|
   page.body.should match(/#{preceeding}.*#{following}/m)
 end
 
-Then /^I hover element "([^"]*)"$/ do |selector|
+Then /^I hover element "([^\"]*)"$/ do |selector|
   page.execute_script("jQuery('#{selector}').mouseover()")
 end
 
 Then /^I should see an input with the current date$/ do
-  page.all("input").map{|i| i.value}.should include(Time.now.strftime("%d.%m.%Y"))
+  expect(page).to have_field("user_group_name", :with => Time.now.strftime("%d.%m.%Y"))
 end
 
 Then /^I should see the hidden element "([^"]*)"$/ do |selector|

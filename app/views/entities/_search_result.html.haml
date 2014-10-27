@@ -13,7 +13,7 @@
     %ul
       - results.items.each do |entity|
         %li.search_result
-          = link_to entity do
+          = link_to web_path(:anchor => entity_path(entity)) do
             = check_box_tag "entity_#{entity.id}", "1", marked?(entity), :class => 'put_in_clipboard'
             
             .description

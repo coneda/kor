@@ -1,11 +1,10 @@
 FactoryGirl.define do
   
   factory :kind do
-    name "Werk"
-    plural_name "Werke"
 
     factory :works do
-      
+      name "Werk"
+      plural_name "Werke"
     end
 
     factory :media do
@@ -91,6 +90,16 @@ FactoryGirl.define do
     factory :is_part_of do
       name "ist Teil von"
       reverse_name "besteht aus"
+    end
+
+    factory :shows do
+      name "shows"
+      reverse_name "is shown by"
+    end
+
+    factory :has_created do
+      name "has created"
+      reverse_name "has been created by"
     end
   end
 

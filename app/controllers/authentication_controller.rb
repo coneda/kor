@@ -50,6 +50,12 @@ class AuthenticationController < ApplicationController
           session[:user_id] = account.id
           account.update_attributes(:last_login => Time.now)
           r_to = (back || current_user.home_page) || Kor.config['app.default_home_page'] || root_path
+
+          if params[:fragment].present?
+            params[:fragment] = nil if params[:fragment].match('{{')
+            r_to += "##{params[:fragment]}" if params[:fragment].present?
+          end
+          
           redirect_to r_to
         end
       else
@@ -80,7 +86,7 @@ class AuthenticationController < ApplicationController
           render :layout => 'normal_small'
         end
       end
-      format.js do
+      format.json do
         render :json => {:message => I18n.t('notices.access_denied')}, :status => 403
       end
     end

@@ -65,7 +65,7 @@ class MediaController < ApplicationController
         :operation => params[:operation].to_sym
       )
 
-      redirect_to @medium.entity
+      redirect_to web_path(:anchor => entity_path(@medium.entity))
     else
       redirect_to denied_path
     end

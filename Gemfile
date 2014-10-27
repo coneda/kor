@@ -61,13 +61,14 @@ group :test do
 end
 
 group :development do
-  gem 'method_profiler'
+  # gem 'method_profiler'
+  # gem 'meta_request'
 end
 
 group :test, :development do
   gem 'thin'
-  gem 'ruby-debug', :platforms => [:ruby_18]
-  gem 'debugger', :platforms => [:ruby_19, :ruby_20]
+  gem 'quiet_assets'
+  gem 'debugger'
 end
 
 group :production do

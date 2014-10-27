@@ -31,13 +31,16 @@ module NavigationHelpers
       authority_group_category_path(AuthorityGroupCategory.find_by_name($1))
     when /the entity page for "([^\"]*)"/
       name = $1
-      blaze_entity_path(Entity.find_by_name(name))
+      entity = Entity.find_by_name(name)
+      web_path(:anchor => entity_path(entity))
     when /the entity page for the (first|last) medium/
       media = Kind.medium_kind.entities
-      blaze_entity_path($1 == 'first' ? media.first : media.last)
+      entity = $1 == 'first' ? media.first : media.last
+      web_path(:anchor => entity_path(entity))
     when /the legacy upload page/ then "/entities/new?kind_id=#{Kind.medium_kind.id}"
     when /the entity page for medium "([0-9]+)"/
-      entity_path(Entity.find($1))
+      entity = Entity.find($1)
+      web_path(:anchor => entity_path(entity))
     when /the kinds page/ then kinds_path
     when /the clipboard/ then '/tools/clipboard'
     when /the new "([^\"]*)-Entity" page/
@@ -63,7 +66,7 @@ module NavigationHelpers
     when /the new relationship page with target "([^\"]+)"/
       entity = Entity.find_by_name($1)
       new_relationship_path(:relationship => {:from_id => entity.id})
-    when /the multi upload page/ then '/entities/multi_upload'
+    when /the multi upload page/ then web_path(:anchor => '/entities/multi_upload')
     when /the exception logs page/ then exception_logs_path
     when /welcome page/ then "/"
 

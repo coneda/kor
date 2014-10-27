@@ -72,34 +72,6 @@ Feature: Cross collection relationships
     When I go to the edit relationship page for the first relationship
     Then I should have access: yes
     
-    
-  Scenario Outline: cross_collection_actions (edit entity)
-    And the user "<username>" with credential "<credential>"
-    And I am logged in as "<username>"
-    And the triple "Werk/Werke" "Frankfurter Dom" "Standort in/Standort von" "Ort/Orte" "Kreuzberg"
-    When I go to the edit page for "entity" "<entity>"
-    Then I should have access: <access>
-    
-    Examples:
-      | username | credential      | entity          | access |
-      | Fadmin   | Admin Frankfurt | Frankfurter Dom | yes    |
-      | Fadmin   | Admin Frankfurt | Kreuzberg       | no     |
-      | Fadmin   | Admin Frankfurt | Neukölln        | no     |
-
-
-  Scenario Outline: cross_collection_actions (delete entity)
-    And the user "<username>" with credential "<credential>"
-    And I am logged in as "<username>"
-    And the triple "Werk/Werke" "Frankfurter Dom" "Standort in/Standort von" "Ort/Orte" "Kreuzberg"
-    When I send the delete request for "entity" "<entity>"
-    Then I should have access: <access>
-    
-    Examples:
-      | username | credential      | entity          | access |
-      | Fadmin   | Admin Frankfurt | Frankfurter Dom | yes    |
-      | Fadmin   | Admin Frankfurt | Kreuzberg       | no     |
-      | Fadmin   | Admin Frankfurt | Neukölln        | no     |
-      
 
   Scenario Outline: cross_collection_actions (mark entity)
     And the user "<username>" with credential "<credential>"
