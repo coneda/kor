@@ -94,6 +94,7 @@ de:
     enlarge: "vergrößern"
     upload: "hochladen"
     save: "sichern"
+    share: "freigeben"
     browse: "blättern"
     show: "anzeigen"
     reset: "zurücksetzen"
@@ -397,6 +398,9 @@ de:
     user_group:
       one: "eigene Gruppe"
       other: "eigene Gruppen"
+    shared_user_group:
+      one: "freigegebene Gruppe"
+      other: "freigegebene Gruppen"
     synonym:
       one: "Synonym"
       other: "Synonyme"
@@ -480,6 +484,8 @@ de:
     add: "%{o} hinzufügen"
     none_found: "es wurden keine %{o} gefunden"
     include: "%{o} einbeziehen"
+    shared_success: "%{o} wurde freigegeben"
+    unshared_success: "%{o} ist nun nicht mehr freigegeben"
     move: "%{o} verschieben"
     create: "%{o} erstellen"
     new: "%{o} anlegen"
@@ -902,6 +908,9 @@ de:
         publisher: Verlag
       user_group:
         owner: Besitzer
+        shared:
+          one: freigegeben
+          other: freigegebene
           
     errors:
       template:

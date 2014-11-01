@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140914112118) do
+ActiveRecord::Schema.define(:version => 20141101094534) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -400,8 +400,10 @@ ActiveRecord::Schema.define(:version => 20140914112118) do
     t.string   "uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "shared"
   end
 
+  add_index "user_groups", ["shared"], :name => "shary"
   add_index "user_groups", ["user_id"], :name => "index_user_groups_on_user_id"
 
   create_table "users", :force => true do |t|

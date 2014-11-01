@@ -3,6 +3,7 @@ class UserGroupsController < GroupsController
   
   def mark
     @user_group = UserGroup.owned_by(current_user).find_by_id(params[:id])
+    @user_group ||= UserGroup.shared.find(params[:id])
     ids = @user_group.entities.allowed(current_user, :view).map{|e| e.id}
     
     session[:clipboard] ||= Array.new
@@ -16,7 +17,7 @@ class UserGroupsController < GroupsController
   def download_images
     @user_group = UserGroup.find(params[:id])
     
-    if @user_group.owner == current_user
+    if @user_group.owner == current_user or @user_group.shared
       @entities = @user_group.entities.allowed(current_user, :view).media
       
       zip_download @user_group, @entities
@@ -42,6 +43,36 @@ class UserGroupsController < GroupsController
     redirect_to @user_group
   end
   
+  def share
+    @user_group = if current_user.admin?
+      UserGroup.find(params[:id])
+    else
+      UserGroup.owned_by(current_user).find(params[:id])
+    end
+
+    @user_group.shared = true
+    @user_group.save
+    flash[:notice] = I18n.t('objects.shared_success', :o => @user_group.name)
+    redirect_to :back
+  end
+  
+  def unshare
+    @user_group = if current_user.admin?
+      UserGroup.find(params[:id])
+    else
+      UserGroup.owned_by(current_user).find(params[:id])
+    end
+
+    @user_group.shared = false
+    @user_group.save
+    flash[:notice] = I18n.t('objects.unshared_success', :o => @user_group.name)
+    redirect_to :back
+  end
+  
+  def shared
+    @user_groups = UserGroup.shared
+  end
+
   def index
     @user_groups = UserGroup.owned_by(current_user)
     
@@ -62,7 +93,7 @@ class UserGroupsController < GroupsController
   def show
     @user_group = UserGroup.find(params[:id])
     
-    if @user_group.owner == current_user
+    if @user_group.owner == current_user or @user_group.shared
       @entities = @user_group.entities.allowed(current_user, :view).paginate(:page => params[:page], :per_page => 16, :order => 'created_at DESC')
       render :layout => 'wide'
     else
@@ -122,7 +153,7 @@ class UserGroupsController < GroupsController
   
   protected
     def generally_authorized?
-      current_user && current_user != User.guest
+      action_name == 'shared' || (current_user && current_user != User.guest)
     end
   
 end

@@ -23,6 +23,7 @@ module NavigationHelpers
     when /the user group page for "([^\"]*)"/
       user_group_path(UserGroup.find_by_name($1))
     when /the user groups page/ then user_groups_path
+    when /the shared user groups page/ then shared_user_groups_path
     when /the authority group page for "([^\"]*)"/
       authority_group_path(AuthorityGroup.find_by_name($1))
     when /the download authority group page for "([^\"]*)"/

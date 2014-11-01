@@ -14,6 +14,16 @@ Feature: User administration
     Then I should be on the users page
     
 
+  @selenium  
+  Scenario: Delete a user which has shared user groups
+    Given I am logged in as "admin"
+    And the user "john"
+    And "john" has a shared user group "My Group"
+    When I go to the users page
+    And I follow the delete link within the row for "user" "john"
+    Then there should be no "UserGroup" named "My Group"
+    
+    
   Scenario: Have a sorted list of credentials within the user form
     Given I am logged in as "admin"
     And the credential "AAAs"

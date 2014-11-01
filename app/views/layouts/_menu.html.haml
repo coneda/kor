@@ -29,7 +29,8 @@
         %ul.toggling_menu#groups_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_group_menu]}"}
           = navigation_item model_specifier(AuthorityGroup, :other), authority_group_categories_path 
           - if current_user && current_user != User.guest
-            = navigation_item model_specifier(UserGroup, :other), user_groups_path
+            = navigation_item model_specifier(UserGroup, :other), user_groups_path, {:except => [ :shared, :show_shared ]}
+          = navigation_item UserGroup.human_attribute_name(:shared, :count => :other), shared_user_groups_path, {:only => [ :shared, :show_shared ]}
           - if current_user && current_user != User.guest
             = navigation_item model_specifier(Publishment, :other), publishments_path
       
