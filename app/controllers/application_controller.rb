@@ -6,9 +6,14 @@ class ApplicationController < ActionController::Base
     :authorized_for_relationship?,
     :kor_graph,
     :current_user,
-    :logged_in?
-
+    :logged_in?,
+    :blaze
+  
   before_filter :locale, :maintenance, :authentication, :authorization, :legal
+
+  before_filter do
+    @blaze = nil
+  end
   
 
   private
@@ -138,6 +143,11 @@ class ApplicationController < ActionController::Base
           false
       end
     end
+
+    def allowed_to?(policy = :view, collections = Collection.all, options = {})
+      options.reverse_merge!(:required => :any)
+      ::Auth::Authorization.authorized? current_user, policy, collections, options
+    end
     
     def user_groups
       UserGroup.owned_by(current_user)
@@ -198,6 +208,10 @@ class ApplicationController < ActionController::Base
     
     def current_entity
       session[:current_entity]
+    end
+
+    def blaze
+      @blaze ||= Kor::Blaze.new(current_user)
     end
 
 end

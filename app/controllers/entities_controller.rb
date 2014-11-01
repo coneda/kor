@@ -81,6 +81,25 @@ class EntitiesController < ApplicationController
     end
   end
 
+  def show
+    @entity = Entity.includes(
+      :medium, :kind, :collection, :datings, :creator, :updater, 
+      :authority_groups => :authority_group_category
+    ).find(params[:id])
+
+    if allowed_to?(:view, @entity.collection)
+      respond_to do |format|
+        format.json
+        format.rdf
+      end
+    else
+      respond_to do |format|
+        format.json { render :json => {}, :status => 403 }
+        format.rdf { render :nothing => true, :status => 403 }
+      end
+    end
+  end
+
   def new
     if authorized? :create, Collection.all, :required => :any
       @entity = Entity.new(:collection_id => current_user.default_collection_id)

@@ -1,17 +1,14 @@
 class Kor::Blaze
 
-  def initialize(user, entity)
+  def initialize(user)
     @user = user
-    @entity = entity
   end
 
   def collection_ids
     @collection_ids ||= ::Auth::Authorization.authorized_collections(@user).map{|c| c.id}
   end
 
-  def relationship_scope(entity = nil)
-    entity ||= @entity
-
+  def relationship_scope(entity)
     Relationship.
       select("rs.*, 
         IF(rs.from_id = #{entity.id}, rs.to_id, rs.from_id) other_id,
@@ -27,29 +24,29 @@ class Kor::Blaze
       order("relation_name, other_name, created_at")
   end
 
-  def relations_for(options = {})
+  def relations_for(entity, options = {})
     options.reverse_merge!(
       :media => false
     )
 
-    base = relationship_scope.
+    base = relationship_scope(entity).
       select("
         rs.*, 
         r.name name, 
         r.reverse_name reverse_name,
         COUNT(rs.id) amount
       ").
-      group("r.name, r.reverse_name, rs.from_id = #{@entity.id}")
+      group("r.name, r.reverse_name, rs.from_id = #{entity.id}")
 
     if options[:media]
-      base = base.where("IF(rs.from_id = #{@entity.id}, tos.medium_id IS NOT NULL, froms.medium_id IS NOT NULL)")
+      base = base.where("IF(rs.from_id = #{entity.id}, tos.medium_id IS NOT NULL, froms.medium_id IS NOT NULL)")
     else
-      base = base.where("IF(rs.from_id = #{@entity.id}, tos.medium_id IS NULL, froms.medium_id IS NULL)")
+      base = base.where("IF(rs.from_id = #{entity.id}, tos.medium_id IS NULL, froms.medium_id IS NULL)")
     end
 
     results = base.map do |r|
       {
-        :name => (r.from_id == @entity.id ? r.name : r.reverse_name),
+        :name => (r.from_id == entity.id ? r.name : r.reverse_name),
         :amount => r.amount
       }
     end.sort do |x, y|
@@ -74,6 +71,7 @@ class Kor::Blaze
       reduced_results.each do |r|
         r[:page] = 1
         r[:relationships] = relationships_for(
+          entity,
           :name => r[:name], 
           :media => options[:media]
         )
@@ -83,7 +81,7 @@ class Kor::Blaze
     reduced_results
   end
 
-  def relationships_for(options = {})
+  def relationships_for(entity, options = {})
     options.reverse_merge!(
       :name => nil,
       :offset => 0,
@@ -91,18 +89,18 @@ class Kor::Blaze
       :media => false
     )
 
-    base = relationship_scope.
+    base = relationship_scope(entity).
       limit(options[:limit]).
       offset(options[:offset])
 
     if options[:name]
-      base = base.where("IF(rs.from_id = #{@entity.id}, r.name, r.reverse_name) = ?", options[:name])
+      base = base.where("IF(rs.from_id = #{entity.id}, r.name, r.reverse_name) = ?", options[:name])
     end
 
     if options[:media]
-      base = base.where("IF(rs.from_id = #{@entity.id}, tos.medium_id, froms.medium_id) IS NOT NULL")
+      base = base.where("IF(rs.from_id = #{entity.id}, tos.medium_id, froms.medium_id) IS NOT NULL")
     else
-      base = base.where("IF(rs.from_id = #{@entity.id}, tos.medium_id, froms.medium_id) IS NULL")
+      base = base.where("IF(rs.from_id = #{entity.id}, tos.medium_id, froms.medium_id) IS NULL")
     end
 
     lookup = []
@@ -139,9 +137,7 @@ class Kor::Blaze
     results
   end
   
-  def media_count_for(entity = nil)
-    entity ||= @entity
-
+  def media_count_for(entity)
     relationship_scope(entity).
       where("IF(rs.from_id = #{entity.id}, tos.medium_id IS NOT NULL, froms.medium_id IS NOT NULL)").
       count

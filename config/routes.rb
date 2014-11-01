@@ -19,18 +19,13 @@ Kor::Application.routes.draw do
       get 'cleanup'
     end
   end
-  resources :meta_entities, :only => [:new, :create] do
-    collection do
-      get 'entities'
-    end
-  end
   resources :tags, :only => :index
   resources :kinds do
     resources :fields, :except => 'show'
     resources :generators
   end
   resources :relations
-  resources :entities, :except => ['show'] do
+  resources :entities do
     collection do
       get 'multi_upload'
       get 'duplicate'
