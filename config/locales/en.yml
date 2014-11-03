@@ -94,6 +94,7 @@ en:
     enlarge: "enlarge"
     upload: "upload"
     save: "save"
+    shared: "share"
     browse: "browse"
     show: "show"
     reset: "reset"
@@ -397,6 +398,9 @@ en:
     user_group:
       one: "own group"
       other: "own groups"
+    shared_user_group:
+      one: "shared group"
+      other: "shared groups"
     synonym:
       one: "synonym"
       other: "synonyms"
@@ -480,6 +484,8 @@ en:
     add: "add %{o}"
     none_found: "no %{o} was found"
     include: "include %{o}"
+    shared_success: "%{o} has been shared"
+    unshared_success: "%{o} is not shared anymore"
     move: "move %{o}"
     create: "create %{o}"
     new: "create %{o}"
@@ -901,6 +907,9 @@ en:
         publisher: publisher
       user_group:
         owner: owner
+        shared:
+          one: shared
+          other: shared
           
     errors:
       template:

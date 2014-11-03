@@ -24,8 +24,8 @@ class Api::EntitiesController < Api::ApiController
       
       hash[:fields] = @entity.kind.field_instances(@entity).map{|f| f.serializable_hash}
       hash[:tags] = @entity.tag_list.join(', ')
-      hash[:related] = blaze.relations_for(:include_relationships => true)
-      hash[:related_media] = blaze.relations_for(:media => true, :include_relationships => true)
+      hash[:related] = blaze.relations_for(current_entity, :include_relationships => true)
+      hash[:related_media] = blaze.relations_for(current_entity, :media => true, :include_relationships => true)
       hash[:links] = WebServices::Dispacher.links_for(@entity)
       hash[:generators] = @entity.kind.generators.map{|g| g.serializable_hash}
 
@@ -44,6 +44,7 @@ class Api::EntitiesController < Api::ApiController
     flash.keep
     render :json => {
       :relationships => blaze.relationships_for(
+        current_entity,
         :name => params[:name],
         :media => params[:media],
         :offset => params[:page].to_i * params[:limit].to_i,
@@ -59,7 +60,7 @@ class Api::EntitiesController < Api::ApiController
     end
 
     def blaze
-      @blaze ||= Kor::Blaze.new(current_user, current_entity)
+      @blaze ||= Kor::Blaze.new(current_user)
     end
 
     def reset_blaze

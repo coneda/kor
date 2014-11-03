@@ -40,6 +40,27 @@ Feature: usergroups
     Then I should not see "Leonardo"
 
 
+  Scenario: share usergroup
+    Given I am logged in as "admin"
+    And the user group "Leonardo"
+    When I go to the user groups page
+    And I follow "Private"
+    Then I should see "Leonardo wurde freigegeben"
+    When I go to the shared user groups page
+    Then I should see "Leonardo"
+
+
+  Scenario: unshare usergroup
+    Given I am logged in as "admin"
+    And the shared user group "Leonardo"
+    When I go to the user groups page
+    And I follow "Public"
+    Then I should be on the user groups page
+    Then I should see "Leonardo ist nun nicht mehr freigegeben"
+    When I go to the shared user groups page
+    Then I should not see "Leonardo"
+
+
   Scenario: publish usergroup
     Given I am logged in as "admin"
     And the user group "Leonardo"
@@ -68,4 +89,20 @@ Feature: usergroups
     And I go to the publishments page
     And I follow "Stop_watch" within the row for "publishment" "Leonforall"
     Then I should be on the publishments page
+    
+    
+  @javascript
+  Scenario: Transfer a shared group to the clipboard
+    Given I am logged in as "admin"
+    And Leonardo, Mona Lisa and a medium as correctly related entities
+    And "admin" has a shared user group "MyStuff"
+    And the first medium is inside user group "MyStuff"
+    And user "john" is allowed to "view/edit" collection "Default" through credential "Freelancers"
+    And I re-login as "john"
+    And I am on the shared user groups page
+    When I follow "MyStuff"
+    Then I should see "Leonardo da Vinci"
+    When I follow "Target"
+    And I go to the clipboard
+    Then I should see element "img" within ".canvas"
     

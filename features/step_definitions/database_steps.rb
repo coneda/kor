@@ -141,6 +141,10 @@ Given /^the entity "([^"]*)" has the synonyms "([^"]*)"$/ do |entity, synonyms|
   Entity.find_by_name(entity).update_attributes :synonyms => synonyms.split('/')
 end
 
+Given /^"([^\"]*)" has a shared user group "([^\"]*)"$/ do |user_name, group_name|
+  User.find_by_name(user_name).user_groups.create(:name => group_name, :shared => true)
+end
+
 Given /^the authority group "([^"]*)"(?: inside "([^"]+)")?$/ do |name, category_name|
   group = AuthorityGroup.create :name => name
   if category_name
@@ -158,6 +162,10 @@ Given /^the authority group category "([^"]*)"$/ do |name|
   AuthorityGroupCategory.create :name => name
 end
 
+Given(/^the first medium is inside user group "(.*?)"$/) do |name|
+  UserGroup.where(:name => name).first.entities << Entity.media.first
+end
+
 Given /^the authority group categories structure "([^"]*)"$/ do |structure|
   category_names = structure.split(' >> ')
   
@@ -167,12 +175,16 @@ Given /^the authority group categories structure "([^"]*)"$/ do |structure|
   end
 end
 
-Given /^the user group "([^\"]*)"( published as "[^\"]*")?$/ do |name, pub|
+Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |shared, name, pub|
   unless UserGroup.find_by_name(name)
     step "I am on the user groups page"
     step "I follow \"Plus\""
     step "I fill in \"user_group[name]\" with \"#{name}\""
     step "I press \"Erstellen\""
+    
+    if shared == 'shared '
+      step "I follow \"Private\""
+    end
     
     unless pub.blank?
       pub_name = pub.gsub(/.*\"([^\"]+)\".*/, "\\1")

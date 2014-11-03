@@ -9,5 +9,9 @@
         %tr.user_group
           %td.subtitle.expanding= link_to h(g.name), user_group_path(g)
           %td.nowrap
+            - if g.shared
+              = link_to kor_command_image('public'), unshare_user_group_path(g)
+            - else
+              = link_to kor_command_image('private'), share_user_group_path(g)
             = link_to kor_command_image('pen'), edit_user_group_path(g)
             = link_to kor_command_image('x'), g, :method => :delete, :data => {:confirm => I18n.t("confirm.delete_user_group")}

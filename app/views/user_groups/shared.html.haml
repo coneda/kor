@@ -1,0 +1,24 @@
+- content_for :normal_title, I18n.t('nouns.shared_user_group', :count => :other)
+- content_for :normal_subtitle, I18n.t('for_all_users')
+- content_for :normal_content do
+  - if @user_groups.empty?
+    = I18n.t('objects.none_found', :o => I18n.t('nouns.shared_user_group', :count => :other))
+  - else
+    %table.kor_table
+      %tr
+        %th= UserGroup.human_attribute_name 'name'
+        %th= UserGroup.human_attribute_name 'owner'
+        - if current_user.admin?
+          %th.commands
+      
+      - @user_groups.each do |g|
+        %tr
+          %td.subtitle.expanding
+            = link_to h(g.name), user_group_path(g)
+          
+          %td.subtitle.nowrap
+            = g.owner.full_name
+
+          - if current_user.admin?
+            %td
+              = link_to kor_command_image('public'), unshare_user_group_path(g)

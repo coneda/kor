@@ -56,9 +56,16 @@ Kor::Application.routes.draw do
   resources :user_groups do
     member do
       get 'download_images'
+      get 'share'
+      get 'unshare'
+      get 'show_shared'
       get 'add_to'
       get 'remove_from'
       get 'mark'
+    end
+    
+    collection do
+      get 'shared'
     end
   end
   resources :authority_groups, :except => [ :index ] do
