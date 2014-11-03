@@ -56,7 +56,6 @@ RSpec.configure do |config|
       Kor::Elastic.reset_index
     end
 
-    Kor::Attachment.collection.drop
     ActionMailer::Base.deliveries = []
     system("rm -rf #{Medium.media_data_dir}/*")
     system("rm -f #{Kor.app_config_file}")

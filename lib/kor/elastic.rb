@@ -20,7 +20,7 @@ class Kor::Elastic
   end
 
   def self.enabled?
-    !!config
+    config.present?
   end
 
   def self.create_index
@@ -50,6 +50,12 @@ class Kor::Elastic
           "distinct_name" => {"type" => "string", "analyzer" => "folding"},
           "synonyms" => {"type" => "string", "analyzer" => "folding"},
           "comment" => {"type" => "string", "analyzer" => "folding"},
+          "dataset" => {
+            "type" => "object",
+            "properties" => {
+              "_default_" => {"type" => "string", "analyzer" => "folding"}
+            }
+          },
           "properties" => {
             "type" => "object", 
             "properties" => {

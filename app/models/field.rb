@@ -17,7 +17,7 @@ class Field < ActiveRecord::Base
 
   # Attributes
   
-  attr_accessor :attachment
+  attr_accessor :entity
 
   def settings
     self[:settings] ||= {}
@@ -47,7 +47,7 @@ class Field < ActiveRecord::Base
         raise "unknown dataset field error class '#{error.class.to_s}'"
     end
     
-    attachment.entity.errors[:base] << message
+    entity.errors[:base] << message
   end
   
   
@@ -97,7 +97,7 @@ class Field < ActiveRecord::Base
   end
   
   def value
-    attachment.dataset[name]
+    entity.dataset[name]
   end
   
   

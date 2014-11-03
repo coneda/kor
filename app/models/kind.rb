@@ -16,7 +16,7 @@ class Kind < ActiveRecord::Base
   
   def field_instances(object)
     self.fields.each do |field|
-      field.attachment = object.attachment
+      field.entity = object
     end
     
     self.fields

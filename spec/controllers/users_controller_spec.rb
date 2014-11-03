@@ -50,5 +50,27 @@ describe UsersController do
     get :index, :search_string => "doesntexist"
     expect(JSON.parse response.body).to have(0).items
   end
+
+  it "should not allow to normal users to change their user rights" do
+    jdoe = FactoryGirl.create :jdoe
+    allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(jdoe)
+    allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_return(false)
+    expect(jdoe.admin?).to be_false
+    
+    put :update_self, :user => {:admin => true}
+    jdoe.reload
+    expect(jdoe.admin?).to be_false
+  end
+
+  it "should allow changing other user's rights for admins" do
+    jdoe = FactoryGirl.create :jdoe
+    allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(User.admin)
+    allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_return(false)
+    expect(jdoe.admin?).to be_false
+    
+    put :update, :id => jdoe.id, :user => {:admin => true}
+    jdoe.reload
+    expect(jdoe.admin?).to be_true
+  end
   
 end

@@ -5,6 +5,7 @@ class Entity < ActiveRecord::Base
   # Settings
   
   serialize :external_references
+  serialize :attachment, JSON
   
   acts_as_taggable_on :tags
   
@@ -132,7 +133,7 @@ class Entity < ActiveRecord::Base
   validates_uniqueness_of :distinct_name, :scope => [ :kind_id, :name ], :allow_blank => true
   validates_presence_of :collection_id
   
-  validate :validate_distinct_name_needed, :validate_attachment, :attached_file
+  validate :validate_distinct_name_needed, :validate_dataset, :validate_synonyms, :validate_properties, :attached_file
 
   def attached_file
     if is_medium?
@@ -171,64 +172,151 @@ class Entity < ActiveRecord::Base
   
   # Attachment
 
-  def dataset
-    get_attachment_value('dataset', {})
-  end
-  
-  def dataset=(values)
-    set_attachment_value('dataset', values)
-  end
-  
   def attachment
-    @attachment ||= Kor::Attachment.new(self)
+    self[:attachment] ||= {}
   end
-  
-  def save_attachment
-    attachment.save
+
+  def schema
+    kind ? kind.field_instances(self) : []
   end
-  
-  def save_id_in_attachment
-    attachment.entity_id = id
-    attachment.save
+
+  def dataset
+    attachment['dataset'] ||= {}
   end
-  
-  def destroy_attachment
-    attachment.destroy
+
+  def dataset=(value)
+    attachment['dataset'] = value
   end
-  
-  def validate_attachment
-    attachment.validate
+
+  def synonyms
+    attachment['synonyms'] ||= []
   end
+
+  def synonyms=(value)
+    attachment['synonyms'] = value
+  end
+
+  def properties
+    attachment['properties'] ||= []
+  end
+
+  def properties=(value)
+    attachment['properties'] = value
+  end
+
+  def validate_dataset
+    schema.each do |field|
+      field.validate_value
+    end
+  end
+
+  def validate_synonyms
+
+  end
+
+  def validate_properties
+    properties.each do |property|
+      errors.add :properties, :needs_label if property['label'].blank?
+      errors.add :properties, :needs_value if property['value'].blank?
+    end
+  end
+
+
+  # def dataset
+  #   get_attachment_value('dataset', {})
+  # end
   
-  def get_attachment_value(scope, default = nil)
-    if kind
-      # kind.entities.build() does not trigger the kind= writer, so no 
-      # attributes are taken from @after_kind_attributes
-      self.kind = kind unless (@after_kind_attributes || {}).empty?
+  # def dataset=(values)
+  #   set_attachment_value('dataset', values)
+  # end
+  
+  # def attachment
+  #   @attachment ||= Kor::Attachment.new(self)
+  # end
+  
+  # def save_attachment
+  #   attachment.save
+  # end
+  
+  # def save_id_in_attachment
+  #   attachment.entity_id = id
+  #   attachment.save
+  # end
+  
+  # def destroy_attachment
+  #   attachment.destroy
+  # end
+  
+  # def validate_attachment
+  #   attachment.validate
+  # end
+  
+  # def get_attachment_value(scope, default = nil)
+  #   if kind
+  #     # kind.entities.build() does not trigger the kind= writer, so no 
+  #     # attributes are taken from @after_kind_attributes
+  #     self.kind = kind unless (@after_kind_attributes || {}).empty?
     
-      attachment.document[scope.to_s] ||= default
-    else
-      @after_kind_attributes[scope.to_sym] || default
-    end
-  end
+  #     attachment.document[scope.to_s] ||= default
+  #   else
+  #     @after_kind_attributes[scope.to_sym] || default
+  #   end
+  # end
   
-  def set_attachment_value(scope, value)
-    if kind
-      attachment.document[scope.to_s] = value
-    else
-      @after_kind_attributes ||= {}
-      @after_kind_attributes[scope.to_sym] = value
-    end
-  end
+  # def set_attachment_value(scope, value)
+  #   if kind
+  #     attachment.document[scope.to_s] = value
+  #   else
+  #     @after_kind_attributes ||= {}
+  #     @after_kind_attributes[scope.to_sym] = value
+  #   end
+  # end
+
+  # # Synonyms
+  
+  # def synonyms
+  #   get_attachment_value('synonyms', []).uniq
+  # end
+  
+  # def synonyms=(values)
+  #   values = values.split(', ') if values.is_a?(String)
+  #   set_attachment_value('synonyms', values)
+  # end
+  
+  
+  # # Properties
+  
+  # def properties
+  #   get_attachment_value('properties', [])
+  # end
+  
+  # def properties=(values)
+  #   set_attachment_value('properties', values)
+  # end
+
+  # alias :old_kind= :kind=
+  
+  # def kind_id=(value)
+  #   self[:kind_id] = value
+  #   self.attributes = @after_kind_attributes
+  #   @after_kind_attributes = {}
+  # end
+  
+  # def kind=(value)
+  #   self.old_kind = value
+  #   self.attributes = @after_kind_attributes
+  #   @after_kind_attributes = {}
+  # end
   
   
   # Callbacks
   
   before_validation :generate_uuid, :sanitize_distinct_name
-  before_save :generate_uuid, :add_to_user_group, :save_attachment
-  after_save :save_id_in_attachment
+  before_save :generate_uuid, :add_to_user_group
+  # :save_attachment
+  # after_save :save_id_in_attachment
   after_update :save_datings
-  before_destroy :destroy_attachment
+  # before_destroy :destroy_attachment
   after_commit :update_elastic
   
   def sanitize_distinct_name
@@ -256,44 +344,7 @@ class Entity < ActiveRecord::Base
   end
   
   
-  # Synonyms
-  
-  def synonyms
-    get_attachment_value('synonyms', []).uniq
-  end
-  
-  def synonyms=(values)
-    values = values.split(', ') if values.is_a?(String)
-    set_attachment_value('synonyms', values)
-  end
-  
-  
-  # Properties
-  
-  def properties
-    get_attachment_value('properties', [])
-  end
-  
-  def properties=(values)
-    set_attachment_value('properties', values)
-  end
-  
-  
   # Attributes
-  
-  alias :old_kind= :kind=
-  
-  def kind_id=(value)
-    self[:kind_id] = value
-    self.attributes = @after_kind_attributes
-    @after_kind_attributes = {}
-  end
-  
-  def kind=(value)
-    self.old_kind = value
-    self.attributes = @after_kind_attributes
-    @after_kind_attributes = {}
-  end
   
   def recent?
     @recent

@@ -77,8 +77,8 @@ class UsersController < ApplicationController
 
   def update_self
     @user = User.find(current_user.id)
-    
-    if @user.update_attributes(params[:user])
+
+    if @user.update_attributes(self_user_params)
       flash[:notice] = I18n.t( 'objects.update_success', :o => I18n.t('nouns.user', :count => 1) )
       redirect_to root_path
     else
@@ -95,9 +95,9 @@ class UsersController < ApplicationController
 
   def update
     params[:user][:make_personal] ||= false
-  
     @user = User.find(params[:id])
-    if @user.update_attributes(params[:user])
+
+    if @user.update_attributes(user_params)
       flash[:notice] = I18n.t( 'objects.update_success', :o => I18n.t('nouns.user', :count => 1) )
       redirect_to users_path
     else
@@ -109,7 +109,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(params[:user])
+    @user = User.new(user_params)
     
     if @user.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => I18n.t('nouns.user', :count => 1) )
@@ -127,9 +127,24 @@ class UsersController < ApplicationController
     redirect_to users_path
   end
   
+
   private
+
+    def user_params
+      params.require(:user).permit!
+    end
+
+    def self_user_params
+      params.require(:user).permit(
+        :full_name, :name, :email, :password, :password_confirmation, :locale,
+        :home_page, :default_collection_id
+      )
+    end
+    
     def generally_authorized?
       current_user.user_admin?
     end
+
+
 
 end

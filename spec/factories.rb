@@ -22,6 +22,18 @@ FactoryGirl.define do
       plural_name "People"
     end
   end
+
+  factory :field do
+    type 'Fields::String'
+    name 'youtube_id'
+    show_label 'Youtube-ID'
+
+    factory :isbn do
+      type 'Fields::Isbn'
+      name 'isbn'
+      show_label 'ISBN'
+    end
+  end
   
   factory :medium do
     document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
@@ -112,6 +124,7 @@ FactoryGirl.define do
     name 'hmustermann'
     full_name 'Hans Mustermann'
     password 'mustermann'
+    terms_accepted true
 
     factory :hmustermann do
 
@@ -131,6 +144,7 @@ FactoryGirl.define do
       password 'admin'
       
       rating_admin true
+      user_admin true
     end
 
     factory :guest do

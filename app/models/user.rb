@@ -1,6 +1,10 @@
 require 'digest/sha2'
 
 class User < ActiveRecord::Base
+
+  include ActiveModel::ForbiddenAttributesProtection
+
+
   serialize :login_attempts
 
   # ----------------------------------------------------------- associations ---
