@@ -9,7 +9,7 @@ kor.service('korTranslate', ["korData", (korData) ->
       try
         options.count ||= 1
         parts = input.split(".")
-        result = korData.info.translations[service.current_locale]
+        result = korData.info.translations[service.current_locale()]
         
         for part in parts
           result = result[part]

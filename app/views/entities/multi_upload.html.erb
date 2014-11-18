@@ -25,7 +25,7 @@
           <% unless relation_names.empty? %>
             <%= kor_input_tag(
               I18n.t('labels.relate_to_via', :to => Entity.find(session[:current_entity]).display_name),
-              :control => select_tag(:relation_name, options_for_select([""] + relation_names))
+              :control => select_tag(:relation_name, options_for_select([""] + relation_names), "ng-model" => "file_queue.params.relation_name")
             ) %>
           <% else %>
             <%= I18n.t("messages.no_relations_provided") %>
