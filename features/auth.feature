@@ -71,3 +71,11 @@ Feature: Authentication and Authorization
       | username | method | url    | params | access |
       | admin    | GET    | /kinds |        | yes    |
       | john     | GET    | /kinds |        | no     |
+
+  
+  @javascript
+  Scenario: Don't show group menu when not logged in
+    Given the user "guest"
+    And I am on the root page
+    Then I should not see "Gruppen"
+

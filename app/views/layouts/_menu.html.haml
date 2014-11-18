@@ -23,17 +23,18 @@
       
       %li.spacer
 
-      %li.inactive_item
-        = link_to I18n.t('nouns.group', :count => :other).capitalize, nil, :class => "menu_toggle"
-      %li
-        %ul.toggling_menu#groups_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_group_menu]}"}
-          = navigation_item model_specifier(AuthorityGroup, :other), authority_group_categories_path 
-          - if current_user && current_user != User.guest
-            = navigation_item model_specifier(UserGroup, :other), user_groups_path
-          - if current_user && current_user != User.guest
-            = navigation_item model_specifier(Publishment, :other), publishments_path
+      - if logged_in?
+        %li.inactive_item
+          = link_to I18n.t('nouns.group', :count => :other).capitalize, nil, :class => "menu_toggle"
+        %li
+          %ul.toggling_menu#groups_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_group_menu]}"}
+            = navigation_item model_specifier(AuthorityGroup, :other), authority_group_categories_path 
+            - if current_user && current_user != User.guest
+              = navigation_item model_specifier(UserGroup, :other), user_groups_path
+            - if current_user && current_user != User.guest
+              = navigation_item model_specifier(Publishment, :other), publishments_path
       
-      %li.spacer
+        %li.spacer
 
       - if authorized? :create
         %li

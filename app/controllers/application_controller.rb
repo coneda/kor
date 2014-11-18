@@ -5,8 +5,9 @@ class ApplicationController < ActionController::Base
     :authorized_collections,
     :authorized_for_relationship?,
     :kor_graph,
-    :current_user
-  
+    :current_user,
+    :logged_in?
+
   before_filter :locale, :maintenance, :authentication, :authorization, :legal
   
 
@@ -180,6 +181,10 @@ class ApplicationController < ActionController::Base
     
     def current_user
       @current_user ||= User.pickup_session_for(session[:user_id])
+    end
+
+    def logged_in?
+      current_user && current_user.name != 'guest'
     end
     
     def kor_graph
