@@ -66,8 +66,8 @@ end
 
 Given /^"([^\"]*)" is expanded$/ do |folded_menu_name|
   case folded_menu_name
-  when "Einstellungen" 
-    click_link "Einstellungen"
+  when "Administration" 
+    click_link "Administration"
   when "Gruppen"
     click_link "Gruppen"
   end

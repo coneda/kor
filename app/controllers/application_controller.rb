@@ -97,9 +97,11 @@ class ApplicationController < ActionController::Base
     def locale
       if current_user && current_user.locale
         I18n.locale = current_user.locale
+      else
+        I18n.locale = Kor.config['locale'] || I18n.default_locale
       end
     end
-  
+
     def authorized?(policy = :view, collections = Collection.all, options = {})
       options.reverse_merge!(:required => :any)
     
