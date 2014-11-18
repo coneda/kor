@@ -6,12 +6,21 @@ Feature: Authentication and Authorization
   I should have to authenticate and be authorized accordingly
   
   
-  Scenario: Reset password with wrong email adress
+  Scenario: Reset password with wrong email address
     When I go to the login page
     And I follow "Passwort vergessen?"
     And I fill in "email" with "does@not.exist"
     And I press "zurücksetzen"
     Then I should see "konnte nicht gefunden werden"
+
+
+  Scenario: Reset password with correct email address
+    Given the user "jdoe"
+    When I go to the login page
+    And I follow "Passwort vergessen?"
+    And I fill in "email" with "jdoe@example.com"
+    And I press "zurücksetzen"
+    Then I should see "Ihr Passwort wurde neu generiert und an die angegebenen Emaildresse gesendet"
     
     
   Scenario: Reset admin password

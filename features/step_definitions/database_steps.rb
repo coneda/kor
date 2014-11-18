@@ -35,6 +35,12 @@ Given /^the kinds$/ do |table|
   end
 end
 
+Given(/^the generator "(.*?)" for kind "(.*?)"$/) do |name, kind_name|
+  step "the kind \"#{kind_name}\""
+  generator = FactoryGirl.build name
+  Kind.where(:name => kind_name.split('/').first).first.generators << generator
+end
+
 Given /^the relation "([^\"]*)"$/ do |names|
   name, reverse = names.split('/')
   reverse = name if reverse.blank?

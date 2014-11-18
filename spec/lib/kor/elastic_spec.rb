@@ -224,4 +224,26 @@ describe Kor::Elastic, :elastic => true do
     }.not_to change{@elastic.search.total}
   end
 
+  it "should search within related entities with special characters" do
+    @people = FactoryGirl.create :people
+    @works = FactoryGirl.create :works
+    @landscape = FactoryGirl.create :landscape
+    @jack = FactoryGirl.create :jack, :name => "Jäck"
+    @is_related_to = FactoryGirl.create :relation
+    Relationship.relate_once_and_save(@landscape, "is related to", @jack)
+    described_class.index_all :full => true
+
+    results = @elastic.search(:query => "Jäck")
+    expect(results.records).to eq([@jack, @landscape])
+  end
+
+  it "should search within the comment" do
+    @people = FactoryGirl.create :people
+    @jack = FactoryGirl.create :jack, :comment => "chainsaw"
+    described_class.index_all :full => true
+
+    results = @elastic.search(:query => "chain")
+    expect(results.records).to eq([@jack])
+  end
+
 end

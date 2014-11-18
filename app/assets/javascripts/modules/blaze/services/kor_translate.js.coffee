@@ -1,10 +1,15 @@
 kor.service('korTranslate', ["korData", (korData) ->
   service = {
+    current_locale: ->
+      try
+        korData.info.session.user.locale || korData.info.locale
+      catch error
+        korData.info.locale
     translate: (input, options = {}) ->
       try
         options.count ||= 1
         parts = input.split(".")
-        result = korData.info.translations[korData.info.locale]
+        result = korData.info.translations[service.current_locale]
         
         for part in parts
           result = result[part]

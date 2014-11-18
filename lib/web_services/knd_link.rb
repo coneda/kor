@@ -8,6 +8,10 @@ class WebServices::KndLink < WebServices::Link
     "GND-ID"
   end
 
+  def self.external_reference
+    "gnd"
+  end
+
   def self.link_for(entity)
     id = entity.external_references[name]
     unless id.blank?
