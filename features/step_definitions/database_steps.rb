@@ -346,6 +346,29 @@ Given /^the triple "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)"$/ do |
   step "the relationship \"#{from_name}\" \"#{relation}\" \"#{to_name}\""
 end
 
+Then(/^"(.*?)" should have "(.*?)" "(.*?)"$/) do |subject, relation, object|
+  subject = Entity.where(:name => subject).first
+  object = Entity.where(:name => object).first
+  
+  normal = if normal_relation = Relation.where(:name => relation).first
+    Relationship.where(
+      :from_id => subject.id, 
+      :relation_id => normal_relation.id,
+      :to_id => object.id
+    ).first
+  end
+
+  reverse = if reverse_relation = Relation.where(:reverse_name => relation).first
+    Relationship.where(
+      :from_id => object.id, 
+      :relation_id => reverse_relation.id,
+      :to_id => subject.id
+    ).first
+  end
+
+  expect(normal || reverse).to be_true
+end
+
 Given /^the relationship "([^\"]*)" "([^\"]*)" "([^\"]*)"$/ do |from, name, to|
   from = Entity.find_by_name(from)
   to = Entity.find_by_name(to)

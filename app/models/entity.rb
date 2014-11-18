@@ -467,7 +467,7 @@ class Entity < ActiveRecord::Base
 
   def display_name
     if is_medium?
-      Medium.model_name.human
+      "#{Medium.model_name.human} #{id}"
     elsif no_name_statement == 'enter_name'
       distinct_name.blank? ? name : "#{name} (#{distinct_name})".strip
     else

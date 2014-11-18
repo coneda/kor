@@ -36,3 +36,31 @@ Feature: Clipboard
     And I press "Senden"
     Then I should be on the user group page for "Neue Gruppe"
     And I should see element "div.kor_extended_image"
+
+
+  @javascript
+  Scenario: Mass relate entities
+    Given I am logged in as "admin"
+    And the entity "Leonardo" of kind "Person/People" 
+    And the entity "Mona Lisa" of kind "Work/Works"
+    And the relation "created/was created by" between "Person/People" and "Work/Works"
+    When I mark "Leonardo" as current entity
+    And I put "Mona Lisa" into the clipboard
+    And I go to the clipboard
+    When I select "verknüpfen" from "clipboard_action"
+    And I press "Senden"
+    Then "Leonardo" should have "created" "Mona Lisa"
+
+
+  @javascript
+  Scenario: Mass relate entities reversely
+    Given I am logged in as "admin"
+    And the entity "Leonardo" of kind "Person/People" 
+    And the entity "Mona Lisa" of kind "Work/Works"
+    And the relation "was created by/created" between "Work/Works" and "Person/People"
+    When I mark "Leonardo" as current entity
+    And I put "Mona Lisa" into the clipboard
+    And I go to the clipboard
+    When I select "verknüpfen" from "clipboard_action"
+    And I press "Senden"
+    Then "Leonardo" should have "created" "Mona Lisa"

@@ -54,6 +54,11 @@ When /^I mark "([^\"]*)" as current entity$/ do |name|
   step "I follow \"Select\""
 end
 
+When(/^I put "(.*?)" into the clipboard$/) do |name|
+  step "I am on the entity page for \"#{name}\""
+  step "I follow \"Target\""
+end
+
 Given /^the session has expired$/ do
   now = Time.now
   Time.stub(:now).and_return(now + 3.hours)
