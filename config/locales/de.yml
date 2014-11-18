@@ -393,7 +393,7 @@ de:
     authority_group:
       one: "globale Gruppe"
       other: "globale Gruppen"
-    config: Einstellungen
+    config: Administration
     user_group:
       one: "eigene Gruppe"
       other: "eigene Gruppen"
