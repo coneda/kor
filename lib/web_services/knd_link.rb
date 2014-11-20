@@ -13,7 +13,7 @@ class WebServices::KndLink < WebServices::Link
   end
 
   def self.link_for(entity)
-    id = entity.external_references[name]
+    id = entity.external_references[self.external_reference]
     unless id.blank?
       return "http://d-nb.info/gnd/" + id
     else

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140914112118) do
+ActiveRecord::Schema.define(:version => 20141120190607) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -164,11 +164,10 @@ ActiveRecord::Schema.define(:version => 20140914112118) do
     t.integer  "medium_id"
   end
 
+  add_index "entities", ["collection_id", "kind_id"], :name => "collections_kinds"
   add_index "entities", ["created_at"], :name => "index_entities_on_created_at"
   add_index "entities", ["creator_id"], :name => "index_entities_on_user_id"
   add_index "entities", ["distinct_name"], :name => "index_entities_on_distinct_name"
-  add_index "entities", ["kind_id"], :name => "index_entities_on_kind_id"
-  add_index "entities", ["medium_id"], :name => "mediy"
   add_index "entities", ["name"], :name => "index_entities_on_name"
   add_index "entities", ["uuid"], :name => "index_entities_on_uuid"
 
@@ -301,6 +300,7 @@ ActiveRecord::Schema.define(:version => 20140914112118) do
   end
 
   add_index "ratings", ["entity_id", "state"], :name => "index_ratings_on_entity_id_and_state"
+  add_index "ratings", ["namespace", "user_id", "entity_id"], :name => "joint"
 
   create_table "relations", :force => true do |t|
     t.string   "uuid"
@@ -432,7 +432,6 @@ ActiveRecord::Schema.define(:version => 20140914112118) do
     t.integer  "collection_id"
     t.integer  "credential_id"
     t.boolean  "rating_admin"
-    t.string   "api_key"
     t.string   "parent_username"
   end
 
