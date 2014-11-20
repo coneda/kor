@@ -42,7 +42,7 @@ module Kor
   
     config.cache_store = :file_store, 'tmp/cache'
     
-    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.delivery_method = (Kor.config['mail_delivery_method'].presence || :smtp).to_sym
     config.action_mailer.smtp_settings = Kor.config['mail'].symbolize_keys
     config.action_mailer.default_url_options = Kor.config['host'].symbolize_keys
   
