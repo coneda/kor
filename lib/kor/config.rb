@@ -29,8 +29,9 @@ class Kor::Config
       {}
     end
     
+    d = YAML.dump(old_state.deep_merge(env => raw))
     File.open file, 'w' do |f|
-      YAML.dump(old_state.deep_merge(env => raw), f)
+      f.write d
     end
   end
   
