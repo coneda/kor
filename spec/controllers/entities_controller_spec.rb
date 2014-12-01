@@ -299,7 +299,7 @@ describe EntitiesController do
     post :create, :entity => {
       :collection_id => Collection.first.id,
       :name => "Some name",
-      :kind_id => 1
+      :kind_id => Kind.medium_kind.id
     }
 
     response.should_not be_success
@@ -307,7 +307,7 @@ describe EntitiesController do
     post :create, :entity => {
       :collection_id => Collection.first.id,
       :name => "Some name",
-      :kind_id => 1,
+      :kind_id => Kind.medium_kind.id,
       :medium_attributes => {}
     }
 

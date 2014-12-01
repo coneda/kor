@@ -18,7 +18,7 @@ test:
     database: kor_test
     port: 27017
 
-  elastic
+  elastic:
     host: elastic
     port: 9200
     index: kor_test

@@ -40,6 +40,15 @@ RSpec.configure do |config|
 
   config.before :all do
     system "cat /dev/null >| #{Rails.root}/log/test.log"
+
+    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.clean_with :deletion
+  end
+
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 
   config.before :each do
@@ -47,9 +56,6 @@ RSpec.configure do |config|
       Kor::Elastic.reset_index
     end
 
-    DatabaseCleaner.strategy = :truncation
-    DatabaseCleaner.clean
-  
     Kor::Attachment.collection.drop
     ActionMailer::Base.deliveries = []
     system("rm -rf #{Medium.media_data_dir}/*")

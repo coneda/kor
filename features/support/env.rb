@@ -22,7 +22,9 @@ Capybara.register_driver :poltergeist do |app|
   )
 end
 
-# Capybara.javascript_driver = :poltergeist
+if ENV['HEADLESS']
+  Capybara.javascript_driver = :poltergeist
+end
 
 ActionController::Base.allow_rescue = false
 
