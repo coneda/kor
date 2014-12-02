@@ -27,8 +27,8 @@ module MediaHelper
       content_tag 'span', :class => 'button_bar', :style => 'display: none' do
         in_clipboard = (session[:clipboard] || []).include?(entity.id)
 
-        link_to(kor_command_image('target_hit'), '/', :style => (in_clipboard ? nil : 'display: none')) +
-        link_to(kor_command_image('target'), '/', :style => (in_clipboard ? 'display: none' : nil))
+        link_to(kor_command_image('target_hit'), '/', :style => (in_clipboard ? nil : 'display: none'), :class => 'marked') +
+        link_to(kor_command_image('target'), '/', :style => (in_clipboard ? 'display: none' : nil), :class => 'unmarked')
       end
     else
       ""

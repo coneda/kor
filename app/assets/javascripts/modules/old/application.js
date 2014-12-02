@@ -384,7 +384,7 @@ ImageQuickButtons.register_events = function() {
   $(document).on('mouseout', '.kor_medium_frame', function(event) {
     $(event.currentTarget).find('.button_bar').hide();
   });
-  
+
   $(document).on('click', ".kor_medium_frame .button_bar img[alt=Target]", function(event) {
     var cT = $(event.currentTarget).parent();
     var entity_id = cT.parents('.kor_medium_frame').attr('id').split('_').pop();

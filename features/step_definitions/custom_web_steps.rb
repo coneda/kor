@@ -74,14 +74,16 @@ When /^I fill in "([^"]*)" with "([^"]*)" and select tag "([^"]*)"$/ do |field, 
   step "I select \"Tag: #{pattern}\" from the autocomplete"
 end
 
-When /^I select "([^"]*)" from the autocomplete$/ do |pattern|
+When /^I select "([^\"]*)" from the autocomplete$/ do |pattern|
+  page.execute_script '$("input[name=search_terms]").keydown()'
+
   t = Time.now
   while Time.now - t < 5.seconds && !page.all('li.ui-menu-item a').to_a.find{|a| a.text.match Regexp.new(pattern)}
     sleep 0.2
   end
-
-  page.all('li.ui-menu-item a').to_a.find do |anker|
-    anker.text.match Regexp.new(pattern)
+  
+  page.all('li.ui-menu-item a').to_a.find do |anchor|
+    anchor.text.match Regexp.new(pattern)
   end.click
 end
 
@@ -165,7 +167,8 @@ When /^I follow the delete link$/ do
 end
 
 When /^I click on "([^\"]*)"$/ do |selector|
-  page.find(selector).click
+  element = page.find(selector)
+  element.click
 end
 
 Then /^(?:|I )should not be on (.+)$/ do |page_name|
@@ -217,4 +220,12 @@ end
 
 Then /^I should see the video player$/ do
   page.should have_selector('.video-js')
+end
+
+Then(/^I should (not )?see option "([^\"]+)"$/) do |negator, text|
+  if negator == "not "
+    expect(page).not_to have_selector("option", :text => text)
+  else
+    expect(page).to have_selector("option", :text => text)
+  end
 end

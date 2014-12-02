@@ -85,3 +85,11 @@ Given /^all entities of kind "([^"]*)" are in the clipboard$/ do |kind|
     step "I follow \"Target\""
   end
 end
+
+When(/^I save a screenshot$/) do
+  page.save_screenshot "screenshot.png"
+end
+
+When(/^I call the inspector$/) do
+  page.driver.debug
+end

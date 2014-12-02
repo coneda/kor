@@ -48,7 +48,8 @@ Feature: Clipboard
     And I put "Mona Lisa" into the clipboard
     And I go to the clipboard
     When I select "verknüpfen" from "clipboard_action"
-    And I press "Senden"
+    Then I should see "alle ausgewählten Entities"
+    When I press "Senden"
     Then "Leonardo" should have "created" "Mona Lisa"
 
 
@@ -62,5 +63,6 @@ Feature: Clipboard
     And I put "Mona Lisa" into the clipboard
     And I go to the clipboard
     When I select "verknüpfen" from "clipboard_action"
+    Then I should see "alle ausgewählten Entities"
     And I press "Senden"
     Then "Leonardo" should have "created" "Mona Lisa"

@@ -61,7 +61,7 @@ Feature: Kinds
     And I press "Erstellen"
     Then I should be on the kinds page
     And I should see "Werk"
-    And I should see "Werk" within "select#new_entity_kind_id"
+    And I should see the option to create a new "Werk"
     
     When I go to the new "Werk-Entity" page
     Then I should see "Werk anlegen"

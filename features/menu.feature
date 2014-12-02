@@ -15,7 +15,7 @@ Feature: Navigation Menu
     And I should see "Profil bearbeiten" within "#menu"
     And I should see "Statistiken" within "#menu"
     And I should not see "Administration" within "#menu"
-    And I should not see "Entität anlegen" within "#menu"
+    And I should not see option "Entität anlegen" within "#menu"
     And I should not see "Ungültige Entitäten" within "#menu"
     And I should not see "Neue Entitäten" within "#menu"
     
@@ -33,7 +33,7 @@ Feature: Navigation Menu
     And I should see "Globale" within "#menu"
     And I should see "Eigene" within "#menu"
     And I should see "Veröffentlichte" within "#menu"
-    And I should see "Entität anlegen"
+    And I should see option "Entität anlegen"
     And I should see "Administration" within "#menu"
     And I should see "Allgemein" within "#menu"
     And I should see "Relationen" within "#menu"
@@ -43,7 +43,7 @@ Feature: Navigation Menu
     And I should see "Benutzerverwaltung" within "#menu"
     And I should see "Profil bearbeiten" within "#menu"
     And I should see "Statistiken" within "#menu"
-    And I should see "Entität anlegen" within "#menu"
+    And I should see option "Entität anlegen" within "#menu"
     And I should see "Ungültige Entitäten" within "#menu"
     And I should see "Neue Entitäten" within "#menu"
 

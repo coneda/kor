@@ -37,6 +37,12 @@ class Medium < ActiveRecord::Base
 
   process_in_background :document  
   process_in_background :image
+
+  before_validation do |m|
+    if m.document.to_file
+      m.document.instance_write :content_type, `file --mime-type -b #{m.document.to_file.path}`.strip.split(';').first
+    end
+  end
   
   def serializable_hash(*args)
     {
