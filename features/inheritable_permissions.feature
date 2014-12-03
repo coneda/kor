@@ -27,7 +27,7 @@ Feature: Inheritable permissions
 
     And the user "hmustermann" has password "hmustermann"
     And I re-login as "hmustermann"
-    And "Einstellungen" is expanded
+    And "Administration" is expanded
     Then I should see "Relationen"
 
 

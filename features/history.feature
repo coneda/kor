@@ -12,6 +12,7 @@ Feature: History
     And I follow "Leonardo da Vinci"
     Then I should see "Leonardo da Vinci"
     When I ignore the next confirmation box
+    And I wait for "2" seconds
     And I follow "X" within ".layout_panel.top:first-child"
     Then I should be on the entity page for "Mona Lisa"
   

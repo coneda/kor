@@ -185,5 +185,13 @@ class Relationship < ActiveRecord::Base
       self[:to_id] = id
     end
   end
+
+  def human
+    from_name = from.display_name.first(30)
+    to_name = to.display_name.first(30)
+    relation_name = (reverse ? relation.reverse_name : relation.name)
+    r = (reverse ? 'reverse' : 'normal')
+    "'#{from_name}' [#{r}] #{relation_name} '#{to_name}'"
+  end
   
 end

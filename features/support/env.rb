@@ -17,12 +17,16 @@ Capybara.register_driver :selenium do |app|
 end
 
 Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app, 
-    :js_errors => false
+  Capybara::Poltergeist::Driver.new(app,
+    # :debug => true,
+    :js_errors => false,
+    :inspector => true
   )
 end
 
-# Capybara.javascript_driver = :poltergeist
+if ENV['HEADLESS']
+  Capybara.javascript_driver = :poltergeist
+end
 
 ActionController::Base.allow_rescue = false
 

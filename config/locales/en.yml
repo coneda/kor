@@ -50,6 +50,7 @@ en:
   some_images: selection of associated media
   edit_personal_collections: edit personal collections
   logged_in_recently: "logged in recently (<= 30 days)"
+  logged_in_last_year: "logged in within the last year (<= 365 days)"
   created_recently: "created recently (<= 30 days)"
   provided_by: "provided by"
 
@@ -394,7 +395,7 @@ en:
     authority_group:
       one: "global group"
       other: "global groups"
-    config: configurations
+    config: administration
     user_group:
       one: "own group"
       other: "own groups"

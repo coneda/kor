@@ -37,7 +37,8 @@ class Api::PublicController < Api::ApiController
           :in_a_row => Api::Engagement.in_a_row(current_user)
         },
         :credits => current_user.credits,
-        :auth => current_user.full_auth
+        :auth => current_user.full_auth,
+        :locale => current_user.locale
       }
 
       result[:session][:flash] = {

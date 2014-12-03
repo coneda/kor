@@ -1,7 +1,6 @@
 kor.controller('entity_controller', [
   '$scope', 'korData', 'relationships_service', '$routeParams', 'entities_service', '$location',
   (scope, kd, rss, rp, es, l) ->
-
     promise = es.show(rp.id)
     promise.success (data) -> scope.entity = data
     promise.error (data) -> l.path("/denied")

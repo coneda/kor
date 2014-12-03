@@ -6,8 +6,9 @@ class ApplicationController < ActionController::Base
     :authorized_for_relationship?,
     :kor_graph,
     :current_user,
-    :blaze
-  
+    :blaze,
+    :logged_in?
+
   before_filter :locale, :maintenance, :authentication, :authorization, :legal
 
   before_filter do
@@ -19,7 +20,7 @@ class ApplicationController < ActionController::Base
 
     # redirects to the legal page if terms have not been accepted
     def legal
-      if !current_user.guest? && !current_user.terms_accepted
+      if current_user && !current_user.guest? && !current_user.terms_accepted
         redirect_to :controller => 'static', :action => 'legal'
       end
     end
@@ -56,8 +57,6 @@ class ApplicationController < ActionController::Base
       redirect_to '/500.html'
     end
 
-    # this filter asserts that there is a valid user id in <tt>params[:user_id]</tt>
-    # which has not expired
     def authentication # :doc:
       session[:user_id] ||= if User.guest
         session[:expires_at] = Kor.session_expiry_time
@@ -68,10 +67,22 @@ class ApplicationController < ActionController::Base
         history_store
         redirect_to login_path
       elsif session_expired?
-        reset_session
-        history_store
-        flash[:notice] = I18n.t('notices.session_expired')
-        redirect_to login_path
+        respond_to do |format|
+          format.html do
+            old_history = session[:history]
+            reset_session
+            session[:history] = old_history
+            history_store unless request.path.match(/^\/blaze/)
+            flash[:notice] = I18n.t('notices.session_expired')
+            redirect_to login_path
+          end
+          format.json do
+            old_history = session[:history]
+            reset_session
+            session[:history] = old_history
+            render :json => {:notice => I18n.t('notices.session_expired')}, :status => 403
+          end
+        end
       else
         Kor.info("AUTH", "user '#{current_user.name}' has been seen")
         session[:expires_at] = Kor.session_expiry_time
@@ -101,9 +112,11 @@ class ApplicationController < ActionController::Base
     def locale
       if current_user && current_user.locale
         I18n.locale = current_user.locale
+      else
+        I18n.locale = Kor.config['locale'] || I18n.default_locale
       end
     end
-  
+
     def authorized?(policy = :view, collections = Collection.all, options = {})
       options.reverse_merge!(:required => :any)
     
@@ -193,6 +206,10 @@ class ApplicationController < ActionController::Base
     
     def current_user
       @current_user ||= User.pickup_session_for(session[:user_id])
+    end
+
+    def logged_in?
+      current_user && current_user.name != 'guest'
     end
     
     def kor_graph

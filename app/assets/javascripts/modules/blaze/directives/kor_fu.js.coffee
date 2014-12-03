@@ -13,6 +13,8 @@ kor.directive "korFu", [
           file_data_name: "entity[medium_attributes][document]"
         )
 
+        window.s = scope
+
         scope.data = {
           jobs: -> uploader.files
           submit: -> 
@@ -20,6 +22,7 @@ kor.directive "korFu", [
               "entity[kind_id]": scope.data.params.kind_id
               "entity[collection_id]": scope.data.params.collection_id
               "user_group_name": scope.data.params.user_group_name
+              "relation_name": scope.data.params.relation_name
             }
             uploader.start()
           abort: -> 

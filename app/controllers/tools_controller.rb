@@ -6,6 +6,8 @@ class ToolsController < ApplicationController
     'remove_from_authority_group' 
   ]
 
+  skip_before_filter :authentication, :only => 'history'
+
   layout 'normal_small'
 
 
@@ -63,7 +65,7 @@ class ToolsController < ApplicationController
   
   def add_media
     session[:current_entity] = params[:id].to_i || nil
-    redirect_to :controller => 'entities', :action => 'multi_upload'
+    redirect_to "/blaze#/entities/multi_upload"
   end
 
   # puts an entity into the clipboard or removes it thereof. this action works

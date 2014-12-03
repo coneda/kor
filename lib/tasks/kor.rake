@@ -62,21 +62,9 @@ namespace :kor do
     end
 
     desc "refresh the elastic index"
-    task :refresh => :environment do
+    task :refresh => [:environment, :drop, :create] do
       ActiveRecord::Base.logger.level = Logger::ERROR
-
-      # require "method_profiler"
-
-      # profilers = [
-      #   MethodProfiler.observe(Entity),
-      #   MethodProfiler.observe(Kor::Elastic)
-      # ]
-
       Kor::Elastic.index_all :full => true, :progress => true
-
-      # profilers.each do |p|
-      #   puts p.report
-      # end
     end
 
   end

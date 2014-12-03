@@ -4,9 +4,24 @@ development:
   timeout: 5000
 
 test:
-  adapter: sqlite3
-  database: data/test.sqlite3
-  timeout: 5000
+  adapter: mysql2
+  host: mysql
+  database: kor_test
+  username: root
+  password: root
+  encoding: utf8
+  collation: utf8_general_ci
+  reconnect: true
+
+  mongo:
+    host: mongo
+    database: kor_test
+    port: 27017
+
+  elastic:
+    host: elastic
+    port: 9200
+    index: kor_test
 
 production:
   adapter: mysql2

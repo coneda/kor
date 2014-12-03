@@ -178,7 +178,8 @@ class User < ActiveRecord::Base
   end
   
   def self.guest
-    find_by_name('guest')
+    user = find_by_name('guest')
+    user.active? ? user : nil
   end
   
   def guest?
@@ -230,6 +231,9 @@ class User < ActiveRecord::Base
   }
   scope :logged_in_recently, lambda {
     where("last_login > ?", 30.days.ago)
+  }
+  scope :logged_in_last_year, lambda {
+    where("last_login > ?", 1.year.ago) 
   }
   scope :created_recently, lambda {
     where("created_at > ?", 30.days.ago)

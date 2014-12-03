@@ -14,6 +14,10 @@
         <td class="number text-right"><%= User.without_predefined.logged_in_recently.count %></td>
       </tr>
       <tr>
+        <td><%= I18n.t "logged_in_last_year" %></td>
+        <td class="number text-right"><%= User.without_predefined.logged_in_last_year.count %></td>
+      </tr>
+      <tr>
         <td><%= I18n.t "created_recently" %></td>
         <td class="number text-right"><%= User.without_predefined.created_recently.count %></td>
       </tr>

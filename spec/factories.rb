@@ -150,5 +150,17 @@ FactoryGirl.define do
       name "students"
     end
   end
+
+  factory :generator do
+    factory :language_indicator do
+      name "language_indicator"
+      show_label "Language indicator"
+      directive "
+        <span>Lang-Label:</span>
+        <span ng-show=\"locale() == 'en'\">English</span>
+        <span ng-show=\"locale() == 'de'\">Deutsch</span>
+      "
+    end
+  end
   
 end

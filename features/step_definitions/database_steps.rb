@@ -23,6 +23,18 @@ Given /^the kind "([^\"]*)"$/ do |names|
   Kind.find_or_create_by_name(:name => singular, :plural_name => plural)
 end
 
+Given /^the kinds$/ do |table|
+  table.hashes.each do |kind|
+    step "the kind \"#{kind[:name]}/#{kind[:plural_name]}\""
+  end
+end
+
+Given(/^the generator "(.*?)" for kind "(.*?)"$/) do |name, kind_name|
+  step "the kind \"#{kind_name}\""
+  generator = FactoryGirl.build name
+  Kind.where(:name => kind_name.split('/').first).first.generators << generator
+end
+
 Given /^the relation "([^\"]*)"$/ do |names|
   name, reverse = names.split('/')
   reverse = name if reverse.blank?
@@ -235,6 +247,29 @@ Given /^the triple "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)"$/ do |
   
   relation = relation.split('/').first
   step "the relationship \"#{from_name}\" \"#{relation}\" \"#{to_name}\""
+end
+
+Then(/^"(.*?)" should have "(.*?)" "(.*?)"$/) do |subject, relation, object|
+  subject = Entity.where(:name => subject).first
+  object = Entity.where(:name => object).first
+  
+  normal = if normal_relation = Relation.where(:name => relation).first
+    Relationship.where(
+      :from_id => subject.id, 
+      :relation_id => normal_relation.id,
+      :to_id => object.id
+    ).first
+  end
+
+  reverse = if reverse_relation = Relation.where(:reverse_name => relation).first
+    Relationship.where(
+      :from_id => object.id, 
+      :relation_id => reverse_relation.id,
+      :to_id => subject.id
+    ).first
+  end
+
+  expect(normal || reverse).to be_true
 end
 
 Given /^the relationship "([^\"]*)" "([^\"]*)" "([^\"]*)"$/ do |from, name, to|

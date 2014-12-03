@@ -55,15 +55,24 @@ When /^I mark "([^\"]*)" as current entity$/ do |name|
   step "I follow \"Select\""
 end
 
+When(/^I put "(.*?)" into the clipboard$/) do |name|
+  step "I am on the entity page for \"#{name}\""
+  step "I should see \"#{name}\""
+  step "I follow \"Target\""
+end
+
 Given /^the session has expired$/ do
-  now = Time.now
-  Time.stub(:now).and_return(now + 3.hours)
+  allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_return(true)
+end
+
+Given /^the session is not forcibly expired anymore$/ do
+  allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_call_original
 end
 
 Given /^"([^\"]*)" is expanded$/ do |folded_menu_name|
   case folded_menu_name
-  when "Einstellungen" 
-    click_link "Einstellungen"
+  when "Administration" 
+    click_link "Administration"
   when "Gruppen"
     click_link "Gruppen"
   end
@@ -80,4 +89,12 @@ Given /^all entities of kind "([^"]*)" are in the clipboard$/ do |kind|
     end
     step "I follow \"Target\""
   end
+end
+
+When(/^I save a screenshot$/) do
+  page.save_screenshot "screenshot.png"
+end
+
+When(/^I call the inspector$/) do
+  page.driver.debug
 end

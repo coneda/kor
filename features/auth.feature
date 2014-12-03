@@ -6,12 +6,21 @@ Feature: Authentication and Authorization
   I should have to authenticate and be authorized accordingly
   
   
-  Scenario: Reset password with wrong email adress
+  Scenario: Reset password with wrong email address
     When I go to the login page
     And I follow "Passwort vergessen?"
     And I fill in "email" with "does@not.exist"
     And I press "zurücksetzen"
     Then I should see "konnte nicht gefunden werden"
+
+
+  Scenario: Reset password with correct email address
+    Given the user "jdoe"
+    When I go to the login page
+    And I follow "Passwort vergessen?"
+    And I fill in "email" with "jdoe@example.com"
+    And I press "zurücksetzen"
+    Then I should see "Ihr Passwort wurde neu generiert und an die angegebenen Emaildresse gesendet"
     
     
   Scenario: Reset admin password
@@ -28,10 +37,13 @@ Feature: Authentication and Authorization
     And the entity "Mona Lisa" of kind "Werk/Werke"
     And the session has expired
     When I go to the entity page for "Mona Lisa"
-    Then I should be on the login page
+    Then I should not see "Mona Lisa"
+    When I follow "anmelden"
+    Given the session is not forcibly expired anymore
     When I fill in "username" with "admin"
     And I fill in "password" with "admin"
     And I press "Anmelden"
+    Then I should see "Mona Lisa"
     Then I should be on the entity page for "Mona Lisa"
 
   
@@ -63,3 +75,11 @@ Feature: Authentication and Authorization
       | username | method | url    | params | access |
       | admin    | GET    | /kinds |        | yes    |
       | john     | GET    | /kinds |        | no     |
+
+  
+  @javascript
+  Scenario: Don't show group menu when not logged in
+    Given the user "guest"
+    And I am on the root page
+    Then I should not see "Gruppen"
+

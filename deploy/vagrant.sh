@@ -14,6 +14,7 @@ function install_standalone {
 
   apt-get update
   apt-get install -y mysql-server mongodb-10gen elasticsearch
+  apt-get clean
 
   update-rc.d elasticsearch defaults
 
@@ -24,6 +25,7 @@ function install_requirements {
   apt-get update
   apt-get upgrade -y
   apt-get install -y git-core build-essential ruby apache2 apache2-prefork-dev libmysqlclient-dev libcurl4-openssl-dev ruby-dev libxml2-dev libxslt-dev openjdk-7-jre imagemagick ffmpeg libapache2-mod-passenger zip
+  apt-get clean
 }
 
 function install_deb {

@@ -1,5 +1,5 @@
 class StaticController < ApplicationController
-  skip_before_filter [ :authentication, :maintenance ], :except => :help
+  skip_before_filter :authentication, :authorization, :maintenance, :except => :help
   
   layout 'wide'
   

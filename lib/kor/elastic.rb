@@ -24,19 +24,25 @@ class Kor::Elastic
   end
 
   def self.create_index
-    request 'put', '/', nil, {
-      "settings" => {
-        "analysis" => {
-          "analyzer" => {
-            "folding" => {
-              "tokenizer" => "standard",
-              "filter" => ["lowercase", "asciifolding"]
+    unless index_exists?
+      request 'put', '/', nil, {
+        "settings" => {
+          "analysis" => {
+            "analyzer" => {
+              "folding" => {
+                "tokenizer" => "standard",
+                "filter" => ["lowercase", "asciifolding"]
+              }
             }
           }
         }
       }
-    }
 
+      mapping!
+    end
+  end
+
+  def self.mapping!
     request "put", "/entities/_mapping", nil, {
       "entities" => {
         "properties" => {
@@ -54,6 +60,7 @@ class Kor::Elastic
           "id" => {"type" => "string", "index" => "not_analyzed"},
           "uuid" => {"type" => "string", "index" => "not_analyzed"},
           "tags" => {"type" => "string", "analyzer" => "keyword"},
+          "related" => {"type" => "string", "analyzer" => "folding"},
 
           "sort" => {"type" => "string", "index" => "not_analyzed"}
         }
@@ -62,7 +69,9 @@ class Kor::Elastic
   end
 
   def self.drop_index
-    request 'delete', '/'
+    if index_exists?
+      request 'delete', '/'
+    end
   end
 
   def self.index_exists?
@@ -71,7 +80,7 @@ class Kor::Elastic
   end
 
   def self.reset_index
-    drop_index if index_exists?
+    drop_index
     create_index
   end
 
@@ -129,7 +138,7 @@ class Kor::Elastic
         [e.name] + fetch(:synonyms, e.id) do
           e.synonyms
         end
-      end
+      end.flatten.select{|e| e.present?}
     end
 
     request 'put', "/entities/#{entity.uuid}", nil, data
@@ -168,8 +177,10 @@ class Kor::Elastic
             'name^10',
             'distinct_name^5',
             'synonyms^5',
+            'related^4',
             'properties.label^2',
             'properties.value^3',
+            'comment^1',
             '_all'
           ]
         }

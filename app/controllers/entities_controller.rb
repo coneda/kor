@@ -136,7 +136,6 @@ class EntitiesController < ApplicationController
       if @entity.save
         if params[:user_group_name]
           transit = UserGroup.owned_by(current_user).find_or_create_by_name(params[:user_group_name])
-          debugger unless @entity
           transit.add_entities @entity if transit
         end
         
@@ -222,5 +221,5 @@ class EntitiesController < ApplicationController
       redirect_to denied_path
     end
   end
-    
+
 end

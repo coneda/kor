@@ -55,7 +55,7 @@ class AuthenticationController < ApplicationController
             params[:fragment] = nil if params[:fragment].match('{{')
             r_to += "##{params[:fragment]}" if params[:fragment].present?
           end
-          
+
           redirect_to r_to
         end
       else

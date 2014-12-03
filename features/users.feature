@@ -14,7 +14,7 @@ Feature: User administration
     Then I should be on the users page
     
 
-  @selenium  
+  @javascript
   Scenario: Delete a user which has shared user groups
     Given I am logged in as "admin"
     And the user "john"

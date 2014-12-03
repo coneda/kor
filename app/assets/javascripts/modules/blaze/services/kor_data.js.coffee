@@ -7,6 +7,12 @@ kor.service('korData', [
 
       error: -> if service.info then service.info.session.flash.error else null
       notice: -> if service.info then service.info.session.flash.notice else null
+
+      logged_in: ->
+        try
+          service.info.session.user.name == 'guest'
+        catch e
+          false
       
       session_load: ->
         http(method: 'get', url: "/api/1.0/info", type: "json").success (data) ->
@@ -20,8 +26,4 @@ kor.service('korData', [
       fully_loaded: false
 
     }
-
-    window.kd = service
-
-    service
 ])

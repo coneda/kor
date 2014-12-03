@@ -5,7 +5,8 @@ kor.service "entities_service", [
       show: (id) ->
         http(
           method: 'get'
-          url: "/api/1.0/entities/#{id}"
+          headers: {accept: 'application/json'}
+          url: "/entities/#{id}"
         )
 
       relation_load: (id, relation, page = 1) ->

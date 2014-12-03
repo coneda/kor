@@ -32,6 +32,7 @@ all:
   #   url: "https://analytics.example.com"
   #   id: "1"
 
+  mail_delivery_method: smtp
   mail:
     host: 127.0.0.1
     port: 25
