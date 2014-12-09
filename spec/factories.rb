@@ -124,12 +124,19 @@ FactoryGirl.define do
       rating_admin true
     end
 
+    factory :guest do
+      name 'guest'
+      email 'guest@example.com'
+      full_name 'Guest'
+    end
+
     factory :ldap_template do
       email 'ldap@coneda.net'
       name 'ldap'
       full_name 'LDAP template user'
       password 'ldap'
     end
+
   end
 
   factory :credential do
@@ -139,6 +146,10 @@ FactoryGirl.define do
 
     factory :students do
       name "students"
+    end
+
+    factory :guests do
+      name "guests"
     end
   end
 

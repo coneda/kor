@@ -1,6 +1,6 @@
 kor.controller('korSessionCtrl', ['$scope', 'korData', 'korFlash', (scope, korData, korFlash) ->
   scope.$on 'kor-session-load-complete', -> scope.info = korData.info
-    
+
   scope.history_available = ->
     if scope.info
       scope.info.session.current_history.length > 0

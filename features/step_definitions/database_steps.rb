@@ -126,7 +126,7 @@ When /^the "([^"]*)" "([^"]*)" is updated behind the scenes$/ do |klass, name|
   klass.classify.constantize.find_by_name(name.split('/').first).save
 end
 
-Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" through credential "([^"]*)"$/ do |user, policy, collection, credential|
+Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" (?:through|via) credential "([^"]*)"$/ do |user, policy, collection, credential|
   step "the user \"#{user}\""
   step "the collection \"#{collection}\""
   step "the credential \"#{credential}\""
@@ -187,7 +187,7 @@ Given /^the (invalid )?entity "([^"]*)" of kind "([^"]*)" inside collection "([^
   entity.mark_invalid if invalid == "invalid "
 end
 
-Given /^(\d+) (invalid )?entities "([^"]*)" of kind "([^"]*)" inside collection "([^"]*)"$/ do |count, invalid, entity, kind, collection|
+Given /^(\d+) (invalid )?entities "([^\"]*)" of kind "([^\"]*)" inside collection "([^\"]*)"$/ do |count, invalid, entity, kind, collection|
   count.to_i.times do |i|
     step "the #{invalid}entity \"#{entity}_#{i}\" of kind \"#{kind}\" inside collection \"#{collection}\""
   end

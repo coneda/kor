@@ -108,7 +108,7 @@
                 <span class="highlighted_subtitle inplace" title="Click to edit ...">
                   <span ng-bind="entity.tags"></span>
                 </span>
-                <a href="#">
+                <a href="#" ng-show="allowed_to('tagging', entity.collection_id)">
                   <img alt="Plus" class="kor_command_image" src="/assets/plus.gif" title="{{'verbs.add' | translate}}">
                 </a>
               </div>

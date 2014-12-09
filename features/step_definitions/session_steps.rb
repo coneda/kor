@@ -1,4 +1,4 @@
-Given /^the user "([^"]*)"$/ do |user|
+Given /^(?:the|a) user "([^"]*)"$/ do |user|
   unless User.exists? :name => user
     User.make(:name => user, :password => user, :email => "#{user}@example.com")
   end

@@ -3,12 +3,11 @@ class Api::PublicController < Api::ApiController
   def info
     result = {
       :info => {
-        :version => "2.0",
+        :version => Kor.version,
         :maintainer => "Coneda UG",
         :url => root_url
       },
       :stats => { 
-        :version => "1.0",
         :entities => Entity.count,
         :kinds => Kind.count,
         :relations => Relation.count,
