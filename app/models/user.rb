@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :email, :allow_blank => false
   validates_presence_of :name
   validates_presence_of :email
-  validates_format_of :name, :allow_blank => true, :with => /\A[a-zA-Z0-9_]+\Z/
+  validates_format_of :name, :allow_blank => true, :with => /\A[a-zA-Z0-9_\.]+\Z/
   validates_format_of :email, :allow_blank => true, :with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i
   validates_format_of :plain_password, :allow_nil => true, :with => /\A(.{5,30})|\Z/
   validates_confirmation_of :plain_password
@@ -316,7 +316,7 @@ class User < ActiveRecord::Base
   end
 
   def serializable_hash(options = {})
-    super options.merge(:except => :password)
+    super options.merge(:except => [:password, :activation_hash])
   end
   
 end

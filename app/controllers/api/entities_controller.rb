@@ -47,8 +47,6 @@ class Api::EntitiesController < Api::ApiController
     hash[:links] = WebServices::Dispacher.links_for(@entity)
     hash[:generators] = @entity.kind.generators.map{|g| g.serializable_hash}
 
-    # TODO: auth (tagging)
-    
     flash.keep
     render :json => hash
   end
@@ -68,17 +66,6 @@ class Api::EntitiesController < Api::ApiController
     }
   end
   
-  # def deep_media
-  #   @entity = Entity.find(params[:id])
-  #   params[:page] ||= 0
-    
-  #   flash.keep
-  #   render :json => Kor::Blaze.relationships_for(current_user, @entity,
-  #     :media => true,
-  #     :offset => params[:page].to_i * 12,
-  #     :limit => 12
-  #   )
-  # end
   
   protected
 

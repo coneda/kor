@@ -32,4 +32,9 @@ describe Auth::Authentication do
     expect(user.name).to eq("cangoin")
   end
 
+  it "should pass usernames with special characters to external auth scripts" do
+    user = described_class.login "can.go.in", "$0.\/@#"
+    expect(user.name).to eq("can.go.in")
+  end
+
 end
