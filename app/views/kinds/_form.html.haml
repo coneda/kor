@@ -3,8 +3,19 @@
 = form_for @kind, :html => { :class => 'kor_form' }, :builder => Stdlib::KorFormBuilder do |f|
   = f.hidden_field :lock_version
 
-  = f.kor_input :name
-  = f.kor_input :plural_name
+  - if @kind == Kind.medium_kind
+    %div
+      = Kind.human_attribute_name(:name) + ':'
+      %span.highlighted_subtitle= @kind.name
+    %div
+      = Kind.human_attribute_name(:plural_name) + ':'
+      %span.highlighted_subtitle= @kind.plural_name
+
+    .hr
+  - else
+    = f.kor_input :name
+    = f.kor_input :plural_name
+
   = f.kor_input :description, :control => f.text_area(:description)
   
   = f.kor_input :web_services, :control => select_tag('kind[settings][web_services]', options_for_select(web_services_for_select, :selected => @kind.web_services), :multiple => true)
