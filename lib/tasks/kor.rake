@@ -18,7 +18,7 @@ namespace :kor do
     end
   end
 
-  namespace :invalids do
+  namespace :recheck_invalid_entities do
     desc "re-validates all entities within the 'invalids' system group"
     task :check => :environment do
       group = SystemGroup.find_by_name('invalids')
@@ -31,7 +31,7 @@ namespace :kor do
     end
   end
 
-  namespace :users do
+  namespace :notify_expiring_users do
     desc "notify users if their account is going to expire soon"
     task :notify_upcoming_expiries => :environment do
       User.where("expires_at < ? AND expires_at > ?", 2.weeks.from_now, Time.now).each do |user|
@@ -48,6 +48,40 @@ namespace :kor do
     admin.login_attempts = []
     admin.admin!
     puts admin.save
+  end
+
+  desc "Package a group into a downloadable zip file"
+  task :group_to_zip => :environment do
+    klass = ENV["KLASS"].constantize
+    group_id = ENV["GROUP_ID"].to_i
+    group = klass.find(group_id)
+
+    size = group.entities.media.map do |e|
+      e.medium.image_file_size || e.medium.document_file_size || 0.0
+    end.sum
+    human_size = size / 1024 / 1024
+    puts "Please be aware that"
+    puts "* the download will be composed with the rights of the 'admin' user"
+    puts "* the download will be approximately #{human_size} MB in size"
+    puts "* the process is running synchronously, blocking your terminal"
+    puts "* the file is going to be cleaned up two weeks after it has been created"
+    print "Continue [yes/no]? "
+    response = STDIN.gets.strip
+
+    if response == "yes"
+      zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/terminal_download.zip", 
+        :user_id => User.admin,
+        :file_name => "#{group.name}.zip"
+      )
+
+      group.entities.media.each do |e|
+        zip_file.add_entity e
+      end
+
+      download = zip_file.create_as_download
+      puts "Packaging complete, the zip file can be downloaded via"
+      puts download.link
+    end
   end
 
   namespace :index do
