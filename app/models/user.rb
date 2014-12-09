@@ -314,5 +314,9 @@ class User < ActiveRecord::Base
       parent[:expires_at]
     end
   end
+
+  def serializable_hash(options = {})
+    super options.merge(:except => :password)
+  end
   
 end
