@@ -4,7 +4,6 @@ class Entity < ActiveRecord::Base
 
   # Settings
   
-  serialize :external_references
   serialize :attachment, JSON
   
   acts_as_taggable_on :tags
@@ -181,15 +180,15 @@ class Entity < ActiveRecord::Base
   end
 
   def dataset
-    attachment['dataset'] ||= {}
+    attachment['fields'] ||= {}
   end
 
   def dataset=(value)
-    attachment['dataset'] = value
+    attachment['fields'] = value
   end
 
   def synonyms
-    attachment['synonyms'] ||= []
+    (attachment['synonyms'] ||= []).uniq
   end
 
   def synonyms=(value)
@@ -222,93 +221,6 @@ class Entity < ActiveRecord::Base
   end
 
 
-  # def dataset
-  #   get_attachment_value('dataset', {})
-  # end
-  
-  # def dataset=(values)
-  #   set_attachment_value('dataset', values)
-  # end
-  
-  # def attachment
-  #   @attachment ||= Kor::Attachment.new(self)
-  # end
-  
-  # def save_attachment
-  #   attachment.save
-  # end
-  
-  # def save_id_in_attachment
-  #   attachment.entity_id = id
-  #   attachment.save
-  # end
-  
-  # def destroy_attachment
-  #   attachment.destroy
-  # end
-  
-  # def validate_attachment
-  #   attachment.validate
-  # end
-  
-  # def get_attachment_value(scope, default = nil)
-  #   if kind
-  #     # kind.entities.build() does not trigger the kind= writer, so no 
-  #     # attributes are taken from @after_kind_attributes
-  #     self.kind = kind unless (@after_kind_attributes || {}).empty?
-    
-  #     attachment.document[scope.to_s] ||= default
-  #   else
-  #     @after_kind_attributes[scope.to_sym] || default
-  #   end
-  # end
-  
-  # def set_attachment_value(scope, value)
-  #   if kind
-  #     attachment.document[scope.to_s] = value
-  #   else
-  #     @after_kind_attributes ||= {}
-  #     @after_kind_attributes[scope.to_sym] = value
-  #   end
-  # end
-
-  # # Synonyms
-  
-  # def synonyms
-  #   get_attachment_value('synonyms', []).uniq
-  # end
-  
-  # def synonyms=(values)
-  #   values = values.split(', ') if values.is_a?(String)
-  #   set_attachment_value('synonyms', values)
-  # end
-  
-  
-  # # Properties
-  
-  # def properties
-  #   get_attachment_value('properties', [])
-  # end
-  
-  # def properties=(values)
-  #   set_attachment_value('properties', values)
-  # end
-
-  # alias :old_kind= :kind=
-  
-  # def kind_id=(value)
-  #   self[:kind_id] = value
-  #   self.attributes = @after_kind_attributes
-  #   @after_kind_attributes = {}
-  # end
-  
-  # def kind=(value)
-  #   self.old_kind = value
-  #   self.attributes = @after_kind_attributes
-  #   @after_kind_attributes = {}
-  # end
-  
-  
   # Callbacks
   
   before_validation :generate_uuid, :sanitize_distinct_name
@@ -543,20 +455,6 @@ class Entity < ActiveRecord::Base
   end
 
 
-  #----------------------------------------------------- external references ---
-  # TODO: Nasty hack, remove as soon as MongoDB is out
-  def external_references
-    self[:external_references] ||= {}
-    self[:external_references].each do |k, v|
-      self[:external_references][k] = v.force_encoding("utf-8")
-    end
-    self[:external_references]
-  end
-  
-  def external_references=(attributes)
-    self[:external_references] = external_references.merge(attributes || {})
-  end
-  
   ############################ dating ##########################################
 
   def new_datings_attributes=(values)
@@ -664,8 +562,8 @@ class Entity < ActiveRecord::Base
       pattern_query = pattern.tokenize.map{ |token| "name LIKE ?"}.join(" AND ")
       pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
 
-      entity_ids = Kor::Attachment.find_by_synonym(pattern)
-      entity_ids += Entity.where([pattern_query.gsub('name','distinct_name')] + pattern_values ).collect{|e| e.id}
+      # entity_ids = Kor::Attachment.find_by_synonym(pattern)
+      entity_ids = Entity.where([pattern_query.gsub('name','distinct_name')] + pattern_values ).collect{|e| e.id}
 
       id_query = entity_ids.blank? ? "" : "OR entities.id IN (?)"
       entity_id_bind_variables = entity_ids.blank? ? [] : [ entity_ids ]

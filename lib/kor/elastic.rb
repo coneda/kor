@@ -121,7 +121,7 @@ class Kor::Elastic
   end
 
   def self.index(entity, options = {})
-    options.reverse_merge! :full => false    
+    options.reverse_merge! :full => false
 
     data = {
       "uuid" => entity.uuid,
@@ -133,13 +133,14 @@ class Kor::Elastic
       "collection_id" => entity.collection_id,
       "comment" => entity.comment,
       "properties" => entity.properties,
+      "dataset" => entity.dataset,
 
       "sort" => entity.display_name
     }
 
     if options[:full]
       related_ids = Investigator.new.related_entities_for(entity.id).values.flatten.uniq
-      scope = Entity.includes(:kind).where(:id => related_ids).select([:id, :attachment_id, :name, :kind_id])
+      scope = Entity.includes(:kind).where(:id => related_ids).select([:id, :name, :kind_id, :attachment])
       data["related"] = scope.map do |e|
         [e.name] + fetch(:synonyms, e.id) do
           e.synonyms
@@ -181,11 +182,12 @@ class Kor::Elastic
           "fields" => [
             'uuid^20',
             'name^10',
-            'distinct_name^5',
-            'synonyms^5',
+            'distinct_name^6',
+            'synonyms^6',
+            'dataset^5',
             'related^4',
-            'properties.label^2',
             'properties.value^3',
+            'properties.label^2',
             'comment^1',
             '_all'
           ]
@@ -287,6 +289,7 @@ class Kor::Elastic
       return :disabled if !enabled?
 
       response = raw_request(method, path, query, body, headers)
+      Rails.logger.info "ELASTIC RESPONSE: #{response.inspect}"
 
       if response.status >= 200 && response.status <= 299
         [response.status, response.headers, Oj.load(response.body, :mode => :strict)]
@@ -298,7 +301,7 @@ class Kor::Elastic
     def self.raw_request(method, path, query = {}, body = nil, headers = {})
       return :disabled if !enabled?
 
-      Rails.logger.info "ELASTIC: #{method} #{path}\n#{body.inspect}"
+      Rails.logger.info "ELASTIC REQUEST: #{method} #{path}\n#{body.inspect}"
 
       headers.reverse_merge 'content-type' => 'application/json', 'accept' => 'application/json'
       url = "http://#{config['host']}:#{config['port']}/#{config['index']}#{path}"

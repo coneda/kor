@@ -15,15 +15,6 @@ describe Entity do
     }}
   end
 
-  it "should only update when setting new external references" do
-    entity = Entity.new(:external_references => {:pnd => '12345'})
-    entity.external_references = {:knd => '6789'}
-    entity.external_references.should eql(:pnd => '12345', :knd => '6789')
-    
-    entity.external_references = {:pnd => '6789'}
-    entity.external_references.should eql(:pnd => '6789', :knd => '6789')
-  end
-  
   it "should find entities by two or more relationships" do
     mona_lisa = Kind.find_by_name('Werk').entities.make(:name => 'Mona Lisa2')
     last_supper = Kind.find_by_name('Werk').entities.make(:name => 'Das Letzte Abendmahl')

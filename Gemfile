@@ -23,7 +23,6 @@ gem 'mime-types', '1.16', :require => 'mime/types'
 gem 'acts-as-taggable-on', '~> 2.2.2'
 gem 'system_timer', :platforms => [:ruby_18]
 
-gem 'kor_api', :path => './plugins/kor_api'
 gem 'kor_index', :path => './plugins/kor_index'
 
 gem "sprockets"

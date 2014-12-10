@@ -1,11 +1,8 @@
 class UnifyGndReferences < ActiveRecord::Migration
   def up
     scope = Entity
-    counter = 0
 
     scope.find_each do |e|
-      puts "unifying gnd references #{counter}/#{scope.count}" if counter % 100 == 0
-
       unless e.external_references.empty?
         new_refs = e.external_references.dup
         all_refs = e.external_references.values_at("pnd", "knd", "gnd")
@@ -23,10 +20,7 @@ class UnifyGndReferences < ActiveRecord::Migration
           e.update_column :external_references, YAML.dump(new_refs)
         end
       end
-
-      counter += 1
     end
-
   end
 
   def down

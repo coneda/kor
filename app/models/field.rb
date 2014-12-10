@@ -7,7 +7,7 @@ class Field < ActiveRecord::Base
   belongs_to :kind
   validates_presence_of :name, :show_label, :form_label, :search_label
   validates_format_of :name, :with => /^[a-z0-9_]+$/
-  validates_uniqueness_of :name
+  validates_uniqueness_of :name, :scope => :kind_id
   
   before_validation do |f|
     f.form_label = f.show_label if f.form_label.blank?
@@ -29,6 +29,10 @@ class Field < ActiveRecord::Base
 
   def show_on_entity=(value)
     settings['show_on_entity'] = value
+  end
+
+  def human
+    show_label.presence || name
   end
   
   
@@ -87,7 +91,7 @@ class Field < ActiveRecord::Base
   def self.label
     raise "please implement in subclass"
   end
-  
+
   def form?
     true
   end

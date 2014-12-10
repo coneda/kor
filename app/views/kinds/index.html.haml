@@ -10,11 +10,11 @@
         %td.expanding
           .name.italic= h(k.name)
           .schema
-            %strong Schema:
-            = k.fields.map{|f| f.show_label}.join(', ')
+            %strong Fields:
+            = k.fields.map{|f| f.human}.join(', ')
           .services
-            %strong Services:
-            = k.generators.map{|f| f.show_label}.join(', ')
+            %strong Generators:
+            = k.generators.map{|f| f.human}.join(', ')
         %td.nowrap.commands
           = link_to kor_command_image('globe', :title => "Configure Generators"), kind_generators_path(k)
           = link_to kor_command_image('three_bars', :title => "Configure fields"), kind_fields_path(k)

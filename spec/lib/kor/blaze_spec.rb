@@ -21,8 +21,8 @@ describe Kor::Blaze do
 
     Relationship.count.should == 2
 
-    blaze = Kor::Blaze.new(u, b)
-    result = blaze.relations_for(:include_relationships => true)
+    blaze = Kor::Blaze.new(u)
+    result = blaze.relations_for(b, :include_relationships => true)
 
     result.count.should == 2
     result.first[:relationships].count.should == 1
@@ -47,8 +47,8 @@ describe Kor::Blaze do
     Relationship.relate_and_save a, r1.name, b
     Relationship.relate_and_save b, r1.name, c
     Relationship.count.should == 2
-    blaze = Kor::Blaze.new(u, b)
-    result = blaze.relations_for(:include_relationships => true)
+    blaze = Kor::Blaze.new(u)
+    result = blaze.relations_for(b, :include_relationships => true)
     result.count.should == 1
     result.first[:relationships].count.should == 2
     result.first[:relationships][0][:entity_id].should == a.id
@@ -62,8 +62,8 @@ describe Kor::Blaze do
     Relationship.relate_and_save a, r2.name, b
     Relationship.relate_and_save b, r2.name, c
     Relationship.count.should == 4
-    blaze = Kor::Blaze.new(u, b)
-    result = blaze.relations_for(:include_relationships => true)
+    blaze = Kor::Blaze.new(u)
+    result = blaze.relations_for(b, :include_relationships => true)
     result.count.should == 1
     result.first[:relationships].count.should == 4
     result.first[:relationships][0][:entity_id].should == a.id
@@ -88,9 +88,9 @@ describe Kor::Blaze do
     Grant.create :credential => admins, :collection => default, :policy => "view"
     FactoryGirl.create :admin, :groups => [admins]
 
-    blaze = Kor::Blaze.new(User.admin, mona_lisa)
-    expect(blaze.relations_for.first[:name]).to eq("has been created by")
-    expect(blaze.relations_for :media => true).to be_empty
+    blaze = Kor::Blaze.new(User.admin)
+    expect(blaze.relations_for(mona_lisa).first[:name]).to eq("has been created by")
+    expect(blaze.relations_for(mona_lisa, :media => true)).to be_empty
   end
 
 end

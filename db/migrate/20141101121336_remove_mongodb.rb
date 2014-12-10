@@ -1,7 +1,6 @@
 class RemoveMongodb < ActiveRecord::Migration
   def up
-    # add_column :entities, :attachment, :text
-    # remove_column :entities, :attachment_id
+    add_column :entities, :attachment, :text
 
     config = Rails.configuration.database_configuration[Rails.env]["mongo"].reverse_merge(
       'host' => '127.0.0.1',
@@ -15,11 +14,30 @@ class RemoveMongodb < ActiveRecord::Migration
       "--jsonArray",
       "--collection attachments"
     ].join(' ')
+    
     data = JSON.parse(`#{command}`)
 
-    debugger
+    data.each do |doc|
+      entity = Entity.where(:id => doc["entity_id"]).first || 
+        Entity.where(:attachment_id => doc['_id']['$oid']).first
 
-    raise "not actually doing it"
+      if entity
+        doc.delete "_id"
+        doc.delete "entity_id"
+        new_value = entity.attachment
+        new_value.merge! doc
+        entity.update_column :attachment, JSON.dump(new_value)
+      end
+    end
+
+    Entity.find_each do |entity|
+      new_value = entity.attachment
+      new_value["fields"] = entity.external_references || {}
+      entity.update_column :attachment, JSON.dump(new_value)
+    end
+
+    remove_column :entities, :attachment_id
+    remove_column :entities, :external_references
   end
 
   def down

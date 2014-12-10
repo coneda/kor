@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141120190607) do
+ActiveRecord::Schema.define(:version => 20141209173305) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -154,14 +154,13 @@ ActiveRecord::Schema.define(:version => 20141120190607) do
     t.integer  "creator_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",        :default => 0
+    t.integer  "lock_version",      :default => 0
     t.string   "no_name_statement"
     t.integer  "updater_id"
     t.string   "subtype"
-    t.text     "external_references"
     t.boolean  "approved"
-    t.string   "attachment_id"
     t.integer  "medium_id"
+    t.text     "attachment"
   end
 
   add_index "entities", ["collection_id", "kind_id"], :name => "collections_kinds"

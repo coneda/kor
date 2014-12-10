@@ -6,12 +6,6 @@ GIT
       activerecord (>= 3.0.0)
 
 PATH
-  remote: ./plugins/kor_api
-  specs:
-    kor_api (0.0.1)
-      rails (~> 3.2.8)
-
-PATH
   remote: ./plugins/kor_index
   specs:
     kor_index (0.0.1)
@@ -275,7 +269,6 @@ DEPENDENCIES
   jbuilder
   jquery-rails
   jquery-ui-rails
-  kor_api!
   kor_index!
   machinist (= 1.0.6)
   mime-types (= 1.16)

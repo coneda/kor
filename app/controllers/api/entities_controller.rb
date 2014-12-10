@@ -57,7 +57,7 @@ class Api::EntitiesController < Api::ApiController
     end
 
     def blaze
-      @blaze ||= Kor::Blaze.new(current_user, current_entity)
+      @blaze ||= Kor::Blaze.new(current_user)
     end
 
     def reset_blaze

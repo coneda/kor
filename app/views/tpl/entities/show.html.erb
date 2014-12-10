@@ -82,18 +82,6 @@
               <br />
             </li>
             <li class="links">
-              <div class="link" ng-repeat="link in entity.links" ng-show="show_link(link)">
-                <div ng-show="link.header">
-                  <div ng-bind="link.header"></div>
-                  <div class="highlighted_subtitle" ng-repeat="(k, v) in link.links">
-                    &nbsp;&nbsp;
-                    <a href="{{v}}" target="_blank">&raquo; {{k}}</a>
-                  </div>
-                </div>
-                <div ng-hide="link.header">
-                  <a href="{{link[1]}}" target="_blank">&raquo; {{link[0]}}</a>
-                </div>
-              </div>
               <div
                 class="generator"
                 ng-repeat="generator in entity.generators"
