@@ -1,7 +1,7 @@
 class EntitiesController < ApplicationController
   layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
   skip_before_filter :verify_authenticity_token
-  
+    
   def by_uuid
     @entity = viewable_entities.find_by_uuid(params[:uuid])
     

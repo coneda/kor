@@ -6,6 +6,8 @@ class ToolsController < ApplicationController
     'remove_from_authority_group' 
   ]
 
+  skip_before_filter :authentication, :authorization, :legal, :only => :history
+
   layout 'normal_small'
 
 

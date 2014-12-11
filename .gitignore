@@ -34,8 +34,11 @@ deploy/build.boxes
 db/*.sqlite3
 .yardoc
 
+# Testing
+screenshot.png
 
 # Deployment
 
 deploy.config.sh
 .vagrant
+

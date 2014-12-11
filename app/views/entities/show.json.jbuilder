@@ -9,5 +9,4 @@ json.tags @entity.tag_list.join(', ')
       
 json.related blaze.relations_for(@entity, :include_relationships => true)
 json.related_media blaze.relations_for(@entity, :media => true, :include_relationships => true)
-json.links WebServices::Dispacher.links_for(@entity)
 json.generators @entity.kind.generators.map{|g| g.serializable_hash}

@@ -56,26 +56,55 @@ Feature: search
     Then I should be on the expert search page
     
     
+  @javascript @elastic
   Scenario: case insensitive search within synonyms
     Given I am logged in as "admin"
     And the entity "Oedipus" of kind "Werk/Werke"
     And the entity "Oedipus" has the synonyms "Ödipus"
+    And everything is indexed
     When I go to the expert search
     And I fill in "query[name]" with "ödipus"
     And I press "Suchen"
+    And I save a screenshot
     Then I should see "Oedipus" within ".search_result"
 
 
-  @javascript
-  Scenario: Search form with dataset
+  @javascript @elastic
+  Scenario: Search by dataset values
     Given I am logged in as "admin"
     And kind "Literatur/Literaturen" has field "isbn" of type "Fields::Isbn"
     And the entity "Die Bibel" of kind "Literatur/Literaturen"
+    And the entity "Die Bibel" has dataset value "123456789" for "isbn"
     When I go to the expert search page
     And I select "Literatur" from "query[kind_id]"
     Then I should see "Isbn"
     When I press "Suchen"
-    Then I should see "Isbn"
+    Then I should see "Die Bibel" within ".search_result"
+    When I fill in "query[dataset][isbn]" with "incorrect"
+    When I press "Suchen"
+    Then I should not see "Die Bibel"
+    When I fill in "query[dataset][isbn]" with "123456789"
+    When I press "Suchen"
+    Then I should see "Die Bibel" within ".search_result"
+
+
+  @javascript @elastic
+  Scenario: Search by property label and value
+    Given I am logged in as "admin"
+    And the entity "Die Bibel" of kind "Literatur/Literaturen"
+    And the entity "Die Bibel" has property "isbn" with value "123456789"
+    And everything is indexed
+    When I go to the expert search page
+    And I select "Literatur" from "query[kind_id]"
+    When I fill in "query[properties]" with "incorrect"
+    When I press "Suchen"
+    Then I should not see "Die Bibel"
+    When I fill in "query[properties]" with "123456789"
+    When I press "Suchen"
+    Then I should see "Die Bibel" within ".search_result"    
+    When I fill in "query[properties]" with "isbn"
+    When I press "Suchen"
+    Then I should see "Die Bibel" within ".search_result"    
 
 
   @javascript @elastic

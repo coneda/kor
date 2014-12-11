@@ -166,7 +166,7 @@ Kor.setup_blaze = function() {
     if (Settings.use_blaze) {
       var link = $(this);
       var url = link.attr('href');
-      if (url.match(/^\/entities\/\d+$/)) {
+      if (url && url.match(/^\/entities\/\d+$/)) {
         var parts = url.split("/");
         var id = parts[parts.length - 1]
         window.location.href = '/blaze/' + id;

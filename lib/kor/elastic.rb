@@ -124,6 +124,7 @@ class Kor::Elastic
     options.reverse_merge! :full => false
 
     data = {
+      "id" => entity.id,
       "uuid" => entity.uuid,
       "name" => entity.name,
       "distinct_name" => entity.distinct_name,
@@ -164,15 +165,27 @@ class Kor::Elastic
   end
 
   def search(query = {})
-    return empty_result unless self.class.enabled?
+    return self.class.empty_result unless self.class.enabled?
+
+    # puts JSON.pretty_generate(query)
 
     page = [(query[:page] || 0).to_i, 1].max
+    size = [(query[:size] || 10).to_i, 10].max
 
     # data = {}
     query_component = nil
 
     if query[:query].present?
-      q = wildcardize(escape tokenize(query[:query])).join(' ')
+      q = if query[:raw]
+        query[:query]
+      else
+        wildcardize(escape tokenize(query[:query])).join(' ')
+      end
+
+      if query[:fields].present?
+        q = query[:fields].map{|f| "#{f}:(#{q})"}.join(' ')
+      end
+
       query_component = {
         "query_string" => {
           "query" => q,
@@ -184,7 +197,7 @@ class Kor::Elastic
             'name^10',
             'distinct_name^6',
             'synonyms^6',
-            'dataset^5',
+            'dataset.*^5',
             'related^4',
             'properties.value^3',
             'properties.label^2',
@@ -230,8 +243,8 @@ class Kor::Elastic
     end
 
     data = {
-      "size" => 10,
-      "from" => (page - 1) * 10,
+      "size" => size,
+      "from" => (page - 1) * size,
       "query" => {
         "filtered" => {
           "filter" => {
@@ -257,9 +270,12 @@ class Kor::Elastic
 
     if response.first == 200
       # puts JSON.pretty_generate(response)
+      # debugger
+
       ::Kor::SearchResult.new(
         :total => response.last['hits']['total'],
         :uuids => response.last['hits']['hits'].map{|hit| hit['_id']},
+        :ids => response.last['hits']['hits'].map{|hit| hit['_source']['id']},
         :page => page
       )
     else

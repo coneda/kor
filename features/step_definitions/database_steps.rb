@@ -23,6 +23,12 @@ Given /^the kind "([^\"]*)"$/ do |names|
   Kind.find_or_create_by_name(:name => singular, :plural_name => plural)
 end
 
+Given(/^the generator "(.*?)" for kind "(.*?)"$/) do |name, kind_name|
+  step "the kind \"#{kind_name}\""
+  generator = FactoryGirl.build name
+  Kind.where(:name => kind_name.split('/').first).first.generators << generator
+end
+
 Given /^the relation "([^\"]*)"$/ do |names|
   name, reverse = names.split('/')
   reverse = name if reverse.blank?
@@ -76,26 +82,21 @@ Given /^kind "([^"]*)" has field "([^"]*)" of type "([^"]+)"$/ do |kind, name, k
   )
 end
 
-Given /^the entity "([^"]*)" has external reference "([^"]*)" like "([^"]*)"$/ do |entity_name, name, value|
-  entity = Entity.find_by_name entity_name
-  entity.external_references[name] = value
-  entity.save
-end
-
 Given /^the entity "([^"]*)" has dataset value "([^"]*)" for "([^"]*)"$/ do |entity, value, field|
   entity = Entity.find_by_name(entity)
   entity.dataset[field] = value
   entity.save
 end
 
-Then /^entity "([^"]*)" should have external_reference value "([^"]*)" for "([^"]*)"$/ do |entity, value, name|
-  entity = Entity.find_by_name entity
-  entity.external_references[name].should == value
-end
-
 Then /^entity "([^"]*)" should have dataset value "([^"]*)" for "([^"]*)"$/ do |entity, value, name|
   entity = Entity.find_by_name entity
   entity.dataset[name].should == value  
+end
+
+Given(/^the entity "(.*?)" has property "(.*?)" with value "(.*?)"$/) do |entity, label, value|
+  entity = Entity.find_by_name entity
+  entity.properties << {'label' => label, 'value' => value}
+  entity.save
 end
 
 When /^the "([^"]*)" "([^"]*)" is updated behind the scenes$/ do |klass, name|

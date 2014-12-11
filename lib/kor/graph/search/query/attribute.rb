@@ -58,11 +58,11 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
       else
         tmp_result = Entity.allowed(user, :view).
           is_a(criteria[:kind_id]).
-          named_like(criteria[:name]).
-          has_property(criteria[:properties]).
+          named_like(user, criteria[:name]).
+          has_property(user, criteria[:properties]).
           dated_in(criteria[:dating_string]).
-          dataset_attributes(criteria[:dataset]).
-          related_to(criteria[:relationships]).
+          dataset_attributes(user, criteria[:dataset]).
+          related_to(user, criteria[:relationships]).
           within_collections(collection_ids).
           includes(:medium)
           

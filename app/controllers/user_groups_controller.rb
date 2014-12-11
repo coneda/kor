@@ -113,11 +113,7 @@ class UserGroupsController < GroupsController
   def destroy
     @user_group = UserGroup.owned_by(current_user).find(params[:id])
     @user_group.destroy
-    
-    respond_to do |format|
-      format.html { redirect_to(user_groups_url) }
-      format.xml  { head :ok }
-    end
+    redirect_to(user_groups_url)
   end
   
   protected

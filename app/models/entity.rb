@@ -188,7 +188,7 @@ class Entity < ActiveRecord::Base
   end
 
   def synonyms
-    (attachment['synonyms'] ||= []).uniq
+    (attachment['synonyms'].presence || []).uniq
   end
 
   def synonyms=(value)
@@ -225,10 +225,7 @@ class Entity < ActiveRecord::Base
   
   before_validation :generate_uuid, :sanitize_distinct_name
   before_save :generate_uuid, :add_to_user_group
-  # :save_attachment
-  # after_save :save_id_in_attachment
   after_update :save_datings
-  # before_destroy :destroy_attachment
   after_commit :update_elastic
   
   def sanitize_distinct_name
@@ -555,35 +552,45 @@ class Entity < ActiveRecord::Base
       where('id NOT IN (?)', ids) :
       where(:id => ids)
   }
-  scope :named_like, lambda { |pattern|
+  scope :named_like, lambda { |user, pattern|
     if pattern.blank?
       {}
     else
       pattern_query = pattern.tokenize.map{ |token| "name LIKE ?"}.join(" AND ")
       pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
 
-      # entity_ids = Kor::Attachment.find_by_synonym(pattern)
-      entity_ids = Entity.where([pattern_query.gsub('name','distinct_name')] + pattern_values ).collect{|e| e.id}
+      entity_ids = Kor::Elastic.new(user).search(:query => pattern, :size => Entity.count, :fields => ["synonyms"]).ids
+      entity_ids += Entity.where([pattern_query.gsub('name','distinct_name')] + pattern_values ).collect{|e| e.id}
 
       id_query = entity_ids.blank? ? "" : "OR entities.id IN (?)"
       entity_id_bind_variables = entity_ids.blank? ? [] : [ entity_ids ]
 
-      where(["(#{pattern_query}) #{id_query}"] + pattern_values + entity_id_bind_variables)
+      query = ["(#{pattern_query}) #{id_query}"] + pattern_values + entity_id_bind_variables
+      where(query)
     end
   }
-  scope :has_property, lambda { |properties|
+  scope :has_property, lambda { |user, properties|
     if properties.blank?
-      {}
+      scoped
     else
-      entity_ids = Kor::Attachment.find_by_property(properties)
-      entity_ids ? where("entities.id IN (?)", entity_ids.uniq) : scoped
+      ids = Kor::Elastic.new(user).search(
+        :query => properties,
+        :size => Entity.count,
+        :fields => ["properties.label"]
+      ).ids
+      ids += Kor::Elastic.new(user).search(
+        :query => properties,
+        :size => Entity.count,
+        :fields => ["properties.value"]
+      ).ids
+      where("entities.id IN (?)", ids.uniq)
     end
   }
-  scope :related_to, lambda { |relationships|
+  scope :related_to, lambda { |user, relationships|
     entity_ids = nil
     
     (relationships || []).each do |criterium|
-      to_entities = Entity.named_like(criterium[:entity_name])
+      to_entities = Entity.named_like(user, criterium[:entity_name])
       rs = Relationship.find_by_participants_and_relation_name(
         :relation_name => criterium[:relation_name],
         :to_id => to_entities.collect{|e| e.id}
@@ -599,18 +606,19 @@ class Entity < ActiveRecord::Base
   scope :dated_in, lambda {|dating|
     dating.blank? ? scoped : where("entities.id IN (?)", EntityDating.between(dating).collect{|ed| ed.entity_id }.uniq)
   }
-  scope :dataset_attributes, lambda { |dataset|
-    query = {}
-    (dataset || {}).each do |k, v|
-      query["dataset.#{k}"] = /#{v}/i unless v.blank?
+  scope :dataset_attributes, lambda { |user, dataset|
+    dataset ||= {}
+    ids = []
+
+    dataset.each do |k, v|
+      ids += Kor::Elastic.new(user).search(
+        :query => v,
+        :size => Entity.count,
+        :fields => ["dataset.#{k}"]
+      ).ids
     end
-    
-    if query.empty?
-      scoped
-    else
-      ids = Kor::Attachment.find query
-      where("entities.id IN (?)", ids)
-    end
+
+    dataset.values.all?{|v| v.blank?} ? scoped : where("entities.id IN (?)", ids.uniq)
   }
   scope :gallery, lambda { |search_string|
     if search_string.blank? || search_string.size < 3

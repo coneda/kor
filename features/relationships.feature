@@ -10,6 +10,7 @@ Feature: relate entities using predefined relations
     And the setup "Bamberg"
     And I mark "Sankt Stephan" as current entity
     When I go to the entity page for "Bamberger Apokalypse"
+    Then I should see "Bamberger Apokalypse"
     And I follow "Plus" within ".relationships"
     Then I should see "Bamberger Apokalypse" within ".canvas"
     And I should see "Sankt Stephan" within ".canvas"

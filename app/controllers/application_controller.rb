@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
 
     # redirects to the legal page if terms have not been accepted
     def legal
-      if !current_user.guest? && !current_user.terms_accepted
+      if current_user && !current_user.guest? && !current_user.terms_accepted
         redirect_to :controller => 'static', :action => 'legal'
       end
     end
@@ -69,10 +69,22 @@ class ApplicationController < ActionController::Base
         history_store
         redirect_to login_path
       elsif session_expired?
-        reset_session
-        history_store
-        flash[:notice] = I18n.t('notices.session_expired')
-        redirect_to login_path
+        respond_to do |format|
+          format.html do
+            old_history = session[:history]
+            reset_session
+            session[:history] = old_history
+            history_store unless request.path.match(/^\/blaze/)
+            flash[:notice] = I18n.t('notices.session_expired')
+            redirect_to login_path
+          end
+          format.json do
+            old_history = session[:history]
+            reset_session
+            session[:history] = old_history
+            render :json => {:notice => I18n.t('notices.session_expired')}, :status => 403
+          end
+        end
       else
         Kor.info("AUTH", "user '#{current_user.name}' has been seen")
         session[:expires_at] = Kor.session_expiry_time

@@ -2,38 +2,38 @@ class Api::EntitiesController < Api::ApiController
 
   before_filter :reset_blaze
 
-  def show
-    @entity = Entity.
-      includes(
-        :medium, :kind, :collection, :datings, :creator, :updater, 
-        :authority_groups => :authority_group_category
-      ).
-      find(params[:id])
+  # def show
+  #   @entity = Entity.
+  #     includes(
+  #       :medium, :kind, :collection, :datings, :creator, :updater, 
+  #       :authority_groups => :authority_group_category
+  #     ).
+  #     find(params[:id])
 
-    if allowed_to?(:view, @entity.collection)
-      @entity = Entity.
-      where(:collection_id => authorized_collections.map{|c| c.id}).
-      includes(:medium, :kind, :collection, :datings, :creator, :updater, :authority_groups => :authority_group_category).
-      find(params[:id])
+  #   if allowed_to?(:view, @entity.collection)
+  #     @entity = Entity.
+  #     where(:collection_id => authorized_collections.map{|c| c.id}).
+  #     includes(:medium, :kind, :collection, :datings, :creator, :updater, :authority_groups => :authority_group_category).
+  #     find(params[:id])
       
-      hash = @entity.serializable_hash(
-        :include => [:medium, :kind, :collection, :datings, :creator, :updater, :authority_groups],
-        :methods => [:synonyms, :dataset, :degree, :properties, :display_name],
-        :root => false
-      )
+  #     hash = @entity.serializable_hash(
+  #       :include => [:medium, :kind, :collection, :datings, :creator, :updater, :authority_groups],
+  #       :methods => [:synonyms, :dataset, :degree, :properties, :display_name],
+  #       :root => false
+  #     )
       
-      hash[:fields] = @entity.kind.field_instances(@entity).map{|f| f.serializable_hash}
-      hash[:tags] = @entity.tag_list.join(', ')
-      hash[:related] = blaze.relations_for(:include_relationships => true)
-      hash[:related_media] = blaze.relations_for(:media => true, :include_relationships => true)
-      hash[:links] = WebServices::Dispacher.links_for(@entity)
-      hash[:generators] = @entity.kind.generators.map{|g| g.serializable_hash}
+  #     hash[:fields] = @entity.kind.field_instances(@entity).map{|f| f.serializable_hash}
+  #     hash[:tags] = @entity.tag_list.join(', ')
+  #     hash[:related] = blaze.relations_for(:include_relationships => true)
+  #     hash[:related_media] = blaze.relations_for(:media => true, :include_relationships => true)
+  #     hash[:links] = WebServices::Dispacher.links_for(@entity)
+  #     hash[:generators] = @entity.kind.generators.map{|g| g.serializable_hash}
 
-      render :json => hash
-    else
-      redirect_to denied_path(:format => request.format.symbol)
-    end
-  end
+  #     render :json => hash
+  #   else
+  #     redirect_to denied_path(:format => request.format.symbol)
+  #   end
+  # end
   
   def relationships
     params[:page] ||= 0
@@ -42,6 +42,7 @@ class Api::EntitiesController < Api::ApiController
     flash.keep
     render :json => {
       :relationships => blaze.relationships_for(
+        Entity.find(params[:id]),
         :name => params[:name],
         :media => params[:media],
         :offset => params[:page].to_i * params[:limit].to_i,

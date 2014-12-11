@@ -256,4 +256,11 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@jack])
   end
 
+  it "should not fail when no results are returned" do
+    results = @elastic.search(:query => "doesnotexist")
+    expect(results.uuids).to be_empty
+    expect(results.ids).to be_empty
+    expect(results.records).to be_empty
+  end
+
 end
