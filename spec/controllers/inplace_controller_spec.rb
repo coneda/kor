@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe InplaceController do
+RSpec.describe InplaceController, :type => :controller do
 
   it "should not allow tagging to guests when the collection doesn't allow it" do
     guest = FactoryGirl.create :guest

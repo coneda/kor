@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe CollectionsController do
+RSpec.describe CollectionsController, :type => :controller do
   include DataHelper
 
   before :each do

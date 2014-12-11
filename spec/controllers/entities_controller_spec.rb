@@ -1,8 +1,8 @@
 # encoding: utf-8
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe EntitiesController do
+RSpec.describe EntitiesController, :type => :controller do
   render_views
   
   include DataHelper
@@ -35,7 +35,7 @@ describe EntitiesController do
   
     get :edit, :id => @mona_lisa.id
 
-    expect(response).to have_selector("input[name^='entity[existing_datings_attributes]'][value='Gemalt um']")
+    expect(response.body).to have_selector("input[name^='entity[existing_datings_attributes]'][value='Gemalt um']")
   end
   
   it "should handle synonym attributes" do
@@ -113,15 +113,15 @@ describe EntitiesController do
     @main.grants.destroy_all
     
     get :new
-    expect(response).not_to have_selector("select[name='new_entity[kind_id]']")
-    expect(response).to redirect_to(denied_path)
+    expect(response.body).not_to have_selector("select[name='new_entity[kind_id]']")
+    expect(response.body).to redirect_to(denied_path)
   end
   
   it "should allow creating entities given appropriate authorization" do
     get :new, :kind_id => @person_kind.id
     
     expect(response).not_to redirect_to(denied_path)
-    expect(response).to have_selector("input[name='entity[collection_id]'][value='#{@main.id}']")
+    expect(response.body).to have_selector("input[name='entity[collection_id]'][value='#{@main.id}']")
   end
   
   
@@ -184,7 +184,7 @@ describe EntitiesController do
     side_entity
     
     get :recent
-    expect(response).to have_selector("a[href='#{entity_path(side_entity)}']")
+    expect(response.body).to have_selector("a[href='#{entity_path(side_entity)}']")
   end
   
   
@@ -204,7 +204,7 @@ describe EntitiesController do
 
     get :invalid
     path = web_path(:anchor => entity_path(side_entity))
-    expect(response).to have_selector("a[href='#{path}']")
+    expect(response.body).to have_selector("a[href='#{path}']")
   end
   
   
@@ -214,14 +214,14 @@ describe EntitiesController do
     set_main_collection_policies :edit => [], :delete => []
   
     get :new
-    expect(response).not_to have_selector("a[href='#{recent_entities_path}']")
-    expect(response).not_to have_selector("a[href='#[invalid_entities_path]']")
+    expect(response.body).not_to have_selector("a[href='#{recent_entities_path}']")
+    expect(response.body).not_to have_selector("a[href='#[invalid_entities_path]']")
   end
   
   it "should not show links to recent and invalid entities without authorization" do
     get :new, :kind_id => Kind.medium_kind.id
-    expect(response).to have_selector("a[href='#{recent_entities_path}']")
-    expect(response).to have_selector("a[href='#{invalid_entities_path}']")
+    expect(response.body).to have_selector("a[href='#{recent_entities_path}']")
+    expect(response.body).to have_selector("a[href='#{invalid_entities_path}']")
   end
 
   it "should not create an entity of kind medium without a file" do

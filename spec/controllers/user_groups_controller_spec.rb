@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe UserGroupsController do
+RSpec.describe UserGroupsController, :type => :controller do
   include DataHelper
   
   before :each do

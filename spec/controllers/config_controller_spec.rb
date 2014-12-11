@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe ConfigController do
+RSpec.describe ConfigController, :type => :controller do
   include DataHelper
 
   before :each do

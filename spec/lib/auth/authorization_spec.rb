@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe Auth::Authorization do
+RSpec.describe Auth::Authorization do
   include DataHelper
 
   before :each do

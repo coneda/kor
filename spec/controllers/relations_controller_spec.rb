@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe RelationsController do
+RSpec.describe RelationsController, :type => :controller do
   render_views
 
   include DataHelper

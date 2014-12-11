@@ -72,12 +72,12 @@ When /^I select "([^\"]*)" from the autocomplete$/ do |pattern|
   page.execute_script '$("input[name=search_terms]").keydown()'
 
   t = Time.now
-  while Time.now - t < 5.seconds && !page.all('li.ui-menu-item a').to_a.find{|a| a.text.match Regexp.new(pattern)}
+  while Time.now - t < 5.seconds && !page.all('li.ui-menu-item a').to_a.find{|a| a.text.match ::Regexp.new(pattern)}
     sleep 0.2
   end
   
   page.all('li.ui-menu-item a').to_a.find do |anchor|
-    anchor.text.match Regexp.new(pattern)
+    anchor.text.match ::Regexp.new(pattern)
   end.click
 end
 

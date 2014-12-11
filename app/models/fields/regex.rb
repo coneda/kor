@@ -15,7 +15,7 @@ class Fields::Regex < Field
   end
   
   def regex
-    Regexp.new(settings[:regex] ||= '')
+    ::Regexp.new(settings[:regex] ||= '')
   end
   
 end

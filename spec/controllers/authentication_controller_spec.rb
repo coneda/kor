@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe AuthenticationController do
+RSpec.describe AuthenticationController, :type => :controller do
   include DataHelper
   
   before :each do 

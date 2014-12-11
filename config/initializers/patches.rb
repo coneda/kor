@@ -16,20 +16,3 @@ module DelayedPaperclip
     end
   end
 end
-
-module Faker
-  class Base
-    class << self
-      def fetch(key)
-        old_available_locales = I18n.available_locales
-        old_locale = I18n.locale
-        I18n.available_locales += [:en]
-        I18n.locale = :en
-        result = I18n.translate("faker.#{key}").rand
-        I18n.locale = old_locale
-        I18n.available_locales = old_available_locales
-        result
-      end
-    end
-  end
-end

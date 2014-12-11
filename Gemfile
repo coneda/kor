@@ -47,10 +47,9 @@ group :test do
   gem 'cucumber-rails', :require => false
   gem 'poltergeist'
   gem 'selenium-webdriver'
-  gem 'rspec-rails', '~> 2.14'
+  gem 'rspec-rails', '~> 3.1'
   gem 'capybara'
   gem 'database_cleaner'
-  gem 'webrat', '0.7.3'
   gem 'factory_girl_rails'
 end
 

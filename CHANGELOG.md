@@ -15,3 +15,4 @@ Version 1.9.0
 * fully replaced machinist with factory_girl for fixture creation
 * removed rating functionality
 * migrated to the rspec `expect` syntax
+* upgraded rspec to version 3.1.0

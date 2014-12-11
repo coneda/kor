@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe MediaController do
+RSpec.describe MediaController, :type => :controller do
   include DataHelper
 
   before :each do

@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe ToolsController do
+RSpec.describe ToolsController, :type => :controller do
   render_views
   
   include DataHelper
@@ -55,7 +55,7 @@ describe ToolsController do
     post :new_clipboard_action, :clipboard_action => 'mass_relate', :selected_entity_ids => [@leonardo.id]
     expect(response).to be_success
     
-    expect(response).to have_selector('select') do
+    expect(response.body).to have_selector('select') do
       have_selector 'option', 'hat erschaffen'
       have_selector 'option', 'ist Ort von'
     end

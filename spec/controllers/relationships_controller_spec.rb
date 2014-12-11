@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe RelationshipsController do
+RSpec.describe RelationshipsController, :type => :controller do
   render_views
   
   include DataHelper
@@ -20,8 +20,8 @@ describe RelationshipsController do
     
     get :edit, :id => relationship.id
     
-    expect(response).to have_selector "select" do
-     have_selector 'option[selected]', 'has created'
+    expect(response.body).to have_selector "select" do
+      have_selector 'option[selected]', 'has created'
     end
   end
   
