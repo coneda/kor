@@ -6,10 +6,14 @@ class Kor::SearchResult
     assign_attributes attrs
   end
 
-  attr_writer :uuids, :records, :total, :page, :per_page
+  attr_writer :uuids, :ids, :records, :total, :page, :per_page
 
   def uuids
     @uuids || []
+  end
+
+  def ids
+    @ids || []
   end
 
   def total

@@ -135,7 +135,7 @@ class Investigator
           rs.from_id as from_id,
           r.name as relation_name,
           r.reverse_name as reverse_relation_name,
-          rs.to_id as to_id, 
+          rs.to_id as to_id,
           ts.kind_id as to_kind_id
         FROM relationships as rs
           LEFT JOIN entities fs ON fs.id = rs.from_id

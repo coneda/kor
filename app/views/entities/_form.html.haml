@@ -39,14 +39,6 @@
     
   = f.kor_input :comment, :control => f.text_area(:comment)
   
-  - unless WebServices::Dispacher.web_services_for_kind_with_external_reference(@entity.kind).empty?
-    .hr
-    
-    = f.fields_for :external_references do |er|
-      - WebServices::Dispacher.web_services_for_kind_with_external_reference(@entity.kind).each do |ws|
-        = er.kor_input ws.external_reference_label, :translate => false, :control => |
-          er.text_field(ws.external_reference, :value => @entity.external_references[ws.external_reference]) |
-          
   - if @entity.kind.can_have_synonyms?
     .hr
   

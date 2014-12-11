@@ -1,7 +1,7 @@
 class EntitiesController < ApplicationController
   layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
   skip_before_filter :verify_authenticity_token
-  
+    
   def by_uuid
     @entity = viewable_entities.find_by_uuid(params[:uuid])
     
@@ -136,6 +136,7 @@ class EntitiesController < ApplicationController
       if @entity.save
         if params[:user_group_name]
           transit = UserGroup.owned_by(current_user).find_or_create_by_name(params[:user_group_name])
+          debugger unless @entity
           transit.add_entities @entity if transit
         end
         

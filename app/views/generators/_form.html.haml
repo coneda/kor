@@ -9,7 +9,7 @@
   = form_for [@kind, @generator], :as => :generator, :builder => Stdlib::KorFormBuilder, :html => {:class => 'kor_form'} do |f|
     = f.hidden_field :kind_id, :value => params[:kind_id]
   
-    %ul
+    %ul{'ng-non-bindable' => true}
       = f.kor_input :name
       = f.kor_input :show_label
       = f.kor_input :directive, :control => f.text_area(:directive, :class => 'monospace')

@@ -43,7 +43,11 @@
   <div id="userinfo" class="highlighted_subtitle">
     <table>
       <tr>
-        <td class="version_info" ng-bind="info.version"></td>
+        <td class="version_info">
+          <strong>ConedaKOR</strong>
+          <span ng-bind="'nouns.version' | translate"></span>
+          <span ng-bind="info.info.version"></span>
+        </td>
         <td ng-show="info.session.user">
           {{'logged_in_as' | translate | capitalize}}
           <span class="username" ng-hide="info.session.user.name != 'guest'">
@@ -68,4 +72,3 @@
   <%= link_to image_tag("logo.gif"), root_path %>
   <%= image_tag 'loading.gif', :id => 'ajax_loading_indicator', :style => 'display: none' %>
 </div>
-

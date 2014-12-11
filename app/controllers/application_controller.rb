@@ -6,9 +6,9 @@ class ApplicationController < ActionController::Base
     :authorized_for_relationship?,
     :kor_graph,
     :current_user,
-    :blaze,
-    :logged_in?
-
+    :logged_in?,
+    :blaze
+  
   before_filter :locale, :maintenance, :authentication, :authorization, :legal
 
   before_filter do

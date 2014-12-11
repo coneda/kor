@@ -17,5 +17,5 @@ kor.controller('root_controller', ['$scope', 'korData', 'korFlash', (scope, kd, 
   scope.flash_notice = -> kd.notice()
 
   kd.session_load()
-
+  
 ])

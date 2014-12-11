@@ -8,7 +8,7 @@ class Mass::EntityMerger < Mass::Base
       merge_groups(options[:old_ids], entity.id)
     else
       entity = Entity.new(Entity.find(options[:old_ids]).first.attributes)
-      entity.attributes = options[:attributes]
+      entity.assign_attributes options[:attributes]
       entity.save :validate => false      
       merge_externals options[:old_ids], entity.id
     end

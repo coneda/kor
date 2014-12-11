@@ -13,13 +13,15 @@ require 'capybara/poltergeist'
 Capybara.default_selector = :css
 
 Capybara.register_driver :selenium do |app|
-  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+  Capybara::Selenium::Driver.new(app, 
+    :browser => :chrome
+  )
 end
 
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app,
     # :debug => true,
-    :js_errors => false,
+    :js_errors => true,
     :inspector => true
   )
 end
@@ -38,6 +40,7 @@ Before do |scenario|
   if scenario.source_tags.any?{|st| st.name == "@elastic"}
     Kor::Elastic.reset_index
   else
+    allow(Kor::Elastic).to receive(:enabled?).and_return(false)
     allow(Kor::Elastic).to receive(:request).and_return([200, {}, {}])
   end
 end

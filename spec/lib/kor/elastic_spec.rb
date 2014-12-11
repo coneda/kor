@@ -18,6 +18,16 @@ describe Kor::Elastic, :elastic => true do
     described_class.index_all
   end
 
+  it "should be enabled only when configuration for elasticsearch is present" do
+    expect(described_class.enabled?).to be_true
+
+    allow(described_class).to receive(:config).and_return(nil)
+    expect(described_class.enabled?).to be_false
+
+    allow(described_class).to receive(:config).and_return({})
+    expect(described_class.enabled?).to be_false    
+  end
+
   it "should index an entity" do
     allow(described_class).to receive(:enabled?).and_return(false)
 
@@ -244,6 +254,13 @@ describe Kor::Elastic, :elastic => true do
 
     results = @elastic.search(:query => "chain")
     expect(results.records).to eq([@jack])
+  end
+
+  it "should not fail when no results are returned" do
+    results = @elastic.search(:query => "doesnotexist")
+    expect(results.uuids).to be_empty
+    expect(results.ids).to be_empty
+    expect(results.records).to be_empty
   end
 
 end

@@ -3,7 +3,7 @@ class InplaceController < ApplicationController
   def update_entity_tags
     @entity = Entity.find(params[:entity_id])
     
-    if authorized? :view, @entity.collection
+    if authorized? :tagging, @entity.collection
       @entity.tag_list += params[:value].split(/,\s*/) unless params[:value].blank?
       
       if @entity.save

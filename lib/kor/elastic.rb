@@ -20,7 +20,7 @@ class Kor::Elastic
   end
 
   def self.enabled?
-    !!config
+    config.present?
   end
 
   def self.create_index
@@ -50,6 +50,12 @@ class Kor::Elastic
           "distinct_name" => {"type" => "string", "analyzer" => "folding"},
           "synonyms" => {"type" => "string", "analyzer" => "folding"},
           "comment" => {"type" => "string", "analyzer" => "folding"},
+          "dataset" => {
+            "type" => "object",
+            "properties" => {
+              "_default_" => {"type" => "string", "analyzer" => "folding"}
+            }
+          },
           "properties" => {
             "type" => "object", 
             "properties" => {
@@ -115,9 +121,10 @@ class Kor::Elastic
   end
 
   def self.index(entity, options = {})
-    options.reverse_merge! :full => false    
+    options.reverse_merge! :full => false
 
     data = {
+      "id" => entity.id,
       "uuid" => entity.uuid,
       "name" => entity.name,
       "distinct_name" => entity.distinct_name,
@@ -127,13 +134,14 @@ class Kor::Elastic
       "collection_id" => entity.collection_id,
       "comment" => entity.comment,
       "properties" => entity.properties,
+      "dataset" => entity.dataset,
 
       "sort" => entity.display_name
     }
 
     if options[:full]
       related_ids = Investigator.new.related_entities_for(entity.id).values.flatten.uniq
-      scope = Entity.includes(:kind).where(:id => related_ids).select([:id, :attachment_id, :name, :kind_id])
+      scope = Entity.includes(:kind).where(:id => related_ids).select([:id, :name, :kind_id, :attachment])
       data["related"] = scope.map do |e|
         [e.name] + fetch(:synonyms, e.id) do
           e.synonyms
@@ -157,15 +165,27 @@ class Kor::Elastic
   end
 
   def search(query = {})
-    return empty_result unless self.class.enabled?
+    return self.class.empty_result unless self.class.enabled?
+
+    # puts JSON.pretty_generate(query)
 
     page = [(query[:page] || 0).to_i, 1].max
+    size = [(query[:size] || 10).to_i, 10].max
 
     # data = {}
     query_component = nil
 
     if query[:query].present?
-      q = wildcardize(escape tokenize(query[:query])).join(' ')
+      q = if query[:raw]
+        query[:query]
+      else
+        wildcardize(escape tokenize(query[:query])).join(' ')
+      end
+
+      if query[:fields].present?
+        q = query[:fields].map{|f| "#{f}:(#{q})"}.join(' ')
+      end
+
       query_component = {
         "query_string" => {
           "query" => q,
@@ -175,11 +195,12 @@ class Kor::Elastic
           "fields" => [
             'uuid^20',
             'name^10',
-            'distinct_name^5',
-            'synonyms^5',
+            'distinct_name^6',
+            'synonyms^6',
+            'dataset.*^5',
             'related^4',
-            'properties.label^2',
             'properties.value^3',
+            'properties.label^2',
             'comment^1',
             '_all'
           ]
@@ -222,8 +243,8 @@ class Kor::Elastic
     end
 
     data = {
-      "size" => 10,
-      "from" => (page - 1) * 10,
+      "size" => size,
+      "from" => (page - 1) * size,
       "query" => {
         "filtered" => {
           "filter" => {
@@ -249,9 +270,12 @@ class Kor::Elastic
 
     if response.first == 200
       # puts JSON.pretty_generate(response)
+      # debugger
+
       ::Kor::SearchResult.new(
         :total => response.last['hits']['total'],
         :uuids => response.last['hits']['hits'].map{|hit| hit['_id']},
+        :ids => response.last['hits']['hits'].map{|hit| hit['_source']['id']},
         :page => page
       )
     else
@@ -281,6 +305,7 @@ class Kor::Elastic
       return :disabled if !enabled?
 
       response = raw_request(method, path, query, body, headers)
+      Rails.logger.info "ELASTIC RESPONSE: #{response.inspect}"
 
       if response.status >= 200 && response.status <= 299
         [response.status, response.headers, Oj.load(response.body, :mode => :strict)]
@@ -292,7 +317,7 @@ class Kor::Elastic
     def self.raw_request(method, path, query = {}, body = nil, headers = {})
       return :disabled if !enabled?
 
-      Rails.logger.info "ELASTIC: #{method} #{path}\n#{body.inspect}"
+      Rails.logger.info "ELASTIC REQUEST: #{method} #{path}\n#{body.inspect}"
 
       headers.reverse_merge 'content-type' => 'application/json', 'accept' => 'application/json'
       url = "http://#{config['host']}:#{config['port']}/#{config['index']}#{path}"

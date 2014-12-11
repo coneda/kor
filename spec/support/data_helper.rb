@@ -62,8 +62,8 @@ module DataHelper
         :label => 'Datierung',
         :dating_string => '1533'
       )],
-      :external_references => {
-        :pnd => '12345'
+      :dataset => {
+        :gnd => '12345'
       }
     )
     
@@ -74,9 +74,9 @@ module DataHelper
         :label => 'Datierung',
         :dating_string => '1533'
       )],
-      :external_references => {
-        :pnd => '123456',
-        :address => 'Deutsche Straße 12, Frankfurt'
+      :dataset => {
+        :gnd => '123456',
+        :google_maps => 'Deutsche Straße 12, Frankfurt'
       }
     )
   end

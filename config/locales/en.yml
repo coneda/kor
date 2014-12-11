@@ -178,6 +178,7 @@ en:
       tools:
         clipboard: clipboard
     values:
+      default_locale: default language
       default_home_page: default home page after login
       entities: entities
       relationships: relationship

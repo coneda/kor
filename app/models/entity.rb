@@ -4,7 +4,7 @@ class Entity < ActiveRecord::Base
 
   # Settings
   
-  serialize :external_references
+  serialize :attachment, JSON
   
   acts_as_taggable_on :tags
   
@@ -132,7 +132,7 @@ class Entity < ActiveRecord::Base
   validates_uniqueness_of :distinct_name, :scope => [ :kind_id, :name ], :allow_blank => true
   validates_presence_of :collection_id
   
-  validate :validate_distinct_name_needed, :validate_attachment, :attached_file
+  validate :validate_distinct_name_needed, :validate_dataset, :validate_synonyms, :validate_properties, :attached_file
 
   def attached_file
     if is_medium?
@@ -171,64 +171,61 @@ class Entity < ActiveRecord::Base
   
   # Attachment
 
-  def dataset
-    get_attachment_value('dataset', {})
-  end
-  
-  def dataset=(values)
-    set_attachment_value('dataset', values)
-  end
-  
   def attachment
-    @attachment ||= Kor::Attachment.new(self)
+    self[:attachment] ||= {}
   end
-  
-  def save_attachment
-    attachment.save
+
+  def schema
+    kind ? kind.field_instances(self) : []
   end
-  
-  def save_id_in_attachment
-    attachment.entity_id = id
-    attachment.save
+
+  def dataset
+    attachment['fields'] ||= {}
   end
-  
-  def destroy_attachment
-    attachment.destroy
+
+  def dataset=(value)
+    attachment['fields'] = value
   end
-  
-  def validate_attachment
-    attachment.validate
+
+  def synonyms
+    (attachment['synonyms'].presence || []).uniq
   end
-  
-  def get_attachment_value(scope, default = nil)
-    if kind
-      # kind.entities.build() does not trigger the kind= writer, so no 
-      # attributes are taken from @after_kind_attributes
-      self.kind = kind unless (@after_kind_attributes || {}).empty?
-    
-      attachment.document[scope.to_s] ||= default
-    else
-      @after_kind_attributes[scope.to_sym] || default
+
+  def synonyms=(value)
+    attachment['synonyms'] = value
+  end
+
+  def properties
+    attachment['properties'] ||= []
+  end
+
+  def properties=(value)
+    attachment['properties'] = value
+  end
+
+  def validate_dataset
+    schema.each do |field|
+      field.validate_value
     end
   end
-  
-  def set_attachment_value(scope, value)
-    if kind
-      attachment.document[scope.to_s] = value
-    else
-      @after_kind_attributes ||= {}
-      @after_kind_attributes[scope.to_sym] = value
+
+  def validate_synonyms
+
+  end
+
+  def validate_properties
+    properties.each do |property|
+      errors.add :properties, :needs_label if property['label'].blank?
+      errors.add :properties, :needs_value if property['value'].blank?
     end
   end
-  
-  
+
+
   # Callbacks
   
   before_validation :generate_uuid, :sanitize_distinct_name
-  before_save :generate_uuid, :add_to_user_group, :save_attachment
-  after_save :save_id_in_attachment
+  before_save :generate_uuid, :add_to_user_group
   after_update :save_datings
-  before_destroy :destroy_attachment
   after_commit :update_elastic
   
   def sanitize_distinct_name
@@ -256,44 +253,7 @@ class Entity < ActiveRecord::Base
   end
   
   
-  # Synonyms
-  
-  def synonyms
-    get_attachment_value('synonyms', []).uniq
-  end
-  
-  def synonyms=(values)
-    values = values.split(', ') if values.is_a?(String)
-    set_attachment_value('synonyms', values)
-  end
-  
-  
-  # Properties
-  
-  def properties
-    get_attachment_value('properties', [])
-  end
-  
-  def properties=(values)
-    set_attachment_value('properties', values)
-  end
-  
-  
   # Attributes
-  
-  alias :old_kind= :kind=
-  
-  def kind_id=(value)
-    self[:kind_id] = value
-    self.attributes = @after_kind_attributes
-    @after_kind_attributes = {}
-  end
-  
-  def kind=(value)
-    self.old_kind = value
-    self.attributes = @after_kind_attributes
-    @after_kind_attributes = {}
-  end
   
   def recent?
     @recent
@@ -492,20 +452,6 @@ class Entity < ActiveRecord::Base
   end
 
 
-  #----------------------------------------------------- external references ---
-  # TODO: Nasty hack, remove as soon as MongoDB is out
-  def external_references
-    self[:external_references] ||= {}
-    self[:external_references].each do |k, v|
-      self[:external_references][k] = v.force_encoding("utf-8")
-    end
-    self[:external_references]
-  end
-  
-  def external_references=(attributes)
-    self[:external_references] = external_references.merge(attributes || {})
-  end
-  
   ############################ dating ##########################################
 
   def new_datings_attributes=(values)
@@ -606,35 +552,45 @@ class Entity < ActiveRecord::Base
       where('id NOT IN (?)', ids) :
       where(:id => ids)
   }
-  scope :named_like, lambda { |pattern|
+  scope :named_like, lambda { |user, pattern|
     if pattern.blank?
       {}
     else
       pattern_query = pattern.tokenize.map{ |token| "name LIKE ?"}.join(" AND ")
       pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
 
-      entity_ids = Kor::Attachment.find_by_synonym(pattern)
+      entity_ids = Kor::Elastic.new(user).search(:query => pattern, :size => Entity.count, :fields => ["synonyms"]).ids
       entity_ids += Entity.where([pattern_query.gsub('name','distinct_name')] + pattern_values ).collect{|e| e.id}
 
       id_query = entity_ids.blank? ? "" : "OR entities.id IN (?)"
       entity_id_bind_variables = entity_ids.blank? ? [] : [ entity_ids ]
 
-      where(["(#{pattern_query}) #{id_query}"] + pattern_values + entity_id_bind_variables)
+      query = ["(#{pattern_query}) #{id_query}"] + pattern_values + entity_id_bind_variables
+      where(query)
     end
   }
-  scope :has_property, lambda { |properties|
+  scope :has_property, lambda { |user, properties|
     if properties.blank?
-      {}
+      scoped
     else
-      entity_ids = Kor::Attachment.find_by_property(properties)
-      entity_ids ? where("entities.id IN (?)", entity_ids.uniq) : scoped
+      ids = Kor::Elastic.new(user).search(
+        :query => properties,
+        :size => Entity.count,
+        :fields => ["properties.label"]
+      ).ids
+      ids += Kor::Elastic.new(user).search(
+        :query => properties,
+        :size => Entity.count,
+        :fields => ["properties.value"]
+      ).ids
+      where("entities.id IN (?)", ids.uniq)
     end
   }
-  scope :related_to, lambda { |relationships|
+  scope :related_to, lambda { |user, relationships|
     entity_ids = nil
     
     (relationships || []).each do |criterium|
-      to_entities = Entity.named_like(criterium[:entity_name])
+      to_entities = Entity.named_like(user, criterium[:entity_name])
       rs = Relationship.find_by_participants_and_relation_name(
         :relation_name => criterium[:relation_name],
         :to_id => to_entities.collect{|e| e.id}
@@ -650,18 +606,19 @@ class Entity < ActiveRecord::Base
   scope :dated_in, lambda {|dating|
     dating.blank? ? scoped : where("entities.id IN (?)", EntityDating.between(dating).collect{|ed| ed.entity_id }.uniq)
   }
-  scope :dataset_attributes, lambda { |dataset|
-    query = {}
-    (dataset || {}).each do |k, v|
-      query["dataset.#{k}"] = /#{v}/i unless v.blank?
+  scope :dataset_attributes, lambda { |user, dataset|
+    dataset ||= {}
+    ids = []
+
+    dataset.each do |k, v|
+      ids += Kor::Elastic.new(user).search(
+        :query => v,
+        :size => Entity.count,
+        :fields => ["dataset.#{k}"]
+      ).ids
     end
-    
-    if query.empty?
-      scoped
-    else
-      ids = Kor::Attachment.find query
-      where("entities.id IN (?)", ids)
-    end
+
+    dataset.values.all?{|v| v.blank?} ? scoped : where("entities.id IN (?)", ids.uniq)
   }
   scope :gallery, lambda { |search_string|
     if search_string.blank? || search_string.size < 3

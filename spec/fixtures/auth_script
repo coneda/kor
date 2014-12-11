@@ -14,6 +14,11 @@ if username == "jdoe" && password == "123456"
     "email": "jdoe@coneda.net",
     "full_name": "John Gustav Doe"
   }'
+elsif username == "can.go.in" && password == "$0.\/@#"
+  puts '{
+    "email": "can.go.in@coneda.net",
+    "full_name": "Can Go In"
+  }'
 elsif password == "$0.\/@#"
   puts '{
     "email": "jdoe@coneda.net",

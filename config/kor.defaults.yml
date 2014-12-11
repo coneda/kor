@@ -68,8 +68,6 @@ all:
 
 
 test:
-  locale: de
-
   auth:
     sources:
       example_auth:
@@ -77,6 +75,7 @@ test:
         map_to: ldap
 
   app:
+    default_locale: de
     gallery:
       primary_relations: ['stellt dar']
       secondary_relations: ['wurde erschaffen von']

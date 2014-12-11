@@ -14,16 +14,7 @@ describe Entity do
         'secondary_relations' => ['wurde erschaffen von']
     }}
   end
-  
-  it "should only update when setting new external references" do
-    entity = Entity.new(:external_references => {:pnd => '12345'})
-    entity.external_references = {:knd => '6789'}
-    entity.external_references.should eql(:pnd => '12345', :knd => '6789')
-    
-    entity.external_references = {:pnd => '6789'}
-    entity.external_references.should eql(:pnd => '6789', :knd => '6789')
-  end
-  
+
   it "should find entities by two or more relationships" do
     mona_lisa = Kind.find_by_name('Werk').entities.make(:name => 'Mona Lisa2')
     last_supper = Kind.find_by_name('Werk').entities.make(:name => 'Das Letzte Abendmahl')
@@ -185,6 +176,68 @@ describe Entity do
     entity = FactoryGirl.create :der_schrei
     entity.update_attributes :comment => "Some comment"
     entity.destroy
+  end
+
+  it "should allow an attachment" do
+    entity = FactoryGirl.create :jack
+
+    expect(entity.dataset).to eq({})
+    expect(entity.synonyms).to eq([])
+    expect(entity.properties).to eq([])
+  end
+
+  it "should allow attachments to be written to" do
+    entity = FactoryGirl.create :jack
+
+    entity.update_attributes(
+      :dataset => {"some" => "value"},
+      :synonyms => ["john"],
+      :properties => [{'label' => 'page', 'value' => 144}]
+    )
+
+    entity.reload
+
+    expect(entity.dataset).to eq({"some" => "value"})
+    expect(entity.synonyms).to eq(["john"])
+    expect(entity.properties).to eq([{'label' => 'page', 'value' => 144}])
+  end
+
+  it "should validate the dataset" do
+    entity = FactoryGirl.build :jack
+    expect(entity).to receive(:validate_dataset).once
+    expect(entity).to receive(:validate_synonyms).once
+    expect(entity).to receive(:validate_properties).once
+    entity.save
+  end
+
+  it "should validate entity properties with the mongo class validator" do
+    entity = FactoryGirl.build :jack, :properties => [
+      {'label' => 'age'},
+      {'value' => 12.7}
+    ]
+    entity.valid?.should be_false
+    entity.errors.full_messages.should include('weitere Eigenschaften benötigen einen Wert')
+    entity.errors.full_messages.should include('weitere Eigenschaften benötigen einen Bezeichner')
+  end
+
+  it "should retrieve unsaved mongo values without a kind" do
+    entity = Entity.new
+    entity.properties = [{'label' => 'test', 'value' => 'test_value'}]
+    expect(entity.properties).to eq([{'label' => 'test', 'value' => 'test_value'}])
+  end
+
+  it "should have correct attachment values after saving" do
+    entity = FactoryGirl.create :jack, :synonyms => ["The Hammer"]
+    expect(entity.synonyms).to eq(["The Hammer"])
+  end
+
+  it "should validate the dataset" do
+    people = Kind.where(:name => "person").first
+    people.fields << FactoryGirl.create(:isbn)
+
+    entity = FactoryGirl.build :jack, :dataset => {'isbn' => 'invalid ISBN'}
+    expect(entity.save).to be_false
+    expect(entity.errors.full_messages).to include("ISBN ist ungültig")
   end
   
 end

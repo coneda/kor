@@ -19,7 +19,7 @@ module Kor
     # I18n
     config.i18n.available_locales = [:de, :en]
     config.i18n.enforce_available_locales = true
-    config.i18n.default_locale = Kor.config["locale"] || :en
+    config.i18n.default_locale = Kor.config["app.default_locale"] || :en
     config.i18n.load_path += Dir.glob("#{Rails.root}/config/locales/**/*.yml")
     
     # Autoload paths

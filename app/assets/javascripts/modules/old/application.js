@@ -166,7 +166,7 @@ Kor.setup_blaze = function() {
     if (Settings.use_blaze) {
       var link = $(this);
       var url = link.attr('href');
-      if (url.match(/^\/entities\/\d+$/)) {
+      if (url && url.match(/^\/entities\/\d+$/)) {
         var parts = url.split("/");
         var id = parts[parts.length - 1]
         window.location.href = '/blaze/' + id;
@@ -547,21 +547,6 @@ Forms.setup = function() {
     $("input[name='entity[name]'], input[name='entity[distinct_name]']").parents('.form_field').show();
   });
 }
-
-
-///* switches the section_panels */
-//function switch_section_panel(panel) {
-//  subtitle = panel.down('.type');
-//  if (subtitle)
-//    subtitle.toggle();
-
-//  content = panel.down('.content');
-//  if (content)
-//    content.toggle();
-
-//  toggle_image(panel.down('.switch').down('img'), 
-//    '/images/triangle_up.gif', '/images/triangle_down.gif' );
-//}
 
 $(document).ready(function(event){
   Application.setup();

@@ -22,6 +22,18 @@ FactoryGirl.define do
       plural_name "People"
     end
   end
+
+  factory :field do
+    type 'Fields::String'
+    name 'youtube_id'
+    show_label 'Youtube-ID'
+
+    factory :isbn do
+      type 'Fields::Isbn'
+      name 'isbn'
+      show_label 'ISBN'
+    end
+  end
   
   factory :medium do
     document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
@@ -112,6 +124,7 @@ FactoryGirl.define do
     name 'hmustermann'
     full_name 'Hans Mustermann'
     password 'mustermann'
+    terms_accepted true
 
     factory :hmustermann do
 
@@ -131,6 +144,13 @@ FactoryGirl.define do
       password 'admin'
       
       rating_admin true
+      user_admin true
+    end
+
+    factory :guest do
+      name 'guest'
+      email 'guest@example.com'
+      full_name 'Guest'
     end
 
     factory :ldap_template do
@@ -139,6 +159,7 @@ FactoryGirl.define do
       full_name 'LDAP template user'
       password 'ldap'
     end
+
   end
 
   factory :credential do
@@ -148,6 +169,10 @@ FactoryGirl.define do
 
     factory :students do
       name "students"
+    end
+
+    factory :guests do
+      name "guests"
     end
   end
 

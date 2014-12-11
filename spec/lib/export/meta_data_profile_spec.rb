@@ -1,7 +1,5 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-require "xmlsimple"
-
 describe Export::MetaDataProfile do
   include DataHelper
   

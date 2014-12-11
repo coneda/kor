@@ -47,6 +47,14 @@ Feature: Kinds
     Then I should not see "img[alt=X]" within "table.kor_table"
     When I send the delete request for "kind" "Medium"
     Then I should be on the denied page
+
+
+  Scenario: Do not allow to rename the medium kind
+    Given I am logged in as "admin"
+    When I go to the kinds page
+    And I follow "Pen"
+    Then I should not see element "input[name='kind[name]']"
+    And I should not see element "input[name='kind[plural_name]']"
     
 
   @javascript    

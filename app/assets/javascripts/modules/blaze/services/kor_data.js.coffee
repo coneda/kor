@@ -26,4 +26,5 @@ kor.service('korData', [
       fully_loaded: false
 
     }
+
 ])

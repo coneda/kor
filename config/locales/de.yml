@@ -178,6 +178,7 @@ de:
       tools:
         clipboard: Zwischenablage
     values:
+      default_locale: voreingestellte Sprache
       default_home_page: Standardseite nach dem Login
       entities: entities
       relationships: relationship

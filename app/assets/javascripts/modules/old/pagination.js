@@ -4,11 +4,16 @@ Pagination.Gallery = new Object();
 
 $(document).ready(function(event){
   Pagination.Entity.register_events();
+
   if (!window.location.pathname.match(/component_search/)) {
     Pagination.Gallery.register_events('.entity_list');
   }
   
   Pagination.Gallery.register_events('.gallery');
+
+  if (window.location.pathname.match(/\/entities\/invalid/)) {
+    Pagination.Gallery.register_events('.section_panel');
+  }
 });
 
 Pagination.Gallery.register_events = function(scope) {

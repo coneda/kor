@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rails', '3.2.19'
+gem 'strong_parameters'
 
 gem 'delayed_paperclip', "= 2.4.5", :require => 'delayed_paperclip/railtie'
 gem "paperclip", "= 2.4.5"
@@ -15,8 +16,6 @@ gem "will_paginate", "= 3.0.3"
 gem "parslet"
 gem "xml-simple", '1.0.14', :require => "xmlsimple"
 gem "exifr", '1.1.1'
-gem "mongo"
-gem "bson_ext", '1.3.1', :require => false
 gem "haml"
 gem "sass"
 gem 'httpclient'
@@ -24,7 +23,6 @@ gem 'mime-types', '1.16', :require => 'mime/types'
 gem 'acts-as-taggable-on', '~> 2.2.2'
 gem 'system_timer', :platforms => [:ruby_18]
 
-gem 'kor_api', :path => './plugins/kor_api'
 gem 'kor_index', :path => './plugins/kor_index'
 
 gem "sprockets"
