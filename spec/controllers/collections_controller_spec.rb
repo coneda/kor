@@ -15,8 +15,8 @@ describe CollectionsController do
         'view' => [@admins.id.to_s]
     }}
     
-    response.should redirect_to(collections_path)
-    Collection.last.grants.with_policy(:view).map{|g| g.credential}.should == [@admins]
+    expect(response).to redirect_to(collections_path)
+    expect(Collection.last.grants.with_policy(:view).map{|g| g.credential}).to eq([@admins])
   end
   
 end

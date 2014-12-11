@@ -16,15 +16,15 @@ describe Auth::Authentication do
   it "should call external auth scripts" do
     FactoryGirl.create :user, :name => "example_auth", :email => 'ea@example.com'
 
-    expect(described_class.login "jdoe", "wrong").to be_false
-    expect(described_class.login "jdoe", "123456").to be_true
+    expect(described_class.login "jdoe", "wrong").to be_falsey
+    expect(described_class.login "jdoe", "123456").to be_truthy
 
     expect(User.count).to eq(3)
     expect(User.last.parent_username).to eq("ldap")
   end
 
   it "should escape double quotes in username and password" do
-    expect(described_class.login "\" echo 'bla' #", "123456").to be_false
+    expect(described_class.login "\" echo 'bla' #", "123456").to be_falsey
   end
 
   it "should pass passwords with special characters to external auth scripts" do

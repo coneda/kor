@@ -9,18 +9,18 @@ describe EntityDating do
 
   it "should store a dating_string and numerical values for from and for to" do
     dating = FactoryGirl.build(:entity_dating, :dating_string => "1566 bis 1988", :from_day => "1566", :to_day => "1988")
-    expect(dating.save).to be_true
+    expect(dating.save).to be_truthy
   end
   
   it "should not save if dating_string can't be parsed" do
     dating = FactoryGirl.build(:entity_dating, :dating_string => "Am Anfang vom 15. Jahrhundert wurde die Kirche gebaut")
-    expect(dating.valid?).to be_false
+    expect(dating.valid?).to be_falsey
     expect(dating.errors).not_to be_empty
   end
   
   it "should not require from and to if dating_string is parsable" do
     dating = FactoryGirl.build(:entity_dating, :dating_string => "15. Jahrhundert")
-    expect(dating.save).to be_true
+    expect(dating.save).to be_truthy
   end
   
   it "should parse the dating_string and find values for from and to" do
@@ -31,13 +31,13 @@ describe EntityDating do
   
   it "should prefer values for to and from to values from the dating_string" do
     dating = FactoryGirl.build(:entity_dating, :dating_string => "15. Jahrhundert", :from_day => "1.1.1420", :to_day => "31.12.1480")
-    dating.from_day.should eql(Date.civil(1420, 1, 1).jd)
-    dating.to_day.should eql(Date.civil(1480, 12, 31).jd)
+    expect(dating.from_day).to eql(Date.civil(1420, 1, 1).jd)
+    expect(dating.to_day).to eql(Date.civil(1480, 12, 31).jd)
   end
   
   it "should not save without a label" do
     dating = FactoryGirl.build(:entity_dating, :label => nil, :dating_string => "15. Jahrhundert")
-    dating.save.should be_false
+    expect(dating.save).to be_falsey
   end
 
   def test_datings
@@ -48,16 +48,16 @@ describe EntityDating do
   
   it "should find datings after a given date" do
     test_datings
-    EntityDating.after("1480").count.should eql(3)
+    expect(EntityDating.after("1480").count).to eql(3)
   end
   
   it "should find datings before a given date" do
     test_datings
-    EntityDating.before("1480").count.should eql(1)
+    expect(EntityDating.before("1480").count).to eql(1)
   end
   
   it "should find datings between two given dates" do
     test_datings
-    EntityDating.between("1750 bis 1950").count.should eql(2)
+    expect(EntityDating.between("1750 bis 1950").count).to eql(2)
   end
 end

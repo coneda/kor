@@ -6,11 +6,11 @@ describe Regexp do
     
     regex = /^(image|video|application\/x-shockwave-flash)/
     
-    "image/jpg".should match(regex)
-    "video/ogg".should match(regex)
-    "application/x-shockwave-flash".should match(regex)
+    expect("image/jpg").to match(regex)
+    expect("video/ogg").to match(regex)
+    expect("application/x-shockwave-flash").to match(regex)
     
-    "text/html".should_not match(regex)
+    expect("text/html").not_to match(regex)
   end
   
 end

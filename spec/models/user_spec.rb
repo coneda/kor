@@ -17,17 +17,17 @@ describe User do
   end
 
   it "should save the plain password in memory" do
-    User.new(:password => 'secret').plain_password.should eql("secret")
+    expect(User.new(:password => 'secret').plain_password).to eql("secret")
   end
   
   it "should generate a password on creation" do
     user = User.create(:name => 'john', :email => 'john.doe@example.com')
-    user.password.should_not be_blank
+    expect(user.password).not_to be_blank
   end
 
   it "should accept 'john.doe@example-dash.com' as email address" do
     u = FactoryGirl.build :jdoe, :email => 'john.doe@example-dash.com'
-    u.valid?.should be_true
+    expect(u.valid?).to be_truthy
   end
 
   it "should keep the three most recent login times" do
@@ -45,13 +45,13 @@ describe User do
     u = User.new
     
     u.add_login_attempt
-    u.login_attempts.should eql([times[0]])
+    expect(u.login_attempts).to eql([times[0]])
     u.add_login_attempt
-    u.login_attempts.should eql([times[0], times[1]])
+    expect(u.login_attempts).to eql([times[0], times[1]])
     u.add_login_attempt
-    u.login_attempts.should eql([times[0], times[1], times[2]])
+    expect(u.login_attempts).to eql([times[0], times[1], times[2]])
     u.add_login_attempt
-    u.login_attempts.should eql([times[1], times[2], times[3]])
+    expect(u.login_attempts).to eql([times[1], times[2], times[3]])
   end
   
   it "should report too many login attempts when three of them were made in one hour" do
@@ -65,10 +65,10 @@ describe User do
 
     allow(Kor).to receive(:now).and_return(times[3])
     user = User.new :login_attempts => times[0..2]
-    expect(user.too_many_login_attempts?).to be_true
+    expect(user.too_many_login_attempts?).to be_truthy
 
     allow(Kor).to receive(:now).and_return(times[4])
-    expect(user.too_many_login_attempts?).to be_false
+    expect(user.too_many_login_attempts?).to be_falsey
   end
 
   it "should respect inherited global roles" do
@@ -78,25 +78,25 @@ describe User do
     hmustermann = User.last
     expect(hmustermann.parent_username).to eq("jdoe")
 
-    expect(hmustermann.admin?).to be_false
-    expect(hmustermann.user_admin?).to be_true
-    expect(hmustermann.kind_admin?).to be_false
-    expect(hmustermann.collection_admin?).to be_true
-    expect(hmustermann.credential_admin?).to be_false
-    expect(hmustermann.relation_admin?).to be_true
-    expect(hmustermann.authority_group_admin?).to be_false
+    expect(hmustermann.admin?).to be_falsey
+    expect(hmustermann.user_admin?).to be_truthy
+    expect(hmustermann.kind_admin?).to be_falsey
+    expect(hmustermann.collection_admin?).to be_truthy
+    expect(hmustermann.credential_admin?).to be_falsy
+    expect(hmustermann.relation_admin?).to be_truthy
+    expect(hmustermann.authority_group_admin?).to be_falsey
   end
 
   it "should respect inherited activation status" do
     jdoe = FactoryGirl.create :jdoe, :active => true
     hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe
-    expect(hmustermann.reload.active).to be_true
+    expect(hmustermann.reload.active).to be_truthy
 
     jdoe.update_attributes :active => false
-    expect(hmustermann.reload.active).to be_false
+    expect(hmustermann.reload.active).to be_falsey
 
     hmustermann.update_attributes :active => true
-    expect(hmustermann.reload.active).to be_true
+    expect(hmustermann.reload.active).to be_truthy
   end
 
   it "should respect inherited expiry" do

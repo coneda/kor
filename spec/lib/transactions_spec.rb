@@ -11,7 +11,7 @@ describe 'Transactions' do
   it "should be delivering consistent data for reloads" do
     Entity.transaction do
       FactoryGirl.create :person
-      Entity.first.name.should == 'A person'
+      expect(Entity.first.name).to eq('A person')
     end
   end
   

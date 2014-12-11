@@ -10,7 +10,7 @@ describe Kor::ZipFile do
     zip = described_class.new(filename)
     zip.add "#{Rails.root}/LICENSE", :as => "info/LICENSE"
     zip.pack
-    `unzip -l #{zip.filename}`.should match(/info\/LICENSE/)
+    expect(`unzip -l #{zip.filename}`).to match(/info\/LICENSE/)
     zip.destroy
   end
 
@@ -23,7 +23,7 @@ describe Kor::ZipFile do
     zip.add "#{Rails.root}/LICENSE", :as => "info/LICENSE"
     download = zip.create_as_download
 
-    Download.count.should == 1
+    expect(Download.count).to eq(1)
   end
 
 end

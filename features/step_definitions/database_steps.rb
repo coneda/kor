@@ -90,7 +90,7 @@ end
 
 Then /^entity "([^"]*)" should have dataset value "([^"]*)" for "([^"]*)"$/ do |entity, value, name|
   entity = Entity.find_by_name entity
-  entity.dataset[name].should == value  
+  expect(entity.dataset[name]).to eq(value  )
 end
 
 Given(/^the entity "(.*?)" has property "(.*?)" with value "(.*?)"$/) do |entity, label, value|
@@ -200,19 +200,19 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
 end
 
 Then /^there should be "([^"]*)" "([^"]*)" entity in the database$/ do |num, kind|
-  Kind.find_by_name(kind).entities.count.should eql(num.to_i)
+  expect(Kind.find_by_name(kind).entities.count).to eql(num.to_i)
 end
 
 Then /^there should( not)? be the collection named "([^\"]*)" in the database$/ do |reverse, name|
   if reverse == ' not'
-    Collection.find_by_name(name).should be_nil
+    expect(Collection.find_by_name name).to be_nil
   else
-    Collection.find_by_name(name).should_not be_nil
+    expect(Collection.find_by_name name).not_to be_nil
   end
 end
 
 Then /^there should be no "([^"]*)" named "([^"]*)"$/ do |model, name|
-  model.classify.constantize.find_by_name(name).should be_nil
+  expect(model.classify.constantize.find_by_name name).to be_nil
 end
 
 Given /^the relation "([^"]*)" between "([^"]*)" and "([^"]*)"$/ do |relation, from_kind, to_kind|
@@ -258,7 +258,7 @@ Then(/^"(.*?)" should have "(.*?)" "(.*?)"$/) do |subject, relation, object|
     ).first
   end
 
-  expect(normal || reverse).to be_true
+  expect(normal || reverse).to be_truthy
 end
 
 Given /^the relationship "([^\"]*)" "([^\"]*)" "([^\"]*)"$/ do |from, name, to|
@@ -341,18 +341,18 @@ end
 Then(/^user "(.*?)" should (not )?be active$/) do |email, n|
   user = User.where(:email => email).first
   if n == "not "
-    expect(user.active).to be_false
+    expect(user.active).to be_falsey
   else
-    expect(user.active).to be_true
+    expect(user.active).to be_truthy
   end
 end
 
 Then(/^user "(.*?)" should (not )?have the role "(.*?)"$/) do |email, n, role|
   user = User.where(:email => email).first
   if n == "not "
-    expect(user.send role.to_sym).to be_false
+    expect(user.send role.to_sym).to be_falsey
   else
-    expect(user.send role.to_sym).to be_true
+    expect(user.send role.to_sym).to be_truthy
   end
 end
 

@@ -24,8 +24,8 @@ describe ToolsController do
     
     get :mark, :mark => 'reset'
 
-    response.should be_redirect
-    session[:clipboard].should be_empty
+    expect(response).to be_redirect
+    expect(session[:clipboard]).to be_empty
   end
   
   it "should show the clipboard when entities are in it" do
@@ -40,9 +40,9 @@ describe ToolsController do
     ]
     
     get :clipboard
-    response.should be_success
-    response.body.should match /Mona Lisa/
-    response.body.should match /Monalisa/
+    expect(response).to be_success
+    expect(response.body).to match /Mona Lisa/
+    expect(response.body).to match /Monalisa/
   end
   
   it "should render a mass relate form only with allowed relations" do
@@ -53,9 +53,9 @@ describe ToolsController do
     session[:current_entity] = @mona_lisa.id
   
     post :new_clipboard_action, :clipboard_action => 'mass_relate', :selected_entity_ids => [@leonardo.id]
-    response.should be_success
+    expect(response).to be_success
     
-    response.should have_selector('select') do
+    expect(response).to have_selector('select') do
       have_selector 'option', 'hat erschaffen'
       have_selector 'option', 'ist Ort von'
     end
@@ -82,10 +82,10 @@ describe ToolsController do
       }
     expect(response).to redirect_to(web_path(:anchor => "/entities/#{Entity.first.id}"))
 
-    Entity.first.name.should eql("Mona Lisa")
-    Entity.first.dataset['material'].should eql('oil on paper')
-    Entity.first.datings.first.dating_string.should eql("1533")
-    Entity.first.dataset.should_not be_nil
+    expect(Entity.first.name).to eql("Mona Lisa")
+    expect(Entity.first.dataset['material']).to eql('oil on paper')
+    expect(Entity.first.datings.first.dating_string).to eql("1533")
+    expect(Entity.first.dataset).not_to be_nil
   end
   
   it "should merge two entities while not messing up the groups" do
@@ -108,8 +108,8 @@ describe ToolsController do
       }
       expect(response).to redirect_to(web_path(:anchor => "/entities/#{Entity.first.id}"))
 
-    Entity.first.name.should eql("Mona Lisa")
-    Entity.first.datings.first.dating_string.should eql("1533")
+    expect(Entity.first.name).to eql("Mona Lisa")
+    expect(Entity.first.datings.first.dating_string).to eql("1533")
   end
   
   it "should merge two images while not messing up the groups" do
@@ -132,8 +132,8 @@ describe ToolsController do
     
     expect(Entity.all).not_to include(image_b)
     
-    image_a.authority_groups.should include(group_1)
-    image_a.authority_groups.should include(group_2)
+    expect(image_a.authority_groups).to include(group_1)
+    expect(image_a.authority_groups).to include(group_2)
       
     expect(response).to redirect_to(web_path(:anchor => "/entities/#{image_a.id}"))
   end
@@ -156,7 +156,7 @@ describe ToolsController do
         :kind_id => Kind.find_by_name('Werk').id
       }
       
-    Entity.find_by_name('Mona Lisa').comment.should eql("comment 1")
+    expect(Entity.find_by_name('Mona Lisa').comment).to eql("comment 1")
   end
 
 end

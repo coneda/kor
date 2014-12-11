@@ -16,12 +16,12 @@ describe Export::MetaDataProfile do
     Relationship.relate_and_save image, 'shows', mona_lisa
     Relationship.relate_and_save leonardo, 'has created', mona_lisa, []
     
-    Relationship.count.should eql(2)
+    expect(Relationship.count).to eql(2)
     
-    lambda {
+    expect {
       exporter = Export::MetaDataProfile.new('simple')
       exporter.render_entity Entity.media.first
-    }.should_not raise_error
+    }.not_to raise_error
   end
   
 end

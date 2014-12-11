@@ -33,15 +33,15 @@ describe Auth::Authorization do
   end
   
   it "should say if a user has more than one right" do
-    Auth::Authorization.authorized?(@admin, :view, @main).should be_true
-    Auth::Authorization.authorized?(@admin, [:view, :edit], @main).should be_true
-    Auth::Authorization.authorized?(@admin, [:view, :edit, :approve], @main).should be_true
+    expect(Auth::Authorization.authorized?(@admin, :view, @main)).to be_truthy
+    expect(Auth::Authorization.authorized?(@admin, [:view, :edit], @main)).to be_truthy
+    expect(Auth::Authorization.authorized?(@admin, [:view, :edit, :approve], @main)).to be_truthy
   end
   
   it "should give all authorized collections for a user and a set of policies" do
-    Auth::Authorization.authorized_collections(@admin, :view).should eql([@main])
-    Auth::Authorization.authorized_collections(@admin, [:view, :edit]).should eql([@main])
-    Auth::Authorization.authorized_collections(@admin, [:view, :edit, :approve]).should eql([@main])
+    expect(Auth::Authorization.authorized_collections(@admin, :view)).to eql([@main])
+    expect(Auth::Authorization.authorized_collections(@admin, [:view, :edit])).to eql([@main])
+    expect(Auth::Authorization.authorized_collections(@admin, [:view, :edit, :approve])).to eql([@main])
   end
 
   it "should allow to inherit permissions from another user" do
@@ -58,18 +58,18 @@ describe Auth::Authorization do
     set_side_collection_policies :view => [@admins]
 
     result = described_class.authorized?(User.admin, :delete, side_entity.collection)
-    expect(result).to be_false
+    expect(result).to be_falsey
   end
 
   it "should not show unauthorized entities" do
     result = described_class.authorized?(User.admin, :view, side_entity.collection)
-    expect(result).to be_false
+    expect(result).to be_falsey
   end
 
   it "should allow to show authorized entities" do
     set_side_collection_policies :view => [@admins]
     result = described_class.authorized?(User.admin, :view, side_entity.collection)
-    expect(result).to be_true
+    expect(result).to be_truthy
   end
 
 end

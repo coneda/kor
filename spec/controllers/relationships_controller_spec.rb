@@ -20,7 +20,7 @@ describe RelationshipsController do
     
     get :edit, :id => relationship.id
     
-    response.should have_selector "select" do
+    expect(response).to have_selector "select" do
      have_selector 'option[selected]', 'has created'
     end
   end
@@ -60,14 +60,14 @@ describe RelationshipsController do
     session[:current_entity] = side_entity.id
         
     get :new, :relationship => {:from_id => main_entity.id}
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
     
     post :create, :relationship => {
       :from_id => main_entity.id,
       :to_id => side_entity.id,
       :relation_name => 'has created'
     }
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
   
   it "should allow to create relationships when one entity is editable and the other is viewable" do
@@ -76,14 +76,14 @@ describe RelationshipsController do
     session[:current_entity] = side_entity.id
         
     get :new, :relationship => {:from_id => main_entity.id}
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
     
     post :create, :relationship => {
       :from_id => main_entity.id,
       :to_id => side_entity.id,
       :relation_name => 'has created'
     }
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
   end
   
   
@@ -96,20 +96,20 @@ describe RelationshipsController do
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
     get :edit, :id => relationship.id
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
     
     get :edit, :id => relationship_reverse.id
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
     
     put :update, :id => relationship.id, :relationship => {
       :relation_name => 'shows'
     }
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
     
     put :update, :id => relationship_reverse.id, :relationship => {
       :relation_name => 'is shown by'
     }
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
   
   it "should allow to edit relationships when one entity is editable and the other is viewable" do
@@ -119,20 +119,20 @@ describe RelationshipsController do
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
     get :edit, :id => relationship.id
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
     
     get :edit, :id => relationship_reverse.id
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
     
     put :update, :id => relationship.id, :relationship => {
       :relation_name => 'shows'
     }
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
     
     put :update, :id => relationship_reverse.id, :relationship => {
       :relation_name => 'is shown by'
     }
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
   end
   
   
@@ -145,10 +145,10 @@ describe RelationshipsController do
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
     delete :destroy, :id => relationship.id
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
     
     delete :destroy, :id => relationship_reverse.id
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
   
   it "should allow to delete relationships when one entity is editable and the other is viewable" do
@@ -159,11 +159,11 @@ describe RelationshipsController do
         
     request.env["HTTP_REFERER"] = '/'
     delete :destroy, :id => relationship.id
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
     
     request.env["HTTP_REFERER"] = '/'
     delete :destroy, :id => relationship_reverse.id
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
   end
   
 end

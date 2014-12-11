@@ -1,14 +1,14 @@
-Then /^I should (not )?see element "([^"]*)"$/ do |yesno, selector|
+Then /^I should (not )?see element "([^\"]*)"$/ do |yesno, selector|
   if yesno == 'not '
     if (elements = page.all(selector)).size > 0
       elements.each do |element|
-        element.visible?.should be_false
+        expect(element.visible?).to be_falsey
       end
     else
-      page.should_not have_css(selector)  
+      expect(page).not_to have_css(selector)  
     end
   else
-    page.should have_css(selector)
+    expect(page).to have_css(selector)
   end
 end
 
@@ -20,17 +20,17 @@ When /^I fill in "([^"]*)" attachment "([^"]*)" with "([^"]*)"$/ do |attachment_
   end
 end
 
-Then /^I should (not )?really see element "([^"]*)"$/ do |yesno, selector|
+Then /^I should (not )?really see element "([^\"]*)"$/ do |yesno, selector|
   page.all(selector).each do |element|
     if yesno == 'not '
-      element.visible?.should be_false
+      expect(element.visible?).to be_falsey
     else
-      element.visible?.should be_true
+      expect(element.visible?).to be_truthy
     end
   end
 end
 
-When /^I select "([^"]*)" from the collections selector$/ do |collections|
+When /^I select "([^\"]*)" from the collections selector$/ do |collections|
   collections = collections.split('/').map{|c| Collection.find_by_name(c).id}
   page.find('form.kor_form a img[alt=Pen]').click
   dialog = page.all(:css, '.ui-dialog').last
@@ -41,7 +41,7 @@ When /^I select "([^"]*)" from the collections selector$/ do |collections|
 end
 
 Then /^I should see "([^"]*)" before "([^"]*)"$/ do |preceeding, following|
-  page.body.should match(/#{preceeding}.*#{following}/m)
+  expect(page.body).to match(/#{preceeding}.*#{following}/m)
 end
 
 Then /^I hover element "([^\"]*)"$/ do |selector|
@@ -143,18 +143,14 @@ end
 
 Then /^(?:|I )should not be on (.+)$/ do |page_name|
   current_path = URI.parse(current_url).path
-  if current_path.respond_to? :should
-    current_path.should_not eql(path_to(page_name))
-  else
-    assert_not_equal path_to(page_name), current_path
-  end
+  expect(current_path).not_to eq(path_to(page_name))
 end
 
 Then /^I should have access: (yes|no)$/ do |yesno|
   if yesno == 'yes'
-    page.should_not have_content('Zugriff wurde verweigert')
+    expect(page).not_to have_content('Zugriff wurde verweigert')
   else
-    page.should have_content('Zugriff wurde verweigert')
+    expect(page).to have_content('Zugriff wurde verweigert')
   end
 end
 
@@ -173,7 +169,7 @@ When /^I fill in "([^"]*)" with harmful code$/ do |field_name|
 end
 
 Then /^the harmful code should not have been executed$/ do
-  File.exists?("#{Rails.root}/tmp/harmful.txt").should be_false
+  expect(File.exists? "#{Rails.root}/tmp/harmful.txt").to be_falsey
 end
 
 When /^I click on the player link$/ do
@@ -181,7 +177,7 @@ When /^I click on the player link$/ do
 end
 
 Then /^I should see the video player$/ do
-  page.should have_selector('.video-js')
+  expect(page).to have_selector('.video-js')
 end
 
 Then(/^I should (not )?see option "([^\"]+)"$/) do |negator, text|

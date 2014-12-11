@@ -51,7 +51,7 @@ RSpec.configure do |config|
     end
   end
 
-  config.before :each do
+  config.before :each do |example|
     if example.metadata[:elastic]
       Kor::Elastic.reset_index
     end

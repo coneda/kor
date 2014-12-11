@@ -19,14 +19,14 @@ describe Kor::Blaze do
     Relationship.relate_and_save a, r.name, b
     Relationship.relate_and_save b, r.name, c
 
-    Relationship.count.should == 2
+    expect(Relationship.count).to eq(2)
 
     blaze = Kor::Blaze.new(u)
     result = blaze.relations_for(b, :include_relationships => true)
 
-    result.count.should == 2
-    result.first[:relationships].count.should == 1
-    result.last[:relationships].count.should == 1
+    expect(result.count).to eq(2)
+    expect(result.first[:relationships].count).to eq(1)
+    expect(result.last[:relationships].count).to eq(1)
   end
 
   it "should gather symmetric relationships just once in both directions" do
@@ -46,30 +46,30 @@ describe Kor::Blaze do
 
     Relationship.relate_and_save a, r1.name, b
     Relationship.relate_and_save b, r1.name, c
-    Relationship.count.should == 2
+    expect(Relationship.count).to eq(2)
     blaze = Kor::Blaze.new(u)
     result = blaze.relations_for(b, :include_relationships => true)
-    result.count.should == 1
-    result.first[:relationships].count.should == 2
-    result.first[:relationships][0][:entity_id].should == a.id
-    result.first[:relationships][1][:entity_id].should == c.id
+    expect(result.count).to eq(1)
+    expect(result.first[:relationships].count).to eq(2)
+    expect(result.first[:relationships][0][:entity_id]).to eq(a.id)
+    expect(result.first[:relationships][1][:entity_id]).to eq(c.id)
 
     Relationship.destroy_all
-    Relationship.count.should == 0
+    expect(Relationship.count).to eq(0)
 
     Relationship.relate_and_save a, r1.name, b
     Relationship.relate_and_save b, r1.name, c
     Relationship.relate_and_save a, r2.name, b
     Relationship.relate_and_save b, r2.name, c
-    Relationship.count.should == 4
+    expect(Relationship.count).to eq(4)
     blaze = Kor::Blaze.new(u)
     result = blaze.relations_for(b, :include_relationships => true)
-    result.count.should == 1
-    result.first[:relationships].count.should == 4
-    result.first[:relationships][0][:entity_id].should == a.id
-    result.first[:relationships][1][:entity_id].should == a.id
-    result.first[:relationships][2][:entity_id].should == c.id
-    result.first[:relationships][3][:entity_id].should == c.id
+    expect(result.count).to eq(1)
+    expect(result.first[:relationships].count).to eq(4)
+    expect(result.first[:relationships][0][:entity_id]).to eq(a.id)
+    expect(result.first[:relationships][1][:entity_id]).to eq(a.id)
+    expect(result.first[:relationships][2][:entity_id]).to eq(c.id)
+    expect(result.first[:relationships][3][:entity_id]).to eq(c.id)
   end
 
   it "should not show media previews for unauthorized media entities" do

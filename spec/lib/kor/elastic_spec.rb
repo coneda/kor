@@ -19,13 +19,13 @@ describe Kor::Elastic, :elastic => true do
   end
 
   it "should be enabled only when configuration for elasticsearch is present" do
-    expect(described_class.enabled?).to be_true
+    expect(described_class.enabled?).to be_truthy
 
     allow(described_class).to receive(:config).and_return(nil)
-    expect(described_class.enabled?).to be_false
+    expect(described_class.enabled?).to be_falsey
 
     allow(described_class).to receive(:config).and_return({})
-    expect(described_class.enabled?).to be_false    
+    expect(described_class.enabled?).to be_falsey   
   end
 
   it "should index an entity" do

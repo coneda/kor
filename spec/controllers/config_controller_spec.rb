@@ -6,7 +6,7 @@ describe ConfigController do
   before :each do
     test_data_for_auth
     
-    Kor.stub(:app_config_file).and_return('config/kor.app.test.yml')
+    allow(Kor).to receive(:app_config_file).and_return('config/kor.app.test.yml')
     file = "#{Rails.root}/config/#{Kor.app_config_file}"
     FileUtils.rm file if File.exists? file
   
@@ -19,7 +19,7 @@ describe ConfigController do
       'maintainer' => {'name' => 'John Doe'}
     }
     
-    Kor::Config.new(Kor.app_config_file)['maintainer.name'].should eql('John Doe')
+    expect(Kor::Config.new(Kor.app_config_file)['maintainer.name']).to eql('John Doe')
   end
   
   it "should reload the config after saving" do
@@ -27,7 +27,7 @@ describe ConfigController do
       'maintainer' => {'name' => 'John Doe'}
     }
     
-    Kor.config['maintainer.name'].should eql('John Doe')
+    expect(Kor.config['maintainer.name']).to eql('John Doe')
   end
   
   it "should only overwrite updated values in config/kor.app.yml" do
@@ -40,8 +40,8 @@ describe ConfigController do
       'maintainer' => {'name' => 'John Doe'}
     }
     
-    Kor.config['maintainer.name'].should eql('John Doe')
-    Kor.config['test'].should eql('value')
+    expect(Kor.config['maintainer.name']).to eql('John Doe')
+    expect(Kor.config['test']).to eql('value')
   end
   
 end

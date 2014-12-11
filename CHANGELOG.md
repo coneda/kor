@@ -14,3 +14,4 @@ Version 1.9.0
 * replaced the former WebServices with fields and generators
 * fully replaced machinist with factory_girl for fixture creation
 * removed rating functionality
+* migrated to the rspec `expect` syntax

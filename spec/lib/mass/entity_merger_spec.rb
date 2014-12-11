@@ -20,8 +20,8 @@ describe Mass::EntityMerger do
       }
     )
     
-    Entity.count.should eql(1)
-    merged.dataset['gnd'].should eql('12345')
+    expect(Entity.count).to eql(1)
+    expect(merged.dataset['gnd']).to eql('12345')
   end
   
 end

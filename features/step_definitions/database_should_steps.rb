@@ -20,7 +20,7 @@ Then /^user "([^\"]*)" should have the following access rights$/ do |user, table
   end
   
   if results.size == 0
-    table.hashes.size.should == 0
+    expect(table.hashes.size).to eq(0)
   else
     table.diff! results
   end

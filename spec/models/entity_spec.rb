@@ -36,8 +36,8 @@ describe Entity do
     )
     
     result = @query.results.items
-    result.size.should eql(1)
-    result.first.should eql(@mona_lisa)
+    expect(result.size).to eql(1)
+    expect(result.first).to eql(@mona_lisa)
   end
 
   it "should accept nested attributes for entity datings" do
@@ -45,7 +45,7 @@ describe Entity do
       { :label => 'Datierung',  :dating_string => "15. Jahrhundert" },
       { :label => 'Datierung',  :dating_string => "15.12.1933" }
     ]
-    leonardo.datings.count.should eql(2)
+    expect(leonardo.datings.count).to eql(2)
   end
   
   it "should search by dating" do
@@ -64,24 +64,24 @@ describe Entity do
   it "should raise an error if the options for the related method are invalid" do
     entity = FactoryGirl.build :work
     
-    lambda { entity.related(:assume => :terciary) }.should raise_error
-    lambda { entity.related(:assume => :image, :search => :secondary) }.should raise_error
+    expect { entity.related(:assume => :terciary) }.to raise_error
+    expect { entity.related(:assume => :image, :search => :secondary) }.to raise_error
   end
   
   it "should find related media for primary entities and vice versa" do
     image = FactoryGirl.create :image_a
     Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
     
-    @mona_lisa.related(:search => :media, :assume => :primary).should eql([image])
-    image.related(:search => :primary, :assume => :media).should eql([@mona_lisa])
+    expect(@mona_lisa.related(:search => :media, :assume => :primary)).to eql([image])
+    expect(image.related(:search => :primary, :assume => :media)).to eql([@mona_lisa])
   end
   
   it "should find related primary entities for secondary entities and vice versa" do
     @leonardo = FactoryGirl.create :leonardo
     Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
     
-    @leonardo.related(:search => :primary, :assume => :secondary).should eql([@mona_lisa])
-    @mona_lisa.related(:search => :secondary, :assume => :primary).should eql([@leonardo])
+    expect(@leonardo.related(:search => :primary, :assume => :secondary)).to eql([@mona_lisa])
+    expect(@mona_lisa.related(:search => :secondary, :assume => :primary)).to eql([@leonardo])
   end
   
   it "should find related primary entities for secondary entities" do
@@ -96,14 +96,14 @@ describe Entity do
   it "should have an uuid when saved without validation" do
     entity = Kind.find_by_name("Ort").entities.build(:name => "Nürnberg")
     entity.save(:validate => false)
-    entity.uuid.should_not be_nil
+    expect(entity.uuid).not_to be_nil
   end
   
   it "should generate correct kind names" do
     entity = Kind.find_by_name("Ort").entities.build(:name => "Nürnberg")
-    entity.kind_name.should eql("Ort")
+    expect(entity.kind_name).to eql("Ort")
     entity.subtype = "Städtchen"
-    entity.kind_name.should eql("Ort (Städtchen)")
+    expect(entity.kind_name).to eql("Ort (Städtchen)")
   end
   
   it "should save with serial numbers" do
@@ -122,11 +122,11 @@ describe Entity do
       end
     end
     
-    entities.map{|e| {:name => e.name, :distinct_name => e.distinct_name}}.should == [
+    expect(entities.map{|e| {:name => e.name, :distinct_name => e.distinct_name}}).to eq([
       {:name => 'Nürnberg', :distinct_name => nil},
       {:name => 'Nürnberg', :distinct_name => '2'},
       {:name => 'Nürnberg', :distinct_name => '3'}
-    ]
+    ])
   end
   
   it "should save with serial with existing distinct name" do
@@ -145,11 +145,11 @@ describe Entity do
       end
     end
     
-    entities.map{|e| {:name => e.name, :distinct_name => e.distinct_name}}.should == [
+    expect(entities.map{|e| {:name => e.name, :distinct_name => e.distinct_name}}).to eq([
       {:name => 'Nürnberg', :distinct_name => "Bayern"},
       {:name => 'Nürnberg', :distinct_name => "Bayern – 2"},
       {:name => 'Nürnberg', :distinct_name => 'Bayern – 3'}
-    ]
+    ])
   end
   
   it "should not allow to create an entity twice" do
@@ -159,11 +159,11 @@ describe Entity do
       :distinct_name => ""
     )
     
-    entity.valid?.should be_false
-    entity.errors.full_messages.should == [
+    expect(entity.valid?).to be_falsey
+    expect(entity.errors.full_messages).to eq([
       'Name ist bereits vergeben',
       'eindeutiger Name ist ungültig'
-    ]
+    ])
   end
 
   it "should fire elastic updates" do
@@ -212,9 +212,9 @@ describe Entity do
       {'label' => 'age'},
       {'value' => 12.7}
     ]
-    entity.valid?.should be_false
-    entity.errors.full_messages.should include('weitere Eigenschaften benötigen einen Wert')
-    entity.errors.full_messages.should include('weitere Eigenschaften benötigen einen Bezeichner')
+    expect(entity.valid?).to be_falsey
+    expect(entity.errors.full_messages).to include('weitere Eigenschaften benötigen einen Wert')
+    expect(entity.errors.full_messages).to include('weitere Eigenschaften benötigen einen Bezeichner')
   end
 
   it "should retrieve unsaved mongo values without a kind" do
@@ -233,7 +233,7 @@ describe Entity do
     people.fields << FactoryGirl.create(:isbn)
 
     entity = FactoryGirl.build :jack, :dataset => {'isbn' => 'invalid ISBN'}
-    expect(entity.save).to be_false
+    expect(entity.save).to be_falsey
     expect(entity.errors.full_messages).to include("ISBN ist ungültig")
   end
   

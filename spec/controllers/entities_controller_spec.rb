@@ -14,19 +14,19 @@ describe EntitiesController do
   end
   
   def create_location(name, attributes)
-    lambda {
+    expect {
       attributes[:name] = name
       attributes[:kind_id] = Kind.find_by_name('Ort').id
       attributes[:collection_id] = @main.id
       post :create, :entity => attributes
-    }.should change(Entity, :count).by(1)
+    }.to change(Entity, :count).by(1)
   end
   
   it "should destroy an entity" do
     test_entities
     
     post :destroy, :id => @mona_lisa.id
-    Entity.exists?(@mona_lisa.id).should be_false
+    expect(Entity.exists?(@mona_lisa.id)).to be_falsey
   end
   
   it "should display the saved dating descriptor when editing" do
@@ -35,14 +35,14 @@ describe EntitiesController do
   
     get :edit, :id => @mona_lisa.id
 
-    response.should have_selector("input[name^='entity[existing_datings_attributes]'][value='Gemalt um']")
+    expect(response).to have_selector("input[name^='entity[existing_datings_attributes]'][value='Gemalt um']")
   end
   
   it "should handle synonym attributes" do
     create_location 'Nürnberg', :synonyms => ["Nouremberg", "Nurnberg"]
     
-    Entity.last.synonyms.count.should eql(2)
-    Entity.last.synonyms.first.should eql("Nouremberg")
+    expect(Entity.last.synonyms.count).to eql(2)
+    expect(Entity.last.synonyms.first).to eql("Nouremberg")
   end
   
   it "should handle property attributes" do
@@ -51,8 +51,8 @@ describe EntitiesController do
       {:label => 'Fläche', :value => "225000km²"}
     ]
     
-    Entity.last.properties.count.should eql(2)
-    Entity.last.properties.first['label'].should eql("Einwohnerzahl")
+    expect(Entity.last.properties.count).to eql(2)
+    expect(Entity.last.properties.first['label']).to eql("Einwohnerzahl")
   end
   
   it "should handle dating attributes" do
@@ -61,15 +61,15 @@ describe EntitiesController do
       { :label => 'Datierung',  :dating_string => '1843' }
     ]
     
-    Entity.last.datings.count.should eql(2)
-    Entity.last.datings.first.dating_string.should eql("1599")
+    expect(Entity.last.datings.count).to eql(2)
+    expect(Entity.last.datings.first.dating_string).to eql("1599")
   end
   
   it "should handle a user group id" do
     user_group = FactoryGirl.create :user_group
     create_location 'Nürnberg', :user_group_id => user_group.id
     
-    user_group.entities.first.name.should eql('Nürnberg')
+    expect(user_group.entities.first.name).to eql('Nürnberg')
   end
 
 
@@ -102,10 +102,10 @@ describe EntitiesController do
     entity = side_entity
     
     get :edit, :id => entity.id
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
     
     put :update, :id => entity.id, :entity => {:collection_id => side_collection.id}
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
   
   # create
@@ -113,15 +113,15 @@ describe EntitiesController do
     @main.grants.destroy_all
     
     get :new
-    response.should_not have_selector("select[name='new_entity[kind_id]']")
-    response.should redirect_to(denied_path)
+    expect(response).not_to have_selector("select[name='new_entity[kind_id]']")
+    expect(response).to redirect_to(denied_path)
   end
   
   it "should allow creating entities given appropriate authorization" do
     get :new, :kind_id => @person_kind.id
     
-    response.should_not redirect_to(denied_path)
-    response.should have_selector("input[name='entity[collection_id]'][value='#{@main.id}']")
+    expect(response).not_to redirect_to(denied_path)
+    expect(response).to have_selector("input[name='entity[collection_id]'][value='#{@main.id}']")
   end
   
   
@@ -130,7 +130,7 @@ describe EntitiesController do
     set_side_collection_policies :view => [@admins]
     
     delete :destroy, :id => side_entity.id
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
   
   # move
@@ -141,14 +141,14 @@ describe EntitiesController do
     put :update, :id => side_entity.id, :entity => {
       :collection_id => @main.id
     }
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
     
     set_main_collection_policies :create => [@admins]
     
     put :update, :id => side_entity.id, :entity => {
       :collection_id => @main.id
     }
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
     
     set_side_collection_policies :delete => [@admins]
     set_main_collection_policies :create => []
@@ -156,7 +156,7 @@ describe EntitiesController do
     put :update, :id => side_entity.id, :entity => {
       :collection_id => @main.id
     }
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
   
   it "should allow moving entities between collections given appropriate authorization" do
@@ -165,7 +165,7 @@ describe EntitiesController do
     put :update, :id => side_entity.id, :entity => {
       :collection_id => @main.id
     }
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
   end
   
   
@@ -175,7 +175,7 @@ describe EntitiesController do
     set_main_collection_policies :edit => []
     
     get :recent
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
   
   it "should show the recent entities with edit rights" do
@@ -184,7 +184,7 @@ describe EntitiesController do
     side_entity
     
     get :recent
-    response.should have_selector("a[href='#{entity_path(side_entity)}']")
+    expect(response).to have_selector("a[href='#{entity_path(side_entity)}']")
   end
   
   
@@ -194,7 +194,7 @@ describe EntitiesController do
     set_main_collection_policies :delete => []
     
     get :invalid
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
   
   it "should show the invalid entities with delete rights" do
@@ -204,7 +204,7 @@ describe EntitiesController do
 
     get :invalid
     path = web_path(:anchor => entity_path(side_entity))
-    response.should have_selector("a[href='#{path}']")
+    expect(response).to have_selector("a[href='#{path}']")
   end
   
   
@@ -214,14 +214,14 @@ describe EntitiesController do
     set_main_collection_policies :edit => [], :delete => []
   
     get :new
-    response.should_not have_selector("a[href='#{recent_entities_path}']")
-    response.should_not have_selector("a[href='#[invalid_entities_path]']")
+    expect(response).not_to have_selector("a[href='#{recent_entities_path}']")
+    expect(response).not_to have_selector("a[href='#[invalid_entities_path]']")
   end
   
   it "should not show links to recent and invalid entities without authorization" do
     get :new, :kind_id => Kind.medium_kind.id
-    response.should have_selector("a[href='#{recent_entities_path}']")
-    response.should have_selector("a[href='#{invalid_entities_path}']")
+    expect(response).to have_selector("a[href='#{recent_entities_path}']")
+    expect(response).to have_selector("a[href='#{invalid_entities_path}']")
   end
 
   it "should not create an entity of kind medium without a file" do
@@ -231,7 +231,7 @@ describe EntitiesController do
       :kind_id => Kind.medium_kind.id
     }
 
-    response.should_not be_success
+    expect(response).not_to be_success
 
     post :create, :entity => {
       :collection_id => Collection.first.id,
@@ -240,7 +240,7 @@ describe EntitiesController do
       :medium_attributes => {}
     }
 
-    response.should_not be_success
+    expect(response).not_to be_success
   end
   
 end

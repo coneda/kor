@@ -11,7 +11,7 @@ describe EntityGroup do
     group = FactoryGirl.create :authority_group
     group.add_entities FactoryGirl.create(:leonardo)
 
-    group.entities.count.should eql(1)
+    expect(group.entities.count).to eql(1)
   end
   
 end

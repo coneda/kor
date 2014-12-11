@@ -15,15 +15,15 @@ describe "Machinist" do
   end
   
   it "should create authentication data" do
-    User.admin.should_not be_nil
-    User.authenticate("admin", "admin").should_not be_nil
+    expect(User.admin).not_to be_nil
+    expect(User.authenticate("admin", "admin")).not_to be_nil
   end
   
   it "should create test images" do
     e = FactoryGirl.create :image_a
     work_off
     
-    e.medium.should_not be_nil
-    e.medium.image.file?.should be_true
+    expect(e.medium).not_to be_nil
+    expect(e.medium.image.file?).to be_truthy
   end
 end

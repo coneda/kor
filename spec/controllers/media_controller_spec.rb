@@ -37,14 +37,14 @@ describe MediaController do
   # view
   it "should not allow viewing to unauthorized users" do
     get :view, :id => side_entity.medium_id
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
 
   it "should allow viewing to authorized users" do
     set_side_collection_policies :view => [@admins]
 
     get :view, :id => side_entity.medium_id
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
   end
 
   def params_for_medium(medium, style = :normal, attachment = :image, style_extension = :png)
@@ -62,21 +62,21 @@ describe MediaController do
   # show
   it "should not show imgages to unauthorized users" do
     get :show, params_for_medium(side_entity.medium)
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
 
   it "should show images to authorized users" do
     set_side_collection_policies :view => [@admins]
 
     get :show, params_for_medium(side_entity.medium)
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
   end
 
 
   # download
   it "should not allow image download to unauthorized users" do
     get :download, :id => side_entity.medium_id, :style => :normal
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
 
   it "should allow image download to authorized users" do
@@ -86,21 +86,21 @@ describe MediaController do
     )
 
     get :download, :id => side_entity.medium_id, :style => :normal
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
   end
 
 
   # transform
   it "should not allow image transformations to unauthorized users" do
     get :transform, :id => side_entity.medium_id, :transformation => 'image', :operation => 'flip'
-    response.should redirect_to(denied_path)
+    expect(response).to redirect_to(denied_path)
   end
 
   it "should allow image transformations to authorized users" do
     set_side_collection_policies :edit => [@admins]
 
     get :transform, :id => side_entity.medium_id, :transformation => 'image', :operation => 'flip'
-    response.should_not redirect_to(denied_path)
+    expect(response).not_to redirect_to(denied_path)
   end
 
 end

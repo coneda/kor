@@ -14,7 +14,7 @@ describe UserGroupsController do
     FactoryGirl.create :user_group
     
     get :show, :id => 1
-    response.should be_success
+    expect(response).to be_success
   end
   
 end

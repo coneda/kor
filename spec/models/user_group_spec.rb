@@ -12,8 +12,8 @@ describe UserGroup do
       :name => "MySuperAnnoyinglyLongNameThatServesNoPurpose"
     )
 
-    user_group.valid?.should be_false
-    user_group.errors.full_messages.should include(
+    expect(user_group.valid?).to be_falsey
+    expect(user_group.errors.full_messages).to include(
       "Name kann keine Wörter mit mehr als 30 Buchstaben enthalten"
     )
   end

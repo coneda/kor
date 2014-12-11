@@ -12,7 +12,7 @@ describe AuthorityGroup do
     entity = Entity.find_by_name('Mona Lisa')
     
     group.entities << entity
-    AuthorityGroup.find_by_name('Sander').entities.size.should eql(1)
+    expect(AuthorityGroup.find_by_name('Sander').entities.size).to eql(1)
   end
   
 end

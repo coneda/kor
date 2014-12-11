@@ -12,7 +12,7 @@ describe Fields::Regex do
       :settings => {:regex => "^(aa|bb|ccc)$"}
     )
     
-    field.reload.settings.should == {:regex => "^(aa|bb|ccc)$"}
+    expect(field.reload.settings).to eq({:regex => "^(aa|bb|ccc)$"})
   end
   
 end

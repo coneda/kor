@@ -19,7 +19,7 @@ describe RelationsController do
       :from_kind_ids => [ @person_kind.id, @artwork_kind.id ]
     }
     
-    @is_equivalent_to.reload.from_kind_ids.should eql([ @person_kind.id, @artwork_kind.id ])
+    expect(@is_equivalent_to.reload.from_kind_ids).to eql([ @person_kind.id, @artwork_kind.id ])
   end
   
 end

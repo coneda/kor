@@ -7,7 +7,7 @@ describe Kind do
     k.settings[:default_dating_label] = "Datierung"
     k.save
     
-    k.reload.settings[:default_dating_label].should eql("Datierung")
+    expect(k.reload.settings[:default_dating_label]).to eql("Datierung")
   end
   
 end

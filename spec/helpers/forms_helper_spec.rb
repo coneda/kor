@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe FormsHelper do
+RSpec.describe FormsHelper, :type => :helper do
   
   describe "kor_input_tag" do
     it "should not raise an error when labels are given as symbol" do
