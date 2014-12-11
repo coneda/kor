@@ -8,26 +8,26 @@ describe Relation do
     
     Kor.config.update 'app' => {
       'gallery' => {
-        'primary_relations' => ['stellt dar'], 
-        'secondary_relations' => ['wurde erschaffen von']
+        'primary_relations' => ['shows'], 
+        'secondary_relations' => ['has been created by']
     }}
   end
   
   it "should return the primary and secondary relation names" do
-    Kor.config['app.gallery.primary_relations'].should eql(['stellt dar'])
-    Kor.config['app.gallery.secondary_relations'].should eql(['wurde erschaffen von'])
+    Kor.config['app.gallery.primary_relations'].should eql(['shows'])
+    Kor.config['app.gallery.secondary_relations'].should eql(['has been created by'])
   
-    Relation.primary_relation_names.should eql(['stellt dar'])
-    Relation.secondary_relation_names.should eql(['wurde erschaffen von'])
+    Relation.primary_relation_names.should eql(['shows'])
+    Relation.secondary_relation_names.should eql(['has been created by'])
   end
   
   it "should return a reverse relation name for a given name" do
-    Relation.reverse_name_for_name('stellt dar').should eql("wird dargestellt von")
-    Relation.reverse_name_for_name('wird dargestellt von').should eql("stellt dar")
+    Relation.reverse_name_for_name('shows').should eql("is shown by")
+    Relation.reverse_name_for_name('is shown by').should eql("shows")
   end
 
   it "should return reverse primary relation names" do
-    Relation.reverse_primary_relation_names.should eql([ 'wird dargestellt von' ])
+    Relation.reverse_primary_relation_names.should eql(['is shown by'])
   end
   
   it "should return all available relation names" do

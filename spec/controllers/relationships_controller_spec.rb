@@ -4,7 +4,6 @@ describe RelationshipsController do
   render_views
   
   include DataHelper
-  include AuthHelper
 
   before :each do
     test_data_for_auth
@@ -16,34 +15,28 @@ describe RelationshipsController do
   
   it "should not switch relationships when rendering the edit form" do
     test_entities
-    leonardo = Kind.find_by_name("Person").entities.make(:name => 'Leonardo da Vinci')
-    relationship = Relationship.relate_and_save(Entity.find_by_name("Mona Lisa"), "wurde erschaffen von", leonardo)
+    leonardo = FactoryGirl.create :leonardo
+    relationship = Relationship.relate_and_save(Entity.find_by_name("Mona Lisa"), "has been created by", leonardo)
     
     get :edit, :id => relationship.id
     
     response.should have_selector "select" do
-     have_selector 'option[selected]', 'hat erschaffen'
+     have_selector 'option[selected]', 'has created'
     end
   end
   
   # ---------------------------------------------------------- authorization ---
   
   def side_collection
-    @side_collection ||= Collection.make(:name => 'Side Collection')
+    @side_collection ||= FactoryGirl.create :private
   end
   
   def side_entity(attributes = {})
-    @side_entity ||= @person_kind.entities.make attributes.reverse_merge(
-      :collection => side_collection, 
-      :name => 'Leonardo da Vinci'
-    )
+    @side_entity ||= FactoryGirl.create :leonardo, :collection => side_collection
   end
   
   def main_entity(attributes = {})
-    @main_entity ||= @artwork_kind.entities.make attributes.reverse_merge(
-      :collection => @main, 
-      :name => 'Mona Lisa'
-    )
+    @main_entity ||= FactoryGirl.create :mona_lisa
   end
   
   def set_side_collection_policies(policies = {})
@@ -72,7 +65,7 @@ describe RelationshipsController do
     post :create, :relationship => {
       :from_id => main_entity.id,
       :to_id => side_entity.id,
-      :relation_name => 'hat erschaffen'
+      :relation_name => 'has created'
     }
     response.should redirect_to(denied_path)
   end
@@ -88,7 +81,7 @@ describe RelationshipsController do
     post :create, :relationship => {
       :from_id => main_entity.id,
       :to_id => side_entity.id,
-      :relation_name => 'hat erschaffen'
+      :relation_name => 'has created'
     }
     response.should_not redirect_to(denied_path)
   end
@@ -99,8 +92,8 @@ describe RelationshipsController do
     set_side_collection_policies :view => [@admins]
     set_main_collection_policies :edit => []
   
-    relationship = Relationship.relate_and_save(main_entity, 'hat erschaffen', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'hat erschaffen', main_entity)
+    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
+    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
     get :edit, :id => relationship.id
     response.should redirect_to(denied_path)
@@ -109,12 +102,12 @@ describe RelationshipsController do
     response.should redirect_to(denied_path)
     
     put :update, :id => relationship.id, :relationship => {
-      :relation_name => 'stellt dar'
+      :relation_name => 'shows'
     }
     response.should redirect_to(denied_path)
     
     put :update, :id => relationship_reverse.id, :relationship => {
-      :relation_name => 'wird dargestellt von'
+      :relation_name => 'is shown by'
     }
     response.should redirect_to(denied_path)
   end
@@ -122,8 +115,8 @@ describe RelationshipsController do
   it "should allow to edit relationships when one entity is editable and the other is viewable" do
     set_side_collection_policies :view => [@admins]
   
-    relationship = Relationship.relate_and_save(main_entity, 'hat erschaffen', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'hat erschaffen', main_entity)
+    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
+    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
     get :edit, :id => relationship.id
     response.should_not redirect_to(denied_path)
@@ -132,12 +125,12 @@ describe RelationshipsController do
     response.should_not redirect_to(denied_path)
     
     put :update, :id => relationship.id, :relationship => {
-      :relation_name => 'stellt dar'
+      :relation_name => 'shows'
     }
     response.should_not redirect_to(denied_path)
     
     put :update, :id => relationship_reverse.id, :relationship => {
-      :relation_name => 'wird dargestellt von'
+      :relation_name => 'is shown by'
     }
     response.should_not redirect_to(denied_path)
   end
@@ -148,8 +141,8 @@ describe RelationshipsController do
     set_side_collection_policies :view => [@admins]
     set_main_collection_policies :edit => []
   
-    relationship = Relationship.relate_and_save(main_entity, 'hat erschaffen', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'hat erschaffen', main_entity)
+    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
+    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
     delete :destroy, :id => relationship.id
     response.should redirect_to(denied_path)
@@ -161,8 +154,8 @@ describe RelationshipsController do
   it "should allow to delete relationships when one entity is editable and the other is viewable" do
     set_side_collection_policies :view => [@admins]
   
-    relationship = Relationship.relate_and_save(main_entity, 'hat erschaffen', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'hat erschaffen', main_entity)
+    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
+    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
     request.env["HTTP_REFERER"] = '/'
     delete :destroy, :id => relationship.id

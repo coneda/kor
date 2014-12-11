@@ -77,7 +77,7 @@ describe Kor::Blaze do
     media = FactoryGirl.create :media
     works = FactoryGirl.create :works
     people = FactoryGirl.create :people
-    medium = FactoryGirl.create :picture, :collection => FactoryGirl.create(:private)
+    medium = FactoryGirl.create :image_a, :collection => FactoryGirl.create(:private)
     mona_lisa = FactoryGirl.create :mona_lisa
     person = FactoryGirl.create :jack
     FactoryGirl.create :shows

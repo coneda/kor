@@ -17,6 +17,16 @@ FactoryGirl.define do
       plural_name "Orte"
     end
 
+    factory :institutions do
+      name "Institution"
+      plural_name "Institutionen"
+    end
+
+    factory :literatures do
+      name "Literatur"
+      plural_name "Literatur"
+    end
+
     factory :people do
       name "Person"
       plural_name "People"
@@ -56,9 +66,23 @@ FactoryGirl.define do
   factory :entity do
     collection { Collection.find_or_create_by_name "default" }
 
-    factory :mona_lisa do
-      name "Mona Lisa"
+    factory :work do
+      name "A entity"
       kind { Kind.find_or_create_by_name "Werk" }
+
+      factory :mona_lisa do
+        name "Mona Lisa"
+        datings do
+          [ EntityDating.new(
+            :label => 'Datierung',
+            :dating_string => '1533'
+          )]
+        end
+
+        dataset do
+          {:gnd => '12345'}
+        end
+      end
 
       factory :der_schrei do
         name "Der Schrei"
@@ -67,30 +91,55 @@ FactoryGirl.define do
       factory :ramirez do
         name "Ramirez"
       end
+
+      factory :landscape do
+        name "Landscape"
+      end
     end
 
-    factory :united_kingdom do
-      name "United Kingdom"
+    factory :location do
+      name "A entity"
       kind { Kind.find_or_create_by_name "Ort" }
+
+      factory :united_kingdom do
+        name "United Kingdom"
+      end
 
       factory :united_states do
         name "United States of America"
       end
     end
 
-    factory :landscape do
-      name "Landscape"
-      kind { Kind.find_or_create_by_name "Werk" }
+    factory :person do
+      name "A person"
+      kind { Kind.find_or_create_by_name "Person" }
+
+      factory :jack do
+        name "Jack"
+      end
+
+      factory :leonardo do
+        name "Leonardo da Vinci"
+      end
     end
 
-    factory :jack do
-      name "Jack"
+    factory :institution do
+      name "A entity"
       kind { Kind.find_or_create_by_name "Person" }
     end
 
-    factory :picture do
+    factory :medium_entity do
       kind { Kind.medium_kind }
-      medium { FactoryGirl.build :medium }
+
+      factory :image_a do
+        medium { FactoryGirl.build :medium }
+      end
+
+      factory :image_b do
+        medium do
+          FactoryGirl.build :medium, :document => File.open("#{Rails.root}/spec/fixtures/image_b.jpg")
+        end
+      end
     end
 
   end
@@ -113,21 +162,26 @@ FactoryGirl.define do
       name "has created"
       reverse_name "has been created by"
     end
+
+    factory :is_equivalent_to do
+      name "is equivalent to"
+      reverse_name "is equivalent to"
+    end
+
+    factory :is_located_at do
+      name "is located at"
+      reverse_name "is location of"
+    end
   end
 
-  factory :rating, :class => Api::Rating do
-    namespace {'2d3d'}
-  end
-  
   factory :user do
-    email 'mustermann@coneda.net'
-    name 'hmustermann'
-    full_name 'Hans Mustermann'
-    password 'mustermann'
     terms_accepted true
 
     factory :hmustermann do
-
+      email 'mustermann@coneda.net'
+      name 'hmustermann'
+      full_name 'Hans Mustermann'
+      password 'mustermann'
     end
 
     factory :jdoe do
@@ -143,8 +197,13 @@ FactoryGirl.define do
       full_name 'Administrator'
       password 'admin'
       
-      rating_admin true
+      admin true
       user_admin true
+      kind_admin true
+      collection_admin true
+      credential_admin true
+      relation_admin true
+      authority_group_admin true
     end
 
     factory :guest do
@@ -186,6 +245,31 @@ FactoryGirl.define do
         <span ng-show=\"locale() == 'de'\">Deutsch</span>
       "
     end
+  end
+
+  factory :entity_dating do
+    label "Dating"
+  end
+
+  factory :authority_group do
+    name "A authority group"
+  end
+
+  factory :user_group do
+    name "A user group"
+    user_id { User.first.id }
+  end
+
+  factory :system_group do
+    name "A system group"
+
+    factory :invalids do
+      name 'invalid'
+    end
+  end
+
+  factory :exception_log do
+
   end
   
 end

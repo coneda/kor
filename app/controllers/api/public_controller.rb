@@ -31,11 +31,6 @@ class Api::PublicController < Api::ApiController
         :id => current_user.id,
         :name => current_user.name,
         :email => current_user.email,
-        :credits => {
-          :amount => current_user.credits,
-          :in_a_row => Api::Engagement.in_a_row(current_user)
-        },
-        :credits => current_user.credits,
         :auth => current_user.full_auth,
         :locale => current_user.locale
       }
@@ -55,7 +50,7 @@ class Api::PublicController < Api::ApiController
       session[:user_id] = @user.id
       session[:expires_at] = Kor.session_expiry_time
       @user.update_attributes(:last_login => Time.now)
-      render :json => @user.to_json(:methods => [:credits]), :status => 200
+      render :json => @user.to_json, :status => 200
     elsif session[:user_id]
       render_notice :already_authenticated
     else

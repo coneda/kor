@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe MediaController do
   include DataHelper
-  include AuthHelper
 
   before :each do
     fake_authentication :persist => true
@@ -18,12 +17,12 @@ describe MediaController do
   end
 
   def side_collection
-    @side_collection ||= Collection.make(:name => 'Side Collection')
+    @side_collection ||= FactoryGirl.create :private
   end
 
   def side_entity(attributes = {})
     @side_entity ||= begin
-      result = Entity.make :medium, :collection => side_collection, :medium => Medium.make_unsaved
+      result = FactoryGirl.create :image_a, :collection => side_collection
       work_off
       result
     end

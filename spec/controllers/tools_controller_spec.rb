@@ -4,7 +4,6 @@ describe ToolsController do
   render_views
   
   include DataHelper
-  include AuthHelper
 
   before :each do
     test_data
@@ -13,6 +12,11 @@ describe ToolsController do
   end
   
   it "should reset the clipboard" do
+    FactoryGirl.create :mona_lisa, :name => 'Monalisa', :dataset => {
+      :gnd => '123456',
+      :google_maps => 'Deutsche Straße 12, Frankfurt'
+    }
+
     session[:clipboard] = [
       Entity.find_by_name("Mona Lisa").id,
       Entity.find_by_name("Monalisa").id
@@ -25,6 +29,11 @@ describe ToolsController do
   end
   
   it "should show the clipboard when entities are in it" do
+    FactoryGirl.create :mona_lisa, :name => 'Monalisa', :dataset => {
+      :gnd => '123456',
+      :google_maps => 'Deutsche Straße 12, Frankfurt'
+    }
+
     session[:clipboard] = [
       Entity.find_by_name("Mona Lisa").id,
       Entity.find_by_name("Monalisa").id
@@ -38,7 +47,7 @@ describe ToolsController do
   
   it "should render a mass relate form only with allowed relations" do
     @mona_lisa = Entity.find_by_name('Mona Lisa')
-    @leonardo = @person_kind.entities.make(:name => 'Leonardo da Vinci')
+    @leonardo = FactoryGirl.create :leonardo
     
     session[:clipboard] = [ @leonardo.id ]
     session[:current_entity] = @mona_lisa.id
@@ -52,25 +61,12 @@ describe ToolsController do
     end
   end
   
-  def merge_entities
-    admins = [ Credential.find_by_name('admins').id ]
-    collection = Collection.make(:name => 'Test Collection', :policy_groups => {
-      'delete' => admins, 'create' => admins
-    })
-  
-    Entity.make(:name => 'Mona Lisa',
-      :collection => collection,
-      :kind => Kind.find_by_name('Werk'),
-      :dataset => Artwork.new
-    )
-    Entity.make(:name => 'Monalisa', 
-      :collection => collection,
-      :kind => Kind.find_by_name('Werk'),
-      :dataset => Artwork.new
-    )
-  end
-
   it "should merge two entities with datasets" do
+    @monalisa = FactoryGirl.create :mona_lisa, :name => 'Monalisa', :dataset => {
+      :gnd => '123456',
+      :google_maps => 'Deutsche Straße 12, Frankfurt'
+    }
+
     entity_ids = [
       @monalisa.id,
       @mona_lisa.id
@@ -93,6 +89,11 @@ describe ToolsController do
   end
   
   it "should merge two entities while not messing up the groups" do
+    FactoryGirl.create :mona_lisa, :name => 'Monalisa', :dataset => {
+      :gnd => '123456',
+      :google_maps => 'Deutsche Straße 12, Frankfurt'
+    }    
+
     entity_ids = [
       Entity.find_by_name("Mona Lisa").id,
       Entity.find_by_name("Monalisa").id
@@ -111,13 +112,9 @@ describe ToolsController do
     Entity.first.datings.first.dating_string.should eql("1533")
   end
   
-  def create_image(file_name)
-    Kind.image_kind.entities.make(:dataset_attributes => {:data => File.read(file_name)})
-  end
-  
   it "should merge two images while not messing up the groups" do
-    image_a = Entity.make(:medium, :medium => Medium.make_unsaved)
-    image_b = Entity.make(:medium, :medium => Medium.make_unsaved(:b))
+    image_a = FactoryGirl.create :image_a
+    image_b = FactoryGirl.create :image_b
     
     entity_ids = [image_a.id, image_b.id]
     
@@ -132,9 +129,8 @@ describe ToolsController do
       :clipboard_action => 'merge', 
       :entity_ids => entity_ids,
       :entity => {:id => image_a.id}
-      
-    Entity.count.should eql(3) # the image plus the two "mona lisas"
-    Entity.find_by_id(image_b.id).should be_nil
+    
+    expect(Entity.all).not_to include(image_b)
     
     image_a.authority_groups.should include(group_1)
     image_a.authority_groups.should include(group_2)
@@ -143,6 +139,11 @@ describe ToolsController do
   end
   
   it "should merge entities while not loosing comments" do
+    FactoryGirl.create :mona_lisa, :name => 'Monalisa', :dataset => {
+      :gnd => '123456',
+      :google_maps => 'Deutsche Straße 12, Frankfurt'
+    }
+
     Entity.find_by_name('Mona Lisa').update_attributes(:comment => 'comment 1')
     Entity.find_by_name('Monalisa').update_attributes(:comment => 'comment 2')
   

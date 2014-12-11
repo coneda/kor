@@ -5,9 +5,9 @@ describe Kor do
   it "should create authentication data" do
     ActionMailer::Base.deliveries.size.should == 0
   
-    User.make(:name => 'john', :email => 'john@doe.com', :expires_at => 1.week.from_now)
-    User.make(:name => 'lisa', :email => 'lisa@coleman.com', :expires_at => 3.week.from_now)
-    User.make(:name => 'admin', :email => 'admin@coneda.net')
+    FactoryGirl.create :jdoe, :expires_at => 1.week.from_now
+    FactoryGirl.create :hmustermann, :expires_at => 3.weeks.from_now
+    FactoryGirl.create :admin
     User.count.should eql(3)
   
     Kor.notify_upcoming_expiries

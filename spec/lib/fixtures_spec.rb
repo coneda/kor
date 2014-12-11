@@ -20,7 +20,7 @@ describe "Machinist" do
   end
   
   it "should create test images" do
-    e = Entity.make(:medium, :medium => Medium.make_unsaved)
+    e = FactoryGirl.create :image_a
     work_off
     
     e.medium.should_not be_nil

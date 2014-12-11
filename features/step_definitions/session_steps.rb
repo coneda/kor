@@ -1,6 +1,6 @@
 Given /^the user "([^\"]*)"$/ do |user|
   unless User.exists? :name => user
-    User.make(:name => user, :password => user, :email => "#{user}@example.com")
+    FactoryGirl.create :user, :name => user, :password => user, :email => "#{user}@example.com"
   end
 end
 

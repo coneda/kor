@@ -1,1 +1,0 @@
-../../spec/support/blueprints.rb

@@ -9,12 +9,12 @@ describe Export::MetaDataProfile do
     test_relations
     test_entities
     
-    image = Kind.medium_kind.entities.make(:medium_attributes => {:document => File.open("#{Rails.root}/spec/fixtures/image_a.jpg")})
+    image = FactoryGirl.create :image_a
     mona_lisa = Entity.find_by_name('Mona Lisa')
-    leonardo = Kind.find_by_name('Person').entities.make(:name => 'Leonardo')
+    leonardo = FactoryGirl.create :leonardo
     
-    Relationship.relate_and_save image, 'stellt dar', mona_lisa
-    Relationship.relate_and_save leonardo, 'hat erschaffen', mona_lisa, []
+    Relationship.relate_and_save image, 'shows', mona_lisa
+    Relationship.relate_and_save leonardo, 'has created', mona_lisa, []
     
     Relationship.count.should eql(2)
     

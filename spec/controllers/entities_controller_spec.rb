@@ -6,7 +6,6 @@ describe EntitiesController do
   render_views
   
   include DataHelper
-  include AuthHelper
   
   before :each do
     fake_authentication :persist => true
@@ -35,7 +34,7 @@ describe EntitiesController do
     @mona_lisa.datings.first.update_attributes(:label => 'Gemalt um')
   
     get :edit, :id => @mona_lisa.id
-    
+
     response.should have_selector("input[name^='entity[existing_datings_attributes]'][value='Gemalt um']")
   end
   
@@ -67,7 +66,7 @@ describe EntitiesController do
   end
   
   it "should handle a user group id" do
-    user_group = UserGroup.make
+    user_group = FactoryGirl.create :user_group
     create_location 'Nürnberg', :user_group_id => user_group.id
     
     user_group.entities.first.name.should eql('Nürnberg')
@@ -77,21 +76,11 @@ describe EntitiesController do
   # ---------------------------------------------------------- authorization ---
 
   def side_collection
-    @side_collection ||= Collection.make(:name => 'Side Collection')
+    @side_collection ||= FactoryGirl.create :private
   end
   
   def side_entity(attributes = {})
-    @side_entity ||= @person_kind.entities.make attributes.reverse_merge(
-      :collection => side_collection, 
-      :name => 'Leonardo da Vinci'
-    )
-  end
-  
-  def main_entity(attributes = {})
-    @main_entity ||= @artwork_kind.entities.make attributes.reverse_merge(
-      :collection => @main, 
-      :name => 'Mona Lisa'
-    )
+    @side_entity ||= FactoryGirl.create :leonardo, :collection => side_collection
   end
   
   def set_side_collection_policies(policies = {})
@@ -211,7 +200,7 @@ describe EntitiesController do
   it "should show the invalid entities with delete rights" do
     set_side_collection_policies :delete => [@admins]
   
-    SystemGroup.make(:name => "invalid").add_entities side_entity
+    FactoryGirl.create(:invalids).add_entities side_entity
 
     get :invalid
     path = web_path(:anchor => entity_path(side_entity))

@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe Auth::Authorization do
   include DataHelper
-  include AuthHelper
 
   before :each do
     test_data_for_auth
@@ -10,21 +9,15 @@ describe Auth::Authorization do
   end
 
   def side_collection
-    @side_collection ||= Collection.make(:name => 'Side Collection')
+    @side_collection ||= FactoryGirl.create :private
   end
   
   def side_entity(attributes = {})
-    @side_entity ||= @person_kind.entities.make attributes.reverse_merge(
-      :collection => side_collection, 
-      :name => 'Leonardo da Vinci'
-    )
+    @side_entity ||= FactoryGirl.create :leonardo, :collection => side_collection
   end
   
   def main_entity(attributes = {})
-    @main_entity ||= @artwork_kind.entities.make attributes.reverse_merge(
-      :collection => @main, 
-      :name => 'Mona Lisa'
-    )
+    @main_entity ||= FactoryGirl.create :mona_lisa
   end
   
   def set_side_collection_policies(policies = {})

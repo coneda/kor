@@ -14,7 +14,7 @@ describe Auth::Authentication do
   end
 
   it "should call external auth scripts" do
-    FactoryGirl.create :user, :name => "example_auth"
+    FactoryGirl.create :user, :name => "example_auth", :email => 'ea@example.com'
 
     expect(described_class.login "jdoe", "wrong").to be_false
     expect(described_class.login "jdoe", "123456").to be_true

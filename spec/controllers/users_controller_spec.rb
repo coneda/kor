@@ -4,7 +4,6 @@ describe UsersController do
   render_views
 
   include DataHelper
-  include AuthHelper
   
   before :each do
     test_data
@@ -23,16 +22,15 @@ describe UsersController do
   end
   
   it "should only grant access to the user admin to authorized users" do
-    fake_authentication :user => User.make_unsaved(:name => 'gloria', :user_admin => false)
+    fake_authentication :user => FactoryGirl.create(:jdoe)
     get :index
-    response.should redirect_to('/login')
+    response.should redirect_to('/authentication/denied')
   end
 
   it "should render a json formatted list of users for autocomplete inputs" do
     FactoryGirl.create :hmustermann
     FactoryGirl.create :jdoe
 
-    # fake_authentication :user => User.admin
     allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(User.admin)
     allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_return(false)
     request.env["HTTP_ACCEPT"] = "application/json"

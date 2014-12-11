@@ -11,7 +11,7 @@ describe UserGroupsController do
   end
   
   it "should show GET '/user_groups/1'" do
-    UserGroup.stub(:find).and_return(UserGroup.make_unsaved(:name => 'TestGroup'))
+    FactoryGirl.create :user_group
     
     get :show, :id => 1
     response.should be_success

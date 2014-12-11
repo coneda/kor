@@ -10,9 +10,8 @@ describe 'Transactions' do
   
   it "should be delivering consistent data for reloads" do
     Entity.transaction do
-      Entity.make(:person)
-      
-      Entity.first.name.should == 'Leonardo da Vinci'
+      FactoryGirl.create :person
+      Entity.first.name.should == 'A person'
     end
   end
   

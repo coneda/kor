@@ -2,14 +2,13 @@ require 'spec_helper'
 
 describe CollectionsController do
   include DataHelper
-  include AuthHelper
 
   before :each do
     fake_authentication :persist => true
   end
   
   it "should update" do
-    collection = Collection.make(:name => 'Test Collection')
+    collection = FactoryGirl.create :collection, :name => 'Test Collection'
     
     put :update, :id => collection.id, :collection => {
       'grants_by_policy' => {

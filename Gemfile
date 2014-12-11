@@ -14,7 +14,6 @@ gem "RedCloth"
 gem "uuidtools"
 gem "will_paginate", "= 3.0.3"
 gem "parslet"
-gem "xml-simple", '1.0.14', :require => "xmlsimple"
 gem "exifr", '1.1.1'
 gem "haml"
 gem "sass"
@@ -36,7 +35,6 @@ gem "sass-rails"
 gem 'awesome_nested_set', :git => 'https://github.com/galetahub/awesome_nested_set.git'
 
 gem 'oj'
-gem 'builder' # TODO: remove when XML API is removed
 gem 'jbuilder'
 
 group :assets do
@@ -53,10 +51,7 @@ group :test do
   gem 'capybara'
   gem 'database_cleaner'
   gem 'webrat', '0.7.3'
-  gem 'faker'
-  gem 'sham'
   gem 'factory_girl_rails'
-  gem 'machinist', '1.0.6', :require => 'machinist/active_record'
 end
 
 group :development do

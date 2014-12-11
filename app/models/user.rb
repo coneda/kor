@@ -13,8 +13,6 @@ class User < ActiveRecord::Base
   has_many :updated_entities, :class_name => 'Entity', :foreign_key => :updater_id
   has_many :user_groups, :dependent => :destroy
   has_many :publishments, :dependent => :destroy
-  has_many :ratings, :class_name => 'Api::Rating'
-  has_many :engagements, :class_name => 'Api::Engagement'
   
   belongs_to :parent, :class_name => "User", :foreign_key => :parent_username, :primary_key => :name
   belongs_to :personal_group, :class_name => 'Credential', :foreign_key => :credential_id
@@ -98,11 +96,11 @@ class User < ActiveRecord::Base
       when 'leave_value'
         nil
       when 'custom'
-        write_attribute(:expires_at, Time.now + custom_extension.to_i.days)
+        write_attribute(:expires_at, Kor.now + custom_extension.to_i.days)
       when 'never'
         write_attribute(:expires_at, nil)
       else
-        write_attribute(:expires_at, Time.now + extension.to_i.days)
+        write_attribute(:expires_at, Kor.now + extension.to_i.days)
       end
     end
   end
@@ -143,7 +141,7 @@ class User < ActiveRecord::Base
   
   def add_login_attempt
     self[:login_attempts] ||= []
-    self[:login_attempts] << Time.now
+    self[:login_attempts] << Kor.now
     self[:login_attempts].shift if self[:login_attempts].size > 3
   end
   
@@ -188,18 +186,6 @@ class User < ActiveRecord::Base
   
   def guest?
     name == 'guest'
-  end
-  
-  def credits
-    @credits ||= self.engagements.sum(:credits)
-  end
-  
-  def self.by_credits
-    select("u.*, sum(e.credits) AS e_sum").
-    from("users u").
-    joins('LEFT JOIN engagements e ON e.user_id = u.id').
-    group('u.id').
-    order('e_sum desc, u.full_name ASC')
   end
   
   def full_auth
@@ -271,7 +257,7 @@ class User < ActiveRecord::Base
   
   def too_many_login_attempts?
     self[:login_attempts] ||= []
-    self[:login_attempts].size == 3 ? self[:login_attempts].first > Time.now - 1.hour : false
+    self[:login_attempts].size == 3 ? self[:login_attempts].first > Kor.now - 1.hour : false
   end
   
   def reset_password

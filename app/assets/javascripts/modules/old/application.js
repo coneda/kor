@@ -100,39 +100,6 @@ Application.load_core_extensions = function() {
   }
 }
 
-Application.render_engagement = function(e) {
-  var stamp = e.created_at.replace(/:\d\d\+\d\d:\d\d/, '').replace(/T/, ' ');
-  return "<li>" + e.credits + " - " + e.kind + " - " + stamp + "</li>";
-}
-
-Application.setup_user_credits = function() {
-  $('.user_credit_list').on('click', '.user a', function(event){
-    var user = $(this).parents('.user');
-    
-    if (user.data('expanded') != 'yes') {
-      var user_id = user.attr('data-user-id');
-      window.current_details = user.find('ul.details');
-      
-      $.ajax({
-        url: '/tools/credits/' + user_id,
-        success: function(data) {
-          $(data).each(function(i, e){
-            window.current_details.append(Application.render_engagement(e.engagement));
-          });
-          
-          window.current_details.parents('.user').data('expanded', 'yes');
-        }
-      });
-
-    } else {
-      user.find('ul.details').empty();
-      user.data('expanded', 'no');
-    }
-    
-    return false;
-  })
-}
-
 Application.setup = function() {
   Kor.setup_blaze();
 
@@ -152,7 +119,6 @@ Application.setup = function() {
   this.register_input_focus_events();
   this.focus_first_input();
   this.register_popups();
-  this.setup_user_credits();
 
   $('table').attr('cellspacing', 0);
   

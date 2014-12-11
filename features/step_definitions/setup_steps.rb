@@ -50,7 +50,7 @@ Given /^the setup "([^"]*)"$/ do |name|
       step "the relation \"ist äquivalent zu/ist äquivalent zu\""
       
       mona_lisa = Entity.find_by_name('Mona Lisa')
-      test_entity = Kind.find_by_name("Ort").entities.make(:name => "Test Entity")
+      test_entity = FactoryGirl.create :location
       image = Medium.last.entity
       
       11.times do

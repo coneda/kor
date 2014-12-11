@@ -229,7 +229,7 @@ describe Kor::Elastic, :elastic => true do
 
   it "should not index media" do
     expect {
-      FactoryGirl.create :picture
+      FactoryGirl.create :image_a
       described_class.index_all
     }.not_to change{@elastic.search.total}
   end

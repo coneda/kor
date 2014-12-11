@@ -10,27 +10,26 @@ describe Entity do
     
     Kor.config.update 'app' => {
       'gallery' => {
-        'primary_relations' => ['stellt dar'], 
-        'secondary_relations' => ['wurde erschaffen von']
+        'primary_relations' => ['shows'], 
+        'secondary_relations' => ['has been created by']
     }}
   end
 
   it "should find entities by two or more relationships" do
-    mona_lisa = Kind.find_by_name('Werk').entities.make(:name => 'Mona Lisa2')
-    last_supper = Kind.find_by_name('Werk').entities.make(:name => 'Das Letzte Abendmahl')
-    leonardo = Kind.find_by_name('Person').entities.make(:name => 'Leonardo')
-    louvre = Entity.make(:name => 'Louvre', :kind => Kind.find_by_name('Ort'))
-    Relationship.relate_and_save(mona_lisa, 'wurde erschaffen von', leonardo)
-    Relationship.relate_and_save(last_supper, 'wurde erschaffen von', leonardo)
-    Relationship.relate_and_save(mona_lisa, 'befindet sich in', louvre)
+    last_supper = FactoryGirl.create :work, :name => "Das Letzte Abendmahl"
+    leonardo = FactoryGirl.create :leonardo
+    louvre = FactoryGirl.create :institution, :name => 'Louvre'
+    Relationship.relate_and_save(@mona_lisa, 'has been created by', leonardo)
+    Relationship.relate_and_save(last_supper, 'has been created by', leonardo)
+    Relationship.relate_and_save(@mona_lisa, 'is located at', louvre)
     
     work_kind_id = Kind.find_by_name('Werk').id
     @query = Kor::Graph.new(:user => User.admin).search(:attribute,
       :criteria => {
         :kind_id => work_kind_id,
         :relationships => [
-          { :relation_name => 'befindet sich in', :entity_name => 'louvre'},
-          { :relation_name => 'wurde erschaffen von', :entity_name => 'leo'}
+          { :relation_name => 'is located at', :entity_name => 'louvre'},
+          { :relation_name => 'has been created by', :entity_name => 'leo'}
         ]
       },
       :page => 1
@@ -38,60 +37,60 @@ describe Entity do
     
     result = @query.results.items
     result.size.should eql(1)
-    result.first.should eql(mona_lisa)
+    result.first.should eql(@mona_lisa)
   end
 
   it "should accept nested attributes for entity datings" do
-    roma = Kind.find_by_name("Ort").entities.make(:name => "Roma", :new_datings_attributes => [
+    leonardo = FactoryGirl.create :leonardo, :new_datings_attributes => [
       { :label => 'Datierung',  :dating_string => "15. Jahrhundert" },
       { :label => 'Datierung',  :dating_string => "15.12.1933" }
-    ])
-    roma.datings.count.should eql(2)
+    ]
+    leonardo.datings.count.should eql(2)
   end
   
   it "should search by dating" do
-    nurnberg = Kind.find_by_name("Ort").entities.make(:name => "Nurnberg", :datings => [
-      EntityDating.make(:dating_string => "15. Jahrhundert"),
-      EntityDating.make(:dating_string => "18. Jahrhundert"),
-      EntityDating.make(:dating_string => "544")
-    ])
+    nurnberg = FactoryGirl.create :location, :name => "Nürnberg", :datings => [
+      FactoryGirl.build(:entity_dating, :dating_string => "15. Jahrhundert"),
+      FactoryGirl.build(:entity_dating, :dating_string => "18. Jahrhundert"),
+      FactoryGirl.build(:entity_dating, :dating_string => "544")
+    ]
     
-    Entity.dated_in("1534").count.should be_zero
-    Entity.dated_in("1433").count.should eql(1)
-    Entity.dated_in("544").count.should eql(1)
-    Entity.dated_in("300 bis 1900").count.should eql(3) # includes 2 default entities from the data helper
+    expect(Entity.dated_in("1534").count).to be_zero
+    expect(Entity.dated_in("1433").count).to eql(1)
+    expect(Entity.dated_in("544").count).to eql(1)
+    expect(Entity.dated_in("300 bis 1900").all).to include(nurnberg)
   end
   
   it "should raise an error if the options for the related method are invalid" do
-    entity = mock_model(Entity)
+    entity = FactoryGirl.build :work
     
     lambda { entity.related(:assume => :terciary) }.should raise_error
     lambda { entity.related(:assume => :image, :search => :secondary) }.should raise_error
   end
   
   it "should find related media for primary entities and vice versa" do
-    image = Entity.make(:medium, :medium => Medium.make_unsaved)
-    Relationship.relate_and_save(@mona_lisa, 'wird dargestellt von', image)
+    image = FactoryGirl.create :image_a
+    Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
     
     @mona_lisa.related(:search => :media, :assume => :primary).should eql([image])
     image.related(:search => :primary, :assume => :media).should eql([@mona_lisa])
   end
   
   it "should find related primary entities for secondary entities and vice versa" do
-    @leonardo = Entity.make(:kind => @person_kind, :name => 'Leonardo da Vinci')
-    Relationship.relate_and_save(@mona_lisa, 'wurde erschaffen von', @leonardo)
+    @leonardo = FactoryGirl.create :leonardo
+    Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
     
     @leonardo.related(:search => :primary, :assume => :secondary).should eql([@mona_lisa])
     @mona_lisa.related(:search => :secondary, :assume => :primary).should eql([@leonardo])
   end
   
   it "should find related primary entities for secondary entities" do
-    image = Entity.make(:medium, :medium => Medium.make_unsaved)
-    @leonardo = Entity.make(:kind => @person_kind, :name => 'Leonardo da Vinci')
-    Relationship.relate_and_save(@mona_lisa, 'wird dargestellt von', image)
-    Relationship.relate_and_save(@mona_lisa, 'wurde erschaffen von', @leonardo)
+    image = FactoryGirl.create :image_a
+    @leonardo = FactoryGirl.create :leonardo
+    Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
+    Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
     
-    @leonardo.related(:search => :media, :assume => :secondary).should eql([image])
+    expect(@leonardo.related(:search => :media, :assume => :secondary)).to eql([image])
   end
   
   it "should have an uuid when saved without validation" do
@@ -108,11 +107,10 @@ describe Entity do
   end
   
   it "should save with serial numbers" do
-    kind = Kind.find_by_name("Ort")
     entities = [
-      kind.entities.make_unsaved(:name => "Nürnberg"),
-      kind.entities.make_unsaved(:name => "Nürnberg"),
-      kind.entities.make_unsaved(:name => "Nürnberg")
+      FactoryGirl.build(:location, :name => 'Nürnberg'),
+      FactoryGirl.build(:location, :name => 'Nürnberg'),
+      FactoryGirl.build(:location, :name => 'Nürnberg')
     ]
     
     entities.each do |e|
@@ -132,11 +130,10 @@ describe Entity do
   end
   
   it "should save with serial with existing distinct name" do
-    kind = Kind.find_by_name("Ort")
     entities = [
-      kind.entities.make_unsaved(:name => "Nürnberg", :distinct_name => 'Bayern'),
-      kind.entities.make_unsaved(:name => "Nürnberg", :distinct_name => 'Bayern'),
-      kind.entities.make_unsaved(:name => "Nürnberg", :distinct_name => 'Bayern')
+      FactoryGirl.build(:location, :name => 'Nürnberg', :distinct_name => 'Bayern'),
+      FactoryGirl.build(:location, :name => 'Nürnberg', :distinct_name => 'Bayern'),
+      FactoryGirl.build(:location, :name => 'Nürnberg', :distinct_name => 'Bayern')
     ]
     
     entities.each do |e|

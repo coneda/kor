@@ -173,6 +173,10 @@ module Kor
   def self.publishment_expiry_time
     Kor.config['auth']['publishment_lifetime'].days.from_now
   end
+
+  def self.now
+    Time.now
+  end
   
   
   # ------------------------------------------------------------- maintenace ---

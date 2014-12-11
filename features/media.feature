@@ -13,23 +13,6 @@ Feature: Media
     Then I should be on the entity page for the last medium
     
   
-  # @javascript
-  # Scenario: Buttonbar quick buttons
-  #   Given I am logged in as "admin"
-  #   And the medium "spec/fixtures/image_a.jpg"
-  #   When I go to the gallery page
-  #   And I hover element ".kor_medium_frame"
-  #   And I wait for "1" seconds
-  #   And I click on ".button_bar a.unmarked"
-  #   Then I should see "Zwischenablage aufgenommen"
-  #   And I hover element "#menu"
-  #   And I hover element ".kor_medium_frame"
-  #   And I wait for "2" seconds
-  #   When I click on ".button_bar a.marked"
-  #   And I wait for "2" seconds
-  #   Then I should see "Zwischenablage entfernt"
-    
-
   @javascript
   Scenario: Previews for uploaded images
     Given I am logged in as "admin"

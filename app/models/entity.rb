@@ -18,8 +18,6 @@ class Entity < ActiveRecord::Base
  
   has_many :datings, :class_name => "EntityDating", :dependent => :destroy
   
-  has_many :ratings, :class_name => 'Api::Rating'
- 
   belongs_to :medium, :dependent => :destroy
 
   belongs_to :collection

@@ -26,7 +26,7 @@ describe User do
   end
 
   it "should accept 'john.doe@example-dash.com' as email address" do
-    u = User.make_unsaved :name => 'john', :email => 'john.doe@example-dash.com'
+    u = FactoryGirl.build :jdoe, :email => 'john.doe@example-dash.com'
     u.valid?.should be_true
   end
 
@@ -37,12 +37,11 @@ describe User do
       Time.parse('2009-09-11 15:45'),
       Time.parse('2009-09-11 15:55')
     ]
-  
-    Time.should_receive(:now).exactly(4).times.and_return(
+
+    allow(Kor).to receive(:now).and_return(
       times[0], times[1], times[2], times[3]
     )
 
-    # this should call Time.now 2 times, because somehow, validation callbacks are triggered  
     u = User.new
     
     u.add_login_attempt
@@ -63,22 +62,13 @@ describe User do
       Time.parse('2009-09-11 15:55'),
       Time.parse('2009-09-11 16:16')
     ]
-  
-    Time.should_receive(:now).exactly(5).times.and_return(
-      times[0], times[1], times[2], times[3], times[4]
-    )
-  
-    # this should call Time.now 2 times, because somehow, validation callbacks are triggered
-    u = User.new
-   
-    u.add_login_attempt
-    u.add_login_attempt
-    u.add_login_attempt
-    
-    u.too_many_login_attempts?.should be_true
-    
-    # one hour later
-    u.too_many_login_attempts?.should be_false
+
+    allow(Kor).to receive(:now).and_return(times[3])
+    user = User.new :login_attempts => times[0..2]
+    expect(user.too_many_login_attempts?).to be_true
+
+    allow(Kor).to receive(:now).and_return(times[4])
+    expect(user.too_many_login_attempts?).to be_false
   end
 
   it "should respect inherited global roles" do
