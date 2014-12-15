@@ -16,7 +16,7 @@ all:
 
   maintainer:
     name: Example Organization
-    mail: "admin@example.com"
+    mail: admin@example.com
     legal_text: Beispieltext
     about_text: Beispieltext
 
@@ -88,7 +88,7 @@ test:
 
   maintainer:
     name: Example Organization
-    mail: admin@example.net
+    mail: admin@example.com
 
   dev:
     value_a: default.env

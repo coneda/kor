@@ -53,6 +53,7 @@ en:
   logged_in_last_year: "logged in within the last year (<= 365 days)"
   created_recently: "created recently (<= 30 days)"
   provided_by: "provided by"
+  report_a_problem: "report a problem"
 
   search_term:
     one: search term

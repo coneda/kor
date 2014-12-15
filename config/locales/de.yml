@@ -53,6 +53,7 @@ de:
   logged_in_last_year: "Im vergangenen Jahr eingeloggt (<= 365 Tage)"
   created_recently: "Vor kurzem erstellt (<= 30 Tage)"
   provided_by: "angeboten durch"
+  report_a_problem: "einen Fehler melden"
 
   search_term: 
     one: Suchbegriff

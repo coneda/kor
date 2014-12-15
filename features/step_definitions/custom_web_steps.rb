@@ -95,7 +95,7 @@ When /^I send the delete request for "([^\"]*)" "([^\"]*)"$/ do |object_type, ob
   Capybara.current_session.driver.browser.follow_redirect!
 end
 
-When /^I send the mark request for entity "([^"]*)"$/ do |entity|
+When /^I send the mark request for entity "([^\"]*)"$/ do |entity|
   entity = Entity.find_by_name(entity)
   Capybara.current_session.driver.send :delete, put_in_clipboard_path(:id => entity.id, :mark => 'mark')
   if page.status_code >= 300 && page.status_code < 400
@@ -103,7 +103,7 @@ When /^I send the mark request for entity "([^"]*)"$/ do |entity|
   end
 end
 
-When /^I send the mark as current request for entity "([^"]*)"$/ do |entity|
+When /^I send the mark as current request for entity "([^\"]*)"$/ do |entity|
   entity = Entity.find_by_name(entity)
   Capybara.current_session.driver.send :delete, mark_as_current_path(:id => entity.id), {}, {'HTTP_REFERER' => '/'}
   if page.status_code >= 300 && page.status_code < 400
@@ -186,4 +186,8 @@ Then(/^I should (not )?see option "([^\"]+)"$/) do |negator, text|
   else
     expect(page).to have_selector("option", :text => text)
   end
+end
+
+Then(/^I should see a link "(.*?)" leading to "(.*?)"$/) do |text, href|
+  expect(page.find_link(text)['href']).to match(href)
 end

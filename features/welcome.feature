@@ -30,3 +30,17 @@ Feature: Welcome
     And I should see "Zufällig ausgewählte Einträge"
     And I should see "Mona Lisa"
     And I should see "Leonardo"
+
+
+  @javascript
+  Scenario: Show the 'report a problem' link to admins
+    Given I am logged in as "admin"
+    And I am on the welcome page
+    Then I should see a link "Einen Fehler melden" leading to "github.com"
+
+
+  @javascript
+  Scenario: Show the 'report a problem' link to non-admins
+    Given I am logged in as "jdoe"
+    And I am on the welcome page
+    Then I should see a link "Einen Fehler melden" leading to "admin@example.com"

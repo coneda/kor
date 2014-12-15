@@ -87,3 +87,11 @@
     = navigation_item I18n.t('legal'), {:controller => 'static', :action => 'legal'}
     = navigation_item I18n.t('about'), {:controller => 'static', :action => 'about'}
     %li.inactive_item= link_to 'coneda.net', 'http://www.coneda.net', :target => '_blank'
+
+    %li.spacer
+
+    %li.inactive_item
+      - if current_user && current_user.any_admin?
+        = link_to I18n.t("report_a_problem").capitalize_first_letter, 'https://github.com/coneda/kor/issues', :target => '_blank'
+      - else
+        = mail_to Kor.config['maintainer.mail'], I18n.t("report_a_problem").capitalize_first_letter
