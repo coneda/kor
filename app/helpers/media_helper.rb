@@ -6,7 +6,7 @@ module MediaHelper
       :style => :thumbnail,
       :buttons => true,
       :wrap => true,
-      :user_special => false
+      :use_special => false
     )
 
     entity = entity.class == Entity ? entity : entity.entity
@@ -18,7 +18,7 @@ module MediaHelper
       select_presenter('image')
     end
 
-    options[:url] ||= entity
+    options[:url] ||= web_path(:anchor => entity_path(entity))
 
     result = options[:presenter].call(entity, options)
 

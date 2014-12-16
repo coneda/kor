@@ -195,3 +195,14 @@ Feature: Entities
     When I go to the entity page for "Leonardo da Vinci"
     Then I should see "Mona Lisa"
     And I should not see element "img[title=Pen]" within ".relationship"
+
+
+  @javascript
+  Scenario: Click the big image on media to return to the entity screen
+    Given I am logged in as "admin"
+    And the medium "spec/fixtures/image_a.jpg"
+    When I go to the last entity's page
+    And I follow "Image" within ".viewer"
+    And I follow "Image" within ".image_projector"
+    Then I should be on the last entity's page
+

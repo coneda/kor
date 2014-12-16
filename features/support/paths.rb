@@ -36,7 +36,11 @@ module NavigationHelpers
       web_path(:anchor => entity_path(entity))
     when /the entity page for the (first|last) medium/
       media = Kind.medium_kind.entities
-      entity = $1 == 'first' ? media.first : media.last
+      entity = ($1 == 'first' ? media.first : media.last)
+      web_path(:anchor => entity_path(entity))
+    when /the (first|last) entity's page/
+      media = Kind.medium_kind.entities
+      entity = ($1 == 'first' ? media.first : media.last)
       web_path(:anchor => entity_path(entity))
     when /the legacy upload page/ then "/entities/new?kind_id=#{Kind.medium_kind.id}"
     when /the entity page for medium "([0-9]+)"/
