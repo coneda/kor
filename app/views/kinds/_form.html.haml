@@ -18,8 +18,6 @@
 
   = f.kor_input :description, :control => f.text_area(:description)
   
-  = f.kor_input :web_services, :control => select_tag('kind[settings][web_services]', options_for_select(web_services_for_select, :selected => @kind.web_services), :multiple => true)
-  
   = kor_input_tag I18n.t("kind_settings.tagging"), :control => check_box_tag("kind[settings][tagging]", "1", @kind.tagging)
   
   = kor_input_tag I18n.t("kind_settings.dating_label"), :control => text_field_tag("kind[settings][dating_label]", @kind.dating_label)

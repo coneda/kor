@@ -52,18 +52,18 @@ Then /^I should see an input with the current date$/ do
   expect(page).to have_field("user_group_name", :with => Time.now.strftime("%d.%m.%Y"))
 end
 
-When /^(?:|I )unselect "([^"]*)" from "([^"]*)"(?: within "([^"]*)")?$/ do |value, field, selector|
+When /^(?:|I )unselect "([^\"]*)" from "([^\"]*)"(?: within "([^\"]*)")?$/ do |value, field, selector|
   with_scope(selector) do
     unselect(value, :from => field)
   end
 end
 
-When /^I fill in "([^"]*)" with "([^"]*)" and select term "([^"]*)"$/ do |field, value, pattern|
+When /^I fill in "([^\"]*)" with "([^\"]*)" and select term "([^\"]*)"$/ do |field, value, pattern|
   step "I fill in \"#{field}\" with \"#{value}\""
   step "I select \"Begriff '#{pattern}'\" from the autocomplete"
 end
 
-When /^I fill in "([^"]*)" with "([^"]*)" and select tag "([^"]*)"$/ do |field, value, pattern|
+When /^I fill in "([^\"]*)" with "([^\"]*)" and select tag "([^\"]*)"$/ do |field, value, pattern|
   step "I fill in \"#{field}\" with \"#{value}\""
   step "I select \"Tag: #{pattern}\" from the autocomplete"
 end
@@ -75,7 +75,7 @@ When /^I select "([^\"]*)" from the autocomplete$/ do |pattern|
   while Time.now - t < 5.seconds && !page.all('li.ui-menu-item a').to_a.find{|a| a.text.match ::Regexp.new(pattern)}
     sleep 0.2
   end
-  
+
   page.all('li.ui-menu-item a').to_a.find do |anchor|
     anchor.text.match ::Regexp.new(pattern)
   end.click

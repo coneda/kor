@@ -10,7 +10,7 @@
     = f.kor_input :email
     = f.kor_input :password, :control => f.password_field(:password, :value => '')
     = f.kor_input :password_confirmation, :control => f.password_field(:plain_password_confirmation, :value => '')
-    = f.kor_input :locale, :control => f.select(:locale, I18n.available_locales)
+    = f.kor_input :locale, :control => f.select(:locale, I18n.available_locales, :selected => I18n.locale)
     
     .hr
     

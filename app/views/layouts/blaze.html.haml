@@ -1,6 +1,6 @@
 !!!
 
-%html
+%html{'ng-app' => 'kor', 'ng-controller' => 'root_controller'}
   %head
     %link{:rel => "shortcut icon", :type => "image/x-icon", :href => asset_path('favicon.ico')}
   
@@ -8,7 +8,6 @@
 
     = stylesheet_link_tag 'master'
     = stylesheet_link_tag 'blaze'
-    
     = javascript_include_tag 'blaze'
     
     = render :partial => 'layouts/javascript_settings'
@@ -18,7 +17,7 @@
     %style{:type => "text/javascript"}
       [ng-cloak] {display: none;}
 
-  %body.blaze_style{'ng-app' => 'kor', 'ng-controller' => 'root_controller', 'style' => "background-color: #1e1e1e !important"}
+  %body.blaze_style{'style' => "background-color: #1e1e1e !important"}
     = render :partial => "layouts/blaze_header"
     = render :partial => "layouts/menu"
     

@@ -43,7 +43,9 @@ ActionController::Base.allow_rescue = false
 Before do |scenario|
 
   file = "#{Rails.root}/tmp/harmful.txt"
-  system "rm #{file}" if File.exists?(file)
+  system "rm -f #{file}"
+  system "rm -f #{Rails.root}/config/kor.app.test.yml"
+  Kor.config true
 
   if scenario.source_tags.any?{|st| st.name == "@elastic"}
     Kor::Elastic.reset_index

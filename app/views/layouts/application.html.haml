@@ -1,6 +1,6 @@
 !!!
 
-%html
+%html{'ng-app' => 'kor'}
   %head
     %link{:rel => "shortcut icon", :type => "image/x-icon", :href => asset_path('favicon.ico')}
   
@@ -8,14 +8,14 @@
 
     = stylesheet_link_tag 'master'
     = javascript_include_tag 'kor'
+
+    = yield :custom_head
     
     = render :partial => 'layouts/javascript_settings'
     
-    = yield :custom_head
-    
     = render :partial => 'layouts/title'
     
-  %body{"ng-app" => "kor"}
+  %body
     = render :partial => "layouts/header"
     = render :partial => "layouts/menu"
     

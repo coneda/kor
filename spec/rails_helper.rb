@@ -11,6 +11,9 @@ RSpec.configure do |config|
   # config.infer_spec_type_from_file_location!
 
   config.before :all do
+    system "rm -f #{Rails.root}/config/kor.app.test.yml"
+    Kor.config true
+
     system "cat /dev/null >| #{Rails.root}/log/test.log"
 
     DatabaseCleaner.strategy = :truncation
