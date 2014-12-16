@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::Base
   helper :all
   helper_method :back, :back_save, :home_page, 
-    :authorized?, 
+    :authorized?,
+    :allowed_to?,
     :authorized_collections,
     :authorized_for_relationship?,
     :kor_graph,
@@ -119,10 +120,9 @@ class ApplicationController < ActionController::Base
 
     def authorized?(policy = :view, collections = Collection.all, options = {})
       options.reverse_merge!(:required => :any)
-    
-      Auth::Authorization.authorized? current_user, policy, collections, options
+      ::Auth::Authorization.authorized? current_user, policy, collections, options
     end
-    
+
     def authorized_collections(policy)
       Auth::Authorization.authorized_collections current_user, policy
     end
@@ -155,8 +155,7 @@ class ApplicationController < ActionController::Base
     end
 
     def allowed_to?(policy = :view, collections = Collection.all, options = {})
-      options.reverse_merge!(:required => :any)
-      ::Auth::Authorization.authorized? current_user, policy, collections, options
+      authorized?(policy, collections, options)
     end
     
     def user_groups

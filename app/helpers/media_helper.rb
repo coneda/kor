@@ -23,7 +23,7 @@ module MediaHelper
     result = options[:presenter].call(entity, options)
 
     id = "kor_medium_frame_#{entity.id}"
-    button_bar = if options[:buttons]
+    button_bar = if options[:buttons] && allowed_to?(:edit)
       content_tag 'span', :class => 'button_bar', :style => 'display: none' do
         in_clipboard = (session[:clipboard] || []).include?(entity.id)
 

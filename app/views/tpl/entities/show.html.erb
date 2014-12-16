@@ -458,12 +458,14 @@
                         <img alt="Image" class="kor_medium" ng-src="{{relationship.entity.medium.url}}">
                       </a>
                       <span class="button_bar" style="display: none;">
-                        <a href="/" style="display: none">
-                          <img alt="Target_hit" class="kor_command_image" src="/assets/target_hit.gif" title="Aus der Zwischenablage entfernen">
-                        </a>
-                        <a href="/">
-                          <img alt="Target" class="kor_command_image" src="/assets/target.gif" title="In die Zwischenablage legen">
-                        </a>
+                        <span ng-show="allowed_to_any('edit')">
+                          <a href="/" style="display: none">
+                            <img alt="Target_hit" class="kor_command_image" src="/assets/target_hit.gif" title="Aus der Zwischenablage entfernen">
+                          </a>
+                          <a href="/">
+                            <img alt="Target" class="kor_command_image" src="/assets/target.gif" title="In die Zwischenablage legen">
+                          </a>
+                        </span>
                       </span>
                     </div>
                     <div style="clear: both"></div>
