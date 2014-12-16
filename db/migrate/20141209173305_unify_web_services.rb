@@ -57,7 +57,9 @@ class UnifyWebServices < ActiveRecord::Migration
               :kind => kind
             )
           when 'knd'
-            field = Fields::String.new(:name => 'gnd', :show_label => 'GND-ID', :show_on_entity => false, :kind => kind)
+            unless kind.fields.where(:name => 'gnd').first
+              field = Fields::String.new(:name => 'gnd', :show_label => 'GND-ID', :show_on_entity => false, :kind => kind)
+            end
           when 'google_maps'
             field = Fields::String.new(:name => 'google_maps', :show_label => 'Adresse', :show_on_entity => false, :kind => kind)
             generator = Generator.new(
@@ -73,7 +75,9 @@ class UnifyWebServices < ActiveRecord::Migration
               :kind => kind
             )
           when 'coneda_information_service'
-            field = Fields::String.new(:name => 'gnd', :show_label => 'GND-ID', :show_on_entity => false, :kind => kind)
+            unless kind.fields.where(:name => 'gnd').first
+              field = Fields::String.new(:name => 'gnd', :show_label => 'GND-ID', :show_on_entity => false, :kind => kind)
+            end
           else
             raise "Web service #{ws} does not exist"
         end

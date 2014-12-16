@@ -32,7 +32,11 @@ class RemoveMongodb < ActiveRecord::Migration
 
     Entity.find_each do |entity|
       new_value = entity.attachment
-      new_value["fields"] = entity.external_references || {}
+      new_value["fields"] = if entity.external_references.present?
+        YAML.load entity.external_references
+      else
+        {}
+      end
       entity.update_column :attachment, JSON.dump(new_value)
     end
 
