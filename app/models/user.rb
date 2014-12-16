@@ -19,12 +19,16 @@ class User < ActiveRecord::Base
   belongs_to :personal_collection, :class_name => 'Collection', :foreign_key => :collection_id
 
   # ------------------------------------------------------------- validation ---
-  validates_uniqueness_of :name, :allow_blank => false
-  validates_uniqueness_of :email, :allow_blank => false
-  validates_presence_of :name
-  validates_presence_of :email
-  validates_format_of :name, :allow_blank => true, :with => /\A[a-zA-Z0-9_\.]+\Z/
-  validates_format_of :email, :allow_blank => true, :with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i
+  validates :name,
+    :presence => true,
+    :uniqueness => {:allow_blank => false},
+    :format => {:with => /\A[a-zA-Z0-9_\.]+\Z/, :allow_blank => true},
+    :white_space => true
+  validates :email,
+    :presence => true,
+    :uniqueness => {:allow_blank => false},
+    :format => {:with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true},
+    :white_space => true
   validates_format_of :plain_password, :allow_nil => true, :with => /\A(.{5,30})|\Z/
   validates_confirmation_of :plain_password
   

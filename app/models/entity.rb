@@ -122,15 +122,22 @@ class Entity < ActiveRecord::Base
 
   validates_associated :datings
 
+  validates :name, 
+    :presence => {:if => :needs_name?},
+    :uniqueness => {:scope => [:kind_id, :distinct_name], :allow_blank => true},
+    :white_space => true
+  validates :distinct_name,
+    :uniqueness => {:scope => [ :kind_id, :name ], :allow_blank => true},
+    :white_space => true
   validates_presence_of :kind
   validates_presence_of :uuid
   validates_inclusion_of :no_name_statement, :allow_blank => true, :in => [ 'unknown', 'not_available', 'empty_name', 'enter_name' ]
-  validates_presence_of :name, :if => :needs_name?
-  validates_uniqueness_of :name, :scope => [ :kind_id, :distinct_name ], :allow_blank => true
-  validates_uniqueness_of :distinct_name, :scope => [ :kind_id, :name ], :allow_blank => true
   validates_presence_of :collection_id
-  
-  validate :validate_distinct_name_needed, :validate_dataset, :validate_synonyms, :validate_properties, :attached_file
+
+  validate(
+    :validate_distinct_name_needed, :validate_dataset, :validate_synonyms,
+    :validate_properties, :attached_file
+  )
 
   def attached_file
     if is_medium?

@@ -2,9 +2,11 @@ class AuthorityGroupCategory < ActiveRecord::Base
   acts_as_nested_set :dependent => :destroy
   
   has_many :authority_groups, :dependent => :destroy
-  
-  validates_presence_of :name
-  validates_uniqueness_of :name, :scope => :parent_id
+
+  validates :name,
+    :presence => true,
+    :uniqueness => {:scope => :parent_id},
+    :white_space => true
 
   def serializable_hash(options = {})
     result = {:name => self.name}

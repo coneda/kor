@@ -4,7 +4,12 @@ class Relation < ActiveRecord::Base
 
   has_many :relationships, :dependent => :destroy
   
-  validates_presence_of :name, :reverse_name
+  validates :reverse_name,
+    :presence => true,
+    :white_space => true
+  validates :name,
+    :presence => true,
+    :white_space => true
 
   after_validation :on => :create do |model|
     model.generate_uuid

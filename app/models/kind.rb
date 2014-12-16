@@ -8,8 +8,13 @@ class Kind < ActiveRecord::Base
   has_many :fields, :dependent => :destroy
   has_many :generators, :dependent => :destroy
   
-  validates_presence_of :name
-  validates_uniqueness_of :name
+  validates :name,
+    :presence => true,
+    :uniqueness => true,
+    :white_space => true
+
+  validates :plural_name,
+    :white_space => true
   
   default_scope :order => 'name'
   scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'spec_helper'
+require 'rails_helper'
 
 describe Entity do
   include DataHelper
@@ -235,6 +235,23 @@ describe Entity do
     entity = FactoryGirl.build :jack, :dataset => {'isbn' => 'invalid ISBN'}
     expect(entity.save).to be_falsey
     expect(entity.errors.full_messages).to include("ISBN ist ungültig")
+  end
+
+  it "should validate against needless spaces" do
+    leonardo = FactoryGirl.build :leonardo
+    expect(leonardo.valid?).to be_truthy
+
+    leonardo.name = " Leonardo"
+    expect(leonardo.valid?).to be_falsey
+    expect(leonardo.errors.full_messages.first).to eq("Name kann nicht mit einem Leerzeichen beginnen")
+
+    leonardo.name = "Leonardo "
+    expect(leonardo.valid?).to be_falsey
+    expect(leonardo.errors.full_messages.first).to eq("Name kann nicht mit einem Leerzeichen enden")
+
+    leonardo.name = "Leonardo  da Vinci"
+    expect(leonardo.valid?).to be_falsey
+    expect(leonardo.errors.full_messages.first).to eq("Name kann keine aufeinander folgende Leerzeichen beinhalten")
   end
   
 end

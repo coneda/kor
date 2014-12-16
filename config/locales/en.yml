@@ -650,7 +650,7 @@ en:
     other_collection: "You have no access to entity %{id}. Please contact the administrator."
 
   labels:
-    relate_to_via: relate all files with "%{to}" via
+    relate_to_via: 'relate all files with "%{to}" via'
 
   meta:
     description: "Store and manage image data with complex metadata reasonably"
@@ -958,7 +958,9 @@ en:
         needs_file: "Without a relevant file the entity cannot be created as a medium"
         invalid_words: "cannot contain words longer than 30 characters"
         user_doesnt_exist: "the user doesn't exist"
-  
+        whitespace_end: "can't end with a space"
+        whitespace_consecutive: "can't contain consecutive spaces"
+
 
   # Mime types
 

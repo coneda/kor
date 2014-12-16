@@ -7,8 +7,12 @@ class Generator < ActiveRecord::Base
   
   # Validations
   
-  validates_presence_of :name, :directive
-  validates_format_of :name, :with => /^[a-z0-9_]+$/
+  validates :name,
+    :presence => true,
+    :format => {:with => /^[a-z0-9_]+$/},
+    :white_space => true
+  validates :directive,
+    :presence => true
   
   
   # Scopes

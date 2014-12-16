@@ -5,9 +5,13 @@ class Field < ActiveRecord::Base
   serialize :settings, Hash
   
   belongs_to :kind
-  validates_presence_of :name, :show_label, :form_label, :search_label
-  validates_format_of :name, :with => /^[a-z0-9_]+$/
-  validates_uniqueness_of :name, :scope => :kind_id
+  
+  validates :name,
+    :presence => true,
+    :format => {:with => /^[a-z0-9_]+$/},
+    :uniqueness => {:scope => :kind_id},
+    :white_space => true
+  validates_presence_of :show_label, :form_label, :search_label
   
   before_validation do |f|
     f.form_label = f.show_label if f.form_label.blank?

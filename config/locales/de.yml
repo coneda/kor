@@ -652,7 +652,7 @@ de:
     other_collection: "Sie haben keinen Zugriff auf Entität %{id}. Bitte wenden Sie sich an einen Adminstrator"
 
   labels:
-    relate_to_via: alle Dateien mit "%{to}" verknüpfen über
+    relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
 
   meta:
     description: "Bilddaten mit komplexen Metadaten sinnvoll ablegen und verwalten"
@@ -959,6 +959,9 @@ de:
         needs_file: "Die Entität kann nicht als Medium erstellt werden ohne entsprechende Datei"
         invalid_words: "kann keine Wörter mit mehr als 30 Buchstaben enthalten"
         user_doesnt_exist: "der Benutzer existiert nicht"
+        whitespace_beginning: "kann nicht mit einem Leerzeichen beginnen"
+        whitespace_end: "kann nicht mit einem Leerzeichen enden"
+        whitespace_consecutive: "kann keine aufeinander folgende Leerzeichen beinhalten"
 
 
   # Mime types

@@ -6,6 +6,14 @@ class Credential < ActiveRecord::Base
   has_many :grants, :dependent => :destroy
   has_many :collections, :through => :grants
   has_one :owner, :class_name => 'User', :foreign_key => :credential_id
+
+
+  # Validations
+
+  validates :name,
+    :presence => true,
+    :uniqueness => true,
+    :white_space => true
   
   
   # Scopes
