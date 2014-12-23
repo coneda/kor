@@ -44,3 +44,17 @@ Feature: Welcome
     Given I am logged in as "jdoe"
     And I am on the welcome page
     Then I should see a link "Einen Fehler melden" leading to "admin@example.com"
+
+
+  @javascript
+  Scenario: Don't show the clipboard to guests
+    And the entity "Mona Lisa" of kind "Werk/Werke"
+    And user "guest" is allowed to "view" collection "default" via credential "guests"
+    When I go to the welcome page
+    Then I should not see "Zwischenablage" within "#menu"
+    And I should not see "Sitzung"
+    When I go to the entity page for "Mona Lisa"
+    Then I should not see "Zwischenablage"
+    And I should not see "Sitzung" within "#session_info"
+    And I should not see link "Target"
+

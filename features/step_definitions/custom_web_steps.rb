@@ -191,3 +191,7 @@ end
 Then(/^I should see a link "(.*?)" leading to "(.*?)"$/) do |text, href|
   expect(page.find_link(text)['href']).to match(href)
 end
+
+Then(/^I should not see link "(.*?)"$/) do |text|
+  expect(page).not_to have_link(text)
+end

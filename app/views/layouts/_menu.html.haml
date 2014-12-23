@@ -8,7 +8,7 @@
       - else
         = navigation_item I18n.t('edit_self'), {:controller => 'users', :action => 'edit_self'}, {:only => :edit_self}
   
-      - if current_user && current_user != User.guest
+      - if current_user && (current_user != User.guest)
         = navigation_item I18n.t('nouns.clipboard'), {:controller => 'tools', :action => 'clipboard'}, {:except => [ :transit, :statistics, :invalid_entities, :new_entities ]}  
       
       %li.spacer

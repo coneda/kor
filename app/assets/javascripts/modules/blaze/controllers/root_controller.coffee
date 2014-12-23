@@ -16,6 +16,14 @@ kor.controller('root_controller', ['$scope', 'korData', 'korFlash', (scope, kd, 
   scope.flash_error = -> kd.error()
   scope.flash_notice = -> kd.notice()
 
+  scope.is_guest = ->
+    if user = scope.info.session.user
+      user.name == 'guest'
+    else
+      false
+
+  window.s = scope
+
   kd.session_load()
   
 ])

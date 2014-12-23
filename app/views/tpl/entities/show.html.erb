@@ -9,10 +9,10 @@
             <a href="/mark_as_current/{{entity.id}}" ng-show="allowed_to_any('edit')">
               <img alt="Select" class="kor_command_image" src="/assets/select.gif" title="{{'title_verbs.select' | translate}}">
             </a>
-            <a href="/mark?id={{entity.id}}&amp;mark=mark" ng-hide="in_clipboard()">
+            <a href="/mark?id={{entity.id}}&amp;mark=mark" ng-hide="in_clipboard() || is_guest()">
               <img alt="Target" class="kor_command_image" src="/assets/target.gif" title="{{'title_verbs.target' | translate}}">
             </a>
-            <a href="/mark?id={{entity.id}}&amp;mark=unmark" ng-show="in_clipboard()">
+            <a href="/mark?id={{entity.id}}&amp;mark=unmark" ng-show="in_clipboard() && !is_guest()">
               <img alt="Target" class="kor_command_image" src="/assets/target_hit.gif" title="{{'title_verbs.target_hit' | translate}}">
             </a>
             <a href="/entities/{{entity.id}}/edit" ng-show="allowed_to('edit')">
