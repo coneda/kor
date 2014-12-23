@@ -51,7 +51,10 @@
         <td ng-show="info.session.user">
           {{'logged_in_as' | translate | capitalize}}
           <span class="username" ng-hide="info.session.user.name != 'guest'">
-            <%= link_to current_user.display_name, edit_self_user_path(current_user) %>
+            <a 
+              href="/edit_self"
+              ng-bind="info.session.user.display_name"
+            ></a>
           </span>
           <span class="username" ng-hide="info.session.user.name == 'guest'" ng-bind="info.session.user.display_name"></span>
         </td>

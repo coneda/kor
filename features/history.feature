@@ -5,6 +5,13 @@ Feature: History
 
 
   @javascript
+  Scenario: Use a direct link to show an entity without logging in
+    Given the entity "Mona Lisa" of kind "Werk/Werke"
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "Der Zugriff wurde verweigert"
+
+
+  @javascript
   Scenario: Show an entity and then delete an other
     Given I am logged in as "admin"
     And Leonardo, Mona Lisa and a medium as correctly related entities

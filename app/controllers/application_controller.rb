@@ -66,7 +66,12 @@ class ApplicationController < ActionController::Base
       
       if !current_user
         history_store
-        redirect_to login_path
+        respond_to do |format|
+          format.html {redirect_to login_path}
+          format.json do
+            render :json => {:notice => I18n.t('notices.access_denied')}, :status => 403
+          end
+        end
       elsif session_expired?
         respond_to do |format|
           format.html do
