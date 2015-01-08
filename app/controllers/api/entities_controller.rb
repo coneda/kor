@@ -69,6 +69,10 @@ class Api::EntitiesController < Api::ApiController
   
   protected
 
+    def require_user?
+      false
+    end
+
     def current_entity
       @entity ||= Entity.find(params[:id])
     end

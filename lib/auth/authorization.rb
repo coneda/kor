@@ -1,10 +1,14 @@
 module Auth::Authorization
 
   def self.groups(user)
+    user ||= User.guest
+
     user.parent.present? ? user.groups + user.parent.groups : user.groups
   end
 
   def self.authorized_collections(user, policies = :view)
+    user ||= User.guest
+
     result = Grant.where(
       :credential_id => groups(user).map{|c| c.id}, 
       :policy => policies
@@ -14,6 +18,8 @@ module Auth::Authorization
   end
   
   def self.authorized?(user, policy = :view, collections = Collection.all, options = {})
+    user ||= User.guest
+    
     options.reverse_merge!(:required => :all)
     collections = [collections] unless collections.is_a? Array
     collections = collections.reject{|c| c.nil?}
