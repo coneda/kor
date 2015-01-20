@@ -47,3 +47,7 @@ kor.filter('image_size', [ ->
 kor.filter 'human_date', ["korTranslate", (kt) ->
   (input) -> kt.localize input
 ]
+
+kor.filter 'trust_as_url', ["$sce", (sce) ->
+  (input) -> if input then sce.trustAsUrl(input) else ""
+]
