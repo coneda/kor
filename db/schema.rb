@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141223180320) do
+ActiveRecord::Schema.define(:version => 20150120154600) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -216,7 +216,6 @@ ActiveRecord::Schema.define(:version => 20141223180320) do
   create_table "generators", :force => true do |t|
     t.integer  "kind_id"
     t.string   "name"
-    t.string   "show_label"
     t.text     "directive"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false

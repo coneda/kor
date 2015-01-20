@@ -10,8 +10,4 @@ class Generator < ActiveRecord::Base
   validates :directive,
     :presence => true
   
-  def human
-    show_label.presence || name
-  end
-  
 end

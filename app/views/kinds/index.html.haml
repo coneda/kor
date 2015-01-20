@@ -14,7 +14,7 @@
             = k.fields.map{|f| f.human}.join(', ')
           .services
             %strong Generators:
-            = k.generators.map{|f| f.human}.join(', ')
+            = k.generators.map{|f| f.name}.join(', ')
         %td.nowrap.commands
           = link_to kor_command_image('globe', :title => "Configure Generators"), kind_generators_path(k)
           = link_to kor_command_image('three_bars', :title => "Configure fields"), kind_fields_path(k)
