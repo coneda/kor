@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe Api::EntitiesController do
+describe EntitiesController, :type => :controller do
   
   it "should allow guest requests" do
     guests = FactoryGirl.create :guests
