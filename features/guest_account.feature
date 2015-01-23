@@ -21,3 +21,11 @@ Feature: Guest account
     Given user "guest" is allowed to "view" collection "Default" through credential "guests"
     When I go to the profile page for user "guest"
     Then I should be on the denied page
+
+
+  @javascript
+  Scenario: Don't show tags field when no tags have been entered
+    Given user "guest" is allowed to "view" collection "Default" through credential "guests"
+    And the entity "Mona Lisa" of kind "Work/Works"
+    And I go to the entity page for "Mona Lisa"
+    Then I should not see "Tags"

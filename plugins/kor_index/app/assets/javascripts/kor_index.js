@@ -3,8 +3,6 @@ var ComponentSearch = new Object();
 ComponentSearch.results = [];
 
 ComponentSearch.setup = function() {
-  console.log("Setup");
-
   $('#search_terms').
     keypress(this.autocomplete_enter_key).
     autocomplete({

@@ -90,7 +90,7 @@
               ></div>
             </li>
             <li class="spacer"></li>
-            <li class="tags" ng-show="entity.kind.tagging">
+            <li class="tags" ng-show="entity.kind.tagging == '1' && (entity.tags || allowed_to('tagging', entity.collection_id))">
               <div class="column inplace_container">
                 Tags: 
                 <span class="highlighted_subtitle inplace" title="Click to edit ...">
