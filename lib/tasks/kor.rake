@@ -70,7 +70,7 @@ namespace :kor do
 
     if response == "yes"
       zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/terminal_download.zip", 
-        :user_id => User.admin,
+        :user_id => User.admin.id,
         :file_name => "#{group.name}.zip"
       )
 
