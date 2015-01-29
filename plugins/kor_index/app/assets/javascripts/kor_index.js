@@ -159,7 +159,7 @@ ComponentSearch.form_submit = function(event) {
 }
 
 ComponentSearch.re_search = function(params) {
-  var url = '/component_search';
+  var url = '/component_search.json';
   $.getJSON(url, params, function(data){
     ComponentSearch.results = data;
     ComponentSearch.results.pages = Math.floor(data.total / 10) + 1;

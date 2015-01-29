@@ -162,6 +162,8 @@ Kor::Application.routes.draw do
     end
   end
 
+  match "api/kinds/:kind_id/entities", :to => "component_search#component_search"
+
   scope "tpl", :module => "tpl" do
     resources :entities, :only => [:show] do
       collection do

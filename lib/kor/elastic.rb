@@ -175,7 +175,7 @@ class Kor::Elastic
     # puts JSON.pretty_generate(query)
 
     page = [(query[:page] || 0).to_i, 1].max
-    size = [(query[:size] || 10).to_i, 10].max
+    per_page = [(query[:per_page] || 10).to_i, 500].min
 
     # data = {}
     query_component = nil
@@ -249,8 +249,13 @@ class Kor::Elastic
     end
 
     data = {
+<<<<<<< HEAD
       "size" => size,
       "from" => (page - 1) * size,
+=======
+      "size" => per_page,
+      "from" => (page - 1) * per_page,
+>>>>>>> adds page size control to component search
       "query" => {
         "filtered" => {
           "filter" => {

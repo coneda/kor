@@ -4,12 +4,13 @@ class ComponentSearchController < ApplicationController
   def component_search
     respond_to do |format|
       format.html {render :layout => 'small_normal_bare'}
-      format.js do
+      format.json do
         @results = elastic.search(
           :query => params[:terms],
           :kind_id => params[:kind_id],
           :tags => params[:tags],
-          :page => params[:page]
+          :page => params[:page],
+          :per_page => params[:per_page]
         )
 
         entities = @results.records.map do |entity|

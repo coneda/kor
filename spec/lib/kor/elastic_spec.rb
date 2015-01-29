@@ -272,4 +272,27 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@jack])
   end
 
+  it "should accept a per_page parameter" do
+    @people = FactoryGirl.create :people
+    11.times do |i|
+      FactoryGirl.create :jack, :name => "Jack #{i}"
+    end
+    described_class.index_all :full => true
+
+    results = @elastic.search(:kind_id => 999)
+    expect(results.records.size).to eq(0)
+
+    results = @elastic.search(:kind_id => @people.id)
+    expect(results.records.size).to eq(10)
+
+    results = @elastic.search(:kind_id => @people.id, :per_page => 20)
+    expect(results.records.size).to eq(11)
+
+    expect(described_class).to receive(:request).with(
+      anything, anything, anything,
+      hash_including("size" => 500)
+    ).and_call_original
+    results = @elastic.search(:kind_id => @people.id, :per_page => 700)
+  end
+
 end
