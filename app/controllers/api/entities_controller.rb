@@ -36,6 +36,7 @@ class Api::EntitiesController < Api::ApiController
       
     hash = @entity.serializable_hash(
       :include => [:medium, :kind, :collection, :datings, :creator, :updater, :authority_groups],
+      :except => [:attachment],
       :methods => [:synonyms, :dataset, :degree, :properties, :display_name],
       :root => false
     )
