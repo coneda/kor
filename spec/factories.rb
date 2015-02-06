@@ -80,7 +80,7 @@ FactoryGirl.define do
     collection { Collection.find_or_create_by_name "default" }
 
     factory :work do
-      name "A entity"
+      name "An artwork"
       kind { Kind.find_or_create_by_name "Werk" }
 
       factory :mona_lisa do
@@ -106,7 +106,7 @@ FactoryGirl.define do
     end
 
     factory :location do
-      name "A entity"
+      name "A location"
       kind { Kind.find_or_create_by_name "Ort" }
 
       factory :united_kingdom do
@@ -132,8 +132,8 @@ FactoryGirl.define do
     end
 
     factory :institution do
-      name "A entity"
-      kind { Kind.find_or_create_by_name "Person" }
+      name "An institution"
+      kind { Kind.find_or_create_by_name "Institution" }
     end
 
     factory :medium_entity do
