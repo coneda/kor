@@ -103,6 +103,10 @@ FactoryGirl.define do
       factory :landscape do
         name "Landscape"
       end
+
+      factory :the_last_supper do
+        name "The Last Supper"
+      end
     end
 
     factory :location do

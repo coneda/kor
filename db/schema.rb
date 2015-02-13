@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150120154600) do
+ActiveRecord::Schema.define(:version => 20150208165036) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -121,6 +121,20 @@ ActiveRecord::Schema.define(:version => 20150120154600) do
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
+  create_table "directed_relationships", :force => true do |t|
+    t.integer  "relation_id"
+    t.boolean  "reverse"
+    t.integer  "from_id"
+    t.integer  "to_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "directed_relationships", ["from_id"], :name => "index_directed_relationships_on_from_id"
+  add_index "directed_relationships", ["relation_id", "reverse", "from_id", "to_id"], :name => "ally"
+  add_index "directed_relationships", ["relation_id"], :name => "index_directed_relationships_on_relation_id"
+  add_index "directed_relationships", ["to_id"], :name => "index_directed_relationships_on_to_id"
+
   create_table "downloads", :force => true do |t|
     t.integer  "user_id"
     t.string   "uuid"
@@ -151,10 +165,11 @@ ActiveRecord::Schema.define(:version => 20150120154600) do
     t.text     "attachment"
   end
 
-  add_index "entities", ["collection_id", "kind_id"], :name => "collections_kinds"
   add_index "entities", ["created_at"], :name => "index_entities_on_created_at"
   add_index "entities", ["creator_id"], :name => "index_entities_on_user_id"
   add_index "entities", ["distinct_name"], :name => "index_entities_on_distinct_name"
+  add_index "entities", ["kind_id"], :name => "index_entities_on_kind_id"
+  add_index "entities", ["medium_id"], :name => "mediy"
   add_index "entities", ["name"], :name => "index_entities_on_name"
   add_index "entities", ["uuid"], :name => "index_entities_on_uuid"
 
@@ -299,6 +314,8 @@ ActiveRecord::Schema.define(:version => 20150120154600) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "lock_version", :default => 0
+    t.integer  "natural_id"
+    t.integer  "reversal_id"
   end
 
   add_index "relationships", ["from_id"], :name => "index_relationships_on_from_id"

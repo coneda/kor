@@ -14,7 +14,7 @@ class Kor::Graph
       db = ActiveRecord::Base.connection
 
       query = []
-      fields
+      fields = []
       conditions = []
       binds = []
 
@@ -25,16 +25,41 @@ class Kor::Graph
           fields << "es_#{index}.id AS es_#{index}_id"
           fields << "es_#{index}.kind_id AS es_#{index}_kind_id"
           fields << "es_#{index}.name AS es_#{index}_name"
-          query << nil
+          query << "JOIN entities AS es_#{index} ON es_#{index}.id = rels_#{index}.from_id"
 
+          if spec['id']
+            value = [spec['id']] if spec['id'].is_a?(String)
+            conditions << "es_#{index}.id IN ?"
+            binds << value
+          end
         elsif i == 1
+          fields << "rels_#{index}.id AS rels_#{index}_id"
+          fields << "rels_#{index}.relation_id AS rels_#{index}_relation_id"
+          fields << "rs_#{index}.name AS rs_#{index}_name"
+          fields << "rs_#{index}.reverse_name AS rs_#{index}_reverse_name"
+          fields << "rels_#{index}.reverse AS rels_#{index}_reverse"
+          query << "JOIN relations AS rs_#{index} ON rels_#{index}.relation_id = rs_#{index}.id"
 
+          if spec['name']
+            rels = Relation.where(:name => spec['name']).pluck(:id)
+            reverse_rels = Relation.where(:reverse_name => spec['name']).pluck(:id)
+            name_conditions = []
+            if rels.present?
+              name_conditions << "(rels_#{index}.relation_id IN ? AND NOT rels.#{index}.reverse)"
+              binds << rels
+            end
+            if reverse_rels.present?
+              name_conditions << "(rels_#{index}.relation_id IN ? AND rels.#{index}.reverse)"
+              binds << rels
+            end
+            conditions << name_conditions.join(' OR ')
+          end
         else
           if i % 2 == 0
             fields << "es_#{index}.id AS es_#{index}_id"
             fields << "es_#{index}.kind_id AS es_#{index}_kind_id"
             fields << "es_#{index}.name AS es_#{index}_name"
-            query << "INNER JOIN entities AS es_#{index} ON es_#{index} = rels_#{index - 1}.to_id"            
+            query << "JOIN entities AS es_#{index} ON es_#{index}.id = rels_#{index - 1}.to_id"            
 
             if spec['id']
               value = [spec['id']] if spec['id'].is_a?(String)
@@ -42,28 +67,60 @@ class Kor::Graph
               binds << value
             end
           else
-            fields << "es_#{index}.id AS es_#{index}_id"
-            fields << "es_#{index}.kind_id AS es_#{index}_kind_id"
-            fields << "es_#{index}.name AS es_#{index}_name"
-            query << "INNER JOIN relationships AS relationships_#{index} ON es_#{index}.id = rels_#{index}.from_id"
-
+            fields << "rels_#{index}.id AS rels_#{index}_id"
+            fields << "rels_#{index}.relation_id AS rels_#{index}_relation_id"
+            fields << "rs_#{index}.name AS rs_#{index}_name"
+            fields << "rs_#{index}.reverse_name AS rs_#{index}_reverse_name"
+            fields << "rels_#{index}.reverse AS rels_#{index}_reverse"
+            query << "JOIN directed_relationships AS rels_#{index} ON es_#{index}.id = rels_#{index}.from_id"
+            query << "JOIN relations AS rs_#{index} ON rels_#{index}.relation_id = rs_#{index}.id"
+            
             if spec['name']
-              value = [spec['name']] if spec['name'].is_a?(String)
-              query << "INNER JOIN relations AS rs_#{index} ON rels_#{index}.relation_id = rs_#{index}.id"
-              conditions << "rs_#{index}.name IN ?"
-              binds << value
+              rels = Relation.where(:name => spec['name']).pluck(:id)
+              reverse_rels = Relation.where(:reverse_name => spec['name']).pluck(:id)
+              name_conditions = []
+              if rels.present?
+                name_conditions << "(rels_#{index}.relation_id IN ? AND NOT rels.#{index}.reverse)"
+                binds << rels
+              end
+              if reverse_rels.present?
+                name_conditions << "(rels_#{index}.relation_id IN ? AND rels.#{index}.reverse)"
+                binds << rels
+              end
+              conditions << name_conditions.join(' OR ')
             end
           end
         end
       end
 
       fields = fields.join(', ')
-      query[0] = "SELECT #{fields} FROM relationships AS rels_0"
+      init = ["SELECT #{fields} FROM directed_relationships AS rels_0"]
 
-      query = query.join("\n")
-      conditions = conditions.join("\n")
+      query = (init + query).join("\n")
+      conditions = conditions.map{|c| "(#{c})"}.join(" AND ")
 
-      puts query.join("\n")
+      final = "#{query}" + (conditions.present? ? " WHERE #{conditions}" : "")
+      puts final
+
+      db.select_all(final).map do |r|
+        specs.each_with_index.map do |spec, i|
+          index = i / 2
+
+          if i % 2 == 0
+            {
+              'id' => r["es_#{index}_id"]
+            }
+          else
+            {
+              'id' => r["rels_#{index}_id"],
+              'relation_id' => r["rels_#{index}_relation_id"],
+              'relation_name' => r["rs_#{index}_name"],
+              'relation_reverse_name' => r["rs_#{index}_reverse_name"],
+              'reverse' => !!r["rels_#{index}_reverse"]
+            }
+          end
+        end
+      end
     else
       []
     end

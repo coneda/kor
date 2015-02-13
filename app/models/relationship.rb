@@ -6,13 +6,40 @@ class Relationship < ActiveRecord::Base
   belongs_to :from, :class_name => "Entity", :foreign_key => :from_id
   belongs_to :to, :class_name => "Entity", :foreign_key => :to_id
 
+  belongs_to :natural, :class_name => "DirectedRelationship", :dependent => :destroy
+  belongs_to :reversal, :class_name => "DirectedRelationship", :dependent => :destroy
+
   after_validation do |relationship|
     relationship.properties = relationship.properties.uniq
+    relationship.ensure_directed
+  end
+
+  def ensure_directed
+    self.natural ||= DirectedRelationship.new
+    self.reversal ||= DirectedRelationship.new
+
+    # self.natural.save
+    # self.reverse.save
+
+    
+
+    self.reversal.update_attributes(
+      :from_id => self.to_id,
+      :to_id => self.from_id,
+      :relation_id => self.relation_id,
+      :reverse => true
+    )
+
+    self.natural.update_attributes(
+      :from_id => self.from_id,
+      :to_id => self.to_id,
+      :relation_id => self.relation_id,
+      :reverse => false
+    )
   end
 
   def other_entity(entity)
-    from_id == entity.id ?
-      to : from
+    from_id == entity.id ? to : from
   end
 
   def relation_name_for_entity(entity)
