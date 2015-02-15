@@ -19,7 +19,7 @@ class RelationshipsController < ApplicationController
 
           # puts scope.to_sql
 
-          render :json => scope
+          render :json => scope.as_json(:root => false)
         else
           render :nothing => true, :status => 401
         end

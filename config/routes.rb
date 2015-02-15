@@ -160,8 +160,11 @@ Kor::Application.routes.draw do
       end
       resources :ratings, :except => [:edit, :update]
 
-      resources :relationships, :only => [:index]
     end
+  end
+
+  scope 'api/1.0' do
+    resources :relationships, :only => [:index]
   end
 
   match "api/kinds/:kind_id/entities", :to => "component_search#component_search"

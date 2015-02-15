@@ -21,7 +21,7 @@ function deploy {
   deploy_code
   cleanup
 
-  within_do $CURRENT_PATH "bundle --deployment --without test development --path $SHARED_PATH/bundle"
+  within_do $CURRENT_PATH "bundle --clean --quiet --deployment --without test development --path $SHARED_PATH/bundle"
 
   remote "ln -sfn $SHARED_PATH/database.yml $CURRENT_PATH/config/database.yml"
   remote "ln -sfn $SHARED_PATH/contact.txt $CURRENT_PATH/config/contact.txt"
