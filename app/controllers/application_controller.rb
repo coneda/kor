@@ -38,9 +38,9 @@ class ApplicationController < ActionController::Base
     # response to a request which wasn't sent from localhost
     
     if Rails.env == 'production'
-      rescue_from Exception, :with => :log_exception_and_notify_user
       rescue_from ActionController::RoutingError, :with => :not_found
       rescue_from ActiveRecord::RecordNotFound, :with => :not_found
+      rescue_from Exception, :with => :log_exception_and_notify_user
     end
     
     def not_found

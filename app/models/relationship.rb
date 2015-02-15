@@ -38,6 +38,46 @@ class Relationship < ActiveRecord::Base
     )
   end
 
+  scope :paginate, -> (page, per_page = 10) {
+    page = (page || 1) - 1
+    per_page = [(per_page || 10).to_i, 500].min
+
+    limit(per_page).offset(per_page * page)
+  }
+  scope :with_ends, -> {
+    joins("LEFT JOIN entities AS froms ON froms.id = relationships.from_id").
+    joins("LEFT JOIN entities AS tos ON tos.id = relationships.to_id")
+  }
+  scope :as_user, -> (user) {
+    user ||= User.guest
+    collections = Auth::Authorization.authorized_collections(user)
+    if collections.empty?
+      where("froms.collection_id is NULL OR tos.collection_id IS NULL")
+    else
+      where("froms.collection_id IN (?) OR tos.collection_id IN (?)", collections, collections)
+    end
+  }
+  scope :to_ids, -> (ids = []) {
+    ids.present? ? where(:to_id => ids) : scoped
+  }
+  scope :from_ids, -> (ids = []) {
+    ids.present? ? where(:from_id => ids) : scoped
+  }
+  scope :from_kind_ids, -> (ids = []) {
+    ids.present? ? where("froms.kind_id IN (?)", ids) : scoped
+  }
+  scope :to_kind_ids, -> (ids = []) {
+    ids.present? ? where("tos.kind_id IN (?)", ids) : scoped
+  }
+  scope :via, -> (names = []) {
+    if names.present? 
+      joins("LEFT JOIN relations ON relations.id = relationships.relation_id").
+      where("relations.name IN (?)", names)
+    else
+      scoped
+    end
+  }
+
   def other_entity(entity)
     from_id == entity.id ? to : from
   end

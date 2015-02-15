@@ -159,6 +159,8 @@ Kor::Application.routes.draw do
         end
       end
       resources :ratings, :except => [:edit, :update]
+
+      resources :relationships, :only => [:index]
     end
   end
 

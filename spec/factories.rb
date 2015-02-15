@@ -1,4 +1,8 @@
 FactoryGirl.define do
+
+  sequence :artwork_name do |n|
+    "Artwork #{n}"
+  end
   
   factory :kind do
 
@@ -107,6 +111,10 @@ FactoryGirl.define do
       factory :the_last_supper do
         name "The Last Supper"
       end
+
+      factory :artwork do
+        name { generate(:artwork_name) }
+      end
     end
 
     factory :location do
@@ -140,7 +148,16 @@ FactoryGirl.define do
       kind { Kind.find_or_create_by_name "Institution" }
     end
 
+<<<<<<< HEAD
     factory :medium_entity do
+=======
+    factory :tom do
+      name "Tom"
+      kind { Kind.find_or_create_by_name "Person" }
+    end
+
+    factory :picture do
+>>>>>>> exposed a relationships api
       kind { Kind.medium_kind }
 
       factory :image_a do
@@ -164,6 +181,20 @@ FactoryGirl.define do
       name "ist Teil von"
       reverse_name "besteht aus"
     end
+<<<<<<< HEAD
+=======
+
+    factory :has_created do
+      name "has created"
+      reverse_name 'was created by'
+    end
+
+    factory :depicts do
+      name "depicts"
+      reverse_name "is depicted by"
+    end
+  end
+>>>>>>> exposed a relationships api
 
     factory :shows do
       name "shows"
