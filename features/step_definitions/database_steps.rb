@@ -358,7 +358,7 @@ end
 
 Then(/^user "(.*?)" should expire at "(.*?)"$/) do |email, time_str|
   user = User.where(:email => email).first
-  time = eval(time_str, binding)
+  time = eval(time_str)
   expect(user.expires_at).to be_within(1.minute).of(time)
 end
 

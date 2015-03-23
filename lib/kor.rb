@@ -175,7 +175,7 @@ module Kor
   end
 
   def self.now
-    Time.now
+    Time.now.utc
   end
   
   

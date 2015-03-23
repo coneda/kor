@@ -100,11 +100,11 @@ class User < ActiveRecord::Base
       when 'leave_value'
         nil
       when 'custom'
-        write_attribute(:expires_at, Kor.now + custom_extension.to_i.days)
+        write_attribute :expires_at, Kor.now + custom_extension.to_i.days
       when 'never'
-        write_attribute(:expires_at, nil)
+        write_attribute :expires_at, nil
       else
-        write_attribute(:expires_at, Kor.now + extension.to_i.days)
+        write_attribute :expires_at, Kor.now + extension.to_i.days
       end
     end
   end
