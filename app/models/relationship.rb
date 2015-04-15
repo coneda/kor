@@ -18,19 +18,14 @@ class Relationship < ActiveRecord::Base
     self.natural ||= DirectedRelationship.new
     self.reversal ||= DirectedRelationship.new
 
-    # self.natural.save
-    # self.reverse.save
-
-    
-
-    self.reversal.update_attributes(
+    self.reversal.assign_attributes(
       :from_id => self.to_id,
       :to_id => self.from_id,
       :relation_id => self.relation_id,
       :reverse => true
     )
 
-    self.natural.update_attributes(
+    self.natural.assign_attributes(
       :from_id => self.from_id,
       :to_id => self.to_id,
       :relation_id => self.relation_id,

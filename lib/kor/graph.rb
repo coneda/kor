@@ -10,6 +10,10 @@ class Kor::Graph
   # Main
 
   def find_paths(specs = [])
+    collection_ids = ::Auth::Authorization.authorized_collections(@options[:user]).map{|c| c.id}
+
+    return [] if collection_ids.empty?
+
     if specs.size > 2
       db = ActiveRecord::Base.connection
 
@@ -27,10 +31,18 @@ class Kor::Graph
           fields << "es_#{index}.name AS es_#{index}_name"
           query << "JOIN entities AS es_#{index} ON es_#{index}.id = rels_#{index}.from_id"
 
+          values = collection_ids.join(',')
+          conditions << "es_#{index}.collection_id IN (#{values})"
+
           if spec['id']
             value = [spec['id']] if spec['id'].is_a?(String)
             conditions << "es_#{index}.id IN ?"
             binds << value
+          end
+
+          if spec['kind_id']
+            value = [spec['kind_id'].to_i]
+            conditions << "es_#{index}.kind_id IN (#{value.join(',')})"
           end
         elsif i == 1
           fields << "rels_#{index}.id AS rels_#{index}_id"
@@ -45,12 +57,10 @@ class Kor::Graph
             reverse_rels = Relation.where(:reverse_name => spec['name']).pluck(:id)
             name_conditions = []
             if rels.present?
-              name_conditions << "(rels_#{index}.relation_id IN ? AND NOT rels.#{index}.reverse)"
-              binds << rels
+              name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND NOT rels_#{index}.reverse)"
             end
             if reverse_rels.present?
-              name_conditions << "(rels_#{index}.relation_id IN ? AND rels.#{index}.reverse)"
-              binds << rels
+              name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND rels_#{index}.reverse)"
             end
             conditions << name_conditions.join(' OR ')
           end
@@ -59,12 +69,20 @@ class Kor::Graph
             fields << "es_#{index}.id AS es_#{index}_id"
             fields << "es_#{index}.kind_id AS es_#{index}_kind_id"
             fields << "es_#{index}.name AS es_#{index}_name"
-            query << "JOIN entities AS es_#{index} ON es_#{index}.id = rels_#{index - 1}.to_id"            
+            query << "JOIN entities AS es_#{index} ON es_#{index}.id = rels_#{index - 1}.to_id"
+
+            values = collection_ids.join(',')
+            conditions << "es_#{index}.collection_id IN (#{values})"
 
             if spec['id']
               value = [spec['id']] if spec['id'].is_a?(String)
               conditions << "es_#{index}.id IN ?"
               binds << value
+            end
+
+            if spec['kind_id']
+              value = [spec['kind_id'].to_i]
+              conditions << "es_#{index}.kind_id IN (#{value.join(',')})"
             end
           else
             fields << "rels_#{index}.id AS rels_#{index}_id"
@@ -80,14 +98,20 @@ class Kor::Graph
               reverse_rels = Relation.where(:reverse_name => spec['name']).pluck(:id)
               name_conditions = []
               if rels.present?
-                name_conditions << "(rels_#{index}.relation_id IN ? AND NOT rels.#{index}.reverse)"
-                binds << rels
+                name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND NOT rels_#{index}.reverse)"
               end
               if reverse_rels.present?
-                name_conditions << "(rels_#{index}.relation_id IN ? AND rels.#{index}.reverse)"
-                binds << rels
+                name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND rels_#{index}.reverse)"
               end
               conditions << name_conditions.join(' OR ')
+            end
+          end
+
+          if i >= 4
+            if i % 2 == 0
+              conditions << "es_#{index}.id != es_#{index - 2}.id"
+            else
+              # conditions <<
             end
           end
         end
@@ -100,7 +124,7 @@ class Kor::Graph
       conditions = conditions.map{|c| "(#{c})"}.join(" AND ")
 
       final = "#{query}" + (conditions.present? ? " WHERE #{conditions}" : "")
-      puts final
+      # puts final
 
       db.select_all(final).map do |r|
         specs.each_with_index.map do |spec, i|
@@ -116,7 +140,7 @@ class Kor::Graph
               'relation_id' => r["rels_#{index}_relation_id"],
               'relation_name' => r["rs_#{index}_name"],
               'relation_reverse_name' => r["rs_#{index}_reverse_name"],
-              'reverse' => !!r["rels_#{index}_reverse"]
+              'reverse' => (r["rels_#{index}_reverse"] == 0 ? false : true)
             }
           end
         end

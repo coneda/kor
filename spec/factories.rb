@@ -128,6 +128,10 @@ FactoryGirl.define do
       factory :united_states do
         name "United States of America"
       end
+
+      factory :paris do
+        name "Paris"
+      end
     end
 
     factory :person do
@@ -192,6 +196,11 @@ FactoryGirl.define do
     factory :depicts do
       name "depicts"
       reverse_name "is depicted by"
+    end
+
+    factory :is_located_at do
+      name "is located at"
+      reverse_name "is location of"
     end
   end
 >>>>>>> exposed a relationships api
