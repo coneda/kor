@@ -313,5 +313,35 @@ describe EntitiesController do
 
     response.should_not be_success
   end
+
+  it "should deny uploading too big files" do
+    file = fixture_file_upload("/image_c.jpg", 'image/jpeg')
+    Kor.config["app.max_file_upload_size"] = 0.2
+
+    post :create, :entity => {
+      :kind_id => Kind.medium_kind.id,
+      :collection_id => Collection.first.id,
+      :medium_attributes => {
+        :image => file
+      }
+    }
+
+    expect(response.status).to be(406)
+  end
+
+  it "should allow uploading files of acceptable size" do
+    file = fixture_file_upload("/image_c.jpg", 'image/jpeg')
+    Kor.config["app.max_file_upload_size"] = 0.5
+
+    post :create, :entity => {
+      :kind_id => Kind.medium_kind.id,
+      :collection_id => Collection.first.id,
+      :medium_attributes => {
+        :image => file
+      }
+    }
+
+    expect(response.status).to be(302)
+  end
   
 end
