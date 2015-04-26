@@ -1,3 +1,13 @@
+class OaiPmhVerbConstraint
+  def initialize(verb)
+    @verb = verb
+  end
+
+  def matches?(request)
+    request.params[:verb] == @verb
+  end
+end
+
 Kor::Application.routes.draw do
 
   match '/blaze', :to => 'static#blaze', :as => :web
@@ -158,7 +168,21 @@ Kor::Application.routes.draw do
           get :deep_media
         end
       end
-      resources :ratings, :except => [:edit, :update]
+    end
+
+    scope 'oai_pmh', :format => :xml, :as => "oai_pmh", :via => [:get, :post] do
+      ['entities', 'relationships'].each do |res|
+        controller "oai_pmh/#{res}" do
+          match res, :to => "oai_pmh/#{res}#identify", :constraints => OaiPmhVerbConstraint.new('Identify')
+          match res, :to => "oai_pmh/#{res}#list_sets", :constraints => OaiPmhVerbConstraint.new('ListSets')
+          match res, :to => "oai_pmh/#{res}#list_metadata_formats", :constraints => OaiPmhVerbConstraint.new('ListMetadataFormats')
+          match res, :to => "oai_pmh/#{res}#list_identifiers", :constraints => OaiPmhVerbConstraint.new('ListIdentifiers')
+          match res, :to => "oai_pmh/#{res}#list_records", :constraints => OaiPmhVerbConstraint.new('ListRecords')
+          match res, :to => "oai_pmh/#{res}#get_record", :constraints => OaiPmhVerbConstraint.new('GetRecord')
+
+          match res, :to => redirect('verbs=Identify'), :as => res
+        end
+      end
     end
   end
 

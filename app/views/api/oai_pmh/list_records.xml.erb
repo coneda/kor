@@ -1,0 +1,10 @@
+<ListRecords>
+  <% @records[:items].each do |record| %>
+    <%= render :partial => 'record', :locals => {:record => record} %>
+  <% end %>
+
+  <resumptionToken
+    expirationDate="<%= timestamp 24.hours.from_now %>"
+    completeListSize="<%= @records[:total] %>"
+  ><%= @records[:token] %></resumptionToken>
+</ListRecords>

@@ -18,6 +18,8 @@ class Kind < ActiveRecord::Base
   
   default_scope :order => 'name'
   scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : scoped}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : scoped}
   
   def field_instances(object)
     self.fields.each do |field|

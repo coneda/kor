@@ -2,6 +2,11 @@ class Api::EntitiesController < Api::ApiController
 
   before_filter :reset_blaze
 
+  def index
+    @entities = Entity.allowed(current_user, :view)
+    render "entities/index"
+  end
+
   def relationships
     params[:page] ||= 0
     params[:limit] ||= 10

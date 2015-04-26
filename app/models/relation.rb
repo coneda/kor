@@ -19,6 +19,8 @@ class Relation < ActiveRecord::Base
   end
 
   default_scope order(:name)
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : scoped}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : scoped}
   
 
   ######################### kinds ##############################################

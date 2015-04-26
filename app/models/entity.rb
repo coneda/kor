@@ -192,6 +192,14 @@ class Entity < ActiveRecord::Base
     attachment['fields'] = value
   end
 
+  def fields
+    kind.field_instances(self)
+  end
+
+  def field_hashes
+    fields.map{|field| field.serializable_hash}
+  end
+
   def synonyms
     (attachment['synonyms'].presence || []).uniq
   end
@@ -531,6 +539,8 @@ class Entity < ActiveRecord::Base
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : scoped }
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : scoped }
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : scoped}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : scoped}
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :searcheable, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }

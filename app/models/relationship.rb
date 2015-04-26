@@ -10,6 +10,19 @@ class Relationship < ActiveRecord::Base
     relationship.properties = relationship.properties.uniq
   end
 
+  scope :allowed, lambda{|user, policy|
+    collection_ids = Auth::Authorization.authorized_collections(user, policy).map{|c| c.id}
+    
+    joins("LEFT JOIN entities AS froms ON relationships.from_id = froms.id").
+    joins("LEFT JOIN entities AS tos ON relationships.to_id = tos.id").
+    where(
+      "froms.collection_id in (?) AND tos.collection_id in (?)",
+      collection_ids, collection_ids
+    )
+  }
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : scoped}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : scoped}
+
   def other_entity(entity)
     from_id == entity.id ?
       to : from
