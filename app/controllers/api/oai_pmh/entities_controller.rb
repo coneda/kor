@@ -13,7 +13,7 @@ class Api::OaiPmh::EntitiesController < Api::OaiPmh::BaseController
     end
 
     def earliest_timestamp
-      model = entities.order(:created_at).first
+      model = records.order(:created_at).first
       model ? model.created_at : super
     end
 
