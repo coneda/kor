@@ -35,8 +35,8 @@ class Kor::Graph
           conditions << "es_#{index}.collection_id IN (#{values})"
 
           if spec['id']
-            value = [spec['id']] if spec['id'].is_a?(String)
-            conditions << "es_#{index}.id IN ?"
+            value = (spec['id'].is_a?(Array) ? spec['id'] : [spec['id']])
+            conditions << "es_#{index}.id IN (#{value.join(',')})"
             binds << value
           end
 
@@ -75,7 +75,7 @@ class Kor::Graph
             conditions << "es_#{index}.collection_id IN (#{values})"
 
             if spec['id']
-              value = [spec['id']] if spec['id'].is_a?(String)
+              value = (spec['id'].is_a?(String) ? [spec['id']] : spec['id'])
               conditions << "es_#{index}.id IN ?"
               binds << value
             end
@@ -121,7 +121,8 @@ class Kor::Graph
       init = ["SELECT #{fields} FROM directed_relationships AS rels_0"]
 
       query = (init + query).join("\n")
-      conditions = conditions.map{|c| "(#{c})"}.join(" AND ")
+      conditions = conditions.select{|c| c.present?}
+      conditions = conditions.map{|c| "(#{c})"}.join(" AND")
 
       final = "#{query}" + (conditions.present? ? " WHERE #{conditions}" : "")
       # puts final
