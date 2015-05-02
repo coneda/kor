@@ -32,17 +32,23 @@ class Kor::Graph
           query << "JOIN entities AS es_#{index} ON es_#{index}.id = rels_#{index}.from_id"
 
           values = collection_ids.join(',')
-          conditions << "es_#{index}.collection_id IN (#{values})"
+          unless values.empty?
+            conditions << "es_#{index}.collection_id IN (#{values})"
+          end
 
           if spec['id']
-            value = (spec['id'].is_a?(Array) ? spec['id'] : [spec['id']])
-            conditions << "es_#{index}.id IN (#{value.join(',')})"
-            binds << value
+            values = (spec['id'].is_a?(Array) ? spec['id'] : [spec['id']])
+            unless values.empty?
+              conditions << "es_#{index}.id IN (#{values.join(',')})"
+              binds << values
+            end
           end
 
           if spec['kind_id']
-            value = [spec['kind_id'].to_i]
-            conditions << "es_#{index}.kind_id IN (#{value.join(',')})"
+            values = [spec['kind_id'].to_i]
+            unless values.empty?
+              conditions << "es_#{index}.kind_id IN (#{values.join(',')})"
+            end
           end
         elsif i == 1
           fields << "rels_#{index}.id AS rels_#{index}_id"
@@ -75,14 +81,18 @@ class Kor::Graph
             conditions << "es_#{index}.collection_id IN (#{values})"
 
             if spec['id']
-              value = (spec['id'].is_a?(String) ? [spec['id']] : spec['id'])
-              conditions << "es_#{index}.id IN ?"
-              binds << value
+              values = (spec['id'].is_a?(String) ? [spec['id']] : spec['id'])
+              unless values.empty?
+                conditions << "es_#{index}.id IN ?"
+                binds << values
+              end
             end
 
             if spec['kind_id']
               value = [spec['kind_id'].to_i]
-              conditions << "es_#{index}.kind_id IN (#{value.join(',')})"
+              unless values.empty?
+                conditions << "es_#{index}.kind_id IN (#{values.join(',')})"
+              end
             end
           else
             fields << "rels_#{index}.id AS rels_#{index}_id"
@@ -97,11 +107,11 @@ class Kor::Graph
               rels = Relation.where(:name => spec['name']).pluck(:id)
               reverse_rels = Relation.where(:reverse_name => spec['name']).pluck(:id)
               name_conditions = []
-              if rels.present?
+              unless rels.empty?
                 name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND NOT rels_#{index}.reverse)"
               end
-              if reverse_rels.present?
-                name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND rels_#{index}.reverse)"
+              unless reverse_rels.empty?
+                name_conditions << "(rels_#{index}.relation_id IN (#{reverse_rels.join(',')}) AND rels_#{index}.reverse)"
               end
               conditions << name_conditions.join(' OR ')
             end

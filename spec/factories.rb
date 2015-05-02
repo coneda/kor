@@ -3,6 +3,14 @@ FactoryGirl.define do
   sequence :artwork_name do |n|
     "Artwork #{n}"
   end
+
+  sequence :picture_file do |n|
+    {
+      0 => "#{Rails.root}/spec/fixtures/image_a.jpg",
+      1 => "#{Rails.root}/spec/fixtures/image_b.jpg",
+      2 => "#{Rails.root}/spec/fixtures/image_c.jpg",
+    }[n] || "#{Rails.root}/spec/fixtures/image_x.jpg"
+  end
   
   factory :kind do
 
@@ -50,7 +58,7 @@ FactoryGirl.define do
   end
   
   factory :medium do
-    document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
+    document { File.open(generate :picture_file) }
   end
 
   factory :medium_without_swap, :class => Medium do
