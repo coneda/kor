@@ -71,12 +71,12 @@ class EntitiesController < ApplicationController
 
   def isolated
     if authorized? :edit
-      entities = Entity.allowed(current_user, :view).isolated.includes(:kind)
+      entities = Entity.allowed(current_user, :view).isolated.newest_first.includes(:kind)
       @result = Kor::SearchResult.new(
         :total => entities.count,
         :page => params[:page],
-        :per_page => 20,
-        :records => entities.pageit(params[:page], 20)
+        :per_page => 16,
+        :records => entities.pageit(params[:page], 16)
       )
     else
       render :nothing => true, :status => 403

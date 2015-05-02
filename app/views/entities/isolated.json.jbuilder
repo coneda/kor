@@ -9,5 +9,9 @@ json.records do
     json.kind_name entity.kind.name
     json.name entity.name
     json.distinct_name entity.distinct_name
+
+    if entity.is_medium?
+      json.url entity.medium.url(:thumbnail)
+    end
   end
 end
