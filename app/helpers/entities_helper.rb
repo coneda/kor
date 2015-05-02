@@ -65,18 +65,6 @@ module EntitiesHelper
     end
   end
   
-  def inplace_column(name, value, options = {})
-    options.reverse_merge!(
-      :name => true
-    )
-    
-    naming = options[:name] ? "#{name}: " : ""
-    link = link_to kor_command_image('plus')
-    link += "<span class='text'>#{ActsAsTaggableOn::Tag.model_name.human}</span>".html_safe
-    
-    "<div class='column inplace_container'>#{naming}<span class='highlighted_subtitle inplace'>#{h value}</span>#{link}</div>".html_safe
-  end
-  
   def entity_subtitle(entity, content_type = false)
     if entity.is_medium?
       result = ""

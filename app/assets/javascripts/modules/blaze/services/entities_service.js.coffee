@@ -2,6 +2,14 @@ kor.service "entities_service", [
   "$http",
   (http) ->
     service = {
+      isolated: (params = {}) ->
+        http(
+          method: 'get'
+          headers: {accept: 'application/json'}
+          url: "/entities/isolated"
+          params: params
+        )
+
       show: (id) ->
         http(
           method: 'get'

@@ -277,6 +277,9 @@ de:
     new_entity:
       one: "neue Entität"
       other: "neue Entitäten"
+    isolated_entity:
+      one: "isolierte Entität"
+      other: "isolierte Entitäten"
     invalid_entity:
       one: "ungültige Entität"
       other: "ungültige Entitäten"

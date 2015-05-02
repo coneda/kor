@@ -114,7 +114,6 @@ Application.setup = function() {
   Menu.setup();
   Panel.setup();
   Forms.setup();
-  Kor.tagging.setup();
   this.setup_search_result_events();
   this.register_input_focus_events();
   this.focus_first_input();
@@ -263,73 +262,6 @@ KorTemplate.get = function(selector) {
   template.removeAttr('id');
   return template;
 }
-
-
-/* Inplace tagging */
-
-Kor.tagging = new Object();
-
-Kor.tagging.split = function(value) {return value.split(/,\s*/);}
-Kor.tagging.extractLast = function(term) {return Kor.tagging.split(term).pop();}
-
-Kor.tagging.setup = function() {
-  var url = '/kor/inplace/tags/entities/' + document.location.href.split('/').pop() + '/tags'
-
-  $('.inplace').add('.inplace > span').editable(url, {
-    onblur: 'submit',
-    style: 'width: 250px; display: inline',
-    type: 'autocomplete',
-    tooltip: "Click to edit ...",
-    placeholder: "<span style='margin-right: -5px'></span>",
-    data: function(value, settings) {return "";},
-    event: 'inplace',
-    callback: function() {$(this).parent().find('a').show();},
-    onreset: function() {$(this).parents('.inplace_container').find('a').show();}
-  });
-  
-  $('.inplace').parent().find('a').click(function(event){
-    $(event.currentTarget).hide();
-    $(event.currentTarget).parent().find('.inplace').trigger('inplace');
-    return false;
-  });
-}
-
-$.editable.addInputType('autocomplete', {
-  element: function(settings, original) {
-    var input = $('<input type="text">');
-    
-    input.keydown(function(event){
-      if (event.keyCode === $.ui.keyCode.TAB && $(this).data('autocomplete').menu.active) {
-        event.preventDefault();
-      }
-    });
-    
-    input.autocomplete({
-      source: function(request, response) {
-        $.getJSON('/tags', {term: Kor.tagging.extractLast(request.term)}, response);
-      },
-      search: function() {
-        var term = Kor.tagging.extractLast(this.value);
-        if (term.length < 2) {
-          return false;
-        }
-      },
-      focus: function() {return false;},
-      select: function(event, ui) {
-        var terms = Kor.tagging.split(this.value);
-        terms.pop();
-        terms.push(ui.item.value);
-        terms.push(' ');
-        this.value = terms.join(", ");
-        return false;
-      }
-    });
-    
-    $(this).append(input);
-    
-    return(input);
-  }
-});
 
 
 /* ImageQuickButtons */

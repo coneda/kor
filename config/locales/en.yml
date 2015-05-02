@@ -274,9 +274,9 @@ en:
     session:
       one: "session"
       other: "sessions"
-    new_entity:
-      one: "new entity"
-      other: "new entities"
+    isolated_entity:
+      one: "isolated entity"
+      other: "isolated entities"
     invalid_entity:
       one: "invalid entity"
       other: "invalid entities"

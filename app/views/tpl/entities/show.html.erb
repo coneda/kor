@@ -91,14 +91,34 @@
             </li>
             <li class="spacer"></li>
             <li class="tags" ng-show="entity.kind.tagging == '1' && (entity.tags || allowed_to('tagging', entity.collection_id))">
-              <div class="column inplace_container">
-                Tags: 
-                <span class="highlighted_subtitle inplace" title="Click to edit ...">
-                  <span ng-bind="entity.tags"></span>
+              <div
+                class="column"
+                kor-inplace-column="entity.tags"
+                kor-inplace-url="/kor/inplace/tags/entities/{{entity.id}}/tags"
+              >
+                Tags:
+                <span class="kor-inplace-show">
+                  <span class="highlighted_subtitle inplace" title="Click to edit ...">
+                    <span ng-bind="entity.tags"></span>
+                  </span>
+                  <a 
+                    href="#" 
+                    ng-show="allowed_to('tagging', entity.collection_id)"
+                    class="kor-inplace-control"
+                  >
+                    <img
+                      alt="Plus"
+                      class="kor_command_image"
+                      src="/assets/plus.gif"
+                      title="{{'verbs.add' | translate}}"
+                    />
+                  </a>
                 </span>
-                <a href="#" ng-show="allowed_to('tagging', entity.collection_id)">
-                  <img alt="Plus" class="kor_command_image" src="/assets/plus.gif" title="{{'verbs.add' | translate}}">
-                </a>
+
+                <span class="kor-inplace-edit">
+                  <label for="tag_list" style="display: none">Tag list</label>
+                  <input id="tag_list" type="text" kor-tagger="true" style="width: 300px">
+                </span>
               </div>
             </li>
           </ul>

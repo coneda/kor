@@ -1,6 +1,8 @@
 class EntitiesController < ApplicationController
   layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
   skip_before_filter :verify_authenticity_token
+
+  respond_to :json, :only => [:isolated]
     
   def by_uuid
     @entity = viewable_entities.find_by_uuid(params[:uuid])
@@ -32,7 +34,6 @@ class EntitiesController < ApplicationController
 
   def gallery
     @query = kor_graph.search(:gallery,
-      :criteria => {:terms => params[:terms]},
       :page => params[:page]
     )
     
@@ -65,6 +66,20 @@ class EntitiesController < ApplicationController
       )
     else
       redirect_to denied_path
+    end
+  end
+
+  def isolated
+    if authorized? :edit
+      entities = Entity.allowed(current_user, :view).isolated.includes(:kind)
+      @result = Kor::SearchResult.new(
+        :total => entities.count,
+        :page => params[:page],
+        :per_page => 20,
+        :records => entities.pageit(params[:page], 20)
+      )
+    else
+      render :nothing => true, :status => 403
     end
   end
 

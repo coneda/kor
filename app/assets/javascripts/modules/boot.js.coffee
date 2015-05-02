@@ -31,6 +31,7 @@ kor.config([
     ]
 
     rp.when "/entities/multi_upload", templateUrl: ((params) -> "/tpl/entities/multi_upload"), reloadOnSearch: false, controller: "record_history_controller"
+    rp.when "/entities/isolated", templateUrl: ((params) -> "/tpl/entities/isolated"), reloadOnSearch: false, controller: "record_history_controller"
     rp.when "/entities/:id", templateUrl: ((params) -> "/tpl/entities/#{params.id}"), reloadOnSearch: false, controller: "record_history_controller"
     rp.when "/denied", templateUrl: ((params) -> "/tpl/denied"), reloadOnSearch: false
 

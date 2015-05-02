@@ -1,0 +1,44 @@
+<div ng-controller="entities_controller">
+
+  <div class="layout_panel left normal_panel_size">
+    <div class="content_panel">
+      <div class="title">
+        {{ 'nouns.isolated_entity' | translate:{count: 'other'} | capitalize }}
+      </div>
+
+      <div kor-pagination="result"></div>
+
+      <table class="kor_table">
+        <tr ng-repeat="entity in result.records">
+          <td>
+            <strong>
+              <a href="/blaze#/entities/{{entity.id}}">
+                <span
+                  ng-show="entity.kind_id == 1"
+                  ng-bind="'activerecord.models.medium' | translate"
+                ></span>
+                <span
+                  ng-hide="entity.kind_id == 1"
+                  ng-bind="entity.name"
+                ></span>
+              </a>
+              <div
+                ng-hide="entity.kind_id == 1"
+                ng-bind="entity.kind_name"
+              ></div>
+            </strong>
+          </td>
+        </tr>
+      </table>
+
+      <div kor-pagination="result"></div>
+    </div>
+  </div>
+
+  <div class="layout_panel right small_panel_size">
+    <div class="content_panel">
+      
+    </div>
+  </div>
+  
+</div>

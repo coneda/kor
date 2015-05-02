@@ -1,6 +1,5 @@
 //= require jquery
 //= require jquery-ui
-//= require modules/vendor/jquery.jeditable.min
 //= require modules/vendor/swfobject
 //= require moxie
 //= require plupload.dev
@@ -15,6 +14,5 @@
 //= require modules/old/clipboard
 //= require modules/old/pagination
 //= require modules/old/attachments
-//= require modules/old/tagging
 //= require modules/boot
 //= require_tree ./modules/blaze

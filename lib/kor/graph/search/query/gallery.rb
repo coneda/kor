@@ -12,20 +12,12 @@ class Kor::Graph::Search::Query::Gallery < Kor::Graph::Search::Query::Base
   end
   
   
-  # Parameters
-  
-  define_params(
-    :terms => nil
-  )
-  
-  
   # Processing
 
   private
 
     def execute
-      criteria[:terms] ||= ""
-      result = Entity.allowed(user, :view).load_fully.gallery(criteria[:terms]).newest_first
+      result = Entity.allowed(user, :view).load_fully.newest_first
       
       @total = result.count
       

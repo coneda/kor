@@ -20,6 +20,10 @@ class Kor::SearchResult
     @total || 0
   end
 
+  def total_pages
+    @total_pages ||= (total / per_page) + 1
+  end
+
   def page
     @page || 1
   end

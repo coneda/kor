@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe ActiveRecord do
   include DataHelper
@@ -15,7 +15,7 @@ describe ActiveRecord do
   it "should take custom values for the timestamps" do
     timestamp = Time.now - 2.weeks
     u = User.create(:name => "Gagamel", :email => "gagamel@schloss.com", :updated_at => timestamp)
-    expect(User.find_by_name("Gagamel").updated_at.day).to eql(timestamp.day)
+    expect(User.find_by_name("Gagamel").updated_at).to be_within(5.seconds).of(timestamp)
   end
   
   it "does insert duplicate links for many-to-many associations" do

@@ -140,7 +140,10 @@ class Kor::Elastic
     }
 
     if options[:full]
-      related_ids = Investigator.new.related_entities_for(entity.id).values.flatten.uniq
+      related = Relationship.
+        where("from_id = ? OR to_id = ?", entity.id, entity.id).
+        select([:from_id, :to_id])
+      related_ids = related.map{|r| [r.from_id, r.to_id]}.flatten.uniq - [entity.id]
       scope = Entity.includes(:kind).where(:id => related_ids).select([:id, :name, :kind_id, :attachment])
       data["related"] = scope.map do |e|
         [e.name] + fetch(:synonyms, e.id) do

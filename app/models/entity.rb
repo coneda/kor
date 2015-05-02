@@ -625,23 +625,17 @@ class Entity < ActiveRecord::Base
 
     dataset.values.all?{|v| v.blank?} ? scoped : where("entities.id IN (?)", ids.uniq)
   }
-  scope :gallery, lambda { |search_string|
-    if search_string.blank? || search_string.size < 3
-      where(:kind_id => Kind.medium_kind.id)
-    else
-      reverse_primary_relations = Relation.reverse_primary_relation_names
-      reverse_secondary_relations = Relation.reverse_secondary_relation_names
-      
-      match_ids = Entity.named_like(search_string).map{|e| e.id}
-      match_ids += Investigator.new.related_entities_for(match_ids, reverse_secondary_relations)
-      image_ids = Investigator.new.related_entities_for(match_ids, reverse_primary_relations, Kind.medium_kind.id)
-      
-      image_ids = (image_ids.is_a?(Hash) ? image_ids.values.flatten : image_ids).uniq
-      
-      where("entities.id IN (?) AND kind_id = ?", image_ids.uniq, Kind.medium_kind.id)
-    end
-  }
-  
   scope :load_fully, joins(:kind, :collection).includes(:medium)
+  scope :isolated, lambda {
+    joins("LEFT JOIN relationships fromrels ON entities.id = fromrels.from_id").
+    joins("LEFT JOIN relationships torels ON entities.id = torels.to_id").
+    where("fromrels.id is NULL AND torels.id IS NULL")
+  }
+  scope :pageit, lambda { |page, per_page|
+    page = (page || 1).to_i
+    per_page = [(per_page || 20).to_i, 100].min
+
+    offset((page - 1) * per_page).limit(per_page)
+  }
   
 end

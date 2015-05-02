@@ -8,4 +8,8 @@ class TplController < ApplicationController
     
   end
 
+  def paginator
+    
+  end
+
 end

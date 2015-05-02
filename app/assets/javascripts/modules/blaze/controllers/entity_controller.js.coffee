@@ -153,4 +153,5 @@ kor.controller('entity_controller', [
       else
         !!link[1]
 
+
 ])

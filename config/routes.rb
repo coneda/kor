@@ -32,6 +32,7 @@ Kor::Application.routes.draw do
       get 'gallery'
       get 'recent'
       get 'invalid'
+      get 'isolated'
     end
     
     member do
@@ -165,10 +166,12 @@ Kor::Application.routes.draw do
     resources :entities, :only => [:show] do
       collection do
         get :multi_upload
+        get :isolated
       end
     end
 
     match "denied", :action => "denied"
+    match "pagination", :action => "pagination"
   end
 
 end

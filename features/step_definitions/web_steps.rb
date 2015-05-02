@@ -100,3 +100,7 @@ end
 Then(/^I should see the option to create a new "(.*?)"$/) do |text|
   expect(page).to have_selector('option', :text => text)
 end
+
+When(/^I click on the version info$/) do
+  page.find(".version_info").click()
+end

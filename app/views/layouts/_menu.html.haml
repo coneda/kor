@@ -50,6 +50,7 @@
         = navigation_item I18n.t('nouns.invalid_entity', :count => :other), invalid_entities_path, :highlight => :action
       - if authorized? :edit
         = navigation_item I18n.t('nouns.new_entity', :count => :other), recent_entities_path, :highlight => :action
+        = navigation_item I18n.t('nouns.isolated_entity', :count => :other), "/blaze#/entities/isolated", :highlight => :action
       
       %li.spacer
 
