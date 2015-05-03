@@ -5,8 +5,16 @@ kor.service "entities_service", [
       isolated: (params = {}) ->
         http(
           method: 'get'
-          headers: {accept: 'application/json'}
           url: "/entities/isolated"
+          headers: {accept: 'application/json'}
+          params: params
+        )
+
+      gallery: (params = {}) ->
+        http(
+          method: 'get'
+          url: '/entities/gallery'
+          headers: {accept: 'application/json'}
           params: params
         )
 

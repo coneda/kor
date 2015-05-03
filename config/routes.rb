@@ -158,8 +158,11 @@ Kor::Application.routes.draw do
           get :deep_media
         end
       end
-      resources :ratings, :except => [:edit, :update]
-
+      resources :paths, :only => [:index] do
+        collection do
+          post :gallery
+        end
+      end
     end
   end
 
@@ -174,6 +177,7 @@ Kor::Application.routes.draw do
       collection do
         get :multi_upload
         get :isolated
+        get :gallery
       end
     end
 

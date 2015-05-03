@@ -4,6 +4,7 @@ Feature: Show media in the gallery and show certain related entities
   use the gallery
   
 
+  @javascript
   Scenario: View the gallery
     Given I am logged in as "admin"
     And Leonardo, Mona Lisa and a medium as correctly related entities
@@ -25,6 +26,7 @@ Feature: Show media in the gallery and show certain related entities
     And I should not see "Leonardo"
     
   
+  @javascript
   Scenario: View gallery when no secondary relationships exist
     Given I am logged in as "admin"
     And Mona Lisa and a medium as correctly related entities
@@ -32,6 +34,7 @@ Feature: Show media in the gallery and show certain related entities
     Then I should not see "Leonardo da Vinci"
 
 
+  @javascript
   Scenario: View gallery when no secondary relationships exist
     Given I am logged in as "admin"
     And Mona Lisa and a medium as correctly related entities
@@ -52,7 +55,8 @@ Feature: Show media in the gallery and show certain related entities
     Then I should not see "Mona Lisa"
     And I should not see "Leonardo"
     
-
+    
+  @javascript
   Scenario: View gallery when no secondary relationships exist
     Given I am logged in as "admin"
     And Mona Lisa and a medium as correctly related entities

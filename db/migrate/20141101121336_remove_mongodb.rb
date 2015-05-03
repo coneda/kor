@@ -17,7 +17,12 @@ class RemoveMongodb < ActiveRecord::Migration
     
     data = JSON.parse(`#{command}`)
 
+    puts "Iterating mongodb documents"
+    counter = 0
     data.each do |doc|
+      counter += 1
+      puts "#{counter}/#{data.size}" if counter % 100 == 0
+
       entity = Entity.where(:id => doc["entity_id"]).first || 
         Entity.where(:attachment_id => doc['_id']['$oid']).first
 
@@ -30,10 +35,20 @@ class RemoveMongodb < ActiveRecord::Migration
       end
     end
 
+    puts "Iterating entities"
+    counter = 0
     Entity.find_each do |entity|
+      counter += 1
+      puts "#{counter}/#{data.size}" if counter % 100 == 0
+
       new_value = entity.attachment
       new_value["fields"] = if entity.external_references.present?
-        YAML.load entity.external_references
+        yaml = entity.external_references
+        result = YAML.load(yaml) || {}
+        result.each do |k, v|
+          result[k].force_encoding("utf-8")
+        end
+        result
       else
         {}
       end

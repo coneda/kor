@@ -1,0 +1,45 @@
+<div ng-controller="gallery_controller">
+
+  <div class="layout_panel">
+    <div class="content_panel gallery">
+      <div class="title">
+        {{ 'pages.new_media' | translate:{count: 'other'} | capitalize }}
+      </div>
+
+      <div kor-pagination="result"></div>
+
+      <div class="hr"></div>
+
+      <table class="kor_table">
+        <tbody>
+          <tr ng-repeat="row in result.grouped_records">
+            <td ng-repeat="entity in row" class="gallery_item">
+              <a href="/blaze#/entities/{{entity.id}}">
+                <span ng-bind="entity.name"></span>
+                <img ng-src="{{entity.url}}" />
+              </a>
+              <div ng-show="result.graph[entity.id]">
+                <div class="hr"></div>
+                <a
+                  ng-show="result.graph[entity.id][4]"
+                  href="#/entities/{{result.graph[entity.id][4].id}}"
+                >
+                  <strong ng-bind="result.graph[entity.id][4].name"></strong>
+                  <br/>
+                </a>
+                <a href="#/entities/{{result.graph[entity.id][2].id}}">
+                  <span ng-bind="result.graph[entity.id][2].name"></span>
+                </a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="hr"></div>
+
+      <div kor-pagination="result"></div>
+    </div>
+  </div>
+
+</div>

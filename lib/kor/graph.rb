@@ -61,12 +61,15 @@ class Kor::Graph
           if spec['name']
             rels = Relation.where(:name => spec['name']).pluck(:id)
             reverse_rels = Relation.where(:reverse_name => spec['name']).pluck(:id)
+
+            return [] if rels.empty? && reverse_rels.empty?
+
             name_conditions = []
-            if rels.present?
+            unless rels.empty?
               name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND NOT rels_#{index}.reverse)"
             end
-            if reverse_rels.present?
-              name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND rels_#{index}.reverse)"
+            unless reverse_rels.empty?
+              name_conditions << "(rels_#{index}.relation_id IN (#{reverse_rels.join(',')}) AND rels_#{index}.reverse)"
             end
             conditions << name_conditions.join(' OR ')
           end
@@ -106,6 +109,9 @@ class Kor::Graph
             if spec['name']
               rels = Relation.where(:name => spec['name']).pluck(:id)
               reverse_rels = Relation.where(:reverse_name => spec['name']).pluck(:id)
+
+              return [] if rels.empty? && reverse_rels.empty?
+
               name_conditions = []
               unless rels.empty?
                 name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND NOT rels_#{index}.reverse)"
@@ -158,6 +164,18 @@ class Kor::Graph
       end
     else
       []
+    end
+  end
+
+  def load(paths = [])
+    paths.map do |path|
+      path.map do |segment|
+        if segment.keys == ['id']
+          Entity.find(segment['id'])
+        else
+          segment
+        end
+      end
     end
   end
   

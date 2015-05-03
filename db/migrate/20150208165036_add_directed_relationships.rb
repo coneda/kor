@@ -24,6 +24,8 @@ class AddDirectedRelationships < ActiveRecord::Migration
 
     Relationship.find_each do |r|
       r.ensure_directed
+      r.natural.save
+      r.reverse.save
     end
   end
 

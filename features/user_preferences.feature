@@ -3,6 +3,7 @@ Feature: Manage user preferences
   Users should be able to
   manage their preferences
 
+  @javascript
   Scenario: Set the home page to the gallery
     Given I am logged in as "admin"
     When follow "Profil bearbeiten"

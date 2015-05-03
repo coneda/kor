@@ -12,7 +12,7 @@ module NavigationHelpers
     when /the home\s?page/ then '/'
     when /the expert search/ then '/entities'
     when /the global groups page/ then '/authority_group_categories'
-    when /the gallery/ then '/entities/gallery'
+    when /the gallery/ then web_path(:anchor => "/entities/gallery")
     when /the new relationship page for "(.*)"/
       new_relationship_path(:relationship => {:from_id => Entity.find_by_name($1).id })
     when /the new publishment page/ then new_publishment_path
