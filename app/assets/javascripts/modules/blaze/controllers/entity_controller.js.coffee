@@ -72,13 +72,17 @@ kor.controller('entity_controller', [
     scope.allowed_to = (policy, object = null) ->
       if kd.info && scope.entity
         object ||= scope.entity.collection_id
-        kd.info.session.user.auth.collections[policy] ||= []
-        kd.info.session.user.auth.collections[policy].indexOf(object) != -1
+
+        if kd.info.session.user.auth
+          kd.info.session.user.auth.collections[policy] ||= []
+          kd.info.session.user.auth.collections[policy].indexOf(object) != -1
+        else
+          false
       else
         false
         
     scope.allowed_to_any = (policy) ->
-      if kd.info
+      if kd.info && kd.info.session.user.auth
         kd.info.session.user.auth.collections[policy].length != 0
       else
         false

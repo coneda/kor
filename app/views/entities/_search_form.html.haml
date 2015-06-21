@@ -16,7 +16,6 @@
     = kor_input_tag Entity.human_attribute_name(:properties), :control => text_field_tag("query[properties]", @query.properties)
     
     = kor_input_tag Entity.human_attribute_name(:tag_list), :control => text_field_tag("query[tag_list]", @query.tag_list)
-    = javascript_tag 'Tagging.tagger("query_tag_list")'
     
     .dataset_attributes
       = (search_fields_for_entity_dataset(@query) || "").html_safe

@@ -5,8 +5,17 @@ kor.service('korData', [
       entity: null
       session: null
 
-      error: -> if service.info then service.info.session.flash.error else null
-      notice: -> if service.info then service.info.session.flash.notice else null
+      error: -> 
+        try
+          service.info.session.flash.error
+        catch e
+          null
+
+      notice: -> 
+        try
+          service.info.session.flash.notice
+        catch e
+          null
 
       logged_in: ->
         try

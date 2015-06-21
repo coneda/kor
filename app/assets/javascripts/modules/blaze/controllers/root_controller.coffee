@@ -17,6 +17,8 @@ kor.controller('root_controller', ['$scope', 'korData', 'korFlash', (scope, kd, 
   scope.flash_notice = -> kd.notice()
 
   scope.is_guest = ->
+    return false unless scope.info
+
     if user = scope.info.session.user
       user.name == 'guest'
     else

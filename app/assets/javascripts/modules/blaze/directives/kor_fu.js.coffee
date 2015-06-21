@@ -38,7 +38,10 @@ kor.directive "korFu", [
 
         prefill_fields = ->
           scope.data.params.user_group_name = kt.localize(new Date)
-          scope.data.params.collection_id = kd.info.session.user.auth.collections['create'][0]
+          scope.data.params.collection_id = try
+            kd.info.session.user.auth.collections['create'][0]
+          catch e
+            undefined
           
 
         if kd.info

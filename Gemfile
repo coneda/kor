@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.19'
+gem 'rails', '3.2.21'
 gem 'strong_parameters'
 
 gem 'delayed_paperclip', "= 2.4.5", :require => 'delayed_paperclip/railtie'
@@ -61,7 +61,8 @@ end
 group :test, :development do
   gem 'thin'
   gem 'quiet_assets'
-  gem 'debugger'
+  gem 'byebug'
+  gem 'pry'
 end
 
 group :production do
