@@ -65,7 +65,6 @@ Feature: search
     When I go to the expert search
     And I fill in "query[name]" with "ödipus"
     And I press "Suchen"
-    And I save a screenshot
     Then I should see "Oedipus" within ".search_result"
 
 
@@ -93,7 +92,6 @@ Feature: search
     Given I am logged in as "admin"
     And the entity "Die Bibel" of kind "Literatur/Literaturen"
     And the entity "Die Bibel" has property "isbn" with value "123456789"
-    And everything is indexed
     When I go to the expert search page
     And I select "Literatur" from "query[kind_id]"
     When I fill in "query[properties]" with "incorrect"
@@ -118,4 +116,3 @@ Feature: search
     Then I should see "wurde in die Zwischenablage aufgenommen"
     When I click on element "input" within the row for "entity" "Mona Lisa"
     Then I should see "wurde aus der Zwischenablage entfernt"
-    

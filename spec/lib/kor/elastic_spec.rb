@@ -263,4 +263,13 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to be_empty
   end
 
+  it "should search within the subtype" do
+    @people = FactoryGirl.create :people
+    @jack = FactoryGirl.create :jack, :subtype => "bipedal"
+    described_class.index_all :full => true
+    
+    results = @elastic.search(:query => "bipedal")
+    expect(results.records).to eq([@jack])
+  end
+
 end

@@ -48,6 +48,7 @@ class Kor::Elastic
         "properties" => {
           "name" => {"type" => "string", "analyzer" => "folding"},
           "distinct_name" => {"type" => "string", "analyzer" => "folding"},
+          "subtype" => {"type" => "string", "analyzer" => "folding"},
           "synonyms" => {"type" => "string", "analyzer" => "folding"},
           "comment" => {"type" => "string", "analyzer" => "folding"},
           "dataset" => {
@@ -128,6 +129,7 @@ class Kor::Elastic
       "uuid" => entity.uuid,
       "name" => entity.name,
       "distinct_name" => entity.distinct_name,
+      "subtype" => entity.subtype,
       "tags" => entity.tags.map{|t| t.name},
       "synonyms" => fetch(:synonyms, entity.id){entity.synonyms},
       "kind_id" => entity.kind_id,
@@ -198,6 +200,7 @@ class Kor::Elastic
           "fields" => [
             'uuid^20',
             'name^10',
+            'subtype^8',
             'distinct_name^6',
             'synonyms^6',
             'dataset.*^5',
