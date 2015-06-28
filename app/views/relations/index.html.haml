@@ -6,12 +6,18 @@
     %colgroup
       %col{:width => "*"}
       %col{:width => "*"}
-      %col{:width => "*"}
+      %col{:width => "50"}
       %col{:width => "0"}
 
     %tr
-      %th.pagination{:colspan => "4"}
+      %th.pagination{:colspan => 4}
         = will_paginate @relations, :previous_label => '«', :next_label => '»'
+
+    %tr
+      %th= Relation.human_attribute_name(:name).capitalize
+      %th= Kind.model_name.human(:count => :other).capitalize
+      %th= I18n.t("usage_count")
+      %th
 
     - if @relations.empty?
       = I18n.t('objects.none_found', :o => I18n.t('nouns.relationship', :count => :other) )
@@ -19,12 +25,21 @@
       - @relations.each do |o|
         %tr{row_identifiers_for(o)}
           %td
-            = link_to h(o.name), edit_relation_path(o)
+            %div
+              = link_to edit_relation_path(o) do
+                = o.name
+                \/
+                = h(o.reverse_name)
+            %div
+              = o.description
           %td
-            = link_to h(o.reverse_name), edit_relation_path(o)
-          %td
-            = h(o.description)
-          %td{:align => "right"}
+            %div
+              = I18n.t(:from).capitalize + ":"
+              = Kind.where(:id => o.from_kind_ids).map{|k| k.name}.join(', ')
+            %div
+              = I18n.t(:to).capitalize + ":"
+              = Kind.where(:id => o.to_kind_ids).map{|k| k.name}.join(', ')
+          %td{:style => "text-align: right"}
             = o.relationships.count
           %td.nowrap
             = link_to kor_command_image('pen'), edit_relation_path(o)
