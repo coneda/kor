@@ -62,6 +62,19 @@ FactoryGirl.define do
       name "private"
     end
   end
+
+  factory :entity_dating do
+    label "Dating"
+
+    factory :d1533 do
+      dating_string "1533"
+    end
+
+    factory :leonardo_lifespan do
+      label "Lifespan"
+      dating_string "1452 bis 1519"
+    end
+  end
   
   factory :entity do
     collection { Collection.find_or_create_by_name "default" }
@@ -72,12 +85,7 @@ FactoryGirl.define do
 
       factory :mona_lisa do
         name "Mona Lisa"
-        datings do
-          [ EntityDating.new(
-            :label => 'Datierung',
-            :dating_string => '1533'
-          )]
-        end
+        # datings [EntityDating.where(:dating_string => "1533").first || FactoryGirl.build(:d1533)]
 
         dataset do
           {:gnd => '12345'}
@@ -244,10 +252,6 @@ FactoryGirl.define do
         <span ng-show=\"locale() == 'de'\">Deutsch</span>
       "
     end
-  end
-
-  factory :entity_dating do
-    label "Dating"
   end
 
   factory :authority_group do

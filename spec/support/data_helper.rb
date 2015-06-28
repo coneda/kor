@@ -64,7 +64,7 @@ module DataHelper
   end
 
   def test_entities  
-    @mona_lisa = FactoryGirl.create :mona_lisa
+    @mona_lisa = FactoryGirl.create :mona_lisa, :datings => [FactoryGirl.build(:d1533)]
   end
   
   def test_authority_groups

@@ -536,7 +536,8 @@ class Entity < ActiveRecord::Base
   end
   
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
-  scope :within_collections, lambda {|ids| ids ? where("collection_id IN (?)", ids) : scoped }
+  scope :only_kinds, lambda {|ids| ids.present? ? where("kind_id IN (?)", ids) : scoped }
+  scope :within_collections, lambda {|ids| ids.present? ? where("collection_id IN (?)", ids) : scoped }
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :searcheable, lambda { where("kind_id != ?", Kind.medium_kind.id) }

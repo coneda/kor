@@ -39,7 +39,6 @@ gem 'jbuilder'
 
 group :assets do
   gem "therubyracer"
-
   gem 'uglifier', '>= 1.0.3'
 end
 
@@ -55,7 +54,6 @@ end
 
 group :development do
   # gem 'method_profiler'
-  # gem 'meta_request'
 end
 
 group :test, :development do
@@ -67,4 +65,9 @@ end
 
 group :production do
   gem 'puma'
+end
+
+group :import_export do
+  gem 'mixlib-cli'
+  gem 'spreadsheet'
 end

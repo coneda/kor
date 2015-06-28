@@ -75,4 +75,13 @@ class EntityDating < ActiveRecord::Base
   def self.julian_date_for(date)
     Date.civil(date.year, date.month, date.day).jd
   end
+
+  def serializable_hash_for_export
+    return {
+      "id" => id,
+      "label" => label,
+      "dating_string" => dating_string
+    }
+  end
+
 end

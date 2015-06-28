@@ -1,0 +1,17 @@
+This is the ConedaKOR command line utility. It currently allows to:
+
+* export entities to excel:
+  
+  kor export -f excel path/to/destination_dir
+
+* import new entities (and updates) from excel:
+  
+  kor import -f excel path/to/source_dir
+
+Make sure you are setting the right rails environment with an environment
+variable, for example:
+
+  RAILS_ENV=production kor export -f excel path/to/destination
+
+Arguments:
+

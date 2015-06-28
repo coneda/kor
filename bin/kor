@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+KOR_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
+
+require "#{KOR_ROOT}/config/environment"
+
+require "mixlib/cli"
+
+cli = Kor::CommandLine.new
+cli.parse_options
+cli.run
