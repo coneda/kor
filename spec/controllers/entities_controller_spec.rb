@@ -244,7 +244,7 @@ RSpec.describe EntitiesController, :type => :controller do
   end
 
   it "should deny uploading too big files" do
-    file = fixture_file_upload("/image_c.jpg", 'image/jpeg')
+    file = fixture_file_upload("#{Rails.root}/spec/fixtures/image_c.jpg", 'image/jpeg')
     Kor.config["app.max_file_upload_size"] = 0.2
 
     post :create, :entity => {
@@ -259,7 +259,7 @@ RSpec.describe EntitiesController, :type => :controller do
   end
 
   it "should allow uploading files of acceptable size" do
-    file = fixture_file_upload("/image_c.jpg", 'image/jpeg')
+    file = fixture_file_upload("#{Rails.root}/spec/fixtures/image_c.jpg", 'image/jpeg')
     Kor.config["app.max_file_upload_size"] = 0.5
 
     post :create, :entity => {

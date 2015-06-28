@@ -13,6 +13,7 @@ Feature: relations
     And I should see "love" within "table.kor_table"
     And I should see "0" within "table.kor_table"
 
+  @javascript
   Scenario: edit relation
     Given I am logged in as "admin"
     And the relation "loves/is being loved by"
@@ -21,6 +22,7 @@ Feature: relations
     And I fill in "relation[name]" with "hates"
     And I fill in "relation[reverse_name]" with "hates not"
     And I fill in "relation[description]" with "hate"
+    And I ignore the next confirmation box
     And I press "Speichern"
     Then I should see "hates"
     And I should see "hates not"
