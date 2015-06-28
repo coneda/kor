@@ -118,7 +118,7 @@ class Relationship < ActiveRecord::Base
   validates_presence_of :from_id, :to_id, :relation_id, :message => 'can_not_be_empty'
   
   after_validation(:on => :create) do |model|
-    model.uuid = UUIDTools::UUID.random_create.to_s
+    model.uuid = SecureRandom.uuid
   end
   
   

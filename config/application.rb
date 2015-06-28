@@ -13,6 +13,8 @@ $: << File.expand_path(File.dirname(__FILE__) + "/../lib")
 require 'kor'
 require 'kor/config'
 
+require 'securerandom'
+
 module Kor
   class Application < Rails::Application
     

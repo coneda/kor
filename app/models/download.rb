@@ -41,7 +41,7 @@ class Download < ActiveRecord::Base
   end
   
   def generate_uuid
-    self[:uuid] ||= UUIDTools::UUID.random_create.to_s
+    self[:uuid] ||= SecureRandom.uuid
   end
   
   def guess_content_type

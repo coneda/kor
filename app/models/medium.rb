@@ -87,17 +87,31 @@ class Medium < ActiveRecord::Base
   
   
   # Validation
-    
+
   validates_attachment_content_type :image, :content_type => /^image\/.+$/, :if => Proc.new{|medium| medium.image.file?}
   validates_attachment_presence :document, :unless => Proc.new{|medium| medium.image.file?}, :message => :file_must_be_set
   validates_uniqueness_of :datahash, :message => :file_exists
   validate :validate_no_two_images
+  validate :validate_file_size
   
   def validate_no_two_images
     if document.content_type && image.content_type
       if document.content_type.match(/^image\//) && image.content_type.match(/^image\//)
         errors.add :base, :no_two_images
       end
+    end
+  end
+
+  def validate_file_size
+    max_mb = Kor.config["app.max_file_upload_size"].to_f
+    max_bytes = max_mb * 1024**2
+
+    if image_file_size.present? and image_file_size > max_bytes
+      errors.add :image_file_size, :file_size_less_than, :value => max_mb
+    end
+
+    if document_file_size.present? and document_file_size > max_bytes
+      errors.add :document_file_size, :file_size_less_than, :value => max_mb
     end
   end
   

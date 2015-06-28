@@ -212,7 +212,7 @@ module Kor
 
   def self.generate_tmpfile_name
     FileUtils.mkdir_p Kor.config['tmp_dir']
-    "#{Kor.config['tmp_dir']}/#{UUIDTools::UUID.random_create.to_s}.tmp"
+    "#{Kor.config['tmp_dir']}/#{SecureRandom.uuid}.tmp"
   end
 
 

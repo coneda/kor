@@ -33,7 +33,7 @@ class Kor::Config::Check
       report :app, :current_history_length, :invalid, @config['app.current_history_length']
     end
     
-    if @config['app.max_file_upload_size'].to_i < 1
+    if @config['app.max_file_upload_size'].to_f < 0.1
       report :app, :max_file_upload_size, :invalid, @config['app.max_file_upload_size']
     end
   end

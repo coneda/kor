@@ -10,7 +10,7 @@ class Publishment < ActiveRecord::Base
   end
 
   def generate_uuid
-    self.uuid = UUIDTools::UUID.random_create.to_s.delete("-")[0..11]
+    self.uuid = SecureRandom.uuid.delete("-")[0..11]
   end
 
   def set_expiry

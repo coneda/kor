@@ -19,6 +19,6 @@ class EntityGroup < ActiveRecord::Base
   end
   
   after_validation(:on => :create) do |model|
-    model.uuid = UUIDTools::UUID.random_create.to_s
+    model.uuid = SecureRandom.uuid
   end
 end

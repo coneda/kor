@@ -39,7 +39,7 @@ class Paperclip::Video < Paperclip::Processor
   end
   
   def still_file
-    @still_file ||= "#{Rails.root}/tmp/stills/#{UUIDTools::UUID.random_create}.jpg"
+    @still_file ||= "#{Rails.root}/tmp/stills/#{SecureRandom.uuid}.jpg"
   end
   
   def probe(file = nil)
