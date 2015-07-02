@@ -117,3 +117,14 @@ Feature: search
     Then I should see "wurde in die Zwischenablage aufgenommen"
     When I click on element "input" within the row for "entity" "Mona Lisa"
     Then I should see "wurde aus der Zwischenablage entfernt"
+
+
+  @javascript @elastic
+  Scenario: Search for media wit tags
+    Given I am logged in as "admin"
+    And the medium "spec/fixtures/image_a.jpg"
+    And the last entity has the tags "some, image"
+    When I go to the simple search page
+    And I fill in "search_terms" with "some"
+    And I wait for "2" seconds
+    Then I should not see "some (1)"

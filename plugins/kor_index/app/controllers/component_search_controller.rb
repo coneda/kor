@@ -23,7 +23,7 @@ class ComponentSearchController < ApplicationController
   end
   
   def counts
-    @tags = Entity.filtered_tag_counts(params[:term])
+    @tags = Entity.without_media.filtered_tag_counts(params[:term])
     @tags = @tags.map do |tag_count|
       type = I18n.t('nouns.tag', :count => 1).capitalize_first_letter
       value = tag_count.name

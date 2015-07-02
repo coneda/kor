@@ -366,3 +366,6 @@ Then(/^user "(.*?)" should not expire$/) do |email|
   expect(User.where(:email => email).first.expires_at).to be_nil
 end
 
+Given(/^the last entity has the tags "(.*?)"$/) do |tag_list|
+  Entity.last.update_attributes :tag_list => tag_list
+end
