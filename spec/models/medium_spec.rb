@@ -1,13 +1,13 @@
 # encoding: utf-8
 
-require 'spec_helper'
+require 'rails_helper'
 
 describe Medium do
 
   def work_off(num = 10)
     Delayed::Worker.new.work_off num
     if Delayed::Job.count > 0
-      debugger
+      binding.pry
       raise "Not all jobs have been processed, please check!"
     end
   end
@@ -36,6 +36,7 @@ describe Medium do
     medium.reload
     
     expect(medium.path(:original)).to eql("#{Rails.root}/data/media.test/original/#{medium.ids}/document.txt")
+    binding.pry
     expect(medium.path(:icon)).to eql("#{Rails.root}/data/media.test/icon/#{medium.ids}/image.jpg")
     expect(medium.url(:original)).to eql("/media/images/original/#{medium.ids}/document.txt?#{medium.document.updated_at}")
     expect(medium.url(:icon)).to eql("/media/images/icon/#{medium.ids}/image.jpg?#{medium.image.updated_at}")

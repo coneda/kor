@@ -5,6 +5,7 @@ gem 'strong_parameters'
 
 gem 'delayed_paperclip', "= 2.4.5", :require => 'delayed_paperclip/railtie'
 gem "paperclip", "= 2.4.5"
+gem "cocaine", "~> 0.2.1"
 gem 'delayed_job_active_record'
 gem 'delayed_job'
 gem 'daemons'
@@ -59,7 +60,6 @@ end
 group :test, :development do
   gem 'thin'
   gem 'quiet_assets'
-  gem 'byebug'
   gem 'pry'
 end
 

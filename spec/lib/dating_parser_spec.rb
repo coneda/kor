@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'spec_helper'
+require 'rails_helper'
 
 RSpec::Matchers.define :parse do |input|
   match do |parser|

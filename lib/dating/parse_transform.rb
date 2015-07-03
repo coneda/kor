@@ -91,9 +91,7 @@ class Dating::ParseTransform < Parslet::Transform
       distance = (Date.today.year - year) / 10
       {:from => Date.new(year - distance, 1, 1), :to => Date.new(a[:to][:to].year, 12, 31)}
     else
-      year = a[:from][:to].year
-      distance = (Date.today.year - year) / 10
-      {:to => Date.new(year + distance, 1, 1), :from => Date.new(a[:from][:from].year, 12, 31)}
+      {:to => Date.new(a[:to].year, 12, 31), :from => Date.new(a[:from].year, 1, 1)}
     end
   end
   
