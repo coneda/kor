@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.21'
+gem 'rails', '3.2.22'
 gem 'strong_parameters'
 
 gem 'delayed_paperclip'
@@ -37,7 +37,7 @@ gem 'jbuilder'
 
 group :assets do
   gem "therubyracer"
-  gem 'uglifier', '>= 1.0.3'
+  gem 'uglifier'
 end
 
 group :test do

@@ -112,8 +112,8 @@ describe Medium do
   end
   
   it "should not generate the checksum error twice" do
-    original = Factory.create(:medium)
-    duplicate = Factory.build(:medium)
+    original = FactoryGirl.create(:medium)
+    duplicate = FactoryGirl.build(:medium)
     
     expect(duplicate.valid?).not_to be_truthy
     expect(duplicate.errors.full_messages).to eq(["Prüfsumme eine inhaltlich gleiche Datei wurde bereits hochgeladen"])
@@ -122,7 +122,7 @@ describe Medium do
   it "should generate a delayed job for processing" do
     Delayed::Worker.delay_jobs = true
     expect(Delayed::Job.count).to eq(0)
-    medium = Factory.create(:medium)
+    medium = FactoryGirl.create(:medium)
     expect(Delayed::Job.count).to eq(2)
   end
 
