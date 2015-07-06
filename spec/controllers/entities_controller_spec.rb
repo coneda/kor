@@ -255,7 +255,7 @@ RSpec.describe EntitiesController, :type => :controller do
       }
     }
 
-    expect(response.status).to be(406)
+    expect(response.status).to eq(406)
   end
 
   it "should allow uploading files of acceptable size" do
@@ -270,7 +270,7 @@ RSpec.describe EntitiesController, :type => :controller do
       }
     }
 
-    expect(response.status).to be(302)
+    expect(response.status).to eq(302)
   end
   
 end

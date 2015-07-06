@@ -64,8 +64,8 @@ describe Entity do
   it "should raise an error if the options for the related method are invalid" do
     entity = FactoryGirl.build :work
     
-    expect { entity.related(:assume => :terciary) }.to raise_error
-    expect { entity.related(:assume => :image, :search => :secondary) }.to raise_error
+    expect { entity.related(:assume => :terciary) }.to raise_error(Kor::Exception)
+    expect { entity.related(:assume => :image, :search => :secondary) }.to raise_error(Kor::Exception)
   end
   
   it "should find related media for primary entities and vice versa" do

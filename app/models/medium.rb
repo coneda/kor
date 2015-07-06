@@ -1,6 +1,6 @@
 class Medium < ActiveRecord::Base
 
-  DelayedPaperclip::Railtie.insert
+  # DelayedPaperclip::Railtie.insert
   
   has_one :entity
 
@@ -35,12 +35,12 @@ class Medium < ActiveRecord::Base
       :normal => ['1440x1440>', :jpg]
     }
 
-  process_in_background :document  
+  process_in_background :document
   process_in_background :image
 
   before_validation do |m|
-    if m.document.to_file
-      m.document.instance_write :content_type, `file --mime-type -b #{m.document.to_file.path}`.strip.split(';').first
+    if m.to_file(:document)
+      m.document.instance_write :content_type, `file --mime-type -b #{m.to_file(:document).path}`.strip.split(';').first
     end
   end
   
@@ -75,7 +75,9 @@ class Medium < ActiveRecord::Base
       end
     end
     
-    m.datahash = Digest::SHA1.hexdigest(File.read(m.to_file.path)) if m.to_file
+    if file = (m.to_file || m.to_file(:image))
+      m.datahash = Digest::SHA1.hexdigest(file.read)
+    end
   end
   
   after_destroy do |medium|
@@ -118,8 +120,14 @@ class Medium < ActiveRecord::Base
   
   # Paperclip
   
-  def to_file
-    document.to_file || image.to_file
+  def to_file(attachment = :document, style = :original)
+    path = if attachment == :document
+      document.staged_path || document.path
+    else
+      image.staged_path || image.path(style)
+    end
+
+    path ? File.open(path) : nil
   end
 
   def content_type(style = :original)
@@ -138,7 +146,7 @@ class Medium < ActiveRecord::Base
   
   def data(style = :original)
     if style == :original
-      document.file? ? document.to_file(style).read : image.to_file(style).read
+      document.file? ? to_file(:document, style).read : to_file(:iamge, style).read
     elsif image_style?(style)
       File.read path(style)
     else
@@ -194,13 +202,15 @@ class Medium < ActiveRecord::Base
   end
   
   def url(style = :original)
-    if style == :original
+    result = if style == :original
       document.url(:original)
     elsif image_style?(style)
       image.url(style)
     else
       custom_style_url(style)
     end
+
+    result.present? ? result.gsub(/%3F/, '?') : result
   end
   
   def path(style = :original)
@@ -266,10 +276,10 @@ class Medium < ActiveRecord::Base
   end
 
   def document=(value)
-    attachment_for(:document).assign(value)
+    document.assign(value)
 
     if value
-      ct = MIME::Types.type_for(value.original_filename).first
+      ct = MIME::Types.type_for(document.original_filename).first
       self.document_content_type = ct.to_s if ct
     end
   end

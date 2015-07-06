@@ -17,12 +17,12 @@ describe Medium do
   end
   
   it "should accept images as image attachment" do
-    expect(Medium.new(:image => File.open("#{Rails.root}/spec/fixtures/image_a.jpg")).valid?).to be_truthy
+    medium = Medium.new(:image => File.open("#{Rails.root}/spec/fixtures/image_a.jpg"))
+    expect(medium).to be_valid
   end
   
   it "should return correct paths and urls" do
     medium = Medium.create :document => File.open("#{Rails.root}/spec/fixtures/text_file.txt")
-    
     work_off
     medium.reload
 
@@ -36,7 +36,6 @@ describe Medium do
     medium.reload
     
     expect(medium.path(:original)).to eql("#{Rails.root}/data/media.test/original/#{medium.ids}/document.txt")
-    binding.pry
     expect(medium.path(:icon)).to eql("#{Rails.root}/data/media.test/icon/#{medium.ids}/image.jpg")
     expect(medium.url(:original)).to eql("/media/images/original/#{medium.ids}/document.txt?#{medium.document.updated_at}")
     expect(medium.url(:icon)).to eql("/media/images/icon/#{medium.ids}/image.jpg?#{medium.image.updated_at}")
@@ -57,7 +56,7 @@ describe Medium do
     medium = Medium.last
     
     expect(medium.document.file?).to be_falsey
-    expect(medium.image.to_file).not_to be_nil
+    expect(medium.to_file :image).not_to be_nil
     expect(medium.image.content_type).to eql('image/jpeg')
   end
   
@@ -124,7 +123,13 @@ describe Medium do
     Delayed::Worker.delay_jobs = true
     expect(Delayed::Job.count).to eq(0)
     medium = Factory.create(:medium)
-    expect(Delayed::Job.count).to eq(1)
+    expect(Delayed::Job.count).to eq(2)
+  end
+
+  it "should generate a datahash for attachments" do
+    medium = FactoryGirl.create :medium
+    medium = Medium.last
+    expect(medium.datahash).to eq("233fcdfee7c55b3978967aacaefb9a08057607a0")
   end
   
 end

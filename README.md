@@ -4,7 +4,7 @@ ConedaKOR allows you to store arbitrary documents and interconnect them with
 relationships. You can build huge semantic networks for an unlimited amount of
 domains.
 
-To learn more and for installation instructions, please visit our \
+To learn more and for installation instructions, please visit our
 [our website (German)](http://coneda.net/pages/download)
 
 ## License ##

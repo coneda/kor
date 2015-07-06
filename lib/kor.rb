@@ -80,7 +80,7 @@ module Kor
   def self.database_config
     Rails.configuration.database_configuration[Rails.env]
   end
-  
+
 
   ####################### uri handling #########################################
 
