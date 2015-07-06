@@ -48,6 +48,7 @@ group :test do
   gem 'capybara'
   gem 'database_cleaner'
   gem 'factory_girl_rails'
+  gem 'test-unit', :platforms => [:ruby_22]
 end
 
 group :development do

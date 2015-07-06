@@ -149,6 +149,7 @@ GEM
       multi_json (~> 1.0)
       websocket-driver (>= 0.2.0)
     polyglot (0.3.5)
+    power_assert (0.2.2)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -226,6 +227,8 @@ GEM
       activesupport (~> 3.0)
       railties (~> 3.0)
     system_timer (1.2.4)
+    test-unit (3.0.8)
+      power_assert
     therubyracer (0.12.2)
       libv8 (~> 3.16.14.0)
       ref
@@ -293,6 +296,7 @@ DEPENDENCIES
   sprockets
   strong_parameters
   system_timer
+  test-unit
   therubyracer
   thin
   uglifier
