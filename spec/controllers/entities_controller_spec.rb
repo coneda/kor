@@ -184,7 +184,9 @@ RSpec.describe EntitiesController, :type => :controller do
     side_entity
     
     get :recent
-    expect(response.body).to have_selector("a[href='#{entity_path(side_entity)}']")
+
+    href = web_path(:anchor => "/entities/#{side_entity.id}")
+    expect(response.body).to have_selector("a[href='#{href}']")
   end
   
   
