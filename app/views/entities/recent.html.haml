@@ -26,7 +26,7 @@
       - @entities.each do |e|
         %tr
           %td.subtitle.expanding
-            = link_to h(e.display_name), e
+            = link_to h(e.display_name), web_path(:anchor => "/entities/#{e.id}")
             = h(e.kind.name)
           %td.subtitle= e.collection.name
           %td.subtitle= e.last_updated_by.try(:display_name)
