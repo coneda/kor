@@ -37,6 +37,13 @@ class RemoveMongodb < ActiveRecord::Migration
       else
         {}
       end
+
+      if new_value["fields"]
+        new_value["fields"].each do |k, v|
+          v.force_encoding("utf-8")
+        end
+      end
+
       entity.update_column :attachment, JSON.dump(new_value)
     end
 
