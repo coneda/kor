@@ -69,4 +69,5 @@ end
 group :import_export do
   gem 'mixlib-cli'
   gem 'spreadsheet'
+  gem 'ruby-progressbar'
 end
