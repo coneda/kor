@@ -1,15 +1,21 @@
 namespace :kor do
 
   task :to_neo => :environment do
+    require "ruby-progressbar"
     graph = Kor::NeoGraph.new(User.admin)
 
     graph.reset!
 
-    Relationship.includes(:from, :to, :relation).limit(100).find_each do |r|
-      p "now #{Time.now} #{r.id}"
-      if !r.to.is_medium? && !r.from.is_medium?
-        graph.create r
-      end
+    progress = ProgressBar.create(
+      :title => "Importing to Neo4j",
+      :total => Relationship.count,
+      :format => "%t: |%B|%a|%E|",
+      :throttle_rate => 0.5
+    )
+
+    Relationship.includes(:from, :to, :relation).find_each do |r|
+      progress.increment
+      graph.create r
     end
   end
 
