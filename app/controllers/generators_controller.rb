@@ -17,7 +17,7 @@ class GeneratorsController < ApplicationController
   end
   
   def new
-    @generator = Generator.new(params[:generator])
+    @generator = Generator.new(generator_params)
     @generator.kind = @kind
   end
   
@@ -28,7 +28,7 @@ class GeneratorsController < ApplicationController
   def update
     @generator = @generators.find(params[:id])
 
-    if @generator.update_attributes params[:generator]
+    if @generator.update_attributes(generator_params)
       flash[:notice] = I18n.t('objects.update_success', :o => @generator.name)
       redirect_to :action => 'index'
     else
@@ -37,7 +37,7 @@ class GeneratorsController < ApplicationController
   end
   
   def create
-    @generator = @generators.new(params[:generator])
+    @generator = @generators.new(generator_params)
     
     if @generator.save
       flash[:notice] = I18n.t('objects.create_success', :o => @generator.name)
@@ -55,6 +55,10 @@ class GeneratorsController < ApplicationController
   end
   
   protected
+    def generator_params
+      params.require(:generator).permit!
+    end
+
     def generally_authorized?
       current_user.kind_admin? || (action_name == 'show')
     end

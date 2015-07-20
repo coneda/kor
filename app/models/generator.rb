@@ -4,7 +4,7 @@ class Generator < ActiveRecord::Base
   
   validates :name,
     :presence => true,
-    :format => {:with => /^[a-z0-9_]+$/},
+    :format => {:with => /\A[a-z0-9_]+\z/},
     :white_space => true
 
   validates :directive,

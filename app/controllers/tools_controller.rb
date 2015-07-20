@@ -216,7 +216,7 @@ class ToolsController < ApplicationController
       acl_create = authorized?(:create, collection)
       
       if acl_delete && acl_create
-        Entity.update_all "collection_id = #{params[:collection_id]}", ["id IN (?)", params[:entity_ids]]
+        Entity.where(:id => params[:entity_ids]).update_all :collection_id => params[:collection_id]
         flash[:notice] = I18n.t('messages.entities_moved_to_collection', :o => collection.name)
         redirect_to clipboard_path
       else
@@ -343,7 +343,7 @@ class ToolsController < ApplicationController
       if allowed_to_create and allowed_to_delete_requested_entities
         @entity = Kor::EntityMerger.new.run(
           :old_ids => params[:entity_ids], 
-          :attributes => params[:entity].merge(:creator_id => current_user.id)
+          :attributes => entity_params.merge(:creator_id => current_user.id)
         )
         
         if @entity
@@ -363,5 +363,5 @@ class ToolsController < ApplicationController
       flash[:notice] = I18n.t('notices.entities_destroyed')
       redirect_to :action => 'clipboard'
     end
-    
+
 end

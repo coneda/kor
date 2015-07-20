@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
     :logged_in?,
     :blaze
   
-  before_filter :locale, :maintenance, :authentication, :authorization, :legal
+  before_filter :locale, :authentication, :authorization, :legal
 
   before_filter do
     @blaze = nil
@@ -24,14 +24,6 @@ class ApplicationController < ActionController::Base
     def legal
       if current_user && !current_user.guest? && !current_user.terms_accepted
         redirect_to :controller => 'static', :action => 'legal'
-      end
-    end
-
-    # redirects to the under_maintenance action of the static
-    # controller if Kor['dev']['down_for_maintenance'] is set to true
-    def maintenance
-      if Kor.under_maintenance?
-        redirect_to :controller => 'static', :action => 'under_maintenance'
       end
     end
 
@@ -220,6 +212,18 @@ class ApplicationController < ActionController::Base
 
     def blaze
       @blaze ||= Kor::Blaze.new(current_user)
+    end
+
+    def entity_params
+      params.require(:entity).permit(
+        :collection_id,
+        :name, :distinct_name, :subtype, :comment, 
+        :synonyms => []
+      ).tap do |whitelisted|
+        whitelisted[:dataset] = params[:entity][:dataset]
+        whitelisted[:datings_attributes] = params[:entity][:datings_attributes]
+        whitelisted[:properties] = params[:entity][:properties]
+      end
     end
 
 end

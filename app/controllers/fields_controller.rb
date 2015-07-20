@@ -14,7 +14,7 @@ class FieldsController < ApplicationController
   end
 
   def new
-    @field = params[:klass].constantize.new(params[:field])
+    @field = sanitize_field_class(params[:klass]).constantize.new(field_params)
     @form_url = kind_fields_path(@kind)
   end
   
@@ -27,7 +27,7 @@ class FieldsController < ApplicationController
     @field = Field.find(params[:id])
     @form_url = kind_field_path(@kind, @field)
     
-    if @field.update_attributes params[:field]
+    if @field.update_attributes field_params
       flash[:notice] = I18n.t('objects.update_success', :o => @field.show_label)
       redirect_to :action => 'index'
     else
@@ -36,7 +36,7 @@ class FieldsController < ApplicationController
   end
   
   def create
-    @field = params[:klass].constantize.new(params[:field])
+    @field = sanitize_field_class(params[:klass]).constantize.new(field_params)
     @form_url = kind_fields_path(@kind)
     
     if @field.save
@@ -74,7 +74,18 @@ class FieldsController < ApplicationController
   end
 
   protected
+
+    def field_params
+      require(:field).permit!
+    end
+
     def generally_authorized?
       current_user.kind_admin?
+    end
+
+    def sanitize_field_class(str)
+      if Kind.available_fields.include?(str)
+         str
+      end
     end
 end

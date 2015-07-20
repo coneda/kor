@@ -86,15 +86,19 @@ class Entity < ActiveRecord::Base
     relation_conditions =  "(from_id = #{self[:id]} OR to_id = #{self[:id]})"
     collection_conditions = "IF(from_id = #{self[:id]},tos_relationships.collection_id,entities.collection_id) IN (?)"
     media_conditions = case options[:media]
-      when :no then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) != #{Kind.medium_kind.id} AND"
-      when :yes then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) = #{Kind.medium_kind.id} AND"
+      when :no then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) != #{Kind.medium_kind.id}"
+      when :yes then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) = #{Kind.medium_kind.id}"
       when :both then ""
     end
     
     relationships = Relationship.includes(:from, :relation, :to).order("tos_relationships.name, entities.name")
-    relationships = relationships.where(
-      "#{media_conditions} #{relation_conditions} AND #{collection_conditions}",
-      Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
+    relationships = relationships.
+      where(media_conditions).
+      where(relation_conditions).
+      where(
+        collection_conditions
+        Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
+      )
     )
     
     relationships.group_by{|r| r.relation_name_for_entity(self)}

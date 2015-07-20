@@ -181,22 +181,6 @@ module Kor
   
   # ------------------------------------------------------------- maintenace ---
   
-  def self.under_maintenance_path
-    "#{Rails.root}/tmp/maintenance.txt"
-  end
-  
-  def self.under_maintenance(active_maintenance = true)
-    if active_maintenance
-      system "touch #{under_maintenance_path}"
-    else
-      system "rm #{under_maintenance_path}"
-    end
-  end
-  
-  def self.under_maintenance?
-    File.exists? "#{under_maintenance_path}"
-  end
-  
   def self.notify_upcoming_expiries
     users = User.find(:all, :conditions => [ "expires_at < ?", 2.weeks.from_now ] )
     

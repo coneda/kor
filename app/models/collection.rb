@@ -133,8 +133,11 @@ class Collection < ActiveRecord::Base
     end
   end
   
-  
   def policies
+    self.class.policies
+  end
+  
+  def self.policies
     ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
   end
   

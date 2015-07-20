@@ -19,7 +19,7 @@ class RelationsController < ApplicationController
   end
 
   def create
-    @relation = Relation.new(params[:relation])
+    @relation = Relation.new(relation_params)
 
     if @relation.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => I18n.t('nouns.relation', :count => 1) )
@@ -35,7 +35,7 @@ class RelationsController < ApplicationController
     
     @relation = Relation.find(params[:id])
     
-    if @relation.update_attributes(params[:relation])
+    if @relation.update_attributes(relation_params)
       flash[:notice] = I18n.t( 'objects.update_success', :o => I18n.t('nouns.relation', :count => 1) )
       redirect_to relations_path
     else
@@ -55,6 +55,11 @@ class RelationsController < ApplicationController
   end
   
   protected
+
+    def relation_params
+      params.require(:relation).permit!
+    end
+
     def generally_authorized?
       current_user.relation_admin?
     end

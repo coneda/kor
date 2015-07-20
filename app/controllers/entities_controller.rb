@@ -142,8 +142,9 @@ class EntitiesController < ApplicationController
   end
 
   def create
-    @entity = Entity.new(:kind_id => params[:entity][:kind_id])
-    @entity.attributes = params[:entity]
+    @entity = Entity.new
+    @entity.kind_id = params[:entity][:kind_id]
+    @entity.assign_attributes entity_params
     
     if authorized?(:create, @entity.collection)
       @entity.creator_id = current_user.id
@@ -212,7 +213,7 @@ class EntitiesController < ApplicationController
     if authorized_to_edit && authorized_to_move
       @entity.updater_id = current_user.id
 
-      if @entity.update_attributes(params[:entity])
+      if @entity.update_attributes(entity_params)
         SystemGroup.find_or_create_by_name('invalid').remove_entities @entity
         flash[:notice] = I18n.t( 'objects.update_success', :o => @entity.display_name )
         redirect_to web_path(:anchor => entity_path(@entity))
