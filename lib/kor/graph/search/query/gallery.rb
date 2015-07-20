@@ -17,7 +17,7 @@ class Kor::Graph::Search::Query::Gallery < Kor::Graph::Search::Query::Base
   private
 
     def execute
-      result = Entity.allowed(user, :view).load_fully.newest_first
+      result = Entity.allowed(user, :view).media.load_fully.newest_first
       
       @total = result.count
       
