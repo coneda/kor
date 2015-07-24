@@ -25,7 +25,7 @@ class Kor::Import::Excel < Kor::Export::Excel
       puts "SIMULATION"
     end
 
-    Dir["#{@source_dir}/entities.*.xls"].each do |file|
+    Dir["#{@source_dir}/*.xls"].each do |file|
       book = Spreadsheet.open file
       self.file = file.split('/').last
       sheet = book.worksheet 0
