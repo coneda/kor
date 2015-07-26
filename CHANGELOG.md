@@ -5,7 +5,7 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
-## Version 1.9.0
+## Version 1.9.1
 
 ### User
 
@@ -13,9 +13,16 @@ commit history on GitHub.
 * fully replaced MongoDB with Elasticsearch
 * replaced the former WebServices with fields and generators
 * removed rating functionality
+* command line based excel import/export
+* a page showing isolated entities
+* navigating from one entity to another doesn't reload the page anymore
+* validation errors for unnecessary white space
+* reincarnation of the feature "published groups"
+* dropped web services in favor of generators
 
 ### Internal
 
 * fully replaced machinist with factory_girl for fixture creation
+* upgraded many gem dependencies like paperclip and rspec
 * migrated to the rspec `expect` syntax
-* upgraded rspec to version 3.1.0
+* using SecureRandom for generating UUIDs
