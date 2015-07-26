@@ -292,7 +292,7 @@ ComponentSearch.hash_to_result = function(hash) {
     $(hash.images).each(function(i, e) {
       var image_tpl = KorTemplate.get('.result_images .result_image');
       image_tpl.set('.kor_medium_frame', 'id', 'kor_medium_frame_' + e.id);
-      image_tpl.set('.kor_medium_frame > a', 'href', '/entities/' + e.id);
+      image_tpl.set('.kor_medium_frame > a', 'href', '/blaze#/entities/' + e.id);
       image_tpl.set('.kor_medium_frame > a', 'target', '_blank');
       image_tpl.set('.kor_medium_frame > a > img', 'src', e.url);
       images_tpl.find('tr.images').append(image_tpl);

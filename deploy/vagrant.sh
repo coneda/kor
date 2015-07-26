@@ -2,18 +2,21 @@
 
 export DEBIAN_FRONTEND=noninteractive
 
-function install_standalone {
-  apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
-  echo 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen' | tee /etc/apt/sources.list.d/mongodb.list
+function system_updates {
+  apt-get update
+  apt-get dist-upgrade -y
+  apt-get clean
+}
 
+function install_standalone {
   debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
   debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
 
   wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
-  echo 'deb http://packages.elasticsearch.org/elasticsearch/1.3/debian stable main' | tee /etc/apt/sources.list.d/elastic.list
+  echo 'deb http://packages.elasticsearch.org/elasticsearch/1.5/debian stable main' | tee /etc/apt/sources.list.d/elastic.list
 
   apt-get update
-  apt-get install -y mysql-server mongodb-10gen elasticsearch
+  apt-get install -y mysql-server elasticsearch
   apt-get clean
 
   update-rc.d elasticsearch defaults
@@ -24,7 +27,9 @@ function install_standalone {
 function install_requirements {
   apt-get update
   apt-get upgrade -y
-  apt-get install -y git-core build-essential ruby apache2 apache2-prefork-dev libmysqlclient-dev libcurl4-openssl-dev ruby-dev libxml2-dev libxslt-dev openjdk-7-jre imagemagick ffmpeg libapache2-mod-passenger zip
+  apt-get install -y git-core build-essential ruby apache2 apache2-prefork-dev \
+    libmysqlclient-dev libcurl4-openssl-dev ruby-dev libxml2-dev libxslt-dev \
+    openjdk-7-jre imagemagick ffmpeg libapache2-mod-passenger zip
   apt-get clean
 }
 

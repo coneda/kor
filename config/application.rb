@@ -31,6 +31,7 @@ module Kor
   
     config.assets.enabled = true
     config.assets.initialize_on_precompile = false
+    config.assets.precompile += ["kor.js", "blaze.js", "master.css", "blaze.css", "kor_index.js", "kor_index.css"]
   
     config.cache_store = :file_store, 'tmp/cache'
     
