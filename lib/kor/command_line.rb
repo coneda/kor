@@ -262,4 +262,10 @@ class Kor::CommandLine
     end
   end
 
+  def connect_random
+    require "ruby-progressbar"
+    graph = Kor::NeoGraph.new(User.admin)
+    graph.connect_random
+  end
+
 end
