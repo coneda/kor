@@ -10,10 +10,17 @@ class Kor::NeoGraph
   end
 
   def reset!
-    commit "MATCH ()-[r]-() DELETE r"
-    commit "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
-    commit "DROP INDEX ON :entity(id)"
-    commit "DROP INDEX ON :entity(kind_id)"
+    print [
+      "You asked for a neo4j data reset. This is not possible in an efficient",
+      "manner, please stop neo4j, delete its data directory and start neo4j",
+      "again. Then hit enter."
+    ].join(" ")
+    x = STDIN.gets
+
+    # simple_cypher "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
+    # simple_cypher "MATCH ()-[r]-() DELETE r"
+    # simple_cypher "DROP INDEX ON :entity(id)"
+    # simple_cypher "DROP INDEX ON :entity(kind_id)"
   end
 
   def store(item)
@@ -61,33 +68,34 @@ class Kor::NeoGraph
     end
   end
 
-  def create_all
-    # new_progress_bar "importing entities", Entity.count
-    # Entity.find_in_batches :batch_size => 100 do |batch|
-    #   results = cypher(
-    #     "statement" => "CREATE (n:entity {e}) RETURN n.id, id(n)",
-    #     "parameters" => {
-    #       "e" => batch.map{|item|
-    #         {
-    #           "id" => item.id,
-    #           "uuid" => item.uuid,
-    #           "collection_id" => item.collection_id,
-    #           "name" => item.display_name,
-    #           "distinct_name" => item.distinct_name,
-    #           "kind_id" => item.kind_id,
-    #           "subtype" => item.subtype,
-    #           "synonyms" => item.synonyms,
-    #           "medium_id" => item.medium_id,
-    #           "created_at" => item.created_at.to_f,
-    #           "updated_at" => item.updated_at.to_f
-    #         }
-    #       }
-    #     }  
-    #   )
-    # end
+  def import_all
+    new_progress_bar "importing entities", Entity.count
+    Entity.find_in_batches :batch_size => 100 do |batch|
+      results = cypher(
+        "statement" => "CREATE (n:entity {e}) RETURN n.id, id(n)",
+        "parameters" => {
+          "e" => batch.map{|item|
+            increment
+            {
+              "id" => item.id,
+              "uuid" => item.uuid,
+              "collection_id" => item.collection_id,
+              "name" => item.display_name,
+              "distinct_name" => item.distinct_name,
+              "kind_id" => item.kind_id,
+              "subtype" => item.subtype,
+              "synonyms" => item.synonyms,
+              "medium_id" => item.medium_id,
+              "created_at" => item.created_at.to_f,
+              "updated_at" => item.updated_at.to_f
+            }
+          }
+        }  
+      )
+    end
 
-    # commit "CREATE INDEX ON :entity(id)"
-    # commit "CREATE INDEX ON :entity(kind_id)"
+    simple_cypher "CREATE INDEX ON :entity(id)"
+    simple_cypher "CREATE INDEX ON :entity(kind_id)"
 
     new_progress_bar "importing relationships", Relationship.count
     Relationship.includes(:relation).find_in_batches :batch_size => 1000 do |batch|
@@ -119,89 +127,12 @@ class Kor::NeoGraph
     end
   end
 
-  # def create(item, bulk = false)
-  #   case item
-  #     when Array
-  #       data = item.map{|i| create(i, true)}
-  #       # response = request "post", "/db/data/batch", {}, data.to_json
-  #       # if response.ok?
-  #       #   Oj.load response.body
-  #       # else
-  #       #   binding.pry
-  #       #   x = 12
-  #       # end
-  #     when Entity
-  #       data = {
-  #         "id" => item.id,
-  #         "uuid" => item.uuid,
-  #         "collection_id" => item.collection_id,
-  #         "name" => item.display_name,
-  #         "distinct_name" => item.distinct_name,
-  #         "kind_id" => item.kind_id,
-  #         "subtype" => item.subtype,
-  #         "synonyms" => item.synonyms,
-  #         "medium_id" => item.medium_id,
-  #         "created_at" => item.created_at.to_f,
-  #         "updated_at" => item.updated_at.to_f
-  #       }
-
-  #       data.each do |k, v|
-  #         data.delete(k) if v.blank?
-  #       end
-
-  #       if bulk
-  #         data
-  #         # {"to" => "/node", "method" => "post", "body" => , "labels" => ["entity"]}
-  #       else
-  #         response = request "post", "/db/data/node", {}, data.to_json
-  #         if response.ok?
-  #           response.headers["Location"].split("\/").last
-  #         else
-  #           puts response.body, response.status
-  #           nil
-  #         end
-  #       end
-  #     when Relationship
-  #       from_id = @node_ids[item.from_id]
-  #       to_id = @node_ids[item.to_id]
-  #       name = item.relation.name
-
-  #       data = {
-  #         "id" => item.id,
-  #         "to" => node_url(to_id),
-  #         "type" => name,
-  #         "data" => {
-  #           "uuid" => item.uuid,
-  #           "created_at" => item.created_at.to_f,
-  #           "updated_at" => item.updated_at.to_f
-  #         }
-  #       }
-
-  #       if bulk
-  #         {"to" => "/node/#{from_id}/relationships", "method" => "post", "body" => data}
-  #       else
-  #         response = request "post", "#{node_path(from_id)}/relationships", {}, data.to_json
-  #         if response.ok?
-  #           # puts "success"
-  #         else
-  #           puts response.body, response.status
-  #           nil          
-  #         end 
-  #       end
-  #     when Relation
-  #   end
-  # end
-
-  def update(item)
-    case item
-      when Entity
-      when Relationship
-      when Relation
-    end
-  end
-
   def cypher(statements = [])
     statements = [statements] unless statements.is_a?(Array)
+    # puts "CYPHER QUERY:"
+    # statements.each do |s|
+    #   puts "  #{s}"
+    # end
     response = request "post", "/db/data/transaction/commit", {}, Oj.dump(
       "statements" => statements
     )
@@ -219,58 +150,6 @@ class Kor::NeoGraph
   def simple_cypher(statement)
     cypher("statement" => statement)
   end
-
-  def commit(statement)
-    response = request "post", "/db/data/transaction/commit", {}, {
-      "statements" => [{"statement" => statement}]
-    }.to_json
-
-    if response.ok?
-      JSON.parse(response.body)
-    else
-      puts response.body, response.status
-      nil
-    end
-  end
-
-  def find_id_by_uuid(uuid)
-    if data = commit("MATCH n WHERE n.uuid = '#{uuid}' RETURN id(n)")
-      if d = data["results"].first["data"].first
-        d["row"].first
-      end
-    end
-  end
-
-  def node_url(id)
-    "#{@options[:base_url]}#{node_path id}"
-  end
-
-  def node_path(id)
-    "/db/data/node/#{id}"
-  end
-
-  def find(item)
-    case item
-      when Entity
-        response = request "post", "/db/data/transaction/commit", {}, {
-          "statements" => [
-            {"statement" => "MATCH n WHERE n.uuid = '#{item.uuid}' RETURN n, id(n)"}
-          ]
-        }.to_json
-
-        if response.ok?
-          data = JSON.parse(response.body)
-          data["results"].first["data"].first["row"].first
-        end
-      when Relationship
-      when Relation
-    end
-  end
-
-  def search
-
-  end
-
 
   protected
 

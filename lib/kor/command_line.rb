@@ -248,22 +248,10 @@ class Kor::CommandLine
     graph = Kor::NeoGraph.new(User.admin)
 
     graph.reset!
-
-    progress = ProgressBar.create(
-      :title => "Importing to Neo4j",
-      :total => Relationship.count,
-      :format => "%t: |%B|%a|%E|",
-      :throttle_rate => 0.5
-    )
-
-    Relationship.includes(:from, :to, :relation).find_each do |r|
-      progress.increment
-      graph.create r
-    end
+    graph.import_all
   end
 
   def connect_random
-    require "ruby-progressbar"
     graph = Kor::NeoGraph.new(User.admin)
     graph.connect_random
   end
