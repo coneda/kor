@@ -26,7 +26,7 @@ class Kor::Import::Excel < Kor::Export::Excel
     end
 
     Dir["#{@source_dir}/*.xls"].each do |file|
-      book = Spreadsheet.open file
+      book = Spreadsheet.open file, "rb"
       self.file = file.split('/').last
       sheet = book.worksheet 0
 
