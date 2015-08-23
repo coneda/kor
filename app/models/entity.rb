@@ -301,7 +301,7 @@ class Entity < ActiveRecord::Base
   
   scope :allowed, lambda { |user, policy|
     collections = Auth::Authorization.authorized_collections(user, policy)
-    where("collection_id IN (?)", collections.map{|c| c.id})
+    where("entities.collection_id IN (?)", collections.map{|c| c.id})
   }
   
 
@@ -545,20 +545,20 @@ class Entity < ActiveRecord::Base
   end
   
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
-  scope :only_kinds, lambda {|ids| ids.present? ? where("kind_id IN (?)", ids) : scoped }
-  scope :within_collections, lambda {|ids| ids.present? ? where("collection_id IN (?)", ids) : scoped }
+  scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : scoped }
+  scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : scoped }
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
-  scope :searcheable, lambda { where("kind_id != ?", Kind.medium_kind.id) }
-  scope :media, lambda { where("kind_id = ?", Kind.medium_kind.id) }
-  scope :without_media, lambda { where("kind_id != ?", Kind.medium_kind.id) }
+  scope :searcheable, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
+  scope :media, lambda { where("entities.kind_id = ?", Kind.medium_kind.id) }
+  scope :without_media, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
   scope :alphabetically, order("name asc, distinct_name asc")
   scope :newest_first, order("created_at DESC")
   scope :globally_identified_by, lambda {|uuid| uuid.blank? ? scoped : where(:uuid => uuid) }
   scope :is_a, lambda { |kind_id|
     kind = Kind.find_by_name(kind_id.to_s)
     kind ||= Kind.find_by_id(kind_id)
-    kind ? where(:kind_id => kind.id) : scoped
+    kind ? where("entities.kind_id = ?", kind_id) : scoped
   }
   scope :named_exactly_like, lambda {|value| where("name like :value or concat(name,' (',distinct_name,')') like :value", :value => value) }
   scope :valid, lambda { |valid|
@@ -601,22 +601,33 @@ class Entity < ActiveRecord::Base
       where("entities.id IN (?)", ids.uniq)
     end
   }
-  scope :related_to, lambda { |user, relationships|
+  scope :related_to, lambda { |user, spec|
     entity_ids = nil
-    
-    (relationships || []).each do |criterium|
-      to_entities = Entity.named_like(user, criterium[:entity_name])
-      rs = Relationship.find_by_participants_and_relation_name(
-        :relation_name => criterium[:relation_name],
-        :to_id => to_entities.collect{|e| e.id}
-      )
-      
-      current_ids = rs.map{|r| r.from_entity_for_relation_name(criterium[:relation_name]).id }
-      entity_ids ||= current_ids  
-      entity_ids &= current_ids
+    spec ||= []
+
+    relation_names = spec.map{|s| s["relation_name"]}.select{|e| e.present?}
+    entity_names = spec.map{|s| s["entity_name"]}.select{|e| e.present?}
+
+    if !relation_names.empty? && !entity_names.empty?
+      conds = []
+      vars = []
+      entity_names.select{|en| en.present?}.each do |n|
+        conds << "tos.name LIKE ? OR froms.name LIKE ?"
+        vars += ["%#{n}%", "%#{n}%"]
+      end
+
+      result = select("distinct entities.id AS joinid, entities.*").
+      joins("LEFT JOIN relationships rf ON rf.from_id = entities.id").
+      joins("LEFT JOIN relations relf ON relf.id = rf.relation_id").
+      joins("LEFT JOIN entities tos ON tos.id = rf.to_id").
+      joins("LEFT JOIN relationships rr ON rr.to_id = entities.id").
+      joins("LEFT JOIN relations relr ON relr.id = rr.relation_id").
+      joins("LEFT JOIN entities froms ON froms.id = rr.from_id").
+      where("relf.name IN (?) OR relr.reverse_name IN (?)", relation_names, relation_names).
+      where(conds.join(' OR '), *vars)
+    else
+      scoped
     end
-    
-    entity_ids ? where("entities.id IN (?)", entity_ids.uniq) : scoped
   }
   scope :dated_in, lambda {|dating|
     dating.blank? ? scoped : where("entities.id IN (?)", EntityDating.between(dating).collect{|ed| ed.entity_id }.uniq)

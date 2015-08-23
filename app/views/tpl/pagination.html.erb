@@ -5,7 +5,7 @@
       <a href="#" ng-show="data.page != 1" ng-click="update(data.page - 1, $event)">
         <img alt="Pager_left" class="kor_command_image" src="/assets/pager_left.gif" title="Zurückblättern">
       </a>
-      <input type="text" ng-model="new_page">
+      <input type="text" ng-model="new_page" wu-delayed-model="true">
       von
       <span ng-bind="data.total_pages"></span>
       <a href="#" ng-show="data.page < data.total_pages" ng-click="update(data.page * 1 + 1, $event)">

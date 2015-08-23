@@ -4,7 +4,7 @@
 //= require jquery_ujs
 //= require angular
 //= require angular-route
-
+//= require modules/vendor/web-utils-all.0.1.11.min
 
 //= require modules/old/application.js
 //= require modules/old/collection_selector.js

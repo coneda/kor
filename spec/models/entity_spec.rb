@@ -36,8 +36,9 @@ describe Entity do
     )
     
     result = @query.results.items
-    expect(result.size).to eql(1)
-    expect(result.first).to eql(@mona_lisa)
+    expect(result.size).to eql(2)
+    expect(result.last).to eql(@mona_lisa)
+    expect(result.first).to eql(last_supper)
   end
 
   it "should accept nested attributes for entity datings" do

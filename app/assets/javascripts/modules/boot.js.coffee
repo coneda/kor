@@ -1,4 +1,4 @@
-kor = angular.module('kor', ["ngRoute"])
+kor = angular.module('kor', ["ngRoute", "web-utils"])
 
 kor.controller "record_history_controller", [
   "$http", "$location",
