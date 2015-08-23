@@ -275,8 +275,7 @@ class Kor::Elastic
     response = self.class.request "post", "/entities/_search", nil, data
 
     if response.first == 200
-      # puts JSON.pretty_generate(response)
-      # debugger
+      # binding.pry
 
       ::Kor::SearchResult.new(
         :total => response.last['hits']['total'],

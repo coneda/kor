@@ -52,7 +52,7 @@ group :test do
 end
 
 group :development do
-  # gem 'method_profiler'
+  gem 'method_profiler'
 end
 
 group :test, :development do

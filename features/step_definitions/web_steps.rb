@@ -1,20 +1,22 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "selectors"))
 
-module WithinHelpers
-  def with_scope(locator)
-    locator ? within(*selector_for(locator)) { yield } : yield
-  end
-end
-World(WithinHelpers)
+# module WithinHelpers
+#   def with_scope(locator)
+#     locator ? within(*selector_for(locator)) { yield } : yield
+#   end
+# end
+# World(WithinHelpers)
 
 When /^(.*) within (.+)$/ do |step, parent|
-  with_scope(parent) { step step }
+  within find(*selector_for(parent)) do
+    step(step)
+  end
 end
 
-When /^(.*) within ([^:]+):$/ do |step, parent, table_or_string|
-  with_scope(parent) { step "#{step}:", table_or_string }
-end
+# When /^(.*) within ([^:]+):$/ do |step, parent, table_or_string|
+#   within(parent) { step "#{step}:", table_or_string }
+# end
 
 Given /^(?:|I )am on (.+)$/ do |page_name|
   visit path_to(page_name)
@@ -77,14 +79,14 @@ Then /^(?:|I )should not see "([^\"]*)"$/ do |text|
 end
 
 Then /^(?:|I )should be on (.+)$/ do |page_name|
-  expected_uri = URI.parse(path_to(page_name))
   uri = URI.parse(current_url)
-
-  expect(uri.path).to eq(expected_uri.path)
-
-  if expected_uri.fragment
-    expect(uri.fragment).to eq(expected_uri.fragment)
+  expected_path = path_to(page_name)
+  expected_uri = URI.parse("#{uri.scheme}://#{uri.host}:#{uri.port}#{expected_path}")
+  if page_name.match(/ path$/)
+    uri.query = nil
+    expected_uri.query = nil
   end
+  expect(uri).to eq(expected_uri)
 end
 
 Then /^I should( not)? see element "(.*?)" with text "(.*?)"$/ do |negative, locator, text|

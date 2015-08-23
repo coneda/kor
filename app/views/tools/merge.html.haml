@@ -12,7 +12,7 @@
     - unless @entities.first.is_medium?
       = f.kor_input :name, :control => f.select(:name, @entities.map{|e| e.name}.uniq)
       = f.kor_input :distinct_name, :control => f.select( :distinct_name, @entities.map{|e| e.distinct_name}.uniq )
-      = f.kor_input :synonyms, :control => f.text_field(:synonyms, :value => @entities.map{|e| e.synonyms}.sum.sort.uniq.join(', '))
+      = f.kor_input :synonyms, :control => f.text_area(:synonyms, :value => @entities.map{|e| e.synonyms}.sum.sort.uniq.join("\n"))
       - if @entity.kind_id && @entity.kind.defines_schema?
         = fields_for "entity[dataset]", :builder => Stdlib::KorFormBuilder do |d|
           - @entity.kind.field_instances(@entity).each do |field|

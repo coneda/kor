@@ -37,9 +37,6 @@ function install_deb {
   export VERSION=`cat /vagrant/config/version.txt 2> /dev/null`
   export DEB_FILENAME="coneda-kor.v$VERSION.deb"
 
-  update-rc.d elasticsearch defaults
-  service elasticsearch start
-  
   dpkg -i /vagrant/deploy/build/$DEB_FILENAME
  
   su -c "cd /opt/kor/current ; RAILS_ENV=production bundle exec rake db:setup" kor

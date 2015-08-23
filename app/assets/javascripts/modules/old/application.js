@@ -34,7 +34,9 @@ Application.setup_kor_command_image_events = function() {
   images.mouseover(function(event) {
     var image = $(event.currentTarget);
     var new_src = image.attr('src').replace('.gif', '_over.gif');
-    image.attr('src', new_src);
+    if (!new_src.match(/_over_over/)) {
+      image.attr('src', new_src);
+    }
   });
   
   images.mouseout(function(event) {

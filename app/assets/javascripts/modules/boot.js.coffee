@@ -15,7 +15,7 @@ kor.config([
   (hp, sce, rp) ->
     sce.enabled(false)
 
-    hp.responseInterceptors.push [
+    hp.interceptors.push [
       "$q", "korFlash",
       (q, korFlash) ->
         (promise) ->

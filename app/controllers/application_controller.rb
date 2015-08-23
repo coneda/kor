@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
 
     # redirects to the under_maintenance action of the static
     # controller if Kor['dev']['down_for_maintenance'] is set to true
-    def maintenance # :doc:
+    def maintenance
       if Kor.under_maintenance?
         redirect_to :controller => 'static', :action => 'under_maintenance'
       end
@@ -58,34 +58,36 @@ class ApplicationController < ActionController::Base
       redirect_to '/500.html'
     end
 
-    def authentication # :doc:
+    def authentication
       session[:user_id] ||= if User.guest
         session[:expires_at] = Kor.session_expiry_time
         User.guest.id
       end
       
       if !current_user
-        history_store
         respond_to do |format|
-          format.html {redirect_to login_path}
+          format.html do
+            unless controller_name.match(/tpl/)
+              history_store
+            end
+            redirect_to login_path
+          end
           format.json do
             render :json => {:notice => I18n.t('notices.access_denied')}, :status => 403
           end
         end
       elsif session_expired?
         respond_to do |format|
+          old_history = session[:history]
+          reset_session
+          session[:history] = old_history
+
           format.html do
-            old_history = session[:history]
-            reset_session
-            session[:history] = old_history
             history_store unless request.path.match(/^\/blaze/)
             flash[:notice] = I18n.t('notices.session_expired')
             redirect_to login_path
           end
           format.json do
-            old_history = session[:history]
-            reset_session
-            session[:history] = old_history
             render :json => {:notice => I18n.t('notices.session_expired')}, :status => 403
           end
         end
@@ -177,11 +179,11 @@ class ApplicationController < ActionController::Base
     end
     
     def history_store(url = nil)
-      unless request.url.match(/^.+\/$/)
-        url ||= request.url
-      end
+      url ||= request.url
       session[:history] ||= []
-      session[:history] << url
+      if url.present? && url != root_url
+        session[:history] << url 
+      end
       session[:history].shift if session[:history].size > 20
     end
     

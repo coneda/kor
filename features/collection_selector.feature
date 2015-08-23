@@ -40,3 +40,5 @@ Feature: Collection selector
     And I press "Suchen"
     Then I should see "Der Schrei" within ".search_result"
     And I should not see "Mona Lisa"
+    # And I wait for "3" seconds
+    # And I debug

@@ -197,7 +197,12 @@ class Entity < ActiveRecord::Base
   end
 
   def synonyms=(value)
-    attachment['synonyms'] = value
+    attachment['synonyms'] = case value
+      when String then value.split("\n")
+      when Array then value
+      else
+        raise "value '#{value.inspect} can't be assigned as synonyms"
+    end
   end
 
   def properties

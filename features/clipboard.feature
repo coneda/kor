@@ -8,8 +8,9 @@ Feature: Clipboard
   Scenario: Mass relate
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "Werk/Werke"
-    And "Mona lisa" is selected as current entity
+    And "Mona Lisa" is selected as current entity
     And the medium "spec/fixtures/image_a.jpg"
+    Then I should see "wurde angelegt"
     And all entities of kind "Medium/Media" are in the clipboard
     And the relation "stellt dar/wird dargestellt von" between "Medium/Media" and "Werk/Werke"
     When I go to the clipboard

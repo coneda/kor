@@ -12,7 +12,7 @@ module HtmlSelectorsHelpers
       "html > body"
     when /the row for "([^\"]+)" "([^\"]+)"/
       object = $1.classify.constantize.find_by_name($2)
-      "##{$1}_#{object.id}"
+      [:css, "##{$1}_#{object.id}"]
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

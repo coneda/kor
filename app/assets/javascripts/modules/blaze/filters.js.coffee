@@ -1,5 +1,7 @@
 kor.filter('translate', ["korTranslate", (korTranslate) ->
-  return (input, options = {}) -> korTranslate.translate(input, options)
+  filter = (input, options = {}) -> korTranslate.translate(input, options)
+  filter.$stateful = true
+  filter
 ])
 
 kor.filter('capitalize', [ ->

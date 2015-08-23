@@ -17,7 +17,9 @@ Feature: Media
   Scenario: Previews for uploaded images
     Given I am logged in as "admin"
     And the medium "spec/fixtures/image_a.jpg"
-    When I go to the entity page for the last medium
+    And all media are processed
+    And I go to the root page
+    And I go to the entity page for the last medium
     Then I should see element "img[src*='/media/images/preview/000/000/001/image.jpg']" within ".viewer"
     
     

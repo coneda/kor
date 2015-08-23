@@ -32,6 +32,7 @@ Given /^I am logged in as "([^\"]*)"/ do |user|
   step "I fill in \"username\" with \"#{user}\""
   step "I fill in \"password\" with \"#{user}\""
   step "I press \"Anmelden\""
+  sleep 1
 end
 
 Given /^I re\-login as "([^"]*)"$/ do |user|
@@ -44,15 +45,14 @@ Given /^I am logged out$/ do
 end
 
 When /^"([^\"]*)" is selected as current entity$/ do |name|
-  step "I go to the entity page for \"#{name}\""
-  sleep 1
-  step "I click element \"img[alt=Select]\""
+  step "I mark \"#{name}\" as current entity"
 end
 
 When /^I mark "([^\"]*)" as current entity$/ do |name|
   step "I am on the entity page for \"#{name}\""
   step "I should see \"#{name}\""
   step "I follow \"Select\""
+  step "I should see \"wurde als aktuelle Entität markiert\""
 end
 
 When(/^I put "(.*?)" into the clipboard$/) do |name|
@@ -78,15 +78,14 @@ Given /^"([^\"]*)" is expanded$/ do |folded_menu_name|
   end
 end
 
-Given /^all entities of kind "([^"]*)" are in the clipboard$/ do |kind|
+Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
   Kind.find_by_name(kind.split("/").first).entities.each do |entity|
     if entity.is_medium?
       step "I go to the entity page for medium \"#{entity.id}\""
-      sleep 1
     else
       step "I go to the entity page for \"#{entity.name}\""
-      sleep 1
     end
+    step "I should see \"#{entity.name}\""
     step "I follow \"Target\""
   end
 end

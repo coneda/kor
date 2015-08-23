@@ -178,11 +178,12 @@ Feature: Own entities
       | harald     | Administrators | view               |
       | gerhard    | Administrators | view               |
       
-      
+
+  @javascript      
   Scenario: Change the mail address for a user with a personal collection
     When I go to the users page
     Then I should see "ja" within the row for "user" "harald"
-    And I follow "Pen" within the row for "user" "harald"
+    When I follow "Pen" within the row for "user" "harald"
     And I fill in "user[email]" with "harald@miami.com"
     And I press "Speichern"
     Then I should see "ja" within the row for "user" "harald"

@@ -53,7 +53,7 @@ Feature: search
     When I go to the expert search page
     And I fill in "query[name]" with "Bamberger Apokalypse"
     And I press "Suchen"
-    Then I should be on the expert search page
+    Then I should be on the expert search path
     
     
   @javascript @elastic

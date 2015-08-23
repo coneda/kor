@@ -43,7 +43,7 @@ Feature: Authentication and Authorization
     When I fill in "username" with "admin"
     And I fill in "password" with "admin"
     And I press "Anmelden"
-    Then I should see "Mona Lisa"
+    And I should see "Mona Lisa"
     Then I should be on the entity page for "Mona Lisa"
 
   

@@ -63,7 +63,6 @@ class TransportController < ApplicationController
   
   def images
     entities = Entity.find(:all, :conditions => ["id IN (?)", params[:entity_ids]], :include => :dataset).map do |entity|
-      puts "IN"
       path = entity.dataset.file_path('original') || 'not_found'
       {:id => entity.id, :original_path => path}
     end

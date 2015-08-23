@@ -53,7 +53,11 @@ Then /^I should see an input with the current date$/ do
 end
 
 When /^(?:|I )unselect "([^\"]*)" from "([^\"]*)"(?: within "([^\"]*)")?$/ do |value, field, selector|
-  with_scope(selector) do
+  if selector
+    within(:css, selector) do
+      unselect(value, :from => field)
+    end
+  else
     unselect(value, :from => field)
   end
 end
@@ -155,7 +159,7 @@ Then /^I should have access: (yes|no)$/ do |yesno|
 end
 
 When /I debug/ do
-  debugger
+  binding.pry
   x = 15
 end
 
