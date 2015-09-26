@@ -17,6 +17,8 @@
     %style{:type => "text/javascript"}
       [ng-cloak] {display: none;}
 
+    = render :partial => 'tpl/misc'
+
   %body.blaze_style{'style' => "background-color: #1e1e1e !important"}
     = render :partial => "layouts/blaze_header"
     = render :partial => "layouts/menu"

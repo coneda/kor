@@ -3,19 +3,25 @@
   <div id="session_info_slide" ng-show="info.session.show_panel">
     <div id="session_info_content" class="subtitle">
 
-      <div id="session_current_history" ng-show="history_available()">
-        {{'nouns.current_entity' | translate:{count: 'other'} }}
-        <div class="hr"></div>
-        <ul ng-repeat="entity in info.session.current_history">
-          <a href="/mark_as_current/{{entity.id}}" ng-hide="entity.medium_id">
-            {{entity.name}} ({{entity.id}})
-          </a>
-          <a href="/mark_as_current/{{entity.id}}" ng-show="entity.medium_id">
-            <img ng-src="{{entity.medium.url}}">
-          </a>
-        </ul>
-      </div>
+      <div class="session-current-history" ng-show="history_available()">
+        <div class="current-box">
+          {{'nouns.current_entity' | translate:{count: 1} }}
+          <div class="hr"></div>
+          <div kor-simple-entity="current_entity()"></div>
+        </div>
 
+        <div class="previous-current-box">
+          {{'nouns.previous_current_entity' | translate:{count: 'other'} }}
+          <div class="hr"></div>
+          <div ng-repeat="entity in previous_current_entities()" class="item">
+            <a kor-to-current="true" href="#">
+              <div kor-simple-entity="entity"></div>
+            </a>
+          </div>
+        </div>
+
+        <div class="clearfix"></div>
+      </div>
     </div>
   </div>
   

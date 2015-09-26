@@ -17,34 +17,27 @@ kor.service "entities_service", [
           url: "/entities/#{id}"
         )
 
-      relation_load: (id, relation, page = 1) ->
-        page = Math.min(relation.total_pages, page)
-        page = Math.max(1, page)
+      relation_load: (entity_id, relation) ->
+        relation.page ||= 1
         
         http(
           method: 'get',
-          url: "/api/1.0/entities/#{id}/relationships",
-          params: {'page': page - 1, name: relation.name}
+          url: "/api/1.0/entities/#{entity_id}/relationships",
+          params: {page: relation.page - 1, name: relation.name}
         )
 
-      media_relation_load: (id, relation, page = 1) ->
-        page = Math.min(relation.total_pages, page)
-        page = Math.max(1, page)
-
+      media_relation_load: (id, relation) ->
         http(
           method: 'get',
           url: "/api/1.0/entities/#{id}/relationships",
-          params: {'page': page - 1, name: relation.name, media: true}
+          params: {'page': relation.page - 1, name: relation.name, media: true}
         )
 
       deep_media_load: (relationship, page = 1) ->
-        page = Math.min(relationship.total_media_pages, page)
-        page = Math.max(1, page)
-
         http(
           method: 'get'
           url: "/api/1.0/entities/#{relationship.entity.id}/relationships"
-          params: {'page': page - 1, media: true, limit: 12}
+          params: {'page': page - 1, media: true, limit: 9}
         )
     }
 ]

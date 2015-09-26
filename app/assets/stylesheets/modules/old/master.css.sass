@@ -44,7 +44,10 @@ ul
 .text-right
   text-align: right
 
-div.clear_both
+.kor-hidden
+  visibility: hidden
+
+div.clear_both, .clearfix
   clear: both
 
 span.text ul
@@ -199,9 +202,11 @@ div
       td
         padding-left: 5px
         padding-right: 5px
-    img
-      max-width: 30px
-      max-height: 30px
+
+    #current_entity_history
+      img
+        max-width: 30px
+        max-height: 30px
 
 
 /* version */
@@ -800,9 +805,15 @@ div
       clear: both
           
 .pagination
+  width: 200px
+  float: right
+  text-align: right
+
   select
     margin-left: 3px
     margin-right: 3px
+  input
+    width: 50px
   img
     position: relative
     top: 4px
@@ -861,8 +872,6 @@ div
       text-align: center
         
 .viewer
-  img.kor_medium
-    width: 200px
   .title
     margin-bottom: 20px
   
@@ -931,13 +940,8 @@ table.kor_extended_image
     font-weight: normal
 
       
-table.related_media
-  img.kor_medium
-    max-width: 140px
-      
 div.kor_medium_frame
   display: block
-  float: left
   position: relative
 
   >
@@ -951,6 +955,10 @@ div.kor_medium_frame
     background-color: #1e1e1e
     padding: 3px
     padding-bottom: 0px
+
+  .kor_medium
+    display: block
+    max-width: 100%
 
   .kor_medium[src^='/content_types/']
     opacity: 0.7

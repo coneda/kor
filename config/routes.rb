@@ -172,6 +172,9 @@ Kor::Application.routes.draw do
 
     match "denied", :action => "denied"
     match "pagination", :action => "pagination"
+    match "relation", :action => "relation"
+    match "media_relation", :action => "media_relation"
+    match "relationship", :action => "relationship"
   end
 
 end

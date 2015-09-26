@@ -272,6 +272,8 @@ de:
     current_entity:
       one: "aktuelle Entität"
       other: "aktuelle Entitäten"
+    previous_current_entity:
+      other: "vorherige aktuelle Entitäten"
     session:
       one: "Sitzung"
       other: "Sitzungen"

@@ -6,7 +6,12 @@
         {{ 'nouns.isolated_entity' | translate:{count: 'other'} | capitalize }}
       </div>
 
-      <div kor-pagination="result"></div>
+      <div 
+        kor-pagination="result.page"
+        kor-total="result.total"
+        kor-per-page="16"
+        kor-use-search="true"
+      ></div>
 
       <table class="kor_table">
         <tbody>
@@ -21,7 +26,6 @@
         </tbody>
       </table>
 
-      <div kor-pagination="result"></div>
     </div>
   </div>
 

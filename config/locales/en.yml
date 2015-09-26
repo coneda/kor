@@ -272,6 +272,8 @@ en:
     current_entity:
       one: "current entity"
       other: "current entities"
+    previous_current_entity:
+      other: "previous current entities"
     session:
       one: "session"
       other: "sessions"

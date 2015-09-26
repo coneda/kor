@@ -1,0 +1,152 @@
+<div
+  class="relationship stage_panel" 
+  id="relationship_{{relationship.id}}" 
+>
+  <div class="header">
+    <div class="string" ng-hide="relationship.entity.kind_id == 1">
+      <a 
+        href="/blaze#/entities/{{relationship.entity.id}}"
+        ng-bind="relationship.entity.display_name"
+      ></a>
+
+      <span class="nowrap">
+        <span class="text italic" ng-bind="relationship.entity.kind.name"></span>
+        <span class="relationship_switch" ng-show="relationship.total_media > 0">
+          <a href="#" ng-click="switch(false, null, $event)">
+            <img alt="Triangle_up" src="/assets/triangle_up.gif" ng-hide="visible">
+            <img alt="Triangle_down" src="/assets/triangle_down.gif" ng-show="visible">
+          </a>
+        </span>
+      </span>
+    </div>
+  
+    <div class="commands">
+      <a
+        href="#"
+        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity.collection_id)"
+        ng-click="edit($event)"
+      >
+        <img
+          class="kor_command_image"
+          src="/assets/three_bars_horizontal.gif"
+          title="{{'objects.add' | translate:{interpolations: {o: 'nouns.property.one'} } }}"
+        >
+      </a>
+      <a
+        href="/relationships/{{relationship.id}}/edit"
+        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity.collection_id)"
+      >
+        <img alt="Pen" class="kor_command_image" src="/assets/pen.gif" title="bearbeiten">
+      </a>
+      <a 
+        href="/relationships/{{relationship.id}}" 
+        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity.collection_id)" 
+        data-confirm="{{'objects.confirm_destroy' | translate:{interpolations: {o: 'activerecord.models.relationship'} } }}" 
+        data-method="delete" 
+        rel="nofollow"
+      >
+        <img alt="X" class="kor_command_image" src="/assets/x.gif" title="{{'verbs.delete' | translate}}">
+      </a>
+    </div>
+
+    <div class="small_content_panel" ng-show="relationship.entity.kind_id == 1">
+      <br />
+      <div
+        class="kor_medium_frame"
+        id="kor_medium_frame_{{relationship.entity.id}}"
+      >
+        <a href="/blaze#/entities/{{relationship.entity.id}}">
+          <img alt="Image" class="kor_medium" ng-src="{{relationship.entity.medium.url}}">
+        </a>
+        <span class="button_bar" style="display: none;">
+          <div kor-current-button="relationship.entity" />
+          <div kor-to-clipboard="relationship.entity" />
+        </span>
+      </div>
+    </div>
+
+    <div class="clear_both"></div>
+    
+    <div class="properties" ng-show="relationship.properties.length > 0 || relationship.editing">
+      <div class="hr"></div>
+      <ul>
+        <li ng-repeat="property in relationship.properties">
+          <div class="pull-right" ng-show="relationship.editing">
+            <a
+              href="#"
+              ng-click="remove_property(property, $event)"
+            >
+              <img
+                class="kor_command_image"
+                src="/assets/minus.gif"
+                title="{{'verbs.delete' | translate}}"
+              />
+            </a>
+          </div>
+          <span ng-bind="property"></span>
+        </li>
+      </ul>
+
+      <div class="header" ng-show="relationship.editing" ng-if="relationship.editing">
+        <form class="kor_form">
+          <div class="form_field">
+            <ul>
+              <input ng-model="relationship.new_property" />
+            </ul>
+          </div>
+
+
+          <div class="kor_submit">
+            <input
+              class="submit highlighted_button" 
+              type="submit" 
+              value="{{'verbs.save' | translate | capitalize}}"
+              ng-click="update($event)"
+            />
+            <input
+              class="submit highlighted_button" 
+              type="submit"
+              value="{{'cancel' | translate | capitalize}}"
+              ng-click="unedit($event)"
+            />
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="switched_panel" ng-show="visible">
+
+    <div
+      kor-pagination="relationship.page"
+      kor-total="relationship.total_media"
+      kor-per-page="12"
+      kor-use-search="false"
+    ></div>
+    
+    <table cellpadding="0" cellspacing="0">
+      <tbody>
+        <tr class="image_row" ng-repeat="row in relationship.media">
+          <td class="image" ng-repeat="rel in row">
+            <div class="kor_medium_frame" id="kor_medium_frame_{{rel.entity.id}}" ng-show="rel.entity.id">
+              <a href="/blaze#/entities/{{rel.entity.id}}">
+                <img alt="Image" class="kor_medium" ng-src="{{rel.entity.medium.url}}">
+              </a>
+              <span class="button_bar" style="display: none">
+                <a href="/" style="display: none">
+                  <img alt="Target_hit" class="kor_command_image" src="/assets/target_hit.gif" title="Aus der Zwischenablage entfernen">
+                </a>
+                <a href="/">
+                  <img alt="Target" class="kor_command_image" src="/assets/target.gif" title="In die Zwischenablage legen">
+                </a>
+              </span>
+            </div>
+            <div class="clear_both"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+</div>

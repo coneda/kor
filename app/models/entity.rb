@@ -135,8 +135,8 @@ class Entity < ActiveRecord::Base
   validates_presence_of :collection_id
 
   validate(
-    :validate_distinct_name_needed, :validate_dataset, :validate_synonyms,
-    :validate_properties, :attached_file
+    :validate_distinct_name_needed, :validate_dataset, :validate_properties,
+    :attached_file
   )
 
   def attached_file
@@ -217,10 +217,6 @@ class Entity < ActiveRecord::Base
     schema.each do |field|
       field.validate_value
     end
-  end
-
-  def validate_synonyms
-
   end
 
   def validate_properties

@@ -60,7 +60,13 @@ class ToolsController < ApplicationController
       flash[:error] = I18n.t("objects.marked_as_current_failure", :o => entity_name)
     end
 
-    redirect_to back_save
+    respond_to do |format|
+      format.html { redirect_to back_save }
+      format.json do
+        data = session[:current_history].map{|id| Entity.includes(:medium).find(id)}
+        render :json => data.as_json(:root => false, :include => :medium)
+      end
+    end
   end
   
   def add_media
@@ -104,7 +110,7 @@ class ToolsController < ApplicationController
           redirect_to :controller => 'tools', :action => 'clipboard'
         end
       end
-      format.js do
+      format.json do
         message = flash[:notice]
         render :json => {:message => message}
         flash.discard
