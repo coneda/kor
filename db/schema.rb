@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150120154600) do
+ActiveRecord::Schema.define(:version => 20150926130623) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -131,6 +131,18 @@ ActiveRecord::Schema.define(:version => 20150120154600) do
   end
 
   add_index "downloads", ["uuid"], :name => "index_downloads_on_uuid"
+
+  create_table "engagements", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "kind"
+    t.string   "related_type"
+    t.integer  "related_id"
+    t.integer  "credits"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  add_index "engagements", ["user_id", "kind", "related_type", "related_id"], :name => "lookup"
 
   create_table "entities", :force => true do |t|
     t.string   "uuid"
@@ -274,6 +286,19 @@ ActiveRecord::Schema.define(:version => 20150120154600) do
 
   add_index "publishments", ["user_id"], :name => "index_publishments_on_user_id"
 
+  create_table "ratings", :force => true do |t|
+    t.string   "namespace"
+    t.integer  "user_id"
+    t.integer  "entity_id"
+    t.text     "data"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.string   "state"
+  end
+
+  add_index "ratings", ["entity_id", "state"], :name => "index_ratings_on_entity_id_and_state"
+  add_index "ratings", ["namespace", "user_id", "entity_id"], :name => "joint"
+
   create_table "relations", :force => true do |t|
     t.string   "uuid"
     t.string   "name"
@@ -330,6 +355,14 @@ ActiveRecord::Schema.define(:version => 20150120154600) do
 
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
+
+  create_table "settings", :force => true do |t|
+    t.string   "key"
+    t.text     "storage"
+    t.integer  "lock_version"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
 
   create_table "synonyms", :force => true do |t|
     t.integer "entity_id"
