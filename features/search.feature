@@ -100,10 +100,10 @@ Feature: search
     Then I should not see "Die Bibel"
     When I fill in "query[properties]" with "123456789"
     When I press "Suchen"
-    Then I should see "Die Bibel" within ".search_result"    
+    Then I should see "Die Bibel" within ".search_result"
     When I fill in "query[properties]" with "isbn"
     When I press "Suchen"
-    Then I should see "Die Bibel" within ".search_result"    
+    Then I should see "Die Bibel" within ".search_result"
 
 
   @javascript @elastic

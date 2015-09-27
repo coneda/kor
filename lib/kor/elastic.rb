@@ -170,6 +170,8 @@ class Kor::Elastic
   end
 
   def search(query = {})
+    query[:analyzer] ||= 'folding'
+
     return self.class.empty_result unless self.class.enabled?
 
     # puts JSON.pretty_generate(query)
@@ -180,22 +182,43 @@ class Kor::Elastic
     # data = {}
     query_component = nil
 
+    q = []
+
     if query[:query].present?
-      q = if query[:raw]
+      q << if query[:raw]
         query[:query]
       else
         wildcardize(escape tokenize(query[:query])).join(' ')
       end
+    end
 
-      if query[:fields].present?
-        q = query[:fields].map{|f| "#{f}:(#{q})"}.join(' ')
+    if query[:properties]
+      v = query[:properties]
+      q << "properties.label:\"#{v}\" OR properties.value:\"#{v}\""
+    end
+
+    if query[:dataset].present?
+      query[:analyzer] = nil
+      query[:dataset].each do |k, v|
+        if v.present?
+          q << "dataset.#{k}:\"#{v}\""
+        end
       end
+    end
+
+    if query[:synonyms].present?
+      v = wildcardize(escape tokenize(query[:synonyms])).join(' ')
+      q << "synonyms:(#{v})"
+    end
+
+    if q.present?
+      q = "(#{q.join ') AND ('})"
 
       query_component = {
         "query_string" => {
           "query" => q,
           "default_operator" => "AND",
-          "analyzer" => "folding",
+          "analyzer" => query[:analyzer],
           "analyze_wildcard" => true,
           "fields" => [
             'uuid^20',
@@ -212,6 +235,8 @@ class Kor::Elastic
           ]
         }
       }
+    else
+      size = 10
     end
 
     collection_ids = ::Auth::Authorization.authorized_collections(@user).map(&:id)
@@ -274,6 +299,9 @@ class Kor::Elastic
 
     response = self.class.request "post", "/entities/_search", nil, data
 
+    # puts response.last['hits']['total']
+    # binding.pry
+
     if response.first == 200
       # binding.pry
 
@@ -310,7 +338,7 @@ class Kor::Elastic
       return :disabled if !enabled?
 
       response = raw_request(method, path, query, body, headers)
-      Rails.logger.info "ELASTIC RESPONSE: #{response.inspect}"
+      # Rails.logger.info "ELASTIC RESPONSE: #{response.inspect}"
 
       if response.status >= 200 && response.status <= 299
         [response.status, response.headers, Oj.load(response.body, :mode => :strict)]

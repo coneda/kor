@@ -415,18 +415,6 @@ class Entity < ActiveRecord::Base
       )
   end
 
-#  def needs_distinct_name?
-#    unless needs_name?
-#      false
-#    else
-#      Entity.where(
-#        ["name LIKE ? and kind_id LIKE ? and id != ?",
-#          name, kind_id, id || -1
-#        ]
-#      ).first
-#    end
-#  end
-
   def needs_name?
     !is_medium? && no_name_statement == 'enter_name'
   end
@@ -570,7 +558,7 @@ class Entity < ActiveRecord::Base
       pattern_query = pattern.tokenize.map{ |token| "name LIKE ?"}.join(" AND ")
       pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
 
-      entity_ids = Kor::Elastic.new(user).search(:query => pattern, :size => Entity.count, :fields => ["synonyms"]).ids
+      entity_ids = Kor::Elastic.new(user).search(:synonyms => pattern, :size => Entity.count).ids
       entity_ids += Entity.where([pattern_query.gsub('name','distinct_name')] + pattern_values ).collect{|e| e.id}
 
       id_query = entity_ids.blank? ? "" : "OR entities.id IN (?)"
@@ -585,14 +573,8 @@ class Entity < ActiveRecord::Base
       scoped
     else
       ids = Kor::Elastic.new(user).search(
-        :query => properties,
+        :properties => properties,
         :size => Entity.count,
-        :fields => ["properties.label"]
-      ).ids
-      ids += Kor::Elastic.new(user).search(
-        :query => properties,
-        :size => Entity.count,
-        :fields => ["properties.value"]
       ).ids
       where("entities.id IN (?)", ids.uniq)
     end
@@ -630,15 +612,10 @@ class Entity < ActiveRecord::Base
   }
   scope :dataset_attributes, lambda { |user, dataset|
     dataset ||= {}
-    ids = []
-
-    dataset.each do |k, v|
-      ids += Kor::Elastic.new(user).search(
-        :query => v,
-        :size => Entity.count,
-        :fields => ["dataset.#{k}"]
-      ).ids
-    end
+    ids = Kor::Elastic.new(user).search(
+      :dataset => dataset,
+      :size => Entity.count
+    ).ids
 
     dataset.values.all?{|v| v.blank?} ? scoped : where("entities.id IN (?)", ids.uniq)
   }
