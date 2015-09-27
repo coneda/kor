@@ -51,14 +51,16 @@ end
 When /^I mark "([^\"]*)" as current entity$/ do |name|
   step "I am on the entity page for \"#{name}\""
   step "I should see \"#{name}\""
-  step "I follow \"Select\""
+  find("a[kor-to-current]").click
   step "I should see \"wurde als aktuelle Entität markiert\""
 end
 
 When(/^I put "(.*?)" into the clipboard$/) do |name|
   step "I am on the entity page for \"#{name}\""
   step "I should see \"#{name}\""
-  step "I follow \"Target\""
+  sleep 1
+  find("a[kor-to-clipboard]").click
+  step "I should see \"wurde in die Zwischenablage aufgenommen\""
 end
 
 Given /^the session has expired$/ do
@@ -86,7 +88,9 @@ Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
       step "I go to the entity page for \"#{entity.name}\""
     end
     step "I should see \"#{entity.name}\""
-    step "I follow \"Target\""
+    sleep 1
+    find("a[kor-to-clipboard]").click
+    step "I should see \"wurde in die Zwischenablage aufgenommen\""
   end
 end
 

@@ -10,7 +10,9 @@ kor.directive "korRelationship", ["entities_service", "session_service",
       }
       replace: true
       link: (scope, element, attrs) ->
-        scope.allowed_to = (policy) -> ss.allowed_to(policy, scope.entity)
+        scope.allowed_to = (policy, entity) ->
+          entity ||= scope.entity
+          ss.allowed_to(policy, entity)
         scope.allowed_to_any = ss.allowed_to_any
 
         scope.visible = false

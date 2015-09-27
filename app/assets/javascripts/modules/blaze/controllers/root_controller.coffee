@@ -1,6 +1,6 @@
 kor.controller('root_controller', [
-  '$scope', 'korData', 'korFlash', "session_service",
-  (scope, kd, korFlash, ss) ->
+  '$scope', 'korData', "session_service",
+  (scope, kd, ss) ->
     scope.$on 'kor-session-load-complete', -> scope.info = kd.info
 
     scope.previous_current_entities = ->

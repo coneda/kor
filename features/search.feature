@@ -92,6 +92,7 @@ Feature: search
     Given I am logged in as "admin"
     And the entity "Die Bibel" of kind "Literatur/Literaturen"
     And the entity "Die Bibel" has property "isbn" with value "123456789"
+    And everything is indexed
     When I go to the expert search page
     And I select "Literatur" from "query[kind_id]"
     When I fill in "query[properties]" with "incorrect"
@@ -99,7 +100,6 @@ Feature: search
     Then I should not see "Die Bibel"
     When I fill in "query[properties]" with "123456789"
     When I press "Suchen"
-    And I wait for "2" seconds
     Then I should see "Die Bibel" within ".search_result"    
     When I fill in "query[properties]" with "isbn"
     When I press "Suchen"

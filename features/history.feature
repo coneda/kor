@@ -30,5 +30,5 @@ Feature: History
     And the entity "Nürnberg" of kind "Ort/Orte"
     And I am on the entity page for "Nürnberg"
     And I wait for "2" seconds
-    When I follow "Target"
+    When I click element "a[kor-to-clipboard]"
     Then I should be on the entity page for "Nürnberg"

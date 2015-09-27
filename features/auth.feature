@@ -38,6 +38,7 @@ Feature: Authentication and Authorization
     And the session has expired
     When I go to the entity page for "Mona Lisa"
     Then I should not see "Mona Lisa"
+    And I should see "Der Zugriff wurde verweigert"
     When I follow "anmelden"
     Given the session is not forcibly expired anymore
     When I fill in "username" with "admin"

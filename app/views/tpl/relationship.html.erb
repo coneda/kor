@@ -23,7 +23,7 @@
     <div class="commands">
       <a
         href="#"
-        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity.collection_id)"
+        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity)"
         ng-click="edit($event)"
       >
         <img
@@ -34,13 +34,13 @@
       </a>
       <a
         href="/relationships/{{relationship.id}}/edit"
-        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity.collection_id)"
+        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity)"
       >
         <img alt="Pen" class="kor_command_image" src="/assets/pen.gif" title="bearbeiten">
       </a>
       <a 
         href="/relationships/{{relationship.id}}" 
-        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity.collection_id)" 
+        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity)" 
         data-confirm="{{'objects.confirm_destroy' | translate:{interpolations: {o: 'activerecord.models.relationship'} } }}" 
         data-method="delete" 
         rel="nofollow"
@@ -134,12 +134,7 @@
                 <img alt="Image" class="kor_medium" ng-src="{{rel.entity.medium.url}}">
               </a>
               <span class="button_bar" style="display: none">
-                <a href="/" style="display: none">
-                  <img alt="Target_hit" class="kor_command_image" src="/assets/target_hit.gif" title="Aus der Zwischenablage entfernen">
-                </a>
-                <a href="/">
-                  <img alt="Target" class="kor_command_image" src="/assets/target.gif" title="In die Zwischenablage legen">
-                </a>
+                <div kor-to-clipboard="rel.entity" ></div>
               </span>
             </div>
             <div class="clear_both"></div>

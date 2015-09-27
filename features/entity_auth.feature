@@ -14,7 +14,7 @@ Feature: Entity authentorization
     And user "joe" is allowed to "view" collection "main" through credential "main_viewers"
     And the entity "Mona Lisa" of kind "Werk/Werke" inside collection "main"
     When I go to the entity page for "Mona Lisa"
-    Then I should see element "img[alt=Select]"
+    Then I should see element "a[kor-to-current]"
     
   
   @javascript

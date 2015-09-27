@@ -41,7 +41,7 @@ class AuthenticationController < ApplicationController
         if account.expires_at && (account.expires_at <= Time.now)
           flash[:error] = I18n.t("errors.account_expired")
           redirect_to :action => "form"
-        elsif ! account.active
+        elsif !account.active
           reset_session
           flash[:error] = I18n.t("errors.account_inactive")
           redirect_to :action => "form"

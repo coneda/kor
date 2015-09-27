@@ -1,8 +1,10 @@
 kor = angular.module('kor', ["ngRoute", "web-utils"])
 
 kor.controller "record_history_controller", [
-  "$http", "$location",
-  (http, l) ->
+  "$http", "$location", "session_service",
+  (http, l, ss) ->
+    ss.reset_flash()
+    ss.read_legacy_flash()
     http(
       method: 'post'
       url: "/tools/history"
@@ -20,6 +22,7 @@ kor.config([
       (q, korFlash) ->
         (promise) ->
           promise.then (response) ->
+            console.log(response)
             if m = response.headers('X-Message-Error')
               korFlash.error = m
 

@@ -159,12 +159,16 @@ ComponentSearch.form_submit = function(event) {
 }
 
 ComponentSearch.re_search = function(params) {
-  var url = '/component_search';
-  $.getJSON(url, params, function(data){
-    ComponentSearch.results = data;
-    ComponentSearch.results.pages = Math.floor(data.total / 10) + 1;
-    ComponentSearch.draw();
-  });
+  $.ajax({
+    method: "get",
+    url: '/component_search',
+    data: params,
+    success: function(data){
+      ComponentSearch.results = data;
+      ComponentSearch.results.pages = Math.floor(data.total / 10) + 1;
+      ComponentSearch.draw();
+    }
+  })
 }
 
 ComponentSearch.clear_results = function() {

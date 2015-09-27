@@ -86,8 +86,9 @@ Application.register_popups = function() {
 
 Application.setup_ajax = function() {
   $.ajaxSetup({
+    dataType: "json",
     beforeSend: function(xhr) {
-      xhr.setRequestHeader('Accept', 'text/javascript');
+      // xhr.setRequestHeader('Accept', 'application/json');
       Kor.ajax_loading();
     },
     complete: function(xhr) {

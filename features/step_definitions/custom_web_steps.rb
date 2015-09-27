@@ -163,6 +163,10 @@ When /I debug/ do
   x = 15
 end
 
+When(/^I print the url$/) do
+  p current_url
+end
+
 When /^I wait for "([^"]*)" seconds?$/ do |num|
   sleep num.to_f
 end

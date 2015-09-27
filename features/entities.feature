@@ -100,7 +100,7 @@ Feature: Entities
     And user "john" is allowed to "view" collection "Default" through credential "Nebenuser"
     And I am logged in as "john"
     When I go to the entity page for "Mona Lisa"
-    Then I should see element "img[alt=Select]"
+    Then I should see element "a[kor-current-button]"
 
   
   @javascript
@@ -158,11 +158,12 @@ Feature: Entities
     Given I am logged in as "admin"
     And the setup "Many relationships with images"
     When I go to the entity page for "Mona Lisa"
+    And I wait for "1" second
     When I click element "img[alt='Pager_right']" within ".relation"
     And I follow "Triangle_up" within ".relationship"
     And I wait for "1" seconds
     And I hover element ".relationships .kor_medium_frame"
-    And I click on ".kor_medium_frame .button_bar img[alt=Target]"
+    And I click on ".kor_medium_frame .button_bar a[kor-to-clipboard]"
     Then I should see "wurde in die Zwischenablage aufgenommen"
 
 

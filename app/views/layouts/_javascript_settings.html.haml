@@ -3,7 +3,11 @@
     flash_session_key: '#{cookies['_session_id']}',
     medium_kind_id: #{Kind.medium_kind.id},
     upload_size_limit: #{Kor.config['app.max_file_upload_size'].to_i * 2**20},
-    use_blaze: #{Kor.config['app.use_blaze']}
+    use_blaze: #{Kor.config['app.use_blaze']},
+    legacy_flash: {
+      notice: "#{flash[:notice]}",
+      error: "#{flash[:error]}"
+    }
   };
   
   var I18n = new Object();

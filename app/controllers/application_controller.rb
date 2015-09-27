@@ -78,9 +78,9 @@ class ApplicationController < ActionController::Base
         end
       elsif session_expired?
         respond_to do |format|
-          old_history = session[:history]
-          reset_session
-          session[:history] = old_history
+          # TODO: this is working but strictly speaking not correct behavior:
+          # no session data should persist through an expired session
+          session[:user_id] = nil
 
           format.html do
             history_store unless request.path.match(/^\/blaze/)

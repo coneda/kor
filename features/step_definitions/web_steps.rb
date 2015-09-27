@@ -1,22 +1,11 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "selectors"))
 
-# module WithinHelpers
-#   def with_scope(locator)
-#     locator ? within(*selector_for(locator)) { yield } : yield
-#   end
-# end
-# World(WithinHelpers)
-
 When /^(.*) within (.+)$/ do |step, parent|
   within find(*selector_for(parent)) do
     step(step)
   end
 end
-
-# When /^(.*) within ([^:]+):$/ do |step, parent, table_or_string|
-#   within(parent) { step "#{step}:", table_or_string }
-# end
 
 Given /^(?:|I )am on (.+)$/ do |page_name|
   visit path_to(page_name)

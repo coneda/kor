@@ -82,7 +82,7 @@ class UserGroupsController < GroupsController
     
     respond_to do |format|
       format.html
-      format.js do
+      format.json do
         render :json => @user_groups.map { |ug|
           {:label => "#{ug.name} (#{ug.entities.count} #{Entity.model_name.human(:count => :other)})", :value => ug.name}
         }
@@ -121,7 +121,7 @@ class UserGroupsController < GroupsController
           redirect_to :action => 'index'
         end
         
-        format.js do
+        format.json do
           render :nothing => true, :status => 200
         end
       end

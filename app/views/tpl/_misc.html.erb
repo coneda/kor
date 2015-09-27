@@ -8,7 +8,7 @@
 </script>
 
 <script type="text/x-kor-tpl" data-id="to-clipboard">
-  <a href="#" ng-show="!is_guest() && allowed_to_any('edit')">
+  <a href="#" ng-show="!is_guest()">
     <img src="/assets/target.gif" ng-show="!in_clipboard()" />
     <img src="/assets/target_hit.gif" ng-show="in_clipboard()" />
   </a>
@@ -18,7 +18,7 @@
   <a
     kor-to-current="true"
     href="#"
-    ng-show="!is_guest() && allowed_to_any('edit') && !is_current()"
+    ng-show="!is_guest() && allowed_to_any('edit')"
   >
     <img src="/assets/select.gif" />
   </a>

@@ -203,7 +203,6 @@ describe Entity do
   it "should validate the dataset" do
     entity = FactoryGirl.build :jack
     expect(entity).to receive(:validate_dataset).once
-    expect(entity).to receive(:validate_synonyms).once
     expect(entity).to receive(:validate_properties).once
     entity.save
   end
