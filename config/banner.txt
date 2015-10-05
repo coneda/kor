@@ -1,17 +1,34 @@
-This is the ConedaKOR command line utility. It currently allows to:
+This is the ConedaKOR command line utility. It operates several sub-commands and
+features general and specific options (see below).
 
-* export entities to excel:
-  
-  kor export -f excel path/to/destination_dir
+As of now, the following sub-commands are supported:
 
-* import new entities (and updates) from excel:
-  
-  kor import -f excel path/to/source_dir
+* import: import data (for now, only excel format is supported)
+* export: export data (for now, only excel format is supported)
+* reset-admin-account: set the password for user admin to "admin"
+* index-all: refresh all indices within elasticsearch
+* reprocess-all: re-generate all image versions (caution: takes a very long
+  time)
+* recheck-invalid-entities: re-validate all entities that have previously been
+  marked as invalid previously
+* notify-expiring-users: send email notifications to users who's account is 
+  about to expire (within the next two weeks)
+* group-to-zip: package a given group as a zip archive
+* delete-expired-downloads: delete expired zip download files (older than 2
+  weeks)
+* editor-stats: list users and how many entities they created/updated
+* exif-stats: count how many images have been taken by a camera versus a scanner
+
+Please consult
+
+  kor <sub-command> --help
+
+for a list of available options for that specific sub-command
 
 Make sure you are setting the right rails environment with an environment
 variable, for example:
 
   RAILS_ENV=production kor export -f excel path/to/destination
 
-Arguments:
+Available options:
 

@@ -94,3 +94,24 @@ fully authorized account (e.g. the default admin account).
 * **Terms of Use:** Terms of use can be edited here.
 * **Imprint:** The imprint can be edited here.
 * **Coneda.net:** Embedded link to Coneda UG’s homepage.
+
+# Documentation
+
+These instructions are intended for system operators who wish to deploy the 
+software for their users.
+
+## Import and export
+
+Please refer to the command line tool.
+
+## Command line tool
+
+The kor command provides access to functionality which is not easily provided 
+from a web page. For example, the excel export potentially generates many large
+files which are impractical to download. You may call the command like
+this
+
+    bundle exec bin/kor --help
+
+from within the ConedaKOR installation directory to obtain a detailed
+description of all the tasks and options.

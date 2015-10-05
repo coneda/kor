@@ -1,88 +1,242 @@
 class Kor::CommandLine
 
-  include Mixlib::CLI
+  def initialize(args)
+    @args = args.dup
+    @config = {
+      :format => "excel",
+      :username => "admin",
+      :ignore_stale => false,
+      :obey_permissions => false,
+      :simulate => false,
+      :ignore_validations => false,
+      :collection_id => [],
+      :kind_id => []
+    }
+    @required = []
+    @command = nil
 
-  banner(File.read "#{Rails.root}/config/banner.txt")
+    @parser = OptionParser.new
+  end
 
-  option(:format,
-    :default => "excel",
-    :short => "-f FORMAT",
-    :description => "the format to use, supported values: [excel], default: excel"
-  )
-  option(:username,
-    :default => "admin",
-    :short => "-u USERNAME",
-    :description => "the user to act as, default: admin"
-  )
-  option(:ignore_stale,
-    :default => false,
-    :boolean => true,
-    :short => "-i",
-    :description => "write objects even if they are stale, default: false"
-  )
-  option(:obey_permissions,
-    :default => false,
-    :boolean => true,
-    :short => "-p",
-    :description => "obey the permission system, default: false"
-  )
-  option(:simulate,
-    :default => false,
-    :boolean => true,
-    :short => "-s",
-    :description => "for imports: don't make any changes, default: false, implies verbose"
-  )
-  option(:verbose,
-    :default => false,
-    :boolean => true,
-    :short => "-v",
-    :description => "turn on verbose output"
-  )
-  option(:ignore_validations,
-    :default => false,
-    :boolean => true,
-    :short => "-o",
-    :description => "ignore all validations"
-  )
+  def parse_options
+    @parser.version = Kor.version
+    @parser.banner = File.read("#{Rails.root}/config/banner.txt")
 
-  option(:collection_id,
-    :default => [],
-    :long => "--collection-id=IDS",
-    :description => "export only the given collections, may contain a comma separated list of values",
-    :on => :tail,
-    :proc => Proc.new{|value| value.split(",").map{|v| v.to_i}}
-  )
-  option(:kind_id,
-    :default => [],
-    :long => "--kind-id=IDS",
-    :description => "export only the given kinds, may contain a comma separated list of values",
-    :on => :tail,
-    :proc => Proc.new{|value| value.split(",").map{|v| v.to_i}}
-  )
-  option(:debug,
-    :default => false,
-    :boolean => true,
-    :short => "-d",
-    :description => "turn on debug mode"
-  )
+    @parser.on("--version", "print the version") { @command = "version" }
+    @parser.on("-v", "--verbose", "run in verbose mode") { @config[:verbose] = true }
+    @parser.on("-h", "--help", "print available options and commands") { @config[:help] = true }
+    @parser.on("--debug", "the user to act as, default: admin") { @config[:debug] = true }
+    @parser.separator ""
 
-  def run
-    if config[:debug]
-      puts "Called with arguments: #{cli_arguments.inspect}"
-      puts "and switches: #{config.inspect}"
+    @parser.order!(@args)
+
+    @command ||= @args.shift
+
+    if @command == "import" || @command == "export"
+      
     end
 
-    if command == "export" && config[:format] == "excel"
-      Kor::Export::Excel.new(cli_arguments.shift, config).run
+    case @command
+      when "export"
+        @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") {|v| @config[:format] = v }
+        @required += [:format]
+      when "import"
+        @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") {|v| @config[:format] = v }
+        @parser.on("-u USERAME", "the user to act as, default: admin") {|v| @config[:username] = v }
+        @parser.on("-i", "write objects even if they are stale, default: false") { @config[:ignore_stale] = true }
+        @parser.on("-p", "obey the permission system, default: false") { @config[:obey_permissions] = true }
+        @parser.on("-s", "for imports: don't make any changes, default: false, implies verbose") { @config[:simulate] = true }
+        @parser.on("-o", "ignore all validations") { @config[:ignore_validations] = true }
+        @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids") {|v| @config[:collection_id] = v.split(",").map{|v| v.to_i} }
+        @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids") {|v| @config[:kind_id] = v.split(",").map{|v| v.to_i} }
+        @required += [:format]
+      when "group-to-zip"
+        @parser.on("--group-id=ID", "select the group to package") {|v| @config[:group_id] = v.to_i }
+        @parser.on("--class-name=NAME", "select the group klass to package") {|v| @config[:class_name] = v }
+        @required += [:group_id, :class_name]
+      when "exif-stats"
+        @parser.on("-f DATE", "the lower bound for the time period to consider (YYYY-MM-DD)") {|v| @config[:from] = v }
+        @parser.on("-t DATE", "the upper bound for the time period to consider (YYYY-MM-DD)") {|v| @config[:to] = v }
+        @required += [:from, :to]
     end
 
-    if command == "import" && config[:format] == "excel"
-      Kor::Import::Excel.new(cli_arguments.shift, config).run
+    @parser.order!(@args)
+
+    if @config[:verbose]
+      puts "command: #{@command}"
+      puts "options: #{@config.inspect}"
     end
   end
 
-  def command
-    @command ||= cli_arguments.shift
+  def validate
+    @required.each do |r|
+      if @config[r].nil?
+        puts "please specify a value for '#{r}'"
+        exit 1
+      end
+    end
+  end
+
+  def run
+    if @config[:help]
+      usage
+    else
+      validate
+
+      if @command == "version"
+        version
+      end
+
+      if @command == "export" && @config[:format] == "excel"
+        excel_export
+      end
+
+      if @command == "import" && @config[:format] == "excel"
+        excel_import
+      end
+
+      if @command == "reprocess-all"
+        reprocess_all
+      end
+
+      if @command == "index-all"
+        index_all
+      end
+
+      if @command == "group-to-zip"
+        group_to_zip
+      end
+
+      if @command == "notify-expiring-users"
+        notify_expiring_users
+      end
+
+      if @command == "recheck-invalid-entities"
+        recheck_invalid_entities
+      end
+
+      if @command == "delete-expired-downloads"
+        delete_expired_downloads
+      end
+
+      if @command == "editor-stats"
+        editor_stats
+      end
+
+      if @command == "exif-stats"
+        exif_stats
+      end
+
+      if @command.nil?
+        usage
+      end
+    end
+  end
+
+  def usage
+    puts @parser
+  end
+
+  def version
+    puts Kor.version
+  end
+
+  def excel_export
+    dir = @args.shift
+    Kor::Export::Excel.new(dir, @config).run
+  end
+
+  def excel_import
+    dir = @args.shift
+    Kor::Import::Excel.new(dir, @config).run
+  end
+
+  def reprocess_all
+    num = Medium.count
+    left = num
+    started_at = nil
+    puts "Found #{num} media entities"
+    
+    Medium.find_each do |m|
+      started_at ||= Time.now
+      
+      m.image.reprocess! if m.image.file?
+      
+      left -= 1
+      seconds_left = (Time.now - started_at).to_f / (num - left) * left
+      puts "#{left} items left (ETA: #{Time.now + seconds_left.to_i})"
+    end
+  end
+
+  def index_all
+    Kor::Elastic.drop_index
+    Kor::Elastic.create_index
+    ActiveRecord::Base.logger.level = Logger::ERROR
+    Kor::Elastic.index_all :full => true, :progress => true
+  end
+
+  def group_to_zip
+    klass = @config[:class_name].constantize
+    group_id = @config[:group_id]
+    group = klass.find(group_id)
+
+    size = group.entities.media.map do |e|
+      e.medium.image_file_size || e.medium.document_file_size || 0.0
+    end.sum
+    human_size = size / 1024 / 1024
+    puts "Please be aware that"
+    puts "* the download will be composed with the rights of the 'admin' user"
+    puts "* the download will be approximately #{human_size} MB in size"
+    puts "* the process is running synchronously, blocking your terminal"
+    puts "* the file is going to be cleaned up two weeks after it has been created"
+    print "Continue [yes/no]? "
+    response = STDIN.gets.strip
+
+    if response == "yes"
+      zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/terminal_download.zip", 
+        :user_id => User.admin.id,
+        :file_name => "#{group.name}.zip"
+      )
+
+      group.entities.media.each do |e|
+        zip_file.add_entity e
+      end
+
+      download = zip_file.create_as_download
+      puts "Packaging complete, the zip file can be downloaded via"
+      puts download.link
+    end
+  end
+
+  def notify_expiring_users
+    User.where("expires_at < ? AND expires_at > ?", 2.weeks.from_now, Time.now).each do |user|
+      UserMailer.deliver_upcoming_expiry(user)
+    end
+  end
+
+  def recheck_invalid_entities
+    group = SystemGroup.find_by_name('invalids')
+    valids = group.entities.select do |entity|
+      entity.valid?
+    end
+    
+    puts "removing #{valids.count} from the 'invalids' system group"
+    group.remove_entities valids
+  end
+
+  def delete_expired_downloads
+    Download.find(:all, :conditions => ['created_at < ?', 2.weeks.ago]).each do |download|
+      download.destroy
+    end
+  end
+
+  def editor_stats
+    Kor::Statistics::Users.new(:verbose => true).run
+  end
+
+  def exif_stats
+    require "exifr"
+    Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
   end
 
 end

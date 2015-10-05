@@ -6,7 +6,7 @@ class Kor::Statistics::Simple
   
   def run
     @counter = 0
-  
+
     items.find_each do |item|
       report_progress
       

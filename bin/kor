@@ -4,8 +4,8 @@ KOR_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 
 require "#{KOR_ROOT}/config/environment"
 
-require "mixlib/cli"
+require "optparse"
 
-cli = Kor::CommandLine.new
+cli = Kor::CommandLine.new(ARGV)
 cli.parse_options
 cli.run
