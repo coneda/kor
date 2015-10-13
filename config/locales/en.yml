@@ -491,7 +491,7 @@ en:
   objects:
     download: "download %{o}"
     add: "add %{o}"
-    none_found: "no %{o} was found"
+    none_found: "no %{o} found"
     include: "include %{o}"
     shared_success: "%{o} has been shared"
     unshared_success: "%{o} is not shared anymore"
