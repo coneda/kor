@@ -131,6 +131,10 @@ class Kor::CommandLine
         to_neo4j
       end
 
+      if @command == "connect-random"
+        connect_random
+      end
+
       if @command.nil?
         usage
       end

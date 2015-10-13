@@ -50,21 +50,25 @@ class Kor::NeoGraph
   end
 
   def connect_random
-    max = Entity.count
-    from = Entity.offset((max * rand).to_i).first.id
-    to = Entity.offset((max * rand).to_i).first.id
-    results = simple_cypher("MATCH (a),(b), p = shortestPath((a)-[r*..25]->(b)) WHERE a.id = #{from} AND b.id = #{to} RETURN nodes(p), [r IN relationships(p) | type(r)]")
+    100.times do
+      max = Entity.count
+      from = Entity.offset((max * rand).to_i).first.id
+      to = Entity.offset((max * rand).to_i).first.id
 
-    if results["results"].first["data"].empty?
-      puts "no connection"
-    else
-      nodes = results["results"].first["data"].first["row"].first
-      rels = results["results"].first["data"].first["row"].last
-      puts nodes.first["name"]
-      rels.each_with_index do |r, i|
-        puts r
-        puts nodes[i + 1]["name"]
+      results = simple_cypher("MATCH (a),(b), p = shortestPath((a)-[r*..25]->(b)) WHERE a.id = #{from} AND b.id = #{to} RETURN nodes(p), [r IN relationships(p) | type(r)]")
+
+      if results["results"].first["data"].empty?
+        puts "!!!#{from} -> #{to}: no connection"
+      else
+        nodes = results["results"].first["data"].first["row"].first
+        rels = results["results"].first["data"].first["row"].last
+        puts nodes.first["name"]
+        rels.each_with_index do |r, i|
+          puts r
+          puts "  [#{nodes[i + 1]['id']}] #{nodes[i + 1]["name"]}"
+        end
       end
+      puts
     end
   end
 
@@ -81,11 +85,11 @@ class Kor::NeoGraph
               "uuid" => item.uuid,
               "collection_id" => item.collection_id,
               "name" => item.display_name,
-              "distinct_name" => item.distinct_name,
+              "distinct_name" => item.distinct_name || "",
               "kind_id" => item.kind_id,
-              "subtype" => item.subtype,
+              "subtype" => item.subtype || "",
               "synonyms" => item.synonyms,
-              "medium_id" => item.medium_id,
+              "medium_id" => item.medium_id || 0,
               "created_at" => item.created_at.to_f,
               "updated_at" => item.updated_at.to_f
             }
@@ -137,10 +141,15 @@ class Kor::NeoGraph
       "statements" => statements
     )
 
-    # binding.pry
-
     if response.ok?
-      JSON.parse(response.body)
+      data = JSON.parse(response.body)
+
+      if data["errors"].empty?
+        data
+      else
+        binding.pry
+        data
+      end
     else
       puts response.body, response.status
       nil
