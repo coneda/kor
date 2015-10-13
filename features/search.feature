@@ -128,3 +128,16 @@ Feature: search
     And I fill in "search_terms" with "some"
     And I wait for "2" seconds
     Then I should not see "some (1)"
+
+  
+  @javascript @elastic
+  Scenario: Search for additional criteria
+    Given I am logged in as "admin"
+    And the triple "Werk/Werke" "Bamberger Apokalypse" "befindet sich in/ist Ort von" "Ort/Orte" "Bamberg"
+    And I go to the expert search page
+    When I select "Werk" from "query_kind_id"
+    And I follow "Plus"
+    And I select "befindet sich in" from "query_relationships__relation_name"
+    And I fill in "query_relationships__entity_name" with "Bamberg"
+    And I press "Suchen"
+    Then I should see "Bamberger Apokalypse" within ".search_result"

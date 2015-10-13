@@ -20,12 +20,16 @@ Attachments.register_expert_search_events = function() {
 
   $('#relation_conditions .commands a').click(function(event) {
     var attachments = $(event.currentTarget).parents('div.attachments');
+    console.log(attachments);
     var kind_id = $('#query_kind_id').val();
     var attachment = $('<div>');
     $.ajax({
       url: '/tools/relational_form_fields',
       data: {'kind_id': kind_id},
-      success: function(data) {$(this).html(data);},
+      dataType: "html",
+      success: function(data) {
+        $(this).html(data);
+      },
       context: attachment
     });
     attachments.append(attachment);
