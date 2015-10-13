@@ -34,9 +34,9 @@
       </tr>
     </thead>
     <tbody>
-      <% Entity.includes(:kind).group("kinds.name").count.sort{|x, y| y.last - x.last}.each do |stat| %>
+      <% Entity.group("kind_id").count.sort{|x, y| y.last - x.last}.each do |stat| %>
         <tr>
-          <td><%= stat.first %></td>
+          <td><%= Kind.find(stat.first).name %></td>
           <td class="number text-right"><%= stat.last %></td>
         </tr>
       <% end %>
@@ -53,9 +53,9 @@
       </tr>
     </thead>
     <tbody>
-      <% Relationship.includes(:relation).group("relations.name").count.sort{|x, y| y.last - x.last}.each do |stat| %>
+      <% Relationship.group("relation_id").count.sort{|x, y| y.last - x.last}.each do |stat| %>
         <tr>
-          <td><%= stat.first %></td>
+          <td><%= Relation.find(stat.first).name %></td>
           <td class="number text-right"><%= stat.last %></td>
         </tr>
       <% end %>
