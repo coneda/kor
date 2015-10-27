@@ -337,6 +337,10 @@ class Kor::Elastic
     def self.request(method, path, query = {}, body = nil, headers = {})
       return :disabled if !enabled?
 
+      if config['token']
+        query['token'] = config['token']
+      end
+
       response = raw_request(method, path, query, body, headers)
       # Rails.logger.info "ELASTIC RESPONSE: #{response.inspect}"
 
