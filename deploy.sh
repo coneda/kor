@@ -16,7 +16,7 @@
 function deploy {
   setup
 
-  within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop"
+  within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop || true"
 
   deploy_code
   cleanup

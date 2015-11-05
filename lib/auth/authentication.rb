@@ -16,12 +16,19 @@ module Auth::Authentication
 
       (Kor.config["auth.sources"] || []).each do |method, c|
         command = "bash -c \"KOR_USERNAME_FILE=#{dir}/username.txt KOR_PASSWORD_FILE=#{dir}/password.txt #{c["script"]}\""
-        data = `#{command} 2> /dev/null`
+        data = Bundler.with_clean_env do
+          `#{command} 2> #{dir}/error.log`
+        end
         status = $?.exitstatus
+
         if status == 0
           return JSON.parse(data).merge(
             :parent_username => c["map_to"]
           )
+        else
+          error = File.read "#{dir}/error.log"
+          Rails.logger.warn("AUTH script error: #{error}")
+          Rails.logger.warn("AUTH script output: #{data}")
         end
       end
     end
