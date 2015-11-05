@@ -133,4 +133,28 @@ describe Kor::Import::Excel do
     expect(Entity.last.datings.count).to eq(0)
   end
 
+  it "should not import timestamps" do
+    created_at = Entity.where(:name => "Leonardo da Vinci").first.created_at
+
+    book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
+    
+    sheet = book.worksheet 0
+    new_created_at = Entity.where(:name => "Leonardo da Vinci").first.created_at
+
+    expect(new_created_at).to eq(created_at)
+  end
+
+  it "should delete entities" do
+    book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
+    sheet = book.worksheet 0
+    sheet[3, 2] = "something"
+    system "rm #{Rails.root}/tmp/export_spec/entities.0001.xls"
+    book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
+
+    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", :verbose => false).run
+
+    leonardo = Entity.where(:name => "Leonardo da Vinci").first
+    expect(leonardo).to be_nil
+  end
+
 end

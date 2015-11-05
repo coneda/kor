@@ -43,6 +43,7 @@ class Kor::Import::Excel < Kor::Export::Excel
         if entity
           if row[2].present?
             puts "file #{file}, row #{i + 2} destroying entity id #{row[0]}"
+            entity.destroy unless @options[:simulate]
           else
             synonyms = json_parse(row[13], [])
             dataset = json_parse(row[16], {})
