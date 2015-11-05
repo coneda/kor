@@ -24,7 +24,8 @@ see file COPYING
 * Put your entities in one or many **groups** and share them with other users
 * A Fine-grained permission system with **user groups** and entity
   **collections**
-* Easy extension of the schema for every kind of entity
+* Easy extension of the schema for every kind of entity: Add fields for all
+  entities of a specific kind or occasionally add data to arbitrary entities
 * Tagging with autocomplete and sensible permissions
 * Full text search through all your metadata
 * A rich API facilitating additional frontends and data harvesting
@@ -37,74 +38,75 @@ see file COPYING
   relations, brand, …)
 
 
-## Main Navigation ##
-
-This should give a rough overview on what the navigation items are good for. The
-menu doesn't show every item to every user. The full version is only visible for
-fully authorized account (e.g. the default admin account).
-
-* **Edit profile:** Within this menu item it is possible to change the username,
-  email adress, password and to preset the front page, which appears after the
-  users login. Furthermore a default collection can be chosen in which uploaded 
-  media will be placed; while working on new entities and media it is possible
-  at any time to change the collection the user wants to expand.
-* **Clipboard:** The Clipboard serves as a temporary storage during a research,
-  the user can collect different media by using the menu item "" (copy to 
-  database). The medium will be saved on the Clipboard and can be added 
-  subsequently to a private or global group. The collected media will be
-  deleted from the clipboard after the log-out.
-* **New Entries:** Assorted samples of recently added media are listed here.
-* **Simple Search:** The menu item "simple search" navigates the user to a quick
-  search tool. 
-* **Expert Search:** The "expert search" provides more criteria, e.g. name,
-  date, further properties and tags, to refine the resulsts. In addition to the 
-  given research criteria the user can add "additional criteria", such as 
-  author, location, institution etc.
-* **Groups:** Within a Collection "Global Groups" are compiled by admins only 
-  and available for the other users, whereas "own groups" are only accessible 
-  by their author. A private user can publish his/her group to give other users
-  access to the respecting group, a shared group can also be edited by the other
-  users.
-* **Create Entity:** Different entities such as exhibition, embedded medium, 
-  institution, literature, medium, location, person, collective of persons, text
-  and works can be created here. The menu item "multiple upload" allows to 
-  upload more than one medium.
-* **New Entity:** New types of entities can be set up here and are later on
-  provided in the menu item "create entity".
-* **Administration:**
-  * **General:** Genereal settings can be changed here: The site operator’s name
-    and mail adress, server port/adress and protocol, email server and port; 
-    settings concerning different applications, such as relations between media,
-    maximum file size for upload, primary and secondary relations.
-  * **Relations:** The admin can declare any number of relations betweens the
-    different types of entities, i.e. how media, persons, locations etc. can be
-    connected while expanding the database.
-  * **Entity Types:** Different types of entities can be created and are alter
-    on available while uploading new media.
-  * **Collections:** The admin has got the oppurtunity to set up different
-    collections to limit access and editing to different groups of users.
-  * **User Groups:** Different user groups and their rights to use the database
-    can be set up und edited here.
-  * **User Administration:** The users and their accounts can be managed with
-    the settled user groups , the duration of user accounts can be extendet and
-    right to edit new media can be given to them.
-* **Statistics:** This menu item comprises general statistics, for example how
-  many media has been uploaded.
-* **Error Report:** Reports of errors are listed here.
-* **Terms of Use:** Terms of use can be edited here.
-* **Imprint:** The imprint can be edited here.
-* **Coneda.net:** Embedded link to Coneda UG’s homepage.
-
-# Documentation
+## Documentation
 
 These instructions are intended for system operators who wish to deploy the 
 software for their users.
 
-## Import and export
+### Deployment
+
+Before we go into the details of the deployment process, **please be sure to
+backup the database and the `$DEPLOY_TO/shared` directory**. In practice, this
+is achieved by dumping the database to a file and creating a snapshot of the VM
+that contains the above directory.
+
+ConedaKOR includes a deployment script `deploy.sh` that facilitats installs and
+upgrades via SSH. It is a plain bash script that connects to the server
+remotely, deploys the code to the specified directory and runs the necessary
+tasks (compiling assets, starting background jobs, …). The functionality does
+not include the installation of requirements, provisioning of a database server
+nor the setup of a web server, since those differ greatly from server to server.
+
+The script expects a directory `$DEPLOY_TO` on the server where it has write
+permissions. Within, it will create two subdirectories `$DEPLOY_TO/releases` and
+`$DEPLOY_TO/shared`. For every deployment, a subdirectory will be created within
+`releases` containing the ConedaKOR code. Data that is supposed to remain
+unchanged by deployments resides in `$DEPLOY_TO/shared`. Symlinks are used to
+connect the current code with the permanent data. Finally, a symlink
+`$DEPLOY_TO/current` will point to the current code so that your (e.g.
+passenger) web server configuration can use `DEPLOY_TO/current/public` as
+document root.
+
+The script is configured by a config file `deploy.config.sh`, which could look
+something like this:
+
+    #!/bin/bash
+
+    export KEEP=5
+    export PORT="22"
+
+    function instance01 {
+      export HOST="app@node01.example.com"
+      export PORT="22"
+      export DEPLOY_TO="/var/storage/host/kor"
+      export COMMIT="v1.9"
+    }
+
+    function instance02 {
+      export HOST="deploy@node02.example.com"
+      export DEPLOY_TO="/var/www/rack/kor"
+      export COMMIT="master"
+    }
+
+HOST, PORT and DIRECTORY are self-explanatory. COMMIT defines the commit, branch
+(head) or tag that is going to be deployed and KEEP let's you configure how many
+previous deployments are going to be kept.
+
+`deploy.config.sh` is run by the `deploy.sh` using the first parameter passed to
+itself, so a call
+
+    ./deploy.sh instance02
+
+would deploy to instance02 according to the configuration above. On terminals 
+that support it, the output is colorized according to the exit code of every
+command issued by the script.
+
+
+### Import and export
 
 Please refer to the command line tool.
 
-## Command line tool
+### Command line tool
 
 The kor command provides access to functionality which is not easily provided 
 from a web page. For example, the excel export potentially generates many large
