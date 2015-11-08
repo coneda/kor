@@ -1,17 +1,17 @@
-Kor::Application.routes.draw do
+Rails.application.routes.draw do
 
-  match '/blaze', :to => 'static#blaze', :as => :web
+  get '/blaze', :to => 'static#blaze', :as => :web
 
-  match '/by_uuid/:uuid', :to => 'entities#by_uuid'
+  match '/by_uuid/:uuid', :to => 'entities#by_uuid', :via => :get
   
   root :to => 'main#welcome'
-  match '/welcome', :to => 'main#welcome'
+  match '/welcome', :to => 'main#welcome', :via => :get
   
-  match '/authentication/form' => redirect('/login')
+  match '/authentication/form' => redirect('/login'), :via => :get
   
   controller 'inplace' do
-    match '/kor/inplace/tags', :action => 'tag_list'
-    match '/kor/inplace/tags/entities/:entity_id/tags', :action => 'update_entity_tags'
+    match '/kor/inplace/tags', :action => 'tag_list', :via => :get
+    match '/kor/inplace/tags/entities/:entity_id/tags', :action => 'update_entity_tags', :via => :get
   end
   
   resources :exception_logs, :only => :index do
@@ -83,9 +83,9 @@ Kor::Application.routes.draw do
       get 'extend'
     end
   end
-  match '/pub/:user_id/:uuid', :to => 'publishments#show', :as => :show_publishment
-  match '/edit_self', :to => 'users#edit_self'
-  match '/update_self', :to => 'users#update_self'
+  match '/pub/:user_id/:uuid', :to => 'publishments#show', :as => :show_publishment, :via => :get
+  match '/edit_self', :to => 'users#edit_self', :via => :get
+  match '/update_self', :to => 'users#update_self', :via => :patch
   resources :users do
     member do
       get 'reset_password'
@@ -96,54 +96,54 @@ Kor::Application.routes.draw do
     end
   end
 
-  match '/errors/:action', :controller => 'errors'  
-  match '/downloads/:uuid', :to => 'downloads#show'
-  match 'content_types/:content_type_group/:content_type.gif', :to => 'media#dummy', :as => :media_dummy, :content_type => /[a-z0-9\.\-]+/
+  match '/errors/:action', :controller => 'errors', :via => :get
+  match '/downloads/:uuid', :to => 'downloads#show', :via => :get
+  match 'content_types/:content_type_group/:content_type.gif', :to => 'media#dummy', :as => :media_dummy, :content_type => /[a-z0-9\.\-]+/, :via => :get
   
   scope '/media', :controller => 'media' do
-    match 'maximize/:id', :action => 'show', :style => 'normal', :as => :maximize_medium
-    match 'transform/:id/:transformation', :action => 'transform', :as => :transform_medium
-    match ':id', :action => 'view', :as => :view_medium
-    match 'images/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension', :action => 'show', :as => :medium
-    match 'download/:style/:id', :action => 'download', :as => :download_medium
+    match 'maximize/:id', :action => 'show', :style => 'normal', :as => :maximize_medium, :via => :get
+    match 'transform/:id/:transformation', :action => 'transform', :as => :transform_medium, :via => :get
+    match ':id', :action => 'view', :as => :view_medium, :via => :get
+    match 'images/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension', :action => 'show', :as => :medium, :via => :get
+    match 'download/:style/:id', :action => 'download', :as => :download_medium, :via => :get
   end
 
   controller 'authentication' do
-    match '/authentication/denied', :action => 'denied', :as => :denied, :format => :html
-    match '/authenticate', :action => 'login'
-    match '/login', :action => 'form', :as => :login
-    match '/logout', :action => 'logout', :as => :logout
-    match '/password_forgotten', :action => 'password_forgotten'
-    match '/password_reset', :action => 'personal_password_reset'
+    match '/authentication/denied', :action => 'denied', :as => :denied, :format => :html, :via => :get
+    match '/authenticate', :action => 'login', :via => :post
+    match '/login', :action => 'form', :as => :login, :via => :get
+    match '/logout', :action => 'logout', :as => :logout, :via => :get
+    match '/password_forgotten', :action => 'password_forgotten', :via => :get
+    match '/password_reset', :action => 'personal_password_reset', :via => :post
   end
   
-  match 'config/:action', :controller => 'config', :as => :config
+  match 'config/:action', :controller => 'config', :as => :config, :via => :get
   
-  match '/mark', :to => 'tools#mark', :as => :put_in_clipboard
-  match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current
+  match '/mark', :to => 'tools#mark', :as => :put_in_clipboard, :via => :get
+  match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current, :via => :get
   
   scope '/tools', :controller => 'tools' do
-    match 'session_info', :action => 'session_info'
-    match 'clipboard', :action => 'clipboard'
-    match 'statistics', :action => 'statistics'
-    match 'credits', :action => 'credits'
-    match 'credits/:id', :action => 'credits'
-    match 'groups_menu', :action => 'groups_menu'
-    match 'input_menu', :action => 'input_menu'
-    match 'relational_form_fields', :action => 'relational_form_fields'
-    match 'dataset_fields', :action => 'dataset_fields'
-    match 'clipboard_action', :action => 'clipboard_action'
-    match 'new_clipboard_action', :action => 'new_clipboard_action'
+    match 'session_info', :action => 'session_info', :via => :get
+    match 'clipboard', :action => 'clipboard', :via => :get
+    match 'statistics', :action => 'statistics', :via => :get
+    match 'credits', :action => 'credits', :via => :get
+    match 'credits/:id', :action => 'credits', :via => :get
+    match 'groups_menu', :action => 'groups_menu', :via => :get
+    match 'input_menu', :action => 'input_menu', :via => :get
+    match 'relational_form_fields', :action => 'relational_form_fields', :via => :get
+    match 'dataset_fields', :action => 'dataset_fields', :via => :get
+    match 'clipboard_action', :action => 'clipboard_action', :via => :get
+    match 'new_clipboard_action', :action => 'new_clipboard_action', :via => :get
     match 'history', :action => 'history', :via => "post"
     
-    match 'add_media/:id', :action => 'add_media'
+    match 'add_media/:id', :action => 'add_media', :via => :get
   end
   
   scope 'static', :controller => 'static' do
-    match 'legal', :action => 'legal'
-    match 'contact', :action => 'contact'
-    match 'about', :action => 'about'
-    match 'help', :action => 'help'
+    match 'legal', :action => 'legal', :via => :get
+    match 'contact', :action => 'contact', :via => :get
+    match 'about', :action => 'about', :via => :get
+    match 'help', :action => 'help', :via => :get
   end
   
   namespace 'api', :format => :json do
@@ -162,7 +162,7 @@ Kor::Application.routes.draw do
     end
   end
 
-  scope "tpl", :module => "tpl" do
+  scope "tpl", :module => "tpl", :via => :get do
     resources :entities, :only => [:show] do
       collection do
         get :multi_upload

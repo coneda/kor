@@ -10,7 +10,7 @@ class Collection < ActiveRecord::Base
   
   # Scopes
   
-  scope :personal, joins(:owner)
+  scope :personal, lambda { joins(:owner) }
   scope :non_personal, lambda {
     personal_ids = joins(:owner).select('collections.id').map{|c| c.id}
     personal_ids.empty? ? scoped : where("id NOT IN (?)", personal_ids)

@@ -1,7 +1,9 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.22'
-gem 'strong_parameters'
+gem 'rails', '~> 4.0'
+gem 'activerecord-session_store'
+gem 'responders', '~> 2.0'
+# gem 'strong_parameters'
 
 gem 'delayed_paperclip'
 gem "paperclip"
@@ -17,12 +19,12 @@ gem "exifr", '1.1.1'
 gem "haml"
 gem "sass"
 gem 'httpclient'
-gem 'acts-as-taggable-on', '~> 2.2.2'
+gem 'acts-as-taggable-on', '~> 3.5'
 gem 'system_timer', :platforms => [:ruby_18]
 
 gem 'kor_index', :path => './plugins/kor_index'
 
-gem "sprockets"
+gem "sprockets-rails"
 gem "jquery-rails"
 gem 'jquery-ui-rails'
 gem 'angularjs-rails'

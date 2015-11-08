@@ -20,6 +20,6 @@ class UserGroup < EntityGroup
   validates_presence_of :user_id
   
   scope :owned_by, lambda { |user| where(:user_id => user ? user.id : nil) }
-  scope :shared, where(:shared => true)
-  scope :latest_first, order('created_at DESC')
+  scope :shared, lambda { where(:shared => true) }
+  scope :latest_first, lambda { order('created_at DESC') }
 end

@@ -19,9 +19,9 @@ class AuthorityGroup < EntityGroup
     validates_uniqueness_of :name, :scope => :authority_group_category_id
   end
   
-  default_scope :order => "name ASC"
+  default_scope lambda { order(:name => :asc) }
   
-  scope :without_category, where(:authority_group_category_id => nil)
+  scope :without_category, lambda { where(:authority_group_category_id => nil) }
 
   def serializable_hash(options = {})
     options.merge! :root => false, :include => :authority_group_category

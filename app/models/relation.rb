@@ -18,7 +18,7 @@ class Relation < ActiveRecord::Base
     write_attribute(:uuid, SecureRandom.uuid)
   end
 
-  default_scope order(:name)
+  default_scope lambda { order(:name) }
   
 
   ######################### kinds ##############################################

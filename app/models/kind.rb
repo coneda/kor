@@ -16,7 +16,7 @@ class Kind < ActiveRecord::Base
   validates :plural_name,
     :white_space => true
   
-  default_scope :order => 'name'
+  default_scope lambda { order(:name) }
   scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }
   
   def field_instances(object)

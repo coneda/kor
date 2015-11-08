@@ -8,7 +8,7 @@ class Field < ActiveRecord::Base
   
   validates :name,
     :presence => true,
-    :format => {:with => /^[a-z0-9_]+$/},
+    :format => {:with => /\A[a-z0-9_]+\z/},
     :uniqueness => {:scope => :kind_id},
     :white_space => true
   validates_presence_of :show_label, :form_label, :search_label

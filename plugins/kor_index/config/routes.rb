@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   controller 'component_search' do
-    match '/component_search', :action => 'component_search'
-    match '/component/tag_counts', :action => 'counts'
+    get '/component_search', :action => 'component_search'
+    get '/component/tag_counts', :action => 'counts'
   end
 end
 

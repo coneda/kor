@@ -126,9 +126,9 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    def authorized?(policy = :view, collections = Collection.all, options = {})
+    def authorized?(policy = :view, collections = nil, options = {})
       options.reverse_merge!(:required => :any)
-      ::Kor::Auth.authorized? current_user, policy, collections, options
+      Kor::Auth.authorized? current_user, policy, collections, options
     end
 
     def authorized_collections(policy)

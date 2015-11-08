@@ -26,59 +26,59 @@ class Entity < ActiveRecord::Base
   has_and_belongs_to_many :authority_groups
   has_and_belongs_to_many :user_groups
 
-  has_many :relationships,
-    :finder_sql => Proc.new {
-      "SELECT DISTINCT relationships.*
-       FROM relationships 
-       WHERE (from_id = #{id} OR to_id = #{id})"
-    },
-    :class_name => "Relationship",
-    :dependent => :destroy do
-      def only(options = {})
-        options.reverse_merge!( :kind => nil, :relation_names => nil )
+  # has_many :relationships,
+  #   :finder_sql => Proc.new {
+  #     "SELECT DISTINCT relationships.*
+  #      FROM relationships 
+  #      WHERE (from_id = #{id} OR to_id = #{id})"
+  #   },
+  #   :class_name => "Relationship",
+  #   :dependent => :destroy do
+  #     def only(options = {})
+  #       options.reverse_merge!( :kind => nil, :relation_names => nil )
 
-        result = self
-        if options[:kind]
-          result = result.select do |rs|
-            Kind.find_ids(options[:kind]).include?( rs.other_entity(proxy_association.owner).kind_id )
-          end
-        end
+  #       result = self
+  #       if options[:kind]
+  #         result = result.select do |rs|
+  #           Kind.find_ids(options[:kind]).include?( rs.other_entity(proxy_association.owner).kind_id )
+  #         end
+  #       end
 
-        if options[:relation_names]
-          result = result.select do |rs|
-            Array(options[:relation_names]).include?( rs.relation_name_for_entity(proxy_association.owner) )
-          end
-        end
+  #       if options[:relation_names]
+  #         result = result.select do |rs|
+  #           Array(options[:relation_names]).include?( rs.relation_name_for_entity(proxy_association.owner) )
+  #         end
+  #       end
 
-        result.sort do |x,y|
-          x_name = x.other_entity(proxy_association.owner).display_name || ""
-          y_name = y.other_entity(proxy_association.owner).display_name || ""
-          x_name.downcase <=> y_name.downcase
-        end
-      end
+  #       result.sort do |x,y|
+  #         x_name = x.other_entity(proxy_association.owner).display_name || ""
+  #         y_name = y.other_entity(proxy_association.owner).display_name || ""
+  #         x_name.downcase <=> y_name.downcase
+  #       end
+  #     end
 
-      def except(options = {})
-        options.reverse_merge!(:kind => [], :relation_names => [])
-        only( 
-          :kind => Kind.all_ids - Kind.find_ids(options[:kind]),
-          :relation_names => Relation.all.collect{|r| [r.name, r.reverse_name]}.flatten - options[:relation_names]
-        )
-      end
+  #     def except(options = {})
+  #       options.reverse_merge!(:kind => [], :relation_names => [])
+  #       only( 
+  #         :kind => Kind.all_ids - Kind.find_ids(options[:kind]),
+  #         :relation_names => Relation.all.collect{|r| [r.name, r.reverse_name]}.flatten - options[:relation_names]
+  #       )
+  #     end
       
-      def authorized(user, policies)
-        collection_ids = Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
+  #     def authorized(user, policies)
+  #       collection_ids = Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
         
-        self.select do |rs|
-          collection_ids.include? rs.other_entity(proxy_association.owner).collection_id
-        end
-      end
+  #       self.select do |rs|
+  #         collection_ids.include? rs.other_entity(proxy_association.owner).collection_id
+  #       end
+  #     end
       
-      def grouped
-        except(:kind => Kind.medium_kind.id).group_by do |r| 
-          r.relation_name_for_entity(proxy_association.owner)
-        end
-      end
-    end
+  #     def grouped
+  #       except(:kind => Kind.medium_kind.id).group_by do |r| 
+  #         r.relation_name_for_entity(proxy_association.owner)
+  #       end
+  #     end
+  #   end
     
   def grouped_related_entities(user, policies, options = {})
     options.reverse_merge!(:media => :no, :limit => false)
@@ -536,8 +536,8 @@ class Entity < ActiveRecord::Base
   scope :searcheable, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
   scope :media, lambda { where("entities.kind_id = ?", Kind.medium_kind.id) }
   scope :without_media, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
-  scope :alphabetically, order("name asc, distinct_name asc")
-  scope :newest_first, order("created_at DESC")
+  scope :alphabetically, lambda { order("name asc, distinct_name asc") }
+  scope :newest_first, lambda { order("created_at DESC") }
   scope :globally_identified_by, lambda {|uuid| uuid.blank? ? scoped : where(:uuid => uuid) }
   scope :is_a, lambda { |kind_id|
     kind = Kind.find_by_name(kind_id.to_s)
@@ -619,7 +619,7 @@ class Entity < ActiveRecord::Base
 
     dataset.values.all?{|v| v.blank?} ? scoped : where("entities.id IN (?)", ids.uniq)
   }
-  scope :load_fully, joins(:kind, :collection).includes(:medium)
+  scope :load_fully, lambda { joins(:kind, :collection).includes(:medium) }
   scope :isolated, lambda {
     joins("LEFT JOIN relationships fromrels ON entities.id = fromrels.from_id").
     joins("LEFT JOIN relationships torels ON entities.id = torels.to_id").
