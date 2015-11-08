@@ -32,7 +32,6 @@ class KindsController < ApplicationController
   def update
     @kind = Kind.find(params[:id])
 
-    params[:kind][:settings][:web_services] ||= []
     params[:kind][:settings][:tagging] ||= false
     
     if @kind.update_attributes(params[:kind])

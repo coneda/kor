@@ -74,14 +74,6 @@ class Kind < ActiveRecord::Base
     settings[:name_label] ||= Entity.human_attribute_name(:name)
   end
   
-  def web_services
-    settings[:web_services]
-  end
-  
-  def web_services=(values)
-    settings[:web_services] = values
-  end
-  
   def tagging
     settings[:tagging] = true if settings[:tagging].nil?
     settings[:tagging]
