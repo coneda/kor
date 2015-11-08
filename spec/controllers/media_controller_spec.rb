@@ -89,6 +89,20 @@ RSpec.describe MediaController, :type => :controller do
     expect(response).not_to redirect_to(denied_path)
   end
 
+  it "should allow original download only to authorized users" do
+    set_side_collection_policies(:view => [@admins])
+
+    get :download, :id => side_entity.medium_id, :style => :original
+    expect(response).to redirect_to(denied_path)
+  end
+
+  it "should show originals only to authorized users" do
+    set_side_collection_policies(:view => [@admins])
+
+    get :show, :id => side_entity.medium_id, :style => :original
+    expect(response).to redirect_to(denied_path)
+  end
+
 
   # transform
   it "should not allow image transformations to unauthorized users" do

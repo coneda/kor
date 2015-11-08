@@ -17,8 +17,11 @@
       <dc:type>Triple</dc:type>
 
       <dc:description>
-        <kor:normal><%= record.relation.name %></kor:normal>
-        <kor:reverse><%= record.relation.reverse_name %></kor:reverse>
+        <kor:id><%= record.uuid %></kor:id>
+        <kor:created-at><%= timestamp record.created_at %></kor:created-at>
+        <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
+        <kor:name><%= record.relation.name %></kor:name>
+        <kor:reverse-name><%= record.relation.reverse_name %></kor:reverse-name>
         <kor:from><%= record.from.uuid %></kor:from>
         <kor:to><%= record.to.uuid %></kor:to>
       </dc:description>

@@ -12,7 +12,7 @@ class Relationship < ActiveRecord::Base
 
   scope :allowed, lambda{|user, policy|
     collection_ids = Auth::Authorization.authorized_collections(user, policy).map{|c| c.id}
-    
+
     joins("LEFT JOIN entities AS froms ON relationships.from_id = froms.id").
     joins("LEFT JOIN entities AS tos ON relationships.to_id = tos.id").
     where(
@@ -131,7 +131,7 @@ class Relationship < ActiveRecord::Base
   validates_presence_of :from_id, :to_id, :relation_id, :message => 'can_not_be_empty'
   
   after_validation(:on => :create) do |model|
-    model.uuid = SecureRandom.uuid
+    model.uuid ||= SecureRandom.uuid
   end
   
   

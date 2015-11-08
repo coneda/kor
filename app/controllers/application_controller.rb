@@ -1,5 +1,5 @@
-class ApplicationController < ActionController::Base
-  
+class ApplicationController < BaseController
+
   helper :all
   helper_method :back, :back_save, :home_page, 
     :authorized?,
@@ -202,10 +202,6 @@ class ApplicationController < ActionController::Base
       current_user.home_page || root_url
     end
     
-    def current_user
-      @current_user ||= User.pickup_session_for(session[:user_id])
-    end
-
     def logged_in?
       current_user && current_user.name != 'guest'
     end

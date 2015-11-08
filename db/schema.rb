@@ -341,6 +341,7 @@ ActiveRecord::Schema.define(:version => 20151111112819) do
     t.integer  "credential_id"
     t.boolean  "rating_admin"
     t.string   "parent_username"
+    t.string   "api_key"
   end
 
   add_index "users", ["name"], :name => "index_users_on_name", :unique => true

@@ -14,7 +14,14 @@ class MediaController < ApplicationController
     id = params[:id] || (params[:id_part_01] + params[:id_part_02] + params[:id_part_03]).to_i
     @medium = Medium.includes(:entity => :collection).find(id)
 
-    if authorized?(:view, @medium.entity.collection)
+    auth = case params[:style].to_sym
+      when :original
+        authorized?(:download_originals, @medium.entity.collection) || (!@medium.content_type.match(/\image/) && authorized?(:view, @medium.entity.collection))
+      else
+        authorized?(:view, @medium.entity.collection)
+    end
+
+    if auth
       style = params[:style].to_sym
 
       send_data @medium.data(style),

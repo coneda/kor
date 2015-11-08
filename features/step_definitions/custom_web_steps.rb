@@ -213,3 +213,8 @@ end
 Then(/^I should see "(\d+)" kor images$/) do |amount|
   expect(page).to have_selector("img.kor_medium", :count => 2)
 end
+
+Then(/^I should see "(.*?)"'s API Key$/) do |username|
+  user = User.where(:name => username).first
+  expect(page).to have_content(user.api_key)
+end

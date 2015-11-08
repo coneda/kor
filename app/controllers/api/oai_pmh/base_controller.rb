@@ -1,4 +1,4 @@
-class Api::OaiPmh::BaseController < ActionController::Base
+class Api::OaiPmh::BaseController < BaseController
 
   layout "../api/oai_pmh/base"
 
@@ -31,12 +31,6 @@ class Api::OaiPmh::BaseController < ActionController::Base
     render :template => "api/oai_pmh/list_identifiers"
   end
 
-  def get_record
-    @record = locate(params[:identifier])
-
-    render :template => "api/oai_pmh/get_record"
-  end
-
   def list_records
     record_params = params.select do |k, v|
       ["metadataPrefix", "from", "to", "set", "resumptionToken"].include?(k)
@@ -64,9 +58,10 @@ class Api::OaiPmh::BaseController < ActionController::Base
       end
 
       scope = records.
+        allowed(current_user, :view).
         updated_after(params['from']).
         updated_before(params['until'])
-      
+
       offset_scope = scope.offset(params['page'] * params['per_page'])
 
       token = if offset_scope.count > params['per_page']
@@ -124,7 +119,7 @@ class Api::OaiPmh::BaseController < ActionController::Base
     end
 
     def current_user
-      User.guest
+      super || User.guest
     end
 
 end

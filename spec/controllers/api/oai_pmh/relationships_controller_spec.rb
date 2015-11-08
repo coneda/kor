@@ -6,15 +6,21 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
 
   before :each do
     default = FactoryGirl.create :default
-    FactoryGirl.create :admin
+    priv = FactoryGirl.create :private
+    admins = FactoryGirl.create :admins
+    FactoryGirl.create :admin, :groups => [admins]
     guests = FactoryGirl.create :guests
     FactoryGirl.create :guest, :groups => [guests]
     Grant.create :credential => guests, :collection => default, :policy => 'view'
 
+    Grant.create :credential => admins, :collection => default, :policy => 'view'
+    Grant.create :credential => admins, :collection => priv, :policy => 'view'
+
     mona_lisa = FactoryGirl.create :mona_lisa
-    leonardo = FactoryGirl.create :leonardo
+    leonardo = FactoryGirl.create :leonardo, :collection_id => priv.id
+
     FactoryGirl.create :has_created
-    Relationship.relate_once_and_save(leonardo, "has created", mona_lisa)
+    Relationship.relate_and_save mona_lisa, "has created", leonardo
   end
 
   it "should respond to 'Identify'" do
@@ -69,15 +75,40 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
 
 
   it "should respond to 'GetRecord'" do
+    admin = User.admin
+    relationship = Relationship.last
+
+    get :get_record, :format => :xml, :identifier => relationship.uuid, :api_key => admin.api_key
+    expect(response).to be_success
+    expect{Hash.from_xml response.body}.not_to raise_error
+
+    post :get_record, :format => :xml, :identifier => relationship.uuid, :api_key => admin.api_key
+    expect(response).to be_success
+    expect{Hash.from_xml response.body}.not_to raise_error
+  end
+
+  it "should only include data the user is authorized for" do
+    get :list_records, :format => :xml
+
+    metadatas = Nokogiri::XML(response.body).xpath("//xmlns:metadata")
+    items = metadatas.map{|m| Nokogiri::XML(m.children.to_s)}
+
+    expect(items.count).to eq(0)
+
+    admin = User.admin
+    get :list_records, :format => :xml, :api_key => admin.api_key
+
+    metadatas = Nokogiri::XML(response.body).xpath("//xmlns:metadata")
+    items = metadatas.map{|m| Nokogiri::XML(m.children.to_s)}
+
+    expect(items.count).to eq(1)
+  end
+
+  it "should respond with 403 if the user is not authorized" do
     relationship = Relationship.last
 
     get :get_record, :format => :xml, :identifier => relationship.uuid
-    expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
-
-    post :get_record, :format => :xml, :identifier => relationship.uuid
-    expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect(response.status).to be(403)
   end
 
 end

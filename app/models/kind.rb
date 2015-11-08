@@ -15,11 +15,17 @@ class Kind < ActiveRecord::Base
 
   validates :plural_name,
     :white_space => true
+
+  before_validation :generate_uuid
   
   default_scope :order => 'name'
   scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : scoped}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : scoped}
+
+  def generate_uuid
+    self.uuid ||= SecureRandom.uuid
+  end
   
   def field_instances(object)
     self.fields.each do |field|
