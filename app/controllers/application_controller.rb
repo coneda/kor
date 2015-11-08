@@ -169,15 +169,6 @@ class ApplicationController < ActionController::Base
       UserGroup.owned_by(current_user)
     end
     
-    def reward(options = {})
-      Engagement.reward(
-        :user => current_user,
-        :kind => options[:for],
-        :related => options[:on],
-        :reward_model => options[:by]
-      )
-    end
-    
     def history_store(url = nil)
       url ||= request.url
       session[:history] ||= []

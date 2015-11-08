@@ -34,16 +34,6 @@ class Api::ApiController < ActionController::Base
       render :json => {:message => error_messages[error]}, :status => status
     end
     
-    def reward(options = {})
-      Api::Engagement.reward(
-        :user => current_user,
-        :kind => options[:for],
-        :related => options[:on],
-        :reward_model => options[:by],
-        :in_a_row => options[:in_a_row]
-      )
-    end
-  
     def error_messages
       return {
         :not_authenticated => "You are not authentiated please provide a key or authenticate via /login first",

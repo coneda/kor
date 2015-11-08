@@ -135,7 +135,7 @@ class Collection < ActiveRecord::Base
   
   
   def policies
-    ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'admin_rating', 'view_meta']
+    ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
   end
   
   def authorized_user_groups(policies)
