@@ -1,4 +1,4 @@
-class Export::MetaDataProfile
+class Kor::Export::MetaData
   
   def initialize(name)
     @profile = (Kor.config['meta_data_profiles'] || {})[name] || []

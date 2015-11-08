@@ -191,7 +191,7 @@ module FormsHelper
     end
     entity_dating ||= EntityDating.new
 
-    fields_for "entity[#{prefix}_datings_attributes][]", entity_dating, :builder => Stdlib::KorFormBuilder do |ed|
+    fields_for "entity[#{prefix}_datings_attributes][]", entity_dating, :builder => Kor::FormBuilder do |ed|
       ed.hidden_field(:lock_version).html_safe +
       ed.kor_input(:label, :control => ed.text_field(:label, :value => label)).html_safe +
       ed.kor_input(:dating_string).html_safe

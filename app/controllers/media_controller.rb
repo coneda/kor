@@ -60,8 +60,8 @@ class MediaController < ApplicationController
     @medium = Medium.find params[:id]
 
     if authorized?(:edit, @medium.entity.collection)
-      Media.transform(@medium,
-        Media.transformation_by_name(params[:transformation]),
+      Kor::Media.transform(@medium,
+        Kor::Media.transformation_by_name(params[:transformation]),
         :operation => params[:operation].to_sym
       )
 

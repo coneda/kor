@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-class Dating::ParseTransform < Parslet::Transform
+class Kor::Dating::Transform < Parslet::Transform
   
   rule(:num => simple(:num), :part => simple(:part), :bc => simple(:bc), :cs => simple(:cs)) do
     modifier = case part

@@ -1,4 +1,4 @@
-module Media
+module Kor::Media
  
   def self.transform(medium, transformation, options = {})
     if transformation.transforms(medium)

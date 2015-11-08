@@ -2,7 +2,7 @@
 
 - content_for :normal_title, I18n.t('objects.edit', :o => I18n.t('nouns.profile', :count => 1))
 - content_for :normal_content do
-  = form_for @user, :url => { :controller => 'users', :action => 'update_self' }, :html => { :class => 'kor_form' }, :builder => Stdlib::KorFormBuilder do |f|
+  = form_for @user, :url => { :controller => 'users', :action => 'update_self' }, :html => { :class => 'kor_form' }, :builder => Kor::FormBuilder do |f|
 
     = f.hidden_field :lock_version
     = f.kor_input :full_name

@@ -1,4 +1,4 @@
-class Media::VideoProber
+class Kor::Media::VideoProber
   
   def initialize(file)
     @file = file
@@ -55,7 +55,7 @@ class Media::VideoProber
 
   def video_stream
     @video_stream ||= if video_streams.size == 0
-      raise Media::ProcessorException, "there are no video streams"
+      raise "there are no video streams"
     elsif video_streams.size > 1
       #raise "there are more than one video stream"
       video_streams.first

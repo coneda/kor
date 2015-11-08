@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require "rails_helper"
 
-describe Export::MetaDataProfile do
+describe Kor::Export::MetaData do
   include DataHelper
   
   it "should correctly include relationship properties" do
@@ -19,7 +19,7 @@ describe Export::MetaDataProfile do
     expect(Relationship.count).to eql(2)
     
     expect {
-      exporter = Export::MetaDataProfile.new('simple')
+      exporter = described_class.new('simple')
       exporter.render_entity Entity.media.first
     }.not_to raise_error
   end

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  
   helper :all
   helper_method :back, :back_save, :home_page, 
     :authorized?,
@@ -127,11 +128,11 @@ class ApplicationController < ActionController::Base
 
     def authorized?(policy = :view, collections = Collection.all, options = {})
       options.reverse_merge!(:required => :any)
-      ::Auth::Authorization.authorized? current_user, policy, collections, options
+      ::Kor::Auth.authorized? current_user, policy, collections, options
     end
 
     def authorized_collections(policy)
-      Auth::Authorization.authorized_collections current_user, policy
+      Kor::Auth.authorized_collections current_user, policy
     end
     
     def viewable_entities

@@ -1,7 +1,7 @@
 - content_for :javascript, javascript_include_tag('attachments')
 - content_for :form_errors, error_box(:object => @relationship)
 
-= form_for @relationship, :html => { :class => "kor_form" }, :builder => Stdlib::KorFormBuilder do |f|
+= form_for @relationship, :html => { :class => "kor_form" }, :builder => Kor::FormBuilder do |f|
   = f.hidden_field :lock_version
   
   .subtitle.content_panel

@@ -1,4 +1,12 @@
-class Mass::EntityMerger < Mass::Base
+class Kor::EntityMerger
+
+  def run(options = {})
+    Entity.transaction do
+      Relationship.transaction do
+        process(options)
+      end
+    end
+  end
 
   def process(options = {})
     if Entity.find(options[:old_ids].first).is_medium?

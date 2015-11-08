@@ -47,11 +47,11 @@ module ApplicationHelper
   def authorized?(policy = :view, collections = Collection.all, options = {})
     options.reverse_merge!(:required => :any)
   
-    Auth::Authorization.authorized? current_user, policy, collections, options
+    Kor::Auth.authorized? current_user, policy, collections, options
   end
   
   def authorized_collections(policy = :view)
-    Auth::Authorization.authorized_collections current_user, policy
+    Kor::Auth.authorized_collections current_user, policy
   end
   
   def kor_translate(item)
@@ -76,7 +76,7 @@ module ApplicationHelper
   end
 
   def authorized_collections(policy = :view)
-    Auth::Authorization.authorized_collections current_user, policy
+    Kor::Auth.authorized_collections current_user, policy
   end
 
   def kor_sort(array, criterium = :name)

@@ -66,7 +66,7 @@ class Entity < ActiveRecord::Base
       end
       
       def authorized(user, policies)
-        collection_ids = Auth::Authorization.authorized_collections(user, policies).map{|c| c.id}
+        collection_ids = Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
         
         self.select do |rs|
           collection_ids.include? rs.other_entity(proxy_association.owner).collection_id
@@ -94,7 +94,7 @@ class Entity < ActiveRecord::Base
     relationships = Relationship.includes(:from, :relation, :to).order("tos_relationships.name, entities.name")
     relationships = relationships.where(
       "#{media_conditions} #{relation_conditions} AND #{collection_conditions}",
-      Auth::Authorization.authorized_collections(user, policies).map{|c| c.id}
+      Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
     )
     
     relationships.group_by{|r| r.relation_name_for_entity(self)}
@@ -296,7 +296,7 @@ class Entity < ActiveRecord::Base
   end
   
   scope :allowed, lambda { |user, policy|
-    collections = Auth::Authorization.authorized_collections(user, policy)
+    collections = Kor::Auth.authorized_collections(user, policy)
     where("entities.collection_id IN (?)", collections.map{|c| c.id})
   }
   
@@ -331,9 +331,7 @@ class Entity < ActiveRecord::Base
       if options[:search] == :primary
         related_entities(:relation_names => Relation.primary_relation_names)
       else
-        raise Kor::Exception.new(
-          "invalid options or invalid combination: #{options.inspect}"
-        )
+        raise "invalid options or invalid combination: #{options.inspect}"
       end
     elsif options[:assume] == :primary
       if options[:search] == :media
@@ -350,9 +348,7 @@ class Entity < ActiveRecord::Base
         end.flatten.uniq
       end
     else
-      raise Kor::Exception.new(
-        "invalid options or invalid combination: #{options.inspect}"
-      )
+      raise "invalid options or invalid combination: #{options.inspect}"
     end
   end
   

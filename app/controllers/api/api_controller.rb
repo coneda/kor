@@ -48,7 +48,7 @@ class Api::ApiController < ActionController::Base
     def authorized_collections(policy = :view, out_of = nil)
       out_of ||= Collection.all.map{|c| c.id}
       out_of = out_of.map{|id| id.to_i}
-      result = Auth::Authorization.authorized_collections current_user, policy
+      result = Kor::Auth.authorized_collections current_user, policy
       result.select do |c|
         out_of.include? c.id
       end

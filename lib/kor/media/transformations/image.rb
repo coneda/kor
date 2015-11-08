@@ -1,4 +1,4 @@
-class Media::Transformations::Image < Media::Transformations::Base
+class Kor::Media::Transformations::Image < Kor::Media::Transformations::Base
 
   def self.transforms(medium)
     medium.image.file?

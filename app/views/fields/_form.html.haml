@@ -6,7 +6,7 @@
 
 - content_for :normal_title, I18n.t('nouns.config')
 - content_for :normal_content do
-  = form_for @field, :as => :field, :url => @form_url, :builder => Stdlib::KorFormBuilder, :html => {:class => 'kor_form'} do |f|
+  = form_for @field, :as => :field, :url => @form_url, :builder => Kor::FormBuilder, :html => {:class => 'kor_form'} do |f|
     = hidden_field_tag :klass, params[:klass]
     = f.hidden_field :kind_id, :value => params[:kind_id]
   

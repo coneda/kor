@@ -21,6 +21,5 @@ class UserGroup < EntityGroup
   
   scope :owned_by, lambda { |user| where(:user_id => user ? user.id : nil) }
   scope :shared, where(:shared => true)
-  scope :named_like, lambda { |name| where("name LIKE ?", "%#{name}%") }
   scope :latest_first, order('created_at DESC')
 end

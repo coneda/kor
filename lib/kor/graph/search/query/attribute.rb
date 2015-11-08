@@ -28,7 +28,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
       when Array then @collection_ids
       when String then Collection.find_all_by_id(@collection_ids.split(',').map{|i| i.to_i}).map{|c| c.id}
       else
-        ::Auth::Authorization.authorized_collections(user, :view).map{|c| c.id}
+        ::Kor::Auth.authorized_collections(user, :view).map{|c| c.id}
     end
   end
   

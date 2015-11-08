@@ -1,8 +1,6 @@
-# encoding: utf-8
-
 require 'rails_helper'
 
-describe Mass::EntityMerger do
+describe Kor::EntityMerger do
   include DataHelper
   
   it "should merge entities while preserving the dataset" do
@@ -11,7 +9,7 @@ describe Mass::EntityMerger do
     mona_lisa = Entity.find_by_name('Mona Lisa')
     mona_lisa.dataset = {'gnd' => '12345', 'google_maps' => 'Am Dornbusch 13, 60315 Frankfurt'}
     
-    merged = Mass::EntityMerger.new.run(:old_ids => Entity.all.map{|e| e.id},
+    merged = described_class.new.run(:old_ids => Entity.all.map{|e| e.id},
       :attributes => {
         :name => mona_lisa.name,
         :dataset => {
@@ -28,7 +26,7 @@ describe Mass::EntityMerger do
     mona_lisa = FactoryGirl.create :mona_lisa, :synonyms => ["La Gioconda"]
     other_mona_lisa = FactoryGirl.create :mona_lisa, :name => "Mona Liza", :synonyms => ["La Gioconda"]
 
-    merged = Mass::EntityMerger.new.run(:old_ids => Entity.all.map{|e| e.id},
+    merged = described_class.new.run(:old_ids => Entity.all.map{|e| e.id},
       :attributes => {
         :name => mona_lisa.name,
         :synonyms => "La Gioconda"

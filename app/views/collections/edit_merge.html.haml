@@ -1,6 +1,6 @@
 - content_for :normal_title, I18n.t('move_contents_from', :o => @collection.name)
 - content_for :normal_content do
-  = form_for @collection, :url => merge_collection_path(@collection), :html => {:class => 'kor_form'}, :builder => Stdlib::KorFormBuilder do |f|
+  = form_for @collection, :url => merge_collection_path(@collection), :html => {:class => 'kor_form'}, :builder => Kor::FormBuilder do |f|
     = collection_selector_tag(:collection_id, :policy => :create)
     
     = f.kor_submit

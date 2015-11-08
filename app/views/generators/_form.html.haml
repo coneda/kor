@@ -6,7 +6,7 @@
 
 - content_for :normal_title, I18n.t('nouns.config')
 - content_for :normal_content do
-  = form_for [@kind, @generator], :as => :generator, :builder => Stdlib::KorFormBuilder, :html => {:class => 'kor_form'} do |f|
+  = form_for [@kind, @generator], :as => :generator, :builder => Kor::FormBuilder, :html => {:class => 'kor_form'} do |f|
     = f.hidden_field :kind_id, :value => params[:kind_id]
   
     %ul{'ng-non-bindable' => true}

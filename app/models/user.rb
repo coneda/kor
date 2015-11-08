@@ -195,7 +195,7 @@ class User < ActiveRecord::Base
   def full_auth
     collections = {}
     Grant.group(:policy).count.each do |policy, c|
-      collections[policy] = Auth::Authorization.authorized_collections(self, policy).map{|c| c.id}
+      collections[policy] = Kor::Auth.authorized_collections(self, policy).map{|c| c.id}
     end
   
     return {

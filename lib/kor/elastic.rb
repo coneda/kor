@@ -239,7 +239,7 @@ class Kor::Elastic
       size = 10
     end
 
-    collection_ids = ::Auth::Authorization.authorized_collections(@user).map(&:id)
+    collection_ids = ::Kor::Auth.authorized_collections(@user).map(&:id)
     if collection_ids.empty?
       return self.class.empty_result
     end

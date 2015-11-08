@@ -5,7 +5,7 @@
     :next_label => "»"
   
 - content_for :normal_content do
-  = form_tag recent_entities_path, :class => 'kor_form', :builder => Stdlib::KorFormBuilder do
+  = form_tag recent_entities_path, :class => 'kor_form', :builder => Kor::FormBuilder do
     = collection_selector_tag(:collection_id, :label => Collection.model_name.human, :policy => :edit)
     
     :javascript

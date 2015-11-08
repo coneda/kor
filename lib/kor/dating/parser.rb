@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-class Dating::Parser < Parslet::Parser
+class Kor::Dating::Parser < Parslet::Parser
 
   # Numbers
   
@@ -46,7 +46,7 @@ class Dating::Parser < Parslet::Parser
   # Transform
   
   def transform(input)
-    Dating::ParseTransform.new.apply(self.class.new.parse(input))
+    Kor::Dating::Transform.new.apply(self.class.new.parse(input))
   end
   
 end

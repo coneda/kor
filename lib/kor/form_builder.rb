@@ -1,4 +1,4 @@
-class Stdlib::KorFormBuilder < ActionView::Helpers::FormBuilder
+class Kor::FormBuilder < ActionView::Helpers::FormBuilder
 
   def t
     @template

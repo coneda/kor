@@ -1,6 +1,6 @@
 - content_for :form_errors, error_box(:object => @user)
 
-= form_for @user, :html => { :class => 'kor_form' }, :builder => Stdlib::KorFormBuilder do |f|
+= form_for @user, :html => { :class => 'kor_form' }, :builder => Kor::FormBuilder do |f|
   = f.hidden_field :lock_version
   = f.kor_input :personal, :control => check_box_tag("user[make_personal]", "1", @user.personal?)
   = f.kor_input :full_name
