@@ -253,5 +253,5 @@ describe Entity do
     expect(leonardo.valid?).to be_falsey
     expect(leonardo.errors.full_messages.first).to eq("Name kann keine aufeinander folgende Leerzeichen beinhalten")
   end
-  
+
 end

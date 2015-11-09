@@ -551,7 +551,7 @@ class Entity < ActiveRecord::Base
     if pattern.blank?
       {}
     else
-      pattern_query = pattern.tokenize.map{ |token| "name LIKE ?"}.join(" AND ")
+      pattern_query = pattern.tokenize.map{ |token| "entities.name LIKE ?"}.join(" AND ")
       pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
 
       entity_ids = Kor::Elastic.new(user).search(:synonyms => pattern, :size => Entity.count).ids
