@@ -320,7 +320,7 @@ class User < ActiveRecord::Base
   end
 
   def allowed_to?(policy = :view, items = nil, options = {})
-    Auth::Authorization.authorized?(self, policy, items, options)
+    Kor::Auth.authorized?(self, policy, items, options)
   end
   
 end

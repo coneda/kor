@@ -11,7 +11,7 @@ class Relationship < ActiveRecord::Base
   end
 
   scope :allowed, lambda{|user, policy|
-    collection_ids = Auth::Authorization.authorized_collections(user, policy).map{|c| c.id}
+    collection_ids = Kor::Auth.authorized_collections(user, policy).map{|c| c.id}
 
     joins("LEFT JOIN entities AS froms ON relationships.from_id = froms.id").
     joins("LEFT JOIN entities AS tos ON relationships.to_id = tos.id").
