@@ -65,8 +65,8 @@ describe Entity do
   it "should raise an error if the options for the related method are invalid" do
     entity = FactoryGirl.build :work
     
-    expect { entity.related(:assume => :terciary) }.to raise_error(Kor::Exception)
-    expect { entity.related(:assume => :image, :search => :secondary) }.to raise_error(Kor::Exception)
+    expect { entity.related(:assume => :terciary) }.to raise_error
+    expect { entity.related(:assume => :image, :search => :secondary) }.to raise_error
   end
   
   it "should find related media for primary entities and vice versa" do
@@ -162,8 +162,8 @@ describe Entity do
     
     expect(entity.valid?).to be_falsey
     expect(entity.errors.full_messages).to eq([
-      'Name ist bereits vergeben',
-      'eindeutiger Name ist ungültig'
+      'name is already taken',
+      'distinguished name is invalid'
     ])
   end
 
@@ -213,8 +213,8 @@ describe Entity do
       {'value' => 12.7}
     ]
     expect(entity.valid?).to be_falsey
-    expect(entity.errors.full_messages).to include('weitere Eigenschaften benötigen einen Wert')
-    expect(entity.errors.full_messages).to include('weitere Eigenschaften benötigen einen Bezeichner')
+    expect(entity.errors.full_messages).to include('further properties need a value')
+    expect(entity.errors.full_messages).to include('further properties need a label')
   end
 
   it "should retrieve unsaved mongo values without a kind" do
@@ -234,7 +234,7 @@ describe Entity do
 
     entity = FactoryGirl.build :jack, :dataset => {'isbn' => 'invalid ISBN'}
     expect(entity.save).to be_falsey
-    expect(entity.errors.full_messages).to include("ISBN ist ungültig")
+    expect(entity.errors.full_messages).to include("ISBN is invalid")
   end
 
   it "should validate against needless spaces" do
@@ -243,15 +243,21 @@ describe Entity do
 
     leonardo.name = " Leonardo"
     expect(leonardo.valid?).to be_falsey
-    expect(leonardo.errors.full_messages.first).to eq("Name kann nicht mit einem Leerzeichen beginnen")
+    expect(leonardo.errors.full_messages.first).to eq(
+      "name can't start with a space"
+    )
 
     leonardo.name = "Leonardo "
     expect(leonardo.valid?).to be_falsey
-    expect(leonardo.errors.full_messages.first).to eq("Name kann nicht mit einem Leerzeichen enden")
+    expect(leonardo.errors.full_messages.first).to eq(
+      "name can't end with a space"
+    )
 
     leonardo.name = "Leonardo  da Vinci"
     expect(leonardo.valid?).to be_falsey
-    expect(leonardo.errors.full_messages.first).to eq("Name kann keine aufeinander folgende Leerzeichen beinhalten")
+    expect(leonardo.errors.full_messages.first).to eq(
+      "name can't contain consecutive spaces"
+    )
   end
 
 end

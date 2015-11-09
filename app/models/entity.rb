@@ -96,10 +96,9 @@ class Entity < ActiveRecord::Base
       where(media_conditions).
       where(relation_conditions).
       where(
-        collection_conditions
+        collection_conditions,
         Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
       )
-    )
     
     relationships.group_by{|r| r.relation_name_for_entity(self)}
   end
@@ -119,7 +118,7 @@ class Entity < ActiveRecord::Base
 
   # Nesting
   
-  accepts_nested_attributes_for :medium
+  accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
 
   
   # Validation
@@ -181,7 +180,11 @@ class Entity < ActiveRecord::Base
   # Attachment
 
   def attachment
-    self[:attachment] ||= {}
+    unless self[:attachment]
+      self[:attachment] = {}
+    end
+
+    self[:attachment]
   end
 
   def schema
@@ -533,8 +536,8 @@ class Entity < ActiveRecord::Base
   end
   
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
-  scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : scoped }
-  scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : scoped }
+  scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
+  scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :searcheable, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
@@ -542,11 +545,11 @@ class Entity < ActiveRecord::Base
   scope :without_media, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
   scope :alphabetically, lambda { order("name asc, distinct_name asc") }
   scope :newest_first, lambda { order("created_at DESC") }
-  scope :globally_identified_by, lambda {|uuid| uuid.blank? ? scoped : where(:uuid => uuid) }
+  scope :globally_identified_by, lambda {|uuid| uuid.blank? ? all : where(:uuid => uuid) }
   scope :is_a, lambda { |kind_id|
     kind = Kind.find_by_name(kind_id.to_s)
     kind ||= Kind.find_by_id(kind_id)
-    kind ? where("entities.kind_id = ?", kind_id) : scoped
+    kind ? where("entities.kind_id = ?", kind_id) : all
   }
   scope :named_exactly_like, lambda {|value| where("name like :value or concat(name,' (',distinct_name,')') like :value", :value => value) }
   scope :valid, lambda { |valid|
@@ -557,7 +560,7 @@ class Entity < ActiveRecord::Base
   }
   scope :named_like, lambda { |user, pattern|
     if pattern.blank?
-      {}
+      all
     else
       pattern_query = pattern.tokenize.map{ |token| "entities.name LIKE ?"}.join(" AND ")
       pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
@@ -574,7 +577,7 @@ class Entity < ActiveRecord::Base
   }
   scope :has_property, lambda { |user, properties|
     if properties.blank?
-      scoped
+      all
     else
       ids = Kor::Elastic.new(user).search(
         :properties => properties,
@@ -608,11 +611,11 @@ class Entity < ActiveRecord::Base
       where("relf.name IN (?) OR relr.reverse_name IN (?)", relation_names, relation_names).
       where(conds.join(' OR '), *vars)
     else
-      scoped
+      all
     end
   }
   scope :dated_in, lambda {|dating|
-    dating.blank? ? scoped : where("entities.id IN (?)", EntityDating.between(dating).collect{|ed| ed.entity_id }.uniq)
+    dating.blank? ? all : where("entities.id IN (?)", EntityDating.between(dating).collect{|ed| ed.entity_id }.uniq)
   }
   scope :dataset_attributes, lambda { |user, dataset|
     dataset ||= {}
@@ -621,7 +624,7 @@ class Entity < ActiveRecord::Base
       :size => Entity.count
     ).ids
 
-    dataset.values.all?{|v| v.blank?} ? scoped : where("entities.id IN (?)", ids.uniq)
+    dataset.values.all?{|v| v.blank?} ? all : where("entities.id IN (?)", ids.uniq)
   }
   scope :load_fully, lambda { joins(:kind, :collection).includes(:medium) }
   scope :isolated, lambda {

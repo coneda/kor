@@ -88,7 +88,11 @@ module Kor::Auth
     user ||= User.guest
     
     options.reverse_merge!(:required => :all)
-    collections = [collections] unless collections.is_a? Array
+    collections = if collections.is_a?(Collection)
+      [collections]
+    else
+      collections.to_a
+    end
     collections = collections.reject{|c| c.nil?}
     
     result = Grant.where(

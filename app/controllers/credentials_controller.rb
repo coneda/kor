@@ -5,7 +5,7 @@ class CredentialsController < ApplicationController
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
     
-    @credentials = Credential.non_personal.order(params[:sort_by] => params[:sort_order)
+    @credentials = Credential.non_personal.order(params[:sort_by] => params[:sort_order])
   end
 
   def show

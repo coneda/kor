@@ -220,7 +220,7 @@ class User < ActiveRecord::Base
       pattern = "%#{search_string}%"
       where('name LIKE ? OR full_name LIKE ? or email LIKE ?', pattern, pattern, pattern)
     else
-      scoped
+      all
     end
   }
   scope :logged_in_recently, lambda {

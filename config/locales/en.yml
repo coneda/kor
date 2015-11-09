@@ -781,7 +781,7 @@ en:
         file_type: file type
         original: original file
         original_extension: file type of the original
-        datahash: hash total
+        datahash: data hash
       snapshot:
         comment: comment
         created_at: created at

@@ -28,7 +28,7 @@ class ToolsController < ApplicationController
 
   def remove_from_invalid_entities
     @entity = viewable_entities.find(params[:id])
-    @group = SystemGroup.find_or_create_by_name('invalid').remove_entities(@entity)
+    @group = SystemGroup.find_or_create_by(:name => 'invalid').remove_entities(@entity)
     redirect_to back_save
   end
 
@@ -38,7 +38,7 @@ class ToolsController < ApplicationController
   # gathers the entities inside the clipboard
   def clipboard
     session[:clipboard] ||= Array.new
-    @entities = viewable_entities.find_all_by_id(session[:clipboard])
+    @entities = viewable_entities.find_all_by(:id => session[:clipboard])
     
     session[:clipboard] = @entities.collect{|e| e.id} if @entities.size < session[:clipboard].size
   end
@@ -171,7 +171,7 @@ class ToolsController < ApplicationController
       when 'prepare_merge' then render :nothing => true
       when 'mass_relate'
         unless session[:current_entity].blank?
-          @selected_entities = Entity.find_all_by_id(params[:selected_entity_ids])
+          @selected_entities = Entity.find_all_by(:id => params[:selected_entity_ids])
           render :action => 'mass_relate', :layout => false
         else
           render :text => I18n.t("errors.destination_not_given")
@@ -291,7 +291,7 @@ class ToolsController < ApplicationController
     end
 
     def prepare_merge
-      @entities = Entity.allowed(current_user, [:edit, :delete]).find_all_by_id(params[:entity_ids])
+      @entities = Entity.allowed(current_user, [:edit, :delete]).find_all_by(:id => params[:entity_ids])
       
       if @entities.blank?
         flash[:error] = I18n.t("errors.merge_access_denied_on_entities")

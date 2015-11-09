@@ -13,7 +13,7 @@ gem 'daemons'
 
 gem 'mysql2'
 gem "RedCloth"
-gem "will_paginate", "= 3.0.3"
+gem "will_paginate", "~> 3.0.3"
 gem "parslet"
 gem "exifr", '1.1.1'
 gem "haml"

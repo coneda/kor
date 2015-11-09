@@ -65,13 +65,17 @@ describe Medium do
     medium = Medium.new :document => File.open("#{Rails.root}/spec/fixtures/text_file.txt")
     
     expect(medium.save).to be_falsey
-    expect(medium.errors.full_messages).to eql(['Prüfsumme eine inhaltlich gleiche Datei wurde bereits hochgeladen'])
+    expect(medium.errors.full_messages).to eql(
+      ['data hash a file with identical content already exists']
+    )
   end
   
   it "should return the dummy when no files are attached" do
     medium = Medium.new
     expect(medium.save).to be_falsey
-    expect(medium.errors[:document]).to eq(['eine Datei muss ausgewählt werden'])
+    expect(medium.errors[:document]).to eq(
+      ['please select a file']
+    )
   end
   
   it "should delete all files after destruction of an image" do
@@ -116,7 +120,9 @@ describe Medium do
     duplicate = FactoryGirl.build(:medium)
     
     expect(duplicate.valid?).not_to be_truthy
-    expect(duplicate.errors.full_messages).to eq(["Prüfsumme eine inhaltlich gleiche Datei wurde bereits hochgeladen"])
+    expect(duplicate.errors.full_messages).to eq(
+      ["data hash a file with identical content already exists"]
+    )
   end
   
   it "should generate a delayed job for processing" do

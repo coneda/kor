@@ -56,7 +56,7 @@ RSpec.describe EntitiesController, :type => :controller do
   end
   
   it "should handle dating attributes" do
-    create_location 'Nürnberg', :new_datings_attributes => [
+    create_location 'Nürnberg', :datings_attributes => [
       { :label => 'Datierung', :dating_string => '1599' },
       { :label => 'Datierung',  :dating_string => '1843' }
     ]
@@ -67,9 +67,15 @@ RSpec.describe EntitiesController, :type => :controller do
   
   it "should handle a user group id" do
     user_group = FactoryGirl.create :user_group
-    create_location 'Nürnberg', :user_group_id => user_group.id
-    
-    expect(user_group.entities.first.name).to eql('Nürnberg')
+    post :create, {
+      :entity => {
+        :name => "Nürnberg",
+        :kind_id => Kind.find_by_name('Ort').id,
+        :collection_id => @main.id
+      },
+      :user_group_name => user_group.name
+    }
+    expect(user_group.reload.entities.first.name).to eql('Nürnberg')
   end
 
 

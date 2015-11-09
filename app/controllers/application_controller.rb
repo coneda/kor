@@ -217,13 +217,12 @@ class ApplicationController < ActionController::Base
     def entity_params
       params.require(:entity).permit(
         :collection_id,
-        :name, :distinct_name, :subtype, :comment, 
-        :synonyms => []
-      ).tap do |whitelisted|
-        whitelisted[:dataset] = params[:entity][:dataset]
-        whitelisted[:datings_attributes] = params[:entity][:datings_attributes]
-        whitelisted[:properties] = params[:entity][:properties]
-      end
+        :name, :distinct_name, :subtype, :comment, :no_name_statement
+        :synonyms => [],
+        :datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :properties => [:label, :value],
+        :medium_attributes => [:image, :document]
+      )
     end
 
 end

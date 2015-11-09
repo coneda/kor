@@ -62,7 +62,11 @@ class Kind < ActiveRecord::Base
   # Settings
   
   def settings
-    (self[:settings] ||= {}).symbolize_keys!
+    unless self[:settings]
+      self[:settings] = {}
+    end
+
+    self[:settings].symbolize_keys!
   end
   
   def settings=(values)
