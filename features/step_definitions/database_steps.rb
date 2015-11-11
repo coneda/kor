@@ -261,24 +261,23 @@ Then(/^"(.*?)" should have "(.*?)" "(.*?)"$/) do |subject, relation, object|
   expect(normal || reverse).to be_truthy
 end
 
-Given /^the relationship "([^\"]*)" "([^\"]*)" "([^\"]*)"$/ do |from, name, to|
+Given /^the relationship "([^\"]*)" "([^\"]*)" "([^\"]*)"(?: with properties "([^\"]*)")?$/ do |from, name, to, props|
   from = Entity.find_by_name(from)
   to = Entity.find_by_name(to)
+  props = (props || "").split("/")
   
-  step "the relation \"#{name}\" between \"#{from.kind.name}/#{from.kind.plural_name}\" and \"#{to.kind.name}/#{to.kind.plural_name}\""
-
   name = name.split("/").first
+  step "the relation \"#{name}\" between \"#{from.kind.name}/#{from.kind.plural_name}\" and \"#{to.kind.name}/#{to.kind.plural_name}\""
   
-  Relationship.relate_and_save(from, name, to)
+  Relationship.relate_and_save(from, name, to, props)
 end
 
 Given /^the relationship "(.*?)" "(.*?)" the last medium$/ do |from, name|
   from = Entity.find_by_name(from)
   to = Medium.last.entity
   
-  step "the relation \"#{name}\" between \"#{from.kind.name}/#{from.kind.plural_name}\" and \"#{to.kind.name}/#{to.kind.plural_name}\""
-  
   name = name.split("/").first
+  step "the relation \"#{name}\" between \"#{from.kind.name}/#{from.kind.plural_name}\" and \"#{to.kind.name}/#{to.kind.plural_name}\""
   
   Relationship.relate_and_save(from, name, to)
 end

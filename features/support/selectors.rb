@@ -8,8 +8,6 @@ module HtmlSelectorsHelpers
   def selector_for(locator)
     case locator
 
-    when /the page/
-      "html > body"
     when /the row for "([^\"]+)" "([^\"]+)"/
       object = $1.classify.constantize.find_by_name($2)
       [:css, "##{$1}_#{object.id}"]
@@ -29,9 +27,10 @@ module HtmlSelectorsHelpers
     # This allows you to provide a quoted selector as the scope
     # for "within" steps as was previously the default for the
     # web steps:
-    when /"(.+)"/
-      $1
-
+    # when /"(.+)"/
+    #   $1
+    when /^the first relation on the page$/
+      [:css, ".relation"]
     else
       raise "Can't find mapping from \"#{locator}\" to a selector.\n" +
         "Now, go and add a mapping in #{__FILE__}"

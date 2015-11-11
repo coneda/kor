@@ -26,8 +26,7 @@ kor.directive "korRelationship", ["entities_service", "session_service",
             #     load_media()
 
         scope.$watch "master_toggle", ->
-          # console.log arguments
-          scope.relationship.visible = scope.master_toggle
+          scope.switch(true, scope.master_toggle)
 
         scope.switch = (force = false, value = null, event) ->
           event.preventDefault() if event
