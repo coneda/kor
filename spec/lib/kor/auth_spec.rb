@@ -37,6 +37,11 @@ describe Kor::Auth do
     expect(user.name).to eq("can.go.in")
   end
 
+  it "should pass username and password directly via env vars" do
+    user = described_class.login "jdoe", '234567'
+    expect(user.name).to eq("jdoe")
+  end
+
   context "authorization" do
 
     include DataHelper

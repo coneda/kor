@@ -331,7 +331,9 @@ class Entity < ActiveRecord::Base
       if options[:search] == :primary
         related_entities(:relation_names => Relation.primary_relation_names)
       else
-        raise "invalid options or invalid combination: #{options.inspect}"
+        raise Kor::Exception.new(
+          "invalid options or invalid combination: #{options.inspect}"
+        )
       end
     elsif options[:assume] == :primary
       if options[:search] == :media
@@ -348,7 +350,9 @@ class Entity < ActiveRecord::Base
         end.flatten.uniq
       end
     else
-      raise "invalid options or invalid combination: #{options.inspect}"
+      raise Kor::Exception.new(
+        "invalid options or invalid combination: #{options.inspect}"
+      )
     end
   end
   

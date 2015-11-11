@@ -15,13 +15,23 @@ module Kor::Auth
       end
 
       (Kor.config["auth.sources"] || []).each do |method, c|
-        command = "bash -c \"KOR_USERNAME_FILE=#{dir}/username.txt KOR_PASSWORD_FILE=#{dir}/password.txt #{c["script"]}\""
-        data = Bundler.with_clean_env do
-          `#{command} 2> #{dir}/error.log`
+        command = "bash -c \"#{c["script"]}\""
+        status = Bundler.with_clean_env do
+          system(
+            {
+              "KOR_USERNAME_FILE" => "#{dir}/username.txt",
+              "KOR_PASSWORD_FILE" => "#{dir}/password.txt",
+              "KOR_USERNAME" => username,
+              "KOR_PASSWORD" => password
+            },
+            "#{command} > #{dir}/stdout.log 2> #{dir}/error.log"
+          )
         end
-        status = $?.exitstatus
+        data = File.read("#{dir}/stdout.log")
 
-        if status == 0
+        # binding.pry if password == "234567"
+
+        if status
           return JSON.parse(data).merge(
             :parent_username => c["map_to"]
           )

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150926130623) do
+ActiveRecord::Schema.define(:version => 20151111112819) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -76,35 +76,6 @@ ActiveRecord::Schema.define(:version => 20150926130623) do
   add_index "credentials_users", ["user_id", "credential_id"], :name => "index_credentials_users_on_user_id_and_credential_id", :unique => true
   add_index "credentials_users", ["user_id"], :name => "index_credentials_users_on_user_id"
 
-  create_table "dataset_artworks", :force => true do |t|
-    t.string  "dimensions"
-    t.integer "lock_version",       :default => 0
-    t.string  "material_technique"
-  end
-
-  create_table "dataset_images", :force => true do |t|
-    t.string  "uri"
-    t.string  "datahash"
-    t.string  "file_format"
-    t.integer "width"
-    t.integer "height"
-    t.integer "bytes"
-    t.integer "lock_version", :default => 0
-  end
-
-  create_table "dataset_literatures", :force => true do |t|
-    t.string  "isbn"
-    t.string  "year_of_publication"
-    t.string  "edition"
-    t.string  "publisher"
-    t.integer "lock_version",        :default => 0
-  end
-
-  create_table "dataset_textuals", :force => true do |t|
-    t.integer "lock_version"
-    t.text    "text"
-  end
-
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
     t.integer  "attempts",   :default => 0
@@ -131,18 +102,6 @@ ActiveRecord::Schema.define(:version => 20150926130623) do
   end
 
   add_index "downloads", ["uuid"], :name => "index_downloads_on_uuid"
-
-  create_table "engagements", :force => true do |t|
-    t.integer  "user_id"
-    t.string   "kind"
-    t.string   "related_type"
-    t.integer  "related_id"
-    t.integer  "credits"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
-  end
-
-  add_index "engagements", ["user_id", "kind", "related_type", "related_id"], :name => "lookup"
 
   create_table "entities", :force => true do |t|
     t.string   "uuid"
@@ -262,20 +221,6 @@ ActiveRecord::Schema.define(:version => 20150926130623) do
     t.boolean "image_processing"
   end
 
-  create_table "properties", :force => true do |t|
-    t.integer  "entity_id"
-    t.integer  "reference_id"
-    t.string   "label"
-    t.string   "value"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "lock_version", :default => 0
-  end
-
-  add_index "properties", ["entity_id"], :name => "index_properties_on_entity_id"
-  add_index "properties", ["label"], :name => "index_properties_on_name"
-  add_index "properties", ["value"], :name => "index_properties_on_value"
-
   create_table "publishments", :force => true do |t|
     t.integer  "user_id"
     t.string   "uuid"
@@ -285,19 +230,6 @@ ActiveRecord::Schema.define(:version => 20150926130623) do
   end
 
   add_index "publishments", ["user_id"], :name => "index_publishments_on_user_id"
-
-  create_table "ratings", :force => true do |t|
-    t.string   "namespace"
-    t.integer  "user_id"
-    t.integer  "entity_id"
-    t.text     "data"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-    t.string   "state"
-  end
-
-  add_index "ratings", ["entity_id", "state"], :name => "index_ratings_on_entity_id_and_state"
-  add_index "ratings", ["namespace", "user_id", "entity_id"], :name => "joint"
 
   create_table "relations", :force => true do |t|
     t.string   "uuid"
@@ -332,20 +264,6 @@ ActiveRecord::Schema.define(:version => 20150926130623) do
   add_index "relationships", ["to_id"], :name => "index_relationships_on_to_id"
   add_index "relationships", ["uuid"], :name => "index_relationships_on_uuid"
 
-  create_table "searches", :force => true do |t|
-    t.integer  "user_id"
-    t.string   "search_type"
-    t.integer  "collection_id"
-    t.integer  "kind_id"
-    t.string   "name"
-    t.string   "dating"
-    t.string   "properties"
-    t.text     "dataset"
-    t.text     "relationships"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :default => "", :null => false
     t.text     "data"
@@ -355,23 +273,6 @@ ActiveRecord::Schema.define(:version => 20150926130623) do
 
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
-
-  create_table "settings", :force => true do |t|
-    t.string   "key"
-    t.text     "storage"
-    t.integer  "lock_version"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
-  end
-
-  create_table "synonyms", :force => true do |t|
-    t.integer "entity_id"
-    t.string  "name"
-    t.integer "lock_version", :default => 0
-  end
-
-  add_index "synonyms", ["entity_id"], :name => "index_synonyms_on_entity_id"
-  add_index "synonyms", ["name"], :name => "index_synonyms_on_name"
 
   create_table "system_groups", :force => true do |t|
     t.integer  "lock_version"
