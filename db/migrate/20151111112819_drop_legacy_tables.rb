@@ -1,17 +1,23 @@
 class DropLegacyTables < ActiveRecord::Migration
   def up
-    drop_table :dataset_artworks
-    drop_table :dataset_literatures
-    drop_table :dataset_images
-    drop_table :dataset_textuals
+    tables = [
+      :dataset_literatures,
+      :dataset_images,
+      :dataset_textuals,
+      :dataset_artworks,
+      :properties,
+      :searches,
+      :settings,
+      :engagements,
+      :ratings,
+      :synonyms
+    ]
 
-    drop_table :properties
-    drop_table :searches
-    drop_table :settings
-
-    drop_table :engagements
-    drop_table :ratings
-    drop_table :synonyms
+    tables.each do |table|
+      if ActiveRecord::Base.connection.table_exists?(table)
+        drop_table table
+      end
+    end
 
     Grant.where(:policy => "admin_rating").delete_all
   end
