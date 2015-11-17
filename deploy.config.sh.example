@@ -5,7 +5,7 @@ export PORT="22"
 
 function instance01 {
   export HOST="app@node01.example.com"
-  export PORT="22"
+  export PORT="11122"
   export DEPLOY_TO="/var/storage/host/kor"
   export COMMIT="v1.9"
 }

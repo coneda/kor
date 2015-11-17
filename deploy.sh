@@ -37,7 +37,12 @@ function deploy {
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake assets:precompile"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job start"
 
-  remote "touch $CURRENT_PATH/tmp/restart.txt"
+  remote "mkdir -p $CURRENT_PATH/public/media/images"
+  remote "ln -sfn $SHARED_PATH/data/media/preview $CURRENT_PATH/public/media/images/preview"
+  remote "ln -sfn $SHARED_PATH/data/media/thumbnail $CURRENT_PATH/public/media/images/thumbnail"
+  remote "ln -sfn $SHARED_PATH/data/media/icon $CURRENT_PATH/public/media/images/icon"
+
+  # remote "touch $CURRENT_PATH/tmp/restart.txt"
 
   finalize
 }
