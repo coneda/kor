@@ -78,7 +78,7 @@ test:
         map_to: ldap
 
   app:
-    default_locale: de
+    default_locale: en
     gallery:
       primary_relations: ['stellt dar']
       secondary_relations: ['wurde erschaffen von']

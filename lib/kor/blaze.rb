@@ -24,6 +24,14 @@ class Kor::Blaze
       order("relation_name, other_name, created_at")
   end
 
+  def related_entities(entity, options = {})
+    options.reverse_merge!(
+      :media => false,
+      :relation_names => nil,
+      :kind_ids => nil
+    )
+  end
+
   def relations_for(entity, options = {})
     options.reverse_merge!(
       :media => false

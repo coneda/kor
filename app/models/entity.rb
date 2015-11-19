@@ -327,7 +327,7 @@ class Entity < ActiveRecord::Base
     options.reverse_merge!(:relation_names => nil)
     relationships.only(options).map{|r| r.other_entity(self)}
   end
-  
+
   def related(options = {})
     options.reverse_merge!(
       :assume => :primary,
@@ -338,9 +338,7 @@ class Entity < ActiveRecord::Base
       if options[:search] == :primary
         related_entities(:relation_names => Relation.primary_relation_names)
       else
-        raise Kor::Exception.new(
-          "invalid options or invalid combination: #{options.inspect}"
-        )
+        raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
       end
     elsif options[:assume] == :primary
       if options[:search] == :media
@@ -357,9 +355,7 @@ class Entity < ActiveRecord::Base
         end.flatten.uniq
       end
     else
-      raise Kor::Exception.new(
-        "invalid options or invalid combination: #{options.inspect}"
-      )
+      raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
     end
   end
   

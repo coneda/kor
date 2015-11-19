@@ -217,7 +217,7 @@ class ApplicationController < ActionController::Base
     def entity_params
       params.require(:entity).permit(
         :collection_id,
-        :name, :distinct_name, :subtype, :comment, :no_name_statement
+        :name, :distinct_name, :subtype, :comment, :no_name_statement,
         :synonyms => [],
         :datings_attributes => [:id, :_destroy, :label, :dating_string],
         :properties => [:label, :value],

@@ -180,6 +180,11 @@ FactoryGirl.define do
       name "is located at"
       reverse_name "is location of"
     end
+
+    factory :is_sibling_of do
+      name "is sibling of"
+      reverse_name "is sibling of"
+    end
   end
 
   factory :user do

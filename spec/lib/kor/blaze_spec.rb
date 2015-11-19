@@ -93,4 +93,31 @@ describe Kor::Blaze do
     expect(blaze.relations_for mona_lisa, :media => true).to be_empty
   end
 
+  it "should retrieve related entities" do
+    default = FactoryGirl.create :default
+
+    is_part_of = FactoryGirl.create :is_part_of
+    has_created = FactoryGirl.create :has_created
+    is_sibling_of = FactoryGirl.create :is_sibling_of
+
+    admins = Credential.create :name => "admins"
+    admin = FactoryGirl.create :admin, :groups => [admins]
+    default.grant :view, :to => admins
+
+    mona_lisa = FactoryGirl.create :mona_lisa
+    der_schrei = FactoryGirl.create :der_schrei
+    leonardo = FactoryGirl.create :leonardo
+    ramirez = FactoryGirl.create :ramirez
+
+    Relationship.relate_and_save leonardo, "has created", mona_lisa
+    Relationship.relate_and_save leonardo, "has created", der_schrei
+    Relationship.relate_and_save leonardo, "is sibling of", ramirez
+
+    blaze = Kor::Blaze.new(admin)
+    expect(blaze.related_entities(mona_lisa).count).to eq(1)
+    expect(blaze.related_entities(der_schrei).count).to eq(1)
+    expect(blaze.related_entities(leonardo).count).to eq(3)
+    expect(blaze.related_entities(ramirez).count).to eq(1)
+  end
+
 end
