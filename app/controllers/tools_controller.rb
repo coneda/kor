@@ -38,7 +38,7 @@ class ToolsController < ApplicationController
   # gathers the entities inside the clipboard
   def clipboard
     session[:clipboard] ||= Array.new
-    @entities = viewable_entities.find_all_by(:id => session[:clipboard])
+    @entities = viewable_entities.where(:id => session[:clipboard])
     
     session[:clipboard] = @entities.collect{|e| e.id} if @entities.size < session[:clipboard].size
   end
@@ -171,7 +171,7 @@ class ToolsController < ApplicationController
       when 'prepare_merge' then render :nothing => true
       when 'mass_relate'
         unless session[:current_entity].blank?
-          @selected_entities = Entity.find_all_by(:id => params[:selected_entity_ids])
+          @selected_entities = Entity.where(:id => params[:selected_entity_ids])
           render :action => 'mass_relate', :layout => false
         else
           render :text => I18n.t("errors.destination_not_given")
@@ -343,7 +343,10 @@ class ToolsController < ApplicationController
       if allowed_to_create and allowed_to_delete_requested_entities
         @entity = Kor::EntityMerger.new.run(
           :old_ids => params[:entity_ids], 
-          :attributes => entity_params.merge(:creator_id => current_user.id)
+          :attributes => entity_params.merge(
+            :id => params[:entity][:id],
+            :creator_id => current_user.id
+          )
         )
         
         if @entity

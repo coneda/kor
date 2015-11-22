@@ -418,7 +418,7 @@ en:
     other:
       other: "other"
     username:
-      one: "user name"
+      one: "username"
     password:
       one: "password"
     plain_password:
@@ -638,7 +638,7 @@ en:
   errors:
     too_many_entities_for_zip: "the group contains too many images"
     collection_not_empty_on_delete: "the collection '%{name}'could not be deleted, because it is not empty"
-    too_many_login_attempts: "due too many login attempts the user has been blocked temporarily"
+    too_many_login_attempts: "the user has been blocked temporarily because of too many login attempts"
     date_parsing_failed: "the entered date could not be identified"
     personal_password_reset_mail_not_found: "the entered email address could not be found"
     search_string_too_short: "the search term must contain at least three characters"
@@ -647,7 +647,7 @@ en:
     destination_not_given: "you have to chose an entity as a target"
     not_allowed_action: "you do not have enough rights to perform this action"
     ocurred: "errors occurred in the input"
-    user_or_pass_refused: "user name or password could not be found"
+    user_or_pass_refused: "username or password could not be found"
     account_inactive: "this account has been deactivated"
     account_expired: "this account has expired"
     only_same_kind: "please chose only entities of the same type"
@@ -800,8 +800,8 @@ en:
       user:
         parent_username: inherit permissions from
         personal: personal collection
-        username: user name
-        name: user name
+        username: username
+        name: username
         full_name: full name
         password: password
         plain_password: password

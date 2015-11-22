@@ -104,7 +104,7 @@ class RelationshipsController < ApplicationController
   protected
 
     def relationship_params
-      params.require(:relationships).permit(
+      params.require(:relationship).permit(
         :from_id, :to_id, :relation_id, :relation_name
       ).tap do |w|
         w[:properties] = params[:relationship][:properties]

@@ -63,35 +63,39 @@ describe Entity do
   end
   
   it "should raise an error if the options for the related method are invalid" do
+    admin = User.admin
     entity = FactoryGirl.build :work
     
-    expect { entity.related(:assume => :terciary) }.to raise_error(Kor::Exception)
-    expect { entity.related(:assume => :image, :search => :secondary) }.to raise_error(Kor::Exception)
+    expect { entity.related(admin, :assume => :terciary) }.to raise_error(Kor::Exception)
+    expect { entity.related(admin, :assume => :image, :search => :secondary) }.to raise_error(Kor::Exception)
   end
   
   it "should find related media for primary entities and vice versa" do
+    admin = User.admin
     image = FactoryGirl.create :image_a
     Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
     
-    expect(@mona_lisa.related(:search => :media, :assume => :primary)).to eql([image])
-    expect(image.related(:search => :primary, :assume => :media)).to eql([@mona_lisa])
+    expect(@mona_lisa.related(admin, :search => :media, :assume => :primary)).to eql([image])
+    expect(image.related(admin, :search => :primary, :assume => :media)).to eql([@mona_lisa])
   end
   
   it "should find related primary entities for secondary entities and vice versa" do
+    admin = User.admin
     @leonardo = FactoryGirl.create :leonardo
     Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
     
-    expect(@leonardo.related(:search => :primary, :assume => :secondary)).to eql([@mona_lisa])
-    expect(@mona_lisa.related(:search => :secondary, :assume => :primary)).to eql([@leonardo])
+    expect(@leonardo.related(admin, :search => :primary, :assume => :secondary)).to eql([@mona_lisa])
+    expect(@mona_lisa.related(admin, :search => :secondary, :assume => :primary)).to eql([@leonardo])
   end
   
   it "should find related primary entities for secondary entities" do
+    admin = User.admin
     image = FactoryGirl.create :image_a
     @leonardo = FactoryGirl.create :leonardo
     Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
     Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
     
-    expect(@leonardo.related(:search => :media, :assume => :secondary)).to eql([image])
+    expect(@leonardo.related(admin, :search => :media, :assume => :secondary)).to eql([image])
   end
   
   it "should have an uuid when saved without validation" do

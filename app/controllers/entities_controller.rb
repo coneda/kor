@@ -102,15 +102,11 @@ class EntitiesController < ApplicationController
       :authority_groups => :authority_group_category
     ).find(params[:id])
 
-    if allowed_to?(:view, @entity.collection)
-      respond_to do |format|
+    respond_to do |format|
+      if allowed_to?(:view, @entity.collection)
         format.json
-        format.rdf
-      end
-    else
-      respond_to do |format|
+      else
         format.json { render :json => {}, :status => 403 }
-        format.rdf { render :nothing => true, :status => 403 }
       end
     end
   end

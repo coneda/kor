@@ -31,7 +31,7 @@ Given /^I am logged in as "([^\"]*)"/ do |user|
   step "I go to the login page"
   step "I fill in \"username\" with \"#{user}\""
   step "I fill in \"password\" with \"#{user}\""
-  step "I press \"Anmelden\""
+  step "I press \"Login\""
   sleep 1
 end
 
@@ -41,7 +41,7 @@ Given /^I re\-login as "([^"]*)"$/ do |user|
 end
 
 Given /^I am logged out$/ do
-  step "I follow \"Abmelden\""
+  step "I follow \"Logout\""
 end
 
 When /^"([^\"]*)" is selected as current entity$/ do |name|

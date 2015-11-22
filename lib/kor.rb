@@ -181,13 +181,11 @@ module Kor
   
   # ------------------------------------------------------------- maintenace ---
   
-  def self.notify_upcoming_expiries
-    users = User.find(:all, :conditions => [ "expires_at < ?", 2.weeks.from_now ] )
-    
-    users.each do |u|
-      UserMailer.upcoming_expiry(u).deliver
+  def self.notify_expiring_users
+    users = User.where("expires_at < ? AND expires_at > ?", 2.weeks.from_now, Time.now)
+    users.each do |user|
+      UserMailer.upcoming_expiry(user).deliver_now
     end
-    
     Kor.info "Upcoming expiries", "notified #{users.size} users"
   end
 

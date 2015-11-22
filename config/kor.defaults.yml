@@ -99,8 +99,8 @@ test:
   meta_data_profiles:
     simple:
       -
-        name: "stellt dar"
+        name: "shows"
         relations: 
           - 
-            name: "wurde erschaffen von"
+            name: "has been created by"
 

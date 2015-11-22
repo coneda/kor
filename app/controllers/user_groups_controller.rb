@@ -94,7 +94,10 @@ class UserGroupsController < GroupsController
     @user_group = UserGroup.find(params[:id])
     
     if @user_group.owner == current_user or @user_group.shared
-      @entities = @user_group.entities.allowed(current_user, :view).paginate(:page => params[:page], :per_page => 16, :order => 'created_at DESC')
+      @entities = @user_group.
+        entities.allowed(current_user, :view).
+        order('created_at DESC').
+        paginate(:page => params[:page], :per_page => 16)
       render :layout => 'wide'
     else
       flash[:error] = I18n.t('errors.access_denied')

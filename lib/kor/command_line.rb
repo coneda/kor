@@ -218,9 +218,7 @@ class Kor::CommandLine
   end
 
   def notify_expiring_users
-    User.where("expires_at < ? AND expires_at > ?", 2.weeks.from_now, Time.now).each do |user|
-      UserMailer.deliver_upcoming_expiry(user)
-    end
+    Kor.notify_expiring_users
   end
 
   def recheck_invalid_entities

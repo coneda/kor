@@ -45,10 +45,11 @@ class UsersController < ApplicationController
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
   
-    @users = User.without_admin.search(params[:search_string]).paginate(
-      :order => "#{params[:sort_by]} #{params[:sort_order]}",
-      :page => params[:page], :per_page => 10
-    )
+    @users = User.
+      without_admin.
+      search(params[:search_string]).
+      order("#{params[:sort_by]} #{params[:sort_order]}").
+      paginate(:page => params[:page], :per_page => 10)
 
     respond_to do |format|
       format.html {render :layout => 'wide'}

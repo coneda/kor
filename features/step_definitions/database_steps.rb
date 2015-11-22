@@ -20,7 +20,7 @@ Given /^the kind "([^\"]*)"$/ do |names|
   components = names.split('/')
   singular = components[0..(components.size / 2 - 1)].join('/')
   plural = components[(components.size / 2)..-1].join('/')
-  Kind.find_or_create_by_name(:name => singular, :plural_name => plural)
+  Kind.find_or_create_by(:name => singular, :plural_name => plural)
 end
 
 Given(/^the generator "(.*?)" for kind "(.*?)"$/) do |name, kind_name|
@@ -38,7 +38,7 @@ end
 Given /^the unprocessed medium "([^"]*)"$/ do |path|
   step "I go to the new \"Medium-Entity\" page"
   step "I attach the file \"#{path}\" to \"entity[medium_attributes][document]\""
-  step "I press \"Erstellen\""
+  step "I press \"Create\""
 end
 
 Given /^the medium "([^"]*)"$/ do |path|
@@ -181,7 +181,7 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
     step "I am on the user groups page"
     step "I follow \"Plus\""
     step "I fill in \"user_group[name]\" with \"#{name}\""
-    step "I press \"Erstellen\""
+    step "I press \"Create\""
     
     if shared == 'shared '
       step "I follow \"Private\""
@@ -194,7 +194,7 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
       step "I follow \"Plus\""
       step "I fill in \"publishment[name]\" with \"#{pub_name}\""
       step "I select \"#{name}\" from \"publishment[user_group_id]\""
-      step "I press \"Erstellen\""
+      step "I press \"Create\""
     end
   end
 end

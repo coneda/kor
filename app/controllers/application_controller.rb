@@ -220,6 +220,7 @@ class ApplicationController < ActionController::Base
         :name, :distinct_name, :subtype, :comment, :no_name_statement,
         :synonyms => [],
         :datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
         :medium_attributes => [:image, :document]
       )

@@ -103,17 +103,17 @@ class Entity < ActiveRecord::Base
     relationships.group_by{|r| r.relation_name_for_entity(self)}
   end
   
-  def try_again
-    Relationship.find_by_sql("
-      SELECT
-        IF(r1.from_id = #{self.id}, 1, 0) AS normal,
-        IF(r1.from_id = #{self.id}, r1.name, r1.reverse_name) AS name,
-        IF(r1.from_id = #{self.id}, e1.name, er1.name) 
-      FROM relationships r1
-        JOIN entities e1 ON e1.id = r1.from_id
-        JOIN entities er1 ON er1.id = r1.to_id
-    ")
-  end
+  # def try_again
+  #   Relationship.find_by_sql("
+  #     SELECT
+  #       IF(r1.from_id = #{self.id}, 1, 0) AS normal,
+  #       IF(r1.from_id = #{self.id}, r1.name, r1.reverse_name) AS name,
+  #       IF(r1.from_id = #{self.id}, e1.name, er1.name) 
+  #     FROM relationships r1
+  #       JOIN entities e1 ON e1.id = r1.from_id
+  #       JOIN entities er1 ON er1.id = r1.to_id
+  #   ")
+  # end
   
 
   # Nesting
@@ -323,12 +323,13 @@ class Entity < ActiveRecord::Base
     Relationship.where("from_id = ? OR to_id = ?", self.id, self.id).count
   end
   
-  def related_entities(options = {})
+  def related_entities(user, options = {})
     options.reverse_merge!(:relation_names => nil)
-    relationships.only(options).map{|r| r.other_entity(self)}
+    blaze = Kor::Blaze.new(user)
+    blaze.related_entities(self, options)
   end
 
-  def related(options = {})
+  def related(user, options = {})
     options.reverse_merge!(
       :assume => :primary,
       :search => :media
@@ -336,22 +337,22 @@ class Entity < ActiveRecord::Base
     
     if options[:assume] == :media
       if options[:search] == :primary
-        related_entities(:relation_names => Relation.primary_relation_names)
+        related_entities(user, :relation_names => Relation.primary_relation_names)
       else
         raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
       end
     elsif options[:assume] == :primary
       if options[:search] == :media
-        related_entities(:relation_names => Relation.reverse_primary_relation_names)
+        related_entities(user, :relation_names => Relation.reverse_primary_relation_names)
       elsif options[:search] == :secondary 
-        related_entities(:relation_names => Relation.secondary_relation_names)
+        related_entities(user, :relation_names => Relation.secondary_relation_names)
       end 
     elsif options[:assume] == :secondary
       if options[:search] == :primary
-        related_entities(:relation_names => Relation.reverse_secondary_relation_names)
+        related_entities(user, :relation_names => Relation.reverse_secondary_relation_names)
       elsif options[:search] == :media
-        related(:assume => :secondary, :search => :primary).map do |e|
-          e.related(:assume => :primary, :search => :media)
+        related(user, :assume => :secondary, :search => :primary).map do |e|
+          e.related(user, :assume => :primary, :search => :media)
         end.flatten.uniq
       end
     else
