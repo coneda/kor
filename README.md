@@ -7,6 +7,10 @@ domains.
 To learn more and for installation instructions, please visit our
 [our website (German)](http://coneda.net/pages/download)
 
+## Changelog
+
+We keep it updated at [CHANGELOG.md](CHANGELOG.md)
+
 ## License ##
 
 see file COPYING
