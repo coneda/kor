@@ -137,7 +137,7 @@ class UsersController < ApplicationController
     def self_user_params
       params.require(:user).permit(
         :full_name, :name, :email, :password, :password_confirmation, :locale,
-        :home_page, :default_collection_id
+        :home_page, :default_collection_id, :api_key
       )
     end
     

@@ -3,7 +3,7 @@ class Api::OaiPmh::EntitiesController < Api::OaiPmh::BaseController
   def get_record
     @record = locate(params[:identifier])
 
-    if current_user.allowed_to?(:view, @record)
+    if current_user && current_user.allowed_to?(:view, @record.collection)
       render :template => "api/oai_pmh/get_record"
     else
       render :nothing => true, :status => 403
