@@ -288,11 +288,11 @@ class Entity < ActiveRecord::Base
   end
   
   def mark_invalid
-    SystemGroup.find_or_create_by_name('invalid').add_entities self
+    SystemGroup.find_or_create_by(:name => 'invalid').add_entities self
   end
 
   def mark_valid
-    SystemGroup.find_or_create_by_name('invalid').remove_entities self
+    SystemGroup.find_or_create_by(:name => 'invalid').remove_entities self
   end
   
   
@@ -523,12 +523,12 @@ class Entity < ActiveRecord::Base
   # ids in the parameter. Ids which refer to non existing entities are
   # transparently ignored.
   def self.find_all_by_id_keep_order(ids)
-    tmp_entities = find_all_by_id(ids)
+    tmp_entities = where(:id => ids).to_a
     Array(ids).collect{|id| tmp_entities.find{|e| e.id.to_i == id.to_i } }.reject{|e| e.blank? }
   end
   
   def self.find_all_by_uuid_keep_order(uuids)
-    tmp_entities = find_all_by_uuid(uuids)
+    tmp_entities = where(:uuid => uuids).to_a
     Array(uuids).collect{|uuid| tmp_entities.find{|e| e.uuid == uuid } }.reject{|e| e.blank? }
   end
   

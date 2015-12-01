@@ -8,7 +8,7 @@ Feature: History
   Scenario: Use a direct link to show an entity without logging in
     Given the entity "Mona Lisa" of kind "Werk/Werke"
     When I go to the entity page for "Mona Lisa"
-    Then I should see "Der Zugriff wurde verweigert"
+    Then I should see "Access denied"
 
 
   @javascript

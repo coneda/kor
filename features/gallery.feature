@@ -4,11 +4,12 @@ Feature: Show media in the gallery and show certain related entities
   use the gallery
   
 
+  @javascript
   Scenario: View the gallery
     Given I am logged in as "admin"
     And Leonardo, Mona Lisa and a medium as correctly related entities
     When I go to the gallery
-    Then I should see "Neue Einträge"
+    Then I should see "New entries"
     And I should see "Leonardo da Vinci"
     And I should see "Mona Lisa"
     And I should not see "Mona Lisa ()"
@@ -20,7 +21,7 @@ Feature: Show media in the gallery and show certain related entities
     And Leonardo, Mona Lisa and a medium as correctly related entities
     And I re-login as "john"
     When I go to the gallery
-    Then I should see "Neue Einträge"
+    Then I should see "New entries"
     Then I should not see "Mona Lisa"
     And I should not see "Leonardo"
     
@@ -36,7 +37,7 @@ Feature: Show media in the gallery and show certain related entities
     Given I am logged in as "admin"
     And Mona Lisa and a medium as correctly related entities
     When I go to the gallery
-    Then I should see "Neue Einträge" within ".canvas"
+    Then I should see "New entries" within ".canvas"
     Then I should not see "Leonardo da Vinci"
     And I should see "Mona Lisa"
     And I should not see "Mona Lisa ()"

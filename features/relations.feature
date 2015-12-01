@@ -7,7 +7,7 @@ Feature: relations
     And I fill in "relation[name]" with "loves"
     And I fill in "relation[reverse_name]" with "loves not"
     And I fill in "relation[description]" with "love"
-    And I press "Erstellen"
+    And I press "Create"
     Then I should see "loves" within "table.kor_table"
     And I should see "loves not" within "table.kor_table"
     And I should see "love" within "table.kor_table"
@@ -23,7 +23,7 @@ Feature: relations
     And I fill in "relation[reverse_name]" with "hates not"
     And I fill in "relation[description]" with "hate"
     And I ignore the next confirmation box
-    And I press "Speichern"
+    And I press "Save"
     Then I should see "hates"
     And I should see "hates not"
     And I should see "hate"

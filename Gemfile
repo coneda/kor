@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 4.0'
+gem 'rails', '~> 4.2.5'
 gem 'activerecord-session_store'
 gem 'responders', '~> 2.0'
 # gem 'strong_parameters'
@@ -32,7 +32,7 @@ gem 'plupload-rails'
 gem 'coffee-rails'
 gem "sass-rails"
 
-gem 'awesome_nested_set', :git => 'https://github.com/galetahub/awesome_nested_set.git'
+gem 'awesome_nested_set', "~> 3.0.0"
 
 gem 'oj'
 gem 'jbuilder'

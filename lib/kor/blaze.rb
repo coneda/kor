@@ -74,26 +74,25 @@ class Kor::Blaze
       binds[:kind_ids] = options[:kind_ids]
     end
 
-    scope = Entity.find_by_sql([
-      "
-        (
-          SELECT tos.*
-          FROM relationships rs
-          LEFT JOIN relations r ON r.id = rs.relation_id
-          LEFT JOIN entities tos ON rs.to_id = tos.id
-          WHERE (rs.from_id = #{entity.id}) #{normal_conditions.join ' '}
-        )
-        UNION DISTINCT
-        (
-          SELECT froms.*
-          FROM relationships rs
-          LEFT JOIN relations r ON r.id = rs.relation_id
-          LEFT JOIN entities froms ON rs.from_id = froms.id
-          WHERE (rs.to_id = #{entity.id}) #{reverse_conditions.join ' '}
-        )
-      ", 
-      binds
-    ])
+    sql = "
+      (
+        SELECT tos.*
+        FROM relationships rs
+        LEFT JOIN relations r ON r.id = rs.relation_id
+        LEFT JOIN entities tos ON rs.to_id = tos.id
+        WHERE (rs.from_id = #{entity.id}) #{normal_conditions.join ' '}
+      )
+      UNION DISTINCT
+      (
+        SELECT froms.*
+        FROM relationships rs
+        LEFT JOIN relations r ON r.id = rs.relation_id
+        LEFT JOIN entities froms ON rs.from_id = froms.id
+        WHERE (rs.to_id = #{entity.id}) #{reverse_conditions.join ' '}
+      )
+    "
+
+    Entity.find_by_sql([sql, binds])
   end
 
   def relations_for(entity, options = {})

@@ -11,6 +11,6 @@ Feature: Invalid entities
     And I go to the invalid entities page
     Then I should see "Entity_0"
     And I should see "Entity_29"
-    When I follow "Pager_right"
+    When I follow "Pager right"
     Then I should not see "Entity_29"
     And I should see "Entity_30"

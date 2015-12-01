@@ -4,13 +4,14 @@ Feature: Publishments
   Publish user groups to outside of the application
   
   
+  @javascript
   Scenario: Create a Publishment
     Given I am logged in as "admin"
     And the user group "Test Group"
     When I go to the new publishment page
-    Then I should see "Veröffentlichte Gruppe anlegen"
+    Then I should see "Create published group"
     When I fill in "publishment[name]" with "Test Publishment"
-    And I press "Erstellen"
+    And I press "Create"
     Then I should be on the publishments page
     And I should see "Test Publishment"
     
@@ -19,7 +20,7 @@ Feature: Publishments
     Given I am logged in as "admin"
     And the user group "Test Group"
     When I go to the new publishment page
-    Then I should see "Veröffentlichte Gruppe anlegen"
+    Then I should see "Create published group"
     When I fill in "publishment[name]" with ""
-    And I press "Erstellen"
-    And I should see "Bezeichnung muss ausgefüllt werden"
+    And I press "Create"
+    And I should see "Description has to be filled in"

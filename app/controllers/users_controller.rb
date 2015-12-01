@@ -20,7 +20,7 @@ class UsersController < ApplicationController
 
     if @user.save
       flash[:notice] = I18n.t("messages.password_reset", :username => @user.display_name)
-      UserMailer.reset_password(@user).deliver
+      UserMailer.reset_password(@user).deliver_now
     else
       flash[:error] = I18n.t('errors.password_reset_failure')
     end
@@ -65,7 +65,7 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
-    @user.groups << Credential.find_all_by_name( Kor.config['auth.default_groups'] )
+    @user.groups << Credential.where(:name => Kor.config['auth.default_groups']).to_a
   end
   
   def edit_self
@@ -114,7 +114,7 @@ class UsersController < ApplicationController
     
     if @user.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => I18n.t('nouns.user', :count => 1) )
-      UserMailer.account_created(@user).deliver
+      UserMailer.account_created(@user).deliver_now
       redirect_to users_path
     else
       render :action => "new"

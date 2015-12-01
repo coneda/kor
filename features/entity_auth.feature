@@ -99,4 +99,4 @@ Feature: Entity authentorization
     Given user "joe" is allowed to "view/view_meta" collection "main" through credential "main_viewers"
     And the entity "Mona Lisa" of kind "Werk/Werke" inside collection "main"
     When I go to the entity page for "Mona Lisa"
-    Then I should see element ".processing_data" with text "Stammdaten"
+    Then I should see element ".processing_data" with text "Master data"

@@ -790,7 +790,7 @@ de:
         name: Name
         description: Beschreibung
       collection:
-        perosnal: benutzereigen
+        personal: benutzereigen
         name: Name
         view: Diesen Gruppen das Anzeigen erlauben
         edit: Diesen Gruppen das Bearbeiten erlauben

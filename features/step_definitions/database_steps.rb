@@ -100,7 +100,8 @@ Given(/^the entity "(.*?)" has property "(.*?)" with value "(.*?)"$/) do |entity
 end
 
 When /^the "([^"]*)" "([^"]*)" is updated behind the scenes$/ do |klass, name|
-  klass.classify.constantize.find_by_name(name.split('/').first).save
+  item = klass.classify.constantize.find_by_name(name.split('/').first)
+  item.update_column :lock_version, item.lock_version + 1
 end
 
 Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" (?:through|via) credential "([^"]*)"$/ do |user, policy, collection, credential|
@@ -218,7 +219,6 @@ end
 Given /^the relation "([^"]*)" between "([^"]*)" and "([^"]*)"$/ do |relation, from_kind, to_kind|
   step "the kind \"#{from_kind}\""
   step "the kind \"#{to_kind}\""
-
   step "the relation \"#{relation}\""
   
   from_kind = Kind.find_by_name(from_kind.split('/').first)
@@ -296,25 +296,25 @@ Given /^there are "([^"]*)" entities named "([^"]*)" of kind "([^"]*)"$/ do |num
 end
 
 Given /^Mona Lisa and a medium as correctly related entities$/ do
-  step "the relation \"wird dargestellt von/stellt dar\""
-  step "the medium \"spec/fixtures/image_a.jpg\""
+  step "the relation \"is shown by/shows\""
   step "the entity \"Mona Lisa\" of kind \"Werk/Werke\""
+  step "the medium \"spec/fixtures/image_a.jpg\""
   
   medium = Kind.medium_kind.entities.first
   mona_lisa = Entity.find_by_name('Mona Lisa')
 
-  Relationship.relate_once_and_save(mona_lisa, "wird dargestellt von", medium)
+  Relationship.relate_once_and_save(mona_lisa, "is shown by", medium)
 end
 
 Given /^Leonardo, Mona Lisa and a medium as correctly related entities$/ do
   step "Mona Lisa and a medium as correctly related entities"
-  step "the relation \"hat erschaffen/wurde erschaffen von\""
+  step "the relation \"has created/has been created by\""
   step "the entity \"Leonardo da Vinci\" of kind \"Person/Personen\""
 
   leonardo = Entity.find_by_name('Leonardo da Vinci')
   mona_lisa = Entity.find_by_name('Mona Lisa')
 
-  Relationship.relate_once_and_save(leonardo, "hat erschaffen", mona_lisa)
+  Relationship.relate_once_and_save(leonardo, "has created", mona_lisa)
 end
 
 Given /^the entity "([^\"]*)" has ([0-9]+) relationships$/ do |name, amount|

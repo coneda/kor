@@ -11,7 +11,7 @@ Feature: tagging
     And Mona Lisa and a medium as correctly related entities
     Given the user "guest"
     Given user "guest" is allowed to "view" collection "default" via credential "guests"
-    When I follow "Abmelden"
+    When I follow "Logout"
     When I go to the entity page for "Mona Lisa"
     Then I should not see element "[kor-inplace-column] a"
 
@@ -23,7 +23,7 @@ Feature: tagging
     Given the user "guest"
     Given user "guest" is allowed to "view" collection "default" via credential "guests"
     Given user "guest" is allowed to "tagging" collection "default" via credential "guests"
-    When I follow "Abmelden"
+    When I follow "Logout"
     When I go to the entity page for "Mona Lisa"
     Then I should see element "[kor-inplace-column] a"
 

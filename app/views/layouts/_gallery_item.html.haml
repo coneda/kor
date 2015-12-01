@@ -7,7 +7,7 @@
           %td
             .hr
       - primary_entities.each do |pe|
-        - pe.related(:assume => :primary, :search => :secondary).reject{|se| se.is_medium?}.each do |se|
+        - pe.related(current_user, :assume => :primary, :search => :secondary).reject{|se| se.is_medium?}.each do |se|
           %tr
             %td.subtitle= link_to h(se.display_name), web_path(:anchor => entity_path(se))
         %tr

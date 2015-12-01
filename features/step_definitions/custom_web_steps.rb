@@ -64,12 +64,12 @@ end
 
 When /^I fill in "([^\"]*)" with "([^\"]*)" and select term "([^\"]*)"$/ do |field, value, pattern|
   step "I fill in \"#{field}\" with \"#{value}\""
-  step "I select \"Begriff '#{pattern}'\" from the autocomplete"
+  step "I select \"terms '#{pattern}'\" from the autocomplete"
 end
 
 When /^I fill in "([^\"]*)" with "([^\"]*)" and select tag "([^\"]*)"$/ do |field, value, pattern|
   step "I fill in \"#{field}\" with \"#{value}\""
-  step "I select \"Tag: #{pattern}\" from the autocomplete"
+  step "I select \"tag: #{pattern}\" from the autocomplete"
 end
 
 When /^I select "([^\"]*)" from the autocomplete$/ do |pattern|

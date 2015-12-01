@@ -10,4 +10,4 @@ Feature: Session
     And the entity "Mona Lisa" of kind "artwork/artworks"
     When the session has expired
     And I go to the entity page for "Mona Lisa"
-    Then I should see "Zugriff wurde verweigert"
+    Then I should see "Access denied"

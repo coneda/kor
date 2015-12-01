@@ -14,5 +14,5 @@ Feature: Tag search
     And everything is indexed
     When I go to the simple search page
     And I fill in "search_terms" with "Auferst" and select term "Auferst"
-    Then I should see "von 2" within ".pagination:first-child"
+    Then I should see "of 2" within ".pagination:first-child"
     

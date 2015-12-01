@@ -76,7 +76,10 @@ class FieldsController < ApplicationController
   protected
 
     def field_params
-      require(:field).permit!
+      params.fetch(:field, {}).permit(
+        :kind_id, :name, :search_label, :form_label, :show_label, :lock_version,
+        :show_on_entity, :type
+      )
     end
 
     def generally_authorized?
@@ -84,8 +87,8 @@ class FieldsController < ApplicationController
     end
 
     def sanitize_field_class(str)
-      if Kind.available_fields.include?(str)
-         str
+      if Kind.available_fields.map{|klass| klass.name}.include?(str)
+        str
       end
     end
 end

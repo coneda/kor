@@ -216,10 +216,14 @@ class ApplicationController < ActionController::Base
 
     def entity_params
       params.require(:entity).permit(
+        :lock_version,
         :collection_id,
         :name, :distinct_name, :subtype, :comment, :no_name_statement,
+        :tag_list,
         :synonyms => [],
         :datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :new_datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :existing_datings_attributes => [:id, :_destroy, :label, :dating_string],
         :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
         :medium_attributes => [:image, :document]

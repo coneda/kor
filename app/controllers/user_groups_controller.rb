@@ -114,7 +114,7 @@ class UserGroupsController < GroupsController
   end
 
   def create
-    @user_group = UserGroup.new(params[:user_group])
+    @user_group = UserGroup.new(user_group_params)
     @user_group.user_id = current_user.id
     
     if @user_group.save
@@ -136,7 +136,7 @@ class UserGroupsController < GroupsController
   def update
     @user_group = UserGroup.owned_by(current_user).find(params[:id])
 
-    if @user_group.update_attributes(params[:user_group])
+    if @user_group.update_attributes(user_group_params)
       flash[:notice] = I18n.t( 'objects.update_success', :o => @user_group.name )
       redirect_to(@user_group)
     else
@@ -153,6 +153,10 @@ class UserGroupsController < GroupsController
   protected
     def generally_authorized?
       action_name == 'shared' || (current_user && current_user != User.guest)
+    end
+
+    def user_group_params
+      params.require(:user_group).permit(:name, :lock_version)
     end
   
 end

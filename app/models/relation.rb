@@ -24,11 +24,19 @@ class Relation < ActiveRecord::Base
   ######################### kinds ##############################################
 
   def from_kind_ids
-    self[:from_kind_ids] ||= []
+    unless self[:from_kind_ids]
+      self[:from_kind_ids] = []
+    end
+
+    self[:from_kind_ids]
   end
 
   def to_kind_ids
-    self[:to_kind_ids] ||= []
+    unless self[:to_kind_ids]
+      self[:to_kind_ids] = []
+    end
+
+    self[:to_kind_ids]
   end
 
   def from_kind_ids=(values)

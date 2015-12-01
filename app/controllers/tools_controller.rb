@@ -291,7 +291,7 @@ class ToolsController < ApplicationController
     end
 
     def prepare_merge
-      @entities = Entity.allowed(current_user, [:edit, :delete]).find_all_by(:id => params[:entity_ids])
+      @entities = Entity.allowed(current_user, [:edit, :delete]).where(:id => params[:entity_ids])
       
       if @entities.blank?
         flash[:error] = I18n.t("errors.merge_access_denied_on_entities")

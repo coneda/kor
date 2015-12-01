@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   
   controller 'inplace' do
     match '/kor/inplace/tags', :action => 'tag_list', :via => :get
-    match '/kor/inplace/tags/entities/:entity_id/tags', :action => 'update_entity_tags', :via => :get
+    match '/kor/inplace/tags/entities/:entity_id/tags', :action => 'update_entity_tags', :via => :post
   end
   
   resources :exception_logs, :only => :index do
@@ -117,10 +117,12 @@ Rails.application.routes.draw do
     match '/password_reset', :action => 'personal_password_reset', :via => :post
   end
   
-  match 'config/:action', :controller => 'config', :as => :config, :via => :get
+  match 'config/menu', :to => "config#menu", :via => :get
+  match 'config/general', :to => "config#general", :via => :get, :as => "config"
+  match 'config/save_general', :to => "config#save_general", :via => :post
   
-  match '/mark', :to => 'tools#mark', :as => :put_in_clipboard, :via => :get
-  match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current, :via => :get
+  match '/mark', :to => 'tools#mark', :as => :put_in_clipboard, :via => [:get, :delete]
+  match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current, :via => [:get, :delete]
   
   scope '/tools', :controller => 'tools' do
     match 'session_info', :action => 'session_info', :via => :get
@@ -132,8 +134,8 @@ Rails.application.routes.draw do
     match 'input_menu', :action => 'input_menu', :via => :get
     match 'relational_form_fields', :action => 'relational_form_fields', :via => :get
     match 'dataset_fields', :action => 'dataset_fields', :via => :get
-    match 'clipboard_action', :action => 'clipboard_action', :via => :get
-    match 'new_clipboard_action', :action => 'new_clipboard_action', :via => :get
+    match 'clipboard_action', :action => 'clipboard_action', :via => :post
+    match 'new_clipboard_action', :action => 'new_clipboard_action', :via => [:get, :post]
     match 'history', :action => 'history', :via => "post"
     
     match 'add_media/:id', :action => 'add_media', :via => :get

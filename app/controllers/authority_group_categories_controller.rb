@@ -57,21 +57,24 @@ class AuthorityGroupCategoriesController < ApplicationController
     @authority_group_category = AuthorityGroupCategory.find(params[:id])
     @authority_group_category.destroy
     
-    if parent = @authority_group_category.parent
-      redirect_to authority_group_category_path(parent)
+    parent = if @authority_group_category.parent
+      authority_group_category_path(parent)
     else
       authority_group_categories_path
     end
+
+    redirect_to parent
   end
   
   protected
+
+    def authority_group_category_params
+      params.require(:authority_group_category).permit(:name, :parent_id)
+    end
 
     def generally_authorized?
       current_user.authority_group_admin?
     end
 
-    def authority_group_category_params
-      params.require(:authority_group_category).permit(:name, :parent_id)
-    end
   
 end

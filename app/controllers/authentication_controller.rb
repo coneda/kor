@@ -19,7 +19,7 @@ class AuthenticationController < ApplicationController
       flash[:notice] = I18n.t('notices.personal_password_reset_success')
       @user.reset_password
       @user.save
-      UserMailer.reset_password(@user).deliver
+      UserMailer.reset_password(@user).deliver_now
     else
       flash[:error] = I18n.t('errors.personal_password_reset_mail_not_found')
     end
