@@ -21,7 +21,11 @@
         <kor:created-at><%= timestamp record.created_at %></kor:created-at>
         <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
         <kor:name><%= record.relation.name %></kor:name>
-        <kor:reverse-name><%= record.relation.reverse_name %></kor:reverse-name>
+        <kor:relation
+          kor:id="<%= record.relation.uuid %>"
+          kor:name="<%= record.relation.name %>"
+          kor:reverse-name="<%= record.relation.reverse_name %>"
+        ></kor:relation>
         <kor:from><%= record.from.uuid %></kor:from>
         <kor:to><%= record.to.uuid %></kor:to>
       </dc:description>
