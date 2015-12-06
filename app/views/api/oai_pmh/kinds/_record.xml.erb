@@ -1,0 +1,56 @@
+<record>
+  <header>
+    <identifier><%= record.uuid %></identifier>
+    <datestamp><%= timestamp record.updated_at %></datestamp>
+  </header>
+  <metadata>
+    <oaidc:dc
+      xmlns:oaidc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:kor="https://coneda.net/XMLSchema/1.0/"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
+                          http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
+    >
+      <dc:identifier><%= record.uuid %></dc:identifier>
+      <dc:type>Type</dc:type>
+      <dc:type>Kind</dc:type>
+      <dc:type>EntityType</dc:type>
+
+      <dc:description>
+        <kor:id><%= record.uuid %></kor:id>
+        <kor:created-at><%= timestamp record.created_at %></kor:created-at>
+        <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
+        <kor:name><%= record.name %></kor:name>
+        <kor:plural-name><%= record.plural_name %></kor:plural-name>
+        <kor:settings><%= record.settings.to_json %></kor:settings>
+        <kor:fields>
+          <% record.fields.each do |field| %>
+            <kor:field>
+              <kor:created-at><%= timestamp field.created_at %></kor:created-at>
+              <kor:updated-at><%= timestamp field.updated_at %></kor:updated-at>
+              <kor:local-id><%= field.id %></kor:local-id>
+              <kor:type><%= field.type %></kor:type>
+              <kor:name><%= field.name %></kor:name>
+              <kor:label><%= field.show_label %></kor:label>
+              <kor:form-label><%= field.form_label %></kor:form-label>
+              <kor:search-label><%= field.search_label %></kor:search-label>
+              <kor:settings><%= field.settings.to_json %></kor:settings>
+            </kor:field>
+          <% end %>
+        </kor:fields>
+        <kor:generators>
+          <% record.generators.each do |generator| %>
+            <kor:generator>
+              <kor:created-at><%= timestamp generator.created_at %></kor:created-at>
+              <kor:updated-at><%= timestamp generator.updated_at %></kor:updated-at>
+              <kor:local-id><%= generator.id %></kor:local-id>
+              <kor:name><%= generator.name %></kor:name>
+              <kor:directive><%= generator.directive %></kor:directive>
+            </kor:generator>
+          <% end %>
+        </kor:generators>
+      </dc:description>
+    </oaidc:dc>
+  </metadata>
+</record>

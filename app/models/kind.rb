@@ -22,6 +22,7 @@ class Kind < ActiveRecord::Base
   scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : scoped}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : scoped}
+  scope :allowed, scoped
 
   def generate_uuid
     self.uuid ||= SecureRandom.uuid

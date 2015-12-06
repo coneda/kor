@@ -171,7 +171,7 @@ Kor::Application.routes.draw do
     end
 
     scope 'oai_pmh', :format => :xml, :as => "oai_pmh", :via => [:get, :post] do
-      ['entities', 'relationships'].each do |res|
+      ['entities', 'relationships', 'kinds', 'relations'].each do |res|
         controller "oai_pmh/#{res}", :defaults => {:format => :xml} do
           match res, :to => "oai-pmh/#{res}#identify", :constraints => OaiPmhVerbConstraint.new('Identify')
           match res, :to => "oai-pmh/#{res}#list_sets", :constraints => OaiPmhVerbConstraint.new('ListSets')

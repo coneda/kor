@@ -10,6 +10,7 @@ FactoryGirl.define do
     factory :media do
       name "Medium"
       plural_name "Media"
+      settings { {:naming => false} }
     end
 
     factory :locations do

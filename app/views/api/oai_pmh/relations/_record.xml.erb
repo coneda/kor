@@ -13,21 +13,19 @@
                           http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
     >
       <dc:identifier><%= record.uuid %></dc:identifier>
-      <dc:type>Dataset</dc:type>
-      <dc:type>Triple</dc:type>
+      <dc:type>Type</dc:type>
+      <dc:type>Kind</dc:type>
+      <dc:type>EntityType</dc:type>
 
       <dc:description>
         <kor:id><%= record.uuid %></kor:id>
         <kor:created-at><%= timestamp record.created_at %></kor:created-at>
         <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
-        <kor:name><%= record.relation.name %></kor:name>
-        <kor:relation
-          kor:id="<%= record.relation.uuid %>"
-          kor:name="<%= record.relation.name %>"
-          kor:reverse-name="<%= record.relation.reverse_name %>"
-        ></kor:relation>
-        <kor:from><%= record.from.uuid %></kor:from>
-        <kor:to><%= record.to.uuid %></kor:to>
+        <kor:name><%= record.name %></kor:name>
+        <kor:reverse-name><%= record.reverse_name %></kor:reverse-name>
+        <kor:description><%= record.description %></kor:description>
+        <kor:from-kind-local-ids><%= record.from_kind_ids.to_json %></kor:from-kind-local-ids>
+        <kor:to-kind-local-ids><%= record.to_kind_ids.to_json %></kor:to-kind-local-ids>
       </dc:description>
     </oaidc:dc>
   </metadata>
