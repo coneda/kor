@@ -7,9 +7,9 @@
 # This is a deploy script for generic apps. Modify the deploy function to suit
 # your needs.
 
-# Settings
+# Load user settings
 
-. ./deploy.config.sh $1
+. ./deploy.config.sh && $1
 
 # Deploy
 
@@ -42,7 +42,7 @@ function deploy {
   remote "ln -sfn $SHARED_PATH/data/media/thumbnail $CURRENT_PATH/public/media/images/thumbnail"
   remote "ln -sfn $SHARED_PATH/data/media/icon $CURRENT_PATH/public/media/images/icon"
 
-  # remote "touch $CURRENT_PATH/tmp/restart.txt"
+  remote "touch $CURRENT_PATH/tmp/restart.txt"
 
   finalize
 }
