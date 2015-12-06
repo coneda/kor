@@ -176,16 +176,20 @@ Example configuration within `config/kor.yml`:
 
 ### API
 
-ConedaKOR spawns two OAI-PMH endpoints for entities and relationships:
+ConedaKOR spawns four OAI-PMH endpoints for entities, kinds, relations and
+relationships:
 
 * http://kor.example.com/api/oai-pmh/entities.xml?verb=Identify
+* http://kor.example.com/api/oai-pmh/kinds.xml?verb=Identify
+* http://kor.example.com/api/oai-pmh/relations.xml?verb=Identify
 * http://kor.example.com/api/oai-pmh/relationships.xml?verb=Identify
 
 Please refer to the [OAI-PMH
 specification](https://www.openarchives.org/OAI/openarchivesprotocol.html) for
 further information on available verbs and on how to use them.
 
-The api will retrieve data tailored to the authenticated user's permissions.
+The api will retrieve entities and relationships according to the authenticated
+user's permissions. Kinds and relations are available without authentication.
 Please check out [Authentication](#authentication) for how to use an api key.
 
 
