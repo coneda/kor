@@ -6,4 +6,7 @@
   <earliestDatestamp><%= timestamp @earliest_timestamp %></earliestDatestamp>
   <deletedRecord>no</deletedRecord>
   <granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
+  <description xmlns:kor="https://coneda.net/XMLSchema/1.0/">
+    <kor:id><%= Kor.repository_uuid %></kor:id>
+  </description>
 </Identify>

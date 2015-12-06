@@ -61,7 +61,16 @@ module Kor
   def self.source_code_url
     Kor.config["app.source_code_url"].gsub(/\{\{version\}\}/, Kor.version)
   end
-  
+
+  def self.repository_uuid
+    unless Kor.config["maintainer.repository_uuid"]
+      Kor.config["maintainer.repository_uuid"] = SecureRandom.uuid
+      Kor.config(false).store Kor.app_config_file
+    end
+
+    Kor.config["maintainer.repository_uuid"]
+  end
+ 
   
   ####################### backups ##############################################
   
@@ -133,7 +142,6 @@ module Kor
     "#{config['host']['protocol']}://#{config['host']['host']}" +
       (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
   end
-
 
   ####################### logging ##############################################
 
