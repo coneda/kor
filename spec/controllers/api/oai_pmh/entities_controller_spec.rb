@@ -90,7 +90,7 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
     items = metadatas.map{|m| Nokogiri::XML(m.children.to_s)}
 
     expect(items.count).to eq(1)
-    expect(items.first.xpath("//dc:description/kor:title").text).to eq("Mona Lisa")
+    expect(items.first.xpath("//dc:description/kor:entity/kor:title").text).to eq("Mona Lisa")
 
     admin = User.admin
     get :list_records, :format => :xml, :api_key => admin.api_key

@@ -24,48 +24,50 @@
       <% end %>
 
       <dc:description>
-        <kor:id><%= record.uuid %></kor:id>
-        <kor:collection kor:id="<%= record.collection_id %>"><%= record.collection.name %></kor:collection>
-        <kor:created-at><%= timestamp record.created_at %></kor:created-at>
-        <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
+        <kor:entity>
+          <kor:id><%= record.uuid %></kor:id>
+          <kor:collection kor:id="<%= record.collection_id %>"><%= record.collection.name %></kor:collection>
+          <kor:created-at><%= timestamp record.created_at %></kor:created-at>
+          <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
 
-        <kor:type kor:id="<%= record.kind.uuid %>"><%= record.kind.name %></kor:type>
+          <kor:type kor:id="<%= record.kind.uuid %>"><%= record.kind.name %></kor:type>
 
-        <% if record.is_medium? %>
-          <kor:image-path kor:style="original" ><%= download_medium_url record.medium, :style => 'original' %></kor:image-path>
-        <% else %>
-          <kor:title><%= record.name %></kor:title>
-          <kor:sub-type><%= record.subtype %></kor:sub-type>
-          <kor:distinction><%= record.distinct_name %></kor:distinction>
-          <% record.synonyms.each do |synonym| %>
-            <kor:synonym><%= synonym %></kor:synonym>
+          <% if record.is_medium? %>
+            <kor:image-path kor:style="original" ><%= download_medium_url record.medium, :style => 'original' %></kor:image-path>
+          <% else %>
+            <kor:title><%= record.name %></kor:title>
+            <kor:sub-type><%= record.subtype %></kor:sub-type>
+            <kor:distinction><%= record.distinct_name %></kor:distinction>
+            <% record.synonyms.each do |synonym| %>
+              <kor:synonym><%= synonym %></kor:synonym>
+            <% end %>
+            <kor:no-name-specifier><%= record.no_name_statement %></kor:no-name-specifier>
           <% end %>
-          <kor:no-name-specifier><%= record.no_name_statement %></kor:no-name-specifier>
-        <% end %>
-        
-        <kor:tags><% record.tag_list.each do |tag| %>
-          <kor:tag><%= tag %></kor:tag>
-        <% end %></kor:tags>
+          
+          <kor:tags><% record.tag_list.each do |tag| %>
+            <kor:tag><%= tag %></kor:tag>
+          <% end %></kor:tags>
 
-        <kor:fields><% record.field_hashes.each do |field| %>
-          <kor:field kor:name="<%= field['name'] %>"><%= field['value'] %></kor:field>
-        <% end %></kor:fields>
+          <kor:fields><% record.field_hashes.each do |field| %>
+            <kor:field kor:name="<%= field['name'] %>"><%= field['value'] %></kor:field>
+          <% end %></kor:fields>
 
-        <kor:properties><% record.properties.each do |property| %>
-          <kor:property
-            kor:name="<%= property['label'] %>"
-          ><%= property['value'] %></kor:property>
-        <% end %></kor:properties>
+          <kor:properties><% record.properties.each do |property| %>
+            <kor:property
+              kor:name="<%= property['label'] %>"
+            ><%= property['value'] %></kor:property>
+          <% end %></kor:properties>
 
-        <kor:datings><% record.datings.each do |dating| %>
-          <kor:dating
-            kor:event="<%= dating.label %>"
-            kor:from-day="<%= dating.from_day %>"
-            kor:to-day="<%= dating.to_day %>"
-          ><%= dating.dating_string %></kor:dating>
-        <% end %></kor:datings>
+          <kor:datings><% record.datings.each do |dating| %>
+            <kor:dating
+              kor:event="<%= dating.label %>"
+              kor:from-day="<%= dating.from_day %>"
+              kor:to-day="<%= dating.to_day %>"
+            ><%= dating.dating_string %></kor:dating>
+          <% end %></kor:datings>
 
-        <kor:comment><%= record.comment %></kor:comment>
+          <kor:comment><%= record.comment %></kor:comment>
+        </kor:entity>
       </dc:description>
 
     </oaidc:dc>
