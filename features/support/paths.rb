@@ -8,7 +8,7 @@ module NavigationHelpers
   def path_to(page_name)
     case page_name
 
-        when /the config page/ then '/config/general'
+    when /the config page/ then '/config/general'
     when /the home\s?page/ then '/'
     when /the expert search/ then '/entities'
     when /the global groups page/ then '/authority_group_categories'
@@ -74,6 +74,7 @@ module NavigationHelpers
     when /the multi upload page/ then web_path(:anchor => '/entities/multi_upload')
     when /the exception logs page/ then exception_logs_path
     when /welcome page/ then "/"
+    when /the path "([^\"]+)"/ then $1
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

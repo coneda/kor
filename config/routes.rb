@@ -2,7 +2,7 @@ Kor::Application.routes.draw do
 
   match '/blaze', :to => 'static#blaze', :as => :web
 
-  match '/by_uuid/:uuid', :to => 'entities#by_uuid'
+  match 'resolve(/:kind)/:id', :to => 'identifiers#resolve'
   
   root :to => 'main#welcome'
   match '/welcome', :to => 'main#welcome'

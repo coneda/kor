@@ -38,6 +38,7 @@ see file COPYING
 * Identify isolated entities
 * Merge entities to further normalize your data
 * External authentication (for example LDAP) by simple shell scripts
+* Easy identifier management
 * Many configurable aspects (welcome page, terms of use, help, primary
   relations, brand, …)
 * Vagrant dev environment

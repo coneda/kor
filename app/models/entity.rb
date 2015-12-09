@@ -11,13 +11,15 @@ class Entity < ActiveRecord::Base
   self.per_page = 10
   
   # Associations
+
+  has_many :identifiers, :foreign_key => :entity_uuid, :primary_key => :uuid, :dependent => :destroy
   
   belongs_to :creator, :class_name => "User", :foreign_key => :creator_id
   belongs_to :updater, :class_name => "User", :foreign_key => :updater_id
   belongs_to :kind
  
   has_many :datings, :class_name => "EntityDating", :dependent => :destroy
-  
+
   belongs_to :medium, :dependent => :destroy
 
   belongs_to :collection
@@ -233,6 +235,7 @@ class Entity < ActiveRecord::Base
   before_save :generate_uuid, :add_to_user_group
   after_update :save_datings
   after_commit :update_elastic
+  after_save :update_identifiers
   
   def sanitize_distinct_name
     self.distinct_name = nil if self.distinct_name == ""
@@ -254,6 +257,19 @@ class Entity < ActiveRecord::Base
         Kor::Elastic.drop self
       else
         Kor::Elastic.index self, :full => true
+      end
+    end
+  end
+
+  def update_identifiers
+    kind.fields.identifiers.each do |field|
+      field.entity = self
+      if field.value.present?
+        id = identifiers.find_or_create_by_kind(field.name)
+        id.update_attributes :value => field.value
+      else
+        id = identifiers.where(:kind =>  field.name).first
+        id.destroy if id
       end
     end
   end

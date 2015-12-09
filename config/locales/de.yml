@@ -871,6 +871,7 @@ de:
         properties: weitere Eigenschaften
         synonyms: Synonyme
         degree: Grad
+        is_identifier: ist ein Identifier
       entity_dating:
         label: Art der Datierung
         dating_string: Datierung

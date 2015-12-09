@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151111112819) do
+ActiveRecord::Schema.define(:version => 20151209092353) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -180,8 +180,9 @@ ActiveRecord::Schema.define(:version => 20151111112819) do
     t.string   "form_label"
     t.string   "search_label"
     t.text     "settings"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.boolean  "is_identifier"
   end
 
   create_table "generators", :force => true do |t|
@@ -191,6 +192,17 @@ ActiveRecord::Schema.define(:version => 20151111112819) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "identifiers", :force => true do |t|
+    t.string   "entity_uuid"
+    t.string   "kind"
+    t.string   "value"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "identifiers", ["entity_uuid"], :name => "index_identifiers_on_entity_uuid"
+  add_index "identifiers", ["value"], :name => "index_identifiers_on_value"
 
   create_table "kinds", :force => true do |t|
     t.string   "uuid"
