@@ -39,6 +39,8 @@ class Kor::CommandLine
     case @command
       when "export"
         @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") {|v| @config[:format] = v }
+        @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids") {|v| @config[:collection_id] = v.split(",").map{|v| v.to_i} }
+        @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids") {|v| @config[:kind_id] = v.split(",").map{|v| v.to_i} }
         @required += [:format]
       when "import"
         @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") {|v| @config[:format] = v }
@@ -47,8 +49,6 @@ class Kor::CommandLine
         @parser.on("-p", "obey the permission system, default: false") { @config[:obey_permissions] = true }
         @parser.on("-s", "for imports: don't make any changes, default: false, implies verbose") { @config[:simulate] = true }
         @parser.on("-o", "ignore all validations") { @config[:ignore_validations] = true }
-        @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids") {|v| @config[:collection_id] = v.split(",").map{|v| v.to_i} }
-        @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids") {|v| @config[:kind_id] = v.split(",").map{|v| v.to_i} }
         @required += [:format]
       when "group-to-zip"
         @parser.on("--group-id=ID", "select the group to package") {|v| @config[:group_id] = v.to_i }

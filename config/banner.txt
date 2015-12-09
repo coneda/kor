@@ -26,9 +26,9 @@ Please consult
 for a list of available options for that specific sub-command
 
 Make sure you are setting the right rails environment with an environment
-variable, for example:
+variable:
 
-  RAILS_ENV=production kor export -f excel path/to/destination
+  RAILS_ENV=production kor ...
 
 Available options:
 
