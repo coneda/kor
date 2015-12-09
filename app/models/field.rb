@@ -17,7 +17,25 @@ class Field < ActiveRecord::Base
     f.form_label = f.show_label if f.form_label.blank?
     f.search_label = f.show_label if f.search_label.blank?
   end
-  
+
+  after_save do |f|
+    if f.is_identifier_changed?
+      if f.is_identifier?
+        self.delay.create_identifiers
+      else
+        Identifier.where(:kind => f.name).delete_all
+      end
+    end
+  end
+
+  def create_identifiers
+    self.kind.entities.find_each :batch_size => 100 do |entity|
+      entity.update_identifiers
+    end
+  end
+
+  scope :identifiers, lambda { where(:is_identifier => true) }
+
 
   # Attributes
   

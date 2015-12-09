@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 
   get '/blaze', :to => 'static#blaze', :as => :web
 
-  match '/by_uuid/:uuid', :to => 'entities#by_uuid', :via => :get
+  match 'resolve(/:kind)/:id', :to => 'identifiers#resolve', via: :get
   
   root :to => 'main#welcome'
   match '/welcome', :to => 'main#welcome', :via => :get

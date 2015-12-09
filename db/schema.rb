@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151111112819) do
+ActiveRecord::Schema.define(version: 20151209092353) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -173,15 +173,16 @@ ActiveRecord::Schema.define(version: 20151111112819) do
   end
 
   create_table "fields", force: :cascade do |t|
-    t.integer  "kind_id",      limit: 4
-    t.string   "type",         limit: 255
-    t.string   "name",         limit: 255
-    t.string   "show_label",   limit: 255
-    t.string   "form_label",   limit: 255
-    t.string   "search_label", limit: 255
-    t.text     "settings",     limit: 65535
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.integer  "kind_id",       limit: 4
+    t.string   "type",          limit: 255
+    t.string   "name",          limit: 255
+    t.string   "show_label",    limit: 255
+    t.string   "form_label",    limit: 255
+    t.string   "search_label",  limit: 255
+    t.text     "settings",      limit: 65535
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "is_identifier"
   end
 
   create_table "generators", force: :cascade do |t|
@@ -191,6 +192,17 @@ ActiveRecord::Schema.define(version: 20151111112819) do
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
   end
+
+  create_table "identifiers", force: :cascade do |t|
+    t.string   "entity_uuid", limit: 255
+    t.string   "kind",        limit: 255
+    t.string   "value",       limit: 255
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "identifiers", ["entity_uuid"], name: "index_identifiers_on_entity_uuid", using: :btree
+  add_index "identifiers", ["value"], name: "index_identifiers_on_value", using: :btree
 
   create_table "kinds", force: :cascade do |t|
     t.string   "uuid",         limit: 255

@@ -870,6 +870,7 @@ en:
         properties: further properties
         synonyms: synonyms
         degree: degree
+        is_identifier: is identifier
       entity_dating:
         label: type of dating
         dating_string: dating
