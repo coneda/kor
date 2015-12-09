@@ -144,7 +144,7 @@ class Kor::Import::Excel < Kor::Export::Excel
     if @options[:verbose]
       entity_desc = if entity && !entity.new_record?
         "entity id #{entity.id}"
-      elsif row[1].present?
+      elsif row && row[1].present?
         "unknown entity"
       else
         "new entity"
