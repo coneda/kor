@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+
+# This is an example script demonstrating how to automatically ingest various
+# kinds of data into a ConedaKOR installation.
+
+# You will have to set this so that the correct installation and environment can
+# be loaded
+KOR_ROOT="/home/schepp/Desktop/coneda/projects/kor/src"
+RAILS_ENV="development"
+
+# loading the rails environment
+require "#{KOR_ROOT}/config/environment"
+
+# we are wrapping the code to catch validation errors
+begin
+  # destroy all users, groups, entities, kinds, relations and collections
+  Entity.destroy_all
+  User.without_predefined.destroy_all # all but the admin and the guest
+  Credential.destroy_all
+  Kind.without_media.destroy_all # all but the Medium kind
+  Relation.destroy_all
+  Collection.destroy_all
+
+  # create a user and fetch the admin user
+  jdoe = User.create!(:name => "jdoe", :password => "secret", :email => "jdoe@example.com")
+  admin = User.where(:name => "admin").first
+
+  # create credentials (user groups)
+  admins = Credential.create!(:name => "admins")
+  editors = Credential.create!(:name => "editors")
+
+  # add 'jdoe' to 'editors'
+  editors.users << jdoe
+  admins.users << admin
+
+  # create a collection
+  project_x = Collection.create!(:name => "Project X")
+
+  # allow 'editors' and 'admins' to view collection 'Project X'.
+  project_x.grant [:view, :edit], :to => [admins, editors]
+
+  # create a few entity types (the 'Medium' type is created automatically by 
+  # seeding the DB)
+  people = Kind.create!(:name => "Person", :plural_name => "People")
+  works = Kind.create!(:name => "Work", :plural_name => "Works", :fields => [
+    Field.new(
+      :type => "Field::String",
+      :name => "dimensions",
+      :show_label => "Dimensions",
+      :show_on_entity => true
+    )
+  ])
+
+  # create a few relations
+  has_created = Relation.create!(:name => "has created", :reverse_name => "was created by")
+  shows = Relation.create!(:name => "shows", :reverse_name => "is shown by")
+  equivalent = Relation.create!(:name => "is equivalent to", :reverse_name => "is equivalent to")
+
+  # create some entities
+  mona_lisa = Entity.create!(
+    :kind => works,
+    :collection => project_x,
+    :name => "Mona Lisa",
+    :dataset => {"dimensions" => "77 cm × 53 cm"},
+    :properties => [{"label" => "Material", "value" => "Oil on poplar"}]
+  )
+  leonardo = Entity.create!(
+    :kind => people,
+    :collection => project_x,
+    :name => "Leonardo"
+  )
+  picture = Entity.create!(
+    :kind => Kind.medium_kind,
+    :collection => project_x,
+    :medium => Medium.new(:image => File.open("#{KOR_ROOT}/spec/fixtures/image_a.jpg"))
+  )
+
+  # and now related the entities
+  Relationship.relate_and_save(mona_lisa, "was created by", leonardo)
+  Relationship.relate_and_save(mona_lisa, "is shown by", picture)
+
+  # images are converted within a background job. Don't forget to work off that
+  # queue unless you have a background job running:
+  # Delayed::Worker.new.work_off
+rescue ActiveRecord::RecordInvalid => e
+  puts e.backtrace
+  puts "full validation messages: " + e.record.errors.full_messages.inspect
+end
