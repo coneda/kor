@@ -1,6 +1,8 @@
 class AddApiKeyToUsers < ActiveRecord::Migration
   def up
-    add_column :users, :api_key, :string
+    unless column_exists?(:users, :api_key)
+      add_column :users, :api_key, :string
+    end
 
     User.reset_column_information
 
