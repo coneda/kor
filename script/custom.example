@@ -42,6 +42,7 @@ begin
   # create a few entity types (the 'Medium' type is created automatically by 
   # seeding the DB)
   people = Kind.create!(:name => "Person", :plural_name => "People")
+  institutions = Kind.create!(:name => "Institution", :plural_name => "Institutions")
   works = Kind.create!(:name => "Work", :plural_name => "Works", :fields => [
     Field.new(
       :type => "Field::String",
@@ -55,6 +56,7 @@ begin
   has_created = Relation.create!(:name => "has created", :reverse_name => "was created by")
   shows = Relation.create!(:name => "shows", :reverse_name => "is shown by")
   equivalent = Relation.create!(:name => "is equivalent to", :reverse_name => "is equivalent to")
+  is_located_at = Relation.create!(:name => "is located at", :reverse_name => "is location of")
 
   # create some entities
   mona_lisa = Entity.create!(
@@ -78,6 +80,25 @@ begin
   # and now related the entities
   Relationship.relate_and_save(mona_lisa, "was created by", leonardo)
   Relationship.relate_and_save(mona_lisa, "is shown by", picture)
+
+  # or create some data from CSV
+  File.read("#{KOR_ROOT}/spec/fixtures/works.csv").split("\n").each do |line|
+    name, dimensions, material, museum = line.split(";")
+    work = Entity.create!(
+      :kind => works,
+      :collection => project_x,
+      :name => name,
+      :dataset => {"dimensions" => dimensions},
+      :properties => [{"label" => "Material", "value" => material}]
+    )
+
+    institution = Entity.find_or_create_by_name!(museum) do |i|
+      i.kind = institutions
+      i.collection = project_x
+    end
+
+    Relationship.relate_and_save(work, "is located at", institution)
+  end
 
   # images are converted within a background job. Don't forget to work off that
   # queue unless you have a background job running:
