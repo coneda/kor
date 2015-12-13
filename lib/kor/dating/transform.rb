@@ -86,13 +86,26 @@ class Kor::Dating::Transform < Parslet::Transform
   end
   
   rule(:year_interval => subtree(:a)) do
+    result = {}
+
     if a[:from] == '?'
       year = a[:to][:from].year
       distance = (Date.today.year - year) / 10
-      {:from => Date.new(year - distance, 1, 1), :to => Date.new(a[:to][:to].year, 12, 31)}
+      result[:from] = Date.new(year - distance, 1, 1)
+      result[:to] = Date.new(a[:to][:to].year, 12, 31)
     else
-      {:to => Date.new(a[:to].year, 12, 31), :from => Date.new(a[:from].year, 1, 1)}
+      from = (a[:from].is_a?(Hash) ? a[:from][:from] : a[:from])
+      result[:from] = Date.new(from.year, 1, 1)
+      if a[:to] == '?'
+        year = result[:from].year
+        distance = (Date.today.year - year) / 10
+        result[:to] = Date.new(year + distance, 12, 31)
+      else
+        result[:to] = Date.new(a[:to].year, 12, 31)
+      end
     end
+
+    result
   end
   
 end

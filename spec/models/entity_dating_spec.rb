@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe EntityDating do
   include DataHelper
@@ -60,4 +60,11 @@ describe EntityDating do
     test_datings
     expect(EntityDating.between("1750 bis 1950").count).to eql(2)
   end
+
+  it "should parse '1957 bis ?'" do
+    dating = EntityDating.create(label: "Date", dating_string: "1957 bis ?")
+    expect(dating.from_day).to eq(2435840)
+    expect(dating.to_day).to eq(2438030)
+  end
+
 end
