@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151209092353) do
+ActiveRecord::Schema.define(:version => 20151213141714) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -202,6 +202,7 @@ ActiveRecord::Schema.define(:version => 20151209092353) do
   end
 
   add_index "identifiers", ["entity_uuid"], :name => "index_identifiers_on_entity_uuid"
+  add_index "identifiers", ["value", "kind"], :name => "index_identifiers_on_value_and_kind"
   add_index "identifiers", ["value"], :name => "index_identifiers_on_value"
 
   create_table "kinds", :force => true do |t|
