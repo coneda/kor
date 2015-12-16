@@ -156,7 +156,7 @@ RSpec.describe RelationshipsController, :type => :controller do
   
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
-        
+
     request.env["HTTP_REFERER"] = '/'
     delete :destroy, :id => relationship.id
     expect(response).not_to redirect_to(denied_path)

@@ -34,7 +34,7 @@ module DataHelper
     @admins = FactoryGirl.create :admins
     @main = FactoryGirl.create :default
     @main.policies.each do |policy|
-      Grant.create(:collection => @main, :credential => @admins, :policy => policy)
+      Grant.create!(:collection => @main, :credential => @admins, :policy => policy)
     end
     @admin = FactoryGirl.create :admin, :groups => Credential.all
   end

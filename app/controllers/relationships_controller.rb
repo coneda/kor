@@ -90,8 +90,8 @@ class RelationshipsController < ApplicationController
 
   def destroy
     @relationship = Relationship.find(params[:id])
-    
-    unless authorized_for_relationship? @relationship, :edit
+
+    unless authorized_for_relationship? @relationship, :delete
       redirect_to denied_path
     else      
       @relationship.destroy

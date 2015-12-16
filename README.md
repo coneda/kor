@@ -113,27 +113,37 @@ all permissions to grant permissions and administer the installation. Also, he
 is member of the `Administrators` credential which allows him to see and edit
 all data.
 
-A `guest` user can be created. If he exists, his permissions apply for
-unauthenticated users. If he doesn't exist, the app will require authentication.
-
 Authentication is performed via a web form at http://kor.example.com/login or by
 providing a valid `api_key` as `GET` or `POST` parameter. You may also specify a
 header `api_key` containing the key. Every user has a key which can be looked up
 by an administrator on the user's administration page.
 
-Users can be authenticated by records within the connected database system. Such
-users have to be created manually by another user with the "User admin" access
-right.
+In order to be able to create user accounts, a user needs the `User admin` role.
+
+#### Unauthenticated access
+
+If you create a user with the username `guest`, every unauthenticated access
+will be treated as if user `guest` had made it. This gives enables you to define
+exactly what permissions to grant in this case. If it doesn't exist, the app
+will require authentication.
+
+#### Permission inheritance
+
+You may enter a parent username for every user. This way, the user will not only
+be able to access the parts of the application he is allowed to himself but also
+that his parent has access to.
+
+#### External authentication
 
 Additionally, one or more scripts may be written to carry out authentication
 with the credentials provided by the user from the login form. This allows
 flexible authentication via external sources such as PAM, LDAP or
 ActiveDirectory.
 
-Database users take preceedence before users authenticated via a script.
+Internal users take preceedence before users authenticated via a script.
 
 The script can be written in the language of your choice. Username and password
-are passed to on to it through two environment variables `KOR_USERNAME_FILE` and
+are passed on to it through two environment variables `KOR_USERNAME_FILE` and
 `KOR_PASSWORD_FILE` which indicate files where the values can be extracted from.
 The script is expected to terminate with exit code 0 if authentication was
 successful and 1 otherwise. In the positive case, a valid JSON hash has to be
@@ -172,6 +182,11 @@ Example configuration within `config/kor.yml`:
           ldap:
             script: /path/to/ldap_auth.pl
             map_to: ldap_user
+
+The authentication system might need to create users when they authenticate via
+external sources. The above configuration would create new users and set their
+parent to `simple_user` or `ldap_user` depending on which authentication source
+succeeded. This allows you to grant default permissions for new users to come.
 
 
 ### API

@@ -5,6 +5,14 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+## Version ???
+
+### User
+
+* added OAI-PMH api to enable harvesting of entities, kinds, relationships and 
+  relations
+* added token authentication
+
 ## Version 1.9.2
 
 ### User

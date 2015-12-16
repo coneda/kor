@@ -20,13 +20,6 @@ User.create!(
   :developer => false
 )
 
-User.create!(
-  :name => "guest",
-  :full_name => "Guest",
-  :email => "guest@example.com",
-  :terms_accepted => true
-)
-
 default = Collection.create! :name => "Default"
 
 default.policies.each do |policy|
