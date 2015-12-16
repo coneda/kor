@@ -2,7 +2,8 @@ Kor.config['maintainer.email'] = 'admin@localhost'
 
 administrators = Credential.create!(:name => "Administrators")
 
-User.create!(:name => "admin",
+User.create!(
+  :name => "admin",
   :full_name => I18n.t('users.administrator'),
   :groups => [ administrators ],
   :password => 'admin', 
@@ -17,6 +18,13 @@ User.create!(:name => "admin",
   :collection_admin => true,
   :kind_admin => true,
   :developer => false
+)
+
+User.create!(
+  :name => "guest",
+  :full_name => "Guest",
+  :email => "guest@example.com",
+  :terms_accepted => true
 )
 
 default = Collection.create! :name => "Default"

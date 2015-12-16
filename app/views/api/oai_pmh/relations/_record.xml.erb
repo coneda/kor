@@ -25,8 +25,16 @@
           <kor:name><%= record.name %></kor:name>
           <kor:reverse-name><%= record.reverse_name %></kor:reverse-name>
           <kor:description><%= record.description %></kor:description>
-          <kor:from-kind-local-ids><%= record.from_kind_ids.to_json %></kor:from-kind-local-ids>
-          <kor:to-kind-local-ids><%= record.to_kind_ids.to_json %></kor:to-kind-local-ids>
+          <kor:from-types>
+            <% Kind.where(:id => record.from_kind_ids).each do |kind| %>
+              <kor:type kor:id="<%= kind.uuid %>"><%= kind.name %></kor:type>
+            <% end %>
+          </kor:from-types>
+          <kor:to-types>
+            <% Kind.where(:id => record.to_kind_ids).each do |kind| %>
+              <kor:type kor:id="<%= kind.uuid %>"><%= kind.name %></kor:type>
+            <% end %>
+          </kor:to-types>
         </kor:relation>
       </dc:description>
     </oaidc:dc>
