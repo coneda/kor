@@ -235,7 +235,7 @@ class Entity < ActiveRecord::Base
   before_save :generate_uuid, :add_to_user_group
   after_update :save_datings
   after_commit :update_elastic
-  after_save :update_identifiers
+  after_save :update_identifiers, :trigger_wikidata_identification
   
   def sanitize_distinct_name
     self.distinct_name = nil if self.distinct_name == ""
@@ -270,6 +270,18 @@ class Entity < ActiveRecord::Base
       else
         id = identifiers.where(:kind =>  field.name).first
         id.destroy if id
+      end
+    end
+  end
+
+  def trigger_wikidata_identification
+    self.delay.wikidata_identification
+  end
+
+  def wikidata_identification
+    unless self.wikidata_id.present?
+      if id = Kor::Import::WikiData.new.id_for_entity(self)
+        update_column :wikidata_id, id
       end
     end
   end

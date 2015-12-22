@@ -64,4 +64,17 @@ class Kor::Import::WikiData
     end
   end
 
+  def id_for_entity(entity)
+    entity.kind.fields.each do |f|
+      f.entity = entity
+      if f.wikidata_id && f.value
+        response = find_by_attribute(f.wikidata_id, f.value)
+        id = response["items"].first.to_s
+        return id if id.present?
+      end
+    end
+
+    nil
+  end
+
 end

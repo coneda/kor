@@ -24,8 +24,10 @@
     = content_tag(:div, "", :id => 'name_lookup_result')
 
     = f.kor_input @entity.kind.distinct_name_label, :attribute => :distinct_name, :translate => false
-    
+
     = f.kor_input :subtype
+    
+    = f.kor_input :wikidata_id
   
   - if @entity.is_medium?
     = f.fields_for :medium, :builder => Kor::FormBuilder do |m|

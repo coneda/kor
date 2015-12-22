@@ -20,6 +20,7 @@
       = f.kor_input :search_label
       = f.kor_input :show_on_entity, :control => f.check_box(:show_on_entity)
       = f.kor_input :is_identifier, :control => f.check_box(:is_identifier)
+      = f.kor_input :wikidata_id
       
       - begin
         = render :partial => @field.class.config_form_partial_name, :locals => {:kind => @kind, :field => @field, :f => f}

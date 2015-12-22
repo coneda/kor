@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151213141714) do
+ActiveRecord::Schema.define(:version => 20151218105135) do
 
   create_table "authority_group_categories", :force => true do |t|
     t.integer  "lock_version"
@@ -120,6 +120,7 @@ ActiveRecord::Schema.define(:version => 20151213141714) do
     t.boolean  "approved"
     t.integer  "medium_id"
     t.text     "attachment"
+    t.string   "wikidata_id"
   end
 
   add_index "entities", ["collection_id", "kind_id"], :name => "collections_kinds"
@@ -183,6 +184,7 @@ ActiveRecord::Schema.define(:version => 20151213141714) do
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
     t.boolean  "is_identifier"
+    t.string   "wikidata_id"
   end
 
   create_table "generators", :force => true do |t|
@@ -214,6 +216,7 @@ ActiveRecord::Schema.define(:version => 20151213141714) do
     t.datetime "updated_at"
     t.integer  "lock_version", :default => 0
     t.string   "plural_name"
+    t.string   "wikidata_id"
   end
 
   create_table "media", :force => true do |t|
@@ -254,6 +257,7 @@ ActiveRecord::Schema.define(:version => 20151213141714) do
     t.text     "from_kind_ids"
     t.text     "to_kind_ids"
     t.string   "description"
+    t.string   "wikidata_id"
   end
 
   add_index "relations", ["name"], :name => "index_relations_on_name"
@@ -269,6 +273,7 @@ ActiveRecord::Schema.define(:version => 20151213141714) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "lock_version", :default => 0
+    t.string   "wikidata_id"
   end
 
   add_index "relationships", ["from_id"], :name => "index_relationships_on_from_id"

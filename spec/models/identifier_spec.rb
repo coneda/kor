@@ -69,7 +69,7 @@ describe Identifier do
     ]
     people.save
     
-    Delayed::Worker.new.work_off(1)
+    Delayed::Worker.new.work_off
 
     expect(described_class.count).to eq(1)
   end

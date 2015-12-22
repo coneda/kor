@@ -54,4 +54,16 @@ describe Kor::Import::WikiData, :vcr => true do
     expect(results).to include("id" => "759", "label" => "Alberta Register of Historic Places identifier")
   end
 
+  it "should automatically add the wikidata id when possible" do
+    works = FactoryGirl.create :works, :fields => [
+      Field.new(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID", :wikidata_id => "227")
+    ]
+    mona_lisa = FactoryGirl.create :mona_lisa, :dataset => {
+      "gnd_id" => "4074156-4"
+    }
+    Delayed::Worker.new.work_off
+    mona_lisa.reload
+    expect(mona_lisa.wikidata_id).to eq("12418")
+  end
+
 end

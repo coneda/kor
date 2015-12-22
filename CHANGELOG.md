@@ -13,6 +13,13 @@ commit history on GitHub.
 * added cli-command to cleanup old sessions
 * added a development environment via `vagrant up`
 * sped up the test suites by about 20%
+* identifier handling and resolution
+* wikidata id for entities, kinds, fields, relations and relationships
+* automatic wikidata id lookup through other identifiers
+
+### Internal
+
+* added VCR gem to enable testing against predictable external API responses
 
 ## Version 1.9.2
 

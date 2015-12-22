@@ -35,6 +35,8 @@ gem 'awesome_nested_set', :git => 'https://github.com/galetahub/awesome_nested_s
 gem 'oj'
 gem 'jbuilder'
 
+gem 'ruby-progressbar'
+
 group :assets do
   gem "therubyracer"
   gem 'uglifier'
