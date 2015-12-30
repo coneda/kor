@@ -177,6 +177,9 @@ Rails.application.routes.draw do
     match "relation", :action => "relation"
     match "media_relation", :action => "media_relation"
     match "relationship", :action => "relationship"
+    
+    match "relationships/form", :to => "relationships#form"
+    match "relations/selector", :to => "relations#selector"
   end
 
 end
