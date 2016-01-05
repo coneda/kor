@@ -76,4 +76,8 @@ function checksums {
   done   
 }
 
+function rbenv {
+  
+}
+
 $1

@@ -7,6 +7,13 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.insert_key = false
 
+  config.vm.define "dev" do |c|
+    c.vm.box = "ubuntu/trusty64"
+    c.vm.provision "shell", path: "deploy/vagrant.sh", args: "system_updates"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_standalone"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_requirements"
+  end
+
   config.vm.define "kor.base" do |base|
     base.vm.box = "coneda/debian7"
     base.vm.box_url = "http://download.coneda.net/coneda_debian7.box"
@@ -16,7 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     base.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_requirements"
 
     base.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.base"
+      vbox.name = "kor.dev"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
     end
 
