@@ -24,6 +24,7 @@
           <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
           <kor:name><%= record.name %></kor:name>
           <kor:plural-name><%= record.plural_name %></kor:plural-name>
+          <kor:description><%= record.description %></kor:description>
           <kor:settings><%= record.settings.to_json %></kor:settings>
           <kor:fields>
             <% record.fields.each do |field| %>
