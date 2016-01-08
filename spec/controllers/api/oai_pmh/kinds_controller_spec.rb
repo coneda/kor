@@ -75,4 +75,22 @@ describe Api::OaiPmh::KindsController, :type => :controller do
     expect(items.first.xpath("//kor:name", ns).text).to eq("Person")
   end
 
+  it "should return XML that validates against the OAI-PMH schema" do
+    people = Kind.where(:name => "Person").first
+
+    xsd_response = HTTPClient.new.get "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
+    xsd = Nokogiri::XML::Schema(xsd_response.body)
+
+    get :get_record, :format => :xml, :identifier => people.uuid
+    doc = Nokogiri::XML(response.body)
+
+    xsd.validate(doc).each do |error|
+      puts "#{error.line} :: #{error.message}"
+      puts error.code
+    end
+
+    binding.pry
+    expect(xsd.validate(doc)).to be_empty
+  end
+
 end

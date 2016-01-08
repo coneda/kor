@@ -1,42 +1,18 @@
-<record>
-  <header>
-    <identifier><%= record.uuid %></identifier>
-    <datestamp><%= timestamp record.updated_at %></datestamp>
-  </header>
-  <metadata>
-    <oaidc:dc
-      xmlns:oaidc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
-      xmlns:dc="http://purl.org/dc/elements/1.1/"
-      xmlns:kor="https://coneda.net/XMLSchema/1.0/"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
-                          http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
-    >
-      <dc:identifier><%= record.uuid %></dc:identifier>
-      <dc:type>Type</dc:type>
-      <dc:type>Kind</dc:type>
-      <dc:type>EntityType</dc:type>
-
-      <dc:description>
-        <kor:relation>
-          <kor:id><%= record.uuid %></kor:id>
-          <kor:created-at><%= timestamp record.created_at %></kor:created-at>
-          <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
-          <kor:name><%= record.name %></kor:name>
-          <kor:reverse-name><%= record.reverse_name %></kor:reverse-name>
-          <kor:description><%= record.description %></kor:description>
-          <kor:from-types>
-            <% Kind.where(:id => record.from_kind_ids).each do |kind| %>
-              <kor:type kor:id="<%= kind.uuid %>"><%= kind.name %></kor:type>
-            <% end %>
-          </kor:from-types>
-          <kor:to-types>
-            <% Kind.where(:id => record.to_kind_ids).each do |kind| %>
-              <kor:type kor:id="<%= kind.uuid %>"><%= kind.name %></kor:type>
-            <% end %>
-          </kor:to-types>
-        </kor:relation>
-      </dc:description>
-    </oaidc:dc>
-  </metadata>
-</record>
+<kor:relation>
+  <kor:id><%= record.uuid %></kor:id>
+  <kor:created-at><%= timestamp record.created_at %></kor:created-at>
+  <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
+  <kor:name><%= record.name %></kor:name>
+  <kor:reverse-name><%= record.reverse_name %></kor:reverse-name>
+  <kor:description><%= record.description %></kor:description>
+  <kor:from-types>
+    <% Kind.where(:id => record.from_kind_ids).each do |kind| %>
+      <kor:type kor:id="<%= kind.uuid %>"><%= kind.name %></kor:type>
+    <% end %>
+  </kor:from-types>
+  <kor:to-types>
+    <% Kind.where(:id => record.to_kind_ids).each do |kind| %>
+      <kor:type kor:id="<%= kind.uuid %>"><%= kind.name %></kor:type>
+    <% end %>
+  </kor:to-types>
+</kor:relation>

@@ -91,58 +91,6 @@ module Kor
   end
 
 
-  ####################### uri handling #########################################
-
-  def self.read_uri(uri_str)
-    uri = nil
-    begin
-      uri = URI.parse(uri_str)
-    rescue URI::InvalidURIError => e
-      uri = URI.parse(URI.escape(uri_str))
-    end
-    
-    if uri.scheme == "file" or !uri.scheme
-      path = URI.unescape(uri.path)
-      utf8 = path.unpack("U*").map{|c|c.chr}.join
-
-      if File.exists? path
-        File.open(path, "rb").read
-      elsif File.exists? utf8
-        File.open(utf8, "rb").read
-      else
-        nil
-      end   
-    elsif uri.scheme == "http"
-      Net::HTTP.get(uri)
-    elsif uri.scheme == "https"
-      http_socket = Net::HTTP.new(uri.host, uri.port)
-      http_socket.use_ssl = true
-      http_socket.get(uri.path + "?" + uri.query).body
-    else
-      raise "unknown scheme #{uri.scheme}"
-    end
-  rescue => e
-    puts e
-  end
-
-  def self.get_follow_redirect(uri_str, limit = 10)
-    # You should choose better exception.
-    raise ArgumentError, 'HTTP redirect too deep' if limit == 0
-
-    response = Net::HTTP.get_response(URI.parse(uri_str))
-    case response
-      when Net::HTTPSuccess then response.body
-      when Net::HTTPRedirection then get_follow_redirect(response['location'], limit - 1)
-    else
-      response.error!
-    end
-  end
-
-  def self.base_url
-    "#{config['host']['protocol']}://#{config['host']['host']}" +
-      (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
-  end
-
   ####################### logging ##############################################
 
   def self.logger

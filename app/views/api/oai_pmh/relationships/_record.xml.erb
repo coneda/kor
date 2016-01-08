@@ -1,36 +1,13 @@
-<record>
-  <header>
-    <identifier><%= record.uuid %></identifier>
-    <datestamp><%= timestamp record.updated_at %></datestamp>
-  </header>
-  <metadata>
-    <oaidc:dc
-      xmlns:oaidc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
-      xmlns:dc="http://purl.org/dc/elements/1.1/"
-      xmlns:kor="https://coneda.net/XMLSchema/1.0/"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
-                          http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
-    >
-      <dc:identifier><%= record.uuid %></dc:identifier>
-      <dc:type>Dataset</dc:type>
-      <dc:type>Triple</dc:type>
-
-      <dc:description>
-        <kor:relationship>
-          <kor:id><%= record.uuid %></kor:id>
-          <kor:created-at><%= timestamp record.created_at %></kor:created-at>
-          <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
-          <kor:name><%= record.relation.name %></kor:name>
-          <kor:relation
-            kor:id="<%= record.relation.uuid %>"
-            kor:name="<%= record.relation.name %>"
-            kor:reverse-name="<%= record.relation.reverse_name %>"
-          ></kor:relation>
-          <kor:from><%= record.from.uuid %></kor:from>
-          <kor:to><%= record.to.uuid %></kor:to>
-        </kor:relationship>
-      </dc:description>
-    </oaidc:dc>
-  </metadata>
-</record>
+<kor:relationship>
+  <kor:id><%= record.uuid %></kor:id>
+  <kor:created-at><%= timestamp record.created_at %></kor:created-at>
+  <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
+  <kor:name><%= record.relation.name %></kor:name>
+  <kor:relation
+    kor:id="<%= record.relation.uuid %>"
+    kor:name="<%= record.relation.name %>"
+    kor:reverse-name="<%= record.relation.reverse_name %>"
+  ></kor:relation>
+  <kor:from><%= record.from.uuid %></kor:from>
+  <kor:to><%= record.to.uuid %></kor:to>
+</kor:relationship>

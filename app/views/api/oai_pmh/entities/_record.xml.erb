@@ -1,75 +1,44 @@
-<record>
-  <header>
-    <identifier><%= record.uuid %></identifier>
-    <datestamp><%= timestamp record.updated_at %></datestamp>
-  </header>
-  <metadata>
-    <oaidc:dc
-      xmlns:oaidc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
-      xmlns:dc="http://purl.org/dc/elements/1.1/" 
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:kor="https://coneda.net/XMLSchema/1.0/"
-      xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
-                          http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
-    >
-      <dc:identifier><%= record.uuid %></dc:identifier>
-      <dc:type>Dataset</dc:type>
-      <dc:type>Object</dc:type>
+<kor:entity>
+  <kor:id><%= record.uuid %></kor:id>
+  <kor:collection kor:id="<%= record.collection_id %>"><%= record.collection.name %></kor:collection>
+  <kor:created-at><%= timestamp record.created_at %></kor:created-at>
+  <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
 
-      <% if record.is_medium? %>
-        <dc:type><%= record.medium.content_type %></dc:type>
-        <dc:relation><%= download_medium_url record.medium, :style => 'original' %></dc:relation>
-      <% else %>
-        <dc:title><%= record.name %></dc:title>
-      <% end %>
+  <kor:type kor:id="<%= record.kind.uuid %>"><%= record.kind.name %></kor:type>
 
-      <dc:description>
-        <kor:entity>
-          <kor:id><%= record.uuid %></kor:id>
-          <kor:collection kor:id="<%= record.collection_id %>"><%= record.collection.name %></kor:collection>
-          <kor:created-at><%= timestamp record.created_at %></kor:created-at>
-          <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
+  <% if record.is_medium? %>
+    <kor:image-path kor:style="original" ><%= download_medium_url record.medium, :style => 'original' %></kor:image-path>
+  <% else %>
+    <kor:title><%= record.name %></kor:title>
+    <kor:sub-type><%= record.subtype %></kor:sub-type>
+    <kor:distinction><%= record.distinct_name %></kor:distinction>
+    <% record.synonyms.each do |synonym| %>
+      <kor:synonym><%= synonym %></kor:synonym>
+    <% end %>
+    <kor:no-name-specifier><%= record.no_name_statement %></kor:no-name-specifier>
+  <% end %>
+  
+  <kor:tags><% record.tag_list.each do |tag| %>
+    <kor:tag><%= tag %></kor:tag>
+  <% end %></kor:tags>
 
-          <kor:type kor:id="<%= record.kind.uuid %>"><%= record.kind.name %></kor:type>
+  <kor:fields><% record.field_hashes.each do |field| %>
+    <kor:field kor:name="<%= field['name'] %>"><%= field['value'] %></kor:field>
+  <% end %></kor:fields>
 
-          <% if record.is_medium? %>
-            <kor:image-path kor:style="original" ><%= download_medium_url record.medium, :style => 'original' %></kor:image-path>
-          <% else %>
-            <kor:title><%= record.name %></kor:title>
-            <kor:sub-type><%= record.subtype %></kor:sub-type>
-            <kor:distinction><%= record.distinct_name %></kor:distinction>
-            <% record.synonyms.each do |synonym| %>
-              <kor:synonym><%= synonym %></kor:synonym>
-            <% end %>
-            <kor:no-name-specifier><%= record.no_name_statement %></kor:no-name-specifier>
-          <% end %>
-          
-          <kor:tags><% record.tag_list.each do |tag| %>
-            <kor:tag><%= tag %></kor:tag>
-          <% end %></kor:tags>
+  <kor:properties><% record.properties.each do |property| %>
+    <kor:property
+      kor:name="<%= property['label'] %>"
+    ><%= property['value'] %></kor:property>
+  <% end %></kor:properties>
 
-          <kor:fields><% record.field_hashes.each do |field| %>
-            <kor:field kor:name="<%= field['name'] %>"><%= field['value'] %></kor:field>
-          <% end %></kor:fields>
+  <kor:datings><% record.datings.each do |dating| %>
+    <kor:dating
+      kor:event="<%= dating.label %>"
+      kor:from-day="<%= dating.from_day %>"
+      kor:to-day="<%= dating.to_day %>"
+    ><%= dating.dating_string %></kor:dating>
+  <% end %></kor:datings>
 
-          <kor:properties><% record.properties.each do |property| %>
-            <kor:property
-              kor:name="<%= property['label'] %>"
-            ><%= property['value'] %></kor:property>
-          <% end %></kor:properties>
-
-          <kor:datings><% record.datings.each do |dating| %>
-            <kor:dating
-              kor:event="<%= dating.label %>"
-              kor:from-day="<%= dating.from_day %>"
-              kor:to-day="<%= dating.to_day %>"
-            ><%= dating.dating_string %></kor:dating>
-          <% end %></kor:datings>
-
-          <kor:comment><%= record.comment %></kor:comment>
-        </kor:entity>
-      </dc:description>
-
-    </oaidc:dc>
-  </metadata>
-</record>
+  <kor:comment><%= record.comment %></kor:comment>
+</kor:entity>
