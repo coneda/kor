@@ -21,6 +21,7 @@ function install_test_requirements {
 
 function install_dev_requirements {
   install_requirements
+  install_test_requirements
   apt-get install -y \
     libmysqlclient-dev imagemagick libav-tools zip openjdk-7-jre
 }
@@ -102,7 +103,7 @@ function install_rbenv {
   rbenv shell $RUBY_VERSION
   gem install bundler
 
-  chgrp -R vagrant /opt/rbenv/shims
+  chown -R vagrant. /opt/rbenv
   chmod -R g+w /opt/rbenv/shims
 }
 

@@ -12,6 +12,7 @@ commit history on GitHub.
 * dropped debian package generation
 * added cli-command to cleanup old sessions
 * added a development environment via `vagrant up`
+* sped up the test suites by about 20%
 
 ## Version 1.9.2
 

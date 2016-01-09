@@ -41,6 +41,7 @@ see file COPYING
 * Many configurable aspects (welcome page, terms of use, help, primary
   relations, brand, …)
 * Vagrant dev environment
+* good unit and integration test coverage
 
 
 ## Documentation
@@ -109,9 +110,9 @@ command issued by the script.
 #### Generating a virtual appliance
 
 Versions after and including 1.9.2 can be packaged into a virtualbox appliance
-automatically. The version is specified as an environment variable:
+automatically. The version is specified as a shell parameter:
 
-    VERSION=1.9.2 ./deploy/build.sh
+    ./deploy/build.sh 1.9.2
 
 The ova file and a checksum are generated within `deploy/build/`.
 
@@ -136,13 +137,30 @@ description of all the tasks and options.
 The easiest way to get started hacking on kor, is to use the included vagrant
 test environment. For now, you can create it with
 
-    vagrant up dev
+    vagrant up
 
 SSH into the resulting virtual machine and start the development server:
 
-    vargant ssh dev
+    vargant ssh
     ...
     bundle exec rails s
 
 This uses the code from the current working directory on your dev machine. Go to
 http://localhost:3000 with your browser to see the development page.
+
+#### Running the tests suites
+
+There are two test suites, rspec unit tests and cucumber integration tests.
+Change to the /vagrant directory within the dev VM first and then run
+the unit tests:
+
+    bundle exec rspec spec/
+
+or the integration tests:
+
+    bundle exec cucumber features/
+
+Be aware that this will spawn a real browser to conduct the tests, If you prefer
+headless testing, you may use phantomjs by setting an environment variable:
+
+    HEADLESS=true bundle exec cucumber features/

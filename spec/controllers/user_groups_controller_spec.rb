@@ -11,9 +11,9 @@ RSpec.describe UserGroupsController, :type => :controller do
   end
   
   it "should show GET '/user_groups/1'" do
-    FactoryGirl.create :user_group
+    user_group = FactoryGirl.create :user_group
     
-    get :show, :id => 1
+    get :show, :id => user_group.id
     expect(response).to be_success
   end
   
