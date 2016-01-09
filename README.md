@@ -40,6 +40,7 @@ see file COPYING
 * External authentication (for example LDAP) by simple shell scripts
 * Many configurable aspects (welcome page, terms of use, help, primary
   relations, brand, …)
+* Vagrant dev environment
 
 
 ## Documentation
@@ -105,6 +106,14 @@ would deploy to instance02 according to the configuration above. On terminals
 that support it, the output is colorized according to the exit code of every
 command issued by the script.
 
+#### Generating a virtual appliance
+
+Versions after and including 1.9.2 can be packaged into a virtualbox appliance
+automatically. The version is specified as an environment variable:
+
+    VERSION=1.9.2 ./deploy/build.sh
+
+The ova file and a checksum are generated within `deploy/build/`.
 
 ### Import and export
 
@@ -121,3 +130,19 @@ this
 
 from within the ConedaKOR installation directory to obtain a detailed
 description of all the tasks and options.
+
+### Development
+
+The easiest way to get started hacking on kor, is to use the included vagrant
+test environment. For now, you can create it with
+
+    vagrant up dev
+
+SSH into the resulting virtual machine and start the development server:
+
+    vargant ssh dev
+    ...
+    bundle exec rails s
+
+This uses the code from the current working directory on your dev machine. Go to
+http://localhost:3000 with your browser to see the development page.

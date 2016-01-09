@@ -7,40 +7,44 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.insert_key = false
 
-  config.vm.define "dev" do |c|
+  pe = {
+    "VERSION" => ENV["VERSION"] || File.read("config/version.txt")
+  }
+
+  config.vm.define "dev", :primary => true do |c|
     c.vm.box = "ubuntu/trusty64"
-    c.vm.provision "shell", path: "deploy/vagrant.sh", args: "system_updates"
-    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_standalone"
-    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_requirements"
-  end
 
-  config.vm.define "kor.base" do |base|
-    base.vm.box = "coneda/debian7"
-    base.vm.box_url = "http://download.coneda.net/coneda_debian7.box"
-
-    base.vm.provision :shell, path: "deploy/vagrant.sh", args: "system_updates"
-    base.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_standalone"
-    base.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_requirements"
-
-    base.vm.provider "virtualbox" do |vbox|
+    c.vm.network :forwarded_port, host: 3000, guest: 3000
+    c.vm.provider "virtualbox" do |vbox|
       vbox.name = "kor.dev"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
+      vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
 
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_dev_requirements"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_elasticsearch"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "configure_dev", privileged: false
   end
 
-  config.vm.define "kor", :primary => true do |kor|
-    kor.vm.box = "coneda/debian7.kor"
-    kor.vm.box_url = "http://download.coneda.net/coneda_debian7.kor.box"
+  config.vm.define "prod", autostart: false do |c|
+    c.vm.box = "ubuntu/trusty64"
 
-    kor.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_deb"
-
-    kor.vm.network :forwarded_port, host: 8080, guest: 80
-
-    kor.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor"
+    c.vm.network :forwarded_port, host: 8080, guest: 80
+    c.vm.provider "virtualbox" do |vbox|
+      vbox.name = "kor.prod"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
+      vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
+
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_prod_requirements"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_elasticsearch"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_prod", privileged: false, env: pe
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "configure_prod", privileged: false
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "clean"
   end
 
 end

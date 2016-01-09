@@ -26,6 +26,7 @@ class Kor::CommandLine
     @parser.on("-v", "--verbose", "run in verbose mode") { @config[:verbose] = true }
     @parser.on("-h", "--help", "print available options and commands") { @config[:help] = true }
     @parser.on("--debug", "the user to act as, default: admin") { @config[:debug] = true }
+    @parser.on("--timestamp", "print a timestamp before doing anything") { @config[:timestamp] = true }
     @parser.separator ""
 
     @parser.order!(@args)
@@ -83,6 +84,10 @@ class Kor::CommandLine
     else
       validate
 
+      if @config[:timestamp]
+        puts Time.now
+      end
+
       if @command == "version"
         version
       end
@@ -125,6 +130,10 @@ class Kor::CommandLine
 
       if @command == "exif-stats"
         exif_stats
+      end
+
+      if @command == "cleanup-sessions"
+        cleanup_sessions
       end
 
       if @command.nil?
@@ -237,6 +246,12 @@ class Kor::CommandLine
   def exif_stats
     require "exifr"
     Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
+  end
+
+  def cleanup_sessions
+    model = Class.new(ActiveRecord::Base)
+    model.table_name = "sessions"
+    model.where("created_at < ?", 5.days.ago).delete_all
   end
 
 end

@@ -5,6 +5,14 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+## Version ???
+
+### User
+
+* dropped debian package generation
+* added cli-command to cleanup old sessions
+* added a development environment via `vagrant up`
+
 ## Version 1.9.2
 
 ### User
