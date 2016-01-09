@@ -21,6 +21,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
 
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "system_updates"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_dev_requirements"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_elasticsearch"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
@@ -38,6 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
 
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "system_updates"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_prod_requirements"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_elasticsearch"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
