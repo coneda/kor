@@ -148,7 +148,7 @@ SSH into the resulting virtual machine and start the development server:
 This uses the code from the current working directory on your dev machine. Go to
 http://localhost:3000 with your browser to see the development page.
 
-#### Running the tests suites
+#### Running the test suites
 
 There are two test suites, rspec unit tests and cucumber integration tests.
 Change to the /vagrant directory within the dev VM first and then run
