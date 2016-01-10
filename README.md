@@ -116,10 +116,6 @@ automatically. The version is specified as a shell parameter:
 
 The ova file and a checksum are generated within `deploy/build/`.
 
-### Import and export
-
-Please refer to the command line tool.
-
 ### Command line tool
 
 The kor command provides access to functionality which is not easily provided 
@@ -131,6 +127,19 @@ this
 
 from within the ConedaKOR installation directory to obtain a detailed
 description of all the tasks and options.
+
+#### Excel import and export
+
+Please refer to the command line tool for available command line options. In
+principle, the export produces seceral spreadsheets containing all entities.
+Those sheets may be modified and imported later on.
+
+* identification columns (id and uuid) are not imported: they are only used to
+  identify existing records on imports. Leave empty when adding new data.
+* the deleted column is not imported: enter any non-empty value in order to
+  delete the entity on import.
+* timestamps are not imported: they will be changed if the entity will be
+  changed by the import.
 
 ### Development
 
