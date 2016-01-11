@@ -118,6 +118,7 @@ function configure_dev {
   cp config/database.yml.example config/database.yml
   bundle exec rake db:drop db:setup
   bundle exec rake db:test:load
+  bundle exec bin/kor index-all
 }
 
 function install_prod {
