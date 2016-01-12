@@ -14,6 +14,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "dev", :primary => true do |c|
     c.vm.box = "ubuntu/trusty64"
 
+    if RUBY_PLATFORM.match(/darwin/)
+      config.vm.synced_folder ".", "/vagrant", type: "nfs"
+    end
     c.vm.network :forwarded_port, host: 3000, guest: 3000
     c.vm.provider "virtualbox" do |vbox|
       vbox.name = "kor.dev"
