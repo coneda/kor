@@ -15,7 +15,7 @@ class Relation < ActiveRecord::Base
     model.generate_uuid
   end
   def generate_uuid
-    write_attribute(:uuid, SecureRandom.uuid)
+    self[:uuid] ||= SecureRandom.uuid
   end
 
   default_scope order(:name)
