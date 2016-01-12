@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Relation do
   include DataHelper
@@ -37,4 +37,10 @@ describe Relation do
   it "should only return relation names available for a given 'from-kind'" do
     expect(Relation.available_relation_names(@artwork_kind.id).size).to eql(4)
   end
+
+  it "should allow setting a custom uuid on creation" do
+    relation = FactoryGirl.create :is_located_at, :uuid => "1234"
+    expect(relation.uuid).to eq("1234")
+  end
+
 end

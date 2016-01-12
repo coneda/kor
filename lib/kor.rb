@@ -90,6 +90,11 @@ module Kor
     Rails.configuration.database_configuration[Rails.env]
   end
 
+  def self.base_url
+    "#{config['host']['protocol']}://#{config['host']['host']}" +
+      (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
+  end
+
 
   ####################### logging ##############################################
 

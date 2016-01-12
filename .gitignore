@@ -1,6 +1,7 @@
 # Directories
 
 .bundle
+bin
 log/*
 tmp/*
 data/*

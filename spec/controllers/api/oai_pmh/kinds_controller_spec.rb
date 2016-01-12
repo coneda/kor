@@ -76,6 +76,8 @@ describe Api::OaiPmh::KindsController, :type => :controller do
   end
 
   it "should return XML that validates against the OAI-PMH schema" do
+    pending "nokogiri is handling validation in an unexpected way: https://groups.google.com/forum/#!topic/nokogiri-talk/svRHxSxZiwc"
+
     people = Kind.where(:name => "Person").first
 
     xsd_response = HTTPClient.new.get "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
@@ -84,12 +86,11 @@ describe Api::OaiPmh::KindsController, :type => :controller do
     get :get_record, :format => :xml, :identifier => people.uuid
     doc = Nokogiri::XML(response.body)
 
-    xsd.validate(doc).each do |error|
-      puts "#{error.line} :: #{error.message}"
-      puts error.code
-    end
+    # xsd.validate(doc).each do |error|
+    #   puts "#{error.line} :: #{error.message}"
+    #   puts error.code
+    # end
 
-    binding.pry
     expect(xsd.validate(doc)).to be_empty
   end
 
