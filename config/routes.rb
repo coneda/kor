@@ -24,7 +24,11 @@ Rails.application.routes.draw do
     resources :fields, :except => 'show'
     resources :generators
   end
-  resources :relations
+  resources :relations do
+    collection do
+      get 'names'
+    end
+  end
   resources :entities do
     collection do
       get 'multi_upload'
@@ -169,6 +173,7 @@ Rails.application.routes.draw do
       collection do
         get :multi_upload
         get :isolated
+        get :selector
       end
     end
 

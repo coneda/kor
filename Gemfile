@@ -20,7 +20,6 @@ gem "haml"
 gem "sass"
 gem 'httpclient'
 gem 'acts-as-taggable-on', '~> 3.5'
-gem 'system_timer', :platforms => [:ruby_18]
 
 gem 'kor_index', :path => './plugins/kor_index'
 
@@ -40,7 +39,7 @@ gem 'jbuilder'
 gem 'factory_girl_rails'
 
 group :assets do
-  gem "therubyracer"
+  gem "therubyracer", "0.11.4"
   gem 'uglifier'
 end
 
@@ -51,13 +50,15 @@ group :test do
   gem 'rspec-rails', '~> 3.1'
   gem 'capybara'
   gem 'database_cleaner'
-  gem 'test-unit', :platforms => [:ruby_22]
   gem 'vcr'
   gem 'webmock'
+  gem 'test-unit'
 end
 
 group :development do
   gem 'method_profiler'
+  gem 'debase-ruby_core_source'
+  gem 'perftools.rb'
 end
 
 group :test, :development do

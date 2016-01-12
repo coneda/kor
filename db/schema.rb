@@ -122,10 +122,11 @@ ActiveRecord::Schema.define(version: 20160210173519) do
     t.text     "attachment",        limit: 65535
   end
 
-  add_index "entities", ["collection_id", "kind_id"], name: "collections_kinds", using: :btree
   add_index "entities", ["created_at"], name: "index_entities_on_created_at", using: :btree
   add_index "entities", ["creator_id"], name: "index_entities_on_user_id", using: :btree
   add_index "entities", ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
+  add_index "entities", ["kind_id"], name: "index_entities_on_kind_id", using: :btree
+  add_index "entities", ["medium_id"], name: "mediy", using: :btree
   add_index "entities", ["name"], name: "index_entities_on_name", using: :btree
   add_index "entities", ["uuid"], name: "index_entities_on_uuid", using: :btree
 

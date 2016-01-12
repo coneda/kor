@@ -11,17 +11,3 @@ kor.directive "korRelationshipEditor", [
         # element.hide()
     }
 ]
-
-kor.directive "korRelationSelector", [
-  ->
-    directive = {
-      scope: {
-        source: "korSource"
-        target: "korTarget"
-        relation_name: "=korRelationName"
-      }
-      templateUrl: "/tpl/relations/selector"
-      link: (scope, element) ->
-        console.log scope.source
-    }
-]

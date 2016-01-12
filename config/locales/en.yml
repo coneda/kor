@@ -2,6 +2,7 @@ en:
 
   # General
 
+  with: mit
   general: "general"
   with_solved_issues_from: "with solved tickets from"
   'yes': "yes"
@@ -54,6 +55,8 @@ en:
   provided_by: "provided by"
   report_a_problem: "report a problem"
   usage_count: "usage count"
+  recently_visited: recently visited
+  recently_created: recently created
 
   search_term:
     one: search term

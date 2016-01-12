@@ -87,12 +87,22 @@ class EntitiesController < ApplicationController
     if params[:query] && @entity = viewable_entities.find_by(:uuid => params[:query][:name])
       redirect_to web_path(:anchor => entity_path(@entity))
     else
-      @query = kor_graph.search(:attribute,
-        :criteria => params[:query],
-        :page => params[:page]
-      )
-
-      render :layout => 'small_normal_bare'
+      if params[:terms]
+        elastic = Kor::Elastic.new(current_user)
+        @results = elastic.search(:query => params[:terms])
+        render :json => {
+          "ids" => @results.ids,
+          "total" => @results.total,
+          "records" => @results.records,
+          "raw_records" => @results.raw_records
+        }
+      else
+        @query = kor_graph.search(:attribute,
+          :criteria => params[:query],
+          :page => params[:page]
+        )
+        render :layout => 'small_normal_bare'
+      end
     end
   end
 

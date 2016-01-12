@@ -2,8 +2,15 @@ class RelationsController < ApplicationController
   layout 'normal_small'
 
   def index
-    @relations = Relation.paginate :page => params[:page], :per_page => 30
-    render :layout => 'wide'
+    @relations = Relation.paginate(:page => params[:page], :per_page => 30)
+  end
+
+  def names
+    @names = Relation.available_relation_names_for_kinds(params[:from_kind_ids])
+
+    respond_to do |format|
+      format.json {render :json => @names}
+    end
   end
 
   def show

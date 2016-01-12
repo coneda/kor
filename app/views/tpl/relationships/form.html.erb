@@ -1,7 +1,11 @@
-<form>
-  <div
-    kor-relation-selector=""
-    kor-source-entity="source"
-    kor-target-entity="target"
-  ></div>
-</form>
+<strong 
+  ng-bind="'objects.create' | 
+    translate:{interpolations: {o: 'activerecord.models.relationship'}}"
+></strong>
+<div
+  kor-relation-selector=""
+  kor-relation-name="relation_name"
+  kor-source="source"
+></div>
+<strong ng-bind="'with' | translate"></strong>
+<div kor-entity-selector="target"></div>

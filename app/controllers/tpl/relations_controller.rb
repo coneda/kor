@@ -1,4 +1,4 @@
-class RelationsController < TplController
+class Tpl::RelationsController < TplController
 
   def selector
 

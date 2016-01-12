@@ -235,6 +235,10 @@ class Kor::Elastic
           ]
         }
       }
+
+      highlight_component = {
+        "fields" => {"name" => {}}
+      }
     else
       size = 10
     end
@@ -295,11 +299,15 @@ class Kor::Elastic
       data["query"]["filtered"]["query"] = query_component
     end
 
+    if highlight_component
+      data["highlight"] = highlight_component
+    end
+
     # puts JSON.pretty_generate(data)
 
     response = self.class.request "post", "/entities/_search", nil, data
 
-    # puts response.last['hits']['total']
+    puts JSON.pretty_generate(response)
     # binding.pry
 
     if response.first == 200
@@ -309,6 +317,7 @@ class Kor::Elastic
         :total => response.last['hits']['total'],
         :uuids => response.last['hits']['hits'].map{|hit| hit['_id']},
         :ids => response.last['hits']['hits'].map{|hit| hit['_source']['id']},
+        :raw_records => response.last['hits']['hits'],
         :page => page
       )
     else

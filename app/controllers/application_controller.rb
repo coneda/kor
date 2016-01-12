@@ -16,6 +16,8 @@ class ApplicationController < ActionController::Base
   before_filter do
     @blaze = nil
   end
+
+  around_filter :profile
   
 
   private
@@ -229,6 +231,19 @@ class ApplicationController < ActionController::Base
         :properties => [:label, :value],
         :medium_attributes => [:image, :document]
       )
+    end
+
+    def profile
+      if ENV["PROFILER"]
+        require 'perftools'
+        path = request.path.gsub("/", "_")
+        path = "#{Rails.root}/tmp/profiles/#{path}"
+        PerfTools::CpuProfiler.start(path) do
+          yield
+        end
+      else
+        yield
+      end
     end
 
 end

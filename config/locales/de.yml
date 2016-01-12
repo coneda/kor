@@ -2,6 +2,7 @@ de:
 
   # General
 
+  with: mit
   general: "allgemein"
   with_solved_issues_from: "mit gelösten Tickets aus"
   'yes': "ja"
@@ -55,6 +56,8 @@ de:
   provided_by: "angeboten durch"
   report_a_problem: "einen Fehler melden"
   usage_count: "Anzahl der Verwendungen"
+  recently_visited: zuletzt angesehen
+  recently_created: zuletzt angelegt
 
   search_term: 
     one: Suchbegriff
