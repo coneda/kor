@@ -16,6 +16,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     if RUBY_PLATFORM.match(/darwin/)
       config.vm.synced_folder ".", "/vagrant", type: "nfs"
+      config.vm.network "private_network", type: "dhcp"
     end
     c.vm.network :forwarded_port, host: 3000, guest: 3000
     c.vm.provider "virtualbox" do |vbox|
