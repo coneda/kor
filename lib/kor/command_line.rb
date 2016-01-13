@@ -221,18 +221,17 @@ class Kor::CommandLine
     Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
   end
 
-<<<<<<< HEAD
   def reset_admin_account
     User.admin.update_attributes(
       :password => "admin",
       :login_attempts => []
     )
-=======
+  end
+
   def cleanup_sessions
     model = Class.new(ActiveRecord::Base)
     model.table_name = "sessions"
     model.where("created_at < ?", 5.days.ago).delete_all
->>>>>>> master
   end
 
 end
