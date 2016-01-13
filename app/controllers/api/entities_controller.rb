@@ -42,7 +42,7 @@ class Api::EntitiesController < Api::ApiController
 
     def allowed_to?(policy = :view, collections = Collection.all, options = {})
       options.reverse_merge!(:required => :any)
-      ::Auth::Authorization.authorized? current_user, policy, collections, options
+      ::Kor::Auth.authorized? current_user, policy, collections, options
     end
   
 end

@@ -1,11 +1,21 @@
 development:
-  adapter: sqlite3
-  database: data/development.sqlite3
-  timeout: 5000
+  adapter: mysql2
+  host: 127.0.0.1
+  database: kor_development
+  username: root
+  password: root
+  encoding: utf8
+  collation: utf8_general_ci
+  reconnect: true
+
+  elastic:
+    host: 127.0.0.1
+    port: 9200
+    index: kor_development
 
 test:
   adapter: mysql2
-  host: mysql
+  host: 127.0.0.1
   database: kor_test
   username: root
   password: root
@@ -13,19 +23,14 @@ test:
   collation: utf8_general_ci
   reconnect: true
 
-  mongo:
-    host: mongo
-    database: kor_test
-    port: 27017
-
   elastic:
-    host: elastic
+    host: 127.0.0.1
     port: 9200
     index: kor_test
 
 production:
   adapter: mysql2
-  host: localhost
+  host: 127.0.0.1
   database: kor
   username: kor
   password: kor
@@ -33,7 +38,7 @@ production:
   collation: utf8_general_ci
   reconnect: true
 
-  mongo:
+  elastic:
     host: 127.0.0.1
-    database: kor
-    port: 27017
+    port: 9200
+    index: kor

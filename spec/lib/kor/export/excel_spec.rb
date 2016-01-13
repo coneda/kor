@@ -44,4 +44,17 @@ describe Kor::Export::Excel do
     expect(sheet.rows.count).to eq(2)
   end
 
+  it "should export only utc" do
+    created_at = Time.now
+    mona_lisa = FactoryGirl.create :mona_lisa
+
+    Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec").run
+
+    book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
+    sheet = book.worksheet 0
+
+    expect(sheet.rows[1][10]).to be_utc
+    expect(sheet.rows[1][10].to_f).to be_within(1.5).of(created_at.to_f)
+  end
+
 end

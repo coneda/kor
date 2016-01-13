@@ -18,7 +18,6 @@ Feature: Own entities
   Scenario: Create user with personal collection and check permissions
     Then user "harald" should have the following access rights
       | collection | credential | policy             |
-      | harald     | harald     | admin_rating       |
       | harald     | harald     | create             |
       | harald     | harald     | delete             |
       | harald     | harald     | download_originals |
@@ -39,7 +38,6 @@ Feature: Own entities
     And I press "Speichern"
     Then user "harald" should have the following access rights
       | collection | credential | policy             |
-      | harald     | harald     | admin_rating       |
       | harald     | harald     | create             |
       | harald     | harald     | delete             |
       | harald     | harald     | download_originals |
@@ -100,7 +98,6 @@ Feature: Own entities
     And I press "Speichern"
     Then user "gerhard" should have the following access rights
       | collection | credential | policy             |
-      | gerhard    | gerhard    | admin_rating       |
       | gerhard    | gerhard    | create             |
       | gerhard    | gerhard    | download_originals |
       | gerhard    | gerhard    | edit               |
@@ -109,7 +106,6 @@ Feature: Own entities
       | gerhard     | gerhard     | view_meta        |
     Then user "harald" should have the following access rights
       | collection | credential | policy             |
-      | harald     | harald     | admin_rating       |
       | harald     | harald     | create             |
       | harald     | harald     | download_originals |
       | harald     | harald     | edit               |
@@ -119,7 +115,6 @@ Feature: Own entities
 
     Then user "admin" should have the following access rights
       | collection | credential     | policy             |
-      | Default    | Administrators | admin_rating       |        
       | Default    | Administrators | create             |
       | Default    | Administrators | delete             |
       | Default    | Administrators | download_originals |
@@ -148,7 +143,6 @@ Feature: Own entities
   
     Then user "gerhard" should have the following access rights
       | collection | credential | policy             |
-      | gerhard    | gerhard    | admin_rating       |
       | gerhard    | gerhard    | create             |
       | gerhard    | gerhard    | download_originals |
       | gerhard    | gerhard    | edit               |
@@ -157,7 +151,6 @@ Feature: Own entities
       | gerhard    | gerhard    | view_meta          |
     Then user "harald" should have the following access rights
       | collection | credential | policy             |
-      | harald     | harald     | admin_rating       |
       | harald     | harald     | create             |
       | harald     | harald     | download_originals |
       | harald     | harald     | edit               |
@@ -167,7 +160,6 @@ Feature: Own entities
 
     Then user "admin" should have the following access rights
       | collection | credential     | policy             |
-      | Default    | Administrators | admin_rating       |
       | Default    | Administrators | create             |
       | Default    | Administrators | delete             |
       | Default    | Administrators | download_originals |
@@ -187,5 +179,4 @@ Feature: Own entities
     And I fill in "user[email]" with "harald@miami.com"
     And I press "Speichern"
     Then I should see "ja" within the row for "user" "harald"
-    
     

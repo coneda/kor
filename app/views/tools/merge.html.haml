@@ -1,6 +1,6 @@
 - content_for :normal_title, I18n.t('verbs.merge').capitalize_first_letter
 - content_for :normal_content do
-  = form_for @entity, :url => { :controller => 'tools', :action => 'clipboard_action', :clipboard_action => 'merge' }, :html => {:class => 'kor_form'}, :builder => Stdlib::KorFormBuilder do |f|
+  = form_for @entity, :url => { :controller => 'tools', :action => 'clipboard_action', :clipboard_action => 'merge' }, :html => {:class => 'kor_form'}, :builder => Kor::FormBuilder do |f|
 
     - @entities.each do |e|
       = hidden_field_tag "entity_ids[]", e.id
@@ -14,7 +14,7 @@
       = f.kor_input :distinct_name, :control => f.select( :distinct_name, @entities.map{|e| e.distinct_name}.uniq )
       = f.kor_input :synonyms, :control => f.text_area(:synonyms, :value => @entities.map{|e| e.synonyms}.sum.sort.uniq.join("\n"))
       - if @entity.kind_id && @entity.kind.defines_schema?
-        = fields_for "entity[dataset]", :builder => Stdlib::KorFormBuilder do |d|
+        = fields_for "entity[dataset]", :builder => Kor::FormBuilder do |d|
           - @entity.kind.field_instances(@entity).each do |field|
             - begin
               = render :partial => field.class.merge_partial_name, :locals => {:field => field, :entities => @entities}

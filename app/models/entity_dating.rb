@@ -65,7 +65,7 @@ class EntityDating < ActiveRecord::Base
   def self.parse(value)
     begin
       if value
-        Dating::ParseTransform.new.apply Dating::Parser.new.parse(value)
+        Kor::Dating::Transform.new.apply Kor::Dating::Parser.new.parse(value)
       end
     rescue Parslet::ParseFailed => e
       nil

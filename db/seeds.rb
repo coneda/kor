@@ -30,3 +30,5 @@ Kind.create(:name => Medium.model_name.human, :plural_name => Medium.model_name.
     :naming => false
   }
 )
+
+SystemGroup.create(:name => 'invalid')

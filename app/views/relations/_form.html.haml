@@ -1,7 +1,7 @@
 - content_for :form_errors do
   = error_box :object => @relation
 
-= form_for @relation, :html => { :class => 'kor_form' }, :builder => Stdlib::KorFormBuilder do |f|
+= form_for @relation, :html => { :class => 'kor_form' }, :builder => Kor::FormBuilder do |f|
   = f.hidden_field :lock_version
 
   = f.kor_input :from_kind_ids, :control => f.select(:from_kind_ids, Kind.for_select, {}, :multiple => true)

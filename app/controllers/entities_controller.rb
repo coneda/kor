@@ -24,7 +24,7 @@ class EntitiesController < ApplicationController
     @entity = viewable_entities.find(params[:id])
     
     if @entity
-      send_data Export::MetaDataProfile.new('simple').render(@entity),
+      send_data Kor::Export::MetaData.new('simple').render(@entity),
         :type => 'text/plain', :filename => "#{@entity.id}.txt"
     else
       flash[:error] = I18n.t('errors.not_found')

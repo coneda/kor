@@ -97,7 +97,7 @@ en:
     enlarge: "enlarge"
     upload: "upload"
     save: "save"
-    shared: "share"
+    share: "share"
     browse: "browse"
     show: "show"
     reset: "reset"
@@ -965,6 +965,7 @@ en:
         needs_file: "Without a relevant file the entity cannot be created as a medium"
         invalid_words: "cannot contain words longer than 30 characters"
         user_doesnt_exist: "the user doesn't exist"
+        whitespace_beginning: "can't start with a space"
         whitespace_end: "can't end with a space"
         whitespace_consecutive: "can't contain consecutive spaces"
 
@@ -1040,27 +1041,3 @@ en:
           rotate_cw: rotate clockwise
           rotate_ccw: rotate counter-clockwise
           rotate_180: rotate 180°
-
-
-  # help
-
-  help:
-    component_search:
-      component_search: |
-        The one-box search shows matching tags and the number of hits as you type. By selecting the suggested term or tag you start the search.
-        
-        You can restrict the search by typing in other terms. To expand or modify the search, every selected term can be deleted by clicking the x. 
-        Start a new search by selecting  
-        „remove“.
-        
-        Narrow down the results according to the entity type in the menu "entity type".
-        
-    entities:
-      index: |
-        The expert search lets you send targeted queries about the fields of entities. Selecting "additional criteria" allows you to include relations and linked entities in your search. 
-        
-        
-    kor_multi_file_upload:
-      form: |
-        Through "add files" you can select multiple files. The selected files will be added to a list, where previously selected files can be deleted. Tp upload the files click "upload".
-        For your own group you can choose any name. You find your uploaded files in this group.

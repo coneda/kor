@@ -7,16 +7,16 @@
 # This is a deploy script for generic apps. Modify the deploy function to suit
 # your needs.
 
-# Settings
+# Load user settings
 
-. ./deploy.config.sh $1
+. ./deploy.config.sh && $1
 
 # Deploy
 
 function deploy {
   setup
 
-  within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop"
+  within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop || true"
 
   deploy_code
   cleanup
@@ -36,6 +36,11 @@ function deploy {
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake db:migrate"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake assets:precompile"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job start"
+
+  remote "mkdir -p $CURRENT_PATH/public/media/images"
+  remote "ln -sfn $SHARED_PATH/data/media/preview $CURRENT_PATH/public/media/images/preview"
+  remote "ln -sfn $SHARED_PATH/data/media/thumbnail $CURRENT_PATH/public/media/images/thumbnail"
+  remote "ln -sfn $SHARED_PATH/data/media/icon $CURRENT_PATH/public/media/images/icon"
 
   remote "touch $CURRENT_PATH/tmp/restart.txt"
 

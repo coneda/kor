@@ -43,7 +43,7 @@ class Paperclip::Video < Paperclip::Processor
   end
   
   def probe(file = nil)
-    @probe = Media::VideoProber.new(original_path)
+    @probe =Kor::Media::VideoProber.new(original_path)
   end
   
   def target

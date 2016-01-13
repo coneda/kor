@@ -341,7 +341,7 @@ class ToolsController < ApplicationController
       allowed_to_delete_requested_entities = authorized?(:delete, collections, :required => :all)
     
       if allowed_to_create and allowed_to_delete_requested_entities
-        @entity = Mass::EntityMerger.new.run(
+        @entity = Kor::EntityMerger.new.run(
           :old_ids => params[:entity_ids], 
           :attributes => params[:entity].merge(:creator_id => current_user.id)
         )

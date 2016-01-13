@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+ENV.each do |k, v|
+  if k.match(/^KOR_/)
+    puts STDERR.puts "#{k}=\"#{v}\""
+  end
+end
+
+username = ENV["KOR_USERNAME"]
+password = ENV["KOR_PASSWORD"]
+
+STDERR.puts username.inspect
+STDERR.puts password.inspect
+
+if username == "jdoe" && password == "234567"
+  puts '{
+    "email": "jdoe@coneda.net",
+    "full_name": "John Gustav Doe"
+  }'
+else
+  exit 1
+end

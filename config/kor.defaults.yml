@@ -70,8 +70,11 @@ all:
 test:
   auth:
     sources:
-      example_auth:
-        script: spec/fixtures/auth_script
+      credentials_via_file:
+        script: spec/fixtures/auth_script.file
+        map_to: ldap
+      credentials_via_env:
+        script: spec/fixtures/auth_script.direct
         map_to: ldap
 
   app:

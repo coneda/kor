@@ -239,7 +239,7 @@ class Kor::Elastic
       size = 10
     end
 
-    collection_ids = ::Auth::Authorization.authorized_collections(@user).map(&:id)
+    collection_ids = ::Kor::Auth.authorized_collections(@user).map(&:id)
     if collection_ids.empty?
       return self.class.empty_result
     end
@@ -336,6 +336,10 @@ class Kor::Elastic
 
     def self.request(method, path, query = {}, body = nil, headers = {})
       return :disabled if !enabled?
+
+      if config['token']
+        query['token'] = config['token']
+      end
 
       response = raw_request(method, path, query, body, headers)
       # Rails.logger.info "ELASTIC RESPONSE: #{response.inspect}"

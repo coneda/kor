@@ -22,7 +22,7 @@ class Kor::Import::Excel < Kor::Export::Excel
 
   def run
     if @options[:simulate]
-      puts "SIMULATION"
+      log "SIMULATION"
     end
 
     Dir["#{@source_dir}/*.xls"].each do |file|
@@ -42,7 +42,8 @@ class Kor::Import::Excel < Kor::Export::Excel
 
         if entity
           if row[2].present?
-            puts "file #{file}, row #{i + 2} destroying entity id #{row[0]}"
+            log "file #{file}, row #{i + 2} destroying entity id #{row[0]}"
+            entity.destroy unless @options[:simulate]
           else
             synonyms = json_parse(row[13], [])
             dataset = json_parse(row[16], {})
@@ -143,7 +144,7 @@ class Kor::Import::Excel < Kor::Export::Excel
     if @options[:verbose]
       entity_desc = if entity && !entity.new_record?
         "entity id #{entity.id}"
-      elsif row[1].present?
+      elsif row && row[1].present?
         "unknown entity"
       else
         "new entity"
@@ -154,7 +155,7 @@ class Kor::Import::Excel < Kor::Export::Excel
 
   def allowed_to?(policy = :edit, collection_id = nil)
     collections = Collection.where(:id => collection_id).to_a
-    ::Auth::Authorization.authorized? @user, policy, collections
+    ::Kor::Auth.authorized? @user, policy, collections
   end
 
   def synchronize_datings(entity, dating_attributes)

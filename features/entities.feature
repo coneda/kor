@@ -207,3 +207,20 @@ Feature: Entities
     And I follow "Image" within ".image_projector"
     Then I should be on the last entity's page
 
+
+  @javascript
+  Scenario: It should expand all relationships for a relation in one go
+    Given I am logged in as "admin"
+    And the entity "Mona Lisa" of kind "Work/Works"
+    And the entity "Das letzte Abendmahl" of kind "Work/Works"
+    And the entity "Leonardo" of kind "Person/People"
+    And the medium "spec/fixtures/image_a.jpg"
+    And the relation "has created/was created by"
+    And the relation "shows/is depicted by"
+    And the relationship "Leonardo" "has created" "Mona Lisa"
+    And the relationship "Leonardo" "has created" "Das letzte Abendmahl"
+    And the relationship "Mona Lisa" "is depicted by" the last medium
+    And the relationship "Das letzte Abendmahl" "is depicted by" the last medium
+    When I go to the entity page for "Leonardo"
+    And I click on the upper triangle for relation "has created"
+    Then I should see "2" kor images within the first relation on the page

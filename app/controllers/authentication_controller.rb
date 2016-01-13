@@ -33,7 +33,7 @@ class AuthenticationController < ApplicationController
       flash[:error] = I18n.t('errors.too_many_login_attempts')
       redirect_to :action => 'form'
     else
-      account = Auth::Authentication.login(params[:username], params[:password])
+      account = Kor::Auth.login(params[:username], params[:password])
 
       if account
         account.update_attributes(:login_attempts => [])

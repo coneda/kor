@@ -26,6 +26,7 @@ class Kor::CommandLine
     @parser.on("-v", "--verbose", "run in verbose mode") { @config[:verbose] = true }
     @parser.on("-h", "--help", "print available options and commands") { @config[:help] = true }
     @parser.on("--debug", "the user to act as, default: admin") { @config[:debug] = true }
+    @parser.on("--timestamp", "print a timestamp before doing anything") { @config[:timestamp] = true }
     @parser.separator ""
 
     @parser.order!(@args)
@@ -39,6 +40,8 @@ class Kor::CommandLine
     case @command
       when "export"
         @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") {|v| @config[:format] = v }
+        @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids") {|v| @config[:collection_id] = v.split(",").map{|v| v.to_i} }
+        @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids") {|v| @config[:kind_id] = v.split(",").map{|v| v.to_i} }
         @required += [:format]
       when "import"
         @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") {|v| @config[:format] = v }
@@ -47,8 +50,6 @@ class Kor::CommandLine
         @parser.on("-p", "obey the permission system, default: false") { @config[:obey_permissions] = true }
         @parser.on("-s", "for imports: don't make any changes, default: false, implies verbose") { @config[:simulate] = true }
         @parser.on("-o", "ignore all validations") { @config[:ignore_validations] = true }
-        @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids") {|v| @config[:collection_id] = v.split(",").map{|v| v.to_i} }
-        @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids") {|v| @config[:kind_id] = v.split(",").map{|v| v.to_i} }
         @required += [:format]
       when "group-to-zip"
         @parser.on("--group-id=ID", "select the group to package") {|v| @config[:group_id] = v.to_i }
@@ -82,6 +83,10 @@ class Kor::CommandLine
       usage
     else
       validate
+
+      if @config[:timestamp]
+        puts Time.now
+      end
 
       if @command == "version"
         version
@@ -133,6 +138,10 @@ class Kor::CommandLine
 
       if @command == "connect-random"
         connect_random
+      end
+
+      if @command == "cleanup-sessions"
+        cleanup_sessions
       end
 
       if @command.nil?
@@ -258,6 +267,12 @@ class Kor::CommandLine
   def connect_random
     graph = Kor::NeoGraph.new(User.admin)
     graph.connect_random
+  end
+
+  def cleanup_sessions
+    model = Class.new(ActiveRecord::Base)
+    model.table_name = "sessions"
+    model.where("created_at < ?", 5.days.ago).delete_all
   end
 
 end

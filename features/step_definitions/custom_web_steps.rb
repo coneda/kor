@@ -203,3 +203,13 @@ end
 Then(/^I should not see link "(.*?)"$/) do |text|
   expect(page).not_to have_link(text)
 end
+
+When(/^I click on the upper triangle for relation "(.*?)"$/) do |relation_name|
+  title = page.find(".relation .subtitle", :text => relation_name)
+  relation = title.find(:xpath, "..")
+  relation.find(".relation_switch a").click
+end
+
+Then(/^I should see "(\d+)" kor images$/) do |amount|
+  expect(page).to have_selector("img.kor_medium", :count => 2)
+end

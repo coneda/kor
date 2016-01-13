@@ -66,7 +66,7 @@ class Entity < ActiveRecord::Base
       end
       
       def authorized(user, policies)
-        collection_ids = Auth::Authorization.authorized_collections(user, policies).map{|c| c.id}
+        collection_ids = Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
         
         self.select do |rs|
           collection_ids.include? rs.other_entity(proxy_association.owner).collection_id
@@ -94,7 +94,7 @@ class Entity < ActiveRecord::Base
     relationships = Relationship.includes(:from, :relation, :to).order("tos_relationships.name, entities.name")
     relationships = relationships.where(
       "#{media_conditions} #{relation_conditions} AND #{collection_conditions}",
-      Auth::Authorization.authorized_collections(user, policies).map{|c| c.id}
+      Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
     )
     
     relationships.group_by{|r| r.relation_name_for_entity(self)}
@@ -296,7 +296,7 @@ class Entity < ActiveRecord::Base
   end
   
   scope :allowed, lambda { |user, policy|
-    collections = Auth::Authorization.authorized_collections(user, policy)
+    collections = Kor::Auth.authorized_collections(user, policy)
     where("entities.collection_id IN (?)", collections.map{|c| c.id})
   }
   
@@ -555,7 +555,7 @@ class Entity < ActiveRecord::Base
     if pattern.blank?
       {}
     else
-      pattern_query = pattern.tokenize.map{ |token| "name LIKE ?"}.join(" AND ")
+      pattern_query = pattern.tokenize.map{ |token| "entities.name LIKE ?"}.join(" AND ")
       pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
 
       entity_ids = Kor::Elastic.new(user).search(:synonyms => pattern, :size => Entity.count).ids

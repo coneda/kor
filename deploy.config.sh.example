@@ -1,7 +1,17 @@
 #!/bin/bash
 
-export HOST="kor@example.con"
-export PORT="22"
-export DEPLOY_TO="/var/www/kor"
-export COMMIT="master"
 export KEEP=5
+export PORT="22"
+
+function instance01 {
+  export HOST="app@node01.example.com"
+  export PORT="11122"
+  export DEPLOY_TO="/var/storage/host/kor"
+  export COMMIT="v1.9"
+}
+
+function instance02 {
+  export HOST="deploy@node02.example.com"
+  export DEPLOY_TO="/var/www/rack/kor"
+  export COMMIT="master"
+}
