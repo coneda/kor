@@ -26,6 +26,7 @@ class Kor::CommandLine
     @parser.on("-v", "--verbose", "run in verbose mode") { @config[:verbose] = true }
     @parser.on("-h", "--help", "print available options and commands") { @config[:help] = true }
     @parser.on("--debug", "the user to act as, default: admin") { @config[:debug] = true }
+    @parser.on("--timestamp", "print a timestamp before doing anything") { @config[:timestamp] = true }
     @parser.separator ""
 
     @parser.order!(@args)
@@ -83,6 +84,10 @@ class Kor::CommandLine
     else
       validate
 
+      if @config[:timestamp]
+        puts Time.now
+      end
+
       case @command
         when "version" then version
         when "export"
@@ -102,6 +107,7 @@ class Kor::CommandLine
         when "editor-stats" then editor_stats
         when "exif-stats" then exif_stats
         when "reset-admin-account" then reset_admin_account
+        when "cleanup-sessions" then cleanup_sessions
         else
           puts "command '#{@command}' is not known"
           usage
@@ -215,11 +221,18 @@ class Kor::CommandLine
     Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
   end
 
+<<<<<<< HEAD
   def reset_admin_account
     User.admin.update_attributes(
       :password => "admin",
       :login_attempts => []
     )
+=======
+  def cleanup_sessions
+    model = Class.new(ActiveRecord::Base)
+    model.table_name = "sessions"
+    model.where("created_at < ?", 5.days.ago).delete_all
+>>>>>>> master
   end
 
 end

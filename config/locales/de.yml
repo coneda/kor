@@ -611,10 +611,9 @@ de:
     no_systemgroups: "es sind keine globalen Gruppen vorhanden"
     no_usergroups: "es sind keine Benutzergruppen vorhanden"
     exception_ocurred: |
-      Der Zeitpunkt und der Zustand
-      der Anwendung wurden zum Zweck der späteren Nachvollziehbarkeit aufgezeichnet.
-      Bitte kontaktieren Sie bei Bedarf den Administrator dieser Installation von
-      KOR
+      Der Zeitpunkt und der Zustand der Anwendung wurden zum Zweck der späteren
+      Nachvollziehbarkeit aufgezeichnet. Bitte kontaktieren Sie bei Bedarf den
+      Administrator dieser Installation von KOR
     not_found: "Die angefragte Resource konnte nicht gefunden werden"
     no_exceptions_recorded: "es wurden keine Ausnahmen registriert"
     no_relations_provided: "Für diese Kombination ist keine Relation vorgesehen"

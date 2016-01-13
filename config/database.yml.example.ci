@@ -15,7 +15,7 @@ development:
 
 test:
   adapter: mysql2
-  host: 127.0.0.1
+  host: mysql
   database: kor_test
   username: root
   password: root
@@ -24,13 +24,13 @@ test:
   reconnect: true
 
   elastic:
-    host: 127.0.0.1
+    host: elastic
     port: 9200
     index: kor_test
 
 production:
   adapter: mysql2
-  host: 127.0.0.1
+  host: localhost
   database: kor
   username: kor
   password: kor
@@ -39,6 +39,6 @@ production:
   reconnect: true
 
   elastic:
-    host: 127.0.0.1
+    host: elastic
     port: 9200
     index: kor

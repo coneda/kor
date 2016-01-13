@@ -41,6 +41,8 @@ see file COPYING
 * Many configurable aspects (welcome page, terms of use, help, primary
   relations, brand, …)
 * Access data via an OAI-PMH interface
+* Vagrant dev environment
+* good unit and integration test coverage
 
 
 ## Documentation
@@ -207,10 +209,14 @@ The api will retrieve entities and relationships according to the authenticated
 user's permissions. Kinds and relations are available without authentication.
 Please check out [Authentication](#authentication) for how to use an api key.
 
+#### Generating a virtual appliance
 
-### Import and export
+Versions after and including 1.9.2 can be packaged into a virtualbox appliance
+automatically. The version is specified as a shell parameter:
 
-Please refer to the command line tool.
+    ./deploy/build.sh 1.9.2
+
+The ova file and a checksum are generated within `deploy/build/`.
 
 ### Command line tool
 
@@ -223,3 +229,49 @@ this
 
 from within the ConedaKOR installation directory to obtain a detailed
 description of all the tasks and options.
+
+#### Excel import and export
+
+Please refer to the command line tool for available command line options. In
+principle, the export produces seceral spreadsheets containing all entities.
+Those sheets may be modified and imported later on.
+
+* identification columns (id and uuid) are not imported: they are only used to
+  identify existing records on imports. Leave empty when adding new data.
+* the deleted column is not imported: enter any non-empty value in order to
+  delete the entity on import.
+* timestamps are not imported: they will be changed if the entity will be
+  changed by the import.
+
+### Development
+
+The easiest way to get started hacking on kor, is to use the included vagrant
+test environment. For now, you can create it with
+
+    vagrant up
+
+SSH into the resulting virtual machine and start the development server:
+
+    vargant ssh
+    ...
+    bundle exec rails s
+
+This uses the code from the current working directory on your dev machine. Go to
+http://localhost:3000 with your browser to see the development page.
+
+#### Running the test suites
+
+There are two test suites, rspec unit tests and cucumber integration tests.
+Change to the /vagrant directory within the dev VM first and then run
+the unit tests:
+
+    bundle exec rspec spec/
+
+or the integration tests:
+
+    bundle exec cucumber features/
+
+Be aware that this will spawn a real browser to conduct the tests, If you prefer
+headless testing, you may use phantomjs by setting an environment variable:
+
+    HEADLESS=true bundle exec cucumber features/

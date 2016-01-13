@@ -1,5 +1,0 @@
-56 4 * * * kor /bin/bash -l -c 'cd /opt/kor/current && bundle exec rake kor:index:refresh --silent --backtrace >> /opt/kor/current/log/cron.log'
-
-45 2 * * * kor /bin/bash -l -c 'cd /opt/kor/current && /usr/bin/bundle exec rake kor:downloads:expire --silent --backtrace >> /opt/kor/current/log/cron.log'
-
-50 2 1,6,11,16,21,26 * * kor /bin/bash -l -c 'cd /opt/kor/current && bundle exec rake kor:users:notify_upcoming_expiries --silent --backtrace >> /opt/kor/current'

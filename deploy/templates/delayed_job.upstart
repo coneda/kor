@@ -1,0 +1,22 @@
+# KOR background service
+
+description     "KOR background service"
+author          "Moritz Schepp <moritz.schepp@gmail.com"
+
+start on (net-device-up and filesystem)
+stop on runlevel [016]
+
+respawn
+setuid vagrant
+
+env RAILS_ENV=production
+
+script
+  # . /etc/profile.d/rbenv.sh
+  PATH="/opt/rbenv/shims:/opt/rbenv/bin:$PATH"
+  cd /opt/kor
+  rbenv versions
+  gem list
+
+  bundle exec rake jobs:work
+end script

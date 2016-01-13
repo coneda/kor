@@ -12,6 +12,10 @@ commit history on GitHub.
 * added OAI-PMH api to enable harvesting of entities, kinds, relationships and 
   relations
 * added token authentication
+* dropped debian package generation
+* added cli-command to cleanup old sessions
+* added a development environment via `vagrant up`
+* sped up the test suites by about 20%
 
 ## Version 1.9.2
 
