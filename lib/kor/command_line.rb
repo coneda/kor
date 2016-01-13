@@ -132,8 +132,8 @@ class Kor::CommandLine
         exif_stats
       end
 
-      if @command == "to-neo4j"
-        to_neo4j
+      if @command == "to-neo"
+        to_neo
       end
 
       if @command == "connect-random"
@@ -256,7 +256,7 @@ class Kor::CommandLine
     Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
   end
 
-  def to_neo4j
+  def to_neo
     require "ruby-progressbar"
     graph = Kor::NeoGraph.new(User.admin)
 

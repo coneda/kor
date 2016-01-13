@@ -18,6 +18,11 @@ As of now, the following sub-commands are supported:
   weeks)
 * editor-stats: list users and how many entities they created/updated
 * exif-stats: count how many images have been taken by a camera versus a scanner
+* to-neo: write all entities and relationships to the neo4j instance
+* connect-random: choose 100 pairs of random entities from neo4j and print the
+  shortest path between them
+* cleanup-sessions: delete all sessions in the database that are older than 5
+  days
 
 Please consult
 
