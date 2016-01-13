@@ -115,7 +115,7 @@ automatically. The version is specified as a shell parameter:
     ./deploy/build.sh v1.9.2
 
 The ova file and a checksum are generated within `deploy/build/`. Instead of
-`v.1.9.2` you may choose any tag or branch available in the repository, although
+`v1.9.2` you may choose any tag or branch available in the repository, although
 very old versions could not work because of unsatisfiable dependencies. Make
 sure you have pulled the most recent commits when using branches!
 
