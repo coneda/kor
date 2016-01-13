@@ -68,28 +68,24 @@ describe Api::OaiPmh::KindsController, :type => :controller do
 
     get :get_record, :format => :xml, :identifier => people.uuid
     expect(response).to be_success
+
     doc = Nokogiri::XML(response.body)
-    items = doc.xpath("//xmlns:record")
-    ns = doc.collect_namespaces
+    doc.collect_namespaces.each{|k, v| doc.root.add_namespace k, v}
+    items = doc.xpath("//dc:description").map{|e| Nokogiri::XML(e.text)}
+
     expect(items.count).to eq(1)
-    expect(items.first.xpath("//kor:name", ns).text).to eq("Person")
+    expect(items.first.xpath("//kor:name").text).to eq("Person")
   end
 
   it "should return XML that validates against the OAI-PMH schema" do
-    pending "nokogiri is handling validation in an unexpected way: https://groups.google.com/forum/#!topic/nokogiri-talk/svRHxSxZiwc"
-
     people = Kind.where(:name => "Person").first
 
-    xsd_response = HTTPClient.new.get "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
-    xsd = Nokogiri::XML::Schema(xsd_response.body)
-
+    # yes this suck, check out 
+    # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
+    # for a reason why it has to be done like this
+    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/spec/fixtures/oai_pmh.xsd")
     get :get_record, :format => :xml, :identifier => people.uuid
     doc = Nokogiri::XML(response.body)
-
-    # xsd.validate(doc).each do |error|
-    #   puts "#{error.line} :: #{error.message}"
-    #   puts error.code
-    # end
 
     expect(xsd.validate(doc)).to be_empty
   end

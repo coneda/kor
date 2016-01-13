@@ -111,4 +111,18 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     expect(response.status).to be(403)
   end
 
+  it "should return XML that validates against the OAI-PMH schema" do
+    relationship = Relationship.last
+    admin = User.admin
+
+    # yes this suck, check out 
+    # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
+    # for a reason why it has to be done like this
+    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/spec/fixtures/oai_pmh.xsd")
+    get :get_record, :format => :xml, :identifier => relationship.uuid, :api_key => admin.api_key
+    doc = Nokogiri::XML(response.body)
+
+    expect(xsd.validate(doc)).to be_empty
+  end
+
 end

@@ -18,7 +18,9 @@
       <dc:type>EntityType</dc:type>
 
       <dc:description>
-        <%= render :partial => 'record', :locals => {:record => record} %>
+        <![CDATA[
+          <%= render :partial => 'record', :locals => {:record => record} %>
+        ]]>
       </dc:description>
     </oai_dc:dc>
   </metadata>

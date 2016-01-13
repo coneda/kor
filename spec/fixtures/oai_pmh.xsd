@@ -1,0 +1,20 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<xs:schema
+   xmlns="http://www.openarchives.org/OAI/2.0/"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+
+   version="1.0"
+   elementFormDefault="qualified"
+   attributeFormDefault="unqualified"
+>
+  <xs:import
+    namespace="http://www.openarchives.org/OAI/2.0/"
+    schemaLocation="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd" 
+  />
+  <xs:import 
+    namespace="http://www.openarchives.org/OAI/2.0/oai_dc/"
+    schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
+  />
+</xs:schema>

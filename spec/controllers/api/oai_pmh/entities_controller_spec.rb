@@ -86,17 +86,19 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
   it "should only include data the user is authorized for" do
     get :list_records, :format => :xml
 
-    metadatas = Nokogiri::XML(response.body).xpath("//xmlns:metadata")
-    items = metadatas.map{|m| Nokogiri::XML(m.children.to_s)}
+    doc = Nokogiri::XML(response.body)
+    doc.collect_namespaces.each{|k, v| doc.root.add_namespace k, v}
+    items = doc.xpath("//dc:description").map{|e| Nokogiri::XML(e.text)}
 
-    expect(items.count).to eq(1)
-    expect(items.first.xpath("//dc:description/kor:entity/kor:title").text).to eq("Mona Lisa")
+    expect(items.size).to eq(1)
+    expect(items.first.xpath("//kor:title").text).to eq("Mona Lisa")
 
     admin = User.admin
     get :list_records, :format => :xml, :api_key => admin.api_key
 
-    metadatas = Nokogiri::XML(response.body).xpath("//xmlns:metadata")
-    items = metadatas.map{|m| Nokogiri::XML(m.children.to_s)}
+    doc = Nokogiri::XML(response.body)
+    doc.collect_namespaces.each{|k, v| doc.root.add_namespace k, v}
+    items = doc.xpath("//dc:description").map{|e| Nokogiri::XML(e.text)}
 
     expect(items.count).to eq(2)
   end
@@ -106,6 +108,20 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
 
     get :get_record, :format => :xml, :identifier => leonardo.uuid
     expect(response.status).to be(403)
+  end
+
+  it "should return XML that validates against the OAI-PMH schema" do
+    leonardo = Entity.last
+    admin = User.admin
+
+    # yes this suck, check out 
+    # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
+    # for a reason why it has to be done like this
+    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/spec/fixtures/oai_pmh.xsd")
+    get :get_record, :format => :xml, :identifier => leonardo.uuid, :api_key => admin.api_key
+    doc = Nokogiri::XML(response.body)
+
+    expect(xsd.validate(doc)).to be_empty
   end
 
 end

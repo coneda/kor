@@ -24,7 +24,9 @@
       <% end %>
 
       <dc:description>
-        <%= render :partial => 'record', :locals => {:record => record} %>
+        <![CDATA[
+          <%= render :partial => 'record', :locals => {:record => record} %>
+        ]]>
       </dc:description>
 
     </oai_dc:dc>

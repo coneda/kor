@@ -64,12 +64,27 @@ describe Api::OaiPmh::RelationsController, :type => :controller do
 
     get :get_record, :format => :xml, :identifier => has_created.uuid
     expect(response).to be_success
+
     doc = Nokogiri::XML(response.body)
-    items = doc.xpath("//xmlns:record")
-    ns = doc.collect_namespaces
+    doc.collect_namespaces.each{|k, v| doc.root.add_namespace k, v}
+    items = doc.xpath("//dc:description").map{|e| Nokogiri::XML(e.text)}
+
     expect(items.count).to eq(1)
-    expect(items.first.xpath("//kor:name", ns).text).to eq("has created")
-    expect(items.first.xpath("//kor:reverse-name", ns).text).to eq("has been created by")
+    expect(items.first.xpath("//kor:name").text).to eq("has created")
+    expect(items.first.xpath("//kor:reverse-name").text).to eq("has been created by")
+  end
+
+  it "should return XML that validates against the OAI-PMH schema" do
+    relation = Relation.where(:name => "has created").first
+
+    # yes this suck, check out 
+    # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
+    # for a reason why it has to be done like this
+    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/spec/fixtures/oai_pmh.xsd")
+    get :get_record, :format => :xml, :identifier => relation.uuid
+    doc = Nokogiri::XML(response.body)
+
+    expect(xsd.validate(doc)).to be_empty
   end
 
 end
