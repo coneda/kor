@@ -132,6 +132,10 @@ class Kor::CommandLine
         exif_stats
       end
 
+      if @command == "reset-admin-account"
+        reset_admin_account
+      end
+
       if @command == "to-neo"
         to_neo
       end
@@ -254,6 +258,23 @@ class Kor::CommandLine
   def exif_stats
     require "exifr"
     Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
+  end
+
+  def reset_admin_account
+    User.admin.update_attributes(
+      :password => "admin",
+      :login_attempts => [],
+      :groups => Credential.all,
+      
+      :admin => true,
+      :relation_admin => true,
+      :authority_group_admin => true,
+      :user_admin => true,
+      :credential_admin => true,
+      :collection_admin => true,
+      :kind_admin => true,
+      :developer => false
+    )
   end
 
   def to_neo

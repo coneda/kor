@@ -35,6 +35,7 @@ gem 'oj'
 gem 'jbuilder'
 
 gem 'httpclient'
+gem 'ruby-progressbar'
 
 group :assets do
   gem "therubyracer"
@@ -50,6 +51,8 @@ group :test do
   gem 'database_cleaner'
   gem 'factory_girl_rails'
   gem 'test-unit', :platforms => [:ruby_22]
+  gem 'vcr'
+  gem 'webmock'
 end
 
 group :development do
@@ -69,5 +72,4 @@ end
 group :import_export do
   gem 'mixlib-cli'
   gem 'spreadsheet'
-  gem 'ruby-progressbar'
 end

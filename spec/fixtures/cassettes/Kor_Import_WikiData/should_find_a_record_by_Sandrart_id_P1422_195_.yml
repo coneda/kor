@@ -1,0 +1,44 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://wdq.wmflabs.org/api
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Sun, 13 Dec 2015 15:32:33 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.9.4
+      Date:
+      - Sun, 13 Dec 2015 15:32:33 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cache-Control:
+      - no-cache
+      Pragma:
+      - no-cache
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+    body:
+      encoding: UTF-8
+      string: '{"status":{"error":"OK","items":1,"querytime":"2ms","parsed_query":"STRING[1422:''195'']"},"items":[762]}'
+    http_version: 
+  recorded_at: Sun, 13 Dec 2015 15:32:34 GMT
+recorded_with: VCR 3.0.0

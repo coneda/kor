@@ -1,0 +1,354 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/9b38009c-06b3-4803-8f98-bb171f2bcfcf
+    body:
+      encoding: UTF-8
+      string: '{"id":1,"uuid":"9b38009c-06b3-4803-8f98-bb171f2bcfcf","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":1,"collection_id":1,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Tue, 22 Dec 2015 17:56:24 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"9b38009c-06b3-4803-8f98-bb171f2bcfcf","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Tue, 22 Dec 2015 17:56:24 GMT
+- request:
+    method: get
+    uri: https://wdq.wmflabs.org/api
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Tue, 22 Dec 2015 17:56:24 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.9.4
+      Date:
+      - Tue, 22 Dec 2015 17:56:24 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cache-Control:
+      - no-cache
+      Pragma:
+      - no-cache
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+    body:
+      encoding: UTF-8
+      string: '{"status":{"error":"OK","items":1,"querytime":"51ms","parsed_query":"STRING[227:''4074156-4'']"},"items":[12418]}'
+    http_version: 
+  recorded_at: Tue, 22 Dec 2015 17:56:24 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/dc5bf375-fcb4-447d-9de8-254a9a7cc371
+    body:
+      encoding: UTF-8
+      string: '{"id":1,"uuid":"dc5bf375-fcb4-447d-9de8-254a9a7cc371","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":1,"collection_id":1,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Tue, 22 Dec 2015 17:57:08 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"dc5bf375-fcb4-447d-9de8-254a9a7cc371","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Tue, 22 Dec 2015 17:57:08 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/a09e5949-074e-4f39-b64e-70baf02598fc
+    body:
+      encoding: UTF-8
+      string: '{"id":1,"uuid":"a09e5949-074e-4f39-b64e-70baf02598fc","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":1,"collection_id":1,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Tue, 22 Dec 2015 17:57:52 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"a09e5949-074e-4f39-b64e-70baf02598fc","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Tue, 22 Dec 2015 17:57:52 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/692b1ee0-bd7d-4d01-baaf-977c0db63400
+    body:
+      encoding: UTF-8
+      string: '{"id":1,"uuid":"692b1ee0-bd7d-4d01-baaf-977c0db63400","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":1,"collection_id":1,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Tue, 22 Dec 2015 17:59:06 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"692b1ee0-bd7d-4d01-baaf-977c0db63400","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Tue, 22 Dec 2015 17:59:06 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/e263cc27-0fcf-4f4d-b98b-ba00ddcf231e
+    body:
+      encoding: UTF-8
+      string: '{"id":1,"uuid":"e263cc27-0fcf-4f4d-b98b-ba00ddcf231e","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":1,"collection_id":1,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Tue, 22 Dec 2015 17:59:53 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"e263cc27-0fcf-4f4d-b98b-ba00ddcf231e","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Tue, 22 Dec 2015 17:59:53 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/cdfa9519-a895-469e-9027-c0fbb0258cf8
+    body:
+      encoding: UTF-8
+      string: '{"id":1,"uuid":"cdfa9519-a895-469e-9027-c0fbb0258cf8","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":1,"collection_id":1,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Tue, 22 Dec 2015 18:12:43 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"cdfa9519-a895-469e-9027-c0fbb0258cf8","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Tue, 22 Dec 2015 18:12:43 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/93c596f4-5832-4825-bf34-fa90af1cdab5
+    body:
+      encoding: UTF-8
+      string: '{"id":1,"uuid":"93c596f4-5832-4825-bf34-fa90af1cdab5","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":1,"collection_id":1,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Tue, 22 Dec 2015 18:19:18 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"93c596f4-5832-4825-bf34-fa90af1cdab5","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Tue, 22 Dec 2015 18:19:18 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/8261f80e-dac5-4532-aaec-c39fc0b2e42f
+    body:
+      encoding: UTF-8
+      string: '{"id":1,"uuid":"8261f80e-dac5-4532-aaec-c39fc0b2e42f","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":1,"collection_id":1,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Tue, 22 Dec 2015 18:20:36 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"8261f80e-dac5-4532-aaec-c39fc0b2e42f","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Tue, 22 Dec 2015 18:20:36 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/48ba2492-e3d4-4805-a291-d13cee6f5a50
+    body:
+      encoding: UTF-8
+      string: '{"id":43,"uuid":"48ba2492-e3d4-4805-a291-d13cee6f5a50","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":127,"collection_id":22,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 13 Jan 2016 00:34:57 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"48ba2492-e3d4-4805-a291-d13cee6f5a50","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Wed, 13 Jan 2016 00:34:57 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/523ee159-f2c7-49d0-8d79-43e306ac51dd
+    body:
+      encoding: UTF-8
+      string: '{"id":239,"uuid":"523ee159-f2c7-49d0-8d79-43e306ac51dd","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":563,"collection_id":180,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 13 Jan 2016 13:52:56 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"523ee159-f2c7-49d0-8d79-43e306ac51dd","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Wed, 13 Jan 2016 13:52:56 GMT
+recorded_with: VCR 3.0.1

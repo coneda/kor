@@ -55,6 +55,8 @@ de:
   provided_by: "angeboten durch"
   report_a_problem: "einen Fehler melden"
   usage_count: "Anzahl der Verwendungen"
+  identified: mit Identifier versehen
+  wikidata_identified: mit wikidata Identifier versehen
 
   search_term: 
     one: Suchbegriff
@@ -767,6 +769,8 @@ de:
         form_label: Anzeige im Bearbeitenformular
         search_label: Anzeige im Suchformular
         show_on_entity: Bei Entität anzeigen
+        is_identifier: ist ein Identifier
+        wikidata_id: Wikidata ID
       generator:
         name: Name
         show_label: Attributname bei Entität
@@ -871,6 +875,7 @@ de:
         properties: weitere Eigenschaften
         synonyms: Synonyme
         degree: Grad
+        wikidata_id: Wikidata ID
       entity_dating:
         label: Art der Datierung
         dating_string: Datierung
@@ -882,16 +887,19 @@ de:
         description: Beschreibung
         dataset_class: Felderweiterungen
         dataset_profile: Profil für Erweiterungen
+        wikidata_id: Wikidata ID
       relation:
         name: Name
         reverse_name: Umkehrung
         description: Beschreibung
         from_kind_ids: erlaubte Typen auf dieser Seite
         to_kind_ids: erlaubte Typen auf dieser Seite
+        wikidata_id: Wikidata ID
       relationship:
         property:
           one: weitere Eigenschaft
           other: weitere Eigenschaften
+        wikidata_id: Wikidata ID
       property:
         search: weitere Eigenschaft
         label: zusätzlicher Feldname

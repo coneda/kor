@@ -69,9 +69,11 @@ module Kor::Auth
   end
 
   def self.groups(user)
-    user ||= User.guest
-
-    user.parent.present? ? user.groups + user.parent.groups : user.groups
+    if user ||= User.guest
+      user.parent.present? ? user.groups + user.parent.groups : user.groups
+    else
+      []
+    end
   end
 
   def self.authorized_collections(user, policies = :view)
