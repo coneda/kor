@@ -289,4 +289,66 @@ http_interactions:
       string: '{"_index":"kor_test","_type":"entities","_id":"8261f80e-dac5-4532-aaec-c39fc0b2e42f","_version":1,"created":true}'
     http_version: 
   recorded_at: Tue, 22 Dec 2015 18:20:36 GMT
-recorded_with: VCR 3.0.0
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/48ba2492-e3d4-4805-a291-d13cee6f5a50
+    body:
+      encoding: UTF-8
+      string: '{"id":43,"uuid":"48ba2492-e3d4-4805-a291-d13cee6f5a50","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":127,"collection_id":22,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 13 Jan 2016 00:34:57 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"48ba2492-e3d4-4805-a291-d13cee6f5a50","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Wed, 13 Jan 2016 00:34:57 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:9200/kor_test/entities/523ee159-f2c7-49d0-8d79-43e306ac51dd
+    body:
+      encoding: UTF-8
+      string: '{"id":239,"uuid":"523ee159-f2c7-49d0-8d79-43e306ac51dd","name":"Mona
+        Lisa","distinct_name":null,"subtype":null,"tags":[],"synonyms":[],"kind_id":563,"collection_id":180,"comment":null,"properties":[],"dataset":{"gnd_id":"4074156-4"},"sort":"Mona
+        Lisa","related":[]}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.6.0.1, ruby 2.2.3 (2015-08-18))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 13 Jan 2016 13:52:56 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '113'
+    body:
+      encoding: UTF-8
+      string: '{"_index":"kor_test","_type":"entities","_id":"523ee159-f2c7-49d0-8d79-43e306ac51dd","_version":1,"created":true}'
+    http_version: 
+  recorded_at: Wed, 13 Jan 2016 13:52:56 GMT
+recorded_with: VCR 3.0.1
