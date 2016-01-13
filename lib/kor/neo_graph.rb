@@ -86,10 +86,10 @@ class Kor::NeoGraph
               "collection_id" => item.collection_id,
               "name" => item.display_name,
               "distinct_name" => item.distinct_name || "",
-              "kind_id" => item.kind_id,
               "subtype" => item.subtype || "",
-              "synonyms" => item.synonyms,
               "medium_id" => item.medium_id || 0,
+              "kind_id" => item.kind_id,
+              "synonyms" => item.synonyms,
               "created_at" => item.created_at.to_f,
               "updated_at" => item.updated_at.to_f
             }
