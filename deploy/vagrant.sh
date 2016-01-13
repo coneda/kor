@@ -53,7 +53,6 @@ function install_mysql {
 }
 
 function appliance {
-  source /vagrant/tmp/vagrant-env.sh || true
   export OVA_FILENAME="deploy/build/coneda-kor.$VERSION.ova"
 
   vagrant halt prod
