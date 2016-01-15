@@ -86,3 +86,16 @@ Feature: Clipboard
     Then I should see "alle ausgewählten Entities"
     And I press "Senden"
     Then I should not be on the 404 page
+
+  @javascript
+  Scenario: Select entities by kind
+    Given I am logged in as "admin"
+    And the kind "Person/People"
+    And the entity "Mona Lisa" of kind "Work/Works"
+    And I put "Mona Lisa" into the clipboard
+    And I go to the clipboard
+    And I select "Person" from "clipboard_entity_selector"
+    Then the checkbox should not be checked within the row for "entity" "Mona Lisa"
+    And I select "Work" from "clipboard_entity_selector"
+    Then the checkbox should be checked within the row for "entity" "Mona Lisa"
+
