@@ -69,3 +69,33 @@ Feature: Clipboard
     Then I should see "alle ausgewählten Entities"
     And I press "Senden"
     Then "Leonardo" should have "created" "Mona Lisa"
+
+  @javascript
+  Scenario: Select no entities while mass relating
+    Given I am logged in as "admin"
+    And the entity "Leonardo" of kind "Person/People" 
+    And the entity "Mona Lisa" of kind "Work/Works"
+    And the relation "was created by/created" between "Work/Works" and "Person/People"
+    When I mark "Leonardo" as current entity
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
+    And I put "Mona Lisa" into the clipboard
+    And I go to the clipboard
+    When I uncheck the checkbox within the row for "entity" "Mona Lisa"
+    When I select "verknüpfen" from "clipboard_action"
+    Then I should see "alle ausgewählten Entities"
+    And I press "Senden"
+    Then I should not be on the 404 page
+
+  @javascript
+  Scenario: Select entities by kind
+    Given I am logged in as "admin"
+    And the kind "Person/People"
+    And the entity "Mona Lisa" of kind "Work/Works"
+    And I put "Mona Lisa" into the clipboard
+    And I go to the clipboard
+    And I select "Person" from "clipboard_entity_selector"
+    Then the checkbox should not be checked within the row for "entity" "Mona Lisa"
+    And I select "Work" from "clipboard_entity_selector"
+    Then the checkbox should be checked within the row for "entity" "Mona Lisa"
+

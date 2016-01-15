@@ -214,9 +214,12 @@ Please check out [Authentication](#authentication) for how to use an api key.
 Versions after and including 1.9.2 can be packaged into a virtualbox appliance
 automatically. The version is specified as a shell parameter:
 
-    ./deploy/build.sh 1.9.2
+    ./deploy/build.sh v1.9.2
 
-The ova file and a checksum are generated within `deploy/build/`.
+The ova file and a checksum are generated within `deploy/build/`. Instead of
+`v1.9.2` you may choose any tag or branch available in the repository, although
+very old versions could not work because of unsatisfiable dependencies. Make
+sure you have pulled the most recent commits when using branches!
 
 ### Command line tool
 

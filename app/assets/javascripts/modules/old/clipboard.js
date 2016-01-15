@@ -44,15 +44,15 @@ Clipboard.setup = function() {
 
 Clipboard.select_clipboard_content_by_kind = function(kind) {
   checkboxes = $('#clipboard_form input[type=checkbox]');
-  checkboxes.attr('checked', false);
+  checkboxes.prop('checked', false);
   
   if (kind == -1) {
-      checkboxes.attr('checked', true);
+      checkboxes.prop('checked', true);
   } else {
     checkboxes.each(function(i, e) {
       kind_field = $(e).parent().find("input[name='kind[]']");
       if (kind_field.val() == kind) {
-        $(e).attr('checked', true);
+        $(e).prop('checked', true);
       }
     });
   }

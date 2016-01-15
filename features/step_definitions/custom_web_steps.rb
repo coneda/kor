@@ -218,3 +218,15 @@ Then(/^I should see "(.*?)"'s API Key$/) do |username|
   user = User.where(:name => username).first
   expect(page).to have_content(user.api_key)
 end
+
+When(/^I uncheck the checkbox$/) do
+  find("input[type=checkbox]").set false
+end
+
+Then(/^the checkbox should (not )?be checked$/) do |yesno|
+  if yesno == "not "
+    expect(find("input[type=checkbox]").checked?).to be(false)
+  else
+    expect(find("input[type=checkbox]").checked?).to be(true)
+  end
+end

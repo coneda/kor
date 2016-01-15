@@ -311,7 +311,7 @@ class ToolsController < ApplicationController
         flash[:error] = I18n.t("errors.destination_not_given")
         redirect_to back_save
       else
-        @entities = Entity.allowed(current_user, :edit).find(params[:entity_ids])
+        @entities = Entity.allowed(current_user, :edit).find(params[:entity_ids] || [])
         @target = Entity.allowed(current_user, :view).find(session[:current_entity])
 
         relationships = @entities.collect do |e|
