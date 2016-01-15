@@ -74,6 +74,7 @@ module NavigationHelpers
     when /the multi upload page/ then web_path(:anchor => '/entities/multi_upload')
     when /the exception logs page/ then exception_logs_path
     when /welcome page/ then "/"
+    when /404/ then "/404.html"
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

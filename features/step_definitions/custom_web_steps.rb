@@ -213,3 +213,7 @@ end
 Then(/^I should see "(\d+)" kor images$/) do |amount|
   expect(page).to have_selector("img.kor_medium", :count => 2)
 end
+
+When(/^I uncheck the checkbox$/) do
+  find("input[type=checkbox]").set false
+end
