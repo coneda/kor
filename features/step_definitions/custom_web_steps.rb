@@ -216,7 +216,7 @@ end
 
 Then(/^I should see "(.*?)"'s API Key$/) do |username|
   user = User.where(:name => username).first
-  expect(page).to have_content(user.api_key)
+  expect(find_field("user[api_key]").value).to eq(user.api_key)
 end
 
 When(/^I uncheck the checkbox$/) do
