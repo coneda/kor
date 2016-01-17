@@ -895,6 +895,9 @@ en:
         to_kind_ids: permitted types on this page
         wikidata_id: Wikidata ID
       relationship:
+        from_id: source
+        to_id: target
+        relation_id: relation
         property:
           one: additional property
           other: additional properties
@@ -975,6 +978,7 @@ en:
         whitespace_beginning: "can't start with a space"
         whitespace_end: "can't end with a space"
         whitespace_consecutive: "can't contain consecutive spaces"
+        can_not_be_empty: "has to be filled in"
 
 
   # Mime types

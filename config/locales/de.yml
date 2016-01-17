@@ -896,6 +896,9 @@ de:
         to_kind_ids: erlaubte Typen auf dieser Seite
         wikidata_id: Wikidata ID
       relationship:
+        from_id: Quelle
+        to_id: Ziel
+        relation_id: Relation
         property:
           one: weitere Eigenschaft
           other: weitere Eigenschaften
@@ -976,6 +979,7 @@ de:
         whitespace_beginning: "kann nicht mit einem Leerzeichen beginnen"
         whitespace_end: "kann nicht mit einem Leerzeichen enden"
         whitespace_consecutive: "kann keine aufeinander folgende Leerzeichen beinhalten"
+        can_not_be_empty: "muss ausgefüllt werden"
 
 
   # Mime types

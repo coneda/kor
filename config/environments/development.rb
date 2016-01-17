@@ -31,8 +31,8 @@ Rails.application.configure do
   # yet still be able to expire them through the digest params.
   config.assets.digest = false
 
-  # config.assets.js_compressor = nil
-  # config.assets.css_compressor = nil
+  config.assets.js_compressor = nil
+  config.assets.css_compressor = nil
 
   # Adds additional error checking when serving assets at runtime.
   # Checks for improperly declared sprockets dependencies.
@@ -42,20 +42,3 @@ Rails.application.configure do
   # Raises error for missing translations
   config.action_view.raise_on_missing_translations = true
 end
-
-# Kor::Application.configure do
-#   config.cache_classes = false
-#   config.whiny_nils = true
-#   config.consider_all_requests_local       = true
-#   config.action_controller.perform_caching = false
-#   config.action_mailer.raise_delivery_errors = false
-#   config.active_support.deprecation = :log
-#   config.action_dispatch.best_standards_support = :builtin
-# #  config.active_record.mass_assignment_sanitizer = :strict
-#   config.serve_static_assets = true
-#   config.assets.digest = false
-#   config.assets.compile = true
-#   config.assets.compress = false
-#   config.assets.debug = true
-#   config.active_record.auto_explain_threshold_in_seconds = 0.5
-# end

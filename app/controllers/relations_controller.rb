@@ -1,4 +1,6 @@
 class RelationsController < ApplicationController
+  skip_before_action :authentication, :only => [:names]
+
   layout 'normal_small'
 
   def index
@@ -68,7 +70,11 @@ class RelationsController < ApplicationController
     end
 
     def generally_authorized?
-      current_user.relation_admin?
+      if params[:action] == "names"
+        true
+      else
+        current_user.relation_admin?
+      end
     end
   
 end

@@ -103,6 +103,15 @@ class Relationship < ActiveRecord::Base
     r
   end
 
+  def self.relate_from_params(params)
+    relate(
+      params[:from_id],
+      params[:relation_name],
+      params[:to_id],
+      params[:properties]
+    )
+  end
+
   def self.relate(from_id, relation_name, to_id, properties = [])
     from_id = Kor.id_for_model(from_id)
     to_id = Kor.id_for_model(to_id)

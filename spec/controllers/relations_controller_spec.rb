@@ -21,5 +21,13 @@ RSpec.describe RelationsController, :type => :controller do
     
     expect(@is_equivalent_to.reload.from_kind_ids).to eql([ @person_kind.id, @artwork_kind.id ])
   end
+
+  it "should allow a json list without auth" do
+    session[:user_id] = nil
+
+    get :names, :format => "json"
+    puts response.body
+    expect(response.status).to eq(200)
+  end
   
 end

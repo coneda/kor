@@ -34,6 +34,15 @@ kor.service('korData', [
 
       fully_loaded: false
 
+      set_error: (value) ->
+        hash = service.info.session ||= {}
+        hash = hash.flash ||= {}
+        hash["error"] = value
+
+      set_notice: (value) ->
+        hash = service.info.session ||= {}
+        hash = hash.flash ||= {}
+        hash["notice"] = value
     }
 
 ])

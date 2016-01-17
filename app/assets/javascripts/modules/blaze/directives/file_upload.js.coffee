@@ -1,9 +1,9 @@
-kor.directive "korFu", [
+kor.directive "korFileUpload", [
   "korTranslate", "korData", "$timeout",
   (kt, kd, to) ->
     directive = {
       scope: {
-        data: "=korFu"
+        data: "=korFileUpload"
       }
       link: (scope, element, attrs) ->
         uploader = new plupload.Uploader(

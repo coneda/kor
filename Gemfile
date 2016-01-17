@@ -3,7 +3,6 @@ source 'https://rubygems.org'
 gem 'rails', '~> 4.2.5'
 gem 'activerecord-session_store'
 gem 'responders', '~> 2.0'
-# gem 'strong_parameters'
 
 gem 'delayed_paperclip'
 gem "paperclip"

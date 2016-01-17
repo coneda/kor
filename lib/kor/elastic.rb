@@ -307,7 +307,7 @@ class Kor::Elastic
 
     response = self.class.request "post", "/entities/_search", nil, data
 
-    puts JSON.pretty_generate(response)
+    # puts JSON.pretty_generate(response)
     # binding.pry
 
     if response.first == 200

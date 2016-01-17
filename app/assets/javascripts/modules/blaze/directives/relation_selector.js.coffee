@@ -5,7 +5,7 @@ kor.directive "korRelationSelector", [
       scope: {
         source: "=korSource"
         target: "=korTarget"
-        relation_name: "=korRelationName"
+        relation_name: "=korRelationSelector"
       }
       templateUrl: "/tpl/relations/selector"
       link: (scope, element, attrs) ->

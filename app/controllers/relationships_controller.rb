@@ -38,17 +38,29 @@ class RelationshipsController < ApplicationController
   end
 
   def create
-    @relationship = Relationship.new(relationship_params)
+    @relationship = Relationship.relate_from_params(relationship_params)
 
     if authorized_for_relationship? @relationship, :create
       if @relationship.save
-        flash[:notice] = I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
-        rrn = session[:recent_relation_names] || []
-        rrn = rrn.unshift params[:relationship][:relation_name]
-        session[:recent_relation_names] = rrn.uniq
-        redirect_to web_path(:anchor => entity_path(@relationship.from))
+        respond_to do |format|
+          format.html do
+            flash[:notice] = I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
+            rrn = session[:recent_relation_names] || []
+            rrn = rrn.unshift params[:relationship][:relation_name]
+            session[:recent_relation_names] = rrn.uniq
+            redirect_to web_path(:anchor => entity_path(@relationship.from))
+          end
+          format.json do
+            render :json => {
+              "message" => I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
+            }
+          end
+        end
       else
-        render :action => "new"
+        respond_to do |format|
+          format.html {render :action => "new"}
+          format.json {render :json => @relationship.errors, :status => 406}
+        end
       end
     else
       redirect_to denied_path

@@ -10,10 +10,9 @@
 
 <ul>
   <li ng-repeat="record in results.raw_records">
-    <span ng-show="entity.uuid == record._source.uuid">»</span>
-    <a ng-click="select(record._source)">
-      <span ng-bind-html="record.highlight.name[0]" ng-show="record.highlight"></span>
-      <span ng-bind="record._source.name" ng-hide="record.highlight"></span>
+    <span ng-show="entity.uuid == record.uuid">»</span>
+    <a ng-click="select(record)">
+      <span ng-bind-html="record.name"></span>
     </a>
   </li>
 </ul>

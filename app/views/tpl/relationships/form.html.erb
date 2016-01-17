@@ -1,11 +1,22 @@
-<strong 
-  ng-bind="'objects.create' | 
-    translate:{interpolations: {o: 'activerecord.models.relationship'}}"
-></strong>
-<div
-  kor-relation-selector=""
-  kor-relation-name="relation_name"
-  kor-source="source"
-></div>
-<strong ng-bind="'with' | translate"></strong>
-<div kor-entity-selector="target"></div>
+<form class="kor_form" ng-submit="save()">
+  <div class="kor-errors" ng-show="errors != {}">
+    Errors: 
+    <span ng-repeat="(field, es) in errors">
+      <span ng-repeat="e in es">
+        {{'activerecord.attributes.relationship.' + field | translate}}
+        {{'activerecord.errors.messages.' + e | translate}}{{$parent.$last && $last ? '' : ', '}}
+      </span>
+    </span>
+  </div>
+  <strong 
+    ng-bind="'objects.create' | 
+      translate:{interpolations: {o: 'activerecord.models.relationship'}}"
+  ></strong>
+  <!-- <div
+    kor-relation-selector="relation_name"
+    kor-source="source"
+  ></div> -->
+  <strong ng-bind="'with' | translate"></strong>
+  <div kor-entity-selector="target"></div>
+  <input type="submit" value="{{'verbs.save' | translate | capitalize}}">
+</form>

@@ -138,21 +138,25 @@ class ApplicationController < ActionController::Base
     end
     
     def authorized_for_relationship?(relationship, policy = :view)
-      case policy
-        when :view
-          view_from = authorized?(:view, relationship.from.collection)
-          view_to = authorized?(:view, relationship.to.collection)
-          
-          view_from and view_to
-        when :create, :delete, :edit
-          view_from = authorized?(:view, relationship.from.collection)
-          view_to = authorized?(:view, relationship.to.collection)
-          edit_from = authorized?(:edit, relationship.from.collection)
-          edit_to = authorized?(:edit, relationship.to.collection)
-          
-          (view_from and edit_to) or (edit_from and view_to)
-        else
-          false
+      if relationship.to && relationship.from
+        case policy
+          when :view
+            view_from = authorized?(:view, relationship.from.collection)
+            view_to = authorized?(:view, relationship.to.collection)
+            
+            view_from and view_to
+          when :create, :delete, :edit
+            view_from = authorized?(:view, relationship.from.collection)
+            view_to = authorized?(:view, relationship.to.collection)
+            edit_from = authorized?(:edit, relationship.from.collection)
+            edit_to = authorized?(:edit, relationship.to.collection)
+            
+            (view_from and edit_to) or (edit_from and view_to)
+          else
+            false
+        end
+      else
+        true
       end
     end
 

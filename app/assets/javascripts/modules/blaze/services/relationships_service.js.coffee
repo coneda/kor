@@ -11,6 +11,16 @@ kor.service "relationships_service", [
         http(request).success (data) ->
           relationship.properties = data.properties
 
+      create: (relationship) ->
+        request = {
+          method: "post"
+          url: "/relationships.json"
+          data: {
+            relationship: relationship
+          }
+        }
+        http(request)
+
       update: (relationship) ->
         properties = angular.copy(relationship.properties)
         properties.push relationship.new_property

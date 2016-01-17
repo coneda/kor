@@ -11,7 +11,9 @@ kor.directive "korEntitySelector", [
 
         search = -> 
           if scope.terms && scope.terms.length >= 3
-            es.index(terms: scope.terms).success (data) -> scope.results = data
+            es.index(terms: scope.terms).success (data) -> 
+              console.log(data)
+              scope.results = data
 
         scope.$watch "tab", -> 
           scope.terms = null
@@ -19,7 +21,6 @@ kor.directive "korEntitySelector", [
           scope.entity = null
         scope.$watch "terms", search
 
-        scope.select = (entity) -> 
-          scope.entity = entity
+        scope.select = (entity) -> scope.entity = entity
     }
 ]

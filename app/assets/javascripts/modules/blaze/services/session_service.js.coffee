@@ -1,6 +1,6 @@
 kor.service "session_service", [
-  "$http", "korData", "korFlash",
-  (http, kd, kf) ->
+  "$http", "korData",
+  (http, kd) ->
     service = {
       is_guest: ->
         return false unless kd.info
