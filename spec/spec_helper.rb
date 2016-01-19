@@ -19,6 +19,11 @@ VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassettes'
   c.hook_into :webmock
   c.configure_rspec_metadata!
-
   c.default_cassette_options = {:record => :new_episodes}
+
+  c.ignore_request do |r|
+    elastic_config = YAML.load_file("config/database.yml")["test"]["elastic"]
+    uri = URI.parse(r.uri)
+    elastic_config["host"] == uri.host && elastic_config["port"] == uri.port
+  end
 end

@@ -36,11 +36,7 @@ Feature: tagging
     When I follow "Plus" within ".tags"
     Then I should see element ".kor-inplace-edit input"
     When I fill in "Tag list" with "smile, woman, 2d"
-    And I click on the version info
+    And I trigger the blur event for "#tag_list"
     Then I should see "Tags: smile, woman, 2d"
     When I go to the entity page for "Mona Lisa"
     Then I should see "Tags: smile, woman, 2d"
-
-
-  # @javascript
-  # Scenario: Use autocomplete to fill in tags

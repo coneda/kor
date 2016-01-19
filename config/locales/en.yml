@@ -766,6 +766,7 @@ en:
         form_label: display in edit form
         search_label: display in search form
         show_on_entity: show on entity
+        is_identifier: is identifier
       generator:
         name: name
         show_label: attribute name on entity
@@ -870,7 +871,7 @@ en:
         properties: further properties
         synonyms: synonyms
         degree: degree
-        is_identifier: is identifier
+        wikidata_id: Wikidata ID
       entity_dating:
         label: type of dating
         dating_string: dating
@@ -882,16 +883,19 @@ en:
         description: description
         dataset_class: field extension
         dataset_profile: profile for extensions
+        wikidata_id: Wikidata ID
       relation:
         name: name
         reverse_name: inversion
         description: description
         from_kind_ids: permitted types on this page
         to_kind_ids: permitted types on this page
+        wikidata_id: Wikidata ID
       relationship:
         property:
           one: additional property
           other: additional properties
+        wikidata_id: Wikidata ID
       property:
         search: additional property
         label: additional field description
