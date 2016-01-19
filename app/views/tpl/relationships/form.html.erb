@@ -12,10 +12,10 @@
     ng-bind="'objects.create' | 
       translate:{interpolations: {o: 'activerecord.models.relationship'}}"
   ></strong>
-  <!-- <div
+  <div
     kor-relation-selector="relation_name"
     kor-source="source"
-  ></div> -->
+  ></div>
   <strong ng-bind="'with' | translate"></strong>
   <div kor-entity-selector="target"></div>
   <input type="submit" value="{{'verbs.save' | translate | capitalize}}">

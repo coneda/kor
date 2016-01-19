@@ -6,9 +6,11 @@ kor.controller('entity_controller', [
     scope.allowed_to = (policy) -> ss.allowed_to(policy, scope.entity)
     scope.allowed_to_any = ss.allowed_to_any
 
-    promise = es.show(rp.id)
-    promise.success (data) -> scope.entity = data
-    promise.error (data) -> l.path("/denied")
+    update = ->
+      promise = es.show(rp.id)
+      promise.success (data) -> scope.entity = data
+      promise.error (data) -> l.path("/denied")
+    update()
 
     scope.visible_entity_fields = ->
       if scope.entity
@@ -46,5 +48,7 @@ kor.controller('entity_controller', [
         
       event.preventDefault()
       event.stopPropagation()
+
+    scope.update_and_paginate = update
 
 ])

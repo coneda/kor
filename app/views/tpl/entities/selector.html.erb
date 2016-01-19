@@ -13,6 +13,7 @@
     <span ng-show="entity.uuid == record.uuid">»</span>
     <a ng-click="select(record)">
       <span ng-bind-html="record.name"></span>
+      [<span ng-bind-html="record.kind.name"></span>]
     </a>
   </li>
 </ul>

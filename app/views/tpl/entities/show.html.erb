@@ -143,6 +143,13 @@
         </div>
         <div class="clear_both"></div>
         <div class="content subtitle">
+
+          <div
+            kor-relationship-editor="null"
+            kor-source-entity="entity"
+            kor-relation-name="relation.name"
+            kor-update="update_and_paginate"
+          ></div>
         
           <div 
             ng-repeat="relation in entity.related"
@@ -266,7 +273,7 @@
           <a href="/tools/add_media/{{entity.id}}">» {{'objects.add' | translate:{interpolations: {o: 'activerecord.models.medium.other'} } }}</a>
         </div>
         <br>
-        
+
         <div 
           ng-repeat="relation in entity.related_media"
           kor-media-relation="relation"

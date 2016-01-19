@@ -17,5 +17,6 @@ kor.directive "korRelation", ["entities_service",
         scope.$watch "relation.page", ->
           es.relation_load(scope.entity.id, scope.relation).success (data) ->
             scope.relation.relationships = data.relationships
+
     }
 ]

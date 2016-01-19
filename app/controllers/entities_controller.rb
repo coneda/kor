@@ -95,7 +95,7 @@ class EntitiesController < ApplicationController
           "ids" => @results.ids,
           "total" => @results.total,
           "records" => @results.items,
-          "raw_records" => @results.items
+          "raw_records" => @results.items.as_json(:methods => [:kind])
         }
       else
         @query = kor_graph.search(:attribute,
