@@ -35,15 +35,10 @@ Given /^the relation "([^\"]*)"$/ do |names|
   Relation.create! :name => name, :reverse_name => reverse
 end
 
-Given /^the unprocessed medium "([^"]*)"$/ do |path|
+Given /^the medium "([^"]*)"$/ do |path|
   step "I go to the new \"Medium-Entity\" page"
   step "I attach the file \"#{path}\" to \"entity[medium_attributes][document]\""
   step "I press \"Create\""
-end
-
-Given /^the medium "([^"]*)"$/ do |path|
-  step "the unprocessed medium \"#{path}\""
-  Delayed::Worker.new.work_off 10
 end
 
 Given /^the medium "(.*?)" inside collection "(.*?)"$/ do |file, collection|

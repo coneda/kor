@@ -52,6 +52,8 @@ describe Identifier do
   end
 
   it "should be removed when a field is not an identifier anymore" do
+    Delayed::Worker.delay_jobs = false
+
     people = FactoryGirl.create :people, :fields => [
       Field.new(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID")
     ]
@@ -62,15 +64,14 @@ describe Identifier do
   end
 
   it "should be created when a field becomes an identifier" do
+    Delayed::Worker.delay_jobs = false
+
     people = FactoryGirl.create :people
     leonardo = FactoryGirl.create :leonardo, :dataset => {"gnd_id" => "1234"}
-    people.fields = [
+    people.update_attributes fields: [
       Field.new(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID")
     ]
-    people.save
     
-    Delayed::Worker.new.work_off
-
     expect(described_class.count).to eq(1)
   end
 

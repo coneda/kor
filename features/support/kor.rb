@@ -19,6 +19,12 @@ Before do |scenario|
     allow(Kor::Elastic).to receive(:enabled?).and_return(false)
     allow(Kor::Elastic).to receive(:request).and_return([200, {}, {}])
   end
+
+  if scenario.source_tags.any?{|st| st.name == "@nodelay"}
+    Delayed::Worker.delay_jobs = false
+  else
+    Delayed::Worker.delay_jobs = true
+  end
 end
 
 Capybara.register_driver :poltergeist do |app|

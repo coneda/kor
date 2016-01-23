@@ -762,10 +762,10 @@ en:
       field:
         type: type
         name: name
-        show_label: attribute name on entity
-        form_label: display in edit form
-        search_label: display in search form
-        show_on_entity: show on entity
+        show_label: label
+        form_label: label on edit form
+        search_label: label on search form
+        show_on_entity: visible on entity page
         is_identifier: is identifier
       generator:
         name: name

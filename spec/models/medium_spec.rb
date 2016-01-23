@@ -4,14 +4,6 @@ require 'rails_helper'
 
 describe Medium do
 
-  def work_off(num = 10)
-    Delayed::Worker.new.work_off num
-    if Delayed::Job.count > 0
-      binding.pry
-      raise "Not all jobs have been processed, please check!"
-    end
-  end
-
   it "should not accept non-image-files as image attachment" do
     expect(Medium.new(:image => File.open("#{Rails.root}/spec/fixtures/text_file.txt")).valid?).to be_falsey
   end
@@ -22,8 +14,9 @@ describe Medium do
   end
   
   it "should return correct paths and urls" do
+    Delayed::Worker.delay_jobs = false
+
     medium = Medium.create :document => File.open("#{Rails.root}/spec/fixtures/text_file.txt")
-    work_off
     medium.reload
 
     expect(medium.path(:original)).to eql("#{Rails.root}/data/media.test/original/#{medium.ids}/document.txt")
@@ -32,7 +25,6 @@ describe Medium do
     expect(medium.url(:icon)).to eql('/content_types/text/plain.gif')
     
     medium.update_attributes(:image => File.open("#{Rails.root}/spec/fixtures/image_a.jpg"))
-    work_off
     medium.reload
     
     expect(medium.path(:original)).to eql("#{Rails.root}/data/media.test/original/#{medium.ids}/document.txt")
@@ -41,7 +33,6 @@ describe Medium do
     expect(medium.url(:icon)).to eql("/media/images/icon/#{medium.ids}/image.jpg?#{medium.image.updated_at}")
     
     medium.update_attributes(:document => nil)
-    work_off
     medium.reload
     
     expect(medium.path(:original)).to eql("#{Rails.root}/data/media.test/original/#{medium.ids}/image.jpg")
@@ -51,8 +42,9 @@ describe Medium do
   end
   
   it "should read an escaped file uri to an existing file" do
+    Delayed::Worker.delay_jobs = false
+
     medium = Medium.create :uri => "file:///#{Rails.root}/spec/fixtures/image_a.jpg"
-    work_off
     medium = Medium.last
     
     expect(medium.document.file?).to be_falsey
@@ -79,8 +71,9 @@ describe Medium do
   end
   
   it "should delete all files after destruction of an image" do
+    Delayed::Worker.delay_jobs = false
+
     medium = Medium.create :document => File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
-    work_off
     medium = Medium.last
     
     paths = [:original, :icon, :thumbnail, :preview, :normal].map{|s| medium.path(s)}
@@ -97,8 +90,9 @@ describe Medium do
   end
   
   it "should delete all files after destruction of a non flash video" do
+    Delayed::Worker.delay_jobs = false
+    
     medium = Medium.create :document => File.open("#{Rails.root}/spec/fixtures/video_a.m4v")
-    work_off
     medium = Medium.last
     
     paths = [:original, :icon, :thumbnail, :preview, :normal].map{|s| medium.path(s)}

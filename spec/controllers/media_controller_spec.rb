@@ -9,22 +9,15 @@ RSpec.describe MediaController, :type => :controller do
     test_kinds
   end
 
-  def work_off(jobs = 10)
-    Delayed::Worker.new.work_off(jobs)
-    if Delayed::Job.count > 0
-      raise "Not all jobs have been processed, please check!"
-    end
-  end
-
   def side_collection
     @side_collection ||= FactoryGirl.create :private
   end
 
   def side_entity(attributes = {})
+    Delayed::Worker.delay_jobs = false
+
     @side_entity ||= begin
-      result = FactoryGirl.create :image_a, :collection => side_collection
-      work_off
-      result
+      FactoryGirl.create :image_a, :collection => side_collection
     end
   end
 
