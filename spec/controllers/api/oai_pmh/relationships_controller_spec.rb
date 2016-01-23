@@ -2,6 +2,8 @@ require 'rails_helper'
 
 describe Api::OaiPmh::RelationshipsController, :type => :controller do
 
+  include XmlHelper
+
   render_views
 
   before :each do
@@ -33,16 +35,6 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     expect{Hash.from_xml response.body}.not_to raise_error
   end
 
-  it "should respond to 'ListSets'" do
-    get :list_sets, :format => :xml
-    expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
-
-    post :list_sets, :format => :xml
-    expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
-  end
-
   it "should respond to 'ListMetadataFormats'" do
     get :list_metadata_formats, :format => :xml
     expect(response).to be_success
@@ -64,11 +56,11 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
   end
 
   it "should respond to 'ListRecords'" do
-    get :list_records, :format => :xml
+    get :list_records, format: :xml, metadataPrefix: 'kor'
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
 
-    post :list_records, :format => :xml
+    post :list_records, format: :xml, metadataPrefix: 'kor'
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
   end
@@ -78,28 +70,39 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     admin = User.admin
     relationship = Relationship.last
 
-    get :get_record, :format => :xml, :identifier => relationship.uuid, :api_key => admin.api_key
+    get(:get_record,
+      format: :xml,
+      identifier: relationship.uuid, 
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
 
-    post :get_record, :format => :xml, :identifier => relationship.uuid, :api_key => admin.api_key
+    post(:get_record,
+      format: :xml,
+      identifier: relationship.uuid, 
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
   end
 
   it "should only include data the user is authorized for" do
-    get :list_records, :format => :xml
+    get :list_records, format: :xml, metadataPrefix: 'kor'
 
-    metadatas = Nokogiri::XML(response.body).xpath("//xmlns:metadata")
-    items = metadatas.map{|m| Nokogiri::XML(m.children.to_s)}
-
-    expect(items.count).to eq(0)
+    list_records = parse_xml(response.body).at_xpath("//xmlns:ListRecords")
+    expect(list_records.xpath('*')).to be_empty
 
     admin = User.admin
-    get :list_records, :format => :xml, :api_key => admin.api_key
+    get(:list_records,
+      format: :xml,
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
 
-    metadatas = Nokogiri::XML(response.body).xpath("//xmlns:metadata")
-    items = metadatas.map{|m| Nokogiri::XML(m.children.to_s)}
+    items = parse_xml(response.body).xpath("//kor:relationship")
 
     expect(items.count).to eq(1)
   end
@@ -107,7 +110,12 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
   it "should respond with 403 if the user is not authorized" do
     relationship = Relationship.last
 
-    get :get_record, :format => :xml, :identifier => relationship.uuid
+    get(:get_record,
+      format: :xml,
+      identifier: relationship.uuid,
+      metadataPrefix: 'kor'
+    )
+
     expect(response.status).to be(403)
   end
 
@@ -120,9 +128,62 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     # for a reason why it has to be done like this
     xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/spec/fixtures/oai_pmh.xsd")
     get :get_record, :format => :xml, :identifier => relationship.uuid, :api_key => admin.api_key
-    doc = Nokogiri::XML(response.body)
+    doc = parse_xml(response.body)
 
     expect(xsd.validate(doc)).to be_empty
+  end
+
+  it "should disseminate oai_dc and kor metadata formats on GetRecord requests" do
+    relationship = Relationship.last
+    admin = User.admin
+
+    get(:get_record, 
+      :format => :xml, 
+      :identifier => relationship.uuid, 
+      :api_key => admin.api_key, 
+      :metadataPrefix => "oai_dc"
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:metadata/oai_dc:dc").count).to eq(1)
+
+    get(:get_record, 
+      :format => :xml, 
+      :identifier => relationship.uuid, 
+      :api_key => admin.api_key, 
+      :metadataPrefix => "kor"
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:metadata/kor:relationship").count).to eq(1)
+  end
+
+  it "should disseminate oai_dc and kor metadata formats on ListRecords requests" do
+    admin = User.admin
+
+    get(:list_records, 
+      :format => :xml, 
+      :api_key => admin.api_key, 
+      :metadataPrefix => "oai_dc"
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:metadata/oai_dc:dc").count).to eq(1)
+
+    get(:list_records, 
+      :format => :xml, 
+      :api_key => admin.api_key, 
+      :metadataPrefix => "kor"
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:metadata/kor:relationship").count).to eq(1)
+  end
+
+  it "should return 'idDoesNotExist' if the identifier given does not exist" do
+    get(:get_record, 
+      format: :xml, 
+      identifier: '1234', 
+      metadataPrefix: 'kor'
+    )
+
+    verify_oaipmh_error 'idDoesNotExist'
   end
 
 end

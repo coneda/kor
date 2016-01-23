@@ -2,7 +2,12 @@ class Api::OaiPmh::KindsController < Api::OaiPmh::BaseController
 
   def get_record
     @record = locate(params[:identifier])
-    render :template => "api/oai_pmh/get_record"
+
+    if @record
+      render :template => "api/oai_pmh/get_record"
+    else
+      render_error 'idDoesNotExist'
+    end
   end
 
   protected

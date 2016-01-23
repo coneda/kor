@@ -6,6 +6,9 @@ class Api::OaiPmh::BaseController < BaseController
 
   helper_method :timestamp, :base_url, :medium_url
 
+  before_filter :ensure_metadata_prefix, only: [:get_record, :list_records]
+  before_filter :handle_resumption_token, only: [:list_identifiers, :list_records]
+
   def identify
     @admin_email = User.admin.email
     @earliest_timestamp = earliest_timestamp
@@ -14,7 +17,7 @@ class Api::OaiPmh::BaseController < BaseController
   end
 
   def list_sets
-    render :template => "api/oai_pmh/list_sets"
+    render_error 'noSetHierarchy'
   end
 
   def list_metadata_formats
@@ -41,21 +44,49 @@ class Api::OaiPmh::BaseController < BaseController
     render :template => "api/oai_pmh/list_records"
   end
 
+  def verb_error
+    render_error 'badVerb'
+  end
+
 
   protected
+
+    def ensure_metadata_prefix
+      available = ["kor", "oai_dc"]
+      unless available.include?(params[:metadataPrefix])
+        render_error 'cannotDisseminateFormat'
+      end
+    end
+
+    def handle_resumption_token
+      if params['resumptionToken']
+        if token_data = load_query(params['resumptionToken'])
+          params.merge! token_data
+          params['page'] += 1
+        else
+          render_error 'badResumptionToken'
+        end
+      end
+    end
+
+    def render_error(code, description = nil)
+      @code = code
+      @description = description
+
+      respond_to do |format|
+        format.xml do
+          render template: 'api/oai_pmh/error', status: 400, layout: '../api/oai_pmh/base'
+        end
+      end
+    end
 
     def medium_url(medium, style = :preview)
       (root_url + medium.url(style)).gsub '//', '/'
     end
 
     def query(params = {})
-      params['per_page'] = 50
-      params['page'] = 0
-
-      if params["resumptionToken"]
-        params = load_query(params["resumptionToken"])
-        params["page"] += 1
-      end
+      params['per_page'] ||= 50
+      params['page'] ||= 0
 
       scope = records.
         allowed(current_user, :view).
@@ -82,7 +113,10 @@ class Api::OaiPmh::BaseController < BaseController
       system "find #{base_dir} -mtime +1 -exec rm {} \;"
 
       File.open "#{base_dir}/#{token}.json", "w+" do |f|
-        f.write JSON.dump(params)
+        f.write JSON.dump(
+          'page': params['page'],
+          'per_page': params['per_page']
+        )
       end
 
       token
@@ -94,12 +128,9 @@ class Api::OaiPmh::BaseController < BaseController
 
       if File.exists?(file)
         JSON.parse(File.read file)
+        system "rm #{file}"
       end
     end
-
-    # def collections
-    #   Auth::Authorization.authorized_collections(current_user, :view)
-    # end
 
     def locate(identifier)
       records.where(:uuid => identifier).first

@@ -1,4 +1,8 @@
-<kor:entity xmlns:kor="https://coneda.net/XMLSchema/1.0/">
+<kor:entity
+  xmlns:kor="https://coneda.net/XMLSchema/1.0/"
+  xsi:schemaLocation="https://coneda.net/XMLSchema/1.0/ 
+                      https://coneda.net/XMLSchema/1.0/kor.xsd"
+>
   <kor:id><%= record.uuid %></kor:id>
   <kor:collection kor:id="<%= record.collection_id %>"><%= record.collection.name %></kor:collection>
   <kor:created-at><%= timestamp record.created_at %></kor:created-at>

@@ -179,6 +179,7 @@ Kor::Application.routes.draw do
           match res, :to => "oai-pmh/#{res}#list_identifiers", :constraints => OaiPmhVerbConstraint.new('ListIdentifiers')
           match res, :to => "oai-pmh/#{res}#list_records", :constraints => OaiPmhVerbConstraint.new('ListRecords')
           match res, :to => "oai-pmh/#{res}#get_record", :constraints => OaiPmhVerbConstraint.new('GetRecord')
+          match res, :to => "oai-pmh/#{res}#verb_error"
 
           match res, :to => redirect('verbs=Identify'), :as => res
         end

@@ -4,23 +4,11 @@
     <datestamp><%= timestamp record.updated_at %></datestamp>
   </header>
   <metadata>
-    <oai_dc:dc
-      xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
-      xmlns:dc="http://purl.org/dc/elements/1.1/"
-      xmlns:kor="https://coneda.net/XMLSchema/1.0/"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
-                          http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
-    >
-      <dc:identifier><%= record.uuid %></dc:identifier>
-      <dc:type>Dataset</dc:type>
-      <dc:type>Triple</dc:type>
-
-      <dc:description>
-        <![CDATA[
-          <%= render :partial => 'record', :locals => {:record => record} %>
-        ]]>
-      </dc:description>
-    </oai_dc:dc>
+    <% case params[:metadataPrefix] %>
+      <% when "oai_dc" %>
+        <%= render partial: "record.oai_dc", locals: {record: record} %>
+      <% when "kor" %>
+        <%= render partial: "record.kor", locals: {record: record} %>
+    <% end %>
   </metadata>
 </record>
