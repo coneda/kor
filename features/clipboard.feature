@@ -82,9 +82,9 @@ Feature: Clipboard
     And I put "Mona Lisa" into the clipboard
     And I go to the clipboard
     When I uncheck the checkbox within the row for "entity" "Mona Lisa"
-    When I select "verknüpfen" from "clipboard_action"
-    Then I should see "alle ausgewählten Entities"
-    And I press "Senden"
+    When I select "relate" from "clipboard_action"
+    Then I should see "all selected entities"
+    And I press "Send"
     Then I should not be on the 404 page
 
   @javascript

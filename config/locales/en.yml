@@ -789,7 +789,7 @@ en:
         name: name
         description: description
       collection:
-        perosnal: personal
+        personal: personal
         name: name
         view: allow these groups to display
         edit: allow these groups to edit
