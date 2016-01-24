@@ -56,7 +56,7 @@ class GeneratorsController < ApplicationController
   
   protected
     def generator_params
-      params.require(:generator).permit!
+      params.fetch(:generator, {}).permit!
     end
 
     def generally_authorized?

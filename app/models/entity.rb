@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Entity < ActiveRecord::Base
 
   # Settings
@@ -272,7 +270,7 @@ class Entity < ActiveRecord::Base
     kind.fields.identifiers.each do |field|
       field.entity = self
       if field.value.present?
-        id = identifiers.find_or_create_by_kind(field.name)
+        id = identifiers.find_or_create_by(kind: field.name)
         id.update_attributes :value => field.value
       else
         id = identifiers.where(:kind =>  field.name).first

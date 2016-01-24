@@ -70,10 +70,10 @@ en:
     delicious: "link to Delicious"
 
   kind_settings:
-    dating_label: "default indication for dating"
-    distinct_name_label: "indication for distinct name"
-    name_label: "description for name"
-    keywords: "key words"
+    dating_label: "default label for datings"
+    distinct_name_label: "label for the distinct name"
+    name_label: "label for the entity name"
+    keywords: "keywords"
     no_keywords: "none"
     all_keywords: "free input"
     predefined_keywords: "default list"

@@ -14,6 +14,7 @@ commit history on GitHub.
 * added a development environment via `vagrant up`
 * sped up the test suites by about 20%
 * identifier handling and resolution
+* changes to field names are now propagated to affected entities
 
 ### Internal
 

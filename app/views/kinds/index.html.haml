@@ -16,7 +16,7 @@
             %strong Generators:
             = k.generators.map{|f| f.name}.join(', ')
         %td.nowrap.commands
-          = link_to kor_command_image('globe', :title => "Configure Generators"), kind_generators_path(k)
+          = link_to kor_command_image('globe', :title => "Configure generators"), kind_generators_path(k)
           = link_to kor_command_image('three_bars', :title => "Configure fields"), kind_fields_path(k)
           = link_to kor_command_image('pen'), edit_kind_path(k)
           - unless k == Kind.medium_kind

@@ -57,7 +57,7 @@ class Field < ActiveRecord::Base
         e.dataset[after] = e.dataset[before]
       end
       e.dataset.delete(before)
-      e.update_column :attachment, JSON.dump(e.attachment)
+      e.update_column :attachment, e.attachment
     end
   end
 

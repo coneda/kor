@@ -78,7 +78,7 @@ class FieldsController < ApplicationController
     def field_params
       params.fetch(:field, {}).permit(
         :kind_id, :name, :search_label, :form_label, :show_label, :lock_version,
-        :show_on_entity, :type
+        :show_on_entity, :type, :is_identifier
       )
     end
 

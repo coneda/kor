@@ -198,7 +198,7 @@ Feature: Entities
     And I should not see element "img[title=Pen]" within ".relationship"
 
 
-  @javascript
+  @javascript @nodelay
   Scenario: Click the big image on media to return to the entity screen
     Given I am logged in as "admin"
     And the medium "spec/fixtures/image_a.jpg"

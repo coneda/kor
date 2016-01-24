@@ -89,7 +89,7 @@ module ApplicationHelper
       :title => I18n.t(name, :scope => :title_verbs)
     )
     
-    path = asset_path("#{name}.#{options[:extension]}")
+    path = "#{name}.#{options[:extension]}"
     options.delete :extension
     image_tag(path, options.merge(:class => 'kor_command_image'))
   end
