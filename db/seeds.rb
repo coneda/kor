@@ -2,22 +2,7 @@ Kor.config['maintainer.email'] = 'admin@localhost'
 
 administrators = Credential.create!(:name => "Administrators")
 
-User.create!(:name => "admin",
-  :full_name => I18n.t('users.administrator'),
-  :groups => [ administrators ],
-  :password => 'admin', 
-  :email => Kor.config['maintainer.mail'],
-  :terms_accepted => true,
-  
-  :admin => true,
-  :relation_admin => true,
-  :authority_group_admin => true,
-  :user_admin => true,
-  :credential_admin => true,
-  :collection_admin => true,
-  :kind_admin => true,
-  :developer => false
-)
+Kor.ensure_admin_account!
 
 default = Collection.create! :name => "Default"
 

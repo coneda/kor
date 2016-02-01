@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151213141714) do
+ActiveRecord::Schema.define(version: 20151213141714) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -197,13 +197,13 @@ ActiveRecord::Schema.define(:version => 20151213141714) do
     t.string   "entity_uuid", limit: 255
     t.string   "kind",        limit: 255
     t.string   "value",       limit: 255
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "identifiers", ["entity_uuid"], name: "index_identifiers_on_entity_uuid", using: :btree
+  add_index "identifiers", ["value", "kind"], name: "index_identifiers_on_value_and_kind", using: :btree
   add_index "identifiers", ["value"], name: "index_identifiers_on_value", using: :btree
-  add_index "identifiers", ["value", "kind"], :name => "index_identifiers_on_value_and_kind"
 
   create_table "kinds", force: :cascade do |t|
     t.string   "uuid",         limit: 255

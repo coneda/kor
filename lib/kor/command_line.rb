@@ -124,6 +124,10 @@ class Kor::CommandLine
         delete_expired_downloads
       end
 
+      if @command == 'reset-admin-account'
+        reset_admin_account
+      end
+
       if @command == "editor-stats"
         editor_stats
       end
@@ -250,6 +254,10 @@ class Kor::CommandLine
     model = Class.new(ActiveRecord::Base)
     model.table_name = "sessions"
     model.where("created_at < ?", 5.days.ago).delete_all
+  end
+
+  def reset_admin_account
+    Kor.ensure_admin_account!
   end
 
 end

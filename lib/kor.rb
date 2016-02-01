@@ -189,6 +189,27 @@ module Kor
     Kor.info "Upcoming expiries", "notified #{users.size} users"
   end
 
+  def self.ensure_admin_account!
+    u = User.find_or_initialize_by name: 'admin'
+    u.update_attributes(
+      groups: Credential.all,
+      password: 'admin',
+      terms_accepted: true,
+
+      admin: true,
+      relation_admin: true,
+      authority_group_admin: true,
+      user_admin: true,
+      credential_admin: true,
+      collection_admin: true,
+      kind_admin: true,
+      developer: false,
+
+      full_name: u.full_name || I18n.t('users.administrator'),
+      email: u.email || Kor.config['maintainer.mail']
+    )
+  end
+
 
   ####################### temp files ###########################################
 
@@ -227,5 +248,5 @@ module Kor
   def self.plugin_installed(name)
     defined?(name.classify)
   end
-  
+
 end
