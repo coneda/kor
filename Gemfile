@@ -61,6 +61,7 @@ group :development do
 end
 
 group :test, :development do
+  gem 'factory_girl_rails'
   gem 'thin'
   gem 'quiet_assets'
   gem 'pry'
