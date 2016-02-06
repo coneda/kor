@@ -157,20 +157,6 @@ describe Entity do
     ])
   end
   
-  it "should not allow to create an entity twice" do
-    entity = Kind.find_by_name('Werk').entities.build(
-      :name => "Mona Lisa",
-      :collection => Collection.first,
-      :distinct_name => ""
-    )
-    
-    expect(entity.valid?).to be_falsey
-    expect(entity.errors.full_messages).to eq([
-      'name is already taken',
-      'distinguished name is invalid'
-    ])
-  end
-
   it "should fire elastic updates" do
     expect(Kor::Elastic).to receive(:index).exactly(2).times
     expect(Kor::Elastic).to receive(:drop)
@@ -262,6 +248,36 @@ describe Entity do
     expect(leonardo.errors.full_messages.first).to eq(
       "name can't contain consecutive spaces"
     )
+  end
+
+  it "should not allow to create an entity twice" do
+    entity = FactoryGirl.build :mona_lisa
+    expect(entity.valid?).to be_falsey
+    expect(entity.errors.full_messages).to eq([
+      'name is already taken',
+      'distinguished name is invalid'
+    ])
+  end
+
+  it "should ensure unique names within the same collection and kind" do
+    entity = FactoryGirl.build :mona_lisa
+    expect(entity.valid?).to be_falsey
+    expect(entity.errors.full_messages).to eq([
+      'name is already taken',
+      'distinguished name is invalid'
+    ])
+  end
+
+  it "should ensure unique names within the same kind but different collections" do
+    priv = FactoryGirl.create :private
+    entity = FactoryGirl.build :mona_lisa, collection: priv
+    expect(entity.valid?).to be_falsey
+  end
+
+  it "should allow equal names within different kinds and the same collection" do
+    people = Kind.where(name: 'Person').first
+    entity = FactoryGirl.build :mona_lisa, kind: people
+    expect(entity.valid?).to be_truthy
   end
 
 end

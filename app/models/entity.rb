@@ -250,6 +250,7 @@ class Entity < ActiveRecord::Base
     self.uuid ||= SecureRandom.uuid
   end
   
+  # TODO: why is this necessary?
   def save_datings
     datings.each do |dating|
       dating.save(:validate => false)
@@ -391,6 +392,7 @@ class Entity < ActiveRecord::Base
     result
   end
   
+  # TODO: move this method to the rspec test suite which is its only user
   def save_with_serial
     while has_name_duplicates?
       self.distinct_name ||= ""
@@ -425,14 +427,6 @@ class Entity < ActiveRecord::Base
     end
   end
 
-  def find_others_by_distinct_name
-    distinct_name.blank? ? [] :
-      Entity.where(
-        [ "(name LIKE ? OR distinct_name LIKE ?) AND kind_id = ? AND id != ?",
-        distinct_name, distinct_name, kind_id, id || -1 ]
-      )
-  end
-
   def needs_name?
     !is_medium? && no_name_statement == 'enter_name'
   end
@@ -455,11 +449,6 @@ class Entity < ActiveRecord::Base
     read_attribute(:no_name_statement) || 'enter_name'
   end
   
-  def find_equally_named(distinct = false)
-    result = Entity.where("kind_id = ?", kind_id).where("name = ?", name)
-    distinct ? result.where("distinct_name = ?", distinct_name) : result
-  end
-
   
   ############################ kind related ####################################
 
@@ -470,12 +459,14 @@ class Entity < ActiveRecord::Base
 
   ############################ dating ##########################################
 
+  # TODO: can this method be removed?
   def new_datings_attributes=(values)
     values.each do |v|
       datings.build v
     end
   end
 
+  # TODO: can this method be removed?
   def existing_datings_attributes=(values)
     datings.reject(&:new_record?).each do |d|
       attributes = values[d.id.to_s]
@@ -511,28 +502,6 @@ class Entity < ActiveRecord::Base
       where('tags.name LIKE ?', "%#{term}%")
   end
   
-  attr_writer :search_attributes
-
-  def search_attributes(section = nil)
-    if section
-      ( @search_attributes || {} )[section] || {}
-    else
-      @search_attributes
-    end
-  end
-  
-  
-  def self.find_by_kind_and_naming(kind_id, naming)
-    find_by_sql "SELECT entities.* from entities
-      LEFT JOIN synonyms on entities.id = synonyms.entity_id
-      WHERE
-        entities.kind_id = #{kind_id} AND (
-          synonyms.name LIKE '#{naming}' OR
-          entities.name LIKE '#{naming}'
-        )
-    "
-  end
-
   # Finds all entities given in <tt>ids</tt> and keeps the same order as the
   # ids in the parameter. Ids which refer to non existing entities are
   # transparently ignored.
@@ -549,14 +518,12 @@ class Entity < ActiveRecord::Base
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
-  scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :searcheable, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
   scope :media, lambda { where("entities.kind_id = ?", Kind.medium_kind.id) }
   scope :without_media, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
   scope :alphabetically, lambda { order("name asc, distinct_name asc") }
   scope :newest_first, lambda { order("created_at DESC") }
-  scope :globally_identified_by, lambda {|uuid| uuid.blank? ? all : where(:uuid => uuid) }
   scope :is_a, lambda { |kind_id|
     kind = Kind.find_by_name(kind_id.to_s)
     kind ||= Kind.find_by_id(kind_id)

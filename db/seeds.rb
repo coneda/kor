@@ -17,3 +17,33 @@ Kind.create(:name => Medium.model_name.human, :plural_name => Medium.model_name.
 )
 
 SystemGroup.create(:name => 'invalid')
+
+if ENV['SAMPLE_DATA']
+  print "generating sample data ... "
+  if FactoryGirl.factories.count == 0
+    require "#{Rails.root}/spec/factories"
+  end
+
+  people = FactoryGirl.create :people
+  works = FactoryGirl.create :works
+  FactoryGirl.create(:has_created,
+    from_kind_ids: [people.id],
+    to_kind_ids: [works.id]
+  )
+  FactoryGirl.create(:is_equivalent_to,
+    from_kind_ids: [works.id],
+    to_kind_ids: [works.id]
+  )
+  FactoryGirl.create(:is_sibling_of,
+    from_kind_ids: [people.id],
+    to_kind_ids: [people.id]
+  )
+
+  leonardo = FactoryGirl.create :leonardo
+  mona_lisa = FactoryGirl.create :mona_lisa
+  FactoryGirl.create :der_schrei
+  FactoryGirl.create :landscape
+
+  Relationship.relate_and_save leonardo, 'has created', mona_lisa
+  puts "done"
+end

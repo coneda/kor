@@ -37,6 +37,8 @@ gem 'awesome_nested_set', "~> 3.0.0"
 gem 'oj'
 gem 'jbuilder'
 
+gem 'factory_girl_rails'
+
 group :assets do
   gem "therubyracer"
   gem 'uglifier'
@@ -49,7 +51,6 @@ group :test do
   gem 'rspec-rails', '~> 3.1'
   gem 'capybara'
   gem 'database_cleaner'
-  gem 'factory_girl_rails'
   gem 'test-unit', :platforms => [:ruby_22]
   gem 'vcr'
   gem 'webmock'
