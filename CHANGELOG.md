@@ -15,6 +15,7 @@ commit history on GitHub.
 * sped up the test suites by about 20%
 * identifier handling and resolution
 * changes to field names are now propagated to affected entities
+* sample data can be generated during db seeting by setting `SAMPLE_DATA=true`
 
 ### Internal
 
