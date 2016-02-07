@@ -1,19 +1,48 @@
-<a ng-bind="'nouns.search' | translate" ng-click="tab = 'search'"></a> | 
-<a ng-bind="'recently_visited' | translate" ng-click="tab = 'visited'"></a> |
-<a ng-bind="'recently_created' | translate" ng-click="tab = 'created'"></a>
+<div class="menu">
+  <a 
+    ng-bind="'nouns.search' | translate"
+    ng-click="tab = 'search'"
+    ng-class="{'selected': tab == 'search'}"
+  ></a> | 
+  <a
+    ng-bind="'recently_visited' | translate"
+    ng-click="tab = 'visited'"
+    ng-class="{'selected': tab == 'visited'}"
+  ></a> |
+  <a
+    ng-bind="'recently_created' | translate"
+    ng-click="tab = 'created'"
+    ng-class="{'selected': tab == 'created'}"
+  ></a>
+  <span ng-show="current()">
+    |
+    <a
+      ng-bind="'nouns.current_entity' | translate"
+      ng-click="tab = 'current'"
+      ng-class="{'selected': tab == 'current'}"
+    ></a>
+  </span>
+</div>
 
 <div ng-show="tab == 'search'">
   <input ng-model="terms" />
 </div>
 <div ng-show="tab == 'visited'"></div>
 <div ng-show="tab == 'created'"></div>
+<div ng-show="tab == 'current'"></div>
 
-<ul>
-  <li ng-repeat="record in results.raw_records">
-    <span ng-show="entity.uuid == record.uuid">»</span>
-    <a ng-click="select(record)">
-      <span ng-bind-html="record.name"></span>
-      [<span ng-bind-html="record.kind.name"></span>]
-    </a>
-  </li>
-</ul>
+<div class="entities">
+  <table>
+    <tbody>
+      <tr ng-repeat="row in grouped_records">
+        <td
+          ng-repeat="record in row"
+          ng-class="{'selected': (record.id && record.id == entity.id)}"
+          ng-click="select(record, $event)"
+        >
+          <span kor-entity-widget="record" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

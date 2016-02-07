@@ -95,6 +95,7 @@ de:
       enter_name: "eingeben"
 
   verbs:
+    add: "hinzufügen"
     maximize: maximieren
     play: "abspielen"
     enlarge: "vergrößern"

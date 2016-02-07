@@ -78,9 +78,51 @@ class EntitiesController < ApplicationController
         :per_page => 16,
         :records => entities.pageit(params[:page], 16)
       )
+
+      render 'index'
     else
       render :nothing => true, :status => 403
     end
+  end
+
+  def recently_created
+    entities = Entity.
+      allowed(current_user, :view).
+      newest_first.includes(:kind)
+
+    @result = Kor::SearchResult.new(
+      :total => entities.count,
+      :page => params[:page],
+      :per_page => 16,
+      :records => entities.pageit(params[:page], 16)
+    )
+
+    render 'index'
+  end
+
+  def recently_visited
+    history_entity_ids = session[:history].map do |url|
+      if m = url.match(/\/blaze\#\/entities\/(\d+)$/)
+        m[1].to_i
+      else
+        nil
+      end
+    end
+
+    entities = Entity.
+      allowed(current_user, :view).
+      where(:id => history_entity_ids).
+      includes(:kind).
+      newest_first
+
+    @result = Kor::SearchResult.new(
+      :total => entities.count,
+      :page => params[:page],
+      :per_page => 16,
+      :records => entities.pageit(params[:page], 16)
+    )
+
+    render 'index'
   end
 
   def index

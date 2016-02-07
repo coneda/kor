@@ -37,6 +37,8 @@ Rails.application.routes.draw do
       get 'recent'
       get 'invalid'
       get 'isolated'
+      get 'recently_created'
+      get 'recently_visited'
     end
     
     member do
@@ -174,6 +176,7 @@ Rails.application.routes.draw do
         get :multi_upload
         get :isolated
         get :selector
+        get :widget
       end
     end
 

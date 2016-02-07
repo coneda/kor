@@ -166,8 +166,6 @@ class Relationship < ActiveRecord::Base
       self.reverse = true
       self[:relation_id] = r.id
       swap_to_and_from
-    else
-      raise "the relation '#{value}' does not exist"
     end
   end
 

@@ -2,7 +2,7 @@ en:
 
   # General
 
-  with: mit
+  with: with
   general: "general"
   with_solved_issues_from: "with solved tickets from"
   'yes': "yes"
@@ -94,6 +94,7 @@ en:
       enter_name: "enter"
 
   verbs:
+    add: "add"
     maximize: maximize
     play: "play"
     enlarge: "enlarge"
@@ -108,7 +109,7 @@ en:
     edit: "edit"
     create: "create"
     update: "save"
-    new: "anlegen"
+    new: "new"
     delete: "delete"
     send: "send"
     search: "search"

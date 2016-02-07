@@ -47,11 +47,16 @@ kor.service "session_service", [
         else
           false
       is_current: (entity) ->
-        if kd.info && entity
-          arr = kd.info.session.current_history
-          arr[arr.length - 1].id == entity.id
+        if entity && e = service.get_current()
+          e.id == entity.id
         else
           false
+      get_current: ->
+        if kd.info
+          arr = kd.info.session.current_history
+          arr[arr.length - 1]
+        else
+          null
       to_clipboard: (entity) ->
         id = if angular.isObject(entity) then entity.id else entity
         promise = http(

@@ -15,6 +15,20 @@ kor.service "entities_service", [
           url: "/entities/isolated"
           params: params
         )
+      recently_created: (params = {}) ->
+        http(
+          method: 'get'
+          headers: {accept: 'application/json'}
+          url: "/entities/recently_created"
+          params: params
+        )
+      recently_visited: (params = {}) ->
+        http(
+          method: 'get'
+          headers: {accept: 'application/json'}
+          url: "/entities/recently_visited"
+          params: params
+        )
 
       show: (id) ->
         http(

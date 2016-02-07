@@ -131,32 +131,32 @@
             <a 
               href="/relationships/new?relationship[from_id]={{entity.id}}"
               ng-show="allowed_to_any('edit')"
+              ng-click="toggle_relationship_editor($event)"
             >
-              <img
-                alt="Plus"
-                class="kor_command_image"
-                src="/assets/plus.gif"
-                title="{{'verbs.add' | translate}}"
-              >
+              <%= kor_command_image 'plus' %>
             </a>
           </div>
         </div>
         <div class="clear_both"></div>
-        <div class="content subtitle">
 
+        
+        <div class="content">
           <div
+            ng-if="relationship_editor_visible"
             kor-relationship-editor="null"
             kor-source-entity="entity"
-            kor-update="update_and_paginate"
+            kor-close="update_and_paginate(refresh)"
           ></div>
-        
-          <div 
-            ng-repeat="relation in entity.related"
-            kor-relation="relation"
-            kor-entity="entity"
-          ></div>
-          
+
+          <div class="content">
+            <div
+              ng-repeat="relation in entity.related"
+              kor-relation="relation"
+              kor-entity="entity"
+            ></div>
+          </div>
         </div>
+
       </div>
     </div>
     

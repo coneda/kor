@@ -1,3 +1,87 @@
+$light_bg: #292929
+$error_bg: #CB1525
+$black_default: #1E1E1E
+
+.content
+  [kor-relationship-editor]
+    margin-bottom: 20px
+
 [kor-pagination]
   margin-top: 10px
   margin-bottom: 10px
+
+[kor-relationship-editor]
+  background-color: $light_bg
+  padding: 10px
+
+  a.selected
+    font-weight: bold
+
+  .header
+    font-weight: bold
+    color: white
+    margin-bottom: 10px
+
+  .kor-errors
+    padding: 10px
+    color: white
+    background-color: $error_bg
+    font-weight: bold
+
+  .kor-field
+    margin-bottom: 10px
+
+    input, select
+      width: 100%
+
+    &.properties ul li
+      margin-bottom: 5px
+
+
+[kor-entity-selector]
+  .menu
+    margin-bottom: 5px
+
+  .entities
+    width: calc(100% + 20px)
+    margin-left: -10px
+    margin-right: -10px
+
+    table
+      width: 100%
+      border-collapse: collapse
+
+      border-top: 1px solid $black_default
+      border-bottom: 1px solid $black_default
+
+      td
+        -moz-box-sizing:border-box
+        -webkit-box-sizing:border-box
+        box-sizing:border-box
+
+        border: 1px solid $black_default
+        padding: 10px
+        width: 25%
+        vertical-align: top
+
+        cursor: pointer
+
+        img
+          width: 100%
+
+        .name
+          font-weight: bold
+          color: white
+
+        .kind
+          font-style: italic
+
+      td.selected
+        background-color: darken($light_bg, 7%)
+
+      td:first-child
+        border-left: 0px
+      td:last-child
+        border-right: 0px
+      tr:last-child
+        border-bottom: 1px solid $black_default

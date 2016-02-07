@@ -10,7 +10,6 @@ $notice_background: #505050
 $session_background: #333333
 $kor-red: #CB1525
 
-
 /* global */
 
 body
@@ -61,7 +60,7 @@ ul li
   &.small_spacer
     height: 5px
 
-input, select, checkbox, textarea
+input, select, checkbox, textarea, button
   box-sizing: border-box
   font-family: arial
   border: 1px solid $frames
@@ -92,7 +91,7 @@ input
   &[type=text]
     padding-left: 4px
     padding-right: 4px
-  &[type=submit], &[type=button]
+  &[type=submit], &[type=reset], &[type=button]
     border: 0px
     padding-left: 4px
     padding-right: 4px
@@ -111,6 +110,21 @@ textarea
   font-weight: normal
   padding-left: 4px
   padding-right: 4px
+
+.input-with-button
+  box-sizing: border-box
+  display: table
+  width: 100%
+
+  & > *
+    display: table-cell
+
+  & > *:first-child
+    width: 100%
+
+  input
+    border-right: 0px
+
 
 table
   border-spacing: 0px

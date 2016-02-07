@@ -12,6 +12,10 @@ kor.controller('entity_controller', [
       promise.error (data) -> l.path("/denied")
     update()
 
+    scope.toggle_relationship_editor = (event) ->
+      event.preventDefault()
+      scope.relationship_editor_visible = !scope.relationship_editor_visible
+
     scope.visible_entity_fields = ->
       if scope.entity
         scope.entity.fields.filter (field) ->
@@ -49,6 +53,8 @@ kor.controller('entity_controller', [
       event.preventDefault()
       event.stopPropagation()
 
-    scope.update_and_paginate = update
+    scope.update_and_paginate = (refresh) ->
+      update() if refresh
+      scope.relationship_editor_visible = false
 
 ])

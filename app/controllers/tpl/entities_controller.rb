@@ -12,4 +12,8 @@ class Tpl::EntitiesController < TplController
 
   end
 
+  def widget
+
+  end
+
 end

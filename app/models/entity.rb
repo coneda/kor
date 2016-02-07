@@ -26,6 +26,7 @@ class Entity < ActiveRecord::Base
   has_and_belongs_to_many :authority_groups
   has_and_belongs_to_many :user_groups
 
+  # TODO: remove comments
   # has_many :relationships,
   #   :finder_sql => Proc.new {
   #     "SELECT DISTINCT relationships.*
