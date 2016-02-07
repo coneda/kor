@@ -56,6 +56,7 @@ RSpec.describe UsersController, :type => :controller do
     expect(jdoe.admin?).to be_falsey
     
     put :update_self, :user => {:admin => true}
+    
     jdoe.reload
     expect(jdoe.admin?).to be_falsey
   end

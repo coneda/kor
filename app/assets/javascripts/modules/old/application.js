@@ -33,15 +33,13 @@ Application.setup_kor_command_image_events = function() {
 
   images.mouseover(function(event) {
     var image = $(event.currentTarget);
-    var new_src = image.attr('src').replace('.gif', '_over.gif');
-    if (!new_src.match(/_over_over/)) {
-      image.attr('src', new_src);
-    }
+    var new_src = image.attr('data-hover-url');
+    image.attr('src', new_src);
   });
   
   images.mouseout(function(event) {
     var image = $(event.currentTarget);
-    var new_src = image.attr('src').replace('_over.gif', '.gif');
+    var new_src = image.attr('data-normal-url');
     image.attr('src', new_src);
   });
 }

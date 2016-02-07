@@ -32,7 +32,7 @@ end
 
 When /^I select "([^\"]*)" from the collections selector$/ do |collections|
   collections = collections.split('/').map{|c| Collection.find_by_name(c).id}
-  page.find('form.kor_form a img[alt=Pen]').click
+  page.find('form.kor_form a img[alt^=Pen]').click
   dialog = page.all(:css, '.ui-dialog').last
   dialog.all(:css, 'input[type=checkbox]').each do |input|
     input.click unless collections.include?(input.value.to_i)

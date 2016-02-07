@@ -39,7 +39,7 @@ class ApplicationController < ActionController::Base
     def not_found
       redirect_to '/404.html'
     end
-    
+
     def log_exception_and_notify_user(exception)
       ExceptionLog.create(
         :kind => exception.class.to_s,
@@ -217,6 +217,7 @@ class ApplicationController < ActionController::Base
     def entity_params
       params.require(:entity).permit(
         :lock_version,
+        :kind_id,
         :collection_id,
         :name, :distinct_name, :subtype, :comment, :no_name_statement,
         :tag_list,

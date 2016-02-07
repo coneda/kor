@@ -16,7 +16,7 @@ Feature: History
     Given I am logged in as "admin"
     And Leonardo, Mona Lisa and a medium as correctly related entities
     When I go to the entity page for "Mona Lisa"
-    And I follow "Leonardo da Vinci"
+    And I follow the link with text "Leonardo da Vinci"
     Then I should see "Leonardo da Vinci"
     When I ignore the next confirmation box
     And I wait for "2" seconds

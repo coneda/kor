@@ -30,7 +30,7 @@ Feature: Clipboard
     And the user group "Alte Gruppe"
     When I go to the clipboard
     And I select "add to one of your own groups" from "clipboard_action"
-    And I follow "create"
+    And I follow the link with text "create"
     And I fill in "user_group[name]" with "Neue Gruppe"
     And I press "Create"
     And I select "Neue Gruppe" from "group_id"

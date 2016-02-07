@@ -90,8 +90,14 @@ module ApplicationHelper
     )
     
     path = "#{name}.#{options[:extension]}"
+    path_hover = "#{name}_over.#{options[:extension]}"
     options.delete :extension
-    image_tag(path, options.merge(:class => 'kor_command_image'))
+    image_tag(path, options.merge(
+      'class' => 'kor_command_image',
+      'data-name' => name,
+      'data-normal-url' => asset_path(path),
+      'data-hover-url' => asset_path(path_hover)
+    ))
   end
 
   # returns a hash which contains all the routing information

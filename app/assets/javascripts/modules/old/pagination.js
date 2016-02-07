@@ -24,8 +24,8 @@ Pagination.Gallery.register_events = function(scope) {
     Pagination.Gallery.page_to(page);
   });
   
-  var left = $(scope + " .pagination img[Alt='Pager left']").parent();
-  var right = $(scope + " .pagination img[Alt='Pager right']").parent();
+  var left = $(scope + " .pagination img[data-name='pager_left']").parent();
+  var right = $(scope + " .pagination img[data-name='pager_right']").parent();
   
   left.click(function(event){
     var link = $(event.currentTarget);
@@ -83,8 +83,8 @@ Pagination.Entity.register_events = function() {
     Pagination.Entity.page_to(relation, select, page);
   });
   
-  var left = $(".relation .pagination img[Alt='Pager left']").parent();
-  var right = $(".relation .pagination img[Alt='Pager right']").parent();
+  var left = $(".relation .pagination img[data-name='pager_left']").parent();
+  var right = $(".relation .pagination img[data-name='pager_right']").parent();
   
   left.click(function(event){
     var link = $(event.currentTarget);

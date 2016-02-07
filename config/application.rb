@@ -39,6 +39,7 @@ module Kor
   end
 end
 
+# TODO: remove comments
 # module Kor
 #   class Application < Rails::Application
     

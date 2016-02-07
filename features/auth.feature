@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Feature: Authentication and Authorization
   In order to have different responsabilities
   As a User

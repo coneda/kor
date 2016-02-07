@@ -20,8 +20,15 @@ When /^(?:|I )press "([^"]*)"$/ do |button|
 end
 
 When /^(?:|I )follow "([^"]*)"$/ do |locator|
-  click_link(locator)
+  element = all(:link, locator).first || all("[data-name='#{locator}']").first
+  raise "couldn't find link '#{locator}'" unless element
+  element.click
 end
+
+When(/^I follow the link with text "([^"]*)"$/) do |text|
+  click_link(text)
+end
+
 
 When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |field, quoted, value|
   value = "\"#{value}\"" if quoted == ' quoted'
