@@ -11,26 +11,26 @@ RSpec.describe AuthenticationController, :type => :controller do
     session[:user_id] = User.find_by_name('admin').id
     post :logout
     expect(response).to redirect_to(root_url)
-    expect(flash[:notice]).to eql "Sie haben sich erfolgreich abgemeldet"
+    expect(flash[:notice]).to eql "you have been logged out successfully"
   end
   
   it "should deny access if there were too many login attempts in one hour" do
     for i in 1..3 do
       post :login, :username => 'admin', :password => 'wrong'
       expect(response).to redirect_to(:action => 'form')
-      expect(flash[:error]).to eql("der Benutzername oder das Passwort waren falsch")
+      expect(flash[:error]).to eql("username or password could not be found")
     end
   
     post :login, :username => 'admin', :password => 'wrong'
     expect(response).to redirect_to(:action => 'form')
-    expect(flash[:error]).to match("Anmeldeversuche")
+    expect(flash[:error]).to match("many login attempts")
     
     # one hour later
     later = Time.now + 1.hour
     allow(Time).to receive(:now).and_return(later)
     post :login, :username => 'admin', :password => 'wrong'
     expect(response).to redirect_to(:action => 'form')
-    expect(flash[:error]).to match("der Benutzername oder das Passwort waren falsch")
+    expect(flash[:error]).to match("username or password could not be found")
   end
   
   it "should reset the users login attempts when he authenticated successfully" do

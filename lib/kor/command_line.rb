@@ -191,9 +191,7 @@ class Kor::CommandLine
   end
 
   def notify_expiring_users
-    User.where("expires_at < ? AND expires_at > ?", 2.weeks.from_now, Time.now).each do |user|
-      UserMailer.deliver_upcoming_expiry(user)
-    end
+    Kor.notify_expiring_users
   end
 
   def recheck_invalid_entities
@@ -232,6 +230,10 @@ class Kor::CommandLine
     model = Class.new(ActiveRecord::Base)
     model.table_name = "sessions"
     model.where("created_at < ?", 5.days.ago).delete_all
+  end
+
+  def reset_admin_account
+    Kor.ensure_admin_account!
   end
 
 end

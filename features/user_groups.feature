@@ -3,7 +3,7 @@ Feature: usergroups
   Scenario: User Groups (no groups, list)
     Given I am logged in as "admin"
     When I go to the credentials page
-    Then I should see "Benutzergruppen"
+    Then I should see "User groups"
     And I should see no user groups
 
 
@@ -11,13 +11,13 @@ Feature: usergroups
     Given I am logged in as "admin"
     When I go to the new user group page
     And I fill in "user_group[name]" with "Leonardo"
-    And I press "Erstellen"
-    Then I should see "Leonardo wurde angelegt"
+    And I press "Create"
+    Then I should see "Leonardo has been created"
     And I should see "Leonardo"
     When I go to the user group "Leonardo"
     Then I should see "Leonardo"
-    And I should see "Eigene Gruppe"
-    And I should see "keine Entitäten"
+    And I should see "Personal group"
+    And I should see "no entities"
 
 
   Scenario: rename user group
@@ -26,7 +26,7 @@ Feature: usergroups
     When I go to the user groups page
     And I follow "Pen"
     And I fill in "user_group[name]" with "Raffael"
-    And I press "Speichern"
+    And I press "Save"
     Then I should see "Raffael"
     And I should not see "Leonardo"
 
@@ -45,7 +45,7 @@ Feature: usergroups
     And the user group "Leonardo"
     When I go to the user groups page
     And I follow "Private"
-    Then I should see "Leonardo wurde freigegeben"
+    Then I should see "Leonardo has been shared"
     When I go to the shared user groups page
     Then I should see "Leonardo"
 
@@ -56,7 +56,7 @@ Feature: usergroups
     When I go to the user groups page
     And I follow "Public"
     Then I should be on the user groups page
-    Then I should see "Leonardo ist nun nicht mehr freigegeben"
+    Then I should see "Leonardo is not shared anymore"
     When I go to the shared user groups page
     Then I should not see "Leonardo"
 
@@ -68,7 +68,7 @@ Feature: usergroups
     And I follow "Plus"
     And I fill in "publishment[name]" with "Leoforall"
     And I select "Leonardo" from "publishment[user_group_id]"
-    And I press "Erstellen"
+    And I press "Create"
     Then I should see "Leoforall"
     And I should see "pub" within "table.kor_table"
 
@@ -78,7 +78,7 @@ Feature: usergroups
     And the user group "Leonardo" published as "Leoforall"
     When I go to the publishments page
     And I follow the delete link within "table.kor_table tr:nth-child(2)"
-    Then I should see "es wurden keine veröffentlichte Gruppen gefunden"
+    Then I should see "no published groups found"
     
     
   Scenario: Renew a published usergroup
@@ -87,7 +87,7 @@ Feature: usergroups
     And the entity "Mona Lisa" of kind "Werk/Werke"
     When I go to the entity page for "Mona Lisa"
     And I go to the publishments page
-    And I follow "Stop_watch" within the row for "publishment" "Leonforall"
+    And I follow "Stop watch" within the row for "publishment" "Leonforall"
     Then I should be on the publishments page
     
     

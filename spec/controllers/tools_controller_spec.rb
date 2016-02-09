@@ -38,7 +38,7 @@ RSpec.describe ToolsController, :type => :controller do
       Entity.find_by_name("Mona Lisa").id,
       Entity.find_by_name("Monalisa").id
     ]
-    
+
     get :clipboard
     expect(response).to be_success
     expect(response.body).to match /Mona Lisa/

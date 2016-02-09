@@ -18,11 +18,11 @@ class Kind < ActiveRecord::Base
 
   before_validation :generate_uuid
   
-  default_scope :order => 'name'
+  default_scope lambda { order(:name) }
   scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }
-  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : scoped}
-  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : scoped}
-  scope :allowed, scoped
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :allowed, lambda {|user, policies| all}
 
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
@@ -71,7 +71,11 @@ class Kind < ActiveRecord::Base
   # Settings
   
   def settings
-    (self[:settings] ||= {}).symbolize_keys!
+    unless self[:settings]
+      self[:settings] = {}
+    end
+
+    self[:settings].symbolize_keys!
   end
   
   def settings=(values)

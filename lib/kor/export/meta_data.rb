@@ -1,6 +1,7 @@
 class Kor::Export::MetaData
   
-  def initialize(name)
+  def initialize(user, name)
+    @user = user
     @profile = (Kor.config['meta_data_profiles'] || {})[name] || []
   end
   
@@ -26,7 +27,8 @@ class Kor::Export::MetaData
     end
     
     options[:profile].each do |relation|
-      relationships = entity.relationships.only(:relation_names => relation['name'])
+      blaze = Kor::Blaze.new(@user)
+      relationships = blaze.relationship_scope(entity, :relation_names => relation['name'])
       
       unless relationships.empty?
         result += line nil, relation['name'], options[:indent]

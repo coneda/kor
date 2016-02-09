@@ -32,7 +32,7 @@ end
 
 When /^I select "([^\"]*)" from the collections selector$/ do |collections|
   collections = collections.split('/').map{|c| Collection.find_by_name(c).id}
-  page.find('form.kor_form a img[alt=Pen]').click
+  page.find('form.kor_form a img[alt^=Pen]').click
   dialog = page.all(:css, '.ui-dialog').last
   dialog.all(:css, 'input[type=checkbox]').each do |input|
     input.click unless collections.include?(input.value.to_i)
@@ -64,12 +64,12 @@ end
 
 When /^I fill in "([^\"]*)" with "([^\"]*)" and select term "([^\"]*)"$/ do |field, value, pattern|
   step "I fill in \"#{field}\" with \"#{value}\""
-  step "I select \"Begriff '#{pattern}'\" from the autocomplete"
+  step "I select \"terms '#{pattern}'\" from the autocomplete"
 end
 
 When /^I fill in "([^\"]*)" with "([^\"]*)" and select tag "([^\"]*)"$/ do |field, value, pattern|
   step "I fill in \"#{field}\" with \"#{value}\""
-  step "I select \"Tag: #{pattern}\" from the autocomplete"
+  step "I select \"tag: #{pattern}\" from the autocomplete"
 end
 
 When /^I select "([^\"]*)" from the autocomplete$/ do |pattern|
@@ -217,6 +217,10 @@ end
 Then(/^I should see "(.*?)"'s API Key$/) do |username|
   user = User.where(:name => username).first
   expect(find_field("user[api_key]").value).to eq(user.api_key)
+end
+
+When(/^I trigger the blur event for "(.*?)"$/) do |selector|
+  page.execute_script("$('#{selector}').blur()")
 end
 
 When(/^I uncheck the checkbox$/) do

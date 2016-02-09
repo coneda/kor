@@ -3,7 +3,7 @@ module EntitiesHelper
   def gallery_item(entity)
     render :partial => 'layouts/gallery_item', :locals => {
       :entity => entity,
-      :primary_entities => entity.related(:assume => :media, :search => :primary).select{|pe| pe && !pe.is_medium?}
+      :primary_entities => entity.related(current_user, :assume => :media, :search => :primary).select{|pe| pe && !pe.is_medium?}
     }
   end
 

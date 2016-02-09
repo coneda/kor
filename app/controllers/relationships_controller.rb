@@ -17,7 +17,7 @@ class RelationshipsController < ApplicationController
   end
 
   def new
-    @relationship = Relationship.new(params[:relationship].merge(:to_id => session[:current_entity]))
+    @relationship = Relationship.new(relationship_params.merge(:to_id => session[:current_entity]))
     
     if @relationship.from and @relationship.to
       unless authorized_for_relationship? @relationship, :create
@@ -38,7 +38,7 @@ class RelationshipsController < ApplicationController
   end
 
   def create
-    @relationship = Relationship.new(params[:relationship])
+    @relationship = Relationship.new(relationship_params)
 
     if authorized_for_relationship? @relationship, :create
       if @relationship.save
@@ -63,7 +63,7 @@ class RelationshipsController < ApplicationController
     unless authorized_for_relationship? @relationship, :edit
       redirect_to denied_path
     else
-      success = @relationship.update_attributes(params[:relationship])
+      success = @relationship.update_attributes(relationship_params)
 
       respond_to do |format|
         format.html do
@@ -99,5 +99,16 @@ class RelationshipsController < ApplicationController
     end
 
   end
+
+
+  protected
+
+    def relationship_params
+      params.require(:relationship).permit(
+        :from_id, :to_id, :relation_id, :relation_name
+      ).tap do |w|
+        w[:properties] = params[:relationship][:properties]
+      end
+    end
 
 end

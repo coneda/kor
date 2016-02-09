@@ -78,11 +78,11 @@ FactoryGirl.define do
   end
   
   factory :entity do
-    collection { Collection.find_or_create_by_name "default" }
+    collection { Collection.find_or_create_by :name => "default" }
 
     factory :work do
       name "A entity"
-      kind { Kind.find_or_create_by_name "Werk" }
+      kind { Kind.find_or_create_by :name => "Werk" }
 
       factory :mona_lisa do
         name "Mona Lisa"
@@ -108,7 +108,7 @@ FactoryGirl.define do
 
     factory :location do
       name "A entity"
-      kind { Kind.find_or_create_by_name "Ort" }
+      kind { Kind.find_or_create_by :name => "Ort" }
 
       factory :united_kingdom do
         name "United Kingdom"
@@ -121,7 +121,7 @@ FactoryGirl.define do
 
     factory :person do
       name "A person"
-      kind { Kind.find_or_create_by_name "Person" }
+      kind { Kind.find_or_create_by :name => "Person" }
 
       factory :jack do
         name "Jack"
@@ -134,7 +134,7 @@ FactoryGirl.define do
 
     factory :institution do
       name "A entity"
-      kind { Kind.find_or_create_by_name "Person" }
+      kind { Kind.find_or_create_by :name => "Person" }
     end
 
     factory :medium_entity do
@@ -180,6 +180,11 @@ FactoryGirl.define do
     factory :is_located_at do
       name "is located at"
       reverse_name "is location of"
+    end
+
+    factory :is_sibling_of do
+      name "is sibling of"
+      reverse_name "is sibling of"
     end
   end
 

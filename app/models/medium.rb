@@ -228,7 +228,7 @@ class Medium < ActiveRecord::Base
   end
   
   def self.dummy_path(content_type)
-    group, type = content_type.split('/')
+    group, type = content_type.split('/').map{|t| t.gsub /\//, '_'}
   
     dir = "#{Rails.root}/public/content_types"
     group_dir = "#{dir}/#{group}"

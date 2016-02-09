@@ -9,22 +9,15 @@ RSpec.describe MediaController, :type => :controller do
     test_kinds
   end
 
-  def work_off(jobs = 10)
-    Delayed::Worker.new.work_off(jobs)
-    if Delayed::Job.count > 0
-      raise "Not all jobs have been processed, please check!"
-    end
-  end
-
   def side_collection
     @side_collection ||= FactoryGirl.create :private
   end
 
   def side_entity(attributes = {})
+    Delayed::Worker.delay_jobs = false
+
     @side_entity ||= begin
-      result = FactoryGirl.create :image_a, :collection => side_collection
-      work_off
-      result
+      FactoryGirl.create :image_a, :collection => side_collection
     end
   end
 
@@ -34,7 +27,6 @@ RSpec.describe MediaController, :type => :controller do
     end
   end
 
-  # view
   it "should not allow viewing to unauthorized users" do
     get :view, :id => side_entity.medium_id
     expect(response).to redirect_to(denied_path)
@@ -59,7 +51,6 @@ RSpec.describe MediaController, :type => :controller do
     }
   end
 
-  # show
   it "should not show imgages to unauthorized users" do
     get :show, params_for_medium(side_entity.medium)
     expect(response).to redirect_to(denied_path)
@@ -72,8 +63,6 @@ RSpec.describe MediaController, :type => :controller do
     expect(response).not_to redirect_to(denied_path)
   end
 
-
-  # download
   it "should not allow image download to unauthorized users" do
     get :download, :id => side_entity.medium_id, :style => :normal
     expect(response).to redirect_to(denied_path)
@@ -96,15 +85,6 @@ RSpec.describe MediaController, :type => :controller do
     expect(response).to redirect_to(denied_path)
   end
 
-  it "should show originals only to authorized users" do
-    set_side_collection_policies(:view => [@admins])
-
-    get :show, :id => side_entity.medium_id, :style => :original
-    expect(response).to redirect_to(denied_path)
-  end
-
-
-  # transform
   it "should not allow image transformations to unauthorized users" do
     get :transform, :id => side_entity.medium_id, :transformation => 'image', :operation => 'flip'
     expect(response).to redirect_to(denied_path)

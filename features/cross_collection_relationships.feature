@@ -40,7 +40,7 @@ Feature: Cross collection relationships
       And I am logged in as "Buser"
       And the triple "Werk/Werke" "Frankfurter Dom" "Standort in/Standort von" "Ort/Orte" "Kreuzberg"
       When I go to the entity page for "Kreuzberg"
-      Then I should see "verweigert"
+      Then I should see "Access denied"
       When I go to the entity page for "Frankfurter Dom"
       Then I should see "Frankfurter Dom"
       And I should see element "a[kor-current-button]" within ".metadata"

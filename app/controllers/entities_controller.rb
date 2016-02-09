@@ -5,7 +5,7 @@ class EntitiesController < ApplicationController
   respond_to :json, :only => [:isolated]
     
   def by_uuid
-    @entity = viewable_entities.find_by_uuid(params[:uuid])
+    @entity = viewable_entities.find_by(:uuid => params[:uuid])
     
     if @entity
       redirect_to web_path(:anchor => entity_path(@entity))
@@ -52,7 +52,7 @@ class EntitiesController < ApplicationController
   
   def invalid
     if authorized? :delete
-      @group = SystemGroup.find_or_create_by_name('invalid')
+      @group = SystemGroup.find_or_create_by(:name => 'invalid')
       @entities = @group.entities.allowed(current_user, :delete).paginate :page => params[:page], :per_page => 30
     else
       redirect_to denied_path
@@ -84,7 +84,7 @@ class EntitiesController < ApplicationController
   end
 
   def index
-    if params[:query] && @entity = viewable_entities.find_by_uuid(params[:query][:name])
+    if params[:query] && @entity = viewable_entities.find_by(:uuid => params[:query][:name])
       redirect_to web_path(:anchor => entity_path(@entity))
     else
       @query = kor_graph.search(:attribute,
@@ -102,15 +102,11 @@ class EntitiesController < ApplicationController
       :authority_groups => :authority_group_category
     ).find(params[:id])
 
-    if allowed_to?(:view, @entity.collection)
-      respond_to do |format|
+    respond_to do |format|
+      if allowed_to?(:view, @entity.collection)
         format.json
-        format.rdf
-      end
-    else
-      respond_to do |format|
+      else
         format.json { render :json => {}, :status => 403 }
-        format.rdf { render :nothing => true, :status => 403 }
       end
     end
   end
@@ -142,18 +138,19 @@ class EntitiesController < ApplicationController
   end
 
   def create
-    @entity = Entity.new(:kind_id => params[:entity][:kind_id])
-    @entity.attributes = params[:entity]
-    
+    @entity = Entity.new
+    @entity.kind_id = params[:entity][:kind_id]
+    @entity.assign_attributes entity_params
+
     if authorized?(:create, @entity.collection)
       @entity.creator_id = current_user.id
-      
+
       if @entity.save
         if params[:user_group_name]
-          transit = UserGroup.owned_by(current_user).find_or_create_by_name(params[:user_group_name])
+          transit = UserGroup.owned_by(current_user).find_or_create_by(:name => params[:user_group_name])
           transit.add_entities @entity if transit
         end
-        
+
         if !params[:relation_name].blank? && current_entity
           Relationship.relate_and_save(@entity, params[:relation_name], current_entity)
         end
@@ -170,7 +167,7 @@ class EntitiesController < ApplicationController
           format.json do
             if @entity.medium && @entity.medium.errors[:datahash].present?
               if params[:user_group_name]
-                transit = UserGroup.owned_by(current_user).find_or_create_by_name(params[:user_group_name])
+                transit = UserGroup.owned_by(current_user).find_or_create_by(:name => params[:user_group_name])
 
                 if transit
                   @entity = Medium.where(:datahash => @entity.medium.datahash).first.entity
@@ -193,11 +190,11 @@ class EntitiesController < ApplicationController
   end
 
   def update
-    params[:entity] ||= {}
-    params[:entity][:dataset] ||= {}
-    params[:entity][:properties] ||= []
-    params[:entity][:synonyms] ||= []
-    params[:entity][:existing_datings_attributes] ||= {}
+    # params[:entity] ||= {}
+    # params[:entity][:dataset] ||= {}
+    # params[:entity][:properties] ||= []
+    # params[:entity][:synonyms] ||= []
+    # params[:entity][:existing_datings_attributes] ||= {}
 
     @entity = Entity.find(params[:id])
     
@@ -212,8 +209,8 @@ class EntitiesController < ApplicationController
     if authorized_to_edit && authorized_to_move
       @entity.updater_id = current_user.id
 
-      if @entity.update_attributes(params[:entity])
-        SystemGroup.find_or_create_by_name('invalid').remove_entities @entity
+      if @entity.update_attributes(entity_params)
+        SystemGroup.find_or_create_by(:name => 'invalid').remove_entities @entity
         flash[:notice] = I18n.t( 'objects.update_success', :o => @entity.display_name )
         redirect_to web_path(:anchor => entity_path(@entity))
       else

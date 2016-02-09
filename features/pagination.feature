@@ -11,6 +11,7 @@ Feature: Pagination
     When I go to the expert search page
     And I select "Werk" from "query[kind_id]"
     And I fill in "query[name]" with "Werk"
-    And I press "Suchen"
-    And I follow "Pager_right"
-    Then I should see "Suchergebnis"
+    And I press "Search"
+    And I follow "pager_right"
+    Then I should see "Search results"
+    And I should see "Werk 9"

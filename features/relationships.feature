@@ -15,9 +15,9 @@ Feature: relate entities using predefined relations
     Then I should see "Bamberger Apokalypse" within ".canvas"
     And I should see "Sankt Stephan" within ".canvas"
     When I select "befindet sich in" from "relationship[relation_name]"
-    And I press "Erstellen"
+    And I press "Create"
     Then I should be on the entity page for "Bamberger Apokalypse"
-    And I should see "Verknüpfung wurde angelegt"
+    And I should see "Relationship has been created"
     And I should see "befindet sich in" within ".canvas"
     And I should see "Sankt Stephan" within ".canvas"
 
@@ -30,9 +30,9 @@ Feature: relate entities using predefined relations
     And I follow "Pen" within ".relationship.stage_panel"
     And I follow "Plus" within "#properties"
     And I fill in "relationship[properties][]" with "Bibliothek"
-    And I press "Speichern"
+    And I press "Save"
     Then I should be on the entity page for "Bamberger Apokalypse"
-    And I should see "Verknüpfung wurde abgeändert"
+    And I should see "Relationship has been changed"
     Then I should see "Bibliothek" within ".relationship .properties"
 
 
@@ -52,7 +52,7 @@ Feature: relate entities using predefined relations
     And Leonardo, Mona Lisa and a medium as correctly related entities
     When I mark "Leonardo da Vinci" as current entity
     And I go to the new relationship page for "Leonardo da Vinci"
-    Then I should see "Für diese Kombination ist keine Relation vorgesehen"
+    Then I should see "There is no relation provided for this combination of entity types"
     
     
   @javascript
@@ -66,9 +66,9 @@ Feature: relate entities using predefined relations
     When all entities of kind "Werk/Werke" are in the clipboard
     And I mark "Leonardo da Vinci" as current entity
     And I go to the clipboard page
-    And I select "verknüpfen mit" from "clipboard_action"
+    And I select "relate with" from "clipboard_action"
     And I wait for "2" seconds
-    And I press "Senden"
+    And I press "Send"
     Then I should be on the entity page for "Leonardo da Vinci"
     
     

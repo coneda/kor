@@ -7,14 +7,14 @@ Feature: Entities
   Scenario: Invalid entities
     Given I am logged in as "admin"
     And 40 invalid entities "Mona Lisa" of kind "Werk" inside collection "default"
-    And I follow "Ungültige Entitäten"
-    Then I should see "gehe zu Seite"
+    And I follow "Invalid entities"
+    Then I should see "go to page"
   
 
   Scenario: Search fields
     Given I am logged in as "admin"
     When I go to the expert search
-    Then I should see "Datierung"
+    Then I should see "Dating"
 
 
   @javascript
@@ -33,9 +33,9 @@ Feature: Entities
   Scenario: Upload a medium
     Given I am logged in as "admin"
     When I go to the legacy upload page
-    Then I should see "Medium anlegen"
+    Then I should see "Create medium"
     When I attach the file "spec/fixtures/image_a.jpg" to "entity[medium_attributes][document]"
-    And I press "Erstellen"
+    And I press "Create"
     Then there should be "1" "Medium" entity in the database
     And I should be on the entity page for the last medium
     And I should see "Medium"
@@ -66,7 +66,7 @@ Feature: Entities
     And I follow "Plus" within "#synonyms"
     And I fill in "synonyms" attachment "2" with "La Gioconde"
     
-    And I press "Erstellen"
+    And I press "Create"
     Then I should be on the entity page for "Mona Lisa"
     And I should see "1688"
     And I should see "Alter"
@@ -76,7 +76,7 @@ Feature: Entities
     
     When I follow "Pen"
     And I follow "Minus" within "#synonyms .attachment:first-child"
-    And I press "Speichern"
+    And I press "Save"
     Then I should be on the entity page for "Mona Lisa"
     And I should see "1688"
     And I should see "Alter"
@@ -111,7 +111,7 @@ Feature: Entities
     When I go to the entity page for "Mona Lisa"
     And I follow "Pen"
     And I fill in "entity[name]" with "La Gioconde"
-    And I press "Speichern"
+    And I press "Save"
     Then I should be on the entity page for "La Gioconde"
     And I should see "La Gioconde"
 
@@ -121,11 +121,11 @@ Feature: Entities
     And the kind "Werk/Werke"
     And I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
+    And I press "Create"
     When I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
-    Then I should see "Name ist bereits vergeben"
+    And I press "Create"
+    Then I should see "name is already taken"
     
   
   Scenario: Try to create an entity with the same name twice (different collections)
@@ -135,12 +135,12 @@ Feature: Entities
     And I am logged in as "admin"
     And I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
+    And I press "Create"
     When I go to the new "Werk-Entity" page
     And I select "side" from "entity[collection_id]"
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
-    Then I should see "Name ist bereits vergeben"
+    And I press "Create"
+    Then I should see "name is already taken"
   
  
   Scenario: Try to create an entity with the same name within another collection
@@ -149,8 +149,8 @@ Feature: Entities
     And I am logged in as "john"
     When I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
-    Then I should see "Konflikt mit Sammlung 'Default'"
+    And I press "Create"
+    Then I should see "conflict with collection 'Default'"
     
   
   @javascript
@@ -164,7 +164,7 @@ Feature: Entities
     And I wait for "1" seconds
     And I hover element ".relationships .kor_medium_frame"
     And I click on ".kor_medium_frame .button_bar a[kor-to-clipboard]"
-    Then I should see "wurde in die Zwischenablage aufgenommen"
+    Then I should see "has been copied to the clipboard"
 
 
   @javascript
@@ -198,7 +198,7 @@ Feature: Entities
     And I should not see element "img[title=Pen]" within ".relationship"
 
 
-  @javascript
+  @javascript @nodelay
   Scenario: Click the big image on media to return to the entity screen
     Given I am logged in as "admin"
     And the medium "spec/fixtures/image_a.jpg"

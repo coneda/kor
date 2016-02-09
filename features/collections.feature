@@ -5,7 +5,7 @@ Feature: collections page
     When I go to the collections page
     And I follow "Plus"
     And I fill in "collection[name]" with "Socks"
-    And I press "Erstellen"
+    And I press "Create"
     Then I should see "Socks" within "table.kor_table"
     And there should be the collection named "Socks" in the database
 
@@ -16,7 +16,7 @@ Feature: collections page
     When I go to the collections page
     And I follow "Pen" within "table.kor_table tr:nth-child(3)"
     And I fill in "collection[name]" with "Pants"
-    And I press "Speichern"
+    And I press "Save"
     Then I should see "Pants" within "table.kor_table"
     Then I should not see "Socks" within "table.kor_table"
     And there should be the collection named "Pants" in the database
@@ -50,7 +50,7 @@ Feature: collections page
     And I am on the collections page
     When I follow the delete link within the row for "collection" "Default"
     Then I should be on the collections page
-    And I should see "kann nicht gelöscht werden"
+    And I should see "cannot be deleted"
     And I should see "Default" within "table.kor_table"
     
   
@@ -59,4 +59,4 @@ Feature: collections page
     Given I am logged in as "admin"
     And I am on the collections page
     When I follow "Plus"
-    Then I should see "Diesen Gruppen das Anzeigen der Stammdaten erlaubem"
+    Then I should see "Allow these groups to display the master data"

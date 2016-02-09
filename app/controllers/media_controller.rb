@@ -14,16 +14,17 @@ class MediaController < ApplicationController
     id = params[:id] || (params[:id_part_01] + params[:id_part_02] + params[:id_part_03]).to_i
     @medium = Medium.includes(:entity => :collection).find(id)
 
-    auth = case params[:style].to_sym
-      when :original
-        authorized?(:download_originals, @medium.entity.collection) || (!@medium.content_type.match(/\image/) && authorized?(:view, @medium.entity.collection))
-      else
+    style = param_to_style(params[:style])
+    auth = if style == :original
+      authorized?(:download_originals, @medium.entity.collection) || (
+        !@medium.content_type.match(/\image/) && 
         authorized?(:view, @medium.entity.collection)
+      )
+    else
+      authorized?(:view, @medium.entity.collection)
     end
 
     if auth
-      style = params[:style].to_sym
-
       send_data @medium.data(style),
         :type => @medium.content_type(style),
         :disposition => 'inline',
@@ -36,16 +37,17 @@ class MediaController < ApplicationController
   def download
     @medium = Medium.find params[:id]
 
-    auth = case params[:style].to_sym
-      when :original
-        authorized?(:download_originals, @medium.entity.collection) || (!@medium.content_type.match(/\image/) && authorized?(:view, @medium.entity.collection))
-      else
+    style = param_to_style(params[:style])
+    auth = if style == :original
+      authorized?(:download_originals, @medium.entity.collection) || (
+        !@medium.content_type.match(/\image/) && 
         authorized?(:view, @medium.entity.collection)
+      )
+    else
+      authorized? :view, @medium.entity.collection
     end
 
     if auth
-      style = params[:style].to_sym
-
       send_data @medium.data(style),
         :type => @medium.content_type(style),
         :disposition => 'attachment',
@@ -58,9 +60,6 @@ class MediaController < ApplicationController
   def dummy
     content_type = "#{params['content_type_group']}/#{params['content_type']}"
     redirect_to Medium.dummy_path(content_type)
-#    send_data Medium.dummy_data(content_type),
-#      :type => 'image/png',
-#      :disposition => 'inline'
   end
 
   def transform
@@ -69,7 +68,7 @@ class MediaController < ApplicationController
     if authorized?(:edit, @medium.entity.collection)
       Kor::Media.transform(@medium,
         Kor::Media.transformation_by_name(params[:transformation]),
-        :operation => params[:operation].to_sym
+        :operation => param_to_operation(params[:operation])
       )
 
       redirect_to web_path(:anchor => entity_path(@medium.entity))
@@ -77,5 +76,18 @@ class MediaController < ApplicationController
       redirect_to denied_path
     end
   end
+
+
+  protected
+
+    def param_to_style(param)
+      allowed = ["icon", "thumbnail", "preview", "screen", "normal", "original"]
+      allowed.include?(param) ? param.to_sym : param
+    end
+
+    def param_to_operation(param)
+      allowed = ["rotate_cw", "rotate_ccw", "rotate_180"]
+      allowed.include?(param) ? param.to_sym : param
+    end
 
 end

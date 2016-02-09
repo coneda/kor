@@ -13,7 +13,7 @@ class Api::OaiPmh::KindsController < Api::OaiPmh::BaseController
   protected
 
     def records
-      Kind.scoped
+      Kind.all
     end
 
     def base_url

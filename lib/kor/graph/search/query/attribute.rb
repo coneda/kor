@@ -26,7 +26,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
   def collection_ids
     case @collection_ids
       when Array then @collection_ids
-      when String then Collection.find_all_by_id(@collection_ids.split(',').map{|i| i.to_i}).map{|c| c.id}
+      when String then Collection.where(:id => @collection_ids.split(',').map{|i| i.to_i}).map{|c| c.id}
       else
         ::Kor::Auth.authorized_collections(user, :view).map{|c| c.id}
     end
@@ -65,7 +65,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
         
         tmp_result = tmp_result.searcheable unless options[:media]
         
-        @total = tmp_result.count  
+        @total = tmp_result.count("entities.id")
         
         tmp_result.alphabetically.paginate(:page => page)
       end

@@ -11,7 +11,7 @@ Feature: Own entities
     And I check "user[make_personal]"
     And I fill in "user[name]" with "harald"
     And I fill in "user[email]" with "harald@gota.com"
-    And I press "Erstellen"
+    And I press "Create"
     Given the user "harald" has password "harald"
 
   
@@ -28,14 +28,14 @@ Feature: Own entities
       
       
   Scenario: Show a user with a personal_collection
-    Then I should see "ja" within the row for "user" "harald"
+    Then I should see "yes" within the row for "user" "harald"
     When I follow "Pen" within the row for "user" "harald"
     Then I should see element "input[name='user[make_personal]'][checked]"
     
   
   Scenario: Edit a user with a personal collection
     When I follow "Pen" within the row for "user" "harald"
-    And I press "Speichern"
+    And I press "Save"
     Then user "harald" should have the following access rights
       | collection | credential | policy             |
       | harald     | harald     | create             |
@@ -50,7 +50,7 @@ Feature: Own entities
   Scenario: Make a user non-personal again
     When I follow "Pen" within the row for "user" "harald"
     And I uncheck "user[make_personal]"
-    And I press "Speichern"
+    And I press "Save"
       Then user "harald" should have the following access rights
       | collection | credential | policy |
     When I go to the collections page
@@ -63,24 +63,24 @@ Feature: Own entities
     When I re-login as "harald"
     And I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
-    And press "Erstellen"
+    And press "Create"
     And I re-login as "admin"
     And I go to the users page
     And I follow "Pen" within the row for "user" "harald"
     And I uncheck "user[make_personal]"
-    And I press "Speichern"
-    Then I should see "Konnte die persönliche Sammlung nicht löschen, da sie noch Entitäten enthält"
+    And I press "Save"
+    Then I should see "The personal collection could not be deleted because it still contains entities"
   
   
   Scenario: Show an edit link when there are personal collections
     When I go to the collections page
-    Then I should see "Persönliche Sammlungen bearbeiten"
+    Then I should see "Edit personal collections"
     When I go to the users page
     And I follow "Pen" within the row for "user" "harald"
     And I uncheck "user[make_personal]"
-    And I press "Speichern"
+    And I press "Save"
     And I go to the collections page
-    Then I should not see "Persönliche Sammlungen bearbeiten"
+    Then I should not see "Edit personal collections"
   
     
   Scenario: Add additional grants for all personal collections
@@ -89,13 +89,13 @@ Feature: Own entities
     And I check "user[make_personal]"
     And I fill in "user[name]" with "gerhard"
     And I fill in "user[email]" with "gerhard@gota.com"
-    And I press "Erstellen"
+    And I press "Create"
     
     When I go to the collections page
-    And I follow "Persönliche Sammlungen bearbeiten"
+    And I follow "Edit personal collections"
     And I select "Administrators" from "collection[grants_by_policy][view][]"
-    And I unselect "Besitzer" from "collection[grants_by_policy][delete][]"
-    And I press "Speichern"
+    And I unselect "owner" from "collection[grants_by_policy][delete][]"
+    And I press "Save"
     Then user "gerhard" should have the following access rights
       | collection | credential | policy             |
       | gerhard    | gerhard    | create             |
@@ -126,20 +126,20 @@ Feature: Own entities
       | gerhard    | Administrators | view               |
 
 
-  
+  @javascript
   Scenario: Apply existing personal collection rights to new personal collections
     When I go to the collections page
-    And I follow "Persönliche Sammlungen bearbeiten"
+    And I follow "Edit personal collections"
     And I select "Administrators" from "collection[grants_by_policy][view][]"
-    And I unselect "Besitzer" from "collection[grants_by_policy][delete][]"
-    And I press "Speichern"
+    And I unselect "owner" from "collection[grants_by_policy][delete][]"
+    And I press "Save"
     
     When I go to the users page
     When I follow "Plus"
     And I check "user[make_personal]"
     And I fill in "user[name]" with "gerhard"
     And I fill in "user[email]" with "gerhard@gota.com"
-    And I press "Erstellen"
+    And I press "Create"
   
     Then user "gerhard" should have the following access rights
       | collection | credential | policy             |
@@ -174,9 +174,9 @@ Feature: Own entities
   @javascript      
   Scenario: Change the mail address for a user with a personal collection
     When I go to the users page
-    Then I should see "ja" within the row for "user" "harald"
+    Then I should see "yes" within the row for "user" "harald"
     When I follow "Pen" within the row for "user" "harald"
     And I fill in "user[email]" with "harald@miami.com"
-    And I press "Speichern"
-    Then I should see "ja" within the row for "user" "harald"
+    And I press "Save"
+    Then I should see "yes" within the row for "user" "harald"
     

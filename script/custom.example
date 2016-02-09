@@ -4,12 +4,13 @@
 # kinds of data into a ConedaKOR installation.
 
 # You will have to set this so that the correct installation and environment can
-# be loaded
+# be loaded. On production instances, make sure you change the environment to
+# "production".
 KOR_ROOT="/home/schepp/Desktop/coneda/projects/kor/src"
 RAILS_ENV="development"
 
 # loading the rails environment
-require "#{KOR_ROOT}/config/environment"
+require "#{KOR_ROOT}/config/environment" unless defined?(Rails)
 
 # we are wrapping the code to catch validation errors
 begin
@@ -48,6 +49,12 @@ begin
       :type => "Field::String",
       :name => "dimensions",
       :show_label => "Dimensions",
+      :show_on_entity => true
+    ),
+    Field.new(
+      :type => "Field::String",
+      :name => "technique",
+      :show_label => "Technique",
       :show_on_entity => true
     )
   ])
@@ -88,8 +95,16 @@ begin
       :kind => works,
       :collection => project_x,
       :name => name,
-      :dataset => {"dimensions" => dimensions},
-      :properties => [{"label" => "Material", "value" => material}]
+      :distinct_name => 'Some distinction to make this thing unique',
+      :comment => 'this is a comment',
+      :dataset => {
+        "dimensions" => dimensions,
+        "technique" => "painting"
+      },
+      :properties => [{"label" => "Material", "value" => material}],
+      :datings => [
+        EntityDating.new(:label => 'Dating', :dating_string => '2012')
+      ]
     )
 
     institution = Entity.find_or_create_by_name!(museum) do |i|

@@ -6,7 +6,7 @@ class Grant < ActiveRecord::Base
   belongs_to :credential
   
   scope :with_policy, lambda { |name|
-    name.blank? ? scoped : where(:policy => name)
+    name.blank? ? all : where(:policy => name)
   }
   
   def personal?

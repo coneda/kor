@@ -20,8 +20,8 @@ class Relationship < ActiveRecord::Base
       collection_ids, collection_ids
     )
   }
-  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : scoped}
-  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : scoped}
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
 
   def other_entity(entity)
     from_id == entity.id ?

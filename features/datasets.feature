@@ -19,7 +19,7 @@ Feature: Datasets
     When I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
     And I fill in "entity[dataset][material]" with "Öl auf Leinwand"
-    And I press "Erstellen"
+    And I press "Create"
     Then I should be on the entity page for "Mona Lisa"
     And I should see "Material"
     And I should see "Öl auf Leinwand"
@@ -31,9 +31,9 @@ Feature: Datasets
     When I go to the new "Literatur-Entity" page
     And I fill in "entity[name]" with "Fräulein Smillas Gespür für Schnee"
     And I fill in "entity[dataset][isbn]" with "wrong isbn format"
-    And I press "Erstellen"
+    And I press "Create"
     Then I should not see "Translation missing"
-    Then I should see "Isbn ist ungültig"
+    Then I should see "Isbn is invalid"
     
   
   @javascript
@@ -43,7 +43,7 @@ Feature: Datasets
     When I go to the new "Literatur-Entity" page
     And I fill in "entity[name]" with "Fräulein Smillas Gespür für Schnee"
     And I fill in "entity[dataset][isbn]" with "3499237016"
-    And I press "Erstellen"
+    And I press "Create"
     Then I should be on the entity page for "Fräulein Smillas Gespür für Schnee"
     Then I should not see "Translation missing"
     And I should see "3499237016"

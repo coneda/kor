@@ -22,7 +22,7 @@ class AuthorityGroupCategoriesController < ApplicationController
   end
 
   def create
-    @authority_group_category = AuthorityGroupCategory.new(params[:authority_group_category])
+    @authority_group_category = AuthorityGroupCategory.new(authority_group_category_params)
 
     if @authority_group_category.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => @authority_group_category.name )
@@ -41,10 +41,10 @@ class AuthorityGroupCategoriesController < ApplicationController
   def update
     @authority_group_category = AuthorityGroupCategory.find(params[:id])
 
-    if @authority_group_category.update_attributes(params[:authority_group_category])
+    if @authority_group_category.update_attributes(authority_group_category_params)
       flash[:notice] = I18n.t( 'objects.update_success', :o => @authority_group_category.name )
       unless @authority_group_category.parent_id.blank?
-        redirect_to @authority_group_category.parent
+        redirect_to authority_group_category_path(@authority_group_category.parent)
       else
         redirect_to :action => 'index'
       end
@@ -57,12 +57,24 @@ class AuthorityGroupCategoriesController < ApplicationController
     @authority_group_category = AuthorityGroupCategory.find(params[:id])
     @authority_group_category.destroy
     
-    redirect_to(@authority_group_category.parent || authority_group_categories_path)
+    parent = if @authority_group_category.parent
+      authority_group_category_path(parent)
+    else
+      authority_group_categories_path
+    end
+
+    redirect_to parent
   end
   
   protected
+
+    def authority_group_category_params
+      params.require(:authority_group_category).permit(:name, :parent_id)
+    end
+
     def generally_authorized?
       current_user.authority_group_admin?
     end
+
   
 end

@@ -3,51 +3,50 @@ Feature: Navigation Menu
   @javascript
   Scenario: User Menu
     Given I am logged in as "john"
-    And "Gruppen" is expanded
-    Then I should see "Einfache Suche" within "#menu"
-    And I should see "Expertensuche" within "#menu"
-    And I should see "Neue Einträge" within "#menu"
-    And I should see "Zwischenablage" within "#menu"
-    And I should see "Gruppen" within "#menu"
-    And I should see "Globale" within "#menu"
-    And I should see "Eigene" within "#menu"
-    And I should see "Freigegeben" within "#menu"
-    And I should see "Veröffentlichte" within "#menu"
-    And I should see "Profil bearbeiten" within "#menu"
-    And I should see "Statistiken" within "#menu"
+    And "Groups" is expanded
+    Then I should see "Simple search" within "#menu"
+    And I should see "Expert search" within "#menu"
+    And I should see "New entries" within "#menu"
+    And I should see "Clipboard" within "#menu"
+    And I should see "Groups" within "#menu"
+    And I should see "Global" within "#menu"
+    And I should see "Personal" within "#menu"
+    And I should see "Shared" within "#menu"
+    And I should see "Published" within "#menu"
+    And I should see "Edit profile" within "#menu"
+    And I should see "Statistics" within "#menu"
     And I should not see "Administration" within "#menu"
-    And I should not see option "Entität anlegen" within "#menu"
-    And I should not see "Ungültige Entitäten" within "#menu"
-    And I should not see "Neue Entitäten" within "#menu"
+    And I should not see option "Create entity" within "#menu"
+    And I should not see "Invalid entities" within "#menu"
+    And I should not see "New entities" within "#menu"
     
 
   @javascript
   Scenario: Admin Menu
     Given I am logged in as "admin"
-    And "Gruppen" is expanded
+    And "Groups" is expanded
     And "Administration" is expanded
-    Then I should see "Einfache Suche" within "#menu"
-    And I should see "Expertensuche" within "#menu"
-    And I should see "Neue Einträge" within "#menu"
-    And I should see "Zwischenablage" within "#menu"
-    And I should see "Gruppen" within "#menu"
-    And I should see "Globale" within "#menu"
-    And I should see "Eigene" within "#menu"
-    And I should see "Freigegeben" within "#menu"
-    And I should see "Veröffentlichte" within "#menu"
-    And I should see option "Entität anlegen"
+    Then I should see "Simple search" within "#menu"
+    And I should see "Expert search" within "#menu"
+    And I should see "New entries" within "#menu"
+    And I should see "Clipboard" within "#menu"
+    And I should see "Groups" within "#menu"
+    And I should see "Global" within "#menu"
+    And I should see "Personal" within "#menu"
+    And I should see "Shared" within "#menu"
+    And I should see "Published" within "#menu"
+    And I should see "Edit profile" within "#menu"
+    And I should see "Statistics" within "#menu"
     And I should see "Administration" within "#menu"
-    And I should see "Allgemein" within "#menu"
-    And I should see "Relationen" within "#menu"
-    And I should see "Entitätstypen" within "#menu"
-    And I should see "Sammlungen" within "#menu"
-    And I should see "Benutzergruppen" within "#menu"
-    And I should see "Benutzerverwaltung" within "#menu"
-    And I should see "Profil bearbeiten" within "#menu"
-    And I should see "Statistiken" within "#menu"
-    And I should see option "Entität anlegen" within "#menu"
-    And I should see "Ungültige Entitäten" within "#menu"
-    And I should see "Neue Entitäten" within "#menu"
+    And I should see option "Create entity" within "#menu"
+    And I should see "Invalid entities" within "#menu"
+    And I should see "New entities" within "#menu"
+    And I should see "General" within "#menu"
+    And I should see "Relations" within "#menu"
+    And I should see "Entity types" within "#menu"
+    And I should see "Collections" within "#menu"
+    And I should see "User groups" within "#menu"
+    And I should see "User administration" within "#menu"
 
     
   @javascript
@@ -55,17 +54,17 @@ Feature: Navigation Menu
     Given the user "john" is a "user_admin"
     And I am logged in as "john"
     And "Administration" is expanded
-    Then I should see "Benutzerverwaltung" within "#menu"
-    And I should not see "Benutzergruppen" within "#menu"
+    Then I should see "User administration" within "#menu"
+    And I should not see "User groups" within "#menu"
     
   
   @javascript
   Scenario: Toggle groups menu as a admin
     Given I am logged in as "admin"
     When I go to the home page
-    And I follow "Gruppen"
+    And I follow "Groups"
     Then I should really see element "#group_links"
-    When I follow "Gruppen"
+    When I follow "Groups"
     Then I should not really see element "#group_links"
     
     

@@ -28,7 +28,7 @@ class StaticController < ApplicationController
   
   def blaze
     flash.keep
-    render :layout => 'blaze', :nothing => true
+    render :layout => 'blaze', :text => ""
   end
   
 end

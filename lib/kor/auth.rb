@@ -45,9 +45,7 @@ module Kor::Auth
   end
   
   def self.authorize(username, additional_attributes = true)
-    user = User.find_by_name(username, :include => :groups) || User.new(
-      :name => username
-    )
+    user = User.includes(:groups).find_or_initialize_by(:name => username)
 
     if additional_attributes.is_a?(Hash)
       user.assign_attributes additional_attributes
@@ -85,11 +83,16 @@ module Kor::Auth
     Collection.where(:id => result.keys).to_a
   end
   
-  def self.authorized?(user, policy = :view, collections = Collection.all, options = {})
+  def self.authorized?(user, policy = :view, collections = nil, options = {})
+    collections ||= Collection.all.to_a
     user ||= User.guest
     
     options.reverse_merge!(:required => :all)
-    collections = [collections] unless collections.is_a? Array
+    collections = if collections.is_a?(Collection)
+      [collections]
+    else
+      collections.to_a
+    end
     collections = collections.reject{|c| c.nil?}
     
     result = Grant.where(

@@ -1,5 +1,4 @@
 class ComponentSearchController < ApplicationController
-  unloadable
 
   def component_search
     respond_to do |format|

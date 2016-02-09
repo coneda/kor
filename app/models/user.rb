@@ -218,14 +218,14 @@ class User < ActiveRecord::Base
   end
   
   # ----------------------------------------------------------------- search ---
-  scope :without_predefined, where("name NOT IN (?)", ["admin", "guest"])
-  scope :without_admin, where("name NOT LIKE ?", "admin")
+  scope :without_predefined, lambda { where("name NOT IN (?)", ["admin", "guest"]) }
+  scope :without_admin, lambda { where("name NOT LIKE ?", "admin") }
   scope :search, lambda { |search_string|
     unless search_string.blank?
       pattern = "%#{search_string}%"
       where('name LIKE ? OR full_name LIKE ? or email LIKE ?', pattern, pattern, pattern)
     else
-      scoped
+      all
     end
   }
   scope :logged_in_recently, lambda {

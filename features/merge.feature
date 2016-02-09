@@ -17,10 +17,10 @@ Feature: Merge
     And the entity "Louvre (Paris)" has dataset value "456" for "bossa_id"
     And all entities of kind "Institution/Institutionen" are in the clipboard
     When I go to the clipboard page
-    And I select "verschmelzen" from "clipboard_action"
-    And I press "Senden"
+    And I select "merge" from "clipboard_action"
+    And I press "Send"
     Then I should see "Knd"
     And I should see "BossaId"
-    When I press "Erstellen"
+    When I press "Create"
     Then entity "Louvre" should have dataset value "12345" for "knd"
     And entity "Louvre" should have dataset value "123" for "bossa_id"

@@ -37,7 +37,7 @@ class Download < ActiveRecord::Base
   end
   
   def notify_ready
-    UserMailer.download_ready(self).deliver if notify_user
+    UserMailer.download_ready(self).deliver_now if notify_user
   end
   
   def generate_uuid

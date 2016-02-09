@@ -12,6 +12,7 @@ RSpec.configure do |config|
   config.mock_with :rspec do |mocks|
     mocks.verify_partial_doubles = true
   end
+
 end
 
 VCR.configure do |c|
@@ -20,4 +21,10 @@ VCR.configure do |c|
   c.configure_rspec_metadata!
   c.default_cassette_options = {:record => :new_episodes}
   c.allow_http_connections_when_no_cassette = true
+
+  c.ignore_request do |r|
+    elastic_config = YAML.load_file("config/database.yml")["test"]["elastic"]
+    uri = URI.parse(r.uri)
+    elastic_config["host"] == uri.host && elastic_config["port"] == uri.port
+  end
 end

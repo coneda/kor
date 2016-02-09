@@ -63,35 +63,39 @@ describe Entity do
   end
   
   it "should raise an error if the options for the related method are invalid" do
+    admin = User.admin
     entity = FactoryGirl.build :work
     
-    expect { entity.related(:assume => :terciary) }.to raise_error(Exception)
-    expect { entity.related(:assume => :image, :search => :secondary) }.to raise_error(Exception)
+    expect { entity.related(admin, :assume => :terciary) }.to raise_error(Kor::Exception)
+    expect { entity.related(admin, :assume => :image, :search => :secondary) }.to raise_error(Kor::Exception)
   end
   
   it "should find related media for primary entities and vice versa" do
+    admin = User.admin
     image = FactoryGirl.create :image_a
     Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
     
-    expect(@mona_lisa.related(:search => :media, :assume => :primary)).to eql([image])
-    expect(image.related(:search => :primary, :assume => :media)).to eql([@mona_lisa])
+    expect(@mona_lisa.related(admin, :search => :media, :assume => :primary)).to eql([image])
+    expect(image.related(admin, :search => :primary, :assume => :media)).to eql([@mona_lisa])
   end
   
   it "should find related primary entities for secondary entities and vice versa" do
+    admin = User.admin
     @leonardo = FactoryGirl.create :leonardo
     Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
     
-    expect(@leonardo.related(:search => :primary, :assume => :secondary)).to eql([@mona_lisa])
-    expect(@mona_lisa.related(:search => :secondary, :assume => :primary)).to eql([@leonardo])
+    expect(@leonardo.related(admin, :search => :primary, :assume => :secondary)).to eql([@mona_lisa])
+    expect(@mona_lisa.related(admin, :search => :secondary, :assume => :primary)).to eql([@leonardo])
   end
   
   it "should find related primary entities for secondary entities" do
+    admin = User.admin
     image = FactoryGirl.create :image_a
     @leonardo = FactoryGirl.create :leonardo
     Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
     Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
     
-    expect(@leonardo.related(:search => :media, :assume => :secondary)).to eql([image])
+    expect(@leonardo.related(admin, :search => :media, :assume => :secondary)).to eql([image])
   end
   
   it "should have an uuid when saved without validation" do
@@ -153,20 +157,6 @@ describe Entity do
     ])
   end
   
-  it "should not allow to create an entity twice" do
-    entity = Kind.find_by_name('Werk').entities.build(
-      :name => "Mona Lisa",
-      :collection => Collection.first,
-      :distinct_name => ""
-    )
-    
-    expect(entity.valid?).to be_falsey
-    expect(entity.errors.full_messages).to eq([
-      'Name ist bereits vergeben',
-      'eindeutiger Name ist ungültig'
-    ])
-  end
-
   it "should fire elastic updates" do
     expect(Kor::Elastic).to receive(:index).exactly(2).times
     expect(Kor::Elastic).to receive(:drop)
@@ -213,8 +203,8 @@ describe Entity do
       {'value' => 12.7}
     ]
     expect(entity.valid?).to be_falsey
-    expect(entity.errors.full_messages).to include('weitere Eigenschaften benötigen einen Wert')
-    expect(entity.errors.full_messages).to include('weitere Eigenschaften benötigen einen Bezeichner')
+    expect(entity.errors.full_messages).to include('further properties need a value')
+    expect(entity.errors.full_messages).to include('further properties need a label')
   end
 
   it "should retrieve unsaved mongo values without a kind" do
@@ -234,7 +224,7 @@ describe Entity do
 
     entity = FactoryGirl.build :jack, :dataset => {'isbn' => 'invalid ISBN'}
     expect(entity.save).to be_falsey
-    expect(entity.errors.full_messages).to include("ISBN ist ungültig")
+    expect(entity.errors.full_messages).to include("ISBN is invalid")
   end
 
   it "should validate against needless spaces" do
@@ -243,15 +233,51 @@ describe Entity do
 
     leonardo.name = " Leonardo"
     expect(leonardo.valid?).to be_falsey
-    expect(leonardo.errors.full_messages.first).to eq("Name kann nicht mit einem Leerzeichen beginnen")
+    expect(leonardo.errors.full_messages.first).to eq(
+      "name can't start with a space"
+    )
 
     leonardo.name = "Leonardo "
     expect(leonardo.valid?).to be_falsey
-    expect(leonardo.errors.full_messages.first).to eq("Name kann nicht mit einem Leerzeichen enden")
+    expect(leonardo.errors.full_messages.first).to eq(
+      "name can't end with a space"
+    )
 
     leonardo.name = "Leonardo  da Vinci"
     expect(leonardo.valid?).to be_falsey
-    expect(leonardo.errors.full_messages.first).to eq("Name kann keine aufeinander folgende Leerzeichen beinhalten")
+    expect(leonardo.errors.full_messages.first).to eq(
+      "name can't contain consecutive spaces"
+    )
+  end
+
+  it "should not allow to create an entity twice" do
+    entity = FactoryGirl.build :mona_lisa
+    expect(entity.valid?).to be_falsey
+    expect(entity.errors.full_messages).to eq([
+      'name is already taken',
+      'distinguished name is invalid'
+    ])
+  end
+
+  it "should ensure unique names within the same collection and kind" do
+    entity = FactoryGirl.build :mona_lisa
+    expect(entity.valid?).to be_falsey
+    expect(entity.errors.full_messages).to eq([
+      'name is already taken',
+      'distinguished name is invalid'
+    ])
+  end
+
+  it "should ensure unique names within the same kind but different collections" do
+    priv = FactoryGirl.create :private
+    entity = FactoryGirl.build :mona_lisa, collection: priv
+    expect(entity.valid?).to be_falsey
+  end
+
+  it "should allow equal names within different kinds and the same collection" do
+    people = Kind.where(name: 'Person').first
+    entity = FactoryGirl.build :mona_lisa, kind: people
+    expect(entity.valid?).to be_truthy
   end
 
 end

@@ -18,20 +18,28 @@ class Relation < ActiveRecord::Base
     self[:uuid] ||= SecureRandom.uuid
   end
 
-  default_scope order(:name)
-  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : scoped}
-  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : scoped}
-  scope :allowed, scoped
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :allowed, lambda {|user, policies| all}
+  default_scope lambda { order(:name) }
   
 
   ######################### kinds ##############################################
 
   def from_kind_ids
-    self[:from_kind_ids] ||= []
+    unless self[:from_kind_ids]
+      self[:from_kind_ids] = []
+    end
+
+    self[:from_kind_ids]
   end
 
   def to_kind_ids
-    self[:to_kind_ids] ||= []
+    unless self[:to_kind_ids]
+      self[:to_kind_ids] = []
+    end
+
+    self[:to_kind_ids]
   end
 
   def from_kind_ids=(values)

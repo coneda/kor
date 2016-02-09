@@ -8,7 +8,7 @@ class Field < ActiveRecord::Base
   
   validates :name,
     :presence => true,
-    :format => {:with => /^[a-z0-9_]+$/},
+    :format => {:with => /\A[a-z0-9_]+\z/},
     :uniqueness => {:scope => :kind_id},
     :white_space => true
   validates_presence_of :show_label, :form_label, :search_label
@@ -17,7 +17,52 @@ class Field < ActiveRecord::Base
     f.form_label = f.show_label if f.form_label.blank?
     f.search_label = f.show_label if f.search_label.blank?
   end
-  
+
+  after_save :synchronize_identifiers
+  after_update do |f|
+    if name_changed?
+      f.class.delay.synchronize_storage(f.kind_id, f.name_was, f.name)
+    end
+  end
+  after_destroy do |f|
+    f.class.delay.synchronize_storage(f.kind_id, f.name_was, nil)
+  end
+
+  def synchronize_identifiers
+    if is_identifier_changed? || id_changed?
+      self.class.where(name: self.name).each do |f|
+        if f.is_identifier != self.is_identifier
+          f.update_column :is_identifier, self.is_identifier
+        end
+
+        if is_identifier?
+          f.delay.create_identifiers
+        else
+          Identifier.where(:kind => name).delete_all
+        end
+      end
+    end
+  end
+
+  def create_identifiers
+    self.kind.entities.find_each batch_size: 100 do |entity|
+      entity.update_identifiers
+    end
+  end
+
+  def self.synchronize_storage(kind_id, before, after)
+    scope = Entity.where(kind_id: kind_id).select([:id, :attachment])
+    scope.find_each batch_size: 100 do |e|
+      if after
+        e.dataset[after] = e.dataset[before]
+      end
+      e.dataset.delete(before)
+      e.update_column :attachment, e.attachment
+    end
+  end
+
+  scope :identifiers, lambda { where(:is_identifier => true) }
+
 
   # Attributes
   

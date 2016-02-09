@@ -11,7 +11,7 @@ class ApplicationController < BaseController
     :logged_in?,
     :blaze
   
-  before_filter :locale, :maintenance, :authentication, :authorization, :legal
+  before_filter :locale, :authentication, :authorization, :legal
 
   before_filter do
     @blaze = nil
@@ -27,14 +27,6 @@ class ApplicationController < BaseController
       end
     end
 
-    # redirects to the under_maintenance action of the static
-    # controller if Kor['dev']['down_for_maintenance'] is set to true
-    def maintenance
-      if Kor.under_maintenance?
-        redirect_to :controller => 'static', :action => 'under_maintenance'
-      end
-    end
-
     # this method is called, when an exception ocurred while generating a
     # response to a request which wasn't sent from localhost
     
@@ -47,7 +39,7 @@ class ApplicationController < BaseController
     def not_found
       redirect_to '/404.html'
     end
-    
+
     def log_exception_and_notify_user(exception)
       ExceptionLog.create(
         :kind => exception.class.to_s,
@@ -126,9 +118,9 @@ class ApplicationController < BaseController
       end
     end
 
-    def authorized?(policy = :view, collections = Collection.all, options = {})
+    def authorized?(policy = :view, collections = nil, options = {})
       options.reverse_merge!(:required => :any)
-      ::Kor::Auth.authorized? current_user, policy, collections, options
+      Kor::Auth.authorized? current_user, policy, collections, options
     end
 
     def authorized_collections(policy)
@@ -216,6 +208,23 @@ class ApplicationController < BaseController
 
     def blaze
       @blaze ||= Kor::Blaze.new(current_user)
+    end
+
+    def entity_params
+      params.require(:entity).permit(
+        :lock_version,
+        :kind_id,
+        :collection_id,
+        :name, :distinct_name, :subtype, :comment, :no_name_statement,
+        :tag_list,
+        :synonyms => [],
+        :datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :new_datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :existing_datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :dataset => params[:entity][:dataset].try(:keys),
+        :properties => [:label, :value],
+        :medium_attributes => [:image, :document]
+      )
     end
 
 end

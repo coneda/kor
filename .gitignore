@@ -35,6 +35,7 @@ deploy/build
 deploy/build.boxes
 db/*.sqlite3
 .yardoc
+.sass-cache
 
 # Testing
 screenshot.png
@@ -43,4 +44,3 @@ screenshot.png
 
 deploy.config.sh
 .vagrant
-

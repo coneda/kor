@@ -93,4 +93,41 @@ describe Kor::Blaze do
     expect(blaze.relations_for mona_lisa, :media => true).to be_empty
   end
 
+  it "should retrieve related entities" do
+    media = FactoryGirl.create :media
+    default = FactoryGirl.create :default
+
+    is_part_of = FactoryGirl.create :is_part_of
+    has_created = FactoryGirl.create :has_created
+    is_sibling_of = FactoryGirl.create :is_sibling_of
+
+    admins = Credential.create :name => "admins"
+    admin = FactoryGirl.create :admin, :groups => [admins]
+    default.grant :view, :to => admins
+
+    mona_lisa = FactoryGirl.create :mona_lisa
+    der_schrei = FactoryGirl.create :der_schrei
+    leonardo = FactoryGirl.create :leonardo
+    jack = FactoryGirl.create :jack
+
+    Relationship.relate_and_save leonardo, "has created", mona_lisa
+    Relationship.relate_and_save leonardo, "has created", der_schrei
+    Relationship.relate_and_save leonardo, "is sibling of", jack
+
+    blaze = Kor::Blaze.new(admin)
+    expect(blaze.related_entities(mona_lisa).count).to eq(1)
+    expect(blaze.related_entities(der_schrei).count).to eq(1)
+    expect(blaze.related_entities(leonardo).count).to eq(3)
+    expect(blaze.related_entities(jack).count).to eq(1)
+
+    expect(blaze.related_entities(leonardo, :kind_ids => [jack.kind_id]).count).to eq(1)
+    expect(blaze.related_entities(leonardo, :relation_names => ["is sibling of"]).count).to eq(1)
+    expect(blaze.related_entities(leonardo, :relation_names => ["has created"]).count).to eq(2)
+    expect(blaze.related_entities(jack).count).to eq(1)
+    expect(blaze.related_entities(jack, :relation_names => ["has created"]).count).to eq(0)
+    expect(blaze.related_entities(jack, :only_media => true).count).to eq(0)
+    expect(blaze.related_entities(jack, :except_media => true).count).to eq(1)
+    expect(blaze.related_entities(jack, :except_media => true).first.name).to eq("Leonardo da Vinci")
+  end
+
 end

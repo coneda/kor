@@ -13,11 +13,17 @@ Before do |scenario|
   system "rm -f #{Rails.root}/config/kor.app.test.yml"
   Kor.config true
 
-  if scenario.source_tags.any?{|st| st.name == "@elastic"}
+  if scenario.tags.any?{|st| st.name == "@elastic"}
     Kor::Elastic.reset_index
   else
     allow(Kor::Elastic).to receive(:enabled?).and_return(false)
     allow(Kor::Elastic).to receive(:request).and_return([200, {}, {}])
+  end
+
+  if scenario.tags.any?{|st| st.name == "@nodelay"}
+    Delayed::Worker.delay_jobs = false
+  else
+    Delayed::Worker.delay_jobs = true
   end
 end
 

@@ -20,8 +20,15 @@ When /^(?:|I )press "([^"]*)"$/ do |button|
 end
 
 When /^(?:|I )follow "([^"]*)"$/ do |locator|
-  click_link(locator)
+  element = all(:link, locator).first || all("[data-name='#{locator}']").first
+  raise "couldn't find link '#{locator}'" unless element
+  element.click
 end
+
+When(/^I follow the link with text "([^"]*)"$/) do |text|
+  click_link(text)
+end
+
 
 When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |field, quoted, value|
   value = "\"#{value}\"" if quoted == ' quoted'
@@ -90,8 +97,4 @@ end
 
 Then(/^I should see the option to create a new "(.*?)"$/) do |text|
   expect(page).to have_selector('option', :text => text)
-end
-
-When(/^I click on the version info$/) do
-  page.find(".version_info").click()
 end

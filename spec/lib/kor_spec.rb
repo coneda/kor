@@ -10,7 +10,7 @@ describe Kor do
     FactoryGirl.create :admin
     expect(User.count).to eql(3)
   
-    Kor.notify_upcoming_expiries
+    Kor.notify_expiring_users
     
     expect(ActionMailer::Base.deliveries.size).to eql(1)
   end
