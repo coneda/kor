@@ -46,21 +46,25 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
   end
 
   it "should respond to 'ListIdentifiers'" do
-    get :list_identifiers, :format => :xml
+    admin = User.admin
+
+    get :list_identifiers, format: :xml, api_key: admin.api_key
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
 
-    post :list_identifiers, :format => :xml
+    post :list_identifiers, format: :xml, api_key: admin.api_key
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
   end
 
   it "should respond to 'ListRecords'" do
-    get :list_records, format: :xml, metadataPrefix: 'kor'
+    admin = User.admin
+
+    get :list_records, format: :xml, api_key: admin.api_key, metadataPrefix: 'kor'
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
 
-    post :list_records, format: :xml, metadataPrefix: 'kor'
+    post :list_records, format: :xml, api_key: admin.api_key, metadataPrefix: 'kor'
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
   end
@@ -90,12 +94,11 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
   end
 
   it "should only include data the user is authorized for" do
-    get :list_records, format: :xml, metadataPrefix: 'kor'
-
-    list_records = parse_xml(response.body).at_xpath("//xmlns:ListRecords")
-    expect(list_records.xpath('*')).to be_empty
-
     admin = User.admin
+
+    get :list_records, format: :xml, metadataPrefix: 'kor'
+    verify_oaipmh_error 'noRecordsMatch'
+
     get(:list_records,
       format: :xml,
       api_key: admin.api_key,
@@ -126,7 +129,7 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     # yes this suck, check out 
     # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
     # for a reason why it has to be done like this
-    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/spec/fixtures/oai_pmh.xsd")
+    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
     get :get_record, :format => :xml, :identifier => relationship.uuid, :api_key => admin.api_key
     doc = parse_xml(response.body)
 
@@ -184,6 +187,21 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     )
 
     verify_oaipmh_error 'idDoesNotExist'
+  end
+
+  it "should return 'noRecordsMatch' if the criteria do not yield any records" do
+    Relationship.destroy_all
+    admin = User.admin
+
+    get :list_identifiers, format: :xml
+    verify_oaipmh_error 'noRecordsMatch'
+
+    get(:list_records,
+      format: :xml, 
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
+    verify_oaipmh_error 'noRecordsMatch'
   end
 
 end

@@ -31,7 +31,11 @@ class Api::OaiPmh::BaseController < BaseController
 
     @records = query(record_params)
 
-    render :template => "api/oai_pmh/list_identifiers"
+    if @records[:total] > 0
+      render :template => "api/oai_pmh/list_identifiers"
+    else
+      render_error 'noRecordsMatch'
+    end
   end
 
   def list_records
@@ -41,7 +45,11 @@ class Api::OaiPmh::BaseController < BaseController
 
     @records = query(record_params)
 
-    render :template => "api/oai_pmh/list_records"
+    if @records[:total] > 0
+      render :template => "api/oai_pmh/list_records"
+    else
+      render_error 'noRecordsMatch'
+    end
   end
 
   def verb_error

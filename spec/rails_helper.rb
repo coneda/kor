@@ -16,6 +16,8 @@ RSpec.configure do |config|
 
     system "cat /dev/null >| #{Rails.root}/log/test.log"
 
+    XmlHelper.compile_validator
+
     DatabaseCleaner.strategy = :deletion
     DatabaseCleaner.clean_with :deletion
   end

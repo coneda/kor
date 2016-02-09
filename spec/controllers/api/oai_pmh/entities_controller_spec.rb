@@ -122,11 +122,16 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
     leonardo = Entity.last
     admin = User.admin
 
-    # yes this suck, check out 
+    leonardo.update_attributes(
+      datings: [FactoryGirl.build(:leonardo_lifespan)],
+      properties: [{'label' => 'age', 'value' => 53}]
+    )
+
+    # yes this sucks, check out 
     # https://mail.gnome.org/archives/xml/2009-November/msg0002it "should return 'badVerb' if the verb is not recognized"2.html
     # for a reason why it has to be done like this
-    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/spec/fixtures/oai_pmh.xsd")
-    get :get_record, :format => :xml, :identifier => leonardo.uuid, :api_key => admin.api_key
+    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
+    get :get_record, format: :xml, identifier: leonardo.uuid, api_key: admin.api_key, metadataPrefix: 'kor'
     doc = parse_xml(response.body)
 
     expect(xsd.validate(doc)).to be_empty
@@ -188,7 +193,20 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
     verify_oaipmh_error 'idDoesNotExist'
   end
 
-  it "should return 'noRecordsMatch' if the criteria do not yield any records"
+  it "should return 'noRecordsMatch' if the criteria do not yield any records" do
+    Entity.destroy_all
+    admin = User.admin
+
+    get :list_identifiers, format: :xml
+    verify_oaipmh_error 'noRecordsMatch'
+
+    get(:list_records,
+      format: :xml, 
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
+    verify_oaipmh_error 'noRecordsMatch'
+  end
 
 
   # The following tests actually test Api::OaiPmh::BaseController behavior. Therefore

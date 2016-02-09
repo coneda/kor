@@ -14,4 +14,11 @@ module XmlHelper
     doc
   end
 
+  def self.compile_validator
+    engine = ERB.new(File.read "#{Rails.root}/spec/fixtures/oai_pmh_validator.xsd.erb")
+    File.open "#{Rails.root}/tmp/oai_pmh_validator.xsd", 'w' do |f|
+      f.write engine.result(binding)
+    end
+  end
+
 end
