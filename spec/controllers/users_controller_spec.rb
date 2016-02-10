@@ -37,7 +37,7 @@ RSpec.describe UsersController, :type => :controller do
 
     get :index
     expect(response.status).to eq(200)
-    expect(JSON.parse(response.body).size).to eq(2)
+    expect(JSON.parse(response.body).size).to eq(3)
 
     get :index, :search_string => "doe"
     expect(JSON.parse(response.body).size).to eq(1)

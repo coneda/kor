@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe User do
 
@@ -72,17 +72,14 @@ describe User do
   end
 
   it "should respect inherited global roles" do
-    jdoe = FactoryGirl.create :jdoe, :user_admin => true, :collection_admin => true
+    jdoe = FactoryGirl.create :jdoe, :admin => true
     hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe, :relation_admin => true
 
     hmustermann = User.last
     expect(hmustermann.parent_username).to eq("jdoe")
 
-    expect(hmustermann.admin?).to be_falsey
-    expect(hmustermann.user_admin?).to be_truthy
+    expect(hmustermann.admin?).to be_truthy
     expect(hmustermann.kind_admin?).to be_falsey
-    expect(hmustermann.collection_admin?).to be_truthy
-    expect(hmustermann.credential_admin?).to be_falsy
     expect(hmustermann.relation_admin?).to be_truthy
     expect(hmustermann.authority_group_admin?).to be_falsey
   end

@@ -19,7 +19,7 @@ describe Kor::Export::MetaData do
     
     expect(Relationship.count).to eql(2)
 
-    exporter = described_class.new(admin, 'simple')
+    exporter = described_class.new(admin)
     output = exporter.render_entity Entity.media.first
 
     expect(output).to match(image.uuid)

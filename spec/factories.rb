@@ -211,10 +211,7 @@ FactoryGirl.define do
       password 'admin'
       
       admin true
-      user_admin true
       kind_admin true
-      collection_admin true
-      credential_admin true
       relation_admin true
       authority_group_admin true
     end
