@@ -135,7 +135,7 @@ Kor.setup_blaze = function() {
       if (url && url.match(/^\/entities\/\d+$/)) {
         var parts = url.split("/");
         var id = parts[parts.length - 1]
-        window.location.href = '/blaze/' + id;
+        window.location.href = '/blaze#/entities/' + id;
         event.preventDefault();
         return false;
       }
