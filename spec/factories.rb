@@ -260,6 +260,20 @@ FactoryGirl.define do
     end
   end
 
+  factory :authority_group_category do
+    factory :archive do
+      name 'archive'
+    end
+
+    factory :shelf_1 do
+      name 'shelf 1'
+    end
+
+    factory :shelf_2 do
+      name 'shelf 2'
+    end
+  end
+
   factory :authority_group do
     name "A authority group"
   end

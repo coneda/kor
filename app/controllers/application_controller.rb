@@ -1,3 +1,8 @@
+# This doesn't belong here, but otherwise, assets:precompile always touches the
+# db
+require 'activerecord/session_store'
+Rails.application.config.session_store :active_record_store, key: '_kor_session'
+
 class ApplicationController < BaseController
 
   helper :all

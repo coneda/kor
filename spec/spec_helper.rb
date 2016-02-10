@@ -1,4 +1,4 @@
-require "vcr"
+require 'vcr'
 
 RSpec.configure do |config|
   config.order = "random"

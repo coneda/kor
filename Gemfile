@@ -1,14 +1,17 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 4.2.5'
-gem 'activerecord-session_store'
+# TODO: loads activerecord on asset precompiliation so we load (and configure)
+# it in app/controllers/application_controller.rb
+gem 'activerecord-session_store', require: false
 gem 'responders', '~> 2.0'
-# gem 'strong_parameters'
 
 gem 'delayed_paperclip'
 gem "paperclip"
 gem "cocaine"
-gem 'delayed_job_active_record'
+# TODO: loads activerecord on asset precompiliation so we load it
+# conditionally in an config/initializers/patches.rb
+gem 'delayed_job_active_record', require: false
 gem 'daemons'
 
 gem 'mysql2'
@@ -20,7 +23,6 @@ gem "haml"
 gem "sass"
 gem 'httpclient'
 gem 'acts-as-taggable-on', '~> 3.5'
-gem 'system_timer', :platforms => [:ruby_18]
 
 gem 'kor_index', :path => './plugins/kor_index'
 
@@ -32,14 +34,16 @@ gem 'plupload-rails'
 gem 'coffee-rails'
 gem "sass-rails"
 
-gem 'awesome_nested_set', "~> 3.0.0"
+# TODO: loads activerecord on asset precompiliation so we load it in
+# app/models/authority_group_category.rb
+gem 'awesome_nested_set', "~> 3.0.0", require: false
 
 gem 'oj'
 gem 'jbuilder'
 
-gem 'factory_girl_rails'
+gem 'factory_girl_rails', require: false
 
-group :assets do
+group :assets, :development do
   gem "therubyracer"
   gem 'uglifier'
 end
@@ -51,7 +55,7 @@ group :test do
   gem 'rspec-rails', '~> 3.1'
   gem 'capybara'
   gem 'database_cleaner'
-  gem 'test-unit', :platforms => [:ruby_22]
+  gem 'test-unit'
   gem 'vcr'
   gem 'webmock'
 end

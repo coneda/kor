@@ -1,5 +1,6 @@
 require "cucumber/rspec/doubles"
 require 'capybara/poltergeist'
+require 'factory_girl_rails'
 
 DatabaseCleaner.strategy = :truncation
 Cucumber::Rails::Database.javascript_strategy = :truncation

@@ -40,6 +40,7 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 end
 
+# TODO remove comments
 # Kor::Application.configure do
 #   config.cache_classes = false
 #   config.whiny_nils = true

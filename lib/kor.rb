@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require "active_support"
-
 module Kor
   @@config = nil
 
