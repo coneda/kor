@@ -142,7 +142,7 @@ class UsersController < ApplicationController
     end
     
     def generally_authorized?
-      current_user.user_admin?
+      current_user.admin?
     end
 
 

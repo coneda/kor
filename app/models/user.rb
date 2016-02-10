@@ -151,19 +151,16 @@ class User < ActiveRecord::Base
   
   def admin!
     self.admin = true
-    self.collection_admin = true
     self.kind_admin = true
     self.relation_admin = true
-    self.user_admin = true
-    self.credential_admin = true
     self.authority_group_admin = true
   end
   
   def any_admin?
-    admin || collection_admin || kind_admin || relation_admin || user_admin || credential_admin || authority_group_admin
+    admin || kind_admin || relation_admin || authority_group_admin
   end
 
-  ["", "collection_", "kind_", "relation_", "user_", "credential_", "authority_group_admin_"].each do |ag|
+  ["", "kind_", "relation_", "authority_group_admin_"].each do |ag|
     define_method "#{ag}admin".to_sym do
       key = "#{ag}admin".to_sym
       self[key] || (self.parent.present? && self.parent[key])
@@ -201,11 +198,8 @@ class User < ActiveRecord::Base
     return {
       :roles => {
         :admin => admin?,
-        :collection_admin => collection_admin?,
         :kind_admin => kind_admin?,
         :relation_admin => relation_admin?,
-        :user_admin => user_admin?,
-        :credential_admin => credential_admin?,
         :authority_group_admin => authority_group_admin
       },
       :collections => collections

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151213141714) do
+ActiveRecord::Schema.define(version: 20160210173519) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -345,17 +345,13 @@ ActiveRecord::Schema.define(version: 20151213141714) do
     t.string   "login_attempts",        limit: 255
     t.boolean  "relation_admin"
     t.boolean  "authority_group_admin"
-    t.boolean  "user_admin"
-    t.boolean  "collection_admin"
     t.boolean  "kind_admin"
-    t.boolean  "developer"
-    t.boolean  "credential_admin"
     t.boolean  "admin"
     t.integer  "default_collection_id", limit: 4
     t.string   "home_page",             limit: 255
     t.integer  "collection_id",         limit: 4
     t.integer  "credential_id",         limit: 4
-    t.boolean  "rating_admin"
+    t.string   "api_key",               limit: 255
     t.string   "parent_username",       limit: 255
   end
 

@@ -75,7 +75,7 @@ class CollectionsController < ApplicationController
   protected
 
     def generally_authorized?
-      current_user.collection_admin?
+      current_user.admin?
     end
 
     def collection_params

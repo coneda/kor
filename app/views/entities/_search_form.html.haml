@@ -2,7 +2,7 @@
   .title= I18n.t('nouns.search')
   
   = form_tag entities_path, :method => :get, :class => 'kor_form', :id => 'search_form' do
-    - if current_user.collection_admin?
+    - if current_user.admin?
       = collections_selector_tag('query[collection_ids]', @query.collection_ids)
     - else
       = hidden_field_tag 'query[collection_ids]', @query.collection_ids.join(',')

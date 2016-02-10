@@ -199,11 +199,7 @@ module Kor
       admin: true,
       relation_admin: true,
       authority_group_admin: true,
-      user_admin: true,
-      credential_admin: true,
-      collection_admin: true,
       kind_admin: true,
-      developer: false,
 
       full_name: u.full_name || I18n.t('users.administrator'),
       email: u.email || Kor.config['maintainer.mail']
