@@ -24,8 +24,13 @@ if ENV['SAMPLE_DATA']
     require "#{Rails.root}/spec/factories"
   end
 
+  media = Kind.medium_kind
   people = FactoryGirl.create :people
   works = FactoryGirl.create :works
+  FactoryGirl.create(:shows,
+    from_kind_ids: [media.id],
+    to_kind_ids: [works.id]
+  )
   FactoryGirl.create(:has_created,
     from_kind_ids: [people.id],
     to_kind_ids: [works.id]
