@@ -155,7 +155,7 @@
     </div>
     
     <div class="layout_panel processing_data" ng-show="allowed_to('view_meta')">
-      <div class="section_panel">
+      <div class="section_panel master_data">
         <div class="header">
           <div class="title" ng-bind="'activerecord.attributes.entity.master_data' | translate | capitalize"></div>
         </div>
@@ -169,16 +169,16 @@
               <span ng-bind="'activerecord.attributes.entity.created_at' | translate | capitalize"></span>:
               <span class="highlighted_subtitle" ng-bind="entity.created_at | strftime:'%Y-%m'"></span>
               <span ng-show="entity.creator">
-                {{'from' | translate}}
-                <span class="highlighted_subtitle" ng-bind="entity.creator.full_name"></span>
+                {{'by' | translate}}
+                <span class="highlighted_subtitle" ng-bind="entity.creator | human_user"></span>
               </span>
             </li>
             <li>
               <span ng-bind="'activerecord.attributes.entity.updated_at' | translate | capitalize"></span>:
               <span class="highlighted_subtitle" ng-bind="entity.updated_at"></span>
               <span ng-show="entity.updater">
-                {{'from' | translate}}
-                <span class="highlighted_subtitle" ng-bind="entity.updater.full_name"></span>
+                {{'by' | translate}}
+                <span class="highlighted_subtitle" ng-bind="entity.updater | human_user"></span>
               </span>
             </li>
             <li ng-show="authority_groups().length > 0">

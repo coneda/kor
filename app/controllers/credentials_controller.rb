@@ -56,7 +56,7 @@ class CredentialsController < ApplicationController
     end
 
     def generally_authorized?
-      current_user.credential_admin?
+      current_user.admin?
     end
   
 end

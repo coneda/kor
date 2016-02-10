@@ -15,6 +15,6 @@ class ExceptionLogsController < ApplicationController
   
   protected
     def generally_authorized?
-      current_user.developer?
+      current_user.admin?
     end
 end

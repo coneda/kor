@@ -224,3 +224,16 @@ Feature: Entities
     When I go to the entity page for "Leonardo"
     And I click on the upper triangle for relation "has created"
     Then I should see "2" kor images within the first relation on the page
+
+
+  @javascript
+  Scenario: Display creator and updater next in the master data
+    Given the user "jdoe"
+    And I am logged in as "admin"
+    And the entity "Mona Lisa" of kind "artwork/artworks"
+    And the entity "Mona Lisa" was created by "jdoe"
+    And the entity "Mona Lisa" was updated by "admin" 
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "by jdoe" within ".master_data"
+    And I should see "by administrator" within ".master_data"
+

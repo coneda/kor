@@ -1,8 +1,14 @@
 class Kor::Export::MetaData
   
-  def initialize(user, name)
+  def initialize(user)
     @user = user
-    @profile = (Kor.config['meta_data_profiles'] || {})[name] || []
+    @profile = []
+    Relation.primary_relation_names.each do |pr|
+      @profile << {
+        'name' => pr,
+        'relations' => Relation.secondary_relation_names.map{|sr| {'name' => sr}}
+      }
+    end
   end
   
   def line(name, value, indent = 0)

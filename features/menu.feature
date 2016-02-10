@@ -50,15 +50,6 @@ Feature: Navigation Menu
 
     
   @javascript
-  Scenario: User menu as a user_admin but not credential_admin
-    Given the user "john" is a "user_admin"
-    And I am logged in as "john"
-    And "Administration" is expanded
-    Then I should see "User administration" within "#menu"
-    And I should not see "User groups" within "#menu"
-    
-  
-  @javascript
   Scenario: Toggle groups menu as a admin
     Given I am logged in as "admin"
     When I go to the home page
