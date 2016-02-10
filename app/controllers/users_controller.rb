@@ -46,7 +46,6 @@ class UsersController < ApplicationController
     params[:sort_order] ||= 'ASC'
   
     @users = User.
-      without_admin.
       search(params[:search_string]).
       order("#{params[:sort_by]} #{params[:sort_order]}").
       paginate(:page => params[:page], :per_page => 10)
