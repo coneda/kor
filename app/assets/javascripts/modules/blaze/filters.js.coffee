@@ -53,3 +53,11 @@ kor.filter 'human_date', ["korTranslate", (kt) ->
 kor.filter 'trust_as_url', ["$sce", (sce) ->
   (input) -> if input then sce.trustAsUrl(input) else ""
 ]
+
+kor.filter 'human_user', [->
+  (input) ->
+    try
+      input.full_name || input.name
+    catch error
+      ""
+]

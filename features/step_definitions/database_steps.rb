@@ -363,3 +363,15 @@ end
 Given(/^the last entity has the tags "(.*?)"$/) do |tag_list|
   Entity.last.update_attributes :tag_list => tag_list
 end
+
+Given(/^the entity "([^"]*)" was created by "([^"]*)"$/) do |name, username|
+  entity = Entity.where(name: 'Mona Lisa').first
+  user = User.where(name: username).first
+  entity.update_attributes creator: user
+end
+
+Given(/^the entity "([^"]*)" was updated by "([^"]*)"$/) do |name, username|
+  entity = Entity.where(name: 'Mona Lisa').first
+  user = User.where(name: username).first
+  entity.update_attributes updater: user
+end
