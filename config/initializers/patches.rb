@@ -4,6 +4,6 @@ module Kernel
   end
 end
 
-unless Rails.groups.include?(:assets)
+unless Rails.groups.include?('assets')
   require 'delayed_job_active_record'
 end
