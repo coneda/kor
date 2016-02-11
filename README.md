@@ -214,11 +214,11 @@ The api will retrieve entities and relationships according to the authenticated
 user's permissions. Kinds and relations are available without authentication.
 Please check out [Authentication](#authentication) for how to use an api key.
 
-Two formats are available: `oai_dc` and `kor`. While former is only maintained
-to fulfill the OAI-PMH specification, the latter gives full access to all
-content within the ConedaKOR installation. According to specification, you must
-choose the format like so `metadataPrefix=kor` as a request parameter. The kor
-format adheres to a schema we provide at
+Two formats are available: `oai_dc` and `kor`. While the former is only
+maintained to fulfill the OAI-PMH specification, the latter gives full access to
+all content within the ConedaKOR installation. According to specification, you
+must choose the format like so `metadataPrefix=kor` as a request parameter. The
+kor format adheres to a schema we provide at
 
 https://kor.example.com/schema/1.0/kor.xsd
 
