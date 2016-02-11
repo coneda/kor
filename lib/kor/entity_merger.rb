@@ -9,6 +9,8 @@ class Kor::EntityMerger
   end
 
   def process(options = {})
+    entity = nil
+
     if Entity.find(options[:old_ids].first).is_medium?
       options[:old_ids].reject!{|id| id == options[:attributes][:id]}
       entity = Entity.find(options[:attributes][:id])
@@ -18,11 +20,11 @@ class Kor::EntityMerger
       entity = Entity.new(Entity.find(options[:old_ids]).first.attributes)
       entity.id = nil
       entity.assign_attributes options[:attributes]
-      entity.save :validate => false
       merge_externals options[:old_ids], entity.id
     end
-    
+  
     Entity.destroy(options[:old_ids])
+    entity.save :validate => false
     entity
   end
   

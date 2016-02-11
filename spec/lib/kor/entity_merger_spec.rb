@@ -36,5 +36,21 @@ describe Kor::EntityMerger do
     expect(Entity.count).to eql(1)
     expect(merged.synonyms).to eq(["La Gioconda"])
   end
+
+  it "should push the merge result to elasticsearch", elastic: true do
+    mona_lisa = FactoryGirl.create :mona_lisa
+    other_mona_lisa = FactoryGirl.create :mona_lisa, :name => "Mona Liza"
+
+    expect(Kor::Elastic).to receive(:drop).twice.and_call_original
+    expect(Kor::Elastic).to receive(:index).and_call_original
+    merged = described_class.new.run(:old_ids => Entity.all.map{|e| e.id},
+      :attributes => {name: mona_lisa.name}
+    )
+    
+    expect(Entity.count).to eql(1)
+    expect {
+      Kor::Elastic.get merged
+    }.not_to raise_error
+  end
   
 end

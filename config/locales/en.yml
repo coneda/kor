@@ -214,7 +214,7 @@ en:
     simple_search: simple search
     expert_search: expert search
     random_entities: randomly selected entries
-    welcome: stnadard page
+    welcome: standard page
 
   nouns:
     agpl: "GNU Affero General Public License Version 3"

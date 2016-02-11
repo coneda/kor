@@ -121,6 +121,10 @@ class Kor::Elastic
     refresh
   end
 
+  def self.get(entity)
+    request 'get', "/entities/#{entity.uuid}"
+  end
+
   def self.index(entity, options = {})
     options.reverse_merge! :full => false
 
