@@ -109,6 +109,7 @@ Feature: Entities
     And user "john" is allowed to "view/edit" collection "Nebensammlung" through credential "Nebenuser"
     And I am logged in as "john"
     When I go to the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
     And I follow "Pen"
     And I fill in "entity[name]" with "La Gioconde"
     And I press "Save"

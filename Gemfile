@@ -1,19 +1,12 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 4.2.5'
-# TODO: loads activerecord on asset precompiliation so we load (and configure)
-# it in app/controllers/application_controller.rb
-gem 'activerecord-session_store', require: false
 gem 'responders', '~> 2.0'
 
 gem 'delayed_paperclip'
 gem "paperclip"
 gem "cocaine"
-# TODO: loads activerecord on asset precompiliation so we load it
-# conditionally in an config/initializers/patches.rb
-gem 'delayed_job_active_record', require: false
 gem 'daemons'
-
 gem 'mysql2'
 gem "RedCloth"
 gem "will_paginate", "~> 3.0.3"
@@ -24,7 +17,6 @@ gem "sass"
 gem 'httpclient'
 gem 'acts-as-taggable-on', '~> 3.5'
 
-gem 'kor_index', :path => './plugins/kor_index'
 
 gem "sprockets-rails"
 gem "jquery-rails"
@@ -34,14 +26,19 @@ gem 'plupload-rails'
 gem 'coffee-rails'
 gem "sass-rails"
 
-# TODO: loads activerecord on asset precompiliation so we load it in
-# app/models/authority_group_category.rb
-gem 'awesome_nested_set', "~> 3.0.0", require: false
-
 gem 'oj'
 gem 'jbuilder'
 
-gem 'factory_girl_rails', require: false
+if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
+  # TODO: all of these load activerecord on asset precompiliation so we load 
+  # (and configure) it in app/controllers/application_controller.rb
+  gem 'activerecord-session_store'#, require: false
+  gem 'delayed_job_active_record'
+  gem 'awesome_nested_set', "~> 3.0.0"
+  gem 'factory_girl_rails'
+end
+
+gem 'kor_index', :path => './plugins/kor_index'
 
 group :assets, :development do
   gem "therubyracer"
