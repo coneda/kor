@@ -29,6 +29,10 @@ class User < ActiveRecord::Base
     :uniqueness => {:allow_blank => false},
     :format => {:with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true},
     :white_space => true
+  validates :api_key,
+    :presence => true,
+    :uniqueness => true,
+    :length => {:minimum => 32}
   validates_format_of :plain_password, :allow_nil => true, :with => /\A(.{5,30})|\Z/
   validates_confirmation_of :plain_password
   
@@ -54,7 +58,7 @@ class User < ActiveRecord::Base
   
   # -------------------------------------------------------------- callbacks ---
   before_validation(:on => :create) do |model|
-    model.generate_password_and_activation_hash
+    model.generate_secrets
   end
   after_validation :set_expires_at, :create_personal, :add_personal_group
   
@@ -89,9 +93,10 @@ class User < ActiveRecord::Base
     end
   end
   
-  def generate_password_and_activation_hash
+  def generate_secrets
     self.activation_hash = User.generate_activation_hash if self[:activation_hash].blank?
     self.password = User.generate_password if self[:password].blank?
+    self.api_key = SecureRandom.hex(48)
   end
   
   def set_expires_at
@@ -306,6 +311,10 @@ class User < ActiveRecord::Base
 
   def serializable_hash(options = {})
     super options.merge(:except => [:password, :activation_hash])
+  end
+
+  def allowed_to?(policy = :view, items = nil, options = {})
+    Kor::Auth.authorized?(self, policy, items, options)
   end
   
 end

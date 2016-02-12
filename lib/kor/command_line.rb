@@ -88,60 +88,29 @@ class Kor::CommandLine
         puts Time.now
       end
 
-      if @command == "version"
-        version
-      end
-
-      if @command == "export" && @config[:format] == "excel"
-        excel_export
-      end
-
-      if @command == "import" && @config[:format] == "excel"
-        excel_import
-      end
-
-      if @command == "reprocess-all"
-        reprocess_all
-      end
-
-      if @command == "index-all"
-        index_all
-      end
-
-      if @command == "group-to-zip"
-        group_to_zip
-      end
-
-      if @command == "notify-expiring-users"
-        notify_expiring_users
-      end
-
-      if @command == "recheck-invalid-entities"
-        recheck_invalid_entities
-      end
-
-      if @command == "delete-expired-downloads"
-        delete_expired_downloads
-      end
-
-      if @command == 'reset-admin-account'
-        reset_admin_account
-      end
-
-      if @command == "editor-stats"
-        editor_stats
-      end
-
-      if @command == "exif-stats"
-        exif_stats
-      end
-
-      if @command == "cleanup-sessions"
-        cleanup_sessions
-      end
-
-      if @command.nil?
-        usage
+      case @command
+        when "version" then version
+        when "export"
+          if @config[:format] == "excel"
+            excel_export
+          end
+        when "import" 
+          if @config[:format] == "excel"
+            excel_import
+          end
+        when "reprocess-all" then reprocess_all
+        when "index-all" then index_all
+        when "group-to-zip" then group_to_zip
+        when "notify-expiring-users" then notify_expiring_users
+        when "recheck-invalid-entities" then recheck_invalid_entities
+        when "delete-expired-downloads" then delete_expired_downloads
+        when "editor-stats" then editor_stats
+        when "exif-stats" then exif_stats
+        when "reset-admin-account" then reset_admin_account
+        when "cleanup-sessions" then cleanup_sessions
+        else
+          puts "command '#{@command}' is not known"
+          usage
       end
     end
   end
@@ -248,6 +217,13 @@ class Kor::CommandLine
   def exif_stats
     require "exifr"
     Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
+  end
+
+  def reset_admin_account
+    User.admin.update_attributes(
+      :password => "admin",
+      :login_attempts => []
+    )
   end
 
   def cleanup_sessions

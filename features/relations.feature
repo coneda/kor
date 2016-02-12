@@ -1,5 +1,6 @@
 Feature: relations
 
+  @javascript
   Scenario: create relation
     Given I am logged in as "admin"
     When I go to the relations page
@@ -7,6 +8,7 @@ Feature: relations
     And I fill in "relation[name]" with "loves"
     And I fill in "relation[reverse_name]" with "loves not"
     And I fill in "relation[description]" with "love"
+    And I ignore the next confirmation box
     And I press "Create"
     Then I should see "loves" within "table.kor_table"
     And I should see "loves not" within "table.kor_table"

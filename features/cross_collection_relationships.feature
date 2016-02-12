@@ -14,7 +14,7 @@ Feature: Cross collection relationships
     And I should <seetargetb> element "a[kor-to-clipboard]" within ".metadata"
     And I should <seepenb> element "img[alt=Pen]" within ".metadata"
     And I should <seexb> element "img[alt=X]" within ".metadata"
-    And I should <seeplusb> element "img[alt=Plus]" within ".layout_panel.left .relationships"
+    And I should <seeplusb> element "img[data-name=plus]" within ".layout_panel.left .relationships"
     And I should <seerelb> "Frankfurter Dom" within ".relationship"
     When I go to the entity page for "Frankfurter Dom"
     Then I should see "<seef>"
@@ -22,7 +22,7 @@ Feature: Cross collection relationships
     And I should <seetargetf> element "a[kor-to-clipboard]" within ".metadata"
     And I should <seepenf> element "img[alt=Pen]" within ".metadata"
     And I should <seexf> element "img[alt=X]" within ".metadata"
-    And I should <seeplusf> element "img[alt=Plus]" within ".layout_panel.left .relationships"
+    And I should <seeplusf> element "img[data-name=plus]" within ".layout_panel.left .relationships"
     And I should <seerelf> element ".relationship"
     # And I debug
     And I should <seerelpenf> element "img[alt=Pen]" within ".relationship.stage_panel"
@@ -47,7 +47,7 @@ Feature: Cross collection relationships
       And I should see element "a[kor-to-clipboard]" within ".metadata"
       And I should not see element "img[alt=Pen]" within ".metadata"
       And I should not see element "img[alt=X]" within ".metadata"
-      And I should see element "img[alt=Plus]" within ".layout_panel.left .relationships"
+      And I should see element "img[data-name=plus]" within ".layout_panel.left .relationships"
       And I should not see element ".relationship"
 
 

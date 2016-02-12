@@ -71,9 +71,11 @@ Feature: Authentication and Authorization
     Then I should get access "<access>"
     
     Examples:
-      | username | method | url    | params | access |
-      | admin    | GET    | /kinds |        | yes    |
-      | john     | GET    | /kinds |        | no     |
+      | username | method | url             | params | access |
+      | admin    | GET    | /kinds          |        | yes    |
+      | john     | GET    | /kinds          |        | yes    |
+      | admin    | GET    | /config/general |        | yes    |
+      | john     | GET    | /config/general |        | no     |
 
   
   @javascript

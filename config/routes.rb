@@ -1,3 +1,13 @@
+class OaiPmhVerbConstraint
+  def initialize(verb)
+    @verb = verb
+  end
+
+  def matches?(request)
+    request.params[:verb] == @verb
+  end
+end
+
 Rails.application.routes.draw do
 
   get '/blaze', :to => 'static#blaze', :as => :web
@@ -169,6 +179,20 @@ Rails.application.routes.draw do
       resources :paths, :only => [:index] do
         collection do
           post :gallery
+        end
+      end
+    end
+
+    scope 'oai-pmh', :format => :xml, :as => 'oai_pmh', :via => [:get, :post] do
+      ['entities', 'relationships', 'kinds', 'relations'].each do |res|
+        controller "oai_pmh/#{res}", :defaults => {:format => :xml} do
+          match res, :to => "oai_pmh/#{res}#identify", :constraints => OaiPmhVerbConstraint.new('Identify')
+          match res, :to => "oai_pmh/#{res}#list_sets", :constraints => OaiPmhVerbConstraint.new('ListSets')
+          match res, :to => "oai_pmh/#{res}#list_metadata_formats", :constraints => OaiPmhVerbConstraint.new('ListMetadataFormats')
+          match res, :to => "oai_pmh/#{res}#list_identifiers", :constraints => OaiPmhVerbConstraint.new('ListIdentifiers')
+          match res, :to => "oai_pmh/#{res}#list_records", :constraints => OaiPmhVerbConstraint.new('ListRecords')
+          match res, :to => "oai_pmh/#{res}#get_record", :constraints => OaiPmhVerbConstraint.new('GetRecord')
+          match res, :to => "oai_pmh/#{res}#verb_error"
         end
       end
     end

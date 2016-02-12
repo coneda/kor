@@ -214,9 +214,15 @@ Then(/^I should see "(\d+)" kor images$/) do |amount|
   expect(page).to have_selector("img.kor_medium", :count => 2)
 end
 
+Then(/^I should see "(.*?)"'s API Key$/) do |username|
+  user = User.where(:name => username).first
+  expect(find_field("user[api_key]").value).to eq(user.api_key)
+end
+
 When(/^I trigger the blur event for "(.*?)"$/) do |selector|
   page.execute_script("$('#{selector}').blur()")
 end
+
 When(/^I uncheck the checkbox$/) do
   find("input[type=checkbox]").set false
 end

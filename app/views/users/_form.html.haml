@@ -9,6 +9,10 @@
 
   .hr
 
+  = f.kor_input :api_key, :control => f.text_area(:api_key, :class => "small")
+
+  .hr
+
   = f.kor_input :activation, :control => f.check_box(:active)
 
   = column(:expires_at, (@user.expires_at ? I18n.l(@user.expires_at) : I18n.t('never')))

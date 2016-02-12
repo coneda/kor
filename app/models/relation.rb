@@ -15,9 +15,12 @@ class Relation < ActiveRecord::Base
     model.generate_uuid
   end
   def generate_uuid
-    write_attribute(:uuid, SecureRandom.uuid)
+    self[:uuid] ||= SecureRandom.uuid
   end
 
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :allowed, lambda {|user, policies| all}
   default_scope lambda { order(:name) }
   
 

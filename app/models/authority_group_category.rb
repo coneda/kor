@@ -1,3 +1,5 @@
+require 'awesome_nested_set'
+
 class AuthorityGroupCategory < ActiveRecord::Base
   acts_as_nested_set :dependent => :destroy
   

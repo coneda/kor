@@ -14,9 +14,17 @@ class MediaController < ApplicationController
     id = params[:id] || (params[:id_part_01] + params[:id_part_02] + params[:id_part_03]).to_i
     @medium = Medium.includes(:entity => :collection).find(id)
 
-    if authorized?(:view, @medium.entity.collection)
-      style = param_to_style(params[:style])
+    style = param_to_style(params[:style])
+    auth = if style == :original
+      authorized?(:download_originals, @medium.entity.collection) || (
+        !@medium.content_type.match(/\image/) && 
+        authorized?(:view, @medium.entity.collection)
+      )
+    else
+      authorized?(:view, @medium.entity.collection)
+    end
 
+    if auth
       send_data @medium.data(style),
         :type => @medium.content_type(style),
         :disposition => 'inline',
@@ -29,16 +37,17 @@ class MediaController < ApplicationController
   def download
     @medium = Medium.find params[:id]
 
-    auth = case param_to_style(params[:style])
-      when :original
-        authorized?(:download_originals, @medium.entity.collection) || (!@medium.content_type.match(/\image/) && authorized?(:view, @medium.entity.collection))
-      else
+    style = param_to_style(params[:style])
+    auth = if style == :original
+      authorized?(:download_originals, @medium.entity.collection) || (
+        !@medium.content_type.match(/\image/) && 
         authorized?(:view, @medium.entity.collection)
+      )
+    else
+      authorized? :view, @medium.entity.collection
     end
 
     if auth
-      style = param_to_style(params[:style])
-
       send_data @medium.data(style),
         :type => @medium.content_type(style),
         :disposition => 'attachment',
@@ -72,7 +81,7 @@ class MediaController < ApplicationController
   protected
 
     def param_to_style(param)
-      allowed = ["icon", "thumbnail", "preview", "screen", "normal"]
+      allowed = ["icon", "thumbnail", "preview", "screen", "normal", "original"]
       allowed.include?(param) ? param.to_sym : param
     end
 

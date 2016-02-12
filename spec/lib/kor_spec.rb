@@ -15,6 +15,14 @@ describe Kor do
     expect(ActionMailer::Base.deliveries.size).to eql(1)
   end
 
+  it "should generate a repository UUID" do
+    expect(Kor.config["maintainer.repository_uuid"]).to be_nil
+    
+    uuid = Kor.repository_uuid
+    expect(uuid).not_to be_nil
+    expect(Kor.config(true)["maintainer.repository_uuid"]).to eq(uuid)
+  end
+
   it "should display ALL primary and secondary related entities within the gallery"
   it "should limit the amount of records returned by the path api"
   it "automatically created generators should not render anything when value is empty"

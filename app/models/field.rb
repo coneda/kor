@@ -157,7 +157,7 @@ class Field < ActiveRecord::Base
   # Formats
   
   def serializable_hash(*args)
-    super :methods => [:value], :root => false
+    super(:methods => [:value], :root => false).stringify_keys
   end
   
 end

@@ -1,0 +1,17 @@
+<kor:relationship
+  xmlns:kor="https://coneda.net/XMLSchema/1.0/"
+  xsi:schemaLocation="https://coneda.net/XMLSchema/1.0/ 
+                      https://coneda.net/XMLSchema/1.0/kor.xsd"
+>
+  <kor:id><%= record.uuid %></kor:id>
+  <kor:created-at><%= timestamp record.created_at %></kor:created-at>
+  <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
+  <kor:name><%= record.relation.name %></kor:name>
+  <kor:relation
+    id="<%= record.relation.uuid %>"
+    name="<%= record.relation.name %>"
+    reverse-name="<%= record.relation.reverse_name %>"
+  ></kor:relation>
+  <kor:from><%= record.from.uuid %></kor:from>
+  <kor:to><%= record.to.uuid %></kor:to>
+</kor:relationship>

@@ -27,7 +27,6 @@ RSpec.describe MediaController, :type => :controller do
     end
   end
 
-  # view
   it "should not allow viewing to unauthorized users" do
     get :view, :id => side_entity.medium_id
     expect(response).to redirect_to(denied_path)
@@ -52,7 +51,6 @@ RSpec.describe MediaController, :type => :controller do
     }
   end
 
-  # show
   it "should not show imgages to unauthorized users" do
     get :show, params_for_medium(side_entity.medium)
     expect(response).to redirect_to(denied_path)
@@ -65,8 +63,6 @@ RSpec.describe MediaController, :type => :controller do
     expect(response).not_to redirect_to(denied_path)
   end
 
-
-  # download
   it "should not allow image download to unauthorized users" do
     get :download, :id => side_entity.medium_id, :style => :normal
     expect(response).to redirect_to(denied_path)
@@ -82,8 +78,13 @@ RSpec.describe MediaController, :type => :controller do
     expect(response).not_to redirect_to(denied_path)
   end
 
+  it "should allow original download only to authorized users" do
+    set_side_collection_policies(:view => [@admins])
 
-  # transform
+    get :download, :id => side_entity.medium_id, :style => :original
+    expect(response).to redirect_to(denied_path)
+  end
+
   it "should not allow image transformations to unauthorized users" do
     get :transform, :id => side_entity.medium_id, :transformation => 'image', :operation => 'flip'
     expect(response).to redirect_to(denied_path)

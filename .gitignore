@@ -2,6 +2,7 @@
 
 bin
 .bundle
+bin
 log/*
 tmp/*
 data/*

@@ -3,6 +3,7 @@ require 'rails_helper'
 describe Kor::Graph do
 
   before :each do
+    skip "postponed after v2.0.0"
     default = FactoryGirl.create :default
     admins = FactoryGirl.create :admins
     Grant.create :collection => default, :credential => admins, :policy => :view

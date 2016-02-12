@@ -12,7 +12,7 @@ kor.directive "korEntitySelector", [
         search = -> 
           if scope.terms && scope.terms.length >= 3
             es.index(terms: scope.terms).success (data) -> 
-              console.log(data)
+              # console.log(data)
               scope.results = data
               scope.group()
 
@@ -23,7 +23,7 @@ kor.directive "korEntitySelector", [
           scope.grouped_records = []
 
           if scope.tab == 'current'
-            console.log scope.current()
+            # console.log scope.current()
             scope.results = {
               raw_records: [scope.current()]
             }
@@ -31,7 +31,7 @@ kor.directive "korEntitySelector", [
 
           if scope.tab == 'created'
             es.recently_created().success (data) ->
-              console.log data
+              # console.log data
               scope.results = {
                 raw_records: data.records
               }
@@ -39,7 +39,7 @@ kor.directive "korEntitySelector", [
 
           if scope.tab == 'visited'
             es.recently_visited().success (data) ->
-              console.log data
+              # console.log data
               scope.results = {
                 raw_records: data.records
               }

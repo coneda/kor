@@ -20,7 +20,6 @@ Attachments.register_expert_search_events = function() {
 
   $('#relation_conditions .commands a').click(function(event) {
     var attachments = $(event.currentTarget).parents('div.attachments');
-    console.log(attachments);
     var kind_id = $('#query_kind_id').val();
     var attachment = $('<div>');
     $.ajax({

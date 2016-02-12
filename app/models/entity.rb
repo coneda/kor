@@ -207,6 +207,14 @@ class Entity < ActiveRecord::Base
     attachment['fields'] = value
   end
 
+  def fields
+    kind.field_instances(self)
+  end
+
+  def field_hashes
+    fields.map{|field| field.serializable_hash}
+  end
+
   def synonyms
     (attachment['synonyms'].presence || []).uniq
   end
@@ -532,6 +540,9 @@ class Entity < ActiveRecord::Base
   end
   
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
@@ -627,7 +638,7 @@ class Entity < ActiveRecord::Base
     where("fromrels.id is NULL AND torels.id IS NULL")
   }
   scope :pageit, lambda { |page, per_page|
-    page = (page || 1).to_i
+    page = [(page || 1).to_i, 1].max
     per_page = [(per_page || 20).to_i, 100].min
 
     offset((page - 1) * per_page).limit(per_page)

@@ -6,7 +6,7 @@ Feature: tagging
 
   @javascript
   Scenario: Hide inplace controls without relevant rights
-    # Given user "guest" is allowed to "tagging" collection "default" via credential "guests"
+    Given user "guest" is allowed to "view" collection "default" via credential "guests"
     Given I am logged in as "admin"
     And Mona Lisa and a medium as correctly related entities
     Given the user "guest"

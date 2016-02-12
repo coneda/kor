@@ -51,7 +51,7 @@ Feature: Show media in the gallery and show certain related entities
     And Leonardo, Mona Lisa and a medium as correctly related entities
     And I re-login as "john"
     When I go to the gallery
-    Then I should see "Neue Einträge"
+    Then I should see "New entries"
     Then I should not see "Mona Lisa"
     And I should not see "Leonardo"
     

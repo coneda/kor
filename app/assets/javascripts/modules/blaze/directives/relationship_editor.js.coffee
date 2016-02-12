@@ -23,17 +23,17 @@ kor.directive "korRelationshipEditor", [
             properties: (prop.value for prop in scope.properties)
           }
 
-          console.log relationship
+          # console.log relationship
 
           promise = rs.create(relationship)
           promise.success (data) -> 
             scope.errors = null
             kd.set_notice(data.message)
-            console.log scope
+            # console.log scope
             scope.close(refresh: true)
           promise.error (data) -> 
             scope.errors = data
-            console.log(data)
+            # console.log(data)
 
         scope.add_property = (event) ->
           event.preventDefault()

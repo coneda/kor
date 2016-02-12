@@ -10,6 +10,7 @@ FactoryGirl.define do
     factory :media do
       name "Medium"
       plural_name "Media"
+      settings { {:naming => false} }
     end
 
     factory :locations do
@@ -283,6 +284,20 @@ FactoryGirl.define do
         <span ng-show=\"locale() == 'en'\">English</span>
         <span ng-show=\"locale() == 'de'\">Deutsch</span>
       "
+    end
+  end
+
+  factory :authority_group_category do
+    factory :archive do
+      name 'archive'
+    end
+
+    factory :shelf_1 do
+      name 'shelf 1'
+    end
+
+    factory :shelf_2 do
+      name 'shelf 2'
     end
   end
 

@@ -5,6 +5,7 @@ class RelationsController < ApplicationController
 
   def index
     @relations = Relation.paginate(:page => params[:page], :per_page => 30)
+    render layout: 'wide'
   end
 
   def names

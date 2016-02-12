@@ -29,8 +29,6 @@ module Kor::Auth
         end
         data = File.read("#{dir}/stdout.log")
 
-        # binding.pry if password == "234567"
-
         if status
           return JSON.parse(data).merge(
             :parent_username => c["map_to"]

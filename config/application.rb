@@ -39,6 +39,7 @@ module Kor
   end
 end
 
+# TODO: add scenario for an empty resultset on the gallery
 # TODO: remove comments
 # module Kor
 #   class Application < Rails::Application

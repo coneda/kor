@@ -8,14 +8,13 @@ class RelationshipsController < ApplicationController
       format.json do
         if user = (current_user || User.guest)
           scope = Relationship.
-            pageit(params[:page], params[:per_page]).
-            as_user(user).
+            allowed(user, :view).
             from_ids(params[:from_ids]).
             to_ids(params[:to_ids]).
             from_kind_ids(params[:from_kind_ids]).
             to_kind_ids(params[:to_kind_ids]).
             via(params[:relation_names]).
-            with_ends
+            pageit(params[:page], params[:per_page])
 
           # puts scope.to_sql
 
@@ -127,8 +126,8 @@ class RelationshipsController < ApplicationController
 
   def destroy
     @relationship = Relationship.find(params[:id])
-    
-    unless authorized_for_relationship? @relationship, :edit
+
+    unless authorized_for_relationship? @relationship, :delete
       redirect_to denied_path
     else      
       @relationship.destroy

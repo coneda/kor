@@ -33,7 +33,7 @@ class ConfigController < ApplicationController
   end
   
   private
-    def generally_authorized
+    def generally_authorized?
       current_user.admin?
     end
 

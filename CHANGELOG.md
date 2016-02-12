@@ -9,10 +9,11 @@ commit history on GitHub.
 
 ### User
 
+* added OAI-PMH api to enable harvesting of entities, kinds, relationships and 
+  relations
+* added token authentication
 * dropped debian package generation
 * added cli-command to cleanup old sessions
-* added a development environment via `vagrant up`
-* sped up the test suites by about 20%
 * identifier handling and resolution
 * changes to field names are now propagated to affected entities
 * sample data can be generated during db seeting by setting `SAMPLE_DATA=true`
@@ -20,6 +21,9 @@ commit history on GitHub.
 ### Internal
 
 * added VCR gem to enable testing against predictable external API responses
+* switched from rails 3.2 to 4.2
+* sped up the test suites by about 20%
+* added a development environment via `vagrant up`
 
 ## Version 1.9.2
 

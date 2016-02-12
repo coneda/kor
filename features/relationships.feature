@@ -41,6 +41,7 @@ Feature: relate entities using predefined relations
     Given I am logged in as "admin"
     And the triple "Werk/Werke" "Bamberger Apokalypse" "befindet sich in/Aubewahrungsort von" "Institution/Institutionen" "Sankt Stephan"
     When I go to the entity page for "Bamberger Apokalypse"
+    And I wait for "2" seconds
     And I follow the delete link within ".relationships"
     Then I should not see "befindet sich in" within ".relationships"
     And I should not see "Sankt Stephan" within ".relationships"

@@ -49,7 +49,7 @@ Feature: Entity authentorization
     And user "joe" is allowed to "edit" collection "side" through credential "side_editors"
     And the entity "Mona Lisa" of kind "Werk/Werke" inside collection "main"
     When I go to the entity page for "Mona Lisa"
-    Then I should see element "img[alt=Plus]" within ".relationships"
+    Then I should see element "img[data-name=plus]" within ".relationships"
     
     
   @javascript

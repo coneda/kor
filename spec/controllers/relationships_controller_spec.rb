@@ -166,7 +166,7 @@ RSpec.describe RelationshipsController, :type => :controller do
   
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
-        
+
     request.env["HTTP_REFERER"] = '/'
     delete :destroy, :id => relationship.id
     expect(response).not_to redirect_to(denied_path)
@@ -177,10 +177,6 @@ RSpec.describe RelationshipsController, :type => :controller do
   end
 
   it "should list all relationships" do
-    # test_data_for_auth
-    # test_kinds
-    # test_relations
-
     default = FactoryGirl.create :default
     side = FactoryGirl.create :collection, :name => "Side"
 
@@ -228,13 +224,13 @@ RSpec.describe RelationshipsController, :type => :controller do
     expect(JSON.parse(response.body).size).to eq(10)
 
     get :index, :format => 'json', :page => 2
-    expect(JSON.parse(response.body).size).to eq(2)
+    expect(JSON.parse(response.body).size).to eq(0)
 
     get :index, :format => 'json', :per_page => 11
-    expect(JSON.parse(response.body).size).to eq(11)
+    expect(JSON.parse(response.body).size).to eq(10)
 
     get :index, :format => 'json', :per_page => 20
-    expect(JSON.parse(response.body).size).to eq(12)
+    expect(JSON.parse(response.body).size).to eq(10)
 
     current_user = admin
 

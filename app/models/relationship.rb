@@ -56,15 +56,6 @@ class Relationship < ActiveRecord::Base
     joins("LEFT JOIN entities AS froms ON froms.id = relationships.from_id").
     joins("LEFT JOIN entities AS tos ON tos.id = relationships.to_id")
   }
-  scope :as_user, lambda { |user|
-    user ||= User.guest
-    collections = Kor::Auth.authorized_collections(user)
-    if collections.empty?
-      where("froms.collection_id is NULL OR tos.collection_id IS NULL")
-    else
-      where("froms.collection_id IN (?) OR tos.collection_id IN (?)", collections, collections)
-    end
-  }
   scope :to_ids, lambda { |ids|
     ids.present? ? where(:to_id => ids) : all
   }
@@ -85,6 +76,15 @@ class Relationship < ActiveRecord::Base
       all
     end
   }
+  scope :allowed, lambda{|user, policy|
+    collection_ids = Kor::Auth.authorized_collections(user, policy).map{|c| c.id}
+    with_ends.where(
+      "froms.collection_id in (:ids) AND tos.collection_id in (:ids)",
+      :ids => collection_ids
+    )
+  }
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
 
   def other_entity(entity)
     from_id == entity.id ? to : from
@@ -202,7 +202,7 @@ class Relationship < ActiveRecord::Base
   validates_presence_of :from_id, :to_id, :relation_id, :message => 'can_not_be_empty'
   
   after_validation(:on => :create) do |model|
-    model.uuid = SecureRandom.uuid
+    model.uuid ||= SecureRandom.uuid
   end
   
   
