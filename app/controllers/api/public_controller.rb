@@ -20,7 +20,7 @@ class Api::PublicController < Api::ApiController
         :current_history => Entity.
           includes(:medium).
           find_all_by_id_keep_order(session[:current_history]).
-          map{|e| e.serializable_hash :root => false, :include => :medium},
+          map{|e| e.serializable_hash :root => false, :include => :medium, :except => [:attachment]},
         :show_panel => session[:show_session_info],
         :clipboard => session[:clipboard] || []
       },
@@ -44,7 +44,7 @@ class Api::PublicController < Api::ApiController
       }
     end
 
-    render :json => result
+    render :json => result.as_json
   end
   
   

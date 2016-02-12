@@ -237,7 +237,7 @@ GEM
       childprocess (~> 0.5)
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
-      websocket (~> 1.0)
+      websocket (~> 1.0.4)
     slop (3.6.0)
     spreadsheet (1.0.3)
       ruby-ole (>= 1.0)
@@ -270,7 +270,7 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
-    websocket (1.2.2)
+    websocket (1.0.7)
     websocket-driver (0.6.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
@@ -285,7 +285,7 @@ DEPENDENCIES
   RedCloth
   activerecord-session_store
   acts-as-taggable-on (~> 3.5)
-  angularjs-rails
+  angularjs-rails (~> 1.4.8)
   awesome_nested_set (~> 3.0.0)
   capybara
   cocaine

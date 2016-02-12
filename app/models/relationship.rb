@@ -6,13 +6,88 @@ class Relationship < ActiveRecord::Base
   belongs_to :from, :class_name => "Entity", :foreign_key => :from_id
   belongs_to :to, :class_name => "Entity", :foreign_key => :to_id
 
-  after_validation do |relationship|
-    relationship.properties = relationship.properties.uniq
+  belongs_to :normal, class_name: "DirectedRelationship", dependent: :destroy
+  belongs_to :reversal, class_name: "DirectedRelationship", dependent: :destroy
+
+  after_validation :ensure_unique_properties, :ensure_directed
+  after_commit :connect_directed
+
+  def ensure_unique_properties
+    self.properties = self.properties.uniq
   end
 
+  def ensure_directed
+    self.normal ||= DirectedRelationship.new
+    self.reversal ||= DirectedRelationship.new
+
+    # TODO: update relation_name in directed relationships when the relation
+    # changes (background job)
+    self.normal.assign_attributes(
+      from_id: self.from_id,
+      to_id: self.to_id,
+      relation_id: self.relation_id,
+      is_reverse: false,
+      relation_name: self.relation.name
+    )
+
+    self.reversal.assign_attributes(
+      from_id: self.to_id,
+      to_id: self.from_id,
+      relation_id: self.relation_id,
+      is_reverse: true,
+      relation_name: self.relation.reverse_name
+    )
+  end
+
+  def connect_directed
+    if !self.normal.destroyed? && !self.normal.destroyed?
+      self.normal.update_column :relationship_id, self.id
+      self.reversal.update_column :relationship_id, self.id
+    end
+  end
+
+  scope :pageit, lambda { |page, per_page|
+    page = (page || 1) - 1
+    per_page = [(per_page || 10).to_i, 500].min
+
+    limit(per_page).offset(per_page * page)
+  }
+  scope :with_ends, lambda {
+    joins("LEFT JOIN entities AS froms ON froms.id = relationships.from_id").
+    joins("LEFT JOIN entities AS tos ON tos.id = relationships.to_id")
+  }
+  scope :as_user, lambda { |user|
+    user ||= User.guest
+    collections = Kor::Auth.authorized_collections(user)
+    if collections.empty?
+      where("froms.collection_id is NULL OR tos.collection_id IS NULL")
+    else
+      where("froms.collection_id IN (?) OR tos.collection_id IN (?)", collections, collections)
+    end
+  }
+  scope :to_ids, lambda { |ids|
+    ids.present? ? where(:to_id => ids) : all
+  }
+  scope :from_ids, lambda { |ids|
+    ids.present? ? where(:from_id => ids) : all
+  }
+  scope :from_kind_ids, lambda { |ids|
+    ids.present? ? where("froms.kind_id IN (?)", ids) : all
+  }
+  scope :to_kind_ids, lambda { |ids|
+    ids.present? ? where("tos.kind_id IN (?)", ids) : all
+  }
+  scope :via, lambda { |names|
+    if names.present? 
+      joins("LEFT JOIN relations ON relations.id = relationships.relation_id").
+      where("relations.name IN (?)", names)
+    else
+      all
+    end
+  }
+
   def other_entity(entity)
-    from_id == entity.id ?
-      to : from
+    from_id == entity.id ? to : from
   end
 
   def relation_name_for_entity(entity)

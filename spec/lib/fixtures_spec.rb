@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe "Fixtures" do
   
@@ -16,7 +16,7 @@ describe "Fixtures" do
   it "should create test images" do
     Delayed::Worker.delay_jobs = false
 
-    e = FactoryGirl.create :image_a
+    e = FactoryGirl.create :picture_a
     
     expect(e.medium).not_to be_nil
     expect(e.medium.image.file?).to be_truthy

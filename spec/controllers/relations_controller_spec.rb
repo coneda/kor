@@ -26,7 +26,7 @@ RSpec.describe RelationsController, :type => :controller do
     session[:user_id] = nil
 
     get :names, :format => "json"
-    puts response.body
+    
     expect(response.status).to eq(200)
   end
   

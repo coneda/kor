@@ -37,5 +37,5 @@ class Credential < ActiveRecord::Base
   def list_name
     (name).short(18)
   end
-  
+
 end

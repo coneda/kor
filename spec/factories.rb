@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  
+
   factory :kind do
 
     factory :works do
@@ -46,7 +46,18 @@ FactoryGirl.define do
   end
   
   factory :medium do
-    document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
+
+    factory :medium_a do
+      document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
+    end
+
+    factory :medium_b do
+      document File.open("#{Rails.root}/spec/fixtures/image_b.jpg")
+    end
+
+    factory :medium_c do
+      document File.open("#{Rails.root}/spec/fixtures/image_c.jpg")
+    end
   end
 
   factory :medium_without_swap, :class => Medium do
@@ -103,10 +114,18 @@ FactoryGirl.define do
       factory :landscape do
         name "Landscape"
       end
+
+      factory :the_last_supper do
+        name "The Last Supper"
+      end
+
+      factory :artwork do
+        name "An artwork"
+      end
     end
 
     factory :location do
-      name "A entity"
+      name "A location"
       kind { Kind.find_or_create_by :name => "Ort" }
 
       factory :united_kingdom do
@@ -115,6 +134,10 @@ FactoryGirl.define do
 
       factory :united_states do
         name "United States of America"
+      end
+
+      factory :paris do
+        name "Paris"
       end
     end
 
@@ -132,21 +155,28 @@ FactoryGirl.define do
     end
 
     factory :institution do
-      name "A entity"
-      kind { Kind.find_or_create_by :name => "Person" }
+      name "An institution"
+      kind { Kind.find_or_create_by :name => "Institution" }
     end
 
-    factory :medium_entity do
+    factory :tom do
+      name "Tom"
+      kind { Kind.find_or_create_by name: "Person" }
+    end
+
+    factory :picture do
       kind { Kind.medium_kind }
 
-      factory :image_a do
-        medium { FactoryGirl.build :medium }
+      factory :picture_a do
+        medium { FactoryGirl.build :medium_a }
       end
 
-      factory :image_b do
-        medium do
-          FactoryGirl.build :medium, :document => File.open("#{Rails.root}/spec/fixtures/image_b.jpg")
-        end
+      factory :picture_b do
+        medium { FactoryGirl.build :medium_b }
+      end
+
+      factory :picture_c do
+        medium { FactoryGirl.build :medium_c }
       end
     end
 
@@ -157,8 +187,8 @@ FactoryGirl.define do
     reverse_name "is related to"
 
     factory :is_part_of do
-      name "ist Teil von"
-      reverse_name "besteht aus"
+      name "is part of"
+      reverse_name "consists of"
     end
 
     factory :shows do

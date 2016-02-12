@@ -200,6 +200,7 @@ class Kor::Blaze
       r[:entity] = e.serializable_hash(
         :root => false, 
         :include => [:kind, :medium], 
+        :except => [:attachment],
         :methods => [:display_name]
       )
       r[:total_media] = media_count_for(e)

@@ -14,5 +14,9 @@ describe Kor do
     
     expect(ActionMailer::Base.deliveries.size).to eql(1)
   end
+
+  it "should display ALL primary and secondary related entities within the gallery"
+  it "should limit the amount of records returned by the path api"
+  it "automatically created generators should not render anything when value is empty"
   
 end

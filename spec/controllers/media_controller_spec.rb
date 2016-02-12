@@ -17,7 +17,7 @@ RSpec.describe MediaController, :type => :controller do
     Delayed::Worker.delay_jobs = false
 
     @side_entity ||= begin
-      FactoryGirl.create :image_a, :collection => side_collection
+      FactoryGirl.create :picture_a, :collection => side_collection
     end
   end
 

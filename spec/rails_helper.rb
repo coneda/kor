@@ -27,6 +27,7 @@ RSpec.configure do |config|
   end
 
   config.before :each do |example|
+    FactoryGirl.reload
     if example.metadata[:elastic]
       Kor::Elastic.reset_index
     end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160210173519) do
+ActiveRecord::Schema.define(version: 20160211222924) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -91,6 +91,22 @@ ActiveRecord::Schema.define(version: 20160210173519) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+
+  create_table "directed_relationships", force: :cascade do |t|
+    t.integer  "relation_id",     limit: 4
+    t.integer  "relationship_id", limit: 4
+    t.boolean  "is_reverse"
+    t.string   "relation_name",   limit: 255
+    t.integer  "from_id",         limit: 4
+    t.integer  "to_id",           limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "directed_relationships", ["from_id"], name: "index_directed_relationships_on_from_id", using: :btree
+  add_index "directed_relationships", ["relation_id", "is_reverse", "from_id", "to_id"], name: "ally", using: :btree
+  add_index "directed_relationships", ["relation_id"], name: "index_directed_relationships_on_relation_id", using: :btree
+  add_index "directed_relationships", ["to_id"], name: "index_directed_relationships_on_to_id", using: :btree
 
   create_table "downloads", force: :cascade do |t|
     t.integer  "user_id",      limit: 4
@@ -195,14 +211,13 @@ ActiveRecord::Schema.define(version: 20160210173519) do
   end
 
   create_table "identifiers", force: :cascade do |t|
-    t.string   "entity_uuid", limit: 255
-    t.string   "kind",        limit: 255
-    t.string   "value",       limit: 255
+    t.string   "kind",       limit: 255
+    t.string   "value",      limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "entity_id",  limit: 4
   end
 
-  add_index "identifiers", ["entity_uuid"], name: "index_identifiers_on_entity_uuid", using: :btree
   add_index "identifiers", ["value", "kind"], name: "index_identifiers_on_value_and_kind", using: :btree
   add_index "identifiers", ["value"], name: "index_identifiers_on_value", using: :btree
 
@@ -270,6 +285,8 @@ ActiveRecord::Schema.define(version: 20160210173519) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "lock_version", limit: 4,     default: 0
+    t.integer  "normal_id",    limit: 4
+    t.integer  "reversal_id",  limit: 4
   end
 
   add_index "relationships", ["from_id"], name: "index_relationships_on_from_id", using: :btree

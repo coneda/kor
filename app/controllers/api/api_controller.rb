@@ -53,5 +53,9 @@ class Api::ApiController < ActionController::Base
         out_of.include? c.id
       end
     end
+
+    def kor_graph
+      @kor_graph ||= Kor::Graph.new(:user => current_user)
+    end
   
 end

@@ -72,7 +72,7 @@ describe Entity do
   
   it "should find related media for primary entities and vice versa" do
     admin = User.admin
-    image = FactoryGirl.create :image_a
+    image = FactoryGirl.create :picture_a
     Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
     
     expect(@mona_lisa.related(admin, :search => :media, :assume => :primary)).to eql([image])
@@ -90,7 +90,7 @@ describe Entity do
   
   it "should find related primary entities for secondary entities" do
     admin = User.admin
-    image = FactoryGirl.create :image_a
+    image = FactoryGirl.create :picture_a
     @leonardo = FactoryGirl.create :leonardo
     Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
     Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)

@@ -5,7 +5,7 @@ describe Identifier do
   it "should require a type and a value" do
     id = described_class.new
     expect(id.valid?).to be_falsey
-    expect(id.errors.full_messages.size).to eq(3)
+    expect(id.errors.full_messages.size).to eq(2)
   end
 
   it "should not allow duplicate identifiers per kind" do
@@ -36,7 +36,7 @@ describe Identifier do
     expect(described_class.count).to eq(1)
 
     id = described_class.first
-    expect(id.entity_uuid).to eq(leonardo.uuid)
+    expect(id.entity_id).to eq(leonardo.id)
     expect(id.kind).to eq("gnd_id")
     expect(id.value).to eq("1234")
   end

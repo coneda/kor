@@ -1,6 +1,31 @@
 class RelationshipsController < ApplicationController
 
   layout 'normal_small'
+  skip_before_filter :legal, :authentication, :authorization, :only => [:index]
+
+  def index
+    respond_to do |format|
+      format.json do
+        if user = (current_user || User.guest)
+          scope = Relationship.
+            pageit(params[:page], params[:per_page]).
+            as_user(user).
+            from_ids(params[:from_ids]).
+            to_ids(params[:to_ids]).
+            from_kind_ids(params[:from_kind_ids]).
+            to_kind_ids(params[:to_kind_ids]).
+            via(params[:relation_names]).
+            with_ends
+
+          # puts scope.to_sql
+
+          render :json => scope.as_json(:root => false)
+        else
+          render :nothing => true, :status => 401
+        end
+      end
+    end
+  end
 
   def show
     @relationship = Relationship.find(params[:id])

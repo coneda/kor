@@ -110,8 +110,8 @@ describe Medium do
   end
   
   it "should not generate the checksum error twice" do
-    original = FactoryGirl.create(:medium)
-    duplicate = FactoryGirl.build(:medium)
+    original = FactoryGirl.create(:medium_a)
+    duplicate = FactoryGirl.build(:medium_a)
     
     expect(duplicate.valid?).not_to be_truthy
     expect(duplicate.errors.full_messages).to eq(
@@ -122,12 +122,12 @@ describe Medium do
   it "should generate a delayed job for processing" do
     Delayed::Worker.delay_jobs = true
     expect(Delayed::Job.count).to eq(0)
-    medium = FactoryGirl.create(:medium)
+    medium = FactoryGirl.create(:medium_a)
     expect(Delayed::Job.count).to eq(2)
   end
 
   it "should generate a datahash for attachments" do
-    medium = FactoryGirl.create :medium
+    medium = FactoryGirl.create :medium_a
     medium = Medium.last
     expect(medium.datahash).to eq("233fcdfee7c55b3978967aacaefb9a08057607a0")
   end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe "Configuration System" do
   it "should load configuration for all environments and merge them" do

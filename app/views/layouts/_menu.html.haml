@@ -13,7 +13,7 @@
       
       %li.spacer
 
-      = navigation_item I18n.t('pages.new_media'), {:controller => "entities", :action => 'gallery'}
+      = navigation_item I18n.t('pages.new_media'), web_path(:anchor => "/entities/gallery")
 
       - if Kor.plugin_installed 'kor_index'
         = navigation_item I18n.t('nouns.simple_search'), {:controller => "component_search", :action => 'component_search'}

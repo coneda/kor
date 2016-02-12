@@ -25,7 +25,7 @@ gem 'kor_index', :path => './plugins/kor_index'
 gem "sprockets-rails"
 gem "jquery-rails"
 gem 'jquery-ui-rails'
-gem 'angularjs-rails'
+gem 'angularjs-rails', '~> 1.4.8'
 gem 'plupload-rails'
 gem 'coffee-rails'
 gem "sass-rails"
@@ -61,7 +61,6 @@ group :development do
 end
 
 group :test, :development do
-  gem 'factory_girl_rails'
   gem 'thin'
   gem 'quiet_assets'
   gem 'pry'

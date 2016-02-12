@@ -35,7 +35,8 @@ class ToolsController < ApplicationController
 
   ####################### clipboard ############################################
 
-  # gathers the entities inside the clipboard
+  # TODO: handle the whole clipboard functionality with localstorage, e.g.
+  # https://github.com/tsironis/lockr
   def clipboard
     session[:clipboard] ||= Array.new
     @entities = viewable_entities.where(:id => session[:clipboard])

@@ -33,11 +33,17 @@ class EntitiesController < ApplicationController
   end
 
   def gallery
-    @query = kor_graph.search(:gallery,
-      :page => params[:page]
-    )
-    
-    render :layout => 'wide'
+    respond_to do |format|
+      format.json do
+        entities = viewable_entities.media.newest_first
+        @result = Kor::SearchResult.new(
+          :total => entities.count,
+          :page => params[:page],
+          :per_page => 16,
+          :records => entities.pageit(params[:page], 16)
+        )
+      end
+    end
   end
   
   def duplicate

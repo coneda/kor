@@ -8,7 +8,8 @@ class ComponentSearchController < ApplicationController
           :query => params[:terms],
           :kind_id => params[:kind_id],
           :tags => params[:tags],
-          :page => params[:page]
+          :page => params[:page],
+          :per_page => params[:per_page]
         )
 
         entities = @results.records.map do |entity|

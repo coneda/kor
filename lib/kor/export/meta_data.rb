@@ -31,18 +31,16 @@ class Kor::Export::MetaData
       value = entity.display_name + (options[:properties].blank? ? "" : " (#{options[:properties]})")
       result += line nil, value, options[:indent]
     end
-    
+
     options[:profile].each do |relation|
-      blaze = Kor::Blaze.new(@user)
-      relationships = blaze.relationship_scope(entity, :relation_names => relation['name'])
-      
+      relationships = entity.outgoing_relationships.by_name(relation['name']).authorized_for(@user, :view)
+
       unless relationships.empty?
         result += line nil, relation['name'], options[:indent]
       end
-      
+
       relationships.each do |relationship|
-        related_entity = relationship.other_entity(entity)
-        result += render_entity(related_entity,
+        result += render_entity(relationship.to,
           :properties => relationship.properties.join(', '),
           :profile => relation['relations'] || [],
           :indent => options[:indent] + 1

@@ -60,6 +60,29 @@ RSpec.describe ToolsController, :type => :controller do
       have_selector 'option', 'ist Ort von'
     end
   end
+
+  it "should merge two entities with datings" do
+    Entity.destroy_all
+
+    original = FactoryGirl.create :mona_lisa, datings: [
+      EntityDating.new(label: 'Dating', dating_string: '1503')
+    ]
+    duplicate = FactoryGirl.create :mona_lisa, name: 'Mona Liza', datings: [
+      EntityDating.new(label: 'Dating', dating_string: '1603')
+    ]
+    entity_ids = [original.id, duplicate.id]
+
+    post :clipboard_action, 
+      :clipboard_action => 'merge', 
+      :entity_ids => entity_ids,
+      :entity => { 
+        :name => 'Mona Lisa', 
+        :kind_id => Kind.find_by_name('Werk').id,
+      }
+
+    expect(Entity.count).to eq(1)
+    expect(Entity.first.datings.count).to eq(2)    
+  end
   
   it "should merge two entities with datasets" do
     @monalisa = FactoryGirl.create :mona_lisa, :name => 'Monalisa', :dataset => {
@@ -84,10 +107,10 @@ RSpec.describe ToolsController, :type => :controller do
 
     expect(Entity.first.name).to eql("Mona Lisa")
     expect(Entity.first.dataset['material']).to eql('oil on paper')
-    expect(Entity.first.datings.first.dating_string).to eql("1533")
     expect(Entity.first.dataset).not_to be_nil
   end
-  
+
+  # TODO: does this test the right thing?  
   it "should merge two entities while not messing up the groups" do
     FactoryGirl.create :mona_lisa, :name => 'Monalisa', :dataset => {
       :gnd => '123456',
@@ -106,36 +129,35 @@ RSpec.describe ToolsController, :type => :controller do
         :name => 'Mona Lisa', 
         :kind_id => Kind.find_by_name('Werk').id
       }
-      expect(response).to redirect_to(web_path(:anchor => "/entities/#{Entity.first.id}"))
+    expect(response).to redirect_to(web_path(:anchor => "/entities/#{Entity.first.id}"))
 
     expect(Entity.first.name).to eql("Mona Lisa")
-    expect(Entity.first.datings.first.dating_string).to eql("1533")
   end
   
   it "should merge two images while not messing up the groups" do
-    image_a = FactoryGirl.create :image_a
-    image_b = FactoryGirl.create :image_b
+    picture_a = FactoryGirl.create :picture_a
+    picture_b = FactoryGirl.create :picture_b
     
-    entity_ids = [image_a.id, image_b.id]
+    entity_ids = [picture_a.id, picture_b.id]
     
     group_1 = AuthorityGroup.create(:name => 'group 1')
-    group_1.add_entities(image_a)
-    group_1.add_entities(image_b)
+    group_1.add_entities(picture_a)
+    group_1.add_entities(picture_b)
        
     group_2 = AuthorityGroup.create(:name => 'group 2')
-    group_2.add_entities(image_b)
+    group_2.add_entities(picture_b)
     
     post :clipboard_action, 
       :clipboard_action => 'merge', 
       :entity_ids => entity_ids,
-      :entity => {:id => image_a.id}
+      :entity => {:id => picture_a.id}
     
-    expect(Entity.all).not_to include(image_b)
+    expect(Entity.all).not_to include(picture_b)
     
-    expect(image_a.authority_groups).to include(group_1)
-    expect(image_a.authority_groups).to include(group_2)
+    expect(picture_a.authority_groups).to include(group_1)
+    expect(picture_a.authority_groups).to include(group_2)
       
-    expect(response).to redirect_to(web_path(:anchor => "/entities/#{image_a.id}"))
+    expect(response).to redirect_to(web_path(:anchor => "/entities/#{picture_a.id}"))
   end
   
   it "should merge entities while not loosing comments" do

@@ -14,17 +14,23 @@ class Kor::EntityMerger
     if Entity.find(options[:old_ids].first).is_medium?
       options[:old_ids].reject!{|id| id == options[:attributes][:id]}
       entity = Entity.find(options[:attributes][:id])
-      merge_externals options[:old_ids], entity.id
       merge_groups(options[:old_ids], entity.id)
     else
       entity = Entity.new(Entity.find(options[:old_ids]).first.attributes)
       entity.id = nil
       entity.assign_attributes options[:attributes]
-      merge_externals options[:old_ids], entity.id
     end
   
-    Entity.destroy(options[:old_ids])
-    entity.save :validate => false
+    # delete the entities but keep their datings and relationships
+    old_entities = Entity.where(id: options[:old_ids]).map do |e|
+      e.delete
+      e
+    end
+    entity.save
+    merge_externals options[:old_ids], entity.id
+    old_entities.each do |e|
+      e.after_merge
+    end
     entity
   end
   
@@ -33,6 +39,7 @@ class Kor::EntityMerger
     merge_entity_datings(old_ids, new_id)
   end
   
+  # TODO: make sure this takes directed relationships into account
   def merge_relationships(old_ids, new_id)
     Relationship.where(:from_id => old_ids).update_all(:from_id => new_id)
     Relationship.where(:to_id => old_ids).update_all(:to_id => new_id)
@@ -41,7 +48,7 @@ class Kor::EntityMerger
   def merge_entity_datings(old_ids, new_id)
     EntityDating.where(:entity_id => old_ids).update_all(:entity_id => new_id)
   end
-  
+
   def merge_groups(old_ids, new_id)
     groups = (
       AuthorityGroup.containing(old_ids).to_a +

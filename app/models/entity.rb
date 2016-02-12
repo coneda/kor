@@ -10,7 +10,7 @@ class Entity < ActiveRecord::Base
   
   # Associations
 
-  has_many :identifiers, :foreign_key => :entity_uuid, :primary_key => :uuid, :dependent => :destroy
+  has_many :identifiers, :dependent => :destroy
   
   belongs_to :creator, :class_name => "User", :foreign_key => :creator_id
   belongs_to :updater, :class_name => "User", :foreign_key => :updater_id
@@ -25,6 +25,13 @@ class Entity < ActiveRecord::Base
   has_and_belongs_to_many :system_groups
   has_and_belongs_to_many :authority_groups
   has_and_belongs_to_many :user_groups
+
+  # TODO: make sure relationships are actually destroyed when the entity is
+  has_many :outgoing_relationships, class_name: "DirectedRelationship", foreign_key: :from_id
+  has_many :outgoing, through: :outgoing_relationships
+
+  has_many :incoming_relationships, class_name: "DirectedRelationship", foreign_key: :to_id
+  has_many :incoming, through: :incoming_relationships
 
   # TODO: remove comments
   # has_many :relationships,
@@ -269,19 +276,27 @@ class Entity < ActiveRecord::Base
   end
 
   def update_identifiers
-    kind.fields.identifiers.each do |field|
-      field.entity = self
-      if field.value.present?
-        id = identifiers.find_or_create_by(kind: field.name)
-        id.update_attributes :value => field.value
-      else
-        id = identifiers.where(:kind =>  field.name).first
-        id.destroy if id
+    if self.destroyed?
+      self.identifiers.destroy_all
+    else
+      kind.fields.identifiers.each do |field|
+        field.entity = self
+        if field.value.present?
+          id = identifiers.find_or_create_by(kind: field.name)
+          id.update_attributes :value => field.value
+        else
+          id = identifiers.where(:kind =>  field.name).first
+          id.destroy if id
+        end
       end
     end
   end
-  
-  
+
+  def after_merge
+    update_elastic
+    update_identifiers
+  end
+
   # Attributes
   
   def recent?

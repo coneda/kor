@@ -45,7 +45,8 @@ module Kor::Auth
 
     false
   end
-  
+
+  # TODO: still needed?  
   def self.authorize(username, additional_attributes = true)
     user = User.includes(:groups).find_or_initialize_by(:name => username)
 
@@ -81,7 +82,7 @@ module Kor::Auth
       :credential_id => groups(user).map{|c| c.id}, 
       :policy => policies
     ).group(:collection_id).count
-    
+
     Collection.where(:id => result.keys).to_a
   end
   
@@ -107,6 +108,18 @@ module Kor::Auth
       result.keys.size == collections.size
     else
       result.keys.size > 0
+    end
+  end
+
+  def self.grant(credential, policy, collections)
+    if collections.is_a?(Array)
+      collections.each{|c| grant policy, c}
+    else
+      Grant.find_or_create_by(
+        credential_id: credential.id,
+        collection_id: collections.id,
+        policy: policy
+      )
     end
   end
   

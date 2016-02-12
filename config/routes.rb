@@ -47,7 +47,7 @@ Rails.application.routes.draw do
       get 'other_collection'
     end
   end
-  resources :relationships, :except => [:index]
+  resources :relationships
   resources :collections do
     collection do
       get 'edit_personal'
@@ -166,7 +166,11 @@ Rails.application.routes.draw do
           get :deep_media
         end
       end
-      resources :ratings, :except => [:edit, :update]
+      resources :paths, :only => [:index] do
+        collection do
+          post :gallery
+        end
+      end
     end
   end
 
@@ -177,6 +181,7 @@ Rails.application.routes.draw do
         get :isolated
         get :selector
         get :widget
+        get :gallery
       end
     end
 
