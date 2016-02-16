@@ -10,7 +10,7 @@
             <div kor-to-clipboard="entity" />
 
             <a href="/entities/{{entity.id}}/edit" ng-show="allowed_to('edit')">
-              <img alt="Pen" class="kor_command_image" src="/assets/pen.gif" title="{{'verbs.edit' | translate}}">
+              <img alt="Pen" class="kor_command_image" src="<%= image_path('pen.gif') %>" title="{{'verbs.edit' | translate}}">
             </a>
             <form method="post" action="{{'/entities/' + entity.id}}">
               <input type="hidden" name="_method" value="delete" />
@@ -25,7 +25,7 @@
                 <img 
                   alt="X" 
                   class="kor_command_image" 
-                  src="/assets/x.gif" 
+                  src="<%= image_path('x.gif') %>" 
                   title="{{'verbs.delete' | translate}}"
                 >
               </a>
@@ -103,7 +103,7 @@
                     <img
                       alt="Plus"
                       class="kor_command_image"
-                      src="/assets/plus.gif"
+                      src="<%= image_path('plus.gif') %>"
                       title="{{'verbs.add' | translate}}"
                     />
                   </a>
@@ -135,7 +135,7 @@
               <img
                 alt="Plus"
                 class="kor_command_image"
-                src="/assets/plus.gif"
+                src="<%= image_path('plus.gif') %>"
                 title="{{'verbs.add' | translate}}"
               >
             </a>
@@ -220,19 +220,19 @@
         
         <div class="commands">
           <a href="/media/transform/{{entity.medium.id}}/image?operation=flip">
-            <img alt="Flip" src="/assets/media/transformations/image/flip.gif">
+            <img alt="Flip" src="<%= image_path('media/transformations/image/flip.gif') %>">
           </a>
           <a href="/media/transform/{{entity.medium.id}}/image?operation=flop">
-            <img alt="Flop" src="/assets/media/transformations/image/flop.gif">
+            <img alt="Flop" src="<%= image_path('media/transformations/image/flop.gif') %>">
           </a>
           <a href="/media/transform/{{entity.medium.id}}/image?operation=rotate_cw">
-            <img alt="Rotate_cw" src="/assets/media/transformations/image/rotate_cw.gif">
+            <img alt="Rotate_cw" src="<%= image_path('media/transformations/image/rotate_cw.gif') %>">
           </a>
           <a href="/media/transform/{{entity.medium.id}}/image?operation=rotate_ccw">
-            <img alt="Rotate_ccw" src="/assets/media/transformations/image/rotate_ccw.gif">
+            <img alt="Rotate_ccw" src="<%= image_path('media/transformations/image/rotate_ccw.gif') %>">
           </a>
           <a href="/media/transform/{{entity.medium.id}}/image?operation=rotate_180">
-            <img alt="Rotate_180" src="/assets/media/transformations/image/rotate_180.gif">
+            <img alt="Rotate_180" src="<%= image_path('media/transformations/image/rotate_180.gif') %>">
           </a>
         </div>
         

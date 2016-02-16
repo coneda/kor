@@ -6,7 +6,7 @@
       ng-click="update(page - 1, $event)"
       ng-class="{'kor-hidden': page <= 1}"
     >
-      <img alt="Pager_left" class="kor_command_image" src="/assets/pager_left.gif">
+      <img alt="Pager_left" class="kor_command_image" src="<%= image_path('pager_left.gif') %>">
     </a>
     <input type="number" ng-model="page" wu-delayed-model="true">
     von
@@ -19,7 +19,7 @@
       <img 
         alt="Pager_right" 
         class="kor_command_image" 
-        src="/assets/pager_right.gif"
+        src="<%= image_path('pager_right.gif') %>"
       >
     </a>
   </span>
