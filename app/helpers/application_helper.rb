@@ -95,8 +95,8 @@ module ApplicationHelper
     image_tag(path, options.merge(
       'class' => 'kor_command_image',
       'data-name' => name,
-      'data-normal-url' => asset_path(path),
-      'data-hover-url' => asset_path(path_hover)
+      'data-normal-url' => image_path(path),
+      'data-hover-url' => image_path(path_hover)
     ))
   end
 

@@ -13,8 +13,8 @@
         <span class="text italic" ng-bind="relationship.entity.kind.name"></span>
         <span class="relationship_switch" ng-show="relationship.total_media > 0">
           <a href="#" ng-click="switch(false, null, $event)">
-            <img alt="Triangle_up" src="/assets/triangle_up.gif" ng-hide="visible">
-            <img alt="Triangle_down" src="/assets/triangle_down.gif" ng-show="visible">
+            <img alt="Triangle_up" src="<%= image_path('triangle_up.gif') %>" ng-hide="visible">
+            <img alt="Triangle_down" src="<%= image_path('triangle_down.gif') %>" ng-show="visible">
           </a>
         </span>
       </span>
@@ -28,7 +28,7 @@
       >
         <img
           class="kor_command_image"
-          src="/assets/three_bars_horizontal.gif"
+          src="<%= image_path('three_bars_horizontal.gif') %>"
           title="{{'objects.add' | translate:{interpolations: {o: 'nouns.property.one'} } }}"
         >
       </a>
@@ -36,7 +36,7 @@
         href="/relationships/{{relationship.id}}/edit"
         ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity)"
       >
-        <img alt="Pen" class="kor_command_image" src="/assets/pen.gif" title="bearbeiten">
+        <img alt="Pen" class="kor_command_image" src="<%= image_path('pen.gif') %>" title="bearbeiten">
       </a>
       <a 
         href="/relationships/{{relationship.id}}" 
@@ -45,7 +45,7 @@
         data-method="delete" 
         rel="nofollow"
       >
-        <img alt="X" class="kor_command_image" src="/assets/x.gif" title="{{'verbs.delete' | translate}}">
+        <img alt="X" class="kor_command_image" src="<%= image_path('x.gif') %>" title="{{'verbs.delete' | translate}}">
       </a>
     </div>
 
@@ -78,7 +78,7 @@
             >
               <img
                 class="kor_command_image"
-                src="/assets/minus.gif"
+                src="<%= image_path('minus.gif') %>"
                 title="{{'verbs.delete' | translate}}"
               />
             </a>

@@ -113,7 +113,7 @@ Application.setup = function() {
   Kor.register_session_events();
   Kor.setup_help();
   Menu.setup();
-  Panel.setup();
+  // Panel.setup();
   Forms.setup();
   this.setup_search_result_events();
   this.register_input_focus_events();
@@ -348,33 +348,33 @@ Menu.setup = function() {
 
 var Panel = new Object();
 
-Panel.setup = function() {
-  $(document).on('click', '.relation_toggle', function(event){
-    var relation = $(this).parents('div.relation');
-    force = !Panel.toggle_custom_state(relation, 'images_shown');
-    relation.find('div.relationship').each( function(i, e){
-      Panel.toggle_relationship_panel($(e), force);
-    });
+// Panel.setup = function() {
+//   $(document).on('click', '.relation_toggle', function(event){
+//     var relation = $(this).parents('div.relation');
+//     force = !Panel.toggle_custom_state(relation, 'images_shown');
+//     relation.find('div.relationship').each( function(i, e){
+//       Panel.toggle_relationship_panel($(e), force);
+//     });
 
-    Panel.toggle_image(
-      relation.find('div.relation_switch img'),
-      '/assets/triangle_up.gif', 
-      '/assets/triangle_down.gif'
-    );
+//     Panel.toggle_image(
+//       relation.find('div.relation_switch img'),
+//       '/assets/triangle_up.gif', 
+//       '/assets/triangle_down.gif'
+//     );
     
-    return false;
-  });
+//     return false;
+//   });
   
-  $(document).on('click', '.relationship_toggle', function(event){
-    var relationship = $(this).parents('div.relationship');
-    Panel.toggle_relationship_panel(relationship);
-    return false;
-  });
+//   $(document).on('click', '.relationship_toggle', function(event){
+//     var relationship = $(this).parents('div.relationship');
+//     Panel.toggle_relationship_panel(relationship);
+//     return false;
+//   });
   
-  $('.exception_log').click(function(event) {
-    $(this).find('.backtrace').toggle();
-  });
-}
+//   $('.exception_log').click(function(event) {
+//     $(this).find('.backtrace').toggle();
+//   });
+// }
 
 Panel.toggle_custom_state = function(element, state_property) {
   if (element.data(state_property) == null) {
@@ -390,23 +390,23 @@ Panel.toggle_custom_state = function(element, state_property) {
   }
 }
 
-Panel.toggle_relationship_panel = function(relationship, force) {
-  try {
-    Panel.toggle_image(relationship.find('span.relationship_switch img'),
-      '/assets/triangle_up.gif', '/assets/triangle_down.gif', force);
+// Panel.toggle_relationship_panel = function(relationship, force) {
+//   try {
+//     Panel.toggle_image(relationship.find('span.relationship_switch img'),
+//       '/assets/triangle_up.gif', '/assets/triangle_down.gif', force);
 
-    var panel = relationship.find('div.switched_panel');
-    if (force == null)
-      panel.toggle();
-    else if (force)
-      panel.show();
-    else
-      panel.hide();
+//     var panel = relationship.find('div.switched_panel');
+//     if (force == null)
+//       panel.toggle();
+//     else if (force)
+//       panel.show();
+//     else
+//       panel.hide();
 
-  } catch (error) {
-    // no relation_switch found => no images
-  }
-}
+//   } catch (error) {
+//     // no relation_switch found => no images
+//   }
+// }
 
 Panel.reset_custom_state = function(element, state_property) {
   element.data(state_property, 'no');
@@ -416,10 +416,10 @@ Panel.reset_image = function(image, path) {
   image.attr('src', path);
 }
 
-Panel.reset_images_shown = function(element) {
-  Panel.reset_custom_state(element, 'images_shown');
-  Panel.reset_image(element.find('div.relation_switch img'), '/assets/triangle_up.gif');
-}
+// Panel.reset_images_shown = function(element) {
+//   Panel.reset_custom_state(element, 'images_shown');
+//   Panel.reset_image(element.find('div.relation_switch img'), '/assets/triangle_up.gif');
+// }
 
 Panel.toggle_image = function(image, path_1, path_2, force) {
   if (force == null) {
