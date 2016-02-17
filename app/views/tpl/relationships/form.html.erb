@@ -1,5 +1,12 @@
 <div>
-  <div class="header">
+  <div class="header" ng-show="existing">
+    {{
+      'objects.edit' | 
+      translate:{interpolations: {o: 'activerecord.models.relationship'} } |
+      capitalize
+    }}
+  </div>
+  <div class="header" ng-hide="existing">
     {{
       'objects.create' | 
       translate:{interpolations: {o: 'activerecord.models.relationship'} } |
@@ -29,25 +36,29 @@
 
     <div class="kor-field">
       <label ng-bind="'activerecord.attributes.relationship.to_id' | translate | capitalize"></label>
-      <div kor-entity-selector="target"></div>
+      <div
+        kor-entity-selector="target"
+        kor-existing="{{existing}}"
+      ></div>
     </div>
 
     <div class="kor-field properties">
       <label ng-bind="'activerecord.attributes.relationship.property.other' | translate | capitalize"></label>
       <ul>
         <li ng-repeat="property in properties">
-          <input ng-model="property.value" />
+          <div class="input-with-button">
+            <div>
+              <input type='text' ng-model="property.value"></input>
+            </div>
+            <button ng-click="remove_property(property, $event)">
+              {{'verbs.remove' | translate}}
+            </button>
+          </div>
         </li>
       </ul>
-
-      <div class="input-with-button">
-        <div>
-          <input type='text' ng-model="new_property"></input>
-        </div>
-        <button ng-click="add_property($event)">
-          {{'verbs.add' | translate | capitalize}}
-        </button>
-      </div>
+      <button ng-click="add_property($event)">
+        {{'verbs.add' | translate | capitalize}}
+      </button>
     </div>
 
     <input type="submit" value="{{'verbs.save' | translate | capitalize}}">

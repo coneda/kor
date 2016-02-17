@@ -83,6 +83,12 @@ module Kor::Auth
 
     Collection.where(:id => result.keys).to_a
   end
+
+  def self.authorized_credentials(collection, policy = :view)
+    collection.grants.where(policy: policy).map do |grant|
+      grant.credential
+    end
+  end
   
   def self.authorized?(user, policy = :view, collections = nil, options = {})
     collections ||= Collection.all.to_a

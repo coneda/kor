@@ -4,19 +4,22 @@ kor.directive "korRelation", ["entities_service",
       templateUrl: "/tpl/relation"
       scope: {
         entity: "=korEntity"
-        relation: "=korRelation"
+        relation_name: "=korRelation"
+        count: "=korCount"
       }
       replace: true
       link: (scope, element, attrs) ->
         scope.visible = false
+        scope.page = 1
 
         scope.switch = (event) ->
           event.preventDefault()
           scope.visible = !scope.visible
 
-        scope.$watch "relation.page", ->
-          es.relation_load(scope.entity.id, scope.relation).success (data) ->
-            scope.relation.relationships = data.relationships
+        scope.$watchGroup ["page", "count"], ->
+          es.relation_load(scope.entity.id, scope.relation_name, scope.page).success (data) ->
+            console.log data
+            scope.relationships = data
 
     }
 ]

@@ -30,6 +30,10 @@ RSpec.describe RelationshipsController, :type => :controller do
       @main.grant p, :to => c
     end
   end
+
+  before do
+    request.headers['accept'] = 'application/json'
+  end
   
   
   # create
@@ -44,15 +48,12 @@ RSpec.describe RelationshipsController, :type => :controller do
   
     session[:current_entity] = side_entity.id
         
-    get :new, :relationship => {:from_id => main_entity.id}
-    expect(response).to redirect_to(denied_path)
-    
     post :create, :relationship => {
       :from_id => main_entity.id,
       :to_id => side_entity.id,
       :relation_name => 'has created'
     }
-    expect(response).to redirect_to(denied_path)
+    expect(response.status).to eq(403)
   end
   
   it "should allow to create relationships when one entity is editable and the other is viewable" do
@@ -65,15 +66,12 @@ RSpec.describe RelationshipsController, :type => :controller do
   
     session[:current_entity] = side_entity.id
         
-    get :new, :relationship => {:from_id => main_entity.id}
-    expect(response).not_to redirect_to(denied_path)
-    
     post :create, :relationship => {
       :from_id => main_entity.id,
       :to_id => side_entity.id,
       :relation_name => 'has created'
     }
-    expect(response).not_to redirect_to(denied_path)
+    expect(response.status).to eq(200)
   end
   
   
@@ -90,70 +88,15 @@ RSpec.describe RelationshipsController, :type => :controller do
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
-    get :edit, :id => relationship.id
-    expect(response).to redirect_to(denied_path)
-    
-    get :edit, :id => relationship_reverse.id
-    expect(response).to redirect_to(denied_path)
-    
     put :update, :id => relationship.id, :relationship => {
       :relation_name => 'shows'
     }
-    expect(response).to redirect_to(denied_path)
+    expect(response.status).to eq(403)
     
     put :update, :id => relationship_reverse.id, :relationship => {
       :relation_name => 'is shown by'
     }
-    expect(response).to redirect_to(denied_path)
-  end
-  
-  it "should allow to edit relationships when one entity is editable and the other is viewable" do
-    test_data_for_auth
-    test_kinds
-    test_relations
-    fake_authentication :user => @admin
-
-    set_side_collection_policies :view => [@admins]
-  
-    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
-        
-    get :edit, :id => relationship.id
-    expect(response).not_to redirect_to(denied_path)
-    
-    get :edit, :id => relationship_reverse.id
-    expect(response).not_to redirect_to(denied_path)
-    
-    put :update, :id => relationship.id, :relationship => {
-      :relation_name => 'shows'
-    }
-    expect(response).not_to redirect_to(denied_path)
-    
-    put :update, :id => relationship_reverse.id, :relationship => {
-      :relation_name => 'is shown by'
-    }
-    expect(response).not_to redirect_to(denied_path)
-  end
-  
-  
-  # delete
-  it "should not allow to delete relationships when not one entity is editable and the other is viewable" do
-    test_data_for_auth
-    test_kinds
-    test_relations
-    fake_authentication :user => @admin
-
-    set_side_collection_policies :view => [@admins]
-    set_main_collection_policies :edit => []
-  
-    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
-        
-    delete :destroy, :id => relationship.id
-    expect(response).to redirect_to(denied_path)
-    
-    delete :destroy, :id => relationship_reverse.id
-    expect(response).to redirect_to(denied_path)
+    expect(response.status).to eq(403)
   end
   
   it "should allow to delete relationships when one entity is editable and the other is viewable" do
@@ -167,100 +110,137 @@ RSpec.describe RelationshipsController, :type => :controller do
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
 
-    request.env["HTTP_REFERER"] = '/'
     delete :destroy, :id => relationship.id
-    expect(response).not_to redirect_to(denied_path)
+    expect(response.status).to eq(200)
     
-    request.env["HTTP_REFERER"] = '/'
     delete :destroy, :id => relationship_reverse.id
-    expect(response).not_to redirect_to(denied_path)
+    expect(response.status).to eq(200)
   end
 
-  it "should list all relationships" do
-    default = FactoryGirl.create :default
-    side = FactoryGirl.create :collection, :name => "Side"
+  it "should not allow to delete relationships when not one entity is editable and the other is viewable" do
+    test_data_for_auth
+    test_kinds
+    test_relations
 
-    FactoryGirl.create :has_created
-    FactoryGirl.create :shows
+    set_side_collection_policies :view => [@admins]
+    set_main_collection_policies :edit => []
+  
+    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
+    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
+        
+    delete :destroy, id: relationship.id, api_key: @admin.api_key
+    expect(response.status).to eq(403)
+    
+    delete :destroy, :id => relationship_reverse.id
+    expect(response.status).to eq(403)
+  end
 
-    main_artist = FactoryGirl.create :jack, :collection => default
-    side_artist = FactoryGirl.create :tom, :collection => side
-    main_works = 10.times.map do |i|
-      FactoryGirl.create :artwork, name: "artwork #{i}", collection: default
-    end
-    side_works = 2.times.map do |i|
-      FactoryGirl.create :artwork, name: "side artwork #{i}", collection: side
-    end
-    (main_works + side_works[0..0]).each do |e|
-      Relationship.relate_and_save(main_artist, 'has created', e)
-    end
-    Relationship.relate_and_save(main_artist, 'is shown by', side_works[1])
-    Relationship.relate_and_save(side_artist, 'has created', side_works[1])
-    students = FactoryGirl.create :students
-    admins = FactoryGirl.create :admins
-    admin = FactoryGirl.create :admin, :groups => [admins]
-    jdoe = FactoryGirl.create :jdoe, :groups => [students]
-    default.grant :view, :to => [admins, students]
-    side.grant :view, :to => [admins]
+  it "should allow to edit relationships when one entity is editable and the other is viewable" do
+    test_data_for_auth
+    test_kinds
+    test_relations
 
-    get :index, :format => 'json'
-    expect(response.status).to eq(401)
+    set_side_collection_policies :view => [@admins]
+    set_main_collection_policies :edit => [@admins]
+  
+    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
+    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
+        
+    put :update, :id => relationship.id, api_key: @admin.api_key, :relationship => {
+      :relation_name => 'shows'
+    }
+    expect(response).to be_success
+    
+    put :update, :id => relationship_reverse.id, api_key: @admin.api_key, :relationship => {
+      :relation_name => 'is shown by'
+    }
+    expect(response).to be_success
+  end
 
-    guest = FactoryGirl.create :guest
+  it "should create a relationship by relation name" do
+    default_setup
+    @default.grant :edit, to: [@admins]
+    @priv.grant :edit, to: [@admins]
 
-    get :index, :format => 'json'
+    post(:create, 
+      api_key: @admin.api_key,
+      relationship: {
+        from_id: @leonardo.id,
+        relation_name: 'has created',
+        to_id: @mona_lisa.id
+      }
+    )
     expect(response.status).to eq(200)
-    expect(JSON.parse(response.body).size).to eq(0)
 
-    current_user = jdoe
-    allow_any_instance_of(described_class).to receive(:current_user) do
-      current_user
-    end
+    expect(Relationship.count).to eq(1)
+    expect(Relationship.first.from_id).to eq(@leonardo.id)
+    expect(Relationship.first.relation_id).to eq(
+      Relation.where(name: 'has created').first.id
+    )
+    expect(Relationship.first.to_id).to eq(@mona_lisa.id)
+  end
 
-    get :index, :format => 'json'
-    expect(JSON.parse(response.body).size).to eq(10)
+  it "should create a relationship by reverse relation name" do
+    default_setup
+    @default.grant :edit, to: [@admins]
+    @priv.grant :edit, to: [@admins]
 
-    get :index, :format => 'json', :page => 1
-    expect(JSON.parse(response.body).size).to eq(10)
+    post(:create, 
+      api_key: @admin.api_key,
+      relationship: {
+        from_id: @mona_lisa.id,
+        relation_name: 'has been created by',
+        to_id: @leonardo.id
+      }
+    )
+    expect(response.status).to eq(200)
 
-    get :index, :format => 'json', :page => 2
-    expect(JSON.parse(response.body).size).to eq(0)
+    expect(Relationship.count).to eq(1)
+    expect(Relationship.first.from_id).to eq(@leonardo.id)
+    expect(Relationship.first.relation_id).to eq(
+      Relation.where(name: 'has created').first.id
+    )
+    expect(Relationship.first.to_id).to eq(@mona_lisa.id)
+  end
 
-    get :index, :format => 'json', :per_page => 11
-    expect(JSON.parse(response.body).size).to eq(10)
+  it "should update a relationship" do
+    default_setup
+    @default.grant :edit, to: [@admins]
+    @priv.grant :edit, to: [@admins]
+    relationship = Relationship.relate_and_save(
+      @leonardo, 'has created', @mona_lisa
+    )
 
-    get :index, :format => 'json', :per_page => 20
-    expect(JSON.parse(response.body).size).to eq(10)
+    patch(:update,
+      id: relationship.id,
+      api_key: @admin.api_key,
+      relationship: {
+        from_id: @last_supper.id,
+        relation_name: 'has been created by',
+        to_id: @leonardo.id
+      }
+    )
 
-    current_user = admin
+    expect(Relationship.count).to eq(1)
+    expect(Relationship.first.from_id).to eq(@leonardo.id)
+    expect(Relationship.first.relation_id).to eq(
+      Relation.where(name: 'has created').first.id
+    )
+    expect(Relationship.first.to_id).to eq(@last_supper.id)
+  end
 
-    get :index, :format => 'json', :per_page => 20
-    expect(JSON.parse(response.body).size).to eq(13)
+  it "should destroy a relationship" do
+    default_setup
+    @default.grant :edit, to: [@admins]
+    @priv.grant :edit, to: [@admins]
+    relationship = Relationship.relate_and_save(
+      @leonardo, 'has created', @mona_lisa
+    )
 
-    get :index, :format => 'json', :per_page => 20, :to_ids => [
-      main_works[2].id, side_works[1].id
-    ]
-    expect(JSON.parse(response.body).size).to eq(2)
+    delete :destroy, api_key: @admin.api_key, id: relationship.id
+    expect(response.status).to eq(200)
 
-    get :index, :format => 'json', :per_page => 20, :from_ids => [
-      side_artist.id
-    ]
-    expect(JSON.parse(response.body).size).to eq(1)
-
-    get :index, :format => 'json', :per_page => 20, :from_kind_ids => [
-      Kind.find_by_name("Person").id
-    ]
-    expect(JSON.parse(response.body).size).to eq(12)
-
-    get :index, :format => 'json', :per_page => 20, :to_kind_ids => [
-      Kind.find_by_name("Person").id
-    ]
-    expect(JSON.parse(response.body).size).to eq(1)
-
-    get :index, :format => 'json', :per_page => 20, :relation_names => [
-      "shows"
-    ]
-    expect(JSON.parse(response.body).size).to eq(1)
+    expect(Relationship.count).to eq(0)
   end
   
 end

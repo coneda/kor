@@ -398,7 +398,25 @@ class Entity < ActiveRecord::Base
       raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
     end
   end
-  
+
+  def relation_counts(user, options = {})
+    options.reverse_merge! media: false
+    media_id = Kind.medium_kind.id
+
+    scope = outgoing_relationships.
+      allowed(user, :view).
+      includes(:to).
+      group('directed_relationships.relation_name')
+
+    if options[:media]
+      scope = scope.where('tos.kind_id = ?', media_id)
+    else
+      scope = scope.where('tos.kind_id != ?', media_id)
+    end
+
+    scope.count
+  end
+
   
   ############################ naming ##########################################
   
@@ -540,6 +558,7 @@ class Entity < ActiveRecord::Base
   end
   
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
+  scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }

@@ -12,6 +12,8 @@ kor.controller('entity_controller', [
       promise.error (data) -> l.path("/denied")
     update()
 
+    scope.$on 'relationship-saved', update
+
     scope.toggle_relationship_editor = (event) ->
       event.preventDefault()
       scope.relationship_editor_visible = !scope.relationship_editor_visible
@@ -53,8 +55,7 @@ kor.controller('entity_controller', [
       event.preventDefault()
       event.stopPropagation()
 
-    scope.update_and_paginate = (refresh) ->
-      update() if refresh
+    scope.close_relationship_editor = ->
       scope.relationship_editor_visible = false
 
 ])

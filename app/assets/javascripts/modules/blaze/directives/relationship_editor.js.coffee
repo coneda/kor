@@ -3,17 +3,26 @@ kor.directive "korRelationshipEditor", [
   (rs, kd) ->
     directive = {
       scope: {
+        directed_relationship: "=korRelationshipEditor"
         source: "=korSourceEntity"
-        relation_name: "=korRelationName"
+        existing: "@korExisting"
         close: "&korClose"
       }
       templateUrl: "/tpl/relationships/form"
       link: (scope, element) ->
         scope.errors = null
+
+        scope.relation_name
+        scope.target = {}
         scope.properties = []
 
-        scope.cancel = ->
-          scope.close refresh: false
+        if scope.directed_relationship
+          scope.relation_name = scope.directed_relationship.relation_name
+          scope.target = scope.directed_relationship.to
+          scope.properties = for prop in scope.directed_relationship.relationship.properties
+            {value: prop}
+
+        scope.cancel = -> scope.close()
 
         scope.save = ->
           relationship = {
@@ -25,20 +34,28 @@ kor.directive "korRelationshipEditor", [
 
           # console.log relationship
 
-          promise = rs.create(relationship)
+          promise = if scope.existing
+            rs.update(scope.directed_relationship.relationship.id, relationship)
+          else
+            rs.create(relationship)
+
           promise.success (data) -> 
             scope.errors = null
             kd.set_notice(data.message)
             # console.log scope
-            scope.close(refresh: true)
+            scope.$emit 'relationship-saved'
+            scope.close()
           promise.error (data) -> 
             scope.errors = data
             # console.log(data)
 
         scope.add_property = (event) ->
           event.preventDefault()
-          scope.properties.push {value: scope.new_property}
-          scope.new_property = ""
+          scope.properties.push {value: ""}
 
+        scope.remove_property = (property, event) ->
+          event.preventDefault() if event
+          index = scope.properties.indexOf(property)
+          scope.properties.splice(index, 1) unless index == -1
     }
 ]

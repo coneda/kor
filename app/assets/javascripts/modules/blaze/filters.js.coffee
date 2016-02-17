@@ -61,3 +61,29 @@ kor.filter 'human_user', [->
     catch error
       ""
 ]
+
+kor.filter 'entity_display_name', [->
+  (input) ->
+    if input
+      if input.name
+        return if input.distinct_name
+          "#{input.name} (#{input.distinct_name}"
+        else
+          input.name
+    
+    return ""
+]
+
+kor.filter 'entity_kind_name', [
+  "kinds_service",
+  (ks) ->
+    kinds = {}
+    ks.index().success (data) -> kinds[kind.id] = kind for kind in data
+    result = (input) -> 
+      try
+        kinds[input.kind_id].name
+      catch e
+        ""
+    result.$stateful = true
+    result
+]

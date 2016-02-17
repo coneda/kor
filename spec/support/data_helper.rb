@@ -70,5 +70,44 @@ module DataHelper
   def test_authority_groups
     FactoryGirl.create :authority_group, :name => 'Sander'
   end
-  
+
+  def default_setup(options = {})
+    options.reverse_merge!(
+      pictures: false,
+      relationships: false
+    )
+
+    @default = FactoryGirl.create :default
+    @priv = FactoryGirl.create :private
+
+    FactoryGirl.create :has_created
+    FactoryGirl.create :shows
+
+    @leonardo = FactoryGirl.create :leonardo
+    @mona_lisa = FactoryGirl.create :mona_lisa
+    @last_supper = FactoryGirl.create :the_last_supper, collection: @priv
+
+    if options[:relationships]
+      Relationship.relate_and_save(@leonardo, 'has created', @mona_lisa)
+      Relationship.relate_and_save(@leonardo, 'has created', @last_supper)
+    end
+
+    if options[:pictures]
+      @picture = FactoryGirl.create :picture
+
+      if options[:relationships]
+        Relationship.relate_and_save(@picture, 'shows', @mona_lisa)
+      end
+    end
+
+    @admins = FactoryGirl.create :admins
+    @students = FactoryGirl.create :students
+
+    @admin = FactoryGirl.create :admin, :groups => [@admins]
+    @jdoe = FactoryGirl.create :jdoe, :groups => [@students]
+    
+    @default.grant :view, :to => [@admins, @students]
+    @priv.grant :view, :to => [@admins]
+  end
+
 end

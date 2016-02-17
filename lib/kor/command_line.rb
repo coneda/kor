@@ -59,6 +59,9 @@ class Kor::CommandLine
         @parser.on("-f DATE", "the lower bound for the time period to consider (YYYY-MM-DD)") {|v| @config[:from] = v }
         @parser.on("-t DATE", "the upper bound for the time period to consider (YYYY-MM-DD)") {|v| @config[:to] = v }
         @required += [:from, :to]
+      when 'list-permissions'
+        @parser.on('-e ENTITY', 'the id of an entity to limit the result list to') {|v| @config[:entity_id] = v}
+        @parser.on('-u USER', 'the id of a user to limit the result list to') {|v| @config[:user_id] = v}
     end
 
     @parser.order!(@args)
@@ -89,25 +92,26 @@ class Kor::CommandLine
       end
 
       case @command
-        when "version" then version
-        when "export"
-          if @config[:format] == "excel"
+        when 'version' then version
+        when 'export'
+          if @config[:format] == 'excel'
             excel_export
           end
-        when "import" 
-          if @config[:format] == "excel"
+        when 'import'
+          if @config[:format] == 'excel'
             excel_import
           end
-        when "reprocess-all" then reprocess_all
-        when "index-all" then index_all
-        when "group-to-zip" then group_to_zip
-        when "notify-expiring-users" then notify_expiring_users
-        when "recheck-invalid-entities" then recheck_invalid_entities
-        when "delete-expired-downloads" then delete_expired_downloads
-        when "editor-stats" then editor_stats
-        when "exif-stats" then exif_stats
-        when "reset-admin-account" then reset_admin_account
-        when "cleanup-sessions" then cleanup_sessions
+        when 'reprocess-all' then reprocess_all
+        when 'index-all' then index_all
+        when 'group-to-zip' then group_to_zip
+        when 'notify-expiring-users' then notify_expiring_users
+        when 'recheck-invalid-entities' then recheck_invalid_entities
+        when 'delete-expired-downloads' then delete_expired_downloads
+        when 'editor-stats' then editor_stats
+        when 'exif-stats' then exif_stats
+        when 'reset-admin-account' then reset_admin_account
+        when 'cleanup-sessions' then cleanup_sessions
+        when 'list-permissions' then list_permissions
         else
           puts "command '#{@command}' is not known"
           usage
@@ -235,5 +239,47 @@ class Kor::CommandLine
   def reset_admin_account
     Kor.ensure_admin_account!
   end
+
+  def list_permissions
+    data = [['entity id', 'enttiy name', 'collection'] + Collection.policies]
+    Entity.by_id(@options[:entity_id]).find_each do |entity|
+      record = [
+        entity.id,
+        entity.name,
+        "#{entity.collection.name} (#{entity.collection.id})"
+      ]
+
+      Collection.policies.each do |policy|
+        record << Kor::Auth.
+          authorized_credentials(entity.collection, policy).
+          map{|c| c.name}.
+          join(',')
+      end
+
+      data << record
+    end
+    print_table data
+
+    data = [['user id', 'username', 'credentials']]
+    User.by_id(@options[:user_id]).find_each do |user|
+      data << [user.id, user.name, user.groups.map{|c| c.name}.join(', ')]
+    end
+    print_table data  
+  end
+
+
+  protected
+
+    def print_table(data)
+      maxes = {}
+      data.each do |record|
+        row = []
+        record.each_with_index do |field, i|
+          maxes[i] ||= data.map{|r| r[i].to_s.size}.max
+          row << "#{field.to_s.ljust(maxes[i])}"
+        end
+        puts row.join(' | ')
+      end
+    end
 
 end

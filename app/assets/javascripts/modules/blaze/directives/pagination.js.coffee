@@ -21,7 +21,9 @@ kor.directive "korPagination", [
         #   1
 
         # scope.$on '$routeUpdate', -> scope.new_page = rp.page || 1
-        scope.$watch "page", -> scope.update()
+        scope.$watch "page", (new_value) -> 
+          if new_value
+            scope.update()
 
         scope.update = (new_page, event) ->
           if new_page

@@ -1,5 +1,5 @@
 <div class="relation">
-  <div class="subtitle" ng-bind="relation.name"></div>
+  <div class="subtitle" ng-bind="relation_name"></div>
   
   <div class="relation_switch">
     <a href="#" ng-click="switch($event)">
@@ -9,14 +9,14 @@
   </div>
 
   <div 
-    kor-pagination="relation.page"
-    kor-total="relation.amount"
+    kor-pagination="page"
+    kor-total="count"
     kor-per-page="10"
     kor-use-search="false"
   ></div>
   
   <div
-    ng-repeat="relationship in relation.relationships"
+    ng-repeat="relationship in relationships"
     kor-relationship="relationship"
     kor-entity="entity"
     kor-master-toggle="visible"

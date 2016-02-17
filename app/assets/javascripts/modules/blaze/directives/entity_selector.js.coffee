@@ -4,22 +4,26 @@ kor.directive "korEntitySelector", [
     directive = {
       scope: {
         entity: "=korEntitySelector"
+        existing: "@korExisting"
       }
       templateUrl: "/tpl/entities/selector"
       link: (scope, element, attrs) ->
         scope.tab = "search"
 
+        if scope.existing
+          listener = scope.$watch 'entity', -> 
+            scope.tab = 'existing' if scope.entity
+            listener()
+
         search = -> 
           if scope.terms && scope.terms.length >= 3
             es.index(terms: scope.terms).success (data) -> 
-              # console.log(data)
               scope.results = data
               scope.group()
 
         scope.$watch "tab", -> 
           scope.terms = null
           scope.results = {}
-          scope.entity = null
           scope.grouped_records = []
 
           if scope.tab == 'current'
@@ -44,6 +48,12 @@ kor.directive "korEntitySelector", [
                 raw_records: data.records
               }
               scope.group()
+
+          if scope.tab == 'existing'
+            scope.results = {
+              raw_records: [scope.entity]
+            }
+            scope.group()
 
         scope.group = -> 
           scope.grouped_records = kt.in_groups_of(

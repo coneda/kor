@@ -21,6 +21,11 @@ class Relation < ActiveRecord::Base
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :allowed, lambda {|user, policies| all}
+  scope :pageit, lambda { |page, per_page|
+    page = (page || 1) - 1
+    per_page = [(per_page || 30).to_i, 500].min
+    limit(per_page).offset(per_page * page)
+  }
   default_scope lambda { order(:name) }
   
 

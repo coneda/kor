@@ -3,120 +3,34 @@ class RelationshipsController < ApplicationController
   layout 'normal_small'
   skip_before_filter :legal, :authentication, :authorization, :only => [:index]
 
-  def index
-    respond_to do |format|
-      format.json do
-        if user = (current_user || User.guest)
-          scope = Relationship.
-            allowed(user, :view).
-            from_ids(params[:from_ids]).
-            to_ids(params[:to_ids]).
-            from_kind_ids(params[:from_kind_ids]).
-            to_kind_ids(params[:to_kind_ids]).
-            via(params[:relation_names]).
-            pageit(params[:page], params[:per_page])
-
-          # puts scope.to_sql
-
-          render :json => scope.as_json(:root => false)
-        else
-          render :nothing => true, :status => 401
-        end
-      end
-    end
-  end
-
-  def show
-    @relationship = Relationship.find(params[:id])
-
-    respond_to do |format|
-      format.json do
-        if authorized_for_relationship? @relationship
-          render :json => @relationship.to_json(:root => false)
-        else
-          render :nothing => true, :status => 403
-        end
-      end
-    end
-  end
-
-  def new
-    @relationship = Relationship.new(relationship_params.merge(:to_id => session[:current_entity]))
-    
-    if @relationship.from and @relationship.to
-      unless authorized_for_relationship? @relationship, :create
-        redirect_to denied_path
-      end
-    else
-      flash[:error] = I18n.t("errors.destination_not_given")
-      redirect_to back_save
-    end
-  end
-
-  def edit
-    @relationship = Relationship.find(params[:id])
-    
-    unless authorized_for_relationship? @relationship, :edit
-      redirect_to denied_path
-    end
-  end
-
   def create
-    @relationship = Relationship.relate_from_params(relationship_params)
+    @relationship = Relationship.new(relationship_params)
 
     if authorized_for_relationship? @relationship, :create
       if @relationship.save
-        respond_to do |format|
-          format.html do
-            flash[:notice] = I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
-            rrn = session[:recent_relation_names] || []
-            rrn = rrn.unshift params[:relationship][:relation_name]
-            session[:recent_relation_names] = rrn.uniq
-            redirect_to web_path(:anchor => entity_path(@relationship.from))
-          end
-          format.json do
-            render :json => {
-              "message" => I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
-            }
-          end
-        end
+        render :json => {
+          "message" => I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
+        }
       else
-        respond_to do |format|
-          format.html {render :action => "new"}
-          format.json {render :json => @relationship.errors, :status => 406}
-        end
+        render :nothing => true, :status => 406
       end
     else
-      redirect_to denied_path
+      render :nothing => true, :status => 403
     end
   end
 
   def update
-    params[:relationship][:properties] ||= []
-
     @relationship = Relationship.find(params[:id])
     
     unless authorized_for_relationship? @relationship, :edit
-      redirect_to denied_path
+      render :nothing => true, :status => 403
     else
-      success = @relationship.update_attributes(relationship_params)
-
-      respond_to do |format|
-        format.html do
-          if success
-            flash[:notice] = I18n.t('objects.update_success', :o => I18n.t('nouns.relationship', :count => 1) )
-            redirect_to web_path(:anchor => entity_path(@relationship.from))
-          else
-            render :action => "edit"
-          end
-        end
-        format.json do
-          if success
-            render :json => @relationship.to_json(:root => false)
-          else
-            render :nothing => true, :status => 406
-          end
-        end
+      if @relationship.update_attributes(relationship_params)
+        render :json => {
+          "message" => I18n.t('objects.update_success', :o => I18n.t('nouns.relationship', :count => 1) )
+        }
+      else
+        render :nothing => true, :status => 406
       end
     end
   rescue ActiveRecord::StaleObjectError
@@ -128,10 +42,12 @@ class RelationshipsController < ApplicationController
     @relationship = Relationship.find(params[:id])
 
     unless authorized_for_relationship? @relationship, :delete
-      redirect_to denied_path
-    else      
+      render :nothing => true, :status => 403
+    else
       @relationship.destroy
-      redirect_to back_save
+      render :json => {
+        "message" => I18n.t('objects.destroy_success', :o => I18n.t('nouns.relationship', :count => 1) )
+      }
     end
 
   end
@@ -141,7 +57,7 @@ class RelationshipsController < ApplicationController
 
     def relationship_params
       params.require(:relationship).permit(
-        :from_id, :to_id, :relation_id, :relation_name
+        :from_id, :to_id, :relation_id, :relation_name, properties: []
       ).tap do |w|
         w[:properties] = params[:relationship][:properties]
       end

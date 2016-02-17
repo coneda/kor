@@ -96,6 +96,7 @@ de:
 
   verbs:
     add: "hinzufügen"
+    remove: "entfernen"
     maximize: maximieren
     play: "abspielen"
     enlarge: "vergrößern"

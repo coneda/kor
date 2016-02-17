@@ -298,7 +298,7 @@ Given /^Mona Lisa and a medium as correctly related entities$/ do
   medium = Kind.medium_kind.entities.first
   mona_lisa = Entity.find_by_name('Mona Lisa')
 
-  Relationship.relate_once_and_save(mona_lisa, "is shown by", medium)
+  Relationship.relate_and_save(mona_lisa, "is shown by", medium)
 end
 
 Given /^Leonardo, Mona Lisa and a medium as correctly related entities$/ do
@@ -309,7 +309,7 @@ Given /^Leonardo, Mona Lisa and a medium as correctly related entities$/ do
   leonardo = Entity.find_by_name('Leonardo da Vinci')
   mona_lisa = Entity.find_by_name('Mona Lisa')
 
-  Relationship.relate_once_and_save(leonardo, "has created", mona_lisa)
+  Relationship.relate_and_save(leonardo, "has created", mona_lisa)
 end
 
 Given /^the entity "([^\"]*)" has ([0-9]+) relationships$/ do |name, amount|

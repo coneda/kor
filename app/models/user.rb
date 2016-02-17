@@ -231,6 +231,7 @@ class User < ActiveRecord::Base
   scope :created_recently, lambda {
     where("created_at > ?", 30.days.ago)
   }
+  scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
   
   def self.guest
     find_by_name('guest')

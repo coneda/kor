@@ -4,9 +4,10 @@ kor.directive "korRelationship", ["entities_service", "session_service",
     directive = {
       templateUrl: "/tpl/relationship"
       scope: {
-        relationship: "=korRelationship"
+        directed_relationship: "=korRelationship"
         entity: "=korEntity"
         master_toggle: "=korMasterToggle"
+        existing: "@korExisting"
       }
       replace: true
       link: (scope, element, attrs) ->
@@ -16,13 +17,14 @@ kor.directive "korRelationship", ["entities_service", "session_service",
         scope.allowed_to_any = ss.allowed_to_any
 
         scope.visible = false
-        scope.relationship.page = 1
+        scope.page = 1
+        scope.editing = false
 
-        scope.$watch "relationship.page", (new_value) ->
+        scope.$watch "page", (new_value) ->
           if scope.visible
             load_media()
-            # if angular.isNumber(scope.relationship.page)
-            #   if scope.relationship.page > 0
+            # if angular.isNumber(scope.directed_relationship.page)
+            #   if scope.directed_relationship.page > 0
             #     load_media()
 
         scope.$watch "master_toggle", ->
@@ -30,7 +32,7 @@ kor.directive "korRelationship", ["entities_service", "session_service",
 
         scope.switch = (force = false, value = null, event) ->
           event.preventDefault() if event
-          r = scope.relationship
+          r = scope.directed_relationship
           if force
             if value
               # r.total_media_pages = Math.floor(r.total_media / 12) + 1
@@ -51,28 +53,27 @@ kor.directive "korRelationship", ["entities_service", "session_service",
 
         scope.edit = (event) -> 
           event.preventDefault() if event
-          if scope.relationship.editing
-            scope.unedit()
-          else
-            scope.relationship.editing = true
+          scope.editing = true
 
-        scope.unedit = (event) -> 
-          event.preventDefault() if event
-          rss.show(scope.relationship)
-          scope.relationship.editing = false
+        # scope.unedit = (event) -> 
+        #   event.preventDefault() if event
+        #   rss.show(scope.directed_relationship)
+        #   scope.editing = false
 
-        scope.update = (event) ->
-          event.preventDefault() if event
-          rss.update(scope.relationship)
+        # scope.update = (event) ->
+        #   event.preventDefault() if event
+        #   rss.update(scope.directed_relationship.relationship)
 
-        scope.remove_property = (property, event) ->
-          event.preventDefault() if event
-          index = scope.relationship.properties.indexOf(property)
-          scope.relationship.properties.splice(index, 1) unless index == -1
+        # scope.remove_property = (property, event) ->
+        #   event.preventDefault() if event
+        #   index = scope.directed_relationship.relationship.properties.indexOf(property)
+        #   scope.directed_relationship.relationship.properties.splice(index, 1) unless index == -1
 
         load_media = ->
-          es.deep_media_load(scope.relationship, scope.relationship.page).success (data) ->
-            scope.relationship.media = kt.in_groups_of(data.relationships, 3, true)
+          es.deep_media_load(scope.directed_relationship, scope.directed_relationship.page).success (data) ->
+            scope.directed_relationship.media = kt.in_groups_of(data.directed_relationships, 3, true)
+
+        scope.close_editor =  -> scope.editing = false
 
     }
 ]

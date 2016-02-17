@@ -45,16 +45,16 @@ kor.service "entities_service", [
           url: "/entities/#{id}"
         )
 
-      relation_load: (entity_id, relation) ->
-        relation.page ||= 1
+      relation_load: (entity_id, relation_name, page) ->
+        page ||= 1
         
         http(
           method: 'get',
-          url: "/api/1.0/entities/#{entity_id}/relationships",
-          params: {page: relation.page - 1, name: relation.name}
+          url: "/entities/#{entity_id}/relationships.json"
+          params: {page: page, relation_name: relation_name}
         )
 
-      media_relation_load: (id, relation) ->
+      media_relation_load: (id, relation_name, page) ->
         http(
           method: 'get',
           url: "/api/1.0/entities/#{id}/relationships",

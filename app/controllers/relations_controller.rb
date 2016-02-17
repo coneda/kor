@@ -1,11 +1,21 @@
 class RelationsController < ApplicationController
-  skip_before_action :authentication, :only => [:names]
+  skip_before_action :authentication, :only => [:names, :index]
 
   layout 'normal_small'
 
   def index
-    @relations = Relation.paginate(:page => params[:page], :per_page => 30)
-    render layout: 'wide'
+    @relations = if params[:entity_id]
+      Entity.find(params[:entity_id]).relation_counts(current_user)
+    else
+      Relation.paginate(:page => params[:page], :per_page => 30)
+    end
+
+    respond_to do |format|
+      format.json
+      format.html do
+        render layout: 'wide'
+      end
+    end
   end
 
   def names
@@ -71,7 +81,7 @@ class RelationsController < ApplicationController
     end
 
     def generally_authorized?
-      if params[:action] == "names"
+      if ['names', 'index'].include?(params[:action])
         true
       else
         current_user.relation_admin?

@@ -109,7 +109,7 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@landscape])
 
     @is_related_to = FactoryGirl.create :relation
-    Relationship.relate_once_and_save(@landscape, "is related to", @jack)
+    Relationship.relate_and_save(@landscape, "is related to", @jack)
     described_class.index_all :full => true
 
     results = @elastic.search(:query => ["\"tree on plane\"", "Oak"])
@@ -240,7 +240,7 @@ describe Kor::Elastic, :elastic => true do
     @landscape = FactoryGirl.create :landscape
     @jack = FactoryGirl.create :jack, :name => "Jäck"
     @is_related_to = FactoryGirl.create :relation
-    Relationship.relate_once_and_save(@landscape, "is related to", @jack)
+    Relationship.relate_and_save(@landscape, "is related to", @jack)
     described_class.index_all :full => true
 
     results = @elastic.search(:query => "Jäck")

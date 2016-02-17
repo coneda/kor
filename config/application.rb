@@ -39,8 +39,28 @@ module Kor
   end
 end
 
+# TODO: remove console.log
+# TODO: handle stale object errors on json apis
+# TODO: user new validates instead of validates_*_of
+# TODO: deal with 'legal' functionality
+# TODO: ensure a correct message on success on all json responses when data was changed
+# TODO: implement destroying relationships
+# TODO: show images on relationships
+# TODO: use jbuilder without exception for api reponses
+# TOTO: remove redundant code and comments from old js files
+# TODO: use the run command for delayed workers instead of the rake job (production)
+# TODO: the entity selector should contain an option to include a given default
+# TODO: handle empty relation list
+# TODO: make sure that time zones are handled correctly from http content type to db
+# TODO: fix serialized column initializers
+# TODO: remove ArgumentArray
+# TODO: clean up asset manifest files
+# TODO: make sure the media kind is properly configured not to show fields on
+# the input form. This has to be done on db seed, probably
+# TODO: fix #1651 (redmine)
 # TODO: add scenario for an empty resultset on the gallery
 # TODO: remove comments
+
 # module Kor
 #   class Application < Rails::Application
     

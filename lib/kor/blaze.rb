@@ -40,6 +40,7 @@ class Kor::Blaze
     result
   end
 
+  # TODO: make sure this obeys permissions
   def related_entities(entity, options = {})
     options.reverse_merge!(
       :only_media => false,

@@ -35,7 +35,19 @@ Feature: Inplace relationship editor
     Then I should see "Relation has to be filled in" within ".kor-errors"
     And I should see "Target has to be filled in" within ".kor-errors"
 
+  @javascript
   Scenario: Create a new relationship
+    Given I am logged in as "admin"
+    And I am on the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
+    When I follow "plus"
+    And I select "is equivalent to" from "relation_name"
+    And I fill in "terms" with "schrei"
+    And I click element "[kor-id='2']"
+    And I press "Save"
+    Then I should see "Der Schrei" within ".relationship"
+    And I should not see "Create link"
+
   Scenario: Add properties to an existing relationship
 
   Scenario: Select a relation which should limit the choices for the other entity

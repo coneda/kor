@@ -14,22 +14,22 @@
     ng-click="tab = 'created'"
     ng-class="{'selected': tab == 'created'}"
   ></a>
-  <span ng-show="current()">
+  <span ng-show="existing">
     |
     <a
       ng-bind="'nouns.current_entity' | translate"
-      ng-click="tab = 'current'"
+      ng-click="tab = 'existing'"
       ng-class="{'selected': tab == 'current'}"
     ></a>
   </span>
 </div>
 
 <div ng-show="tab == 'search'">
-  <input ng-model="terms" />
+  <input name="terms" ng-model="terms" />
 </div>
 <div ng-show="tab == 'visited'"></div>
 <div ng-show="tab == 'created'"></div>
-<div ng-show="tab == 'current'"></div>
+<div ng-show="tab == 'existing'"></div>
 
 <div class="entities">
   <table>
@@ -39,6 +39,7 @@
           ng-repeat="record in row"
           ng-class="{'selected': (record.id && record.id == entity.id)}"
           ng-click="select(record, $event)"
+          kor-id="{{record.id}}"
         >
           <span kor-entity-widget="record" />
         </td>

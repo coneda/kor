@@ -95,6 +95,7 @@ en:
 
   verbs:
     add: "add"
+    remove: "remove"
     maximize: maximize
     play: "play"
     enlarge: "enlarge"

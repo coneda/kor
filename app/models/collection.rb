@@ -99,6 +99,7 @@ class Collection < ActiveRecord::Base
         self.grants.with_policy(p).destroy_all
       else
         options[:to].each do |credential|
+          binding.pry if !credential
           self.grants << Grant.new(:collection => self, :policy => policy, :credential => credential)
         end
       end

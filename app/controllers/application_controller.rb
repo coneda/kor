@@ -100,9 +100,13 @@ class ApplicationController < BaseController
     end
 
     def session_expired?
-      unless current_user.guest?
+      if !current_user.guest? && !api_auth?
         (session[:expires_at] || Time.now) <= Time.now
       end
+    end
+
+    def api_auth?
+      params[:api_key] && User.exists?(api_key: params[:api_key])
     end
     
     def generally_authorized?

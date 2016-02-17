@@ -145,14 +145,15 @@
             ng-if="relationship_editor_visible"
             kor-relationship-editor="null"
             kor-source-entity="entity"
-            kor-close="update_and_paginate(refresh)"
+            kor-close="close_relationship_editor()"
           ></div>
 
           <div class="content">
             <div
-              ng-repeat="relation in entity.related"
-              kor-relation="relation"
+              ng-repeat="(name, count) in entity.relation_counts"
               kor-entity="entity"
+              kor-relation="name"
+              kor-count="count"
             ></div>
           </div>
         </div>

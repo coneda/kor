@@ -1,17 +1,25 @@
 <div
   class="relationship stage_panel" 
-  id="relationship_{{relationship.id}}" 
+  id="relationship_{{directed_relationship.relationship.id}}" 
 >
-  <div class="header">
-    <div class="string" ng-hide="relationship.entity.kind_id == 1">
+  <div
+    ng-if="editing"
+    kor-relationship-editor="directed_relationship"
+    kor-source-entity="entity"
+    kor-close="close_editor()"
+    kor-existing="true"
+  ></div>
+
+  <div class="header" ng-hide="editing">
+    <div class="string" ng-hide="directed_relationship.to.kind_id == 1">
       <a 
-        href="/blaze#/entities/{{relationship.entity.id}}"
-        ng-bind="relationship.entity.display_name"
+        href="/blaze#/entities/{{directed_relationship.to.id}}"
+        ng-bind="directed_relationship.to | entity_display_name"
       ></a>
 
       <span class="nowrap">
-        <span class="text italic" ng-bind="relationship.entity.kind.name"></span>
-        <span class="relationship_switch" ng-show="relationship.total_media > 0">
+        <span class="text italic" ng-bind="directed_relationship.to | entity_kind_name"></span>
+        <span class="relationship_switch" ng-show="directed_relationship.total_media > 0">
           <a href="#" ng-click="switch(false, null, $event)">
             <img alt="Triangle_up" src="<%= image_path('triangle_up.gif') %>" ng-hide="visible">
             <img alt="Triangle_down" src="<%= image_path('triangle_down.gif') %>" ng-show="visible">
@@ -23,24 +31,14 @@
     <div class="commands">
       <a
         href="#"
-        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity)"
+        ng-show="allowed_to('edit') || allowed_to('edit', directed_relationship.to)"
         ng-click="edit($event)"
       >
-        <img
-          class="kor_command_image"
-          src="<%= image_path('three_bars_horizontal.gif') %>"
-          title="{{'objects.add' | translate:{interpolations: {o: 'nouns.property.one'} } }}"
-        >
-      </a>
-      <a
-        href="/relationships/{{relationship.id}}/edit"
-        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity)"
-      >
-        <img alt="Pen" class="kor_command_image" src="<%= image_path('pen.gif') %>" title="bearbeiten">
+        <%= kor_command_image 'pen' %>
       </a>
       <a 
-        href="/relationships/{{relationship.id}}" 
-        ng-show="allowed_to('edit') || allowed_to('edit', relationship.entity)" 
+        href="/relationships/{{directed_relationship.id}}" 
+        ng-show="allowed_to('edit') || allowed_to('edit', directed_relationship.to)" 
         data-confirm="{{'objects.confirm_destroy' | translate:{interpolations: {o: 'activerecord.models.relationship'} } }}" 
         data-method="delete" 
         rel="nofollow"
@@ -49,29 +47,29 @@
       </a>
     </div>
 
-    <div class="small_content_panel" ng-show="relationship.entity.kind_id == 1">
+    <div class="small_content_panel" ng-show="directed_relationship.to.kind_id == 1">
       <br />
       <div
         class="kor_medium_frame"
-        id="kor_medium_frame_{{relationship.entity.id}}"
+        id="kor_medium_frame_{{directed_relationship.to.id}}"
       >
-        <a href="/blaze#/entities/{{relationship.entity.id}}">
-          <img alt="Image" class="kor_medium" ng-src="{{relationship.entity.medium.url}}">
+        <a href="/blaze#/entities/{{directed_relationship.to.id}}">
+          <img alt="Image" class="kor_medium" ng-src="{{directed_relationship.to.medium.url}}">
         </a>
         <span class="button_bar" style="display: none;">
-          <div kor-current-button="relationship.entity" />
-          <div kor-to-clipboard="relationship.entity" />
+          <div kor-current-button="directed_relationship.to" />
+          <div kor-to-clipboard="directed_relationship.to" />
         </span>
       </div>
     </div>
 
     <div class="clear_both"></div>
     
-    <div class="properties" ng-show="relationship.properties.length > 0 || relationship.editing">
+    <div class="properties" ng-show="directed_relationship.relationship.properties.length > 0">
       <div class="hr"></div>
       <ul>
-        <li ng-repeat="property in relationship.properties">
-          <div class="pull-right" ng-show="relationship.editing">
+        <li ng-repeat="property in directed_relationship.relationship.properties">
+          <div class="pull-right" ng-show="editing">
             <a
               href="#"
               ng-click="remove_property(property, $event)"
@@ -86,47 +84,21 @@
           <span ng-bind="property"></span>
         </li>
       </ul>
-
-      <div class="header" ng-show="relationship.editing" ng-if="relationship.editing">
-        <form class="kor_form">
-          <div class="form_field">
-            <ul>
-              <input ng-model="relationship.new_property" />
-            </ul>
-          </div>
-
-          <div class="kor_submit">
-            <input
-              class="submit highlighted_button" 
-              type="submit" 
-              value="{{'verbs.save' | translate | capitalize}}"
-              ng-click="update($event)"
-            />
-            <input
-              class="submit highlighted_button" 
-              type="submit"
-              value="{{'cancel' | translate | capitalize}}"
-              ng-click="unedit($event)"
-            />
-          </div>
-        </form>
-      </div>
-
     </div>
   </div>
 
   <div class="switched_panel" ng-show="visible">
 
     <div
-      kor-pagination="relationship.page"
-      kor-total="relationship.total_media"
+      kor-pagination="page"
+      kor-total="directed_relationship.total_media"
       kor-per-page="12"
       kor-use-search="false"
     ></div>
     
     <table cellpadding="0" cellspacing="0">
       <tbody>
-        <tr class="image_row" ng-repeat="row in relationship.media">
+        <tr class="image_row" ng-repeat="row in directed_relationship.media">
           <td class="image" ng-repeat="rel in row">
             <div class="kor_medium_frame" id="kor_medium_frame_{{rel.entity.id}}" ng-show="rel.entity.id">
               <a href="/blaze#/entities/{{rel.entity.id}}">

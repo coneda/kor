@@ -17,6 +17,7 @@ commit history on GitHub.
 * identifier handling and resolution
 * changes to field names are now propagated to affected entities
 * sample data can be generated during db seeting by setting `SAMPLE_DATA=true`
+* a task to display list permissions
 
 ### Internal
 

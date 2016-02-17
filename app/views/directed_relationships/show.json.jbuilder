@@ -1,0 +1,1 @@
+json.partial! 'extended', directed_relationship: @directed_relationship

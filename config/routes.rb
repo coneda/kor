@@ -56,8 +56,18 @@ Rails.application.routes.draw do
       get 'metadata'
       get 'other_collection'
     end
+
+    scope format: :json do
+      resources :relations, only: [:index]
+      resources :relationships, only: [:index, :show], controller: 'directed_relationships'
+    end
   end
-  resources :relationships
+
+  scope format: :json do
+    resources :directed_relationships, only: [:index, :show]
+    resources :relationships, only: [:create, :update, :destroy]
+  end
+  
   resources :collections do
     collection do
       get 'edit_personal'
