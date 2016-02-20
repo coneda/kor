@@ -7,7 +7,7 @@ class Download < ActiveRecord::Base
   
   # Validations
 
-  validates_presence_of :user, :uuid, :content_type, :file_name, :new_data
+  validates :user, :uuid, :content_type, :file_name, :new_data, presence: true
   
   
   # Callbacks

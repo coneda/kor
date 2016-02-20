@@ -1,7 +1,5 @@
 class Medium < ActiveRecord::Base
 
-  # DelayedPaperclip::Railtie.insert
-  
   has_one :entity
 
   # -------------------------------------------------------------- paperclip ---
@@ -44,6 +42,7 @@ class Medium < ActiveRecord::Base
     end
   end
   
+  # TODO: still needed?
   def serializable_hash(*args)
     {
       :id => id,
@@ -90,9 +89,10 @@ class Medium < ActiveRecord::Base
   
   # Validation
 
-  validates_attachment_content_type :image, :content_type => /^image\/.+$/, :if => Proc.new{|medium| medium.image.file?}
-  validates_attachment_presence :document, :unless => Proc.new{|medium| medium.image.file?}, :message => :file_must_be_set
-  validates_uniqueness_of :datahash, :message => :file_exists
+  validates_attachment :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{|medium| medium.image.file?}}
+  validates_attachment :document, presence: {unless: Proc.new{|medium| medium.image.file?}, message: :file_must_be_set} 
+  validates :datahash, uniqueness: {:message => :file_exists}
+  
   validate :validate_no_two_images
   validate :validate_file_size
   
@@ -247,6 +247,7 @@ class Medium < ActiveRecord::Base
     dummy
   end
   
+  # TODO: still needed?
   def uri=(value)
     self[:original_url] = value
     
@@ -263,6 +264,7 @@ class Medium < ActiveRecord::Base
     end
   end
 
+  # TODO: still needed?
   def original_url=(value)
     unless value.blank?
       self [:original_url] = value

@@ -7,6 +7,7 @@ class DirectedRelationshipsController < ApplicationController
       @directed_relationships = DirectedRelationship.
         by_entity(params[:entity_id]).
         by_relation_name(params[:relation_name]).
+        by_to_kind(params[:kind_id]).
         allowed(user, :view).
         pageit(params[:page], params[:per_page])
     else

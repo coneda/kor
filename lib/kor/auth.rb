@@ -44,7 +44,6 @@ module Kor::Auth
     false
   end
 
-  # TODO: still needed?  
   def self.authorize(username, additional_attributes = true)
     user = User.includes(:groups).find_or_initialize_by(:name => username)
 

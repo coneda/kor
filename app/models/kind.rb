@@ -1,7 +1,5 @@
-# An instance of this class represents an entity kind. It therefor holds some
-# settings, has many entities and allows the configuration of custom dataset
-# attributes
 class Kind < ActiveRecord::Base
+
   serialize :settings
   
   has_many :entities, :dependent => :destroy
@@ -15,14 +13,14 @@ class Kind < ActiveRecord::Base
 
   validates :plural_name,
     :white_space => true
-
-  before_validation :generate_uuid
   
   default_scope lambda { order(:name) }
   scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :allowed, lambda {|user, policies| all}
+
+  before_validation :generate_uuid
 
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
@@ -109,19 +107,12 @@ class Kind < ActiveRecord::Base
     settings[:naming]
   end
   
-  def has_subtype?
-    settings[:subtype]
-  end
-  
   def can_have_synonyms?
     settings[:synonyms] || requires_naming?
   end
-  
-  
-  # Formats
-  
+
   def serializable_hash(*args)
     super :methods => [:defines_schema?, :tagging]
   end
-
+  
 end

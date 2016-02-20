@@ -18,6 +18,8 @@ commit history on GitHub.
 * changes to field names are now propagated to affected entities
 * sample data can be generated during db seeting by setting `SAMPLE_DATA=true`
 * a task to display list permissions
+* creating and editing relationships is now done inline
+* the gallery is now rendered in the browser and is therefore a lot faster
 
 ### Internal
 
@@ -25,6 +27,8 @@ commit history on GitHub.
 * switched from rails 3.2 to 4.2
 * sped up the test suites by about 20%
 * added a development environment via `vagrant up`
+* relationships are now saved as two records per link (in and out). This greatly
+  simplyfies queries and enhances performance
 
 ## Version 1.9.2
 

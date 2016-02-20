@@ -2,12 +2,12 @@
   %table.kor_extended_image
     %tr
       %td.image= kor_entity(entity, :style => :preview)
-      - unless primary_entities.empty?
+      - unless entity.primary_entities(current_user).empty?
         %tr
           %td
             .hr
-      - primary_entities.each do |pe|
-        - pe.related(current_user, :assume => :primary, :search => :secondary).reject{|se| se.is_medium?}.each do |se|
+      - entity.primary_entities(current_user).each do |pe|
+        - pe.secondary_entities(current_user).each do |se|
           %tr
             %td.subtitle= link_to h(se.display_name), web_path(:anchor => entity_path(se))
         %tr

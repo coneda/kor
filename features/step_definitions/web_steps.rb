@@ -20,7 +20,10 @@ When /^(?:|I )press "([^"]*)"$/ do |button|
 end
 
 When /^(?:|I )follow "([^"]*)"$/ do |locator|
-  element = all(:link, locator).first || all("[data-name='#{locator}']").first
+  element = 
+    all(:link, locator).first || 
+    all("[data-name='#{locator}']").first ||
+    all(:button, locator).first
   raise "couldn't find link '#{locator}'" unless element
   element.click
 end
@@ -32,7 +35,8 @@ end
 
 When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |field, quoted, value|
   value = "\"#{value}\"" if quoted == ' quoted'
-  fill_in(field, :with => value)
+  field = all(:css, field).first || find(:fillable_field, field)
+  field.set value
 end
 
 When /^(?:|I )fill in the following:$/ do |fields|

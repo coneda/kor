@@ -15,14 +15,24 @@
 
       <div class="hr"></div>
 
-      <table class="kor_table">
+      <div ng-show="result.records.length == 0">
+        {{ 'objects.none_found' | translate:{interpolations: {o: 'nouns.entry.other'} } | capitalize }}
+      </div>
+
+      <table class="kor_table" ng-show="result.records.length > 0">
         <tbody>
           <tr ng-repeat="row in result.grouped_records">
             <td ng-repeat="entity in row" class="gallery_item">
-              <a href="/blaze#/entities/{{entity.id}}">
-                <span ng-bind="entity.name"></span>
-                <img ng-src="{{entity.url}}" />
-              </a>
+              <div class="kor_medium_frame">
+                <a href="/blaze#/entities/{{entity.id}}">
+                  <span ng-bind="entity.name"></span>
+                  <img ng-src="{{entity.url}}" />
+                </a>
+                <span class="button_bar" style="display: none;">
+                  <div kor-current-button="entity" />
+                  <div kor-to-clipboard="entity" />
+                </span>
+              </div>
               <div ng-show="entity.url">
                 <div>
                   <small>

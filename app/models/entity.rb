@@ -5,89 +5,31 @@ class Entity < ActiveRecord::Base
   serialize :attachment, JSON
   
   acts_as_taggable_on :tags
-  
-  self.per_page = 10
-  
+
   # Associations
 
-  has_many :identifiers, :dependent => :destroy
   
+  belongs_to :kind
+  belongs_to :collection
   belongs_to :creator, :class_name => "User", :foreign_key => :creator_id
   belongs_to :updater, :class_name => "User", :foreign_key => :updater_id
-  belongs_to :kind
  
+  has_many :identifiers, :dependent => :destroy
   has_many :datings, :class_name => "EntityDating", :dependent => :destroy
-
   belongs_to :medium, :dependent => :destroy
 
-  belongs_to :collection
-  
   has_and_belongs_to_many :system_groups
   has_and_belongs_to_many :authority_groups
   has_and_belongs_to_many :user_groups
 
   # TODO: make sure relationships are actually destroyed when the entity is
   has_many :outgoing_relationships, class_name: "DirectedRelationship", foreign_key: :from_id
-  has_many :outgoing, through: :outgoing_relationships
+  has_many :outgoing, through: :outgoing_relationships, source: :to
 
   has_many :incoming_relationships, class_name: "DirectedRelationship", foreign_key: :to_id
-  has_many :incoming, through: :incoming_relationships
+  has_many :incoming, through: :incoming_relationships, source: :from
 
-  # TODO: remove comments
-  # has_many :relationships,
-  #   :finder_sql => Proc.new {
-  #     "SELECT DISTINCT relationships.*
-  #      FROM relationships 
-  #      WHERE (from_id = #{id} OR to_id = #{id})"
-  #   },
-  #   :class_name => "Relationship",
-  #   :dependent => :destroy do
-  #     def only(options = {})
-  #       options.reverse_merge!( :kind => nil, :relation_names => nil )
-
-  #       result = self
-  #       if options[:kind]
-  #         result = result.select do |rs|
-  #           Kind.find_ids(options[:kind]).include?( rs.other_entity(proxy_association.owner).kind_id )
-  #         end
-  #       end
-
-  #       if options[:relation_names]
-  #         result = result.select do |rs|
-  #           Array(options[:relation_names]).include?( rs.relation_name_for_entity(proxy_association.owner) )
-  #         end
-  #       end
-
-  #       result.sort do |x,y|
-  #         x_name = x.other_entity(proxy_association.owner).display_name || ""
-  #         y_name = y.other_entity(proxy_association.owner).display_name || ""
-  #         x_name.downcase <=> y_name.downcase
-  #       end
-  #     end
-
-  #     def except(options = {})
-  #       options.reverse_merge!(:kind => [], :relation_names => [])
-  #       only( 
-  #         :kind => Kind.all_ids - Kind.find_ids(options[:kind]),
-  #         :relation_names => Relation.all.collect{|r| [r.name, r.reverse_name]}.flatten - options[:relation_names]
-  #       )
-  #     end
-      
-  #     def authorized(user, policies)
-  #       collection_ids = Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
-        
-  #       self.select do |rs|
-  #         collection_ids.include? rs.other_entity(proxy_association.owner).collection_id
-  #       end
-  #     end
-      
-  #     def grouped
-  #       except(:kind => Kind.medium_kind.id).group_by do |r| 
-  #         r.relation_name_for_entity(proxy_association.owner)
-  #       end
-  #     end
-  #   end
-    
+  # TODO: still needed?
   def grouped_related_entities(user, policies, options = {})
     options.reverse_merge!(:media => :no, :limit => false)
   
@@ -111,6 +53,7 @@ class Entity < ActiveRecord::Base
     relationships.group_by{|r| r.relation_name_for_entity(self)}
   end
   
+  # TODO: remove comments
   # def try_again
   #   Relationship.find_by_sql("
   #     SELECT
@@ -122,7 +65,6 @@ class Entity < ActiveRecord::Base
   #       JOIN entities er1 ON er1.id = r1.to_id
   #   ")
   # end
-  
 
   # Nesting
   
@@ -140,16 +82,17 @@ class Entity < ActiveRecord::Base
   validates :distinct_name,
     :uniqueness => {:scope => [ :kind_id, :name ], :allow_blank => true},
     :white_space => true
-  validates_presence_of :kind
-  validates_presence_of :uuid
-  validates_inclusion_of :no_name_statement, :allow_blank => true, :in => [ 'unknown', 'not_available', 'empty_name', 'enter_name' ]
-  validates_presence_of :collection_id
+  validates :kind, :uuid, :collection_id, presence: true
+  validates :no_name_statement, inclusion: {
+    :allow_blank => true, :in => [ 'unknown', 'not_available', 'empty_name', 'enter_name' ]
+  }
 
   validate(
     :validate_distinct_name_needed, :validate_dataset, :validate_properties,
     :attached_file
   )
-
+ 
+  # TODO: still needed?
   def attached_file
     if is_medium?
       if medium
@@ -361,43 +304,60 @@ class Entity < ActiveRecord::Base
   def degree
     Relationship.where("from_id = ? OR to_id = ?", self.id, self.id).count
   end
-  
-  def related_entities(user, options = {})
-    options.reverse_merge!(:relation_names => nil)
-    blaze = Kor::Blaze.new(user)
-    blaze.related_entities(self, options)
+
+  def primary_entities(user)
+    relation_names = Relation.primary_relation_names
+    outgoing.
+      allowed(user, :view).
+      where('directed_relationships.relation_name' => relation_names).
+      without_media
   end
 
-  def related(user, options = {})
-    options.reverse_merge!(
-      :assume => :primary,
-      :search => :media
-    )
-    
-    if options[:assume] == :media
-      if options[:search] == :primary
-        related_entities(user, :relation_names => Relation.primary_relation_names)
-      else
-        raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
-      end
-    elsif options[:assume] == :primary
-      if options[:search] == :media
-        related_entities(user, :relation_names => Relation.reverse_primary_relation_names)
-      elsif options[:search] == :secondary 
-        related_entities(user, :relation_names => Relation.secondary_relation_names)
-      end 
-    elsif options[:assume] == :secondary
-      if options[:search] == :primary
-        related_entities(user, :relation_names => Relation.reverse_secondary_relation_names)
-      elsif options[:search] == :media
-        related(user, :assume => :secondary, :search => :primary).map do |e|
-          e.related(user, :assume => :primary, :search => :media)
-        end.flatten.uniq
-      end
-    else
-      raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
-    end
+  def secondary_entities(user)
+    relation_names = Relation.secondary_relation_names
+    outgoing.
+      allowed(user, :view).
+      where('directed_relationships.relation_name' => relation_names).
+      without_media
   end
+  
+  # TODO: remove if tests pass
+  # def related_entities(user, options = {})
+  #   options.reverse_merge!(:relation_names => nil)
+  #   blaze = Kor::Blaze.new(user)
+  #   blaze.related_entities(self, options)
+  # end
+
+  # def related(user, options = {})
+  #   options.reverse_merge!(
+  #     :assume => :primary,
+  #     :search => :media
+  #   )
+    
+  #   if options[:assume] == :media
+  #     if options[:search] == :primary
+  #       related_entities(user, :relation_names => Relation.primary_relation_names)
+  #     else
+  #       raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
+  #     end
+  #   elsif options[:assume] == :primary
+  #     if options[:search] == :media
+  #       related_entities(user, :relation_names => Relation.reverse_primary_relation_names)
+  #     elsif options[:search] == :secondary 
+  #       related_entities(user, :relation_names => Relation.secondary_relation_names)
+  #     end 
+  #   elsif options[:assume] == :secondary
+  #     if options[:search] == :primary
+  #       related_entities(user, :relation_names => Relation.reverse_secondary_relation_names)
+  #     elsif options[:search] == :media
+  #       related(user, :assume => :secondary, :search => :primary).map do |e|
+  #         e.related(user, :assume => :primary, :search => :media)
+  #       end.flatten.uniq
+  #     end
+  #   else
+  #     raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
+  #   end
+  # end
 
   def relation_counts(user, options = {})
     options.reverse_merge! media: false
@@ -415,6 +375,10 @@ class Entity < ActiveRecord::Base
     end
 
     scope.count
+  end
+
+  def media_count
+    outgoing_relationships.with_to.where('tos.kind_id = 1').count
   end
 
   
@@ -521,19 +485,9 @@ class Entity < ActiveRecord::Base
   end
 
 
-  ############################ image related ###################################
-  def images(user)
-    @images ||= grouped_related_entities(user, :view, :media => :yes).values.flatten.map{|r| r.other_entity(self)}.uniq
-  end
-
   def media(user)
     @media ||= grouped_related_entities(user, :view, :media => :yes).values.flatten.map{|r| r.other_entity(self)}.uniq
   end
-
-  def has_images?(user)
-    !images(user).empty?
-  end
-
 
   # ----------------------------------------------------------------- search ---
   def self.filtered_tag_counts(term, options = {})
@@ -567,7 +521,13 @@ class Entity < ActiveRecord::Base
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :searcheable, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
   scope :media, lambda { where("entities.kind_id = ?", Kind.medium_kind.id) }
-  scope :without_media, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
+  scope :without_media, lambda { 
+    if id = Kind.medium_kind.try(:id)
+      where("entities.kind_id != ?", id) 
+    else
+      all
+    end
+  }
   scope :alphabetically, lambda { order("name asc, distinct_name asc") }
   scope :newest_first, lambda { order("created_at DESC") }
   scope :is_a, lambda { |kind_id|
@@ -610,6 +570,7 @@ class Entity < ActiveRecord::Base
       where("entities.id IN (?)", ids.uniq)
     end
   }
+  # TODO: rewrite this to use directed relationships
   scope :related_to, lambda { |user, spec|
     entity_ids = nil
     spec ||= []

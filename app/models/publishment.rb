@@ -2,7 +2,7 @@ class Publishment < ActiveRecord::Base
   belongs_to :user_group
   belongs_to :user
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   after_validation(:on => :create) do |model|
     model.generate_uuid

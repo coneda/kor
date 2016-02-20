@@ -60,3 +60,6 @@ Feature: collections page
     And I am on the collections page
     When I follow "Plus"
     Then I should see "Allow these groups to display the master data"
+
+  Scenario: Merge one collection into another
+    Given pending: implement it!

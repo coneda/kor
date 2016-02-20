@@ -1,3 +1,4 @@
+# TODO: remove if tests pass
 class Api::PublicController < Api::ApiController
   
   def info
@@ -45,36 +46,6 @@ class Api::PublicController < Api::ApiController
     end
 
     render :json => result.as_json
-  end
-  
-  
-  def login
-    if @user = User.authenticate(params[:username], params[:password])
-      session[:user_id] = @user.id
-      session[:expires_at] = Kor.session_expiry_time
-      @user.update_attributes(:last_login => Time.now)
-      render :json => @user.to_json, :status => 200
-    elsif session[:user_id]
-      render_notice :already_authenticated
-    else
-      render_error :bad_credentials, 401
-    end
-  end
-  
-  def logout
-    reset_session
-    render_notice :logged_out
-  end
-  
-  def log
-    @data = params
-    
-    ['action', 'version', 'controller'].each do |i|
-      @data.delete i
-    end
-    
-    Rails.logger.info "-------- JS CONSOLE LOG:\n" + @data.inspect + "\n-------- END JS CONSOLE"
-    render :nothing => true
   end
   
 

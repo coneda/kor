@@ -16,10 +16,13 @@ kor.directive "korRelation", ["entities_service",
           event.preventDefault()
           scope.visible = !scope.visible
 
-        scope.$watchGroup ["page", "count"], ->
+        fetch = ->
           es.relation_load(scope.entity.id, scope.relation_name, scope.page).success (data) ->
-            console.log data
+            # console.log data
             scope.relationships = data
+
+        scope.$watchGroup ["page", "count"], fetch
+        scope.$on 'relationship-saved', fetch
 
     }
 ]

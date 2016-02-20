@@ -1,12 +1,14 @@
 module EntitiesHelper
 
+  # TODO: still needed?
   def gallery_item(entity)
-    render :partial => 'layouts/gallery_item', :locals => {
-      :entity => entity,
-      :primary_entities => entity.related(current_user, :assume => :media, :search => :primary).select{|pe| pe && !pe.is_medium?}
+    render partial: 'layouts/gallery_item', locals: {
+      entity: entity,
+      primary_entities: entity.primary_entities(current_user)
     }
   end
 
+  # TODO: still needed?
   def link_to_medium_transformation(medium, transformation, operation)
     link_to(
       image_tag(transformation.button_icon(operation)),
@@ -18,6 +20,7 @@ module EntitiesHelper
     )
   end
   
+  # TODO: still needed?
   def dataset_attribute(dataset, attribute, options = {})
     options.merge!(
       :translate => false, 
@@ -30,7 +33,6 @@ module EntitiesHelper
     column dataset.class.human_attribute_name(attribute), value, options
   end
 
-  # TODO: refactor this somehow
   def column(name, value, options = {})
     options.reverse_merge!(
       :count => 1,
@@ -65,6 +67,7 @@ module EntitiesHelper
     end
   end
   
+  # TODO: still needed?
   def entity_subtitle(entity, content_type = false)
     if entity.is_medium?
       result = ""
@@ -81,14 +84,17 @@ module EntitiesHelper
     end
   end
 
+  # TODO: still needed?
   def synonym_list_for_entity(entity)
     entity.synonyms.join(" | ")
   end
   
+  # TODO: still needed?
   def marked?(entity)
     (session[:clipboard] || []).include? entity.id.to_i
   end
 
+  # TODO: still needed?
   def commands_for_entity(entity, options = {})
     result = "".html_safe
   
@@ -132,6 +138,7 @@ module EntitiesHelper
     result
   end
   
+  # TODO: still needed?
   def relative_commands_for_entity(entity)
     if authorized?(:edit, Collection.all, :required => :any)
       link_to(kor_command_image('plus'), new_relationship_path(:relationship => {:from_id => entity.id}))

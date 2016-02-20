@@ -11,7 +11,7 @@ class Field < ActiveRecord::Base
     :format => {:with => /\A[a-z0-9_]+\z/},
     :uniqueness => {:scope => :kind_id},
     :white_space => true
-  validates_presence_of :show_label, :form_label, :search_label
+  validates :show_label, :form_label, :search_label, presence: true
   
   before_validation do |f|
     f.form_label = f.show_label if f.form_label.blank?
@@ -69,7 +69,11 @@ class Field < ActiveRecord::Base
   attr_accessor :entity
 
   def settings
-    self[:settings] ||= {}
+    unless self[:settings]
+      self[:settings] = {}
+    end
+
+    self[:settings]
   end
 
   def show_on_entity

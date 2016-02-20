@@ -2,6 +2,8 @@ require 'rails_helper'
 
 describe DirectedRelationshipsController, type: :controller do
 
+  include DataHelper
+
   render_views
 
   before :each do
@@ -76,6 +78,17 @@ describe DirectedRelationshipsController, type: :controller do
     expect(JSON.parse(response.body).size).to eq(1)
   end
 
-  it "should response with a single directed relationship"
+  it "should response with a single directed relationship" do
+    default_setup relationships: true
+
+    directed_relationship = Relationship.first.normal
+    get :show, id: directed_relationship.id
+    expect(response.status).to eq(403)
+
+    get :show, id: directed_relationship.id, api_key: @admin.api_key
+    expect(response.status).to eq(200)
+    data = JSON.parse(response.body)
+    expect(data['id']).to eq(directed_relationship.id)
+  end
 
 end

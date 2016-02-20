@@ -1,5 +1,3 @@
-/* Application */
-
 var Application = new Object();
 var Kor = new Object();
 
@@ -22,10 +20,6 @@ Application.register_input_focus_events = function() {
 
 Application.focus_first_input = function() {
   $('input[type=text], input[type=password], textarea').first().focus();
-}
-
-Application.alter_comment_links = function() {
-  $('span.text > p a').attr('target', '_blank');
 }
 
 Application.setup_kor_command_image_events = function() {
@@ -69,11 +63,6 @@ Application.setup_search_result_events = function() {
 }
 
 Application.register_popups = function() {
-  $(document).on('click', 'a.popup', function(e) { 
-    window.open($(this).attr('href')); 
-    e.preventDefault(); 
-  });
-  
   $('#templates .dialog_popup').dialog({autoOpen: false, width: 200});
   $(document).on('click', 'a.dialog_popup', function(event){
     var id = $(this).attr('id');
@@ -95,25 +84,17 @@ Application.setup_ajax = function() {
   });
 }
 
-Application.load_core_extensions = function() {
-  String.prototype.capitalize_first_letter = function() {
-    return this.charAt(0).toUpperCase() + this.substr(1);
-  }
-}
-
 Application.setup = function() {
   Kor.setup_blaze();
 
-  Application.load_core_extensions();
   Kor.load_settings();
   Application.setup_ajax();
   
-  this.alter_comment_links();
   this.setup_kor_command_image_events();
   Kor.register_session_events();
   Kor.setup_help();
   Menu.setup();
-  // Panel.setup();
+  Panel.setup();
   Forms.setup();
   this.setup_search_result_events();
   this.register_input_focus_events();
@@ -124,8 +105,6 @@ Application.setup = function() {
   
   Attachments.register_expert_search_events();
 }
-
-/* Kor */
 
 Kor.setup_blaze = function() {
   $(document).on('click', 'a', function(event) {
@@ -149,12 +128,6 @@ Kor.load_settings = function() {
 
 Kor.ajax_loading = function() {$('#ajax_loading_indicator').fadeIn(200);}
 Kor.ajax_not_loading = function() {$('#ajax_loading_indicator').fadeOut(200);}
-
-Kor.reverse_merge = function(given, defaults) {
-  if (!given) {given = {};}
-  if (!defaults) {defaults = {};}
-  return $.extend(defaults, given);
-}
 
 Kor.notice = function(msg) {
   Kor.cleanup_message_area();
@@ -180,29 +153,6 @@ Kor.config = function() {
 
 Kor.cleanup_message_area = function() {
   $('#message_area').empty();
-}
-
-Kor.error = function(msg, options) {
-  options = Kor.reverse_merge(options, {
-    'field_name': null,
-    'title': I18n.t('activerecord.errors.template.header').capitalize_first_letter()
-  });
-  
-  var message_area = $('#message_area');
-  var errors_div = message_area.find('.errors');
-  
-  if (errors_div.length == 0) {
-    var tpl = KorTemplate.get('.errors');
-    tpl.fill_in('.title', options.title);
-    tpl.fill_in('.field_name', options.field_name);
-    tpl.fill_in('span.message', msg);
-    message_area.append(tpl);
-  } else {
-    var tpl = KorTemplate.get('.errors .error');
-    tpl.fill_in('.field_name', options.field_name);
-    tpl.fill_in('span.message', msg);
-    errors_div.find('ul').append(tpl);
-  }
 }
 
 Kor.register_session_events = function() {
@@ -311,7 +261,6 @@ ImageQuickButtons.register_events = function() {
 
 ImageQuickButtons.register_events();
 
-
 var Menu = new Object();
 
 Menu.setup = function() {
@@ -348,91 +297,10 @@ Menu.setup = function() {
 
 var Panel = new Object();
 
-// Panel.setup = function() {
-//   $(document).on('click', '.relation_toggle', function(event){
-//     var relation = $(this).parents('div.relation');
-//     force = !Panel.toggle_custom_state(relation, 'images_shown');
-//     relation.find('div.relationship').each( function(i, e){
-//       Panel.toggle_relationship_panel($(e), force);
-//     });
-
-//     Panel.toggle_image(
-//       relation.find('div.relation_switch img'),
-//       '/assets/triangle_up.gif', 
-//       '/assets/triangle_down.gif'
-//     );
-    
-//     return false;
-//   });
-  
-//   $(document).on('click', '.relationship_toggle', function(event){
-//     var relationship = $(this).parents('div.relationship');
-//     Panel.toggle_relationship_panel(relationship);
-//     return false;
-//   });
-  
-//   $('.exception_log').click(function(event) {
-//     $(this).find('.backtrace').toggle();
-//   });
-// }
-
-Panel.toggle_custom_state = function(element, state_property) {
-  if (element.data(state_property) == null) {
-    element.data(state_property, 'no');
-  }
-
-  if (element.data(state_property) == 'yes') {
-    element.data(state_property, 'no');
-    return true;
-  } else {
-    element.data(state_property, 'yes');
-    return false;
-  }
-}
-
-// Panel.toggle_relationship_panel = function(relationship, force) {
-//   try {
-//     Panel.toggle_image(relationship.find('span.relationship_switch img'),
-//       '/assets/triangle_up.gif', '/assets/triangle_down.gif', force);
-
-//     var panel = relationship.find('div.switched_panel');
-//     if (force == null)
-//       panel.toggle();
-//     else if (force)
-//       panel.show();
-//     else
-//       panel.hide();
-
-//   } catch (error) {
-//     // no relation_switch found => no images
-//   }
-// }
-
-Panel.reset_custom_state = function(element, state_property) {
-  element.data(state_property, 'no');
-}
-
-Panel.reset_image = function(image, path) {
-  image.attr('src', path);
-}
-
-// Panel.reset_images_shown = function(element) {
-//   Panel.reset_custom_state(element, 'images_shown');
-//   Panel.reset_image(element.find('div.relation_switch img'), '/assets/triangle_up.gif');
-// }
-
-Panel.toggle_image = function(image, path_1, path_2, force) {
-  if (force == null) {
-    if (image.attr('src').search(path_1) == -1) {
-      image.attr('src', path_1);
-    } else {
-      image.attr('src', path_2);
-    }
-  } else if (force) {
-    image.attr('src', path_2);
-  } else {
-    image.attr('src', path_1);
-  }
+Panel.setup = function() {
+  $('.exception_log').click(function(event) {
+    $(this).find('.backtrace').toggle();
+  });
 }
 
 var Forms = new Object();

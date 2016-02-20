@@ -12,6 +12,8 @@ kor.controller('entity_controller', [
       promise.error (data) -> l.path("/denied")
     update()
 
+    window.s = scope
+
     scope.$on 'relationship-saved', update
 
     scope.toggle_relationship_editor = (event) ->

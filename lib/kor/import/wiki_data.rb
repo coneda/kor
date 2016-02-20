@@ -58,8 +58,8 @@ class Kor::Import::WikiData
     response = @client.request(method, url, params, headers, body)
 
     begin
-      Oj.load(response.body)
-    rescue Oj::ParseError => e
+      JSON.load(response.body)
+    rescue JSON::ParserError => e
       response
     end
   end

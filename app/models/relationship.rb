@@ -27,12 +27,11 @@ class Relationship < ActiveRecord::Base
     self.normal ||= DirectedRelationship.new
     self.reversal ||= DirectedRelationship.new
 
-    # TODO: update relation_name in directed relationships when the relation
-    # changes (background job)
     self.normal.assign_attributes(
       from_id: self.from_id,
       to_id: self.to_id,
       relation_id: self.relation_id,
+      relationship_id: self.id,
       is_reverse: false,
       relation_name: self.relation.try(:name)
     )
@@ -41,13 +40,14 @@ class Relationship < ActiveRecord::Base
       from_id: self.to_id,
       to_id: self.from_id,
       relation_id: self.relation_id,
+      relationship_id: self.id,
       is_reverse: true,
       relation_name: self.relation.try(:reverse_name)
     )
   end
 
   def connect_directed
-    if !self.normal.destroyed? && !self.normal.destroyed?
+    if self.normal && !self.normal.destroyed?
       self.normal.update_column :relationship_id, self.id
       self.reversal.update_column :relationship_id, self.id
     end
@@ -77,26 +77,6 @@ class Relationship < ActiveRecord::Base
     joins("LEFT JOIN entities AS froms ON froms.id = relationships.from_id").
     joins("LEFT JOIN entities AS tos ON tos.id = relationships.to_id")
   }
-  # scope :to_ids, lambda { |ids|
-  #   ids.present? ? where(:to_id => ids) : all
-  # }
-  # scope :from_ids, lambda { |ids|
-  #   ids.present? ? where(:from_id => ids) : all
-  # }
-  # scope :from_kind_ids, lambda { |ids|
-  #   ids.present? ? where("froms.kind_id IN (?)", ids) : all
-  # }
-  # scope :to_kind_ids, lambda { |ids|
-  #   ids.present? ? where("tos.kind_id IN (?)", ids) : all
-  # }
-  # scope :via, lambda { |names|
-  #   if names.present? 
-  #     joins("LEFT JOIN relations ON relations.id = relationships.relation_id").
-  #     where("relations.name IN (?)", names)
-  #   else
-  #     all
-  #   end
-  # }
   scope :allowed, lambda{|user, policy|
     collection_ids = Kor::Auth.authorized_collections(user, policy).map{|c| c.id}
     with_ends.where(
@@ -106,41 +86,6 @@ class Relationship < ActiveRecord::Base
   }
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
-
-  # TODO: remove comments
-  # def other_entity(entity)
-  #   from_id == entity.id ? to : from
-  # end
-
-  # def relation_name_for_entity(entity)
-  #   if from_id == entity.id
-  #     relation.name
-  #   elsif to_id == entity.id
-  #     relation.reverse_name
-  #   else
-  #     raise "entity not part of relationship"
-  #   end
-  # end
-
-  # def to_entity_for_relation_name(relation_name)
-  #   if relation.name == relation_name
-  #     to
-  #   elsif relation.reverse_name == relation_name
-  #     from
-  #   else
-  #     raise "relation name not part of relationship"
-  #   end
-  # end
-
-  # def from_entity_for_relation_name(relation_name)
-  #   if relation.name == relation_name
-  #     from
-  #   elsif relation.reverse_name == relation_name
-  #     to
-  #   else
-  #     raise "relation name not part of relationship"
-  #   end
-  # end
 
   def self.relate_and_save( from_id, relation_name, to_id, properties = [] )
     r = relate(from_id, relation_name, to_id, properties)
@@ -160,61 +105,25 @@ class Relationship < ActiveRecord::Base
     )
   end
   
-  
-  ########################## properties ########################################
-
   def has_properties?
     !properties.blank?
   end
   
   def properties
-    read_attribute(:properties) || []
-  end
+    unless self[:properties]
+      self[:properties] = []
+    end
 
-  
-  ########################## relation related ##################################
-  # attr_writer :reverse
+    self[:properties]
+  end
 
   def has_relation_name(name)
     relation.has_name(name)
   end
-
-  # def reverse
-  #   @reverse ||= false
-  # end
-
-  # this method only exists because the writer is used in the relationship form
-  # def relation_name
-  #   relation.name if relation
-  # end
   
   def relation_name=(value)
     @relation_name = value
   end
-
-  # def swap_to_and_from
-  #   tmp = read_attribute :from_id
-  #   write_attribute :from_id, read_attribute(:to_id)
-  #   write_attribute :to_id, tmp
-  # end
-
-  ########################## entity related ####################################
-
-  # def from_id=(id)
-  #   if reverse
-  #     self[:to_id] = id
-  #   else
-  #     self[:from_id] = id
-  #   end
-  # end
-
-  # def to_id=(id)
-  #   if reverse
-  #     self[:from_id] = id
-  #   else
-  #     self[:to_id] = id
-  #   end
-  # end
 
   def human
     from_name = from.display_name.first(30)

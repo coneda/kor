@@ -26,14 +26,15 @@ gem 'plupload-rails'
 gem 'coffee-rails'
 gem "sass-rails"
 
-gem 'oj'
+# TODO: remove comments
+# gem 'oj'
 gem 'jbuilder'
 gem 'test-unit'
 
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load 
   # (and configure) it in app/controllers/application_controller.rb
-  gem 'activerecord-session_store'#, require: false
+  gem 'activerecord-session_store'
   gem 'delayed_job_active_record'
   gem 'awesome_nested_set', "~> 3.0.0"
   gem 'factory_girl_rails'
@@ -74,6 +75,5 @@ group :production do
 end
 
 group :import_export do
-  gem 'mixlib-cli'
   gem 'spreadsheet'
 end

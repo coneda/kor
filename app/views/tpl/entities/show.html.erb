@@ -10,7 +10,7 @@
             <div kor-to-clipboard="entity" />
 
             <a href="/entities/{{entity.id}}/edit" ng-show="allowed_to('edit')">
-              <img alt="Pen" class="kor_command_image" src="<%= image_path('pen.gif') %>" title="{{'verbs.edit' | translate}}">
+              <%= kor_command_image 'pen' %>
             </a>
             <form method="post" action="{{'/entities/' + entity.id}}">
               <input type="hidden" name="_method" value="delete" />
@@ -22,12 +22,7 @@
                 rel="nofollow" 
                 ng-click="submit($event)"
               >
-                <img 
-                  alt="X" 
-                  class="kor_command_image" 
-                  src="<%= image_path('x.gif') %>" 
-                  title="{{'verbs.delete' | translate}}"
-                >
+                <%= kor_command_image 'x' %>
               </a>
             </form>
           </div>
@@ -100,12 +95,7 @@
                     ng-show="allowed_to('tagging', entity.collection_id)"
                     class="kor-inplace-control"
                   >
-                    <img
-                      alt="Plus"
-                      class="kor_command_image"
-                      src="<%= image_path('plus.gif') %>"
-                      title="{{'verbs.add' | translate}}"
-                    />
+                    <%= kor_command_image 'plus' %>
                   </a>
                 </span>
 
@@ -274,12 +264,13 @@
         </div>
         <br>
 
-        <div 
-          ng-repeat="relation in entity.related_media"
-          kor-media-relation="relation"
+        <div
+          ng-repeat="(name, count) in entity.media_relation_counts"
           kor-entity="entity"
+          kor-media-relation="name"
+          kor-count="count"
         ></div>
-        
+
       </div>
       
     </div>

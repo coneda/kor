@@ -33,8 +33,10 @@ class User < ActiveRecord::Base
     :presence => true,
     :uniqueness => true,
     :length => {:minimum => 32}
-  validates_format_of :plain_password, :allow_nil => true, :with => /\A(.{5,30})|\Z/
-  validates_confirmation_of :plain_password
+  validates(:plain_password, 
+    format: {:allow_nil => true, :with => /\A(.{5,30})|\Z/},
+    confirmation: true
+  )
   
   validate :validate_empty_personal_collection
   validate :validate_existing_parent_user
@@ -149,11 +151,14 @@ class User < ActiveRecord::Base
   end
   
   def add_login_attempt
-    self[:login_attempts] ||= []
+    unless self[:login_attempts]
+      self[:login_attempts] = []
+    end
     self[:login_attempts] << Kor.now
     self[:login_attempts].shift if self[:login_attempts].size > 3
   end
   
+ # TODO: still needed?
   def admin!
     self.admin = true
     self.kind_admin = true
@@ -185,6 +190,7 @@ class User < ActiveRecord::Base
     end
   end
   
+  # TODO: still needed?
   def self.guest
     user = find_by_name('guest')
     user.active? ? user : nil

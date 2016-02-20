@@ -44,7 +44,7 @@ Feature: Kinds
   Scenario: do not allow to destroy the medium kind
     Given I am logged in as "admin"
     When I go to the kinds page
-    Then I should not see "img[alt=X]" within "table.kor_table"
+    Then I should not see "img[data-name=x]" within "table.kor_table"
     When I send the delete request for "kind" "Medium"
     Then I should be on the denied page
 
@@ -99,3 +99,9 @@ Feature: Kinds
     Then I should see "Material"
     
     
+  @javascript
+  Scenario: Naming should not be required for media
+    Given I am logged in as "admin"
+    And I go to the new "Medium-Entity" page
+    Then I should not see "Name"
+

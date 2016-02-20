@@ -11,9 +11,25 @@ class Relation < ActiveRecord::Base
     :presence => true,
     :white_space => true
 
-  after_validation :on => :create do |model|
-    model.generate_uuid
+  after_validation :generate_uuid, :on => :create
+  after_save :correct_directed
+
+  def correct_directed
+    if name_changed?
+      DirectedRelationship.
+        where(relation_name: name_was).
+        where(relation_id: id).
+        update_all(relation_name: name)
+    end
+
+    if reverse_name_changed?
+      DirectedRelationship.
+        where(relation_name: reverse_name_was).
+        where(relation_id: id).
+        update_all(relation_name: reverse_name)
+    end
   end
+
   def generate_uuid
     self[:uuid] ||= SecureRandom.uuid
   end

@@ -295,4 +295,9 @@ describe Kor::Elastic, :elastic => true do
     results = @elastic.search(:kind_id => @people.id, :per_page => 700)
   end
 
+  it "should not fail on short query terms" do
+    results = @elastic.search(query: "xx")
+    expect(results.records.size).to eq(2)
+  end
+
 end

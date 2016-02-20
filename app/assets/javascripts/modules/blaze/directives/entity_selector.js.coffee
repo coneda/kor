@@ -21,6 +21,10 @@ kor.directive "korEntitySelector", [
               scope.results = data
               scope.group()
 
+        scope.goto_tab = (tab, event) ->
+          event.preventDefault() if event
+          scope.tab = tab
+
         scope.$watch "tab", -> 
           scope.terms = null
           scope.results = {}

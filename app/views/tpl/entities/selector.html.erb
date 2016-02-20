@@ -1,24 +1,28 @@
 <div class="menu">
   <a 
+    href="#"
     ng-bind="'nouns.search' | translate"
-    ng-click="tab = 'search'"
+    ng-click="goto_tab('search', $event)"
     ng-class="{'selected': tab == 'search'}"
   ></a> | 
   <a
+    href="#"
     ng-bind="'recently_visited' | translate"
-    ng-click="tab = 'visited'"
+    ng-click="goto_tab('visited', $event)"
     ng-class="{'selected': tab == 'visited'}"
   ></a> |
   <a
+    href="#"
     ng-bind="'recently_created' | translate"
-    ng-click="tab = 'created'"
+    ng-click="goto_tab('created', $event)"
     ng-class="{'selected': tab == 'created'}"
   ></a>
   <span ng-show="existing">
     |
     <a
-      ng-bind="'nouns.current_entity' | translate"
-      ng-click="tab = 'existing'"
+      href="#"
+      ng-bind="'currently_linked' | translate"
+      ng-click="goto_tab('existing', $event)"
       ng-class="{'selected': tab == 'current'}"
     ></a>
   </span>

@@ -112,6 +112,7 @@ class Kor::CommandLine
         when 'reset-admin-account' then reset_admin_account
         when 'cleanup-sessions' then cleanup_sessions
         when 'list-permissions' then list_permissions
+        when 'cleanup-exception-logs' then cleanup_exception_logs
         else
           puts "command '#{@command}' is not known"
           usage
@@ -237,15 +238,16 @@ class Kor::CommandLine
   end
 
   def reset_admin_account
+    puts "setting password of account 'admin' to 'admin' and granting all rights"
     Kor.ensure_admin_account!
   end
 
   def list_permissions
-    data = [['entity id', 'enttiy name', 'collection'] + Collection.policies]
-    Entity.by_id(@options[:entity_id]).find_each do |entity|
+    puts "Entities: "
+    data = [['entity (id)', 'collection (id)'] + Collection.policies]
+    Entity.by_id(@config[:entity_id]).find_each do |entity|
       record = [
-        entity.id,
-        entity.name,
+        "#{entity.name} (#{entity.id})",
         "#{entity.collection.name} (#{entity.collection.id})"
       ]
 
@@ -253,18 +255,23 @@ class Kor::CommandLine
         record << Kor::Auth.
           authorized_credentials(entity.collection, policy).
           map{|c| c.name}.
-          join(',')
+          join(', ')
       end
 
       data << record
     end
     print_table data
 
-    data = [['user id', 'username', 'credentials']]
-    User.by_id(@options[:user_id]).find_each do |user|
-      data << [user.id, user.name, user.groups.map{|c| c.name}.join(', ')]
+    puts "\nUsers: "
+    data = [['username (id)', 'credentials']]
+    User.by_id(@config[:user_id]).find_each do |user|
+      data << ["#{user.name} (#{user.id})", user.groups.map{|c| c.name}.join(', ')]
     end
-    print_table data  
+    print_table data
+  end
+
+  def cleanup_exception_logs
+    ExceptionLog.delete_all
   end
 
 
@@ -278,7 +285,7 @@ class Kor::CommandLine
           maxes[i] ||= data.map{|r| r[i].to_s.size}.max
           row << "#{field.to_s.ljust(maxes[i])}"
         end
-        puts row.join(' | ')
+        puts '| ' + row.join(' | ') + ' |'
       end
     end
 

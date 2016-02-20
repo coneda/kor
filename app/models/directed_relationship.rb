@@ -5,13 +5,12 @@ class DirectedRelationship < ActiveRecord::Base
   belongs_to :from, class_name: 'Entity'
   belongs_to :to, class_name: 'Entity'
 
-  scope :by_name, lambda {|name|
-    name.present? ? where(relation_name: name) : all
+  scope :with_to, lambda {
+    joins('LEFT JOIN entities tos ON tos.id = directed_relationships.to_id')
   }
   def self.allowed(user, policy = :view)
     collection_ids = Kor::Auth.authorized_collections(user, policy).map{|c| c.id}
-    joins('LEFT JOIN entities tos ON tos.id = directed_relationships.to_id').
-      where('tos.collection_id IN (?)', collection_ids)
+    with_to.where('tos.collection_id IN (?)', collection_ids)
   end
   scope :pageit, lambda { |page, per_page|
     page = (page || 1).to_i - 1
@@ -24,7 +23,11 @@ class DirectedRelationship < ActiveRecord::Base
   scope :by_relation_name, lambda { |relation_name|
     relation_name.present? ? where(relation_name: relation_name) : all
   }
+  scope :by_to_kind, lambda { |kind_id|
+    kind_id.present? ? with_to.where('tos.kind_id IN (?)', kind_id) : all
+  }
 
+  # TODO: still needed?
   def properties
     self.relationship.properties
   end

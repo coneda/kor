@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160211222924) do
+ActiveRecord::Schema.define(version: 20160219145808) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -133,16 +133,14 @@ ActiveRecord::Schema.define(version: 20160211222924) do
     t.string   "no_name_statement", limit: 255
     t.integer  "updater_id",        limit: 4
     t.string   "subtype",           limit: 255
-    t.boolean  "approved"
     t.integer  "medium_id",         limit: 4
     t.text     "attachment",        limit: 65535
   end
 
+  add_index "entities", ["collection_id", "kind_id"], name: "collections_kinds", using: :btree
   add_index "entities", ["created_at"], name: "index_entities_on_created_at", using: :btree
   add_index "entities", ["creator_id"], name: "index_entities_on_user_id", using: :btree
   add_index "entities", ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
-  add_index "entities", ["kind_id"], name: "index_entities_on_kind_id", using: :btree
-  add_index "entities", ["medium_id"], name: "mediy", using: :btree
   add_index "entities", ["name"], name: "index_entities_on_name", using: :btree
   add_index "entities", ["uuid"], name: "index_entities_on_uuid", using: :btree
 
@@ -369,8 +367,8 @@ ActiveRecord::Schema.define(version: 20160211222924) do
     t.string   "home_page",             limit: 255
     t.integer  "collection_id",         limit: 4
     t.integer  "credential_id",         limit: 4
-    t.string   "api_key",               limit: 255
     t.string   "parent_username",       limit: 255
+    t.string   "api_key",               limit: 255
   end
 
   add_index "users", ["name"], name: "index_users_on_name", unique: true, using: :btree

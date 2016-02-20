@@ -22,7 +22,7 @@ Feature: Entity authentorization
     Given user "joe" is allowed to "view/edit" collection "side" through credential "side_editors"
     And the entity "Mona Lisa" of kind "Werk/Werke" inside collection "side"
     When I go to the entity page for "Mona Lisa"
-    Then I should see element "img[alt=Pen]"
+    Then I should see element "img[data-name=pen]"
     
   
   @javascript
@@ -30,7 +30,7 @@ Feature: Entity authentorization
     Given user "joe" is allowed to "view/delete" collection "side" through credential "side_editors"
     And the entity "Mona Lisa" of kind "Werk/Werke" inside collection "side"
     When I go to the entity page for "Mona Lisa"
-    Then I should see element "img[alt=X]"
+    Then I should see element "img[data-name=x]"
   
   
   @javascript
@@ -60,11 +60,11 @@ Feature: Entity authentorization
     And the entity "Leonardo da Vinci" of kind "Person/People" inside collection "side"
     And the relationship "Mona Lisa" "wurde geschaffen von/hat geschaffen" "Leonardo da Vinci"
     When I go to the entity page for "Mona Lisa"
-    Then I should see element "img[alt=Pen]" within ".relationships"
-    Then I should see element "img[alt=X]" within ".relationships"
+    Then I should see element "img[data-name=pen]" within ".relationships"
+    Then I should see element "img[data-name=x]" within ".relationships"
     When I go to the entity page for "Leonardo da Vinci"
-    Then I should see element "img[alt=Pen]" within ".relationships"
-    Then I should see element "img[alt=X]" within ".relationships"
+    Then I should see element "img[data-name=pen]" within ".relationships"
+    Then I should see element "img[data-name=x]" within ".relationships"
     
     
   @javascript
@@ -84,7 +84,7 @@ Feature: Entity authentorization
     And user "joe" is allowed to "view" collection "side" through credential "main_viewers"
     And the entity "Mona Lisa" of kind "Werk/Werke" inside collection "side"
     When I go to the entity page for "Mona Lisa"
-    Then I should not see element "img[alt=Pen]"
+    Then I should not see element "img[data-name=pen]"
   
 
   @javascript

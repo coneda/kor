@@ -33,7 +33,7 @@ class Kor::Export::MetaData
     end
 
     options[:profile].each do |relation|
-      relationships = entity.outgoing_relationships.by_name(relation['name']).allowed(@user, :view)
+      relationships = entity.outgoing_relationships.by_relation_name(relation['name']).allowed(@user, :view)
 
       unless relationships.empty?
         result += line nil, relation['name'], options[:indent]

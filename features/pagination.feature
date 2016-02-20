@@ -12,6 +12,6 @@ Feature: Pagination
     And I select "Werk" from "query[kind_id]"
     And I fill in "query[name]" with "Werk"
     And I press "Search"
-    And I follow "pager_right"
+    And I click element "img[data-name=pager_right]"
     Then I should see "Search results"
     And I should see "Werk 9"

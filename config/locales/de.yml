@@ -58,6 +58,7 @@ de:
   usage_count: "Anzahl der Verwendungen"
   recently_visited: zuletzt angesehen
   recently_created: zuletzt angelegt
+  currently_linked: bestehende Verknüpfung
 
   search_term: 
     one: Suchbegriff
@@ -491,6 +492,9 @@ de:
     original: "Original"
     metadata: Metadaten
     degree: Anzahl Verknüpfungen (Grad)
+    entry: 
+      one: "Eintrag"
+      other: "Einträge"
 
 
   objects:

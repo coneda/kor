@@ -13,13 +13,6 @@ class AddDirectedRelationships < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :directed_relationships, :relation_id
-    add_index :directed_relationships, :from_id
-    add_index :directed_relationships, :to_id
-    add_index :directed_relationships, [
-      :relation_id, :is_reverse, :from_id, :to_id
-    ], :name => :ally
-
     change_table :relationships do |t|
       t.integer :normal_id
       t.integer :reversal_id
@@ -27,11 +20,20 @@ class AddDirectedRelationships < ActiveRecord::Migration
 
     Relationship.reset_column_information
 
-    Relationship.find_each do |r|
+    ActiveRecord::Base.record_timestamps = false
+    Relationship.includes(:relation).find_each do |r|
       r.ensure_directed
-      r.outgoing.save
-      r.incoming.save
+      r.normal.save
+      r.reversal.save
     end
+    ActiveRecord::Base.record_timestamps = true
+
+    add_index :directed_relationships, :relation_id
+    add_index :directed_relationships, :from_id
+    add_index :directed_relationships, :to_id
+    add_index :directed_relationships, [
+      :relation_id, :is_reverse, :from_id, :to_id
+    ], :name => :ally
   end
 
   def down

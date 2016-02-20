@@ -4,6 +4,7 @@ describe Kor::Graph do
 
   before :each do
     skip "postponed after v2.0.0"
+
     default = FactoryGirl.create :default
     admins = FactoryGirl.create :admins
     Grant.create :collection => default, :credential => admins, :policy => :view
@@ -211,5 +212,7 @@ describe Kor::Graph do
     expect(results[0][3]['reverse']).to be_truthy
     expect(results[0][4]['id']).to eq(leonardo.id)
   end
+
+  it "should limit the amount of records returned by the path api"
 
 end

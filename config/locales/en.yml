@@ -57,6 +57,7 @@ en:
   usage_count: "usage count"
   recently_visited: recently visited
   recently_created: recently created
+  currently_linked: currently linked
 
   search_term:
     one: search term
@@ -490,6 +491,9 @@ en:
     original: "original"
     metadata: meta data
     degree: amount of relations (degree)
+    entry: 
+      one: "entry"
+      other: "entries"
 
 
   objects:

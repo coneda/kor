@@ -39,62 +39,16 @@ module Kor
   end
 end
 
-# TODO: remove console.log
-# TODO: handle stale object errors on json apis
-# TODO: user new validates instead of validates_*_of
-# TODO: deal with 'legal' functionality
-# TODO: ensure a correct message on success on all json responses when data was changed
-# TODO: implement destroying relationships
-# TODO: show images on relationships
-# TODO: use jbuilder without exception for api reponses
-# TOTO: remove redundant code and comments from old js files
-# TODO: use the run command for delayed workers instead of the rake job (production)
-# TODO: the entity selector should contain an option to include a given default
-# TODO: handle empty relation list
-# TODO: make sure that time zones are handled correctly from http content type to db
-# TODO: fix serialized column initializers
-# TODO: remove ArgumentArray
-# TODO: clean up asset manifest files
-# TODO: make sure the media kind is properly configured not to show fields on
-# the input form. This has to be done on db seed, probably
+# TODO: paginate entities in entity selector
 # TODO: fix #1651 (redmine)
-# TODO: add scenario for an empty resultset on the gallery
-# TODO: remove comments
+# TODO: handle stale object errors on json apis
+# TODO: use jbuilder without exception for api responses
+# TODO: angular: remove flashing of unloaded page areas and remove flashing of strange "select <some HEX>" within media relations
+# TODO: make sure that time zones are handled correctly from http content type to db
 
-# module Kor
-#   class Application < Rails::Application
-    
-#     # I18n
-#     config.i18n.available_locales = [:de, :en]
-#     config.i18n.enforce_available_locales = true
-#     config.i18n.default_locale = Kor.config["app.default_locale"] || :en
-#     config.i18n.load_path += Dir.glob("#{Rails.root}/config/locales/**/*.yml")
-    
-#     # Autoload paths
-#     config.autoload_paths += %W(#{Rails.root}/lib)
-    
-#     File.umask Kor.config['umask']
-  
-#     config.assets.enabled = true
-#     config.assets.initialize_on_precompile = false
-#     config.assets.precompile += ["kor.js", "blaze.js", "master.css", "blaze.css", "kor_index.js", "kor_index.css"]
-  
-#     config.cache_store = :file_store, 'tmp/cache'
-    
-#     config.action_mailer.delivery_method = (Kor.config['mail_delivery_method'].presence || :smtp).to_sym
-#     config.action_mailer.smtp_settings = Kor.config['mail'].symbolize_keys
-#     config.action_mailer.sendmail_settings = {:arguments => "-i"}
-#     config.action_mailer.default_url_options = Kor.config['host'].symbolize_keys
-  
-#     config.action_view.field_error_proc = Proc.new do |html_tag, instance|
-#       "<span class='field_with_errors'>#{html_tag}</span>".html_safe
-#     end
-
-#     # Configure the default encoding used in templates for Ruby 1.9.
-#     config.encoding = "utf-8"
-#     config.active_record.default_timezone = :utc
-
-#     # Configure sensitive parameters which will be filtered from the log file.
-#     config.filter_parameters << :password
-#   end
-# end
+# TODO: check helpers for redundant code
+# TOTO: remove redundant code and comments from old js files
+# TODO: remove console.log
+# TODO: remove window.s = scope and similar
+# TODO: remove comments everywhere
+# TODO: move Dockerfiles files to kor repo

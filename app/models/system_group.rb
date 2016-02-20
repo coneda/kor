@@ -14,8 +14,6 @@ class SystemGroup < EntityGroup
     end
   end
   
-  validates_uniqueness_of :name
-
   scope :containing, lambda {|entity_ids|
     joins('JOIN entities_system_groups ge on system_groups.id = ge.system_group_id').
     where('ge.entity_id' => entity_ids)

@@ -22,7 +22,7 @@ Feature: Inplace relationship editor
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
     And I should not see "Create link"
-    When I follow "plus"
+    When I follow "plus" within ".relationships"
     Then I should see "Create link"
 
   @javascript
@@ -30,7 +30,7 @@ Feature: Inplace relationship editor
     Given I am logged in as "admin"
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    When I follow "plus"
+    When I follow "plus" within ".relationships"
     And I press "Save"
     Then I should see "Relation has to be filled in" within ".kor-errors"
     And I should see "Target has to be filled in" within ".kor-errors"
@@ -40,15 +40,72 @@ Feature: Inplace relationship editor
     Given I am logged in as "admin"
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    When I follow "plus"
+    When I follow "plus" within ".relationships"
     And I select "is equivalent to" from "relation_name"
     And I fill in "terms" with "schrei"
     And I click element "[kor-id='2']"
     And I press "Save"
-    Then I should see "Der Schrei" within ".relationship"
     And I should not see "Create link"
+    Then I should see "Der Schrei" within ".relationship"
 
+  @javascript
   Scenario: Add properties to an existing relationship
+    Given I am logged in as "admin"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
+    When I follow "pen" within ".relationships"
+    And I follow "Add" within ".relationships"
+    And I fill in ".properties > .input-with-button:first-child input" with "this is almost certain"
+    And I press "Save"
+    And I should not see "Edit link"
+    And I should see "Relationship has been changed"
+    And I should see "this is almost certain" within ".relationships"
+
+  @javascript
+  Scenario: Delete relationship
+    Given I am logged in as "admin"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
+    And I ignore the next confirmation box
+    When I follow "x" within ".relationships"
+    And I should see "Relationship has been deleted"
+    And I should not see "Der Schrei" within ".relationships"
+
+  @javascript
+  Scenario: Change the relation on an existing relationship
+    Given I am logged in as "admin"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
+    When I follow "pen" within ".relationships"
+    And I select "is equivalent to" from "relation_name"
+    And I press "Save"
+    And I should not see "Edit link"
+    And I should see "Relationship has been changed"
+    And I should see "is equivalent to" within ".relationships"
+    And I should not see "is similar to" within ".relationships"
+
+  @javascript
+  Scenario: Change the target entity on an existing relationship
+    Given I am logged in as "admin"
+    And the entity "The Last Supper" of kind "artwork/artworks"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
+    When I follow "pen" within ".relationships"
+    And I follow "recently created"
+    And I click on entity "The Last Supper"
+    And I press "Save"
+    And I should not see "Edit link"
+    And I should see "Relationship has been changed"
+    And I should see "is similar to" within ".relationships"
+    And I should see "The Last Supper" within ".relationships"
+    And I should not see "Der Schrei" within ".relationships"
 
   Scenario: Select a relation which should limit the choices for the other entity
+    Given pending: todo
   Scenario: Select another entity which should limit the choices for the relation
+    Given pending: todo
+  

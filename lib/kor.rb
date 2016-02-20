@@ -186,6 +186,14 @@ module Kor
     ActiveRecord::Base.connection
   end
 
+  def self.array_wrap(object)
+    if object.is_a?(Array)
+      object
+    else
+      [object]
+    end
+  end
+
   def self.id_for_model(object)
     if object.is_a?(Array)
       object.collect{|o| id_for_model(o) }

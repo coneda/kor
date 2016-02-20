@@ -16,7 +16,7 @@ class AuthorityGroup < EntityGroup
   belongs_to :authority_group_category
 
   if column_names.include? 'authority_group_category_id'
-    validates_uniqueness_of :name, :scope => :authority_group_category_id
+    validates :name, uniqueness: {scope: :authority_group_category_id}
   end
   
   default_scope lambda { order(:name => :asc) }

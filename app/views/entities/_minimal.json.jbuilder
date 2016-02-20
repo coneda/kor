@@ -1,4 +1,5 @@
 json.id entity.id
+json.collection_id entity.collection_id
 json.kind_id entity.kind_id
 json.kind_name entity.kind.name
 json.name entity.name

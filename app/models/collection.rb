@@ -17,11 +17,6 @@ class Collection < ActiveRecord::Base
   }
 
 
-  # Settings
-  
-  serialize :policy_groups
-
-
   # Validations
 
   validates :name,

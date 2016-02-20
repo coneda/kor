@@ -29,7 +29,8 @@ class UserGroupsController < GroupsController
 
   def add_to
     @user_group = UserGroup.owned_by(current_user).find(params[:id])
-    entities = viewable_entities.find ArgumentArray(params[:entity_ids])
+    entity_ids = Kor.array_wrap(params[:entity_ids])
+    entities = viewable_entities.find entity_ids
     @user_group.add_entities(entities)
     
     redirect_to @user_group
@@ -37,7 +38,8 @@ class UserGroupsController < GroupsController
 
   def remove_from
     @user_group = UserGroup.owned_by(current_user).find(params[:id])
-    entities = viewable_entities.find ArgumentArray(params[:entity_ids])
+    entity_ids = Kor.array_wrap(params[:entity_ids])
+    entities = viewable_entities.find entity_ids
     @user_group.remove_entities(entities)
 
     redirect_to @user_group

@@ -40,3 +40,10 @@ Feature: relations
     When I go to the relations page
     And I follow the delete link within the row for "relation" "loves"
     Then I should not see "loves"
+
+  @javascript
+  Scenario: Empty relation list
+    Given I am logged in as "admin"
+    And I go to the relations page
+    Then I should not see "Reverse name"
+    And I should see "No relations found"

@@ -3,17 +3,8 @@ class EntitiesController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   respond_to :json, :only => [:isolated]
-    
-  def by_uuid
-    @entity = viewable_entities.find_by(:uuid => params[:uuid])
-    
-    if @entity
-      redirect_to web_path(:anchor => entity_path(@entity))
-    else
-      not_found
-    end
-  end
-  
+
+  # TODO: still needed?  
   def other_collection
     @entity = Entity.find(params[:id])
     flash[:error] = I18n.t('errors.other_collection', :id => @entity.id)
@@ -43,16 +34,6 @@ class EntitiesController < ApplicationController
           :records => entities.pageit(params[:page], 16)
         )
       end
-    end
-  end
-  
-  def duplicate
-    @entities = Entity.where(:name => params[:name], :kind_id => params[:kind_id])
-    
-    if params[:render_selection]
-      render :template => 'precise', :layout => false
-    else
-      render :layout => false
     end
   end
   
@@ -136,8 +117,6 @@ class EntitiesController < ApplicationController
       redirect_to web_path(:anchor => entity_path(@entity))
     else
       if params[:terms]
-        # elastic = Kor::Elastic.new(current_user)
-        # @results = elastic.search(:query => params[:terms])
         @results = kor_graph.search(:attribute, :criteria => {:name => params[:terms]})
         render :json => {
           "ids" => @results.ids,
@@ -165,7 +144,7 @@ class EntitiesController < ApplicationController
       if allowed_to?(:view, @entity.collection)
         format.json
       else
-        format.json { render :json => {}, :status => 403 }
+        format.json { render nothing: true, :status => 403 }
       end
     end
   end
@@ -249,12 +228,6 @@ class EntitiesController < ApplicationController
   end
 
   def update
-    # params[:entity] ||= {}
-    # params[:entity][:dataset] ||= {}
-    # params[:entity][:properties] ||= []
-    # params[:entity][:synonyms] ||= []
-    # params[:entity][:existing_datings_attributes] ||= {}
-
     @entity = Entity.find(params[:id])
     
     authorized_to_edit = authorized?(:edit, @entity.collection)

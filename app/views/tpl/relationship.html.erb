@@ -12,14 +12,13 @@
 
   <div class="header" ng-hide="editing">
     <div class="string" ng-hide="directed_relationship.to.kind_id == 1">
-      <a 
-        href="/blaze#/entities/{{directed_relationship.to.id}}"
-        ng-bind="directed_relationship.to | entity_display_name"
-      ></a>
+      <a href="/blaze#/entities/{{directed_relationship.to.id}}">
+        <strong ng-bind="directed_relationship.to | entity_display_name"></strong>
+      </a>
 
       <span class="nowrap">
-        <span class="text italic" ng-bind="directed_relationship.to | entity_kind_name"></span>
-        <span class="relationship_switch" ng-show="directed_relationship.total_media > 0">
+        <span class="text italic" ng-bind="directed_relationship.to.kind_name"></span>
+        <span class="relationship_switch" ng-show="directed_relationship.media_count > 0">
           <a href="#" ng-click="switch(false, null, $event)">
             <img alt="Triangle_up" src="<%= image_path('triangle_up.gif') %>" ng-hide="visible">
             <img alt="Triangle_down" src="<%= image_path('triangle_down.gif') %>" ng-show="visible">
@@ -36,14 +35,14 @@
       >
         <%= kor_command_image 'pen' %>
       </a>
-      <a 
-        href="/relationships/{{directed_relationship.id}}" 
+      <a
+        ng-click="destroy($event)"
+        kor-confirm="{{'objects.confirm_destroy' | translate:{interpolations: {o: 'activerecord.models.relationship'} } }}"
+        href="#"
         ng-show="allowed_to('edit') || allowed_to('edit', directed_relationship.to)" 
-        data-confirm="{{'objects.confirm_destroy' | translate:{interpolations: {o: 'activerecord.models.relationship'} } }}" 
-        data-method="delete" 
         rel="nofollow"
       >
-        <img alt="X" class="kor_command_image" src="<%= image_path('x.gif') %>" title="{{'verbs.delete' | translate}}">
+        <%= kor_command_image 'x' %>
       </a>
     </div>
 
@@ -54,7 +53,7 @@
         id="kor_medium_frame_{{directed_relationship.to.id}}"
       >
         <a href="/blaze#/entities/{{directed_relationship.to.id}}">
-          <img alt="Image" class="kor_medium" ng-src="{{directed_relationship.to.medium.url}}">
+          <img alt="Image" class="kor_medium" ng-src="{{directed_relationship.to.url}}">
         </a>
         <span class="button_bar" style="display: none;">
           <div kor-current-button="directed_relationship.to" />
@@ -74,11 +73,7 @@
               href="#"
               ng-click="remove_property(property, $event)"
             >
-              <img
-                class="kor_command_image"
-                src="<%= image_path('minus.gif') %>"
-                title="{{'verbs.delete' | translate}}"
-              />
+              <%= kor_command_image 'minus' %>
             </a>
           </div>
           <span ng-bind="property"></span>
@@ -91,21 +86,21 @@
 
     <div
       kor-pagination="page"
-      kor-total="directed_relationship.total_media"
-      kor-per-page="12"
+      kor-total="directed_relationship.media_count"
+      kor-per-page="9"
       kor-use-search="false"
     ></div>
     
     <table cellpadding="0" cellspacing="0">
       <tbody>
-        <tr class="image_row" ng-repeat="row in directed_relationship.media">
+        <tr class="image_row" ng-repeat="row in media">
           <td class="image" ng-repeat="rel in row">
-            <div class="kor_medium_frame" id="kor_medium_frame_{{rel.entity.id}}" ng-show="rel.entity.id">
-              <a href="/blaze#/entities/{{rel.entity.id}}">
-                <img alt="Image" class="kor_medium" ng-src="{{rel.entity.medium.url}}">
+            <div class="kor_medium_frame" id="kor_medium_frame_{{rel.to.id}}" ng-show="rel.to.id">
+              <a href="/blaze#/entities/{{rel.to.id}}">
+                <img alt="Image" class="kor_medium" ng-src="{{rel.to.url}}">
               </a>
               <span class="button_bar" style="display: none">
-                <div kor-to-clipboard="rel.entity" ></div>
+                <div kor-to-clipboard="rel.to" ></div>
               </span>
             </div>
             <div class="clear_both"></div>

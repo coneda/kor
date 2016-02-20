@@ -42,7 +42,6 @@ Rails.application.routes.draw do
   resources :entities do
     collection do
       get 'multi_upload'
-      get 'duplicate'
       get 'gallery'
       get 'recent'
       get 'invalid'
@@ -176,21 +175,7 @@ Rails.application.routes.draw do
   
   namespace 'api', :format => :json do
     scope ':version', :version => /[0-9\.]+/, :defaults => {:version => '1.0'} do
-      match 'login', :to => 'public#login', :via => :post
-      match 'logout', :to => 'public#logout', :via => :get
       match 'info', :to => 'public#info', :via => :get
-      
-      resources :entities, :only => :show do
-        member do
-          get :relationships
-          get :deep_media
-        end
-      end
-      resources :paths, :only => [:index] do
-        collection do
-          post :gallery
-        end
-      end
     end
 
     scope 'oai-pmh', :format => :xml, :as => 'oai_pmh', :via => [:get, :post] do

@@ -1,3 +1,4 @@
+# TODO: remove if tests pass
 json.total @result.total
 json.page @result.page
 json.per_page @result.per_page

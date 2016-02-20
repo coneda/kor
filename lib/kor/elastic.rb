@@ -146,11 +146,12 @@ class Kor::Elastic
     }
 
     if options[:full]
-      related = Relationship.
-        where("from_id = ? OR to_id = ?", entity.id, entity.id).
-        select([:from_id, :to_id])
-      related_ids = related.map{|r| [r.from_id, r.to_id]}.flatten.uniq - [entity.id]
-      scope = Entity.includes(:kind).where(:id => related_ids).select([:id, :name, :kind_id, :attachment])
+      scope = entity.
+        outgoing.
+        includes(:kind).
+        without_media.
+        select([:id, :name, :kind_id, :attachment])
+
       data["related"] = scope.map do |e|
         [e.name] + fetch(:synonyms, e.id) do
           e.synonyms
@@ -189,10 +190,11 @@ class Kor::Elastic
     q = []
 
     if query[:query].present?
-      q << if query[:raw]
-        query[:query]
+      q += if query[:raw]
+        [query[:query]]
       else
-        wildcardize(escape tokenize(query[:query])).join(' ')
+        result = wildcardize(escape tokenize(query[:query]))
+        result.empty? ? [] : [result.join(' ')]
       end
     end
 
@@ -358,9 +360,9 @@ class Kor::Elastic
       # Rails.logger.info "ELASTIC RESPONSE: #{response.inspect}"
 
       if response.status >= 200 && response.status <= 299
-        [response.status, response.headers, Oj.load(response.body, :mode => :strict)]
+        [response.status, response.headers, JSON.load(response.body)]
       else
-        raise Exception.new("error", [response.status, response.headers, Oj.load(response.body, :mode => :strict)])
+        raise Exception.new("error", [response.status, response.headers, JSON.load(response.body)])
       end
     end
 

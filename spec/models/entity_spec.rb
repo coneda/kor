@@ -62,41 +62,42 @@ describe Entity do
     expect(Entity.dated_in("300 bis 1900").all).to include(nurnberg)
   end
   
-  it "should raise an error if the options for the related method are invalid" do
-    admin = User.admin
-    entity = FactoryGirl.build :work
+  # TODO: remove if tests pass
+  # it "should raise an error if the options for the related method are invalid" do
+  #   admin = User.admin
+  #   entity = FactoryGirl.build :work
     
-    expect { entity.related(admin, :assume => :terciary) }.to raise_error(Kor::Exception)
-    expect { entity.related(admin, :assume => :image, :search => :secondary) }.to raise_error(Kor::Exception)
-  end
+  #   expect { entity.related(admin, :assume => :terciary) }.to raise_error(Kor::Exception)
+  #   expect { entity.related(admin, :assume => :image, :search => :secondary) }.to raise_error(Kor::Exception)
+  # end
   
-  it "should find related media for primary entities and vice versa" do
-    admin = User.admin
-    image = FactoryGirl.create :picture_a
-    Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
+  # it "should find related media for primary entities and vice versa" do
+  #   admin = User.admin
+  #   image = FactoryGirl.create :picture_a
+  #   Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
     
-    expect(@mona_lisa.related(admin, :search => :media, :assume => :primary)).to eql([image])
-    expect(image.related(admin, :search => :primary, :assume => :media)).to eql([@mona_lisa])
-  end
+  #   expect(@mona_lisa.related(admin, :search => :media, :assume => :primary)).to eql([image])
+  #   expect(image.related(admin, :search => :primary, :assume => :media)).to eql([@mona_lisa])
+  # end
   
-  it "should find related primary entities for secondary entities and vice versa" do
-    admin = User.admin
-    @leonardo = FactoryGirl.create :leonardo
-    Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
+  # it "should find related primary entities for secondary entities and vice versa" do
+  #   admin = User.admin
+  #   @leonardo = FactoryGirl.create :leonardo
+  #   Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
     
-    expect(@leonardo.related(admin, :search => :primary, :assume => :secondary)).to eql([@mona_lisa])
-    expect(@mona_lisa.related(admin, :search => :secondary, :assume => :primary)).to eql([@leonardo])
-  end
+  #   expect(@leonardo.related(admin, :search => :primary, :assume => :secondary)).to eql([@mona_lisa])
+  #   expect(@mona_lisa.related(admin, :search => :secondary, :assume => :primary)).to eql([@leonardo])
+  # end
   
-  it "should find related primary entities for secondary entities" do
-    admin = User.admin
-    image = FactoryGirl.create :picture_a
-    @leonardo = FactoryGirl.create :leonardo
-    Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
-    Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
+  # it "should find related primary entities for secondary entities" do
+  #   admin = User.admin
+  #   image = FactoryGirl.create :picture_a
+  #   @leonardo = FactoryGirl.create :leonardo
+  #   Relationship.relate_and_save(@mona_lisa, 'is shown by', image)
+  #   Relationship.relate_and_save(@mona_lisa, 'has been created by', @leonardo)
     
-    expect(@leonardo.related(admin, :search => :media, :assume => :secondary)).to eql([image])
-  end
+  #   expect(@leonardo.related(admin, :search => :media, :assume => :secondary)).to eql([image])
+  # end
   
   it "should have an uuid when saved without validation" do
     entity = Kind.find_by_name("Ort").entities.build(:name => "Nürnberg")

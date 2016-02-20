@@ -2,6 +2,12 @@ Feature: Show media in the gallery and show certain related entities
   In order to give a better overview of the stored entities
   Users should be able to
   use the gallery
+
+  @javascript
+  Scenario: View an empty gallery
+    Given I am logged in as "admin"
+    When I go to the gallery
+    Then I should see "No entries found"
   
 
   @javascript

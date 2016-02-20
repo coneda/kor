@@ -1,6 +1,6 @@
 kor.directive "korRelationship", ["entities_service", "session_service",
-  "relationships_service", "kor_tools",
-  (es, ss, rss, kt) ->
+  "relationships_service", "kor_tools", 'korData',
+  (es, ss, rss, kt, kd) ->
     directive = {
       templateUrl: "/tpl/relationship"
       scope: {
@@ -55,6 +55,14 @@ kor.directive "korRelationship", ["entities_service", "session_service",
           event.preventDefault() if event
           scope.editing = true
 
+        scope.destroy = (event) ->
+          event.preventDefault()
+
+          if confirm($(event.target).attr('kor-confirm'))
+            rss.destroy(scope.directed_relationship.relationship_id).success (data) ->
+              kd.set_notice(data.message)
+              scope.$emit 'relationship-saved'
+
         # scope.unedit = (event) -> 
         #   event.preventDefault() if event
         #   rss.show(scope.directed_relationship)
@@ -70,8 +78,9 @@ kor.directive "korRelationship", ["entities_service", "session_service",
         #   scope.directed_relationship.relationship.properties.splice(index, 1) unless index == -1
 
         load_media = ->
-          es.deep_media_load(scope.directed_relationship, scope.directed_relationship.page).success (data) ->
-            scope.directed_relationship.media = kt.in_groups_of(data.directed_relationships, 3, true)
+          es.deep_media_load(scope.directed_relationship.to_id, scope.page).success (data) ->
+            # console.log data
+            scope.media = kt.in_groups_of(data, 3, true)
 
         scope.close_editor =  -> scope.editing = false
 

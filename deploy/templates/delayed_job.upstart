@@ -18,5 +18,5 @@ script
   rbenv versions
   gem list
 
-  bundle exec rake jobs:work
+  bundle exec bin/delayed_job -n 2 run
 end script

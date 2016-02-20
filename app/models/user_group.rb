@@ -14,10 +14,14 @@ class UserGroup < EntityGroup
     end
   end
   belongs_to :owner, :class_name => 'User', :foreign_key => :user_id
-  
-  validates_uniqueness_of :name, :scope => :user_id
-  validates_format_of :name, :with => /\A[^\s]{,30}(\s[^\s]{,30})*\Z/, :message => :invalid_words
-  validates_presence_of :user_id
+
+  validates(:name,
+    uniqueness: {:scope => :user_id}, 
+    format: {
+      :with => /\A[^\s]{,30}(\s[^\s]{,30})*\Z/, :message => :invalid_words
+    }
+  )
+  validates :user_id, presence: true
   
   scope :owned_by, lambda { |user| where(:user_id => user ? user.id : nil) }
   scope :shared, lambda { where(:shared => true) }

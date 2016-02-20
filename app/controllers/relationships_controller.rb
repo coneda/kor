@@ -12,7 +12,7 @@ class RelationshipsController < ApplicationController
           "message" => I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
         }
       else
-        render :nothing => true, :status => 406
+        render json: @relationship.errors, status: 406
       end
     else
       render :nothing => true, :status => 403
@@ -30,7 +30,7 @@ class RelationshipsController < ApplicationController
           "message" => I18n.t('objects.update_success', :o => I18n.t('nouns.relationship', :count => 1) )
         }
       else
-        render :nothing => true, :status => 406
+        render json: @relationship.errors, status: 406
       end
     end
   rescue ActiveRecord::StaleObjectError

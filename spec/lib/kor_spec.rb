@@ -23,8 +23,4 @@ describe Kor do
     expect(Kor.config(true)["maintainer.repository_uuid"]).to eq(uuid)
   end
 
-  it "should display ALL primary and secondary related entities within the gallery"
-  it "should limit the amount of records returned by the path api"
-  it "automatically created generators should not render anything when value is empty"
-  
 end

@@ -1,6 +1,6 @@
 kor.service "session_service", [
-  "$http", "korData",
-  (http, kd) ->
+  "$http", "korData", "$rootScope",
+  (http, kd, rs) ->
     service = {
       is_guest: ->
         return false unless kd.info
@@ -68,6 +68,7 @@ kor.service "session_service", [
         promise.success (data) -> 
           kd.info.session.clipboard = data.clipboard
           service.flash 'notice', data.message
+          rs.$broadcast 'clipboard-changed'
       from_clipboard: (entity) ->
         id = if angular.isObject(entity) then entity.id else entity
         promise = http(
@@ -88,5 +89,6 @@ kor.service "session_service", [
         promise.success (data) ->
           kd.info.session.current_history = data.current_history
           service.flash 'notice', data.message
+          rs.$broadcast 'current-changed'
     }
 ]

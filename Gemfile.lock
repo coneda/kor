@@ -149,13 +149,11 @@ GEM
     mimemagic (0.3.0)
     mini_portile2 (2.0.0)
     minitest (5.8.4)
-    mixlib-cli (1.5.0)
     multi_json (1.11.2)
     multi_test (0.1.2)
     mysql2 (0.4.2)
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
-    oj (2.14.3)
     paperclip (4.3.4)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -310,9 +308,7 @@ DEPENDENCIES
   jquery-ui-rails
   kor_index!
   method_profiler
-  mixlib-cli
   mysql2
-  oj
   paperclip
   parslet
   perftools.rb

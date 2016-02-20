@@ -24,7 +24,7 @@ Feature: Entities
     And the entity "Nürnberg" has 12 relationships
     When I go to the entity page for "Nürnberg"
     Then I should see element ".pagination input"
-    When I click element "img[alt='Pager_right']" within ".relation"
+    When I click element "img[data-name='pager_right']" within ".relation"
     And I follow "Triangle_up" within ".relation"
     Then I should see /ENDE/ within ".relationships"
 
@@ -89,7 +89,7 @@ Feature: Entities
     Given I am logged in as "john"
     And the entity "Mona Lisa" of kind "Werk/Werke"
     When I go to the entity page for "Mona Lisa"
-    Then I should not see element "img[alt=Select]"
+    Then I should not see element "a[kor-to-clipboard]"
     
     
   @javascript  
@@ -160,7 +160,7 @@ Feature: Entities
     And the setup "Many relationships with images"
     When I go to the entity page for "Mona Lisa"
     And I wait for "1" second
-    When I click element "img[alt='Pager_right']" within ".relation"
+    When I click element "img[data-name='pager_right']" within ".relation"
     And I follow "Triangle_up" within ".relationship"
     And I wait for "1" seconds
     And I hover element ".relationships .kor_medium_frame"

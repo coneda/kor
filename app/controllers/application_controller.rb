@@ -201,7 +201,7 @@ class ApplicationController < BaseController
     end
     
     def home_page
-      current_user.home_page || root_url
+      (current_user ? current_user.home_page : nil ) || root_url
     end
     
     def logged_in?
@@ -214,10 +214,6 @@ class ApplicationController < BaseController
 
     def current_entity
       session[:current_entity]
-    end
-
-    def blaze
-      @blaze ||= Kor::Blaze.new(current_user)
     end
 
     def entity_params

@@ -9,7 +9,7 @@ RSpec.describe InplaceController, :type => :controller do
     mona_lisa = FactoryGirl.create :mona_lisa
 
     post :update_entity_tags, :entity_id => mona_lisa.id, :value => "red, fox, brown, river"
-    expect(response.status).to be(401)
+    expect(response.status).to be(403)
   end
 
   it "should allow tagging to guests when the collection allows it" do

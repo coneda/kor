@@ -54,18 +54,18 @@ kor.service "entities_service", [
           params: {page: page, relation_name: relation_name}
         )
 
-      media_relation_load: (id, relation_name, page) ->
+      media_relation_load: (entity_id, relation_name, page) ->
         http(
           method: 'get',
-          url: "/api/1.0/entities/#{id}/relationships",
-          params: {'page': relation.page - 1, name: relation.name, media: true}
+          url: "/entities/#{entity_id}/relationships.json"
+          params: {page: page, relation_name: relation_name, kind_id: 1}
         )
 
-      deep_media_load: (relationship, page = 1) ->
+      deep_media_load: (entity_id, page = 1) ->
         http(
           method: 'get'
-          url: "/api/1.0/entities/#{relationship.entity.id}/relationships"
-          params: {'page': page - 1, media: true, limit: 9}
+          url: "/entities/#{entity_id}/relationships.json"
+          params: {page: page, per_page: 9, kind_id: 1}
         )
     }
 ]

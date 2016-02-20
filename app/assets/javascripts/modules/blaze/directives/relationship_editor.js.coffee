@@ -32,8 +32,6 @@ kor.directive "korRelationshipEditor", [
             properties: (prop.value for prop in scope.properties)
           }
 
-          # console.log relationship
-
           promise = if scope.existing
             rs.update(scope.directed_relationship.relationship.id, relationship)
           else
@@ -46,8 +44,8 @@ kor.directive "korRelationshipEditor", [
             scope.$emit 'relationship-saved'
             scope.close()
           promise.error (data) -> 
+            # console.log data
             scope.errors = data
-            # console.log(data)
 
         scope.add_property = (event) ->
           event.preventDefault()

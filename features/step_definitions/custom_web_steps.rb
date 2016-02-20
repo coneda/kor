@@ -234,3 +234,7 @@ Then(/^the checkbox should (not )?be checked$/) do |yesno|
     expect(find("input[type=checkbox]").checked?).to be(true)
   end
 end
+
+When(/^I click on entity "([^"]*)"$/) do |name|
+  find('[kor-entity-widget]', :text => /#{name}/).click
+end
