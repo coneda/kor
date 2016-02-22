@@ -1,4 +1,3 @@
-# TODO: remove if tests pass
 class Api::PublicController < Api::ApiController
   
   def info

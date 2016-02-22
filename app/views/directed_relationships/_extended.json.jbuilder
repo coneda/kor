@@ -18,4 +18,4 @@ json.to do
   json.partial! 'entities/minimal', entity: directed_relationship.to
 end
 
-json.media_count directed_relationship.to.media_count
+json.media_count directed_relationship.to.media_count(current_user)

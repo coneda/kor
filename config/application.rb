@@ -39,8 +39,10 @@ module Kor
   end
 end
 
-# TODO: paginate entities in entity selector
-
+# TODO: integration tests for tools: mass_destroy, add_to_authority_group, 
+#       add_to_user_group, move_to_collection, remove_from_authority_group,
+#       remove_from_user_group
+# TODO: integration test for reset clipboard
 # TODO: remove one of the two web-utils versions
 # TODO: make sure in js kind_id == 1 isn't assumed to ensure medium kind
 # TODO: remove new_datings_attributes and existing_datings_attributes

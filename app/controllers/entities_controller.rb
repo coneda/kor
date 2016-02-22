@@ -4,13 +4,6 @@ class EntitiesController < ApplicationController
 
   respond_to :json, only: [:isolated]
 
-  # TODO: still needed?  
-  def other_collection
-    @entity = Entity.find(params[:id])
-    flash[:error] = I18n.t('errors.other_collection', :id => @entity.id)
-    redirect_to denied_path
-  end
-  
   def metadata
     @entity = viewable_entities.find(params[:id])
     

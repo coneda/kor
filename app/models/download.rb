@@ -27,7 +27,7 @@ class Download < ActiveRecord::Base
       when File then FileUtils.copy(new_data.path, path)
       when String
         if File.exists?(new_data)
-          system "cp", "#{new_data} #{path}"
+          system "cp", new_data, path
         else
           File.open path, "w" do |f|
             f.write new_data

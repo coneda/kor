@@ -117,10 +117,6 @@ class Relationship < ActiveRecord::Base
     self[:properties]
   end
 
-  def has_relation_name(name)
-    relation.has_name(name)
-  end
-  
   def relation_name=(value)
     @relation_name = value
   end

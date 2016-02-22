@@ -24,15 +24,6 @@ class ToolsController < ApplicationController
   end
   
 
-  ####################### invalid ##############################################
-
-  def remove_from_invalid_entities
-    @entity = viewable_entities.find(params[:id])
-    @group = SystemGroup.find_or_create_by(:name => 'invalid').remove_entities(@entity)
-    redirect_to back_save
-  end
-
-
   ####################### clipboard ############################################
 
   # TODO: handle the whole clipboard functionality with localstorage, e.g.
@@ -75,6 +66,7 @@ class ToolsController < ApplicationController
     end
   end
   
+  # TODO: write integration test for this but implement it within angularjs
   def add_media
     session[:current_entity] = params[:id].to_i || nil
     redirect_to "/blaze#/entities/multi_upload"

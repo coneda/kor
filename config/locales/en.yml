@@ -664,7 +664,6 @@ en:
     only_same_kind: "please chose only entities of the same type"
     exception_ocurred: "an unexpected error has occurred"
     publishment_expired: "this link has expired"
-    other_collection: "You have no access to entity %{id}. Please contact the administrator."
 
   labels:
     relate_to_via: 'relate all files with "%{to}" via'

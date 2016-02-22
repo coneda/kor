@@ -29,7 +29,6 @@ kor.directive "korPagination", [
           if search_value
             sanitize(search_value)
           else
-            #l.search('page', 1).notify(false)
             1
         else
           1

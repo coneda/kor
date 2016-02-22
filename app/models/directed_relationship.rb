@@ -27,9 +27,4 @@ class DirectedRelationship < ActiveRecord::Base
     kind_id.present? ? with_to.where('tos.kind_id IN (?)', kind_id) : all
   }
 
-  # TODO: still needed?
-  def properties
-    self.relationship.properties
-  end
-
 end

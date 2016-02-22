@@ -39,10 +39,11 @@ class Kor::EntityMerger
     merge_entity_datings(old_ids, new_id)
   end
   
-  # TODO: make sure this takes directed relationships into account
   def merge_relationships(old_ids, new_id)
     Relationship.where(:from_id => old_ids).update_all(:from_id => new_id)
     Relationship.where(:to_id => old_ids).update_all(:to_id => new_id)
+    DirectedRelationship.where(:from_id => old_ids).update_all(:from_id => new_id)
+    DirectedRelationship.where(:to_id => old_ids).update_all(:to_id => new_id)
   end
   
   def merge_entity_datings(old_ids, new_id)

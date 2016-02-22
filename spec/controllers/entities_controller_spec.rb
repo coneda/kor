@@ -287,6 +287,15 @@ RSpec.describe EntitiesController, :type => :controller do
       expect(response).to redirect_to("/blaze#/entities/#{new_entity.id}")
     end
 
+    it "should allow guest requests" do
+      guests = FactoryGirl.create :guests
+      guest = FactoryGirl.create :guest, :groups => [guests]
+      Grant.create :collection => @default, :credential => guests, :policy => "view"
+
+      get :show, :id => @mona_lisa, :format => 'json'
+      expect(response).to be_success
+    end
+
   end
   
 end

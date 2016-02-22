@@ -41,7 +41,7 @@ class Kor::Export::MetaData
 
       relationships.each do |relationship|
         result += render_entity(relationship.to,
-          :properties => relationship.properties.join(', '),
+          :properties => relationship.relationship.properties.join(', '),
           :profile => relation['relations'] || [],
           :indent => options[:indent] + 1
         )

@@ -72,16 +72,6 @@ class Medium < ActiveRecord::Base
     end
   end
   
-  # TODO: still needed?
-  def serializable_hash(*args)
-    {
-      :id => id,
-      :url => image.url(:preview),
-      :file_size => file_size,
-      :content_type => content_type
-    }
-  end
-
   def presentable?
     self.content_type.match /^(image|video|application\/x-shockwave-flash)/
   end
@@ -271,7 +261,6 @@ class Medium < ActiveRecord::Base
     dummy
   end
   
-  # TODO: still needed?
   def uri=(value)
     self[:original_url] = value
     
@@ -288,14 +277,6 @@ class Medium < ActiveRecord::Base
     end
   end
 
-  # TODO: still needed?
-  def original_url=(value)
-    unless value.blank?
-      self [:original_url] = value
-      self.document = open URI(value)
-    end
-  end
-  
   def human_content_type
     group, type = content_type.split('/')
     I18n.t(type, :scope => ['mimes', group], :default => content_type)

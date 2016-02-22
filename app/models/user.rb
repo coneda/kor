@@ -158,14 +158,6 @@ class User < ActiveRecord::Base
     self[:login_attempts].shift if self[:login_attempts].size > 3
   end
   
- # TODO: still needed?
-  def admin!
-    self.admin = true
-    self.kind_admin = true
-    self.relation_admin = true
-    self.authority_group_admin = true
-  end
-  
   def any_admin?
     admin || kind_admin || relation_admin || authority_group_admin
   end
@@ -190,10 +182,10 @@ class User < ActiveRecord::Base
     end
   end
   
-  # TODO: still needed?
   def self.guest
-    user = find_by_name('guest')
-    user.active? ? user : nil
+    if user = find_by_name('guest')
+      user.active? ? user : nil
+    end
   end
   
   def guest?
@@ -238,10 +230,6 @@ class User < ActiveRecord::Base
     where("created_at > ?", 30.days.ago)
   }
   scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
-  
-  def self.guest
-    find_by_name('guest')
-  end
   
   def self.admin
     unless user = find_by_name('admin')

@@ -666,7 +666,6 @@ de:
     only_same_kind: "bitte wählen Sie hierzu nur Entitäten vom selbem Typ"
     exception_ocurred: "ein unerwarteter Fehler ist eingetreten"
     publishment_expired: "Dieser Link ist abgelaufen"
-    other_collection: "Sie haben keinen Zugriff auf Entität %{id}. Bitte wenden Sie sich an einen Adminstrator"
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

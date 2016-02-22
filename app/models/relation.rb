@@ -116,13 +116,6 @@ class Relation < ActiveRecord::Base
     results.sort.uniq
   end
   
-
-  ######################### other ##############################################
-  # TODO This should also work with an array in the configfile
-  def has_name(name)
-    self.name == name or reverse_name == name
-  end
-  
   def self.primary_relation_names
     Kor.config['app.gallery.primary_relations'] || []
   end

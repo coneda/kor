@@ -22,14 +22,16 @@ class Entity < ActiveRecord::Base
   has_and_belongs_to_many :authority_groups
   has_and_belongs_to_many :user_groups
 
-  # TODO: make sure relationships are actually destroyed when the entity is
+  has_many :out_rels, foreign_key: :from_id, class_name: 'Relationship', dependent: :destroy
+  has_many :in_rels, foreign_key: :to_id, class_name: 'Relationship', dependent: :destroy
+
   has_many :outgoing_relationships, class_name: "DirectedRelationship", foreign_key: :from_id
   has_many :outgoing, through: :outgoing_relationships, source: :to
 
   has_many :incoming_relationships, class_name: "DirectedRelationship", foreign_key: :to_id
   has_many :incoming, through: :incoming_relationships, source: :from
 
-  # TODO: still needed?
+  # TODO: get rid of this
   def grouped_related_entities(user, policies, options = {})
     options.reverse_merge!(:media => :no, :limit => false)
   
@@ -53,25 +55,7 @@ class Entity < ActiveRecord::Base
     relationships.group_by{|r| r.relation_name_for_entity(self)}
   end
   
-  # TODO: remove comments
-  # def try_again
-  #   Relationship.find_by_sql("
-  #     SELECT
-  #       IF(r1.from_id = #{self.id}, 1, 0) AS normal,
-  #       IF(r1.from_id = #{self.id}, r1.name, r1.reverse_name) AS name,
-  #       IF(r1.from_id = #{self.id}, e1.name, er1.name) 
-  #     FROM relationships r1
-  #       JOIN entities e1 ON e1.id = r1.from_id
-  #       JOIN entities er1 ON er1.id = r1.to_id
-  #   ")
-  # end
-
-  # Nesting
-  
   accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
-
-  
-  # Validation
 
   validates_associated :datings
 
@@ -92,7 +76,6 @@ class Entity < ActiveRecord::Base
     :attached_file
   )
  
-  # TODO: still needed?
   def attached_file
     if is_medium?
       if medium
@@ -321,44 +304,6 @@ class Entity < ActiveRecord::Base
       without_media
   end
   
-  # TODO: remove if tests pass
-  # def related_entities(user, options = {})
-  #   options.reverse_merge!(:relation_names => nil)
-  #   blaze = Kor::Blaze.new(user)
-  #   blaze.related_entities(self, options)
-  # end
-
-  # def related(user, options = {})
-  #   options.reverse_merge!(
-  #     :assume => :primary,
-  #     :search => :media
-  #   )
-    
-  #   if options[:assume] == :media
-  #     if options[:search] == :primary
-  #       related_entities(user, :relation_names => Relation.primary_relation_names)
-  #     else
-  #       raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
-  #     end
-  #   elsif options[:assume] == :primary
-  #     if options[:search] == :media
-  #       related_entities(user, :relation_names => Relation.reverse_primary_relation_names)
-  #     elsif options[:search] == :secondary 
-  #       related_entities(user, :relation_names => Relation.secondary_relation_names)
-  #     end 
-  #   elsif options[:assume] == :secondary
-  #     if options[:search] == :primary
-  #       related_entities(user, :relation_names => Relation.reverse_secondary_relation_names)
-  #     elsif options[:search] == :media
-  #       related(user, :assume => :secondary, :search => :primary).map do |e|
-  #         e.related(user, :assume => :primary, :search => :media)
-  #       end.flatten.uniq
-  #     end
-  #   else
-  #     raise Kor::Exception, "invalid options or invalid combination: #{options.inspect}"
-  #   end
-  # end
-
   def relation_counts(user, options = {})
     options.reverse_merge! media: false
     media_id = Kind.medium_kind.id
@@ -377,7 +322,7 @@ class Entity < ActiveRecord::Base
     scope.count
   end
 
-  def media_count
+  def media_count(user)
     outgoing_relationships.with_to.where('tos.kind_id = 1').count
   end
 
@@ -396,28 +341,6 @@ class Entity < ActiveRecord::Base
        result += " (#{self[:subtype]})"
     end
     result
-  end
-  
-  # TODO: move this method to the rspec test suite which is its only user
-  def save_with_serial
-    while has_name_duplicates?
-      self.distinct_name ||= ""
-      if self.distinct_name.match(/– \d+$/)
-        serial = distinct_name.match(/\d+$/)[0].to_i + 1
-        self.distinct_name.gsub! /\d+$/, serial.to_s
-      elsif self.distinct_name.match(/^[\d]+$/)
-        serial = self.distinct_name.to_i + 1
-        self.distinct_name = serial.to_s
-      else
-        if self.distinct_name.blank?
-          self.distinct_name = "2"
-        else
-          self.distinct_name += " – 2"
-        end
-      end
-    end
-    
-    save
   end
   
   def has_name_duplicates?
@@ -511,14 +434,18 @@ class Entity < ActiveRecord::Base
     Array(uuids).collect{|uuid| tmp_entities.find{|e| e.uuid == uuid } }.reject{|e| e.blank? }
   end
   
-  # TODO the scopes are not combinable e.g. id-conditions overwrite each other
   scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
-  scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
-  scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
+  scope :alphabetically, lambda { order("name asc, distinct_name asc") }
+  scope :newest_first, lambda { order("created_at DESC") }
+  # TODO the scopes are not combinable e.g. id-conditions overwrite each other
+  # TODO: the next two should use
+  scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
+  scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
+  # TODO: the next three should use 'only_kinds'
   scope :searcheable, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
   scope :media, lambda { where("entities.kind_id = ?", Kind.medium_kind.id) }
   scope :without_media, lambda { 
@@ -528,14 +455,15 @@ class Entity < ActiveRecord::Base
       all
     end
   }
-  scope :alphabetically, lambda { order("name asc, distinct_name asc") }
-  scope :newest_first, lambda { order("created_at DESC") }
+  # TODO: this is the same as 'only_kinds'
   scope :is_a, lambda { |kind_id|
     kind = Kind.find_by_name(kind_id.to_s)
     kind ||= Kind.find_by_id(kind_id)
     kind ? where("entities.kind_id = ?", kind_id) : all
   }
+  # TODO: still needed?
   scope :named_exactly_like, lambda {|value| where("name like :value or concat(name,' (',distinct_name,')') like :value", :value => value) }
+  # TODO: rewrite this not to collect singular entity ids
   scope :valid, lambda { |valid|
     ids = Tag.invalid_tag.entities.collect{|e| e.id}
     valid ?
@@ -599,6 +527,7 @@ class Entity < ActiveRecord::Base
       all
     end
   }
+  # TODO: rewrite this to use joins
   scope :dated_in, lambda {|dating|
     dating.blank? ? all : where("entities.id IN (?)", EntityDating.between(dating).collect{|ed| ed.entity_id }.uniq)
   }

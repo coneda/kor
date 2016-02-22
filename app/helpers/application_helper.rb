@@ -106,7 +106,7 @@ module ApplicationHelper
     Rails.application.routes.recognize_path url
   end
 
-  # TODO remove the translation logic from the helper or refactor in another manner
+  # TODO: remove the translation logic from the helper or refactor in another manner
   # returns an item to be included in the navigation bar. it takes care of
   # the highlighting of active items by assigning them the 'active_item' class
   def navigation_item( label, target, options = {} )

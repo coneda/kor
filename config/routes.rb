@@ -29,7 +29,6 @@ Rails.application.routes.draw do
       get 'cleanup'
     end
   end
-  resources :tags, :only => :index
   resources :kinds do
     resources :fields, :except => 'show'
     resources :generators
@@ -51,9 +50,7 @@ Rails.application.routes.draw do
     end
     
     member do
-      get 'images'
       get 'metadata'
-      get 'other_collection'
     end
 
     scope format: :json do
@@ -121,7 +118,6 @@ Rails.application.routes.draw do
     end
   end
 
-  match '/errors/:action', :controller => 'errors', :via => :get
   match '/downloads/:uuid', :to => 'downloads#show', :via => :get
   match 'content_types/:content_type_group/:content_type.gif', :to => 'media#dummy', :as => :media_dummy, :content_type => /[a-z0-9\.\-]+/, :via => :get
   
@@ -198,20 +194,11 @@ Rails.application.routes.draw do
       collection do
         get :multi_upload
         get :isolated
-        get :selector
-        get :widget
         get :gallery
       end
     end
 
     match "denied", :action => "denied"
-    match "pagination", :action => "pagination"
-    match "relation", :action => "relation"
-    match "media_relation", :action => "media_relation"
-    match "relationship", :action => "relationship"
-    
-    match "relationships/form", :to => "relationships#form"
-    match "relations/selector", :to => "relations#selector"
   end
 
 end

@@ -212,6 +212,15 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
   # The following tests actually test Api::OaiPmh::BaseController behavior. Therefore
   # they have no respective counterparts for other OAI-PMH controllers.
 
+  specify "oai-pmh routes" do
+    expect(get: '/api/oai-pmh/entities.xml?verb=ListRecords').to route_to(
+      "format" => "xml",
+      "controller" => "api/oai_pmh/entities",
+      "action" => "list_records",
+      "verb" => "ListRecords"
+    )
+  end
+
   it "should return 'noSetHierarchy' if a set is requested" do
     get :list_sets, format: :xml
 
