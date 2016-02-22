@@ -83,8 +83,8 @@ class EntitiesController < ApplicationController
     @result = Kor::SearchResult.new(
       total: entities.count,
       page: params[:page],
-      per_page: 16,
-      records: entities.pageit(params[:page], 16)
+      per_page: 12,
+      records: entities.pageit(params[:page], 12)
     )
 
     render 'index'
@@ -108,8 +108,8 @@ class EntitiesController < ApplicationController
     @result = Kor::SearchResult.new(
       total: entities.count,
       page: params[:page],
-      per_page: 16,
-      records: entities.pageit(params[:page], 16)
+      per_page: 12,
+      records: entities.pageit(params[:page], 12)
     )
 
     render 'index'
@@ -120,7 +120,10 @@ class EntitiesController < ApplicationController
       redirect_to web_path(:anchor => entity_path(@entity))
     else
       if params[:terms]
-        @results = kor_graph.search(:attribute, :criteria => {:name => params[:terms]})
+        @results = kor_graph.search(:attribute,
+          criteria: {name: params[:terms]},
+          per_page: params[:per_page]
+        )
         render :json => {
           "ids" => @results.ids,
           "total" => @results.total,

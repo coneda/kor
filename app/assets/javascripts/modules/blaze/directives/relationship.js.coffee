@@ -8,6 +8,7 @@ kor.directive "korRelationship", ["entities_service", "session_service",
         entity: "=korEntity"
         master_toggle: "=korMasterToggle"
         existing: "@korExisting"
+        is_medium: "@korIsMedium"
       }
       replace: true
       link: (scope, element, attrs) ->

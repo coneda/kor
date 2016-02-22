@@ -7,10 +7,14 @@ kor.directive "korRelationshipEditor", [
         source: "=korSourceEntity"
         existing: "@korExisting"
         close: "&korClose"
+        grid_width: "@korGridWidh"
       }
       template: -> ts.get('relationship-editor')
-      link: (scope, element) ->
+      link: (scope, element, attrs) ->
         scope.errors = null
+
+        attrs.$observe 'korGridWidth', (new_value) ->
+          scope.grid_width = parseInt(new_value) || 3
 
         scope.relation_name
         scope.target = {}

@@ -10,6 +10,10 @@ kor.directive "korEntitySelector", [
       link: (scope, element, attrs) ->
         scope.tab = "search"
 
+        attrs.$observe 'korGridWidth', (new_value) ->
+          scope.grid_width = parseInt(new_value || 3)
+          scope.group()
+
         if scope.existing
           listener = scope.$watch 'entity', -> 
             scope.tab = 'existing' if scope.entity
@@ -17,7 +21,7 @@ kor.directive "korEntitySelector", [
 
         search = -> 
           if scope.terms && scope.terms.length >= 3
-            es.index(terms: scope.terms).success (data) -> 
+            es.index(terms: scope.terms, per_page: 12).success (data) -> 
               scope.results = data
               scope.group()
 
@@ -31,7 +35,6 @@ kor.directive "korEntitySelector", [
           scope.grouped_records = []
 
           if scope.tab == 'current'
-            # console.log scope.current()
             scope.results = {
               raw_records: [scope.current()]
             }
@@ -39,7 +42,6 @@ kor.directive "korEntitySelector", [
 
           if scope.tab == 'created'
             es.recently_created().success (data) ->
-              # console.log data
               scope.results = {
                 raw_records: data.records
               }
@@ -47,7 +49,6 @@ kor.directive "korEntitySelector", [
 
           if scope.tab == 'visited'
             es.recently_visited().success (data) ->
-              # console.log data
               scope.results = {
                 raw_records: data.records
               }
@@ -60,9 +61,10 @@ kor.directive "korEntitySelector", [
             scope.group()
 
         scope.group = -> 
-          scope.grouped_records = kt.in_groups_of(
-            scope.results.raw_records, 4, true
-          )
+          if scope.results
+            scope.grouped_records = kt.in_groups_of(
+              scope.results.raw_records, scope.grid_width, true
+            )
 
         scope.$watch "terms", search
 

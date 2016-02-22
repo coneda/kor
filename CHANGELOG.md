@@ -33,6 +33,8 @@ commit history on GitHub.
   simplyfies queries and enhances performance
 * audio and video processing are now faster and adhere to the paperclip gem's
   way
+* added brakeman for security audits
+* added rubocop to improve code style
 
 ## Version 1.9.2
 
