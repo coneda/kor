@@ -106,20 +106,16 @@ module MediaHelper
         end
       end
 
-      result['video/x-flv'] = Proc.new do |entity, options|
-        render :partial => "video_player", :locals => {:entity => entity, :options => options}
-      end
-
       result['application/x-shockwave-flash'] = Proc.new do |entity, options|
         render :partial => "video_player", :locals => {:entity => entity, :options => options}
       end
 
       result['video'] = Proc.new do |entity, options|
-        if File.exists? entity.medium.path(:flash)
-          result['video/x-flv'].call(entity, options)
-        else
-          result['image'].call(entity, options)
-        end
+        render :partial => "video_player", :locals => {:entity => entity, :options => options}
+      end
+
+      result['audio'] = Proc.new do |entity, options|
+        render :partial => "video_player", :locals => {:entity => entity, :options => options}
       end
 
       result

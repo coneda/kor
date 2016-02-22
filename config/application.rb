@@ -41,11 +41,17 @@ end
 
 # TODO: paginate entities in entity selector
 # TODO: fix #1651 (redmine)
+
+# TODO: remove new_datings_attributes and existing_datings_attributes
+# TODO: upgrade elasticsearch
+# TODO: move logic from command_line.rb to the service layer
+# TODO: make sure that time zones are handled correctly from http content type to db
+# TODO: angular: remove flashing of unloaded page areas and remove flashing of strange "select <some HEX>" within media relations
 # TODO: handle stale object errors on json apis
 # TODO: use jbuilder without exception for api responses
-# TODO: angular: remove flashing of unloaded page areas and remove flashing of strange "select <some HEX>" within media relations
-# TODO: make sure that time zones are handled correctly from http content type to db
-
+# TODO: make image and video styles configurable live
+# TODO: develop commenting policy
+# TODO: replace fake_authentication and classic data_helper
 # TODO: check helpers for redundant code
 # TOTO: remove redundant code and comments from old js files
 # TODO: remove console.log

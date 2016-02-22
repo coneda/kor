@@ -1,8 +1,8 @@
 kor.directive "korPagination", [
-  "$location", "$routeParams",
-  (l, rp) ->
+  "$location", "$routeParams", 'templates_service',
+  (l, rp, ts) ->
     directive = {
-      templateUrl: "/tpl/pagination"
+      template: -> ts.get('pagination')
       replace: true
       scope: {
         page: "=korPagination"

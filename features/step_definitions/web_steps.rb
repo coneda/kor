@@ -20,12 +20,11 @@ When /^(?:|I )press "([^"]*)"$/ do |button|
 end
 
 When /^(?:|I )follow "([^"]*)"$/ do |locator|
-  element = 
-    all(:link, locator).first || 
-    all("[data-name='#{locator}']").first ||
-    all(:button, locator).first
-  raise "couldn't find link '#{locator}'" unless element
-  element.click
+  find_link(locator).click
+end
+
+When /^(?:|I )click button "([^"]*)"$/ do |locator|
+  find_button(locator).click
 end
 
 When(/^I follow the link with text "([^"]*)"$/) do |text|

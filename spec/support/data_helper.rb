@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module DataHelper
 
   def fake_authentication(options = {})
@@ -80,6 +78,10 @@ module DataHelper
     @default = FactoryGirl.create :default
     @priv = FactoryGirl.create :private
 
+    @media = FactoryGirl.create :media
+    @people = FactoryGirl.create :people
+    @works = FactoryGirl.create :works
+
     FactoryGirl.create :has_created
     FactoryGirl.create :shows
 
@@ -93,7 +95,7 @@ module DataHelper
     end
 
     if options[:pictures]
-      @picture = FactoryGirl.create :picture
+      @picture = FactoryGirl.create :picture_a
 
       if options[:relationships]
         Relationship.relate_and_save(@picture, 'shows', @mona_lisa)
@@ -106,8 +108,25 @@ module DataHelper
     @admin = FactoryGirl.create :admin, :groups => [@admins]
     @jdoe = FactoryGirl.create :jdoe, :groups => [@students]
     
-    @default.grant :view, :to => [@admins, @students]
-    @priv.grant :view, :to => [@admins]
+    @default.grant :all, :to => @admins
+    @default.grant :view, :to => @students
+    @priv.grant :all, :to => @admins
+  end
+
+  def current_user(user)
+    @current_user = user
+
+    @current_user_mock ||= begin
+      allow_any_instance_of(ApplicationController).to(
+        receive(:current_user).and_return(@current_user)
+      )
+
+      allow_any_instance_of(ApplicationController).to(
+        receive(:session_expired?).and_return(false)
+      )
+
+      true
+    end
   end
 
 end

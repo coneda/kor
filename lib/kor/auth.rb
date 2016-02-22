@@ -89,9 +89,10 @@ module Kor::Auth
     end
   end
   
-  def self.authorized?(user, policy = :view, collections = nil, options = {})
+  def self.allowed_to?(user, policy = :view, collections = nil, options = {})
     collections ||= Collection.all.to_a
     user ||= User.guest
+    policy = Collection.policies if policy == :all
     
     options.reverse_merge!(:required => :all)
     collections = if collections.is_a?(Collection)
@@ -114,16 +115,4 @@ module Kor::Auth
     end
   end
 
-  def self.grant(credential, policy, collections)
-    if collections.is_a?(Array)
-      collections.each{|c| grant policy, c}
-    else
-      Grant.find_or_create_by(
-        credential_id: credential.id,
-        collection_id: collections.id,
-        policy: policy
-      )
-    end
-  end
-  
 end

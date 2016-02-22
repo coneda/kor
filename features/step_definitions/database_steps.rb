@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Given /^the credential "([^\"]*)"$/ do |name|
   step "the credential \"#{name}\" described by \"\""
 end

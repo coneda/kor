@@ -8,6 +8,9 @@ class Grant < ActiveRecord::Base
   scope :with_policy, lambda { |name|
     name.blank? ? all : where(:policy => name)
   }
+  scope :with_credential, lambda { |credential|
+    credential.present? ? where(credential: credential) : all
+  }
   
   def personal?
     !!credential.owner

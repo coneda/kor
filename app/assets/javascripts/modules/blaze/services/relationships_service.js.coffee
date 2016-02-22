@@ -21,7 +21,7 @@ kor.service "relationships_service", [
 
       update: (id, relationship) ->
         request = {
-          method: "put"
+          method: "patch"
           url: "/relationships/#{id}.json"
           data: {
             relationship: relationship

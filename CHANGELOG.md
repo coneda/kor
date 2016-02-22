@@ -20,6 +20,8 @@ commit history on GitHub.
 * a task to display list permissions
 * creating and editing relationships is now done inline
 * the gallery is now rendered in the browser and is therefore a lot faster
+* an HTML5 audio player is now integrated
+* the video player has been dropped in favor of native HTML5 functionality
 
 ### Internal
 
@@ -29,14 +31,16 @@ commit history on GitHub.
 * added a development environment via `vagrant up`
 * relationships are now saved as two records per link (in and out). This greatly
   simplyfies queries and enhances performance
+* audio and video processing are now faster and adhere to the paperclip gem's
+  way
 
 ## Version 1.9.2
 
 ### User
 
 * changed custom authentication to work with environment variables rather than
-* made custom authentication logging more verbose
   with files
+* made custom authentication logging more verbose
 * fixed synonyms that had been saved as strings instead of an array of strings
 * fixes the metadata download
 * refactored the command line tool

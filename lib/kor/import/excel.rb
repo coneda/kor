@@ -155,7 +155,7 @@ class Kor::Import::Excel < Kor::Export::Excel
 
   def allowed_to?(policy = :edit, collection_id = nil)
     collections = Collection.where(:id => collection_id).to_a
-    ::Kor::Auth.authorized? @user, policy, collections
+    ::Kor::Auth.allowed_to? @user, policy, collections
   end
 
   def synchronize_datings(entity, dating_attributes)

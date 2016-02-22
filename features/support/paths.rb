@@ -52,7 +52,6 @@ module NavigationHelpers
       new_entity_path(:kind_id => Kind.find_by_name($1).id)
     when /the denied page/ then denied_path
     when /the login page/ then login_path
-    when /the logout page/ then logout_path
     when /the new user group page/ then new_user_group_path
     when /the user group "([^\"]*)"/ then user_group_path(UserGroup.find_by_name($1))
     when /the edit page for user group "([^\"]*)"/ then edit_user_group_path(UserGroup.find_by_name($1))

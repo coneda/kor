@@ -73,7 +73,7 @@ Rails.application.routes.draw do
     end
     member do
       get 'edit_merge'
-      put 'merge'
+      patch 'merge'
     end
   end
   resources :credentials

@@ -29,9 +29,6 @@ class ApplicationController < BaseController
       end
     end
 
-    # this method is called, when an exception ocurred while generating a
-    # response to a request which wasn't sent from localhost
-    
     if Rails.env == 'production'
       rescue_from ActionController::RoutingError, :with => :not_found
       rescue_from ActiveRecord::RecordNotFound, :with => :not_found
@@ -126,7 +123,7 @@ class ApplicationController < BaseController
 
     def authorized?(policy = :view, collections = nil, options = {})
       options.reverse_merge!(:required => :any)
-      Kor::Auth.authorized? current_user, policy, collections, options
+      Kor::Auth.allowed_to? current_user, policy, collections, options
     end
 
     def authorized_collections(policy)
@@ -234,7 +231,7 @@ class ApplicationController < BaseController
     end
 
     def profile
-      if ENV["PROFILER"]
+      if ENV["PROFILE"]
         require 'perftools'
         path = request.path.gsub("/", "_")
         path = "#{Rails.root}/tmp/profiles/#{path}"

@@ -1,11 +1,14 @@
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start
+end
+
 require "cucumber/rspec/doubles"
 require 'capybara/poltergeist'
 require 'factory_girl_rails'
 
 DatabaseCleaner.strategy = :truncation
 Cucumber::Rails::Database.javascript_strategy = :truncation
-
-# ActionController::Base.allow_rescue = false
 
 Before do |scenario|
   DatabaseCleaner.clean
@@ -30,12 +33,23 @@ end
 
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app,
-    # :debug => true,
-    :js_errors => true,
-    :inspector => true
+    # debug: true,
+    js_errors: false,
+    inspector: false
   )
 end
 
 if ENV['HEADLESS']
   Capybara.javascript_driver = :poltergeist
+end
+
+VCR.configure do |c|
+  c.cassette_library_dir = 'spec/fixtures/cassettes'
+  c.hook_into :webmock
+  c.default_cassette_options = {:record => :new_episodes}
+  c.allow_http_connections_when_no_cassette = true
+end
+
+VCR.cucumber_tags do |t|
+  t.tag "@vcr", :use_scenario_name => true
 end

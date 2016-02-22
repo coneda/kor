@@ -16,7 +16,7 @@ RSpec.describe UsersController, :type => :controller do
     john = FactoryGirl.create :jdoe
     session[:user_id] = john.id
   
-    put :update_self, :user => {:home_page => '/entities/gallery'}
+    patch :update_self, :user => {:home_page => '/entities/gallery'}
     
     expect(response).not_to redirect_to(denied_path)
   end
@@ -55,7 +55,7 @@ RSpec.describe UsersController, :type => :controller do
     allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_return(false)
     expect(jdoe.admin?).to be_falsey
     
-    put :update_self, :user => {:admin => true}
+    patch :update_self, :user => {:admin => true}
     
     jdoe.reload
     expect(jdoe.admin?).to be_falsey
@@ -67,7 +67,7 @@ RSpec.describe UsersController, :type => :controller do
     allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_return(false)
     expect(jdoe.admin?).to be_falsey
     
-    put :update, :id => jdoe.id, :user => {:admin => true}
+    patch :update, :id => jdoe.id, :user => {:admin => true}
     jdoe.reload
     expect(jdoe.admin?).to be_truthy
   end

@@ -4,7 +4,7 @@ Feature: Media
   I want to be able to upload, transform and link media
   
   
-  @javascript
+  @javascript @nodelay
   Scenario: Rotate an uploaded image
     Given I am logged in as "admin"
     And the medium "spec/fixtures/image_a.jpg"

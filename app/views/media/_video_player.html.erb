@@ -1,31 +1,14 @@
-<link rel="stylesheet" type="text/css" href="/video-js/video-js.css">
-<script type="text/javascript" src="/video-js/video.js"></script>
-<script>
-  videojs.options.flash.swf = "/video-js/video-js.swf"
-</script>
+<% if entity.medium.content_type.match(/^video\//) || entity.medium.content_type == 'application/x-shockwave-flash' %>
+  <video controls mute autoplay>
+    <source src="<%= entity.medium.document.url(:mp4) %>" type="video/mp4">
+    <source src="<%= entity.medium.document.url(:webm) %>" type="video/webm">
+    <source src="<%= entity.medium.document.url(:ogg) %>" type="video/ogg">
+  </video>
+<% end %>
 
-<video
-  id="example_video_1"
-  class="video-js vjs-default-skin"
-  controls preload="auto"
-  width="685"
-  height="400"
-  poster="<%= entity.medium.image.url(:preview) %>"
-  data-setup='{"example_option":true}'
->
-  <% if entity.medium.content_type == 'video/x-flv' %>
-    <source
-      src="<%= entity.medium.document.url(:original) %>" 
-      type="<%= entity.medium.content_type %>"
-    />
-  <% else %>
-    <source
-      src="<%= entity.medium.url(:flash) %>"
-      type="video/x-flv"
-    />
-  <% end %>
-  <p class="vjs-no-js">
-    To view this video please enable JavaScript, and consider upgrading to a web browser that
-    <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-  </p>
-</video>
+<% if entity.medium.content_type.match(/^audio\//) %>
+  <audio controls>
+    <source src="<%= entity.medium.document.url(:mp3) %>" type="audio/mp3">
+    <source src="<%= entity.medium.document.url(:ogg) %>" type="audio/ogg">
+  </audio>
+<% end %>

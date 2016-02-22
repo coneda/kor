@@ -1,13 +1,13 @@
 kor.directive "korRelationSelector", [
-  "relations_service",
-  (rs) ->
+  "relations_service", 'templates_service',
+  (rs, ts) ->
     directive = {
       scope: {
         source: "=korSource"
         target: "=korTarget"
         relation_name: "=korRelationSelector"
       }
-      templateUrl: "/tpl/relations/selector"
+      template: -> ts.get('relation-selector')
       link: (scope, element, attrs) ->
         update = ->
           from_kind_ids = if scope.source then scope.source.kind_id else null 

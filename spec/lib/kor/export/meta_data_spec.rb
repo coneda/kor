@@ -11,7 +11,7 @@ describe Kor::Export::MetaData do
     default = FactoryGirl.create :default
     admins = FactoryGirl.create :admins
     admin = FactoryGirl.create :admin, :groups => [admins]
-    Kor::Auth.grant admins, :view, default
+    default.grant :view, to: admins
     image = FactoryGirl.create :picture_a
     mona_lisa = FactoryGirl.create :mona_lisa
     leonardo = FactoryGirl.create :leonardo

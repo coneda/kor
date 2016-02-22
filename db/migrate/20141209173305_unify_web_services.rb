@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class UnifyWebServices < ActiveRecord::Migration
   def up
     Kind.all.each do |kind|

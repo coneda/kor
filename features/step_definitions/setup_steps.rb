@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Given /^the setup "([^"]*)"$/ do |name|
   case name
     when 'Bamberg'

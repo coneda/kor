@@ -1,12 +1,12 @@
 kor.directive "korEntitySelector", [
-  "entities_service", "session_service", "kor_tools",
-  (es, ss, kt) ->
+  "entities_service", "session_service", "kor_tools", 'templates_service',
+  (es, ss, kt, ts) ->
     directive = {
       scope: {
         entity: "=korEntitySelector"
         existing: "@korExisting"
       }
-      templateUrl: "/tpl/entities/selector"
+      template: -> ts.get('entity-selector')
       link: (scope, element, attrs) ->
         scope.tab = "search"
 

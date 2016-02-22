@@ -320,8 +320,8 @@ class User < ActiveRecord::Base
     super options.merge(:except => [:password, :activation_hash])
   end
 
-  def allowed_to?(policy = :view, items = nil, options = {})
-    Kor::Auth.authorized?(self, policy, items, options)
+  def allowed_to?(policy = :view, collections = nil, options = {})
+    Kor::Auth.allowed_to?(self, policy, collections, options)
   end
   
 end

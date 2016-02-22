@@ -1,6 +1,6 @@
 kor.directive "korEntityWidget", [
-  "kinds_service",
-  (ks) ->
+  "kinds_service", 'templates_service',
+  (ks, ts) ->
     kinds = {}
     ks.index().success (data) ->
       for kind in data
@@ -10,7 +10,7 @@ kor.directive "korEntityWidget", [
       scope: {
         entity: "=korEntityWidget"
       }
-      templateUrl: "/tpl/entities/widget"
+      template: -> ts.get('entity-widget')
       link: (scope, element) ->
         scope.kind_name = -> 
           try 

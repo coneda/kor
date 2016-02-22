@@ -26,8 +26,6 @@ gem 'plupload-rails'
 gem 'coffee-rails'
 gem "sass-rails"
 
-# TODO: remove comments
-# gem 'oj'
 gem 'jbuilder'
 gem 'test-unit'
 
@@ -40,15 +38,10 @@ if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   gem 'factory_girl_rails'
 end
 
-gem 'kor_index', :path => './plugins/kor_index'
-
-group :development do
-  gem "therubyracer"
-  gem 'uglifier'
-end
+gem 'kor_index', path: './plugins/kor_index'
 
 group :test do
-  gem 'cucumber-rails', :require => false
+  gem 'cucumber-rails', require: false
   gem 'poltergeist'
   gem 'selenium-webdriver'
   gem 'rspec-rails', '~> 3.1'
@@ -56,6 +49,7 @@ group :test do
   gem 'database_cleaner'
   gem 'vcr'
   gem 'webmock'
+  gem 'simplecov', require: false
 end
 
 group :development do
@@ -72,6 +66,8 @@ end
 
 group :production do
   gem 'puma'
+  gem "therubyracer"
+  gem 'uglifier'
 end
 
 group :import_export do

@@ -294,3 +294,19 @@ Be aware that this will spawn a real browser to conduct the tests, If you prefer
 headless testing, you may use phantomjs by setting an environment variable:
 
     HEADLESS=true bundle exec cucumber features/
+
+#### Coverage reports
+
+You may run rspec or cucumber tests with the `COVERAGE` environment variable
+set, which will generate a coverage report to `./coverage`. For example:
+
+    COVERAGE=true HEADLESS=true bundle exec cucumber features/
+
+#### Profiling
+
+ConedaKOR will generate a detailed per-action profile when the environment
+variable PROFILE is set, for example in development:
+
+    PROFILE=true bundle exec rails s
+
+The reports will be generated in `./tmp/profiles`

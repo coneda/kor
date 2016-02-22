@@ -48,16 +48,32 @@ FactoryGirl.define do
   
   factory :medium do
 
-    factory :medium_a do
+    factory :medium_image_a do
       document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
     end
 
-    factory :medium_b do
+    factory :medium_image_b do
       document File.open("#{Rails.root}/spec/fixtures/image_b.jpg")
     end
 
-    factory :medium_c do
+    factory :medium_image_c do
       document File.open("#{Rails.root}/spec/fixtures/image_c.jpg")
+    end
+
+    factory :medium_video_a do
+      document File.open("#{Rails.root}/spec/fixtures/video_a.m4v")
+    end
+
+    factory :medium_video_b do
+      document File.open("#{Rails.root}/spec/fixtures/video_b.flv")
+    end
+
+    factory :medium_audio_a do
+      document File.open("#{Rails.root}/spec/fixtures/audio_a.wav")
+    end
+
+    factory :medium_audio_b do
+      document File.open("#{Rails.root}/spec/fixtures/audio_b.mp3")
     end
   end
 
@@ -169,15 +185,31 @@ FactoryGirl.define do
       kind { Kind.medium_kind }
 
       factory :picture_a do
-        medium { FactoryGirl.build :medium_a }
+        medium { FactoryGirl.build :medium_image_a }
       end
 
       factory :picture_b do
-        medium { FactoryGirl.build :medium_b }
+        medium { FactoryGirl.build :medium_image_b }
       end
 
       factory :picture_c do
-        medium { FactoryGirl.build :medium_c }
+        medium { FactoryGirl.build :medium_image_c }
+      end
+
+      factory :video_a do
+        medium { FactoryGirl.build :medium_video_a }
+      end
+
+      factory :video_b do
+        medium { FactoryGirl.build :medium_video_b }
+      end
+
+      factory :audio_a do
+        medium { FactoryGirl.build :medium_audio_a }
+      end
+
+      factory :audio_b do
+        medium { FactoryGirl.build :medium_audio_b }
       end
     end
 

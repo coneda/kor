@@ -1,6 +1,6 @@
 kor.directive "korRelationshipEditor", [
-  "relationships_service", "korData",
-  (rs, kd) ->
+  "relationships_service", "korData", 'templates_service',
+  (rs, kd, ts) ->
     directive = {
       scope: {
         directed_relationship: "=korRelationshipEditor"
@@ -8,7 +8,7 @@ kor.directive "korRelationshipEditor", [
         existing: "@korExisting"
         close: "&korClose"
       }
-      templateUrl: "/tpl/relationships/form"
+      template: -> ts.get('relationship-editor')
       link: (scope, element) ->
         scope.errors = null
 

@@ -2,7 +2,7 @@ class EntitiesController < ApplicationController
   layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
   skip_before_filter :verify_authenticity_token
 
-  respond_to :json, :only => [:isolated]
+  respond_to :json, only: [:isolated]
 
   # TODO: still needed?  
   def other_collection
@@ -15,8 +15,10 @@ class EntitiesController < ApplicationController
     @entity = viewable_entities.find(params[:id])
     
     if @entity
-      send_data Kor::Export::MetaData.new(current_user).render(@entity),
-        :type => 'text/plain', :filename => "#{@entity.id}.txt"
+      send_data(Kor::Export::MetaData.new(current_user).render(@entity),
+        type: 'text/plain',
+        filename: "#{@entity.id}.txt"
+      )
     else
       flash[:error] = I18n.t('errors.not_found')
       redirect_to back_save
@@ -28,10 +30,10 @@ class EntitiesController < ApplicationController
       format.json do
         entities = viewable_entities.media.newest_first
         @result = Kor::SearchResult.new(
-          :total => entities.count,
-          :page => params[:page],
-          :per_page => 16,
-          :records => entities.pageit(params[:page], 16)
+          total: entities.count,
+          page: params[:page],
+          per_page: 16,
+          records: entities.pageit(params[:page], 16)
         )
       end
     end
@@ -49,7 +51,8 @@ class EntitiesController < ApplicationController
   def recent
     if authorized? :edit
       @entities = editable_entities.latest(1.week).searcheable.newest_first.within_collections(params[:collection_id]).paginate(
-        :page => params[:page], :per_page => 30
+        page: params[:page],
+        per_page: 30
       )
     else
       redirect_to denied_path
@@ -60,10 +63,10 @@ class EntitiesController < ApplicationController
     if authorized? :edit
       entities = Entity.allowed(current_user, :view).isolated.newest_first.includes(:kind)
       @result = Kor::SearchResult.new(
-        :total => entities.count,
-        :page => params[:page],
-        :per_page => 16,
-        :records => entities.pageit(params[:page], 16)
+        total: entities.count,
+        page: params[:page],
+        per_page: 16,
+        records: entities.pageit(params[:page], 16)
       )
 
       render 'index'
@@ -78,10 +81,10 @@ class EntitiesController < ApplicationController
       newest_first.includes(:kind)
 
     @result = Kor::SearchResult.new(
-      :total => entities.count,
-      :page => params[:page],
-      :per_page => 16,
-      :records => entities.pageit(params[:page], 16)
+      total: entities.count,
+      page: params[:page],
+      per_page: 16,
+      records: entities.pageit(params[:page], 16)
     )
 
     render 'index'
@@ -98,15 +101,15 @@ class EntitiesController < ApplicationController
 
     entities = Entity.
       allowed(current_user, :view).
-      where(:id => history_entity_ids).
+      where(id: history_entity_ids).
       includes(:kind).
       newest_first
 
     @result = Kor::SearchResult.new(
-      :total => entities.count,
-      :page => params[:page],
-      :per_page => 16,
-      :records => entities.pageit(params[:page], 16)
+      total: entities.count,
+      page: params[:page],
+      per_page: 16,
+      records: entities.pageit(params[:page], 16)
     )
 
     render 'index'
@@ -126,8 +129,8 @@ class EntitiesController < ApplicationController
         }
       else
         @query = kor_graph.search(:attribute,
-          :criteria => params[:query],
-          :page => params[:page]
+          criteria: params[:query],
+          page: params[:page]
         )
         render :layout => 'small_normal_bare'
       end
@@ -137,14 +140,14 @@ class EntitiesController < ApplicationController
   def show
     @entity = Entity.includes(
       :medium, :kind, :collection, :datings, :creator, :updater, 
-      :authority_groups => :authority_group_category
+      authority_groups: :authority_group_category
     ).find(params[:id])
 
     respond_to do |format|
       if allowed_to?(:view, @entity.collection)
         format.json
       else
-        format.json { render nothing: true, :status => 403 }
+        format.json { render nothing: true, status: 403 }
       end
     end
   end
@@ -217,9 +220,9 @@ class EntitiesController < ApplicationController
               end
             end
 
-            render :json => {:success => false, :errors => @entity.errors}, :status => 400
+            render :json => {success: false, errors: @entity.errors}, status: 400
           end
-          format.html {render :action => "new", :status => :not_acceptable}
+          format.html {render action: "new", status: :not_acceptable}
         end
       end
     else
@@ -246,14 +249,14 @@ class EntitiesController < ApplicationController
         flash[:notice] = I18n.t( 'objects.update_success', :o => @entity.display_name )
         redirect_to web_path(:anchor => entity_path(@entity))
       else
-        render :action => "edit"
+        render action: "edit"
       end
     else
       redirect_to denied_path
     end
   rescue ActiveRecord::StaleObjectError
     flash[:error] = I18n.t('activerecord.errors.messages.stale_entity_update')
-    redirect_to :action => 'edit'
+    redirect_to action: 'edit'
   end
 
   def destroy

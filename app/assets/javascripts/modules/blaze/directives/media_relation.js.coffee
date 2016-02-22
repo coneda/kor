@@ -1,7 +1,8 @@
 kor.directive "korMediaRelation", ["entities_service", "session_service",
-  (es, ss) ->
+  'templates_service',
+  (es, ss, ts) ->
     directive = {
-      templateUrl: "/tpl/media_relation"
+      template: -> ts.get('media-relation')
       scope: {
         entity: "=korEntity"
         relation_name: "=korMediaRelation"

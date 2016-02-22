@@ -47,7 +47,7 @@ module ApplicationHelper
   def authorized?(policy = :view, collections = Collection.all, options = {})
     options.reverse_merge!(:required => :any)
   
-    Kor::Auth.authorized? current_user, policy, collections, options
+    Kor::Auth.allowed_to? current_user, policy, collections, options
   end
   
   def authorized_collections(policy = :view)

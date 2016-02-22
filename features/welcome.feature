@@ -8,7 +8,7 @@ Feature: Welcome
     Given I am logged in as "admin"
     And Leonardo, Mona Lisa and a medium as correctly related entities
     And the user "guest"
-    And I am logged out
+    And I log out
   
   
   @javascript

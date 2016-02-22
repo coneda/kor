@@ -5,7 +5,9 @@ RSpec.describe RelationshipsController, :type => :controller do
   
   include DataHelper
 
-  # ---------------------------------------------------------- authorization ---
+  before :each do
+    request.headers['accept'] = 'application/json'
+  end
   
   def side_collection
     @side_collection ||= FactoryGirl.create :private
@@ -21,22 +23,18 @@ RSpec.describe RelationshipsController, :type => :controller do
   
   def set_side_collection_policies(policies = {})
     policies.each do |p, c|
+      side_collection.revoke :all, from: c
       side_collection.grant(p, :to => c)
     end
   end
   
   def set_main_collection_policies(policies = {})
     policies.each do |p, c|
+      @main.revoke :all, from: c
       @main.grant p, :to => c
     end
   end
 
-  before do
-    request.headers['accept'] = 'application/json'
-  end
-  
-  
-  # create
   it "should not allow to create relationships when not one entity is editable and the other is viewable" do
     test_data_for_auth
     test_kinds
@@ -74,8 +72,6 @@ RSpec.describe RelationshipsController, :type => :controller do
     expect(response.status).to eq(200)
   end
   
-  
-  # edit
   it "should not allow to edit relationships when not one entity is editable and the other is viewable" do
     test_data_for_auth
     test_kinds
@@ -88,12 +84,12 @@ RSpec.describe RelationshipsController, :type => :controller do
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
-    put :update, :id => relationship.id, :relationship => {
+    patch :update, :id => relationship.id, :relationship => {
       :relation_name => 'shows'
     }
     expect(response.status).to eq(403)
     
-    put :update, :id => relationship_reverse.id, :relationship => {
+    patch :update, :id => relationship_reverse.id, :relationship => {
       :relation_name => 'is shown by'
     }
     expect(response.status).to eq(403)
@@ -146,12 +142,12 @@ RSpec.describe RelationshipsController, :type => :controller do
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
         
-    put :update, :id => relationship.id, api_key: @admin.api_key, :relationship => {
+    patch :update, :id => relationship.id, api_key: @admin.api_key, :relationship => {
       :relation_name => 'shows'
     }
     expect(response).to be_success
     
-    put :update, :id => relationship_reverse.id, api_key: @admin.api_key, :relationship => {
+    patch :update, :id => relationship_reverse.id, api_key: @admin.api_key, :relationship => {
       :relation_name => 'is shown by'
     }
     expect(response).to be_success

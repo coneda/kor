@@ -185,7 +185,7 @@ When /^I click on the player link$/ do
 end
 
 Then /^I should see the video player$/ do
-  expect(page).to have_selector('.video-js')
+  expect(page).to have_selector('video')
 end
 
 Then(/^I should (not )?see option "([^\"]+)"$/) do |negator, text|

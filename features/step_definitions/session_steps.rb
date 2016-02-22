@@ -36,12 +36,12 @@ Given /^I am logged in as "([^\"]*)"/ do |user|
 end
 
 Given /^I re\-login as "([^"]*)"$/ do |user|
-  step "I am logged out"
+  step "I log out"
   step "I am logged in as \"#{user}\""
 end
 
-Given /^I am logged out$/ do
-  step "I follow \"Logout\""
+Given /^I log out$/ do
+  step "I click element \"a[href='/logout']\""
 end
 
 When /^"([^\"]*)" is selected as current entity$/ do |name|

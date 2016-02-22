@@ -36,6 +36,7 @@ deploy/build.boxes
 db/*.sqlite3
 .yardoc
 .sass-cache
+coverage
 
 # Testing
 screenshot.png

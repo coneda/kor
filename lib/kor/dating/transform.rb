@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Kor::Dating::Transform < Parslet::Transform
   
   rule(:num => simple(:num), :part => simple(:part), :bc => simple(:bc), :cs => simple(:cs)) do

@@ -95,12 +95,3 @@ test:
 
   dev:
     value_a: default.env
-
-  meta_data_profiles:
-    simple:
-      -
-        name: "shows"
-        relations: 
-          - 
-            name: "has been created by"
-

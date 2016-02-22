@@ -10,10 +10,7 @@ Feature: Manage user preferences
     And I select "New entries" from "user[home_page]"
     And I press "Save"
     Then I should be on the home page
-    When I go to the logout page
-    And I fill in "username" with "admin"
-    And I fill in "password" with "admin"
-    And I press "Login"
+    When I re-login as "admin"
     Then I should be on the gallery
   
     

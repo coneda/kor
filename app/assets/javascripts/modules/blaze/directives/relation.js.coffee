@@ -1,7 +1,7 @@
-kor.directive "korRelation", ["entities_service",
-  (es) ->
+kor.directive "korRelation", ["entities_service", 'templates_service',
+  (es, ts) ->
     directive = {
-      templateUrl: "/tpl/relation"
+      template: -> ts.get('relation')
       scope: {
         entity: "=korEntity"
         relation_name: "=korRelation"
