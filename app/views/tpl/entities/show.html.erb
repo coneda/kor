@@ -164,7 +164,7 @@
             </li>
             <li>
               <span ng-bind="'activerecord.attributes.entity.created_at' | translate | capitalize"></span>:
-              <span class="highlighted_subtitle" ng-bind="entity.created_at | strftime:'%Y-%m'"></span>
+              <span class="highlighted_subtitle" ng-bind="entity.created_at | strftime:'%Y-%m-%d %H:%M:%S'"></span>
               <span ng-show="entity.creator">
                 {{'by' | translate}}
                 <span class="highlighted_subtitle" ng-bind="entity.creator | human_user"></span>
@@ -172,11 +172,18 @@
             </li>
             <li>
               <span ng-bind="'activerecord.attributes.entity.updated_at' | translate | capitalize"></span>:
-              <span class="highlighted_subtitle" ng-bind="entity.updated_at"></span>
               <span ng-show="entity.updater">
-                {{'by' | translate}}
-                <span class="highlighted_subtitle" ng-bind="entity.updater | human_user"></span>
+                <span class="highlighted_subtitle" ng-bind="entity.updated_at | strftime:'%Y-%m-%d %H:%M:%S'"></span>
+                <span ng-show="entity.updater">
+                  {{'by' | translate}}
+                  <span class="highlighted_subtitle" ng-bind="entity.updater | human_user"></span>
+                </span>
               </span>
+              <span 
+                class="highlighted_subtitle"
+                ng-hide="entity.updater"
+                ng-bind="'never' | translate"
+              />
             </li>
             <li ng-show="authority_groups().length > 0">
               {{'activerecord.models.authority_group.other' | translate | capitalize}}:

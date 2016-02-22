@@ -220,7 +220,7 @@ class EntitiesController < ApplicationController
               end
             end
 
-            render :json => {success: false, errors: @entity.errors}, status: 400
+            render :json => @entity.errors, status: 406
           end
           format.html {render action: "new", status: :not_acceptable}
         end

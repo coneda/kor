@@ -10,7 +10,6 @@ all:
     welcome_text: "*This text can be configured via the general settings*"
     current_history_length: 5
     max_foreground_group_download_size: 10
-    use_blaze: true
     max_file_upload_size: "100"
     source_code_url: "http://download.coneda.net/releases/coneda-kor.v{{version}}.tar.gz"
 

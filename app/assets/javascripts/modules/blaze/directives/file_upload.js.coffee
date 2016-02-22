@@ -13,8 +13,6 @@ kor.directive "korFileUpload", [
           file_data_name: "entity[medium_attributes][document]"
         )
 
-        window.s = scope
-
         scope.data = {
           jobs: -> uploader.files
           submit: -> 
@@ -58,6 +56,11 @@ kor.directive "korFileUpload", [
         uploader.bind "FileUploaded", (up, file, response) ->
           doit = -> scope.data.remove(file)
           to(doit, 300)
+
+        uploader.bind "Error", (up, error) -> 
+          error.parsed_response = JSON.parse(error.response)
+          error.file.error = error
+          scope.$apply_safely()
 
         uploader.init()
 

@@ -56,6 +56,8 @@ group :development do
   gem 'method_profiler'
   gem 'debase-ruby_core_source'
   gem 'perftools.rb'
+  gem 'rubocop', require: false
+  gem 'brakeman', require: false
 end
 
 group :test, :development do

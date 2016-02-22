@@ -8,7 +8,6 @@
 //= require jquery-ui/dialog
 //= require jquery-ui/resizable
 
-//= require modules/vendor/swfobject.js
 //= require jquery_ujs
 //= require angular
 //= require angular-route

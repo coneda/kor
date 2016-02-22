@@ -42,6 +42,8 @@ end
 # TODO: paginate entities in entity selector
 # TODO: fix #1651 (redmine)
 
+# TODO: remove one of the two web-utils versions
+# TODO: make sure in js kind_id == 1 isn't assumed to ensure medium kind
 # TODO: remove new_datings_attributes and existing_datings_attributes
 # TODO: upgrade elasticsearch
 # TODO: move logic from command_line.rb to the service layer

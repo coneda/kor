@@ -53,15 +53,17 @@
               <span ng-show="job.percent < 100">
                 {{job.percent}}
               </span>
-              <span ng-show="job.percent == 100">
-                <span ng-show="job.response().success">... done</span>
-                <span ng-show="!job.response().success">
-                  <div ng-repeat="(field, error) in job.response().data.errors">
-                    <span ng-bind="error"></span>
-                  </div>
-                </span>
+              <span ng-show="job.percent == 100 && !job.error">
+                ... {{'done' | translate}}
               </span>
             </span>
+            <strong class="kor-error" ng-show="job.error">
+              ... {{'nouns.error' | translate}}:
+              <span ng-repeat="(field, errors) in job.error.parsed_response">
+                {{'activerecord.attributes.' + field | translate}}:
+                <span ng-bind="errors.join(', ')"></span>
+              </span>
+            </strong>
           </div>
         </li>
       </ul>

@@ -108,16 +108,14 @@ Application.setup = function() {
 
 Kor.setup_blaze = function() {
   $(document).on('click', 'a', function(event) {
-    if (Settings.use_blaze) {
-      var link = $(this);
-      var url = link.attr('href');
-      if (url && url.match(/^\/entities\/\d+$/)) {
-        var parts = url.split("/");
-        var id = parts[parts.length - 1]
-        window.location.href = '/blaze#/entities/' + id;
-        event.preventDefault();
-        return false;
-      }
+    var link = $(this);
+    var url = link.attr('href');
+    if (url && url.match(/^\/entities\/\d+$/)) {
+      var parts = url.split("/");
+      var id = parts[parts.length - 1]
+      window.location.href = '/blaze#/entities/' + id;
+      event.preventDefault();
+      return false;
     }
   });
 }

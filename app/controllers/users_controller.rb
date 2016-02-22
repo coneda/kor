@@ -47,7 +47,7 @@ class UsersController < ApplicationController
   
     @users = User.
       search(params[:search_string]).
-      order("#{params[:sort_by]} #{params[:sort_order]}").
+      order(params[:sort_by] => params[:sort_order]).
       paginate(:page => params[:page], :per_page => 10)
 
     respond_to do |format|

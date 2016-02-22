@@ -494,6 +494,9 @@ en:
     entry: 
       one: "entry"
       other: "entries"
+    error:
+      one: "error"
+      other: "errors"
 
 
   objects:
@@ -786,6 +789,7 @@ en:
         document: document
         content_type: file type
         document_file_name: document
+        document_file_size: file size
         file_size: file size of the original
         file_type: file type
         original: original file

@@ -23,9 +23,6 @@ kor.directive "korRelationship", ["entities_service", "session_service",
         scope.$watch "page", (new_value) ->
           if scope.visible
             load_media()
-            # if angular.isNumber(scope.directed_relationship.page)
-            #   if scope.directed_relationship.page > 0
-            #     load_media()
 
         scope.$watch "master_toggle", ->
           scope.switch(true, scope.master_toggle)
@@ -35,7 +32,6 @@ kor.directive "korRelationship", ["entities_service", "session_service",
           r = scope.directed_relationship
           if force
             if value
-              # r.total_media_pages = Math.floor(r.total_media / 12) + 1
               if !r.media || r.media.length == 0
                 load_media()
               scope.visible = true
@@ -45,8 +41,6 @@ kor.directive "korRelationship", ["entities_service", "session_service",
             if scope.visible
               scope.visible = false
             else
-              # r.total_media_pages = Math.floor(r.total_media / 12) + 1
-              window.s = scope
               if !r.media || r.media.length == 0
                 load_media()
               scope.visible = true
@@ -63,23 +57,8 @@ kor.directive "korRelationship", ["entities_service", "session_service",
               kd.set_notice(data.message)
               scope.$emit 'relationship-saved'
 
-        # scope.unedit = (event) -> 
-        #   event.preventDefault() if event
-        #   rss.show(scope.directed_relationship)
-        #   scope.editing = false
-
-        # scope.update = (event) ->
-        #   event.preventDefault() if event
-        #   rss.update(scope.directed_relationship.relationship)
-
-        # scope.remove_property = (property, event) ->
-        #   event.preventDefault() if event
-        #   index = scope.directed_relationship.relationship.properties.indexOf(property)
-        #   scope.directed_relationship.relationship.properties.splice(index, 1) unless index == -1
-
         load_media = ->
           es.deep_media_load(scope.directed_relationship.to_id, scope.page).success (data) ->
-            # console.log data
             scope.media = kt.in_groups_of(data, 3, true)
 
         scope.close_editor =  -> scope.editing = false
