@@ -233,7 +233,9 @@ RSpec.describe RelationshipsController, :type => :controller do
       @leonardo, 'has created', @mona_lisa
     )
 
-    delete :destroy, api_key: @admin.api_key, id: relationship.id
+    expect {
+      delete :destroy, api_key: @admin.api_key, id: relationship.id
+    }.to change{DirectedRelationship.count}.by(-2)
     expect(response.status).to eq(200)
 
     expect(Relationship.count).to eq(0)

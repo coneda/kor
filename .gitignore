@@ -8,7 +8,6 @@ tmp/*
 data/*
 db/*.sqlite3
 public/media
-public/plugin_assets
 
 
 # Configuration

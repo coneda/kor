@@ -23,7 +23,7 @@
         <tbody>
           <tr ng-repeat="row in result.grouped_records">
             <td ng-repeat="entity in row" class="gallery_item">
-              <div class="kor_medium_frame">
+              <div class="kor_medium_frame" ng-if="entity.id">
                 <a href="/blaze#/entities/{{entity.id}}">
                   <span ng-bind="entity.name"></span>
                   <img ng-src="{{entity.url}}" />
@@ -33,7 +33,7 @@
                   <div kor-to-clipboard="entity" />
                 </span>
               </div>
-              <div ng-show="entity.url">
+              <div ng-if="entity.url">
                 <div>
                   <small>
                     {{'activerecord.attributes.medium.content_type' | translate}}
@@ -41,7 +41,7 @@
                   </small>
                 </div>
               </div>
-              <div ng-show="entity.primary_entities.length > 0">
+              <div ng-if="entity.primary_entities.length > 0">
                 <div class="hr"></div>
                 <div ng-repeat="pe in entity.primary_entities">
                   <div ng-repeat="se in pe.secondary_entities">

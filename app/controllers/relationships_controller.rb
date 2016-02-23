@@ -41,15 +41,14 @@ class RelationshipsController < ApplicationController
   def destroy
     @relationship = Relationship.find(params[:id])
 
-    unless authorized_for_relationship? @relationship, :delete
-      render :nothing => true, :status => 403
-    else
+    if authorized_for_relationship? @relationship, :delete
       @relationship.destroy
       render :json => {
         "message" => I18n.t('objects.destroy_success', :o => I18n.t('nouns.relationship', :count => 1) )
       }
+    else
+      render :nothing => true, :status => 403
     end
-
   end
 
 

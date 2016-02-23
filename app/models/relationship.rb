@@ -128,5 +128,21 @@ class Relationship < ActiveRecord::Base
     r = (reverse ? 'reverse' : 'normal')
     "'#{from_name}' [#{r}] #{relation_name} '#{to_name}'"
   end
+
+  # TODO: remove with grouped_related_entities
+  def other_entity(entity)
+    from_id == entity.id ? to : from
+  end
+
+  # TODO: remove with grouped_related_entities
+  def relation_name_for_entity(entity)
+    if from_id == entity.id
+      relation.name
+    elsif to_id == entity.id
+      relation.reverse_name
+    else
+      raise "entity not part of relationship"
+    end
+  end
   
 end

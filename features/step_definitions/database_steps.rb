@@ -373,3 +373,14 @@ Given(/^the entity "([^"]*)" was updated by "([^"]*)"$/) do |name, username|
   user = User.where(name: username).first
   entity.update_attributes updater: user
 end
+
+Given(/^there are "([^"]*)" media entities$/) do |amount|
+  amount.to_i.times do |i|
+    file = "tmp/test_file.txt"
+    system "echo #{i} > #{file}"
+    FactoryGirl.create :text, medium: FactoryGirl.build(:medium,
+      document: File.open(file)
+    )
+    system "rm #{file}"
+  end
+end

@@ -310,3 +310,11 @@ variable PROFILE is set, for example in development:
     PROFILE=true bundle exec rails s
 
 The reports will be generated in `./tmp/profiles`
+
+#### Showing media in development
+
+In the development environment, images are not being shown. Instead, a icon
+representing the medium's content_type is displayed. If you'd like to see the
+actual images nevertheless, use
+
+    SHOW_MEDIA=true bundle exec rails s

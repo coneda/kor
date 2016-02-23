@@ -216,15 +216,19 @@ class Medium < ActiveRecord::Base
   end
   
   def url(style = :original)
-    result = if style == :original
-      document.url(:original)
-    elsif image_style?(style)
-      image.url(style)
+    if Rails.env.development? && !ENV['SHOW_MEDIA']
+      "/content_types/#{content_type}.gif"
     else
-      custom_style_url(style)
-    end
+      result = if style == :original
+        document.url(:original)
+      elsif image_style?(style)
+        image.url(style)
+      else
+        custom_style_url(style)
+      end
 
-    result.present? ? result.gsub(/%3F/, '?') : result
+      result.present? ? result.gsub(/%3F/, '?') : result
+    end
   end
   
   def path(style = :original)

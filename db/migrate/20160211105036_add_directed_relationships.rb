@@ -22,9 +22,7 @@ class AddDirectedRelationships < ActiveRecord::Migration
 
     ActiveRecord::Base.record_timestamps = false
     Relationship.includes(:relation).find_each do |r|
-      r.ensure_directed
-      r.normal.save
-      r.reversal.save
+      r.save
     end
     ActiveRecord::Base.record_timestamps = true
 

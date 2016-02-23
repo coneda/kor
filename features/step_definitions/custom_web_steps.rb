@@ -238,3 +238,27 @@ end
 When(/^I click on entity "([^"]*)"$/) do |name|
   find('[kor-entity-widget]', :text => /#{name}/).click
 end
+
+Then(/^I should see "([^"]*)" gallery items?$/) do |amount|
+  all('.gallery_item .kor_medium_frame', count: amount.to_i)
+end
+
+Then(/^the current js page should be "([^"]*)"$/) do |expected|
+  params = {}
+  fragment = URI.parse(current_url).fragment || ''
+  fragment.split('?').last.split('&').each do |pair|
+    key, value = pair.split('=')
+    params[key] = value
+  end
+  page = (params['page'] || 1).to_i
+
+  expect(page).to eq(expected.to_i)
+end
+
+When(/^I click the first gallery item$/) do
+  first('.gallery_item .kor_medium_frame > a').click
+end
+
+When(/^I go back$/) do
+  go_back
+end

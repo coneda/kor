@@ -39,6 +39,8 @@ module Kor
   end
 end
 
+# TODO: when deleting relationships and that completely empties the second or a
+#       higher page, the previous page should be loaded
 # TODO: integration tests for tools: mass_destroy, add_to_authority_group, 
 #       add_to_user_group, move_to_collection, remove_from_authority_group,
 #       remove_from_user_group

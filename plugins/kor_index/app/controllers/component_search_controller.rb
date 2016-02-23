@@ -23,6 +23,13 @@ class ComponentSearchController < ApplicationController
   end
   
   def counts
+    # TODO: refactor tag counts for simple search (acts_as_taggable_on generates
+    #       massive lists of ids and uses them in SQL queries)
+    #       use something like this instead: 
+    #         ActsAsTaggableOn::Tagging.
+    #         joins('left join entities e on e.id = taggings.taggable_id').
+    #         joins('left join tags t on t.id = taggings.tag_id').
+    #         group('t.name').count
     @tags = Entity.without_media.filtered_tag_counts(params[:term])
     @tags = @tags.map do |tag_count|
       type = I18n.t('nouns.tag', :count => 1).capitalize_first_letter

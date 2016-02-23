@@ -20,7 +20,7 @@ commit history on GitHub.
 * a task to display list permissions
 * creating and editing relationships is now done inline
 * the gallery is now rendered in the browser and is therefore a lot faster
-* an HTML5 audio player is now integrated
+* an HTML5 audio player is now available
 * the video player has been dropped in favor of native HTML5 functionality
 
 ### Internal
@@ -35,6 +35,7 @@ commit history on GitHub.
   way
 * added brakeman for security audits
 * added rubocop to improve code style
+* media are not shown in development anymore (override with `SHOW_MEDIA`)
 
 ## Version 1.9.2
 

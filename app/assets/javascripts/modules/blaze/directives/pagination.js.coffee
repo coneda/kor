@@ -16,7 +16,10 @@ kor.directive "korPagination", [
           if isNaN(result) then 1 else result
         boxed_page = (value) ->
           result = Math.max(1, value)
-          Math.min(scope.total_pages(), value)
+          if !isNaN(scope.total_pages())
+            Math.min(scope.total_pages(), value)
+          else
+            result
         sanitize = (value) -> boxed_page(parse_int(value))
         scope.total_pages = -> Math.ceil(scope.total / scope.per_page)
 

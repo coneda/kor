@@ -75,6 +75,10 @@ FactoryGirl.define do
     factory :medium_audio_b do
       document File.open("#{Rails.root}/spec/fixtures/audio_b.mp3")
     end
+
+    factory :medium_text_a do
+      document File.open("#{Rails.root}/spec/fixtures/text_file.txt")
+    end
   end
 
   factory :medium_without_swap, :class => Medium do
@@ -169,6 +173,10 @@ FactoryGirl.define do
       factory :leonardo do
         name "Leonardo da Vinci"
       end
+
+      factory :tom do
+        name "Tom"
+      end
     end
 
     factory :institution do
@@ -176,12 +184,8 @@ FactoryGirl.define do
       kind { Kind.find_or_create_by :name => "Institution" }
     end
 
-    factory :tom do
-      name "Tom"
-      kind { Kind.find_or_create_by name: "Person" }
-    end
 
-    factory :picture do
+    factory :medium_entity do
       kind { Kind.medium_kind }
 
       factory :picture_a do
@@ -210,6 +214,10 @@ FactoryGirl.define do
 
       factory :audio_b do
         medium { FactoryGirl.build :medium_audio_b }
+      end
+
+      factory :text do
+        medium { FactoryGirl.build :medium_text_a }
       end
     end
 

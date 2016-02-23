@@ -4,7 +4,7 @@ Feature: Pagination
   I want to paginate through them
   
   
-  @javascript
+  @javascript @nodelay
   Scenario: Paginate 11 search results
     Given I am logged in as "admin"
     And there are "11" entities named "Werk X" of kind "Werk/Werke"
@@ -15,3 +15,37 @@ Feature: Pagination
     And I click element "img[data-name=pager_right]"
     Then I should see "Search results"
     And I should see "Werk 9"
+
+  
+  @javascript @nodelay
+  Scenario: Paginate 33 items on the gallery
+    Given I am logged in as "admin"
+    And there are "33" media entities
+    When I go to the gallery
+    Then I should see "16" gallery items
+    And the current js page should be "1"
+    When I click element "img[data-name='pager_right']"
+    And I should see "16" gallery items
+    And the current js page should be "2"
+    When I click element "img[data-name='pager_right']"
+    And I should see "1" gallery item
+    And the current js page should be "3"
+
+    When I click the first gallery item
+    Then I should see "text/plain"
+    When I go back
+    And I should see "1" gallery item
+    And the current js page should be "3"
+
+    When I click element "img[data-name='pager_left']"
+    And I should see "16" gallery items
+    And the current js page should be "2"
+
+
+  @javascript @nodelay
+  Scenario: Go to specific page directly
+    Given I am logged in as "admin"
+    And there are "17" media entities
+    When I go to page "2" of the gallery
+    And I should see "1" gallery item
+    And the current js page should be "2"
