@@ -22,6 +22,8 @@ commit history on GitHub.
 * the gallery is now rendered in the browser and is therefore a lot faster
 * an HTML5 audio player is now available
 * the video player has been dropped in favor of native HTML5 functionality
+* some roles have been dropped: `user_admin`, `credentials_admin`,
+  `collection_admin` and `developer` are now just `admin`
 
 ### Internal
 

@@ -60,7 +60,7 @@
             <strong class="kor-error" ng-show="job.error">
               ... {{'nouns.error' | translate}}:
               <span ng-repeat="(field, errors) in job.error.parsed_response">
-                {{'activerecord.attributes.' + field | translate}}:
+                {{'activerecord.attributes.medium.' + field | translate}}:
                 <span ng-bind="errors.join(', ')"></span>
               </span>
             </strong>

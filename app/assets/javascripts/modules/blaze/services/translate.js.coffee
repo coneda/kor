@@ -19,8 +19,9 @@ kor.service('korTranslate', ["korData", (korData) ->
         
         for key, value of options.interpolations
           regex = new RegExp("%\{#{key}\}", "g")
-          value = tvalue if (tvalue = this.translate(value)) != value
-          result = result.replace regex, tvalue
+          tvalue = this.translate(value)
+          value = tvalue if tvalue && (tvalue != value)
+          result = result.replace regex, value
           
         result
       catch error

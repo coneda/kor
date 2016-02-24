@@ -664,6 +664,7 @@ en:
     only_same_kind: "please chose only entities of the same type"
     exception_ocurred: "an unexpected error has occurred"
     publishment_expired: "this link has expired"
+    file_too_big: "the file '%{file}' is too big (%{size}MB) and can't be uploaded. The maximum allowed size is %{max}MB"
 
   labels:
     relate_to_via: 'relate all files with "%{to}" via'

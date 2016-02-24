@@ -39,6 +39,7 @@ module Kor
   end
 end
 
+# TODO: what happened here: https://testing-2-0.coneda.net/blaze#/entities/166 ?
 # TODO: when deleting relationships and that completely empties the second or a
 #       higher page, the previous page should be loaded
 # TODO: integration tests for tools: mass_destroy, add_to_authority_group, 

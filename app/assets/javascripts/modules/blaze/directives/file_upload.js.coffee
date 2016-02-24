@@ -13,6 +13,15 @@ kor.directive "korFileUpload", [
           file_data_name: "entity[medium_attributes][document]"
         )
 
+        scope.max_file_size = -> kd.info.config.max_file_size
+        scope.$watch 'max_file_size()', (new_value) ->
+          setting = if new_value < 1
+            "#{new_value * 1024}kb"
+          else
+            "#{new_value}kb"
+          uploader.setOption "filters", {max_file_size: setting}
+            
+
         scope.data = {
           jobs: -> uploader.files
           submit: -> 
@@ -57,10 +66,18 @@ kor.directive "korFileUpload", [
           doit = -> scope.data.remove(file)
           to(doit, 300)
 
-        uploader.bind "Error", (up, error) -> 
-          error.parsed_response = JSON.parse(error.response)
-          error.file.error = error
-          scope.$apply_safely()
+        uploader.bind "Error", (up, error) ->
+          if error.code == -600
+            message = kt.translate 'errors.file_too_big', interpolations: {
+              file: error.file.name
+              size: (error.file.origSize / 1024.0 / 1024.0).toFixed(2)
+              max: 0.5
+            }
+            window.alert message
+          else
+            error.parsed_response = JSON.parse(error.response)
+            error.file.error = error
+            scope.$apply_safely()
 
         uploader.init()
 

@@ -24,6 +24,9 @@ class Api::PublicController < Api::ApiController
         :show_panel => session[:show_session_info],
         :clipboard => session[:clipboard] || []
       },
+      :config => {
+        :max_file_size => Kor.config['app.max_file_upload_size'].to_f
+      },
       :translations => I18n.backend.send(:translations),
       :locale => I18n.locale
     }

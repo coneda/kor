@@ -666,6 +666,7 @@ de:
     only_same_kind: "bitte wählen Sie hierzu nur Entitäten vom selbem Typ"
     exception_ocurred: "ein unerwarteter Fehler ist eingetreten"
     publishment_expired: "Dieser Link ist abgelaufen"
+    file_too_big: "Die Datei '%{file}' ist zu groß (%{size}MB) und kann nicht hochgeladen werden. Die maximale Größe beträgt %{max}MB"
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

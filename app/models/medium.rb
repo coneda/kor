@@ -72,6 +72,7 @@ class Medium < ActiveRecord::Base
     end
   end
   
+  # TODO: fix for audio case or remove if not used
   def presentable?
     self.content_type.match /^(image|video|application\/x-shockwave-flash)/
   end
