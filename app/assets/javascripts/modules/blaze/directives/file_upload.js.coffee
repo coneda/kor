@@ -15,10 +15,11 @@ kor.directive "korFileUpload", [
 
         scope.max_file_size = -> kd.info.config.max_file_size
         scope.$watch 'max_file_size()', (new_value) ->
-          setting = if new_value < 1
-            "#{new_value * 1024}kb"
+          v = parse_int(new_value)
+          setting = if v < 1
+            "#{v * 1024}kb"
           else
-            "#{new_value}kb"
+            "#{v}mb"
           uploader.setOption "filters", {max_file_size: setting}
             
 
@@ -71,7 +72,7 @@ kor.directive "korFileUpload", [
             message = kt.translate 'errors.file_too_big', interpolations: {
               file: error.file.name
               size: (error.file.origSize / 1024.0 / 1024.0).toFixed(2)
-              max: 0.5
+              max: scope.max_file_size()
             }
             window.alert message
           else
@@ -85,5 +86,8 @@ kor.directive "korFileUpload", [
           unless scope.$root.$$phase == "$apply" || scope.$root.$$phase == "$digest"
             scope.$apply() 
 
+        parse_int = (str) ->
+          int = parseInt(str)
+          if isNaN(int) then 0 else int
     }
 ]
