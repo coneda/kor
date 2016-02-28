@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160219145808) do
+ActiveRecord::Schema.define(version: 20160228124411) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -61,8 +61,8 @@ ActiveRecord::Schema.define(version: 20160219145808) do
 
   create_table "credentials", force: :cascade do |t|
     t.string  "name",         limit: 255
-    t.string  "description",  limit: 255
-    t.integer "lock_version", limit: 4,   default: 0
+    t.text    "description",  limit: 65535
+    t.integer "lock_version", limit: 4,     default: 0
   end
 
   add_index "credentials", ["name"], name: "index_credentials_on_name", using: :btree
@@ -222,7 +222,7 @@ ActiveRecord::Schema.define(version: 20160219145808) do
   create_table "kinds", force: :cascade do |t|
     t.string   "uuid",         limit: 255
     t.string   "name",         limit: 255
-    t.string   "description",  limit: 255
+    t.text     "description",  limit: 65535
     t.text     "settings",     limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -267,7 +267,7 @@ ActiveRecord::Schema.define(version: 20160219145808) do
     t.integer  "lock_version",  limit: 4,     default: 0
     t.text     "from_kind_ids", limit: 65535
     t.text     "to_kind_ids",   limit: 65535
-    t.string   "description",   limit: 255
+    t.text     "description",   limit: 65535
   end
 
   add_index "relations", ["name"], name: "index_relations_on_name", using: :btree
