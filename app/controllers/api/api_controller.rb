@@ -1,5 +1,7 @@
 class Api::ApiController < ActionController::Base
 
+  helper_method :current_user
+
   respond_to :json
 
   before_filter do

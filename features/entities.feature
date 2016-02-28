@@ -3,14 +3,16 @@ Feature: Entities
   As a user
   I should be able to manage entities
   
-  
+
+  @javascript
   Scenario: Invalid entities
     Given I am logged in as "admin"
     And 40 invalid entities "Mona Lisa" of kind "Werk" inside collection "default"
     And I follow "Invalid entities"
     Then I should see "go to page"
   
-
+  
+  @javascript
   Scenario: Search fields
     Given I am logged in as "admin"
     When I go to the expert search
@@ -84,7 +86,8 @@ Feature: Entities
     And I should not see "La Bella"
     And I should see "La Gioconde"
     
-  
+
+  @javascript  
   Scenario: I don't see the select as current link when I have no edit rights for no collection
     Given I am logged in as "john"
     And the entity "Mona Lisa" of kind "Werk/Werke"
@@ -117,6 +120,7 @@ Feature: Entities
     And I should see "La Gioconde"
 
 
+  @javascript
   Scenario: Try to create an entity with the same name twice (same collection)
     Given I am logged in as "admin"
     And the kind "Werk/Werke"
@@ -143,7 +147,8 @@ Feature: Entities
     And I press "Create"
     Then I should see "name is already taken"
   
- 
+
+  @javascript
   Scenario: Try to create an entity with the same name within another collection
     Given the entity "Mona Lisa" of kind "Werk/Werke"
     And user "john" is allowed to "view/create" collection "Nebensammlung" through credential "Nebenuser"

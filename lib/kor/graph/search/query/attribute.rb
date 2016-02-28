@@ -20,7 +20,8 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
     :collection_ids => 'all',
     :properties => nil,
     :dataset => {},
-    :tag_list => ""
+    :tag_list => "",
+    :relation_name => nil
   )
   
   def collection_ids
@@ -57,6 +58,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
           dataset_attributes(user, criteria[:dataset]).
           related_to(user, criteria[:relationships]).
           within_collections(collection_ids).
+          by_relation_name(criteria[:relation_name]).
           includes(:medium)
           
         unless tag_list.empty?

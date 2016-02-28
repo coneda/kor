@@ -12,7 +12,7 @@ module NavigationHelpers
     when /the home\s?page/ then '/'
     when /the expert search/ then '/entities'
     when /the global groups page/ then '/authority_group_categories'
-    when /^the gallery$/ then web_path(:anchor => "/entities/gallery")
+    when /^the gallery( page)?$/ then web_path(:anchor => "/entities/gallery")
     when /^page "(\d+)" of the gallery$/
       page = $1
       web_path(:anchor => "/entities/gallery?page=#{page}")

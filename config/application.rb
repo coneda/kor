@@ -39,6 +39,12 @@ module Kor
   end
 end
 
+# TODO: document elastic token
+# TODO: finalize integration of brakeman and rubocop
+# TODO: make sure there are tests for storing serialized attributes: dataset,
+#       properties, datings, synonyms, relationship properties
+# TODO: merge entity group tables?
+# TODO: add @javascript tag to all feature tests
 # TODO: what happened here: https://testing-2-0.coneda.net/blaze#/entities/166 ?
 # TODO: when deleting relationships and that completely empties the second or a
 #       higher page, the previous page should be loaded

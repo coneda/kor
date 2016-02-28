@@ -71,6 +71,7 @@ class EntitiesController < ApplicationController
   def recently_created
     entities = Entity.
       allowed(current_user, :view).
+      by_relation_name(params[:relation_name]).
       newest_first.includes(:kind)
 
     @result = Kor::SearchResult.new(
@@ -95,6 +96,7 @@ class EntitiesController < ApplicationController
     entities = Entity.
       allowed(current_user, :view).
       where(id: history_entity_ids).
+      by_relation_name(params[:relation_name]).
       includes(:kind).
       newest_first
 
@@ -114,7 +116,7 @@ class EntitiesController < ApplicationController
     else
       if params[:terms]
         @results = kor_graph.search(:attribute,
-          criteria: {name: params[:terms]},
+          criteria: {name: params[:terms], relation_name: params[:relation_name]},
           per_page: params[:per_page]
         )
         render :json => {

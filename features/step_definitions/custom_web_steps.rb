@@ -260,5 +260,9 @@ When(/^I click the first gallery item$/) do
 end
 
 When(/^I go back$/) do
-  go_back
+  page.evaluate_script('window.history.back()')
+end
+
+When(/^I refresh the page$/) do
+  page.evaluate_script("window.location.reload()")
 end

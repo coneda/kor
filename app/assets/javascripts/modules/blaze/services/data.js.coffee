@@ -24,7 +24,12 @@ kor.service('korData', [
           false
       
       session_load: ->
-        http(method: 'get', url: "/api/1.0/info", type: "json").success (data) ->
+        request = {
+          method: 'get'
+          url: "/api/1.0/info"
+          headers: {accept: "application/json"}
+        }
+        http(request).success (data) ->
           service.info = data
           rs.$broadcast "kor-session-load-complete", data
         

@@ -104,8 +104,36 @@ Feature: Inplace relationship editor
     And I should see "The Last Supper" within ".relationships"
     And I should not see "Der Schrei" within ".relationships"
 
+  @javascript
+  Scenario: Show message when no relations are allowed for this source entity
+    Given I am logged in as "admin"
+    And the entity "Leonardo" of kind "person/people"
+    When I go to the entity page for "Leonardo"
+    And I click element "[data-name=plus]" within ".relationships"
+    And I save a screenshot
+    Then I should see "There is no relation provided for this combination of entity types"
+    Given the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
+    When I refresh the page
+    And I click element "img[data-name=plus]"
+    Then I should see "is equivalent to" within "[kor-relation-selector]"
+
+  @javascript
   Scenario: Select a relation which should limit the choices for the other entity
-    Given pending: todo
+    Given I am logged in as "admin"
+    And the entity "Leonardo" of kind "person/people"
+    And the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
+    When I go to the entity page for "Mona Lisa"
+    And I click element "[data-name=plus]" within ".relationships"
+    And I select "is equivalent to" from "relation_name"
+    Then I follow "recently created" within "[kor-entity-selector]"
+    Then I should see "Leonardo" within "[kor-entity-selector]"
+    And I should see "Der Schrei" within "[kor-entity-selector]"
+    When I select "is similar to" from "relation_name"
+    Then I should not see "Leonardo" within "[kor-entity-selector]"
+    But I should see "Der Schrei" within "[kor-entity-selector]"
+
+
+
   Scenario: Select another entity which should limit the choices for the relation
     Given pending: todo
   

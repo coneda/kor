@@ -433,7 +433,16 @@ class Entity < ActiveRecord::Base
     tmp_entities = where(:uuid => uuids).to_a
     Array(uuids).collect{|uuid| tmp_entities.find{|e| e.uuid == uuid } }.reject{|e| e.blank? }
   end
-  
+
+  scope :by_relation_name, lambda {|relation_name|
+    if relation_name
+      kind_ids = Relation.where(name: relation_name).map{|r| r.to_kind_ids}
+      kind_ids << Relation.where(reverse_name: relation_name).map{|r| r.from_kind_ids}
+      where(kind_id: kind_ids.flatten)
+    else
+      all
+    end
+  }  
   scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}

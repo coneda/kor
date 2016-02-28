@@ -39,6 +39,8 @@ Capybara.register_driver :poltergeist do |app|
   )
 end
 
+Capybara.default_max_wait_time = 5
+
 if ENV['HEADLESS']
   Capybara.javascript_driver = :poltergeist
 end
