@@ -66,11 +66,6 @@ class Medium < ActiveRecord::Base
     []
   end
 
-  before_validation do |m|
-    if m.to_file(:document)
-      m.document.instance_write :content_type, `file --mime-type -b #{m.to_file(:document).path}`.strip.split(';').first
-    end
-  end
   
   # TODO: fix for audio case or remove if not used
   def presentable?

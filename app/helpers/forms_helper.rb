@@ -139,7 +139,7 @@ module FormsHelper
   end
 
   def kind_selector_tag(name, options = {})
-    select_tag name, options_for_select(kinds_for_select(options), options[:selected].to_i)
+    select_tag name, options_for_select(kinds_for_select(options), options[:selected].to_i), options
   end
 
   def search_fields_for_entity_dataset(query)

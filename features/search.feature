@@ -141,3 +141,12 @@ Feature: search
     And I fill in "query_relationships__entity_name" with "Bamberg"
     And I press "Search"
     Then I should see "Bamberger Apokalypse" within ".search_result"
+
+
+  @javascript
+  Scenario: Expert search: see results after kind selection
+    Given I am logged in as "admin"
+    And the entity "Mona Lisa" of kind "Werk/Werke"
+    When I go to the expert search page
+    And I select "Werk" from "query[kind_id]"
+    Then I should see "Mona Lisa" within ".entity_list"

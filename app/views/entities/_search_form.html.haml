@@ -7,7 +7,7 @@
     - else
       = hidden_field_tag 'query[collection_ids]', @query.collection_ids.join(',')
     
-    = kor_input_tag Kind.model_name.human, :control => kind_selector_tag('query[kind_id]', :selected => @query.kind_id, :without_images => true, :no_selection_name => I18n.t('all'))
+    = kor_input_tag Kind.model_name.human, :control => kind_selector_tag('query[kind_id]', :selected => @query.kind_id, :without_images => true, :no_selection_name => I18n.t('all'), 'kor-submit-on-change' => true)
     
     = kor_input_tag Kor.config['search.entity_name'], :control => text_field_tag('query[name]', @query.name)
     

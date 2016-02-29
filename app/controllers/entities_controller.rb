@@ -77,8 +77,8 @@ class EntitiesController < ApplicationController
     @result = Kor::SearchResult.new(
       total: entities.count,
       page: params[:page],
-      per_page: 12,
-      records: entities.pageit(params[:page], 12)
+      per_page: 9,
+      records: entities.pageit(params[:page], 9)
     )
 
     render 'index'
@@ -103,8 +103,8 @@ class EntitiesController < ApplicationController
     @result = Kor::SearchResult.new(
       total: entities.count,
       page: params[:page],
-      per_page: 12,
-      records: entities.pageit(params[:page], 12)
+      per_page: 9,
+      records: entities.pageit(params[:page], 9)
     )
 
     render 'index'

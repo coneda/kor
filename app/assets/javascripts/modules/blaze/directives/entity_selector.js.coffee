@@ -71,7 +71,7 @@ kor.directive "korEntitySelector", [
               params = {
                 relation_name: scope.relation_name
                 terms: scope.terms
-                per_page: 12
+                per_page: 9
               }
               es.index(params).success (data) -> 
                 scope.results = data
