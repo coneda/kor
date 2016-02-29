@@ -136,7 +136,8 @@ Feature: search
     And the triple "Werk/Werke" "Bamberger Apokalypse" "befindet sich in/ist Ort von" "Ort/Orte" "Bamberg"
     And I go to the expert search page
     When I select "Werk" from "query_kind_id"
-    And I follow "Plus"
+    And I should see element ".entity_list"
+    And I click element "[data-name=plus]"
     And I select "befindet sich in" from "query_relationships__relation_name"
     And I fill in "query_relationships__entity_name" with "Bamberg"
     And I press "Search"

@@ -55,12 +55,9 @@ class ToolsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to back_save }
       format.json do
-        current_history = session[:current_history].map{|id| Entity.includes(:medium).find(id)}
-        data = {
-          :message => flash[:notice],
-          :current_history => current_history.as_json(:root => false, :include => :medium)
-        }
-        render :json => data
+        @current_history = session[:current_history].map{|id| Entity.includes(:medium).find(id)}
+        @notice = flash[:notice]
+        render
         flash.discard
       end
     end

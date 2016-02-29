@@ -266,3 +266,11 @@ end
 When(/^I refresh the page$/) do
   page.evaluate_script("window.location.reload()")
 end
+
+Then(/^I should (not )?see an image$/) do |negation|
+  if negation == 'not '
+    expect(page).not_to have_selector("img[src]")
+  else
+    expect(page).to have_selector("img[src]")
+  end
+end

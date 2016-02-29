@@ -105,7 +105,7 @@ module DataHelper
     @admins = FactoryGirl.create :admins
     @students = FactoryGirl.create :students
 
-    @admin = FactoryGirl.create :admin, :groups => [@admins]
+    @admin = FactoryGirl.create :admin, groups: [@admins]
     @jdoe = FactoryGirl.create :jdoe, :groups => [@students]
     
     @default.grant :all, :to => @admins

@@ -1,3 +1,5 @@
+json.partial! 'minimal', entity: @entity
+
 json.merge! @entity.serializable_hash(
   :include => [:kind, :collection, :datings, :creator, :updater, :authority_groups],
   :methods => [:synonyms, :dataset, :degree, :properties, :display_name],
