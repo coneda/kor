@@ -57,6 +57,7 @@ end
 # TODO: remove new_datings_attributes and existing_datings_attributes
 # TODO: upgrade elasticsearch
 # TODO: move logic from command_line.rb to the service layer
+# TODO: add tests for the command line tool
 # TODO: make sure that time zones are handled correctly from http content type to db
 # TODO: angular: remove flashing of unloaded page areas and remove flashing of strange "select <some HEX>" within media relations
 # TODO: handle stale object errors on json apis

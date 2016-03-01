@@ -1,7 +1,4 @@
-if ENV['COVERAGE']
-  require 'simplecov'
-  SimpleCov.start 'rails'
-end
+require 'simplecov'
 
 require 'vcr'
 
