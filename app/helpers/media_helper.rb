@@ -70,9 +70,7 @@ module MediaHelper
     medium = entity.medium
 
     if medium
-      if medium.content_type.match('video') && Kor.plugin_installed?("kor_video_player")
-        link_to I18n.t('verbs.play'), view_medium_path(medium.id)
-      elsif medium.content_type.match('image')
+      if medium.content_type.match(/^image\//)
         link_to(I18n.t('verbs.enlarge'), view_medium_path(medium.id)) + ' | ' +
         link_to(I18n.t('verbs.maximize'), maximize_medium_path(medium))
       else

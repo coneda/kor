@@ -8,20 +8,4 @@ class TplController < ApplicationController
     
   end
 
-  def pagination
-    
-  end
-
-  def relation
-
-  end
-
-  def media_relation
-    
-  end
-
-  def relationship
-    
-  end
-
 end

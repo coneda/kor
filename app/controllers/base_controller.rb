@@ -1,5 +1,7 @@
 class BaseController < ActionController::Base
 
+  helper_method :current_user
+
   def current_user
     @current_user ||= user_by_api_key || User.pickup_session_for(session[:user_id])
   end

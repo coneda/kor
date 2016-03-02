@@ -8,11 +8,11 @@ class Tpl::EntitiesController < TplController
 
   end
 
-  def show
-
+  def gallery
+    
   end
 
-  def widget
+  def show
 
   end
 

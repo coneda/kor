@@ -23,38 +23,40 @@
         <tbody>
           <tr ng-repeat="row in result.grouped_records">
             <td ng-repeat="entity in row" class="gallery_item">
-              <div class="kor_medium_frame" ng-if="entity.id">
-                <a href="/blaze#/entities/{{entity.id}}">
-                  <span ng-bind="entity.name"></span>
-                  <img ng-src="{{entity.url}}" />
-                </a>
-                <span class="button_bar" style="display: none;">
-                  <div kor-current-button="entity" />
-                  <div kor-to-clipboard="entity" />
-                </span>
-              </div>
-              <div ng-if="entity.url">
-                <div>
-                  <small>
-                    {{'activerecord.attributes.medium.content_type' | translate}}
-                    <strong ng-bind="entity.content_type.split('/')[1]"></strong>
-                  </small>
+              <div ng-if="entity.id">
+                <div class="kor_medium_frame" ng-show="entity.url">
+                  <a href="/blaze#/entities/{{entity.id}}">
+                    <span ng-bind="entity.name"></span>
+                    <img ng-src="{{entity.url}}" />
+                  </a>
+                  <span class="button_bar" style="display: none;">
+                    <div kor-current-button="entity" />
+                    <div kor-to-clipboard="entity" />
+                  </span>
                 </div>
-              </div>
-              <div ng-if="entity.primary_entities.length > 0">
-                <div class="hr"></div>
-                <div ng-repeat="pe in entity.primary_entities">
-                  <div ng-repeat="se in pe.secondary_entities">
-                    <a href="#/entities/{{se.id}}">
-                      <strong ng-bind="se.name"></strong>
-                    </a>  
+                <div ng-show="entity.url">
+                  <div>
+                    <small>
+                      {{'activerecord.attributes.medium.content_type' | translate}}
+                      <strong ng-bind="entity.content_type.split('/')[1]"></strong>
+                    </small>
                   </div>
                 </div>
-                <div ng-repeat="pe in entity.primary_entities">
-                  <a
-                    href="#/entities/{{pe.id}}"
-                    ng-bind="pe.name"
-                  ></a>  
+                <div ng-show="entity.primary_entities.length > 0">
+                  <div class="hr"></div>
+                  <div ng-repeat="pe in entity.primary_entities">
+                    <div ng-repeat="se in pe.secondary_entities">
+                      <a href="#/entities/{{se.id}}">
+                        <strong ng-bind="se.name"></strong>
+                      </a>  
+                    </div>
+                  </div>
+                  <div ng-repeat="pe in entity.primary_entities">
+                    <a
+                      href="#/entities/{{pe.id}}"
+                      ng-bind="pe.name"
+                    ></a>  
+                  </div>
                 </div>
               </div>
             </td>

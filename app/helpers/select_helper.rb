@@ -31,8 +31,6 @@ module SelectHelper
       ['simple_search', url_for(:controller => 'component_search', :action => 'component_search')]
     ]
     
-    result.pop unless Kor.plugin_installed?('kor_index')
-    
     result.map!{|e| [I18n.t(e.first, :scope => :pages).capitalize_first_letter, e.last] }
     result.sort!{|x,y| x.first <=> y.first}
   end

@@ -54,24 +54,6 @@ class FieldsController < ApplicationController
     redirect_to :action => 'index'
   end
   
-  def edit_schema
-    @kind = Kind.find(params[:id])
-    @schema = @kind.schema
-    render :layout => 'small_normal'
-  end
-  
-  def drop_schema_field
-    @kind = Kind.find(params[:id])
-    @kind.fields = @kind.schema.reject do |f|
-      f.name == params[:name]
-    end
-    
-    if @kind.save
-      render :nothing => true
-    else
-      render :nothing => true, :status => :unacceptable
-    end
-  end
 
   protected
 

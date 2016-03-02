@@ -39,6 +39,14 @@ module Kor
   end
 end
 
+# TODO: oai-pmh test resumptionToken
+# TODO: better test fields_controller.rb
+# TODO: better test generators_controller.rb
+# TODO: test putting a whole authority group to the clipboard
+# TODO: test random query for more than 4 entities
+# TODO: test mailers and that they are used
+# TODO: move all js templates to misc.html.erb or partial them from there
+# TODO: test downloads_controller
 # TODO: document elastic token
 # TODO: finalize integration of brakeman and rubocop
 # TODO: make sure there are tests for storing serialized attributes: dataset,

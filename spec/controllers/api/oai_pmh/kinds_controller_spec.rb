@@ -79,7 +79,7 @@ describe Api::OaiPmh::KindsController, :type => :controller do
     xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
     get :get_record, :format => :xml, :identifier => people.uuid
     doc = parse_xml(response.body)
-
+    
     expect(xsd.validate(doc)).to be_empty
   end
 

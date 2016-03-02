@@ -15,11 +15,8 @@
 
       = navigation_item I18n.t('pages.new_media'), web_path(:anchor => "/entities/gallery")
 
-      - if Kor.plugin_installed 'kor_index'
-        = navigation_item I18n.t('nouns.simple_search'), {:controller => "component_search", :action => 'component_search'}
-        = navigation_item I18n.t('nouns.expert_search'), {:controller => "entities"}
-      - else
-        = navigation_item I18n.t('nouns.search'), {:controller => "entities"}
+      = navigation_item I18n.t('nouns.simple_search'), {:controller => "component_search", :action => 'component_search'}
+      = navigation_item I18n.t('nouns.expert_search'), {:controller => "entities"}
       
       %li.spacer
 

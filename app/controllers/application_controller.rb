@@ -84,7 +84,7 @@ class ApplicationController < BaseController
           end
         end
       else
-        Kor.info("AUTH", "user '#{current_user.name}' has been seen")
+        Rails.logger.info("Auth: user '#{current_user.name}' has been seen")
         session[:expires_at] = Kor.session_expiry_time
       end
     end

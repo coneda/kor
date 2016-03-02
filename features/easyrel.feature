@@ -114,7 +114,8 @@ Feature: Inplace relationship editor
     Then I should see "There is no relation provided for this combination of entity types"
     Given the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
     When I refresh the page
-    And I click element "img[data-name=plus]"
+    Then I should see "Leonardo"
+    When I click element "img[data-name=plus]"
     Then I should see "is equivalent to" within "[kor-relation-selector]"
 
   @javascript
@@ -133,7 +134,7 @@ Feature: Inplace relationship editor
     But I should see "Der Schrei" within "[kor-entity-selector]"
 
 
-
+  @javascript
   Scenario: Select another entity which should limit the choices for the relation
     Given pending: todo
   

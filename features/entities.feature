@@ -25,10 +25,11 @@ Feature: Entities
     And the entity "Nürnberg" of kind "Ort/Orte"
     And the entity "Nürnberg" has 12 relationships
     When I go to the entity page for "Nürnberg"
+    Then I should see "Nürnberg"
     Then I should see element ".pagination input"
     When I click element "img[data-name='pager_right']" within ".relation"
     And I follow "Triangle_up" within ".relation"
-    Then I should see /ENDE/ within ".relationships"
+    Then I should see "ENDE" within ".relationships"
 
 
   @javascript
@@ -89,10 +90,12 @@ Feature: Entities
 
   @javascript  
   Scenario: I don't see the select as current link when I have no edit rights for no collection
-    Given I am logged in as "john"
-    And the entity "Mona Lisa" of kind "Werk/Werke"
+    Given the entity "Mona Lisa" of kind "Werk/Werke"
+    And user "john" is allowed to "view" collection "default" via credential "users"
+    And I am logged in as "john"
     When I go to the entity page for "Mona Lisa"
-    Then I should not see element "a[kor-to-clipboard]"
+    And I should see "Mona Lisa"
+    Then I should not see element "a[kor-current-button]"
     
     
   @javascript  

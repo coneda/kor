@@ -240,7 +240,7 @@ When(/^I click on entity "([^"]*)"$/) do |name|
 end
 
 Then(/^I should see "([^"]*)" gallery items?$/) do |amount|
-  all('.gallery_item .kor_medium_frame', count: amount.to_i)
+  all('.gallery_item > div', count: amount.to_i, visible: true)
 end
 
 Then(/^the current js page should be "([^"]*)"$/) do |expected|
