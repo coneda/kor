@@ -4,4 +4,4 @@
 
   - unless @entities.empty?
     .random_entities
-    = render :partial => 'entities/gallery', :locals => {:top_left => I18n.t('pages.random_entities'), :results => @entities, :top_right => ""}
+    = render :partial => 'entities/gallery', :locals => {:top_left => I18n.t('pages.random_entities').capitalize, :results => @entities, :top_right => ""}

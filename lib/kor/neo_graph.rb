@@ -23,15 +23,6 @@ class Kor::NeoGraph
     # simple_cypher "DROP INDEX ON :entity(kind_id)"
   end
 
-  def store(item)
-    case item
-      when Entity
-
-      when Relationship
-      when Relation
-    end
-  end
-
   def new_progress_bar(title, total)
     @progress = ProgressBar.create(
       :title => title,
@@ -42,10 +33,12 @@ class Kor::NeoGraph
   end
 
   def increment(i = 1)
-    if i == 1
-      @progress.increment
-    else
-      @progress.progress += i
+    if @progress
+      if i == 1
+        @progress.increment
+      else
+        @progress.progress += i
+      end
     end
   end
 
@@ -75,27 +68,7 @@ class Kor::NeoGraph
   def import_all
     new_progress_bar "importing entities", Entity.count
     Entity.find_in_batches :batch_size => 100 do |batch|
-      results = cypher(
-        "statement" => "CREATE (n:entity {e}) RETURN n.id, id(n)",
-        "parameters" => {
-          "e" => batch.map{|item|
-            increment
-            {
-              "id" => item.id,
-              "uuid" => item.uuid,
-              "collection_id" => item.collection_id,
-              "name" => item.display_name,
-              "distinct_name" => item.distinct_name || "",
-              "subtype" => item.subtype || "",
-              "medium_id" => item.medium_id || 0,
-              "kind_id" => item.kind_id,
-              "synonyms" => item.synonyms,
-              "created_at" => item.created_at.to_f,
-              "updated_at" => item.updated_at.to_f
-            }
-          }
-        }  
-      )
+      store(batch)
     end
 
     simple_cypher "CREATE INDEX ON :entity(id)"
@@ -103,31 +76,64 @@ class Kor::NeoGraph
 
     new_progress_bar "importing relationships", Relationship.count
     Relationship.includes(:relation).find_in_batches :batch_size => 1000 do |batch|
-      statements = batch.map do |relationship|
-        {
-          "statement" => [
-            "MATCH (a:entity),(b:entity)",
-            "WHERE a.id = {from_id} AND b.id = {to_id}",
-            "CREATE (a)-[rn:`#{relationship.relation.name}` {data}]->(b)",
-            "CREATE (b)-[rr:`#{relationship.relation.reverse_name}` {data}]->(a)"
-          ].join(" "),
+      store(batch)
+    end
+  end
+
+  def store(items)
+    items = Kor.array_wrap(items)
+
+    case items.first
+      when Entity
+        cypher(
+          "statement" => "CREATE (n:entity {e}) RETURN n.id, id(n)",
           "parameters" => {
-            "from_id" => relationship.from_id,
-            "to_id" => relationship.to_id,
-            "data" => {
-              "id" => relationship.id,
-              "uuid" => relationship.uuid,
-              "relation_name" => relationship.relation.name,
-              "relation_reverse_name" => relationship.relation.reverse_name,
-              "created_at" => relationship.created_at.to_f,
-              "updated_at" => relationship.updated_at.to_f    
+            "e" => items.map{ |item|
+              increment
+              {
+                "id" => item.id,
+                "uuid" => item.uuid,
+                "collection_id" => item.collection_id,
+                "name" => item.display_name,
+                "distinct_name" => item.distinct_name || "",
+                "subtype" => item.subtype || "",
+                "medium_id" => item.medium_id || 0,
+                "kind_id" => item.kind_id,
+                "synonyms" => item.synonyms,
+                "created_at" => item.created_at.to_f,
+                "updated_at" => item.updated_at.to_f
+              }
+            }
+          }  
+        )
+      when Relationship
+        statements = items.map do |item|
+          {
+            "statement" => [
+              "MATCH (a:entity),(b:entity)",
+              "WHERE a.id = {from_id} AND b.id = {to_id}",
+              "CREATE (a)-[rn:`#{item.relation.name}` {data}]->(b)",
+              "CREATE (b)-[rr:`#{item.relation.reverse_name}` {data}]->(a)"
+            ].join(" "),
+            "parameters" => {
+              "from_id" => item.from_id,
+              "to_id" => item.to_id,
+              "data" => {
+                "id" => item.id,
+                "uuid" => item.uuid,
+                "relation_name" => item.relation.name,
+                "relation_reverse_name" => item.relation.reverse_name,
+                "created_at" => item.created_at.to_f,
+                "updated_at" => item.updated_at.to_f    
+              }
             }
           }
-        }
-      end
+        end
 
-      results = cypher(statements)
-      increment batch.size
+        results = cypher(statements)
+        increment items.size
+      else
+        raise "invalid items: #{items.inspect}"
     end
   end
 
@@ -137,7 +143,7 @@ class Kor::NeoGraph
     # statements.each do |s|
     #   puts "  #{s}"
     # end
-    response = request "post", "/db/data/transaction/commit", {}, Oj.dump(
+    response = request "post", "/db/data/transaction/commit", {}, JSON.dump(
       "statements" => statements
     )
 

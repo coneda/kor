@@ -9,10 +9,10 @@ class InplaceController < ApplicationController
       if @entity.save
         render :text => @entity.tag_list
       else
-        render :nothing => true, :status => 500
+        render json: @entity.errors, status: 406
       end
     else
-      render :nothing => true, :status => 401
+      render :nothing => true, :status => 403
     end
   end
   

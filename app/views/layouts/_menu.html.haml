@@ -13,13 +13,10 @@
       
       %li.spacer
 
-      = navigation_item I18n.t('pages.new_media'), {:controller => "entities", :action => 'gallery'}
+      = navigation_item I18n.t('pages.new_media'), web_path(:anchor => "/entities/gallery")
 
-      - if Kor.plugin_installed 'kor_index'
-        = navigation_item I18n.t('nouns.simple_search'), {:controller => "component_search", :action => 'component_search'}
-        = navigation_item I18n.t('nouns.expert_search'), {:controller => "entities"}
-      - else
-        = navigation_item I18n.t('nouns.search'), {:controller => "entities"}
+      = navigation_item I18n.t('nouns.simple_search'), {:controller => "component_search", :action => 'component_search'}
+      = navigation_item I18n.t('nouns.expert_search'), {:controller => "entities"}
       
       %li.spacer
 
@@ -40,7 +37,7 @@
       - if authorized? :create
         %li
           = form_for :new_entity, :url => {:controller => 'entities', :action => 'new'}, :method => :get, :builder => Kor::FormBuilder do |f|
-            = f.kind_selector :kind_id, {:no_selection_name => I18n.t('objects.new', :o => I18n.t('nouns.entity', :count => 1)), :media => true}
+            = f.kind_selector :kind_id, {:no_selection_name => I18n.t('objects.new', :o => I18n.t('nouns.entity', :count => 1)).capitalize, :media => true}
         
         = navigation_item I18n.t('nouns.mass_upload'), web_path(:anchor => "/entities/multi_upload")
       
@@ -64,17 +61,17 @@
               = navigation_item Relation.model_name.human(:count => :other), :controller => 'relations' if current_user.relation_admin?
               = navigation_item Kind.model_name.human(:count => :other), :controller => 'kinds' if current_user.kind_admin?
             = submenu_section do
-              = navigation_item Collection.model_name.human(:count => :other), collections_path if current_user.collection_admin?
-              - if current_user.credential_admin?
+              = navigation_item Collection.model_name.human(:count => :other), collections_path if current_user.admin?
+              - if current_user.admin?
                 = navigation_item Credential.model_name.human(:count => :other), credentials_path            
-              - if current_user.user_admin?
+              - if current_user.admin?
                 = navigation_item I18n.t('nouns.user_admin'), users_path, :except => :edit_self, :highlight => :controller
 
         %li.spacer
       
       = navigation_item I18n.t('nouns.statistics'), {:controller => 'tools', :action => 'statistics'}
       
-      = navigation_item ExceptionLog.model_name.human, :controller => 'exception_logs' if current_user.developer?
+      = navigation_item ExceptionLog.model_name.human, :controller => 'exception_logs' if current_user.admin?
 
       - unless current_user == User.guest
         %li.spacer

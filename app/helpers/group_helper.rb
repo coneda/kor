@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module GroupHelper
 
   def authority_group_with_ancestors(group, options = {})

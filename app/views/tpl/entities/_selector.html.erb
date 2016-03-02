@@ -1,0 +1,53 @@
+<div class="menu">
+  <a 
+    href="#"
+    ng-bind="'nouns.search' | translate"
+    ng-click="goto_tab('search', $event)"
+    ng-class="{'selected': tab == 'search'}"
+  ></a> | 
+  <a
+    href="#"
+    ng-bind="'recently_visited' | translate"
+    ng-click="goto_tab('visited', $event)"
+    ng-class="{'selected': tab == 'visited'}"
+  ></a> |
+  <a
+    href="#"
+    ng-bind="'recently_created' | translate"
+    ng-click="goto_tab('created', $event)"
+    ng-class="{'selected': tab == 'created'}"
+  ></a>
+  <span ng-show="existing">
+    |
+    <a
+      href="#"
+      ng-bind="'currently_linked' | translate"
+      ng-click="goto_tab('existing', $event)"
+      ng-class="{'selected': tab == 'existing'}"
+    ></a>
+  </span>
+</div>
+
+<div ng-show="tab == 'search'">
+  <input name="terms" ng-model="terms" />
+</div>
+<div ng-show="tab == 'visited'"></div>
+<div ng-show="tab == 'created'"></div>
+<div ng-show="tab == 'existing'"></div>
+
+<div class="entities">
+  <table>
+    <tbody>
+      <tr ng-repeat="row in grouped_records">
+        <td
+          ng-repeat="record in row"
+          ng-class="{'selected': (record.id && record.id == entity.id)}"
+          ng-click="select(record, $event)"
+          kor-id="{{record.id}}"
+        >
+          <span kor-entity-widget="record" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

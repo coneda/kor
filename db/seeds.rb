@@ -2,22 +2,7 @@ Kor.config['maintainer.email'] = 'admin@localhost'
 
 administrators = Credential.create!(:name => "Administrators")
 
-User.create!(:name => "admin",
-  :full_name => I18n.t('users.administrator'),
-  :groups => [ administrators ],
-  :password => 'admin', 
-  :email => Kor.config['maintainer.mail'],
-  :terms_accepted => true,
-  
-  :admin => true,
-  :relation_admin => true,
-  :authority_group_admin => true,
-  :user_admin => true,
-  :credential_admin => true,
-  :collection_admin => true,
-  :kind_admin => true,
-  :developer => false
-)
+Kor.ensure_admin_account!
 
 default = Collection.create! :name => "Default"
 
@@ -32,3 +17,38 @@ Kind.create(:name => Medium.model_name.human, :plural_name => Medium.model_name.
 )
 
 SystemGroup.create(:name => 'invalid')
+
+if ENV['SAMPLE_DATA']
+  print "generating sample data ... "
+  if FactoryGirl.factories.count == 0
+    require "#{Rails.root}/spec/factories"
+  end
+
+  media = Kind.medium_kind
+  people = FactoryGirl.create :people
+  works = FactoryGirl.create :works
+  FactoryGirl.create(:shows,
+    from_kind_ids: [media.id],
+    to_kind_ids: [works.id]
+  )
+  FactoryGirl.create(:has_created,
+    from_kind_ids: [people.id],
+    to_kind_ids: [works.id]
+  )
+  FactoryGirl.create(:is_equivalent_to,
+    from_kind_ids: [works.id],
+    to_kind_ids: [works.id]
+  )
+  FactoryGirl.create(:is_sibling_of,
+    from_kind_ids: [people.id],
+    to_kind_ids: [people.id]
+  )
+
+  leonardo = FactoryGirl.create :leonardo
+  mona_lisa = FactoryGirl.create :mona_lisa
+  FactoryGirl.create :der_schrei
+  FactoryGirl.create :landscape
+
+  Relationship.relate_and_save leonardo, 'has created', mona_lisa
+  puts "done"
+end

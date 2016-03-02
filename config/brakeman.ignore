@@ -1,0 +1,82 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Command Injection",
+      "warning_code": 14,
+      "fingerprint": "f69efd9dba4e5e128c893a90cd60a92e9f82631221e6fcb2d9e4316a2dd4a468",
+      "message": "Possible command injection",
+      "file": "lib/kor/auth.rb",
+      "line": 23,
+      "link": "http://brakemanscanner.org/docs/warning_types/command_injection/",
+      "code": "system({ \"KOR_USERNAME_FILE\" => (\"#{dir}/username.txt\"), \"KOR_PASSWORD_FILE\" => (\"#{dir}/password.txt\"), \"KOR_USERNAME\" => username, \"KOR_PASSWORD\" => password }, \"#{\"bash -c \\\"#{c[\"script\"]}\\\"\"} > #{dir}/stdout.log 2> #{dir}/error.log\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Kor::Auth",
+        "method": "s(:self).authenticate"
+      },
+      "user_input": "dir",
+      "confidence": "Medium",
+      "note": ""
+    },
+    {
+      "warning_type": "Command Injection",
+      "warning_code": 14,
+      "fingerprint": "51eff3b26d9d5a1de3294e6c76be3c79bd8bb76cf3229038e5e36a98455dd0b9",
+      "message": "Possible command injection",
+      "file": "lib/kor/export/excel.rb",
+      "line": 13,
+      "link": "http://brakemanscanner.org/docs/warning_types/command_injection/",
+      "code": "system(\"mkdir -p #{@target_dir}\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Kor::Export::Excel",
+        "method": "run"
+      },
+      "user_input": "@target_dir",
+      "confidence": "Medium",
+      "note": ""
+    },
+    {
+      "warning_type": "Command Injection",
+      "warning_code": 14,
+      "fingerprint": "3618a18d41d320195b0d8cc52718ff205c7f135f4c487327c54743b2741acf48",
+      "message": "Possible command injection",
+      "file": "lib/kor/export/excel.rb",
+      "line": 14,
+      "link": "http://brakemanscanner.org/docs/warning_types/command_injection/",
+      "code": "system(\"rm -f #{@target_dir}/entities.*.xls\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Kor::Export::Excel",
+        "method": "run"
+      },
+      "user_input": "@target_dir",
+      "confidence": "Medium",
+      "note": ""
+    },
+    {
+      "warning_type": "Command Injection",
+      "warning_code": 14,
+      "fingerprint": "444e6d9e81bcc15bb6acf9aef64bbb7d2678c6a603d9c3e3d532f3f1e0f74755",
+      "message": "Possible command injection",
+      "file": "lib/kor/zip_file.rb",
+      "line": 58,
+      "link": "http://brakemanscanner.org/docs/warning_types/command_injection/",
+      "code": "system(\"mkdir -p #{dir}/kor_files\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Kor::ZipFile",
+        "method": "pack"
+      },
+      "user_input": "dir",
+      "confidence": "Medium",
+      "note": ""
+    }
+  ],
+  "updated": "2016-02-22 03:05:11 +0100",
+  "brakeman_version": "3.1.5"
+}

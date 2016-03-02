@@ -18,10 +18,10 @@ class Credential < ActiveRecord::Base
   
   # Scopes
   
-  scope :ordered, order("name ASC")
+  scope :ordered, lambda { order("name ASC") }
   scope :non_personal, lambda {
     personal_ids = joins(:owner).select('credentials.id').map{|c| c.id}
-    personal_ids.empty? ? scoped : where("id NOT IN (?)", personal_ids)
+    personal_ids.empty? ? all : where("id NOT IN (?)", personal_ids)
   }
   
   # Attributes
@@ -37,5 +37,5 @@ class Credential < ActiveRecord::Base
   def list_name
     (name).short(18)
   end
-  
+
 end

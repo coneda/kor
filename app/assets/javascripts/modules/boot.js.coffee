@@ -12,30 +12,25 @@ kor.controller "record_history_controller", [
     )
 ]
 
+kor.factory 'timeoutHttpIntercept', [
+  '$rootScope', '$q',
+  (rs, q) ->
+    factory = {
+      'request': (config) ->
+        config.timeout = 10000
+        config
+    }
+]
+
 kor.config([ 
   "$httpProvider", "$sceProvider", "$routeProvider",
   (hp, sce, rp) ->
     sce.enabled(false)
 
-    hp.interceptors.push [
-      "$q", "korFlash",
-      (q, korFlash) ->
-        (promise) ->
-          promise.then (response) ->
-            console.log(response)
-            if m = response.headers('X-Message-Error')
-              korFlash.error = m
-
-            if m = response.headers('X-Message-Notice')
-              korFlash.notice = m
-
-            response
-
-    ]
-
-    rp.when "/entities/multi_upload", templateUrl: ((params) -> "/tpl/entities/multi_upload"), reloadOnSearch: false, controller: "record_history_controller"
+    rp.when "/entities/gallery", templateUrl: ((params) -> "/tpl/entities/gallery"), reloadOnSearch: false, controller: "record_history_controller"
+    rp.when "/entities/multi_upload", templateUrl: ((params) -> "/tpl/entities/multi_upload?#{Math.random()}"), reloadOnSearch: false, controller: "record_history_controller"
     rp.when "/entities/isolated", templateUrl: ((params) -> "/tpl/entities/isolated"), reloadOnSearch: false, controller: "record_history_controller"
-    rp.when "/entities/:id", templateUrl: ((params) -> "/tpl/entities/#{params.id}"), reloadOnSearch: false, controller: "record_history_controller"
+    rp.when "/entities/:id", templateUrl: "/tpl/entities/1", reloadOnSearch: false, controller: "record_history_controller"
     rp.when "/denied", templateUrl: ((params) -> "/tpl/denied"), reloadOnSearch: false
 
   ]

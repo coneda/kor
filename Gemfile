@@ -1,62 +1,64 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.22'
-gem 'strong_parameters'
+gem 'rails', '~> 4.2.5'
+gem 'responders', '~> 2.0'
 
 gem 'delayed_paperclip'
 gem "paperclip"
 gem "cocaine"
-gem 'delayed_job_active_record'
 gem 'daemons'
-
 gem 'mysql2'
 gem "RedCloth"
-gem "will_paginate", "= 3.0.3"
+gem "will_paginate", "~> 3.0.3"
 gem "parslet"
 gem "exifr", '1.1.1'
 gem "haml"
 gem "sass"
-gem 'acts-as-taggable-on', '~> 2.2.2'
-gem 'system_timer', :platforms => [:ruby_18]
+gem 'httpclient'
+gem 'acts-as-taggable-on', '~> 3.5'
 
-gem 'kor_index', :path => './plugins/kor_index'
 
-gem "sprockets"
+gem "sprockets-rails"
 gem "jquery-rails"
 gem 'jquery-ui-rails'
-gem 'angularjs-rails'
+gem 'angularjs-rails', '~> 1.4.8'
 gem 'plupload-rails'
 gem 'coffee-rails'
 gem "sass-rails"
 
-gem 'awesome_nested_set', :git => 'https://github.com/galetahub/awesome_nested_set.git'
-
-gem 'oj'
 gem 'jbuilder'
-
-gem 'httpclient'
+gem 'test-unit'
 gem 'ruby-progressbar'
 
-group :assets do
-  gem "therubyracer"
-  gem 'uglifier'
+if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
+  # TODO: all of these load activerecord on asset precompiliation so we load 
+  # (and configure) it in app/controllers/application_controller.rb
+  gem 'activerecord-session_store'
+  gem 'delayed_job_active_record'
+  gem 'awesome_nested_set', "~> 3.0.0"
+  gem 'factory_girl_rails'
 end
 
+gem 'kor_index', path: './plugins/kor_index'
+
 group :test do
-  gem 'cucumber-rails', :require => false
+  gem 'cucumber-rails', require: false
   gem 'poltergeist'
   gem 'selenium-webdriver'
   gem 'rspec-rails', '~> 3.1'
   gem 'capybara'
   gem 'database_cleaner'
-  gem 'factory_girl_rails'
-  gem 'test-unit', :platforms => [:ruby_22]
   gem 'vcr'
   gem 'webmock'
+  gem 'simplecov', require: false
 end
 
 group :development do
   gem 'method_profiler'
+  gem 'debase-ruby_core_source'
+  gem 'perftools.rb'
+  gem 'rubocop', require: false
+  gem 'brakeman', require: false
 end
 
 group :test, :development do
@@ -67,9 +69,10 @@ end
 
 group :production do
   gem 'puma'
+  gem "therubyracer"
+  gem 'uglifier'
 end
 
 group :import_export do
-  gem 'mixlib-cli'
   gem 'spreadsheet'
 end

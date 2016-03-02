@@ -2,6 +2,7 @@ de:
 
   # General
 
+  with: mit
   general: "allgemein"
   with_solved_issues_from: "mit gelösten Tickets aus"
   'yes': "ja"
@@ -56,7 +57,9 @@ de:
   report_a_problem: "einen Fehler melden"
   usage_count: "Anzahl der Verwendungen"
   identified: mit Identifier versehen
-  wikidata_identified: mit wikidata Identifier versehen
+  recently_visited: zuletzt angesehen
+  recently_created: zuletzt angelegt
+  currently_linked: bestehende Verknüpfung
 
   search_term: 
     one: Suchbegriff
@@ -94,6 +97,8 @@ de:
       enter_name: "eingeben"
 
   verbs:
+    add: "hinzufügen"
+    remove: "entfernen"
     maximize: maximieren
     play: "abspielen"
     enlarge: "vergrößern"
@@ -488,6 +493,12 @@ de:
     original: "Original"
     metadata: Metadaten
     degree: Anzahl Verknüpfungen (Grad)
+    entry: 
+      one: "Eintrag"
+      other: "Einträge"
+    error:
+      one: "Fehler"
+      other: "Fehler"
 
 
   objects:
@@ -656,7 +667,7 @@ de:
     only_same_kind: "bitte wählen Sie hierzu nur Entitäten vom selbem Typ"
     exception_ocurred: "ein unerwarteter Fehler ist eingetreten"
     publishment_expired: "Dieser Link ist abgelaufen"
-    other_collection: "Sie haben keinen Zugriff auf Entität %{id}. Bitte wenden Sie sich an einen Adminstrator"
+    file_too_big: "Die Datei '%{file}' ist zu groß (%{size}MB) und kann nicht hochgeladen werden. Die maximale Größe beträgt %{max}MB"
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
@@ -770,7 +781,6 @@ de:
         search_label: Anzeige im Suchformular
         show_on_entity: Bei Entität anzeigen
         is_identifier: ist ein Identifier
-        wikidata_id: Wikidata ID
       generator:
         name: Name
         show_label: Attributname bei Entität
@@ -781,6 +791,7 @@ de:
         document: Dokument
         content_type: Dateityp
         document_file_name: Dokument
+        document_file_size: Dateigröße
         file_size: Dateigröße des Originals
         file_type: Dateityp
         original: Orginaldatei
@@ -794,7 +805,7 @@ de:
         name: Name
         description: Beschreibung
       collection:
-        perosnal: benutzereigen
+        personal: benutzereigen
         name: Name
         view: Diesen Gruppen das Anzeigen erlauben
         edit: Diesen Gruppen das Bearbeiten erlauben
@@ -896,6 +907,9 @@ de:
         to_kind_ids: erlaubte Typen auf dieser Seite
         wikidata_id: Wikidata ID
       relationship:
+        from_id: Quelle
+        to_id: Ziel
+        relation_id: Relation
         property:
           one: weitere Eigenschaft
           other: weitere Eigenschaften
@@ -976,6 +990,7 @@ de:
         whitespace_beginning: "kann nicht mit einem Leerzeichen beginnen"
         whitespace_end: "kann nicht mit einem Leerzeichen enden"
         whitespace_consecutive: "kann keine aufeinander folgende Leerzeichen beinhalten"
+        can_not_be_empty: "muss ausgefüllt werden"
 
 
   # Mime types

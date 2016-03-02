@@ -29,8 +29,14 @@ class User < ActiveRecord::Base
     :uniqueness => {:allow_blank => false},
     :format => {:with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true},
     :white_space => true
-  validates_format_of :plain_password, :allow_nil => true, :with => /\A(.{5,30})|\Z/
-  validates_confirmation_of :plain_password
+  validates :api_key,
+    :presence => true,
+    :uniqueness => true,
+    :length => {:minimum => 32}
+  validates(:plain_password, 
+    format: {:allow_nil => true, :with => /\A(.{5,30})|\Z/},
+    confirmation: true
+  )
   
   validate :validate_empty_personal_collection
   validate :validate_existing_parent_user
@@ -54,7 +60,7 @@ class User < ActiveRecord::Base
   
   # -------------------------------------------------------------- callbacks ---
   before_validation(:on => :create) do |model|
-    model.generate_password_and_activation_hash
+    model.generate_secrets
   end
   after_validation :set_expires_at, :create_personal, :add_personal_group
   
@@ -89,9 +95,10 @@ class User < ActiveRecord::Base
     end
   end
   
-  def generate_password_and_activation_hash
+  def generate_secrets
     self.activation_hash = User.generate_activation_hash if self[:activation_hash].blank?
     self.password = User.generate_password if self[:password].blank?
+    self.api_key = SecureRandom.hex(48)
   end
   
   def set_expires_at
@@ -144,26 +151,18 @@ class User < ActiveRecord::Base
   end
   
   def add_login_attempt
-    self[:login_attempts] ||= []
+    unless self[:login_attempts]
+      self[:login_attempts] = []
+    end
     self[:login_attempts] << Kor.now
     self[:login_attempts].shift if self[:login_attempts].size > 3
   end
   
-  def admin!
-    self.admin = true
-    self.collection_admin = true
-    self.kind_admin = true
-    self.relation_admin = true
-    self.user_admin = true
-    self.credential_admin = true
-    self.authority_group_admin = true
-  end
-  
   def any_admin?
-    admin || collection_admin || kind_admin || relation_admin || user_admin || credential_admin || authority_group_admin
+    admin || kind_admin || relation_admin || authority_group_admin
   end
 
-  ["", "collection_", "kind_", "relation_", "user_", "credential_", "authority_group_admin_"].each do |ag|
+  ["", "kind_", "relation_", "authority_group_admin_"].each do |ag|
     define_method "#{ag}admin".to_sym do
       key = "#{ag}admin".to_sym
       self[key] || (self.parent.present? && self.parent[key])
@@ -184,8 +183,9 @@ class User < ActiveRecord::Base
   end
   
   def self.guest
-    user = find_by_name('guest')
-    user.active? ? user : nil
+    if user = find_by_name('guest')
+      user.active? ? user : nil
+    end
   end
   
   def guest?
@@ -201,26 +201,23 @@ class User < ActiveRecord::Base
     return {
       :roles => {
         :admin => admin?,
-        :collection_admin => collection_admin?,
         :kind_admin => kind_admin?,
         :relation_admin => relation_admin?,
-        :user_admin => user_admin?,
-        :credential_admin => credential_admin?,
         :authority_group_admin => authority_group_admin
       },
       :collections => collections
     }
   end
-  
+
   # ----------------------------------------------------------------- search ---
-  scope :without_predefined, where("name NOT IN (?)", ["admin", "guest"])
-  scope :without_admin, where("name NOT LIKE ?", "admin")
+  scope :without_predefined, lambda { where("name NOT IN (?)", ["admin", "guest"]) }
+  scope :without_admin, lambda { where("name NOT LIKE ?", "admin") }
   scope :search, lambda { |search_string|
     unless search_string.blank?
       pattern = "%#{search_string}%"
       where('name LIKE ? OR full_name LIKE ? or email LIKE ?', pattern, pattern, pattern)
     else
-      scoped
+      all
     end
   }
   scope :logged_in_recently, lambda {
@@ -232,10 +229,7 @@ class User < ActiveRecord::Base
   scope :created_recently, lambda {
     where("created_at > ?", 30.days.ago)
   }
-  
-  def self.guest
-    find_by_name('guest')
-  end
+  scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
   
   def self.admin
     unless user = find_by_name('admin')
@@ -312,6 +306,10 @@ class User < ActiveRecord::Base
 
   def serializable_hash(options = {})
     super options.merge(:except => [:password, :activation_hash])
+  end
+
+  def allowed_to?(policy = :view, collections = nil, options = {})
+    Kor::Auth.allowed_to?(self, policy, collections, options)
   end
   
 end

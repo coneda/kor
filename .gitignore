@@ -1,12 +1,12 @@
 # Directories
 
 .bundle
+bin
 log/*
 tmp/*
 data/*
 db/*.sqlite3
 public/media
-public/plugin_assets
 
 
 # Configuration
@@ -33,6 +33,8 @@ deploy/build
 deploy/build.boxes
 db/*.sqlite3
 .yardoc
+.sass-cache
+coverage
 
 # Testing
 screenshot.png
@@ -41,4 +43,3 @@ screenshot.png
 
 deploy.config.sh
 .vagrant
-

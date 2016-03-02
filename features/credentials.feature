@@ -3,13 +3,13 @@ Feature: credentials
   Scenario: see credentials without authorization
     Given I am logged in as "john"
     When I go to the credentials page
-    Then I should see "Der Zugriff wurde verweigert"
+    Then I should see "Access denied"
 
     
   Scenario: see credentials with authorization
     Given I am logged in as "admin"
     When I go to the credentials page
-    Then I should see "Benutzergruppen"
+    Then I should see "User groups"
 
 
   Scenario: create credential
@@ -18,7 +18,7 @@ Feature: credentials
     And I follow "Plus"
     And I fill in "credential[name]" with "Freaks"
     And I fill in "credential[description]" with "The KOR-Freaks"
-    And I press "Erstellen"
+    And I press "Create"
     Then I should see "Freaks"
     And I should see "The KOR-Freaks"
 
@@ -30,7 +30,7 @@ Feature: credentials
     And I follow "Pen" within "table.kor_table tr:nth-child(3)"
     And I fill in "credential[name]" with "Kings"
     And I fill in "credential[description]" with "The KOR-Kings"
-    And I press "Speichern"
+    And I press "Save"
     Then I should see "Kings"
     And I should see "The KOR-Kings"
     And I should not see "Freaks" within "table.kor_table"

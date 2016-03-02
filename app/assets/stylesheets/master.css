@@ -1,6 +1,10 @@
 /*
 *= require modules/vendor/reset.css
-*= require jquery-ui
-*
+
+*= require jquery-ui/core
+*= require jquery-ui/autocomplete
+*= require jquery-ui/selectmenu
+*= require jquery-ui/dialog
+
 *= require modules/old/master.css.sass
 */

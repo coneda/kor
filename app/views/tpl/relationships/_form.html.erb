@@ -1,0 +1,69 @@
+<div>
+  <div class="header" ng-show="existing">
+    {{
+      'objects.edit' | 
+      translate:{interpolations: {o: 'activerecord.models.relationship'} } |
+      capitalize
+    }}
+  </div>
+  <div class="header" ng-hide="existing">
+    {{
+      'objects.create' | 
+      translate:{interpolations: {o: 'activerecord.models.relationship'} } |
+      capitalize
+    }}
+  </div>
+
+  <form ng-submit="save()">
+    <div class="kor-errors" ng-if="errors">
+      <div ng-show="errors.to_id || errors.from_id">
+        {{'activerecord.attributes.relationship.to_id' | translate | capitalize}}
+        {{'activerecord.errors.messages.can_not_be_empty'| translate}}
+      </div>
+      <div ng-show="errors.relation_id">
+        {{'activerecord.attributes.relationship.relation_id' | translate | capitalize}}
+        {{'activerecord.errors.messages.can_not_be_empty'| translate}}
+      </div>
+    </div>
+
+    <div class="kor-field">
+      <label ng-bind="'activerecord.attributes.relationship.relation_id' | translate | capitalize"></label>
+      <div
+        kor-relation-selector="relation_name"
+        kor-source="source"
+      ></div>
+    </div>
+
+    <div class="kor-field">
+      <label ng-bind="'activerecord.attributes.relationship.to_id' | translate | capitalize"></label>
+      <div
+        kor-entity-selector="target"
+        kor-existing="{{existing}}"
+        kor-grid-width="{{grid_width}}"
+        kor-relation-name="relation_name"
+      ></div>
+    </div>
+
+    <div class="kor-field properties">
+      <label ng-bind="'activerecord.attributes.relationship.property.other' | translate | capitalize"></label>
+      <ul>
+        <li ng-repeat="property in properties" class="properties">
+          <div class="input-with-button">
+            <div>
+              <input type='text' ng-model="property.value"></input>
+            </div>
+            <button ng-click="remove_property(property, $event)">
+              {{'verbs.remove' | translate}}
+            </button>
+          </div>
+        </li>
+      </ul>
+      <button ng-click="add_property($event)">
+        {{'verbs.add' | translate | capitalize}}
+      </button>
+    </div>
+
+    <input type="submit" value="{{'verbs.save' | translate | capitalize}}">
+    <input type="reset" value="{{'cancel' | translate | capitalize}}" ng-click="cancel()">
+  </form>
+</div>

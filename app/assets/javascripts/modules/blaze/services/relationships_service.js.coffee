@@ -2,32 +2,38 @@ kor.service "relationships_service", [
   "$http",
   (http) ->
     service = {
-      show: (relationship) ->
+      show: (id) ->
         request = {
           method: "get"
-          url: "/relationships/#{relationship.id}.json"
+          url: "/directed_relationships/#{id}.json"
         }
+        http(request)
 
-        http(request).success (data) ->
-          relationship.properties = data.properties
-
-      update: (relationship) ->
-        properties = angular.copy(relationship.properties)
-        properties.push relationship.new_property
-
+      create: (relationship) ->
         request = {
-          method: "put"
-          url: "/relationships/#{relationship.id}.json"
+          method: "post"
+          url: "/relationships.json"
           data: {
-            relationship: {
-              properties: properties
-            }
+            relationship: relationship
           }
         }
+        http(request)
 
-        http(request).success (data) -> 
-          relationship.properties = data.properties
-          relationship.new_property = undefined
-          relationship.editing = false
+      update: (id, relationship) ->
+        request = {
+          method: "patch"
+          url: "/relationships/#{id}.json"
+          data: {
+            relationship: relationship
+          }
+        }
+        http(request)
+
+      destroy: (id) ->
+        request = {
+          method: 'delete'
+          url: "/relationships/#{id}.json"
+        }
+        http(request)
     }
 ]

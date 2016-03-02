@@ -1,3 +1,4 @@
+<!-- TODO: still needed? replaced by entity-widhet? -->
 <script type="text/x-kor-tpl" data-id="entity">
   <div class="kor-entity">
     <span ng-hide="entity.medium_id">
@@ -9,8 +10,8 @@
 
 <script type="text/x-kor-tpl" data-id="to-clipboard">
   <a href="#" ng-show="!is_guest()">
-    <img src="/assets/target.gif" ng-show="!in_clipboard()" />
-    <img src="/assets/target_hit.gif" ng-show="in_clipboard()" />
+    <img data-name="target" src="<%= image_path('target.gif') %>" ng-show="!in_clipboard()" />
+    <img data-name="target" src="<%= image_path('target_hit.gif') %>" ng-show="in_clipboard()" />
   </a>
 </script>
 
@@ -20,6 +21,47 @@
     href="#"
     ng-show="!is_guest() && allowed_to_any('edit')"
   >
-    <img src="/assets/select.gif" />
+    <%= kor_command_image 'select' %>
   </a>
+</script>
+
+<script type="text/x-kor-tpl" data-id="entity-widget">
+  <span ng-show="entity.id">
+    <span ng-hide="entity.kind_id == 1">
+      <div class="name" ng-bind-html="entity.name"></div>
+      <div class="kind" ng-bind-html="kind_name()"></div>
+    </span>
+    <img 
+      ng-show="entity.kind_id == 1"
+      ng-src="{{entity.url || entity.medium.url}}"
+    />
+  </span>
+</script>
+
+<script type="text/x-kor-tpl" data-id="relation">
+  <%= render partial: 'tpl/relation' %>
+</script>
+
+<script type="text/x-kor-tpl" data-id="relationship">
+  <%= render partial: 'tpl/relationship' %>
+</script>
+
+<script type="text/x-kor-tpl" data-id="entity-selector">
+  <%= render partial: 'tpl/entities/selector' %>
+</script>
+
+<script type="text/x-kor-tpl" data-id="relation-selector">
+  <%= render partial: 'tpl/relations/selector' %>
+</script>
+
+<script type="text/x-kor-tpl" data-id="pagination">
+  <%= render partial: 'tpl/pagination' %>
+</script>
+
+<script type="text/x-kor-tpl" data-id="media-relation">
+  <%= render partial: 'tpl/media_relation' %>
+</script>
+
+<script type="text/x-kor-tpl" data-id="relationship-editor">
+  <%= render partial: 'tpl/relationships/form' %>
 </script>

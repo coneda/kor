@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Kor::Dating::Parser < Parslet::Parser
 
   # Numbers

@@ -31,3 +31,11 @@ Feature: User administration
     And I follow "Plus"
     Then I should see "AAAs" before "Administrators"
 
+
+  @javascript
+  Scenario: Show the user's API key
+    Given I am logged in as "admin"
+    And the user "jdoe"
+    And I go to the users page
+    And I follow "Pen" within the row for "user" "jdoe"
+    Then I should see "jdoe"'s API Key

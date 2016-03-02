@@ -1,86 +1,36 @@
 class RelationshipsController < ApplicationController
 
   layout 'normal_small'
-
-  def show
-    @relationship = Relationship.find(params[:id])
-
-    respond_to do |format|
-      format.json do
-        if authorized_for_relationship? @relationship
-          render :json => @relationship.to_json(:root => false)
-        else
-          render :nothing => true, :status => 403
-        end
-      end
-    end
-  end
-
-  def new
-    @relationship = Relationship.new(params[:relationship].merge(:to_id => session[:current_entity]))
-    
-    if @relationship.from and @relationship.to
-      unless authorized_for_relationship? @relationship, :create
-        redirect_to denied_path
-      end
-    else
-      flash[:error] = I18n.t("errors.destination_not_given")
-      redirect_to back_save
-    end
-  end
-
-  def edit
-    @relationship = Relationship.find(params[:id])
-    
-    unless authorized_for_relationship? @relationship, :edit
-      redirect_to denied_path
-    end
-  end
+  skip_before_filter :legal, :authentication, :authorization, :only => [:index]
 
   def create
-    @relationship = Relationship.new(params[:relationship])
+    @relationship = Relationship.new(relationship_params)
 
     if authorized_for_relationship? @relationship, :create
       if @relationship.save
-        flash[:notice] = I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
-        rrn = session[:recent_relation_names] || []
-        rrn = rrn.unshift params[:relationship][:relation_name]
-        session[:recent_relation_names] = rrn.uniq
-        redirect_to web_path(:anchor => entity_path(@relationship.from))
+        render :json => {
+          "message" => I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
+        }
       else
-        render :action => "new"
+        render json: @relationship.errors, status: 406
       end
     else
-      redirect_to denied_path
+      render :nothing => true, :status => 403
     end
   end
 
   def update
-    params[:relationship][:properties] ||= []
-
     @relationship = Relationship.find(params[:id])
     
     unless authorized_for_relationship? @relationship, :edit
-      redirect_to denied_path
+      render :nothing => true, :status => 403
     else
-      success = @relationship.update_attributes(params[:relationship])
-
-      respond_to do |format|
-        format.html do
-          if success
-            flash[:notice] = I18n.t('objects.update_success', :o => I18n.t('nouns.relationship', :count => 1) )
-            redirect_to web_path(:anchor => entity_path(@relationship.from))
-          else
-            render :action => "edit"
-          end
-        end
-        format.json do
-          if success
-            render :json => @relationship.to_json(:root => false)
-          else
-            render :nothing => true, :status => 406
-          end
-        end
+      if @relationship.update_attributes(relationship_params)
+        render :json => {
+          "message" => I18n.t('objects.update_success', :o => I18n.t('nouns.relationship', :count => 1) )
+        }
+      else
+        render json: @relationship.errors, status: 406
       end
     end
   rescue ActiveRecord::StaleObjectError
@@ -90,14 +40,26 @@ class RelationshipsController < ApplicationController
 
   def destroy
     @relationship = Relationship.find(params[:id])
-    
-    unless authorized_for_relationship? @relationship, :edit
-      redirect_to denied_path
-    else      
-      @relationship.destroy
-      redirect_to back_save
-    end
 
+    if authorized_for_relationship? @relationship, :delete
+      @relationship.destroy
+      render :json => {
+        "message" => I18n.t('objects.destroy_success', :o => I18n.t('nouns.relationship', :count => 1) )
+      }
+    else
+      render :nothing => true, :status => 403
+    end
   end
+
+
+  protected
+
+    def relationship_params
+      params.require(:relationship).permit(
+        :from_id, :to_id, :relation_id, :relation_name, properties: []
+      ).tap do |w|
+        w[:properties] = params[:relationship][:properties]
+      end
+    end
 
 end

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Given /^the credential "([^\"]*)"$/ do |name|
   step "the credential \"#{name}\" described by \"\""
 end
@@ -20,7 +18,7 @@ Given /^the kind "([^\"]*)"$/ do |names|
   components = names.split('/')
   singular = components[0..(components.size / 2 - 1)].join('/')
   plural = components[(components.size / 2)..-1].join('/')
-  Kind.find_or_create_by_name(:name => singular, :plural_name => plural)
+  Kind.find_or_create_by(:name => singular, :plural_name => plural)
 end
 
 Given(/^the generator "(.*?)" for kind "(.*?)"$/) do |name, kind_name|
@@ -35,15 +33,10 @@ Given /^the relation "([^\"]*)"$/ do |names|
   Relation.create! :name => name, :reverse_name => reverse
 end
 
-Given /^the unprocessed medium "([^"]*)"$/ do |path|
+Given /^the medium "([^"]*)"$/ do |path|
   step "I go to the new \"Medium-Entity\" page"
   step "I attach the file \"#{path}\" to \"entity[medium_attributes][document]\""
-  step "I press \"Erstellen\""
-end
-
-Given /^the medium "([^"]*)"$/ do |path|
-  step "the unprocessed medium \"#{path}\""
-  Delayed::Worker.new.work_off 10
+  step "I press \"Create\""
 end
 
 Given /^the medium "(.*?)" inside collection "(.*?)"$/ do |file, collection|
@@ -100,7 +93,8 @@ Given(/^the entity "(.*?)" has property "(.*?)" with value "(.*?)"$/) do |entity
 end
 
 When /^the "([^"]*)" "([^"]*)" is updated behind the scenes$/ do |klass, name|
-  klass.classify.constantize.find_by_name(name.split('/').first).save
+  item = klass.classify.constantize.find_by_name(name.split('/').first)
+  item.update_column :lock_version, item.lock_version + 1
 end
 
 Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" (?:through|via) credential "([^"]*)"$/ do |user, policy, collection, credential|
@@ -181,7 +175,7 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
     step "I am on the user groups page"
     step "I follow \"Plus\""
     step "I fill in \"user_group[name]\" with \"#{name}\""
-    step "I press \"Erstellen\""
+    step "I press \"Create\""
     
     if shared == 'shared '
       step "I follow \"Private\""
@@ -194,7 +188,7 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
       step "I follow \"Plus\""
       step "I fill in \"publishment[name]\" with \"#{pub_name}\""
       step "I select \"#{name}\" from \"publishment[user_group_id]\""
-      step "I press \"Erstellen\""
+      step "I press \"Create\""
     end
   end
 end
@@ -218,7 +212,6 @@ end
 Given /^the relation "([^"]*)" between "([^"]*)" and "([^"]*)"$/ do |relation, from_kind, to_kind|
   step "the kind \"#{from_kind}\""
   step "the kind \"#{to_kind}\""
-
   step "the relation \"#{relation}\""
   
   from_kind = Kind.find_by_name(from_kind.split('/').first)
@@ -296,25 +289,25 @@ Given /^there are "([^"]*)" entities named "([^"]*)" of kind "([^"]*)"$/ do |num
 end
 
 Given /^Mona Lisa and a medium as correctly related entities$/ do
-  step "the relation \"wird dargestellt von/stellt dar\""
-  step "the medium \"spec/fixtures/image_a.jpg\""
+  step "the relation \"is shown by/shows\""
   step "the entity \"Mona Lisa\" of kind \"Werk/Werke\""
+  step "the medium \"spec/fixtures/image_a.jpg\""
   
   medium = Kind.medium_kind.entities.first
   mona_lisa = Entity.find_by_name('Mona Lisa')
 
-  Relationship.relate_once_and_save(mona_lisa, "wird dargestellt von", medium)
+  Relationship.relate_and_save(mona_lisa, "is shown by", medium)
 end
 
 Given /^Leonardo, Mona Lisa and a medium as correctly related entities$/ do
   step "Mona Lisa and a medium as correctly related entities"
-  step "the relation \"hat erschaffen/wurde erschaffen von\""
+  step "the relation \"has created/has been created by\""
   step "the entity \"Leonardo da Vinci\" of kind \"Person/Personen\""
 
   leonardo = Entity.find_by_name('Leonardo da Vinci')
   mona_lisa = Entity.find_by_name('Mona Lisa')
 
-  Relationship.relate_once_and_save(leonardo, "hat erschaffen", mona_lisa)
+  Relationship.relate_and_save(leonardo, "has created", mona_lisa)
 end
 
 Given /^the entity "([^\"]*)" has ([0-9]+) relationships$/ do |name, amount|
@@ -367,4 +360,27 @@ end
 
 Given(/^the last entity has the tags "(.*?)"$/) do |tag_list|
   Entity.last.update_attributes :tag_list => tag_list
+end
+
+Given(/^the entity "([^"]*)" was created by "([^"]*)"$/) do |name, username|
+  entity = Entity.where(name: 'Mona Lisa').first
+  user = User.where(name: username).first
+  entity.update_attributes creator: user
+end
+
+Given(/^the entity "([^"]*)" was updated by "([^"]*)"$/) do |name, username|
+  entity = Entity.where(name: 'Mona Lisa').first
+  user = User.where(name: username).first
+  entity.update_attributes updater: user
+end
+
+Given(/^there are "([^"]*)" media entities$/) do |amount|
+  amount.to_i.times do |i|
+    file = "tmp/test_file.txt"
+    system "echo #{i} > #{file}"
+    FactoryGirl.create :text, medium: FactoryGirl.build(:medium,
+      document: File.open(file)
+    )
+    system "rm #{file}"
+  end
 end

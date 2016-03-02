@@ -8,6 +8,10 @@ class Tpl::EntitiesController < TplController
 
   end
 
+  def gallery
+    
+  end
+
   def show
 
   end

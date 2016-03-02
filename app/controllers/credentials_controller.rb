@@ -5,7 +5,7 @@ class CredentialsController < ApplicationController
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
     
-    @credentials = Credential.non_personal.order("#{params[:sort_by]} #{params[:sort_order]}")
+    @credentials = Credential.non_personal.order(params[:sort_by] => params[:sort_order])
   end
 
   def show
@@ -21,7 +21,7 @@ class CredentialsController < ApplicationController
   end
 
   def create
-    @credential = Credential.new(params[:credential])
+    @credential = Credential.new(credential_params)
 
     if @credential.save
       flash[:notice] = I18n.t('objects.create_success', :o => @credential.name)
@@ -34,7 +34,7 @@ class CredentialsController < ApplicationController
   def update
     @credential = Credential.find(params[:id])
 
-    if @credential.update_attributes(params[:credential])
+    if @credential.update_attributes(credential_params)
       flash[:notice] = I18n.t('objects.update_success', :o => @credential.name)
       redirect_to credentials_path
     else
@@ -50,8 +50,13 @@ class CredentialsController < ApplicationController
   end
   
   protected
+
+    def credential_params
+      params.require(:credential).permit!
+    end
+
     def generally_authorized?
-      current_user.credential_admin?
+      current_user.admin?
     end
   
 end

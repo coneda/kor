@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Kor do
   
@@ -10,9 +10,17 @@ describe Kor do
     FactoryGirl.create :admin
     expect(User.count).to eql(3)
   
-    Kor.notify_upcoming_expiries
+    Kor.notify_expiring_users
     
     expect(ActionMailer::Base.deliveries.size).to eql(1)
   end
-  
+
+  it "should generate a repository UUID" do
+    expect(Kor.config["maintainer.repository_uuid"]).to be_nil
+    
+    uuid = Kor.repository_uuid
+    expect(uuid).not_to be_nil
+    expect(Kor.config(true)["maintainer.repository_uuid"]).to eq(uuid)
+  end
+
 end

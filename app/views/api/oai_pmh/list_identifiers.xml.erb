@@ -1,0 +1,13 @@
+<listIdentifiers>
+  <% @records[:items].each do |item| %>
+    <header>
+      <identifier><%= item.uuid %></identifier>
+      <datestamp><%= timestamp item.updated_at %></datestamp>
+    </header>
+  <% end %>
+
+  <resumptionToken
+    expirationDate="<%= timestamp 24.hours.from_now %>"
+    completeListSize="<%= @records[:total] %>"
+  ><%= @records[:token] %></resumptionToken>
+</listIdentifiers>

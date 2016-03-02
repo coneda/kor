@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://coneda.net/XMLSchema/1.0/" xmlns:kor="https://coneda.net/XMLSchema/1.0/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    
+    <xs:element name="kind">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string"/>
+                <xs:element name="created-at" type="xs:dateTime"/>
+                <xs:element name="updated-at" type="xs:dateTime"/>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="plural-name" type="xs:string"/>
+                <xs:element name="description" type="xs:string"/>
+                <xs:element name="settings" type="xs:string"/> <!-- json -->
+                <xs:element name="fields">
+                    <xs:complexType>
+                        <xs:sequence>
+                        <xs:element name="field" type="kor:fieldtype" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="generators">
+                    <xs:complexType>
+                        <xs:sequence>
+                        <xs:element name="generator" type="kor:generatortype" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="relation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="created-at" type="xs:dateTime"/>
+            <xs:element name="updated-at" type="xs:dateTime"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="reverse-name" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="from-types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="type" type="kor:typetype" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="to-types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="type" type="kor:typetype" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="entity">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string"/>
+                <xs:element name="collection">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="id" type="xs:integer" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="created-at" type="xs:dateTime"/>
+                <xs:element name="updated-at" type="xs:dateTime"/>
+                <xs:element name="type">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="id" type="xs:string" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:choice>
+                    <xs:group ref="kor:mediumgroup"/>
+                    <xs:group ref="kor:othergroup"/>
+                </xs:choice>
+                <xs:element name="tags">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="tag" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="fields">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="field" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="name" type="xs:string" use="required"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="properties">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="name" type="xs:string" use="required"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="datings">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="dating" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="event" type="xs:string" use="required"/>
+                                            <xs:attribute name="from-day" type="xs:integer" use="required"/>
+                                            <xs:attribute name="to-day" type="xs:integer" use="required"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="comment" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="relationship">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string"/>
+                <xs:element name="created-at" type="xs:dateTime"/>
+                <xs:element name="updated-at" type="xs:dateTime"/>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="relation">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+                        <xs:attribute name="name" type="xs:string" use="required"/>
+                        <xs:attribute name="reverse-name" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="from" type="xs:string"/>
+                <xs:element name="to" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="fieldtype">
+        <xs:sequence>
+            <xs:element name="created-at" type="xs:dateTime"/>
+            <xs:element name="updated-at" type="xs:dateTime"/>
+            <xs:element name="local-id" type="xs:integer"/>
+            <xs:element name="type" type="xs:string"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="label" type="xs:string"/>
+            <xs:element name="form-label" type="xs:string"/>
+            <xs:element name="search-label" type="xs:string"/>
+            <xs:element name="settings" type="xs:string"/> <!-- json -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="generatortype">
+        <xs:sequence>
+            <xs:element name="created-at" type="xs:dateTime"/>
+            <xs:element name="updated-at" type="xs:dateTime"/>
+            <xs:element name="local-id" type="xs:integer"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="directive" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="typetype">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:attribute name="id" type="xs:string" use="required"/>
+          </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:group name="mediumgroup">
+        <xs:sequence>
+            <xs:element name="image-path">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="style" type="xs:string" use="required"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:group name="othergroup">
+        <xs:sequence>
+            <xs:element name="title" type="xs:string"/>
+            <xs:element name="sub-type" type="xs:string"/>
+            <xs:element name="distinction" type="xs:string"/>
+            <xs:element name="synonym" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="no-name-specifier" type="xs:string"/>
+        </xs:sequence>
+    </xs:group>
+
+</xs:schema>

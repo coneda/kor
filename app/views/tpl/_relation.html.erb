@@ -1,0 +1,24 @@
+<div class="relation">
+  <div class="subtitle" ng-bind="relation_name"></div>
+  
+  <div class="relation_switch">
+    <a href="#" ng-click="switch($event)">
+      <img alt="Triangle_up" src="<%= image_path('triangle_up.gif') %>" ng-hide="visible">
+      <img alt="Triangle_down" src="<%= image_path('triangle_down.gif') %>" ng-show="visible">
+    </a>
+  </div>
+
+  <div 
+    kor-pagination="page"
+    kor-total="count"
+    kor-per-page="10"
+    kor-use-search="false"
+  ></div>
+  
+  <div
+    ng-repeat="relationship in relationships"
+    kor-relationship="relationship"
+    kor-entity="entity"
+    kor-master-toggle="visible"
+  ></div>
+</div>

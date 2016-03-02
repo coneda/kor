@@ -10,7 +10,7 @@ RSpec.describe CollectionsController, :type => :controller do
   it "should update" do
     collection = FactoryGirl.create :collection, :name => 'Test Collection'
     
-    put :update, :id => collection.id, :collection => {
+    patch :update, :id => collection.id, :collection => {
       'grants_by_policy' => {
         'view' => [@admins.id.to_s]
     }}

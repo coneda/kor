@@ -20,12 +20,22 @@ When /^(?:|I )press "([^"]*)"$/ do |button|
 end
 
 When /^(?:|I )follow "([^"]*)"$/ do |locator|
-  click_link(locator)
+  find_link(locator).click
 end
+
+When /^(?:|I )click button "([^"]*)"$/ do |locator|
+  find_button(locator).click
+end
+
+When(/^I follow the link with text "([^"]*)"$/) do |text|
+  click_link(text)
+end
+
 
 When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |field, quoted, value|
   value = "\"#{value}\"" if quoted == ' quoted'
-  fill_in(field, :with => value)
+  field = all(:css, field).first || find(:fillable_field, field)
+  field.set value
 end
 
 When /^(?:|I )fill in the following:$/ do |fields|

@@ -4,7 +4,8 @@ class EntityDating < ActiveRecord::Base
   
   
   # ------------------------------------------------------------- validation ---
-  validates_presence_of :label, :dating_string
+  validates :label, :dating_string, presence: true
+  
   validate :dating_string_must_be_parseable
   def dating_string_must_be_parseable
     errors.add :dating_string, :invalid if unparsable? and not self[:dating_string].blank?

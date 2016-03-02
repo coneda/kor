@@ -7,7 +7,7 @@ class Download < ActiveRecord::Base
   
   # Validations
 
-  validates_presence_of :user, :uuid, :content_type, :file_name, :new_data
+  validates :user, :uuid, :content_type, :file_name, :new_data, presence: true
   
   
   # Callbacks
@@ -27,7 +27,7 @@ class Download < ActiveRecord::Base
       when File then FileUtils.copy(new_data.path, path)
       when String
         if File.exists?(new_data)
-          system "cp #{new_data} #{path}"
+          system "cp", new_data, path
         else
           File.open path, "w" do |f|
             f.write new_data
@@ -37,7 +37,7 @@ class Download < ActiveRecord::Base
   end
   
   def notify_ready
-    UserMailer.download_ready(self).deliver if notify_user
+    UserMailer.download_ready(self).deliver_now if notify_user
   end
   
   def generate_uuid

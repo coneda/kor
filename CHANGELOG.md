@@ -9,10 +9,28 @@ commit history on GitHub.
 
 ### User
 
+* added OAI-PMH api to enable harvesting of entities, kinds, relationships and 
+  relations
+* added token authentication
 * dropped debian package generation
 * added cli-command to cleanup old sessions
-* added a development environment via `vagrant up`
+* identifier handling and resolution
+* changes to field names are now propagated to affected entities
+* sample data can be generated during db seeting by setting `SAMPLE_DATA=true`
+* a task to display list permissions
+* creating and editing relationships is now done inline
+* the gallery is now rendered in the browser and is therefore a lot faster
+* an HTML5 audio player is now available
+* the video player has been dropped in favor of native HTML5 functionality
+* some roles have been dropped: `user_admin`, `credentials_admin`,
+  `collection_admin` and `developer` are now just `admin`
+
+### Internal
+
+* added VCR gem to enable testing against predictable external API responses
+* switched from rails 3.2 to 4.2
 * sped up the test suites by about 20%
+<<<<<<< HEAD
 * identifier handling and resolution
 * wikidata id for entities, kinds, fields, relations and relationships
 * automatic wikidata id lookup through other identifiers
@@ -20,14 +38,24 @@ commit history on GitHub.
 ### Internal
 
 * added VCR gem to enable testing against predictable external API responses
+=======
+* added a development environment via `vagrant up`
+* relationships are now saved as two records per link (in and out). This greatly
+  simplyfies queries and enhances performance
+* audio and video processing are now faster and adhere to the paperclip gem's
+  way
+* added brakeman for security audits
+* added rubocop to improve code style
+* media are not shown in development anymore (override with `SHOW_MEDIA`)
+>>>>>>> master
 
 ## Version 1.9.2
 
 ### User
 
 * changed custom authentication to work with environment variables rather than
-* made custom authentication logging more verbose
   with files
+* made custom authentication logging more verbose
 * fixed synonyms that had been saved as strings instead of an array of strings
 * fixes the metadata download
 * refactored the command line tool

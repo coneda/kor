@@ -20,13 +20,14 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
     :collection_ids => 'all',
     :properties => nil,
     :dataset => {},
-    :tag_list => ""
+    :tag_list => "",
+    :relation_name => nil
   )
   
   def collection_ids
     case @collection_ids
       when Array then @collection_ids
-      when String then Collection.find_all_by_id(@collection_ids.split(',').map{|i| i.to_i}).map{|c| c.id}
+      when String then Collection.where(:id => @collection_ids.split(',').map{|i| i.to_i}).map{|c| c.id}
       else
         ::Kor::Auth.authorized_collections(user, :view).map{|c| c.id}
     end
@@ -57,6 +58,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
           dataset_attributes(user, criteria[:dataset]).
           related_to(user, criteria[:relationships]).
           within_collections(collection_ids).
+          by_relation_name(criteria[:relation_name]).
           includes(:medium)
           
         unless tag_list.empty?
@@ -65,9 +67,9 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
         
         tmp_result = tmp_result.searcheable unless options[:media]
         
-        @total = tmp_result.count  
+        @total = tmp_result.count("entities.id")
         
-        tmp_result.alphabetically.paginate(:page => page)
+        tmp_result.alphabetically.paginate(page: page, per_page: per_page)
       end
     end
   

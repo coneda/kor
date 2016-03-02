@@ -20,7 +20,7 @@ class UsersController < ApplicationController
 
     if @user.save
       flash[:notice] = I18n.t("messages.password_reset", :username => @user.display_name)
-      UserMailer.reset_password(@user).deliver
+      UserMailer.reset_password(@user).deliver_now
     else
       flash[:error] = I18n.t('errors.password_reset_failure')
     end
@@ -45,10 +45,10 @@ class UsersController < ApplicationController
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
   
-    @users = User.without_admin.search(params[:search_string]).paginate(
-      :order => "#{params[:sort_by]} #{params[:sort_order]}",
-      :page => params[:page], :per_page => 10
-    )
+    @users = User.
+      search(params[:search_string]).
+      order(params[:sort_by] => params[:sort_order]).
+      paginate(:page => params[:page], :per_page => 10)
 
     respond_to do |format|
       format.html {render :layout => 'wide'}
@@ -64,7 +64,7 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
-    @user.groups << Credential.find_all_by_name( Kor.config['auth.default_groups'] )
+    @user.groups << Credential.where(:name => Kor.config['auth.default_groups']).to_a
   end
   
   def edit_self
@@ -113,7 +113,7 @@ class UsersController < ApplicationController
     
     if @user.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => I18n.t('nouns.user', :count => 1) )
-      UserMailer.account_created(@user).deliver
+      UserMailer.account_created(@user).deliver_now
       redirect_to users_path
     else
       render :action => "new"
@@ -137,12 +137,12 @@ class UsersController < ApplicationController
     def self_user_params
       params.require(:user).permit(
         :full_name, :name, :email, :password, :password_confirmation, :locale,
-        :home_page, :default_collection_id
+        :home_page, :default_collection_id, :api_key
       )
     end
     
     def generally_authorized?
-      current_user.user_admin?
+      current_user.admin?
     end
 
 

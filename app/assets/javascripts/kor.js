@@ -1,6 +1,13 @@
 //= require jquery
-//= require jquery-ui
-//= require modules/vendor/swfobject.js
+
+//= require jquery-ui/core
+//= require jquery-ui/widget
+//= require jquery-ui/autocomplete
+//= require jquery-ui/selectmenu
+//= require jquery-ui/position
+//= require jquery-ui/dialog
+//= require jquery-ui/resizable
+
 //= require jquery_ujs
 //= require angular
 //= require angular-route

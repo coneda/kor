@@ -121,6 +121,10 @@ class Kor::Elastic
     refresh
   end
 
+  def self.get(entity)
+    request 'get', "/entities/#{entity.uuid}"
+  end
+
   def self.index(entity, options = {})
     options.reverse_merge! :full => false
 
@@ -142,11 +146,12 @@ class Kor::Elastic
     }
 
     if options[:full]
-      related = Relationship.
-        where("from_id = ? OR to_id = ?", entity.id, entity.id).
-        select([:from_id, :to_id])
-      related_ids = related.map{|r| [r.from_id, r.to_id]}.flatten.uniq - [entity.id]
-      scope = Entity.includes(:kind).where(:id => related_ids).select([:id, :name, :kind_id, :attachment])
+      scope = entity.
+        outgoing.
+        includes(:kind).
+        without_media.
+        select([:id, :name, :kind_id, :attachment])
+
       data["related"] = scope.map do |e|
         [e.name] + fetch(:synonyms, e.id) do
           e.synonyms
@@ -177,7 +182,7 @@ class Kor::Elastic
     # puts JSON.pretty_generate(query)
 
     page = [(query[:page] || 0).to_i, 1].max
-    size = [(query[:size] || 10).to_i, 10].max
+    per_page = [(query[:per_page] || 10).to_i, 500].min
 
     # data = {}
     query_component = nil
@@ -185,10 +190,11 @@ class Kor::Elastic
     q = []
 
     if query[:query].present?
-      q << if query[:raw]
-        query[:query]
+      q += if query[:raw]
+        [query[:query]]
       else
-        wildcardize(escape tokenize(query[:query])).join(' ')
+        result = wildcardize(escape tokenize(query[:query]))
+        result.empty? ? [] : [result.join(' ')]
       end
     end
 
@@ -235,6 +241,10 @@ class Kor::Elastic
           ]
         }
       }
+
+      highlight_component = {
+        "fields" => {"name" => {}}
+      }
     else
       size = 10
     end
@@ -274,8 +284,8 @@ class Kor::Elastic
     end
 
     data = {
-      "size" => size,
-      "from" => (page - 1) * size,
+      "size" => per_page,
+      "from" => (page - 1) * per_page,
       "query" => {
         "filtered" => {
           "filter" => {
@@ -295,11 +305,15 @@ class Kor::Elastic
       data["query"]["filtered"]["query"] = query_component
     end
 
+    if highlight_component
+      data["highlight"] = highlight_component
+    end
+
     # puts JSON.pretty_generate(data)
 
     response = self.class.request "post", "/entities/_search", nil, data
 
-    # puts response.last['hits']['total']
+    # puts JSON.pretty_generate(response)
     # binding.pry
 
     if response.first == 200
@@ -309,6 +323,7 @@ class Kor::Elastic
         :total => response.last['hits']['total'],
         :uuids => response.last['hits']['hits'].map{|hit| hit['_id']},
         :ids => response.last['hits']['hits'].map{|hit| hit['_source']['id']},
+        :raw_records => response.last['hits']['hits'],
         :page => page
       )
     else
@@ -345,9 +360,9 @@ class Kor::Elastic
       # Rails.logger.info "ELASTIC RESPONSE: #{response.inspect}"
 
       if response.status >= 200 && response.status <= 299
-        [response.status, response.headers, Oj.load(response.body, :mode => :strict)]
+        [response.status, response.headers, JSON.load(response.body)]
       else
-        raise Exception.new("error", [response.status, response.headers, Oj.load(response.body, :mode => :strict)])
+        raise Exception.new("error", [response.status, response.headers, JSON.load(response.body)])
       end
     end
 

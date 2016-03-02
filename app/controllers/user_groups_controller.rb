@@ -29,7 +29,8 @@ class UserGroupsController < GroupsController
 
   def add_to
     @user_group = UserGroup.owned_by(current_user).find(params[:id])
-    entities = viewable_entities.find ArgumentArray(params[:entity_ids])
+    entity_ids = Kor.array_wrap(params[:entity_ids])
+    entities = viewable_entities.find entity_ids
     @user_group.add_entities(entities)
     
     redirect_to @user_group
@@ -37,7 +38,8 @@ class UserGroupsController < GroupsController
 
   def remove_from
     @user_group = UserGroup.owned_by(current_user).find(params[:id])
-    entities = viewable_entities.find ArgumentArray(params[:entity_ids])
+    entity_ids = Kor.array_wrap(params[:entity_ids])
+    entities = viewable_entities.find entity_ids
     @user_group.remove_entities(entities)
 
     redirect_to @user_group
@@ -94,7 +96,10 @@ class UserGroupsController < GroupsController
     @user_group = UserGroup.find(params[:id])
     
     if @user_group.owner == current_user or @user_group.shared
-      @entities = @user_group.entities.allowed(current_user, :view).paginate(:page => params[:page], :per_page => 16, :order => 'created_at DESC')
+      @entities = @user_group.
+        entities.allowed(current_user, :view).
+        order('created_at DESC').
+        paginate(:page => params[:page], :per_page => 16)
       render :layout => 'wide'
     else
       flash[:error] = I18n.t('errors.access_denied')
@@ -111,7 +116,7 @@ class UserGroupsController < GroupsController
   end
 
   def create
-    @user_group = UserGroup.new(params[:user_group])
+    @user_group = UserGroup.new(user_group_params)
     @user_group.user_id = current_user.id
     
     if @user_group.save
@@ -133,7 +138,7 @@ class UserGroupsController < GroupsController
   def update
     @user_group = UserGroup.owned_by(current_user).find(params[:id])
 
-    if @user_group.update_attributes(params[:user_group])
+    if @user_group.update_attributes(user_group_params)
       flash[:notice] = I18n.t( 'objects.update_success', :o => @user_group.name )
       redirect_to(@user_group)
     else
@@ -150,6 +155,10 @@ class UserGroupsController < GroupsController
   protected
     def generally_authorized?
       action_name == 'shared' || (current_user && current_user != User.guest)
+    end
+
+    def user_group_params
+      params.require(:user_group).permit(:name, :lock_version)
     end
   
 end

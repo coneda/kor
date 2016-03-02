@@ -1,28 +1,23 @@
 This is the ConedaKOR command line utility. It operates several sub-commands and
 features general and specific options (see below).
 
-As of now, the following sub-commands are supported:
-
-* import: import data (for now, only excel format is supported)
-* export: export data (for now, only excel format is supported)
-* reset-admin-account: set the password for user admin to "admin"
-* index-all: refresh all indices within elasticsearch
-* reprocess-all: re-generate all image versions (caution: takes a very long
-  time)
-* recheck-invalid-entities: re-validate all entities that have previously been
-  marked as invalid previously
-* notify-expiring-users: send email notifications to users who's account is 
-  about to expire (within the next two weeks)
-* group-to-zip: package a given group as a zip archive
-* delete-expired-downloads: delete expired zip download files (older than 2
-  weeks)
-* editor-stats: list users and how many entities they created/updated
-* exif-stats: count how many images have been taken by a camera versus a scanner
-* to-neo: write all entities and relationships to the neo4j instance
-* connect-random: choose 100 pairs of random entities from neo4j and print the
-  shortest path between them
-* cleanup-sessions: delete all sessions in the database that are older than 5
-  days
+Commands:
+ import                     import data (for now, only excel format is supported)
+ export                     export data (for now, only excel format is supported)
+ reset-admin-account        set the password for user admin to "admin"
+ index-all                  refresh all indices within elasticsearch
+ reprocess-all              re-generate all image versions (caution: takes a very long time)
+ recheck-invalid-entities   re-validate all entities that have previously been marked as invalid previously
+ notify-expiring-users      send email notifications to users who's account are about to expire (within the next two weeks)
+ group-to-zip               package a given group as a zip archive
+ delete-expired-downloads   delete expired zip download files (older than 2 weeks)
+ editor-stats               list users and how many entities they created/updated
+ exif-stats                 count how many images have been taken by a camera versus a scanner
+ to-neo:                    write all entities and relationships to the neo4j instance
+ connect-random:            choose 100 pairs of random entities from neo4j and print the shortest path between them
+ cleanup-sessions           delete all sessions older than 5 days ago
+ list-permissions           list permissions and user credentials (for a given pair of entity and user or all)
+ cleanup-exception-logs     delete all exception logs
 
 Please consult
 

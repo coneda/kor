@@ -47,7 +47,7 @@ module ApplicationHelper
   def authorized?(policy = :view, collections = Collection.all, options = {})
     options.reverse_merge!(:required => :any)
   
-    Kor::Auth.authorized? current_user, policy, collections, options
+    Kor::Auth.allowed_to? current_user, policy, collections, options
   end
   
   def authorized_collections(policy = :view)
@@ -89,9 +89,15 @@ module ApplicationHelper
       :title => I18n.t(name, :scope => :title_verbs)
     )
     
-    path = asset_path("#{name}.#{options[:extension]}")
+    path = "#{name}.#{options[:extension]}"
+    path_hover = "#{name}_over.#{options[:extension]}"
     options.delete :extension
-    image_tag(path, options.merge(:class => 'kor_command_image'))
+    image_tag(path, options.merge(
+      'class' => 'kor_command_image',
+      'data-name' => name,
+      'data-normal-url' => image_path(path),
+      'data-hover-url' => image_path(path_hover)
+    ))
   end
 
   # returns a hash which contains all the routing information
@@ -100,7 +106,7 @@ module ApplicationHelper
     Rails.application.routes.recognize_path url
   end
 
-  # TODO remove the translation logic from the helper or refactor in another manner
+  # TODO: remove the translation logic from the helper or refactor in another manner
   # returns an item to be included in the navigation bar. it takes care of
   # the highlighting of active items by assigning them the 'active_item' class
   def navigation_item( label, target, options = {} )

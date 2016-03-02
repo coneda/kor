@@ -1,17 +1,27 @@
-Kor::Application.routes.draw do
+class OaiPmhVerbConstraint
+  def initialize(verb)
+    @verb = verb
+  end
 
-  match '/blaze', :to => 'static#blaze', :as => :web
+  def matches?(request)
+    request.params[:verb] == @verb
+  end
+end
 
-  match 'resolve(/:kind)/:id', :to => 'identifiers#resolve'
+Rails.application.routes.draw do
+
+  get '/blaze', :to => 'static#blaze', :as => :web
+
+  match 'resolve(/:kind)/:id', :to => 'identifiers#resolve', via: :get
   
   root :to => 'main#welcome'
-  match '/welcome', :to => 'main#welcome'
+  match '/welcome', :to => 'main#welcome', :via => :get
   
-  match '/authentication/form' => redirect('/login')
+  match '/authentication/form' => redirect('/login'), :via => :get
   
   controller 'inplace' do
-    match '/kor/inplace/tags', :action => 'tag_list'
-    match '/kor/inplace/tags/entities/:entity_id/tags', :action => 'update_entity_tags'
+    match '/kor/inplace/tags', :action => 'tag_list', :via => :get
+    match '/kor/inplace/tags/entities/:entity_id/tags', :action => 'update_entity_tags', :via => :post
   end
   
   resources :exception_logs, :only => :index do
@@ -19,36 +29,48 @@ Kor::Application.routes.draw do
       get 'cleanup'
     end
   end
-  resources :tags, :only => :index
   resources :kinds do
     resources :fields, :except => 'show'
     resources :generators
   end
-  resources :relations
+  resources :relations do
+    collection do
+      get 'names'
+    end
+  end
   resources :entities do
     collection do
       get 'multi_upload'
-      get 'duplicate'
       get 'gallery'
       get 'recent'
       get 'invalid'
       get 'isolated'
+      get 'recently_created'
+      get 'recently_visited'
     end
     
     member do
-      get 'images'
       get 'metadata'
-      get 'other_collection'
+    end
+
+    scope format: :json do
+      resources :relations, only: [:index]
+      resources :relationships, only: [:index, :show], controller: 'directed_relationships'
     end
   end
-  resources :relationships, :except => [:index]
+
+  scope format: :json do
+    resources :directed_relationships, only: [:index, :show]
+    resources :relationships, only: [:create, :update, :destroy]
+  end
+  
   resources :collections do
     collection do
       get 'edit_personal'
     end
     member do
       get 'edit_merge'
-      put 'merge'
+      patch 'merge'
     end
   end
   resources :credentials
@@ -83,9 +105,9 @@ Kor::Application.routes.draw do
       get 'extend'
     end
   end
-  match '/pub/:user_id/:uuid', :to => 'publishments#show', :as => :show_publishment
-  match '/edit_self', :to => 'users#edit_self'
-  match '/update_self', :to => 'users#update_self'
+  match '/pub/:user_id/:uuid', :to => 'publishments#show', :as => :show_publishment, :via => :get
+  match '/edit_self', :to => 'users#edit_self', :via => :get
+  match '/update_self', :to => 'users#update_self', :via => :patch
   resources :users do
     member do
       get 'reset_password'
@@ -96,85 +118,87 @@ Kor::Application.routes.draw do
     end
   end
 
-  match '/errors/:action', :controller => 'errors'  
-  match '/downloads/:uuid', :to => 'downloads#show'
-  match 'content_types/:content_type_group/:content_type.gif', :to => 'media#dummy', :as => :media_dummy, :content_type => /[a-z0-9\.\-]+/
+  match '/downloads/:uuid', :to => 'downloads#show', :via => :get
+  match 'content_types/:content_type_group/:content_type.gif', :to => 'media#dummy', :as => :media_dummy, :content_type => /[a-z0-9\.\-]+/, :via => :get
   
   scope '/media', :controller => 'media' do
-    match 'maximize/:id', :action => 'show', :style => 'normal', :as => :maximize_medium
-    match 'transform/:id/:transformation', :action => 'transform', :as => :transform_medium
-    match ':id', :action => 'view', :as => :view_medium
-    match 'images/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension', :action => 'show', :as => :medium
-    match 'download/:style/:id', :action => 'download', :as => :download_medium
+    match 'maximize/:id', :action => 'show', :style => 'normal', :as => :maximize_medium, :via => :get
+    match 'transform/:id/:transformation', :action => 'transform', :as => :transform_medium, :via => :get
+    match ':id', :action => 'view', :as => :view_medium, :via => :get
+    match 'images/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension', :action => 'show', :as => :medium, :via => :get
+    match 'download/:style/:id', :action => 'download', :as => :download_medium, :via => :get
   end
 
   controller 'authentication' do
-    match '/authentication/denied', :action => 'denied', :as => :denied, :format => :html
-    match '/authenticate', :action => 'login'
-    match '/login', :action => 'form', :as => :login
-    match '/logout', :action => 'logout', :as => :logout
-    match '/password_forgotten', :action => 'password_forgotten'
-    match '/password_reset', :action => 'personal_password_reset'
+    match '/authentication/denied', :action => 'denied', :as => :denied, :format => :html, :via => :get
+    match '/authenticate', :action => 'login', :via => :post
+    match '/login', :action => 'form', :as => :login, :via => :get
+    match '/logout', :action => 'logout', :as => :logout, :via => :get
+    match '/password_forgotten', :action => 'password_forgotten', :via => :get
+    match '/password_reset', :action => 'personal_password_reset', :via => :post
   end
   
-  match 'config/:action', :controller => 'config', :as => :config
+  match 'config/menu', :to => "config#menu", :via => :get
+  match 'config/general', :to => "config#general", :via => :get, :as => "config"
+  match 'config/save_general', :to => "config#save_general", :via => :post
   
-  match '/mark', :to => 'tools#mark', :as => :put_in_clipboard
-  match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current
+  match '/mark', :to => 'tools#mark', :as => :put_in_clipboard, :via => [:get, :delete]
+  match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current, :via => [:get, :delete]
   
   scope '/tools', :controller => 'tools' do
-    match 'session_info', :action => 'session_info'
-    match 'clipboard', :action => 'clipboard'
-    match 'statistics', :action => 'statistics'
-    match 'credits', :action => 'credits'
-    match 'credits/:id', :action => 'credits'
-    match 'groups_menu', :action => 'groups_menu'
-    match 'input_menu', :action => 'input_menu'
-    match 'relational_form_fields', :action => 'relational_form_fields'
-    match 'dataset_fields', :action => 'dataset_fields'
-    match 'clipboard_action', :action => 'clipboard_action'
-    match 'new_clipboard_action', :action => 'new_clipboard_action'
+    match 'session_info', :action => 'session_info', :via => :get
+    match 'clipboard', :action => 'clipboard', :via => :get
+    match 'statistics', :action => 'statistics', :via => :get
+    match 'credits', :action => 'credits', :via => :get
+    match 'credits/:id', :action => 'credits', :via => :get
+    match 'groups_menu', :action => 'groups_menu', :via => :get
+    match 'input_menu', :action => 'input_menu', :via => :get
+    match 'relational_form_fields', :action => 'relational_form_fields', :via => :get
+    match 'dataset_fields', :action => 'dataset_fields', :via => :get
+    match 'clipboard_action', :action => 'clipboard_action', :via => :post
+    match 'new_clipboard_action', :action => 'new_clipboard_action', :via => [:get, :post]
     match 'history', :action => 'history', :via => "post"
     
-    match 'add_media/:id', :action => 'add_media'
+    match 'add_media/:id', :action => 'add_media', :via => :get
   end
   
   scope 'static', :controller => 'static' do
-    match 'legal', :action => 'legal'
-    match 'contact', :action => 'contact'
-    match 'about', :action => 'about'
-    match 'help', :action => 'help'
+    match 'legal', :action => 'legal', :via => :get
+    match 'contact', :action => 'contact', :via => :get
+    match 'about', :action => 'about', :via => :get
+    match 'help', :action => 'help', :via => :get
   end
   
   namespace 'api', :format => :json do
     scope ':version', :version => /[0-9\.]+/, :defaults => {:version => '1.0'} do
-      match 'login', :to => 'public#login', :via => :post
-      match 'logout', :to => 'public#logout', :via => :get
       match 'info', :to => 'public#info', :via => :get
-      
-      resources :entities, :only => :show do
-        member do
-          get :relationships
-          get :deep_media
+    end
+
+    scope 'oai-pmh', :format => :xml, :as => 'oai_pmh', :via => [:get, :post] do
+      ['entities', 'relationships', 'kinds', 'relations'].each do |res|
+        controller "oai_pmh/#{res}", :defaults => {:format => :xml} do
+          match res, :to => "oai_pmh/#{res}#identify", :constraints => OaiPmhVerbConstraint.new('Identify')
+          match res, :to => "oai_pmh/#{res}#list_sets", :constraints => OaiPmhVerbConstraint.new('ListSets')
+          match res, :to => "oai_pmh/#{res}#list_metadata_formats", :constraints => OaiPmhVerbConstraint.new('ListMetadataFormats')
+          match res, :to => "oai_pmh/#{res}#list_identifiers", :constraints => OaiPmhVerbConstraint.new('ListIdentifiers')
+          match res, :to => "oai_pmh/#{res}#list_records", :constraints => OaiPmhVerbConstraint.new('ListRecords')
+          match res, :to => "oai_pmh/#{res}#get_record", :constraints => OaiPmhVerbConstraint.new('GetRecord')
+          match res, :to => "oai_pmh/#{res}#verb_error"
         end
       end
-      resources :ratings, :except => [:edit, :update]
     end
   end
 
-  scope "tpl", :module => "tpl" do
+  scope "tpl", :module => "tpl", :via => :get do
     resources :entities, :only => [:show] do
       collection do
         get :multi_upload
         get :isolated
+        get :gallery
       end
     end
 
     match "denied", :action => "denied"
-    match "pagination", :action => "pagination"
-    match "relation", :action => "relation"
-    match "media_relation", :action => "media_relation"
-    match "relationship", :action => "relationship"
   end
 
 end

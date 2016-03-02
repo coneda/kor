@@ -39,7 +39,7 @@ class CollectionsController < ApplicationController
   end
 
   def create
-    @collection = Collection.new(params[:collection])
+    @collection = Collection.new(collection_params)
 
     if @collection.save
       flash[:notice] = I18n.t('objects.create_success', :o => @collection.name)
@@ -52,7 +52,7 @@ class CollectionsController < ApplicationController
   def update
     @collection = Collection.find(params[:id])
 
-    if @collection.update_attributes(params[:collection])
+    if @collection.update_attributes(collection_params)
       flash[:notice] = I18n.t('objects.update_success', :o => @collection.name)
       redirect_to collections_path
     else
@@ -73,8 +73,13 @@ class CollectionsController < ApplicationController
   end
   
   protected
+
     def generally_authorized?
-      current_user.collection_admin?
+      current_user.admin?
+    end
+
+    def collection_params
+      params.require(:collection).permit!
     end
     
 end

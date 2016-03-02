@@ -6,14 +6,22 @@ kor.controller('entity_controller', [
     scope.allowed_to = (policy) -> ss.allowed_to(policy, scope.entity)
     scope.allowed_to_any = ss.allowed_to_any
 
-    promise = es.show(rp.id)
-    promise.success (data) -> scope.entity = data
-    promise.error (data) -> l.path("/denied")
+    update = ->
+      promise = es.show(rp.id)
+      promise.success (data) -> scope.entity = data
+      promise.error (data) -> l.path("/denied")
+    update()
+
+    scope.$on 'relationship-saved', update
+
+    scope.toggle_relationship_editor = (event) ->
+      event.preventDefault()
+      scope.relationship_editor_visible = !scope.relationship_editor_visible
 
     scope.visible_entity_fields = ->
       if scope.entity
         scope.entity.fields.filter (field) ->
-          field.value && field.settings.show_on_entity == "1"
+          field.value
       else
         []
 
@@ -46,5 +54,8 @@ kor.controller('entity_controller', [
         
       event.preventDefault()
       event.stopPropagation()
+
+    scope.close_relationship_editor = ->
+      scope.relationship_editor_visible = false
 
 ])

@@ -1,3 +1,3 @@
-Given(/^pending$/) do
-  pending "implement this test!"
+Given(/^(pending.*)$/) do |message|
+  pending message
 end

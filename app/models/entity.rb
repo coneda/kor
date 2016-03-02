@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Entity < ActiveRecord::Base
 
   # Settings
@@ -7,120 +5,57 @@ class Entity < ActiveRecord::Base
   serialize :attachment, JSON
   
   acts_as_taggable_on :tags
-  
-  self.per_page = 10
-  
+
   # Associations
 
-  has_many :identifiers, :foreign_key => :entity_uuid, :primary_key => :uuid, :dependent => :destroy
-  
+  belongs_to :kind
+  belongs_to :collection
   belongs_to :creator, :class_name => "User", :foreign_key => :creator_id
   belongs_to :updater, :class_name => "User", :foreign_key => :updater_id
-  belongs_to :kind
  
+  has_many :identifiers, :dependent => :destroy
   has_many :datings, :class_name => "EntityDating", :dependent => :destroy
 
   belongs_to :medium, :dependent => :destroy
 
-  belongs_to :collection
-  
   has_and_belongs_to_many :system_groups
   has_and_belongs_to_many :authority_groups
   has_and_belongs_to_many :user_groups
 
-  has_many :relationships,
-    :finder_sql => Proc.new {
-      "SELECT DISTINCT relationships.*
-       FROM relationships 
-       WHERE (from_id = #{id} OR to_id = #{id})"
-    },
-    :class_name => "Relationship",
-    :dependent => :destroy do
-      def only(options = {})
-        options.reverse_merge!( :kind => nil, :relation_names => nil )
+  has_many :out_rels, foreign_key: :from_id, class_name: 'Relationship', dependent: :destroy
+  has_many :in_rels, foreign_key: :to_id, class_name: 'Relationship', dependent: :destroy
 
-        result = self
-        if options[:kind]
-          result = result.select do |rs|
-            Kind.find_ids(options[:kind]).include?( rs.other_entity(proxy_association.owner).kind_id )
-          end
-        end
+  has_many :outgoing_relationships, class_name: "DirectedRelationship", foreign_key: :from_id
+  has_many :outgoing, through: :outgoing_relationships, source: :to
 
-        if options[:relation_names]
-          result = result.select do |rs|
-            Array(options[:relation_names]).include?( rs.relation_name_for_entity(proxy_association.owner) )
-          end
-        end
+  has_many :incoming_relationships, class_name: "DirectedRelationship", foreign_key: :to_id
+  has_many :incoming, through: :incoming_relationships, source: :from
 
-        result.sort do |x,y|
-          x_name = x.other_entity(proxy_association.owner).display_name || ""
-          y_name = y.other_entity(proxy_association.owner).display_name || ""
-          x_name.downcase <=> y_name.downcase
-        end
-      end
-
-      def except(options = {})
-        options.reverse_merge!(:kind => [], :relation_names => [])
-        only( 
-          :kind => Kind.all_ids - Kind.find_ids(options[:kind]),
-          :relation_names => Relation.all.collect{|r| [r.name, r.reverse_name]}.flatten - options[:relation_names]
-        )
-      end
-      
-      def authorized(user, policies)
-        collection_ids = Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
-        
-        self.select do |rs|
-          collection_ids.include? rs.other_entity(proxy_association.owner).collection_id
-        end
-      end
-      
-      def grouped
-        except(:kind => Kind.medium_kind.id).group_by do |r| 
-          r.relation_name_for_entity(proxy_association.owner)
-        end
-      end
-    end
-    
+  # TODO: get rid of this
   def grouped_related_entities(user, policies, options = {})
     options.reverse_merge!(:media => :no, :limit => false)
   
     relation_conditions =  "(from_id = #{self[:id]} OR to_id = #{self[:id]})"
     collection_conditions = "IF(from_id = #{self[:id]},tos_relationships.collection_id,entities.collection_id) IN (?)"
     media_conditions = case options[:media]
-      when :no then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) != #{Kind.medium_kind.id} AND"
-      when :yes then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) = #{Kind.medium_kind.id} AND"
+      when :no then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) != #{Kind.medium_kind.id}"
+      when :yes then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) = #{Kind.medium_kind.id}"
       when :both then ""
     end
     
     relationships = Relationship.includes(:from, :relation, :to).order("tos_relationships.name, entities.name")
-    relationships = relationships.where(
-      "#{media_conditions} #{relation_conditions} AND #{collection_conditions}",
-      Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
-    )
+    relationships = relationships.
+      where(media_conditions).
+      where(relation_conditions).
+      where(
+        collection_conditions,
+        Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
+      )
     
     relationships.group_by{|r| r.relation_name_for_entity(self)}
   end
   
-  def try_again
-    Relationship.find_by_sql("
-      SELECT
-        IF(r1.from_id = #{self.id}, 1, 0) AS normal,
-        IF(r1.from_id = #{self.id}, r1.name, r1.reverse_name) AS name,
-        IF(r1.from_id = #{self.id}, e1.name, er1.name) 
-      FROM relationships r1
-        JOIN entities e1 ON e1.id = r1.from_id
-        JOIN entities er1 ON er1.id = r1.to_id
-    ")
-  end
-  
-
-  # Nesting
-  
-  accepts_nested_attributes_for :medium
-
-  
-  # Validation
+  accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
 
   validates_associated :datings
 
@@ -131,16 +66,16 @@ class Entity < ActiveRecord::Base
   validates :distinct_name,
     :uniqueness => {:scope => [ :kind_id, :name ], :allow_blank => true},
     :white_space => true
-  validates_presence_of :kind
-  validates_presence_of :uuid
-  validates_inclusion_of :no_name_statement, :allow_blank => true, :in => [ 'unknown', 'not_available', 'empty_name', 'enter_name' ]
-  validates_presence_of :collection_id
+  validates :kind, :uuid, :collection_id, presence: true
+  validates :no_name_statement, inclusion: {
+    :allow_blank => true, :in => [ 'unknown', 'not_available', 'empty_name', 'enter_name' ]
+  }
 
   validate(
     :validate_distinct_name_needed, :validate_dataset, :validate_properties,
     :attached_file
   )
-
+ 
   def attached_file
     if is_medium?
       if medium
@@ -179,7 +114,11 @@ class Entity < ActiveRecord::Base
   # Attachment
 
   def attachment
-    self[:attachment] ||= {}
+    unless self[:attachment]
+      self[:attachment] = {}
+    end
+
+    self[:attachment]
   end
 
   def schema
@@ -192,6 +131,14 @@ class Entity < ActiveRecord::Base
 
   def dataset=(value)
     attachment['fields'] = value
+  end
+
+  def fields
+    kind.field_instances(self)
+  end
+
+  def field_hashes
+    fields.map{|field| field.serializable_hash}
   end
 
   def synonyms
@@ -235,7 +182,7 @@ class Entity < ActiveRecord::Base
   before_save :generate_uuid, :add_to_user_group
   after_update :save_datings
   after_commit :update_elastic
-  after_save :update_identifiers, :trigger_wikidata_identification
+  after_save :update_identifiers
   
   def sanitize_distinct_name
     self.distinct_name = nil if self.distinct_name == ""
@@ -245,6 +192,7 @@ class Entity < ActiveRecord::Base
     self.uuid ||= SecureRandom.uuid
   end
   
+  # TODO: why is this necessary?
   def save_datings
     datings.each do |dating|
       dating.save(:validate => false)
@@ -262,32 +210,27 @@ class Entity < ActiveRecord::Base
   end
 
   def update_identifiers
-    kind.fields.identifiers.each do |field|
-      field.entity = self
-      if field.value.present?
-        id = identifiers.find_or_create_by_kind(field.name)
-        id.update_attributes :value => field.value
-      else
-        id = identifiers.where(:kind =>  field.name).first
-        id.destroy if id
+    if self.destroyed?
+      self.identifiers.destroy_all
+    else
+      kind.fields.identifiers.each do |field|
+        field.entity = self
+        if field.value.present?
+          id = identifiers.find_or_create_by(kind: field.name)
+          id.update_attributes :value => field.value
+        else
+          id = identifiers.where(:kind =>  field.name).first
+          id.destroy if id
+        end
       end
     end
   end
 
-  def trigger_wikidata_identification
-    self.delay.wikidata_identification
-    # self.wikidata_identification
+  def after_merge
+    update_elastic
+    update_identifiers
   end
 
-  def wikidata_identification
-    unless self.wikidata_id.present?
-      if id = Kor::Import::WikiData.new.id_for_entity(self)
-        update_column :wikidata_id, id
-      end
-    end
-  end
-  
-  
   # Attributes
   
   def recent?
@@ -310,11 +253,11 @@ class Entity < ActiveRecord::Base
   end
   
   def mark_invalid
-    SystemGroup.find_or_create_by_name('invalid').add_entities self
+    SystemGroup.find_or_create_by(:name => 'invalid').add_entities self
   end
 
   def mark_valid
-    SystemGroup.find_or_create_by_name('invalid').remove_entities self
+    SystemGroup.find_or_create_by(:name => 'invalid').remove_entities self
   end
   
   
@@ -344,47 +287,45 @@ class Entity < ActiveRecord::Base
   def degree
     Relationship.where("from_id = ? OR to_id = ?", self.id, self.id).count
   end
-  
-  def related_entities(options = {})
-    options.reverse_merge!(:relation_names => nil)
-    relationships.only(options).map{|r| r.other_entity(self)}
+
+  def primary_entities(user)
+    relation_names = Relation.primary_relation_names
+    outgoing.
+      allowed(user, :view).
+      where('directed_relationships.relation_name' => relation_names).
+      without_media
+  end
+
+  def secondary_entities(user)
+    relation_names = Relation.secondary_relation_names
+    outgoing.
+      allowed(user, :view).
+      where('directed_relationships.relation_name' => relation_names).
+      without_media
   end
   
-  def related(options = {})
-    options.reverse_merge!(
-      :assume => :primary,
-      :search => :media
-    )
-    
-    if options[:assume] == :media
-      if options[:search] == :primary
-        related_entities(:relation_names => Relation.primary_relation_names)
-      else
-        raise Kor::Exception.new(
-          "invalid options or invalid combination: #{options.inspect}"
-        )
-      end
-    elsif options[:assume] == :primary
-      if options[:search] == :media
-        related_entities(:relation_names => Relation.reverse_primary_relation_names)
-      elsif options[:search] == :secondary 
-        related_entities(:relation_names => Relation.secondary_relation_names)
-      end 
-    elsif options[:assume] == :secondary
-      if options[:search] == :primary
-        related_entities(:relation_names => Relation.reverse_secondary_relation_names)
-      elsif options[:search] == :media
-        related(:assume => :secondary, :search => :primary).map do |e|
-          e.related(:assume => :primary, :search => :media)
-        end.flatten.uniq
-      end
+  def relation_counts(user, options = {})
+    options.reverse_merge! media: false
+    media_id = Kind.medium_kind.id
+
+    scope = outgoing_relationships.
+      allowed(user, :view).
+      includes(:to).
+      group('directed_relationships.relation_name')
+
+    if options[:media]
+      scope = scope.where('tos.kind_id = ?', media_id)
     else
-      raise Kor::Exception.new(
-        "invalid options or invalid combination: #{options.inspect}"
-      )
+      scope = scope.where('tos.kind_id != ?', media_id)
     end
+
+    scope.count
   end
-  
+
+  def media_count(user)
+    outgoing_relationships.with_to.where('tos.kind_id = 1').count
+  end
+
   
   ############################ naming ##########################################
   
@@ -402,27 +343,6 @@ class Entity < ActiveRecord::Base
     result
   end
   
-  def save_with_serial
-    while has_name_duplicates?
-      self.distinct_name ||= ""
-      if self.distinct_name.match(/– \d+$/)
-        serial = distinct_name.match(/\d+$/)[0].to_i + 1
-        self.distinct_name.gsub! /\d+$/, serial.to_s
-      elsif self.distinct_name.match(/^[\d]+$/)
-        serial = self.distinct_name.to_i + 1
-        self.distinct_name = serial.to_s
-      else
-        if self.distinct_name.blank?
-          self.distinct_name = "2"
-        else
-          self.distinct_name += " – 2"
-        end
-      end
-    end
-    
-    save
-  end
-  
   def has_name_duplicates?
     find_name_duplicates.count > 0
   end
@@ -434,14 +354,6 @@ class Entity < ActiveRecord::Base
       result = self.class.where(:name => name, :distinct_name => distinct_name, :kind_id => kind_id)
       new_record? ? result : result.where("id != ?", id)
     end
-  end
-
-  def find_others_by_distinct_name
-    distinct_name.blank? ? [] :
-      Entity.where(
-        [ "(name LIKE ? OR distinct_name LIKE ?) AND kind_id = ? AND id != ?",
-        distinct_name, distinct_name, kind_id, id || -1 ]
-      )
   end
 
   def needs_name?
@@ -466,11 +378,6 @@ class Entity < ActiveRecord::Base
     read_attribute(:no_name_statement) || 'enter_name'
   end
   
-  def find_equally_named(distinct = false)
-    result = Entity.where("kind_id = ?", kind_id).where("name = ?", name)
-    distinct ? result.where("distinct_name = ?", distinct_name) : result
-  end
-
   
   ############################ kind related ####################################
 
@@ -481,12 +388,14 @@ class Entity < ActiveRecord::Base
 
   ############################ dating ##########################################
 
+  # TODO: can this method be removed?
   def new_datings_attributes=(values)
     values.each do |v|
       datings.build v
     end
   end
 
+  # TODO: can this method be removed?
   def existing_datings_attributes=(values)
     datings.reject(&:new_record?).each do |d|
       attributes = values[d.id.to_s]
@@ -499,19 +408,9 @@ class Entity < ActiveRecord::Base
   end
 
 
-  ############################ image related ###################################
-  def images(user)
-    @images ||= grouped_related_entities(user, :view, :media => :yes).values.flatten.map{|r| r.other_entity(self)}.uniq
-  end
-
   def media(user)
     @media ||= grouped_related_entities(user, :view, :media => :yes).values.flatten.map{|r| r.other_entity(self)}.uniq
   end
-
-  def has_images?(user)
-    !images(user).empty?
-  end
-
 
   # ----------------------------------------------------------------- search ---
   def self.filtered_tag_counts(term, options = {})
@@ -522,58 +421,58 @@ class Entity < ActiveRecord::Base
       where('tags.name LIKE ?', "%#{term}%")
   end
   
-  attr_writer :search_attributes
-
-  def search_attributes(section = nil)
-    if section
-      ( @search_attributes || {} )[section] || {}
-    else
-      @search_attributes
-    end
-  end
-  
-  
-  def self.find_by_kind_and_naming(kind_id, naming)
-    find_by_sql "SELECT entities.* from entities
-      LEFT JOIN synonyms on entities.id = synonyms.entity_id
-      WHERE
-        entities.kind_id = #{kind_id} AND (
-          synonyms.name LIKE '#{naming}' OR
-          entities.name LIKE '#{naming}'
-        )
-    "
-  end
-
   # Finds all entities given in <tt>ids</tt> and keeps the same order as the
   # ids in the parameter. Ids which refer to non existing entities are
   # transparently ignored.
   def self.find_all_by_id_keep_order(ids)
-    tmp_entities = find_all_by_id(ids)
+    tmp_entities = where(:id => ids).to_a
     Array(ids).collect{|id| tmp_entities.find{|e| e.id.to_i == id.to_i } }.reject{|e| e.blank? }
   end
   
   def self.find_all_by_uuid_keep_order(uuids)
-    tmp_entities = find_all_by_uuid(uuids)
+    tmp_entities = where(:uuid => uuids).to_a
     Array(uuids).collect{|uuid| tmp_entities.find{|e| e.uuid == uuid } }.reject{|e| e.blank? }
   end
-  
+
+  scope :by_relation_name, lambda {|relation_name|
+    if relation_name
+      kind_ids = Relation.where(name: relation_name).map{|r| r.to_kind_ids}
+      kind_ids << Relation.where(reverse_name: relation_name).map{|r| r.from_kind_ids}
+      where(kind_id: kind_ids.flatten)
+    else
+      all
+    end
+  }  
+  scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
+  scope :alphabetically, lambda { order("name asc, distinct_name asc") }
+  scope :newest_first, lambda { order("created_at DESC") }
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
-  scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : scoped }
-  scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : scoped }
+  # TODO: the next two should use
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
+  scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
+  # TODO: the next three should use 'only_kinds'
   scope :searcheable, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
   scope :media, lambda { where("entities.kind_id = ?", Kind.medium_kind.id) }
-  scope :without_media, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
-  scope :alphabetically, order("name asc, distinct_name asc")
-  scope :newest_first, order("created_at DESC")
-  scope :globally_identified_by, lambda {|uuid| uuid.blank? ? scoped : where(:uuid => uuid) }
+  scope :without_media, lambda { 
+    if id = Kind.medium_kind.try(:id)
+      where("entities.kind_id != ?", id) 
+    else
+      all
+    end
+  }
+  # TODO: this is the same as 'only_kinds'
   scope :is_a, lambda { |kind_id|
     kind = Kind.find_by_name(kind_id.to_s)
     kind ||= Kind.find_by_id(kind_id)
-    kind ? where("entities.kind_id = ?", kind_id) : scoped
+    kind ? where("entities.kind_id = ?", kind_id) : all
   }
+  # TODO: still needed?
   scope :named_exactly_like, lambda {|value| where("name like :value or concat(name,' (',distinct_name,')') like :value", :value => value) }
+  # TODO: rewrite this not to collect singular entity ids
   scope :valid, lambda { |valid|
     ids = Tag.invalid_tag.entities.collect{|e| e.id}
     valid ?
@@ -582,7 +481,7 @@ class Entity < ActiveRecord::Base
   }
   scope :named_like, lambda { |user, pattern|
     if pattern.blank?
-      {}
+      all
     else
       pattern_query = pattern.tokenize.map{ |token| "entities.name LIKE ?"}.join(" AND ")
       pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
@@ -599,7 +498,7 @@ class Entity < ActiveRecord::Base
   }
   scope :has_property, lambda { |user, properties|
     if properties.blank?
-      scoped
+      all
     else
       ids = Kor::Elastic.new(user).search(
         :properties => properties,
@@ -608,6 +507,7 @@ class Entity < ActiveRecord::Base
       where("entities.id IN (?)", ids.uniq)
     end
   }
+  # TODO: rewrite this to use directed relationships
   scope :related_to, lambda { |user, spec|
     entity_ids = nil
     spec ||= []
@@ -633,11 +533,12 @@ class Entity < ActiveRecord::Base
       where("relf.name IN (?) OR relr.reverse_name IN (?)", relation_names, relation_names).
       where(conds.join(' OR '), *vars)
     else
-      scoped
+      all
     end
   }
+  # TODO: rewrite this to use joins
   scope :dated_in, lambda {|dating|
-    dating.blank? ? scoped : where("entities.id IN (?)", EntityDating.between(dating).collect{|ed| ed.entity_id }.uniq)
+    dating.blank? ? all : where("entities.id IN (?)", EntityDating.between(dating).collect{|ed| ed.entity_id }.uniq)
   }
   scope :dataset_attributes, lambda { |user, dataset|
     dataset ||= {}
@@ -646,16 +547,16 @@ class Entity < ActiveRecord::Base
       :size => Entity.count
     ).ids
 
-    dataset.values.all?{|v| v.blank?} ? scoped : where("entities.id IN (?)", ids.uniq)
+    dataset.values.all?{|v| v.blank?} ? all : where("entities.id IN (?)", ids.uniq)
   }
-  scope :load_fully, joins(:kind, :collection).includes(:medium)
+  scope :load_fully, lambda { joins(:kind, :collection).includes(:medium) }
   scope :isolated, lambda {
     joins("LEFT JOIN relationships fromrels ON entities.id = fromrels.from_id").
     joins("LEFT JOIN relationships torels ON entities.id = torels.to_id").
     where("fromrels.id is NULL AND torels.id IS NULL")
   }
   scope :pageit, lambda { |page, per_page|
-    page = (page || 1).to_i
+    page = [(page || 1).to_i, 1].max
     per_page = [(per_page || 20).to_i, 100].min
 
     offset((page - 1) * per_page).limit(per_page)

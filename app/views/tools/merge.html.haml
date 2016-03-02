@@ -5,6 +5,8 @@
     - @entities.each do |e|
       = hidden_field_tag "entity_ids[]", e.id
 
+    = f.kor_input :uuid, :control => f.select(:uuid, @entities.map{|e| e.uuid}.uniq)
+
     = f.hidden_field :kind_id
     
     = f.collection_selector :collection_id

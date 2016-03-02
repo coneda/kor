@@ -1,8 +1,3 @@
-# Be sure to restart your server when you modify this file.
-
-#Kor::Application.config.session_store :cookie_store, :key => '_kor_session'
-
-# Use the database for sessions instead of the cookie-based default,
-# which shouldn't be used to store highly confidential information
-# (create the session table with "rails generate session_migration")
-Kor::Application.config.session_store :active_record_store
+# TODO: This can't be done at the moment, have a look at 
+# app/controllers/application_controller.rb:1
+# Rails.application.config.session_store :active_record_store, key: '_kor_session'

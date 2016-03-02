@@ -8,9 +8,9 @@ Feature: Configurable help
   Scenario: See the configuration menu
     Given I am logged in as "admin"
     When I go to the config page
-    Then I should see "Hilfe" within ".layout_panel.left .section_panel"
-    When I follow "Hilfe" within ".layout_panel.left .section_panel"
-    Then I should see "Einfache Suche" within ".canvas"
-    And I should see "Expertensuche" within ".canvas"
-    And I should see "Multiupload" within ".canvas"
+    Then I should see "Help" within ".layout_panel.left .section_panel"
+    When I follow "Help" within ".layout_panel.left .section_panel"
+    Then I should see "Simple search" within ".canvas"
+    And I should see "Expert search" within ".canvas"
+    And I should see "Multiple upload" within ".canvas"
     

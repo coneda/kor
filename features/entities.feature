@@ -3,18 +3,20 @@ Feature: Entities
   As a user
   I should be able to manage entities
   
-  
+
+  @javascript
   Scenario: Invalid entities
     Given I am logged in as "admin"
     And 40 invalid entities "Mona Lisa" of kind "Werk" inside collection "default"
-    And I follow "Ungültige Entitäten"
-    Then I should see "gehe zu Seite"
+    And I follow "Invalid entities"
+    Then I should see "go to page"
   
-
+  
+  @javascript
   Scenario: Search fields
     Given I am logged in as "admin"
     When I go to the expert search
-    Then I should see "Datierung"
+    Then I should see "Dating"
 
 
   @javascript
@@ -23,19 +25,20 @@ Feature: Entities
     And the entity "Nürnberg" of kind "Ort/Orte"
     And the entity "Nürnberg" has 12 relationships
     When I go to the entity page for "Nürnberg"
+    Then I should see "Nürnberg"
     Then I should see element ".pagination input"
-    When I click element "img[alt='Pager_right']" within ".relation"
+    When I click element "img[data-name='pager_right']" within ".relation"
     And I follow "Triangle_up" within ".relation"
-    Then I should see /ENDE/ within ".relationships"
+    Then I should see "ENDE" within ".relationships"
 
 
   @javascript
   Scenario: Upload a medium
     Given I am logged in as "admin"
     When I go to the legacy upload page
-    Then I should see "Medium anlegen"
+    Then I should see "Create medium"
     When I attach the file "spec/fixtures/image_a.jpg" to "entity[medium_attributes][document]"
-    And I press "Erstellen"
+    And I press "Create"
     Then there should be "1" "Medium" entity in the database
     And I should be on the entity page for the last medium
     And I should see "Medium"
@@ -66,7 +69,7 @@ Feature: Entities
     And I follow "Plus" within "#synonyms"
     And I fill in "synonyms" attachment "2" with "La Gioconde"
     
-    And I press "Erstellen"
+    And I press "Create"
     Then I should be on the entity page for "Mona Lisa"
     And I should see "1688"
     And I should see "Alter"
@@ -76,7 +79,7 @@ Feature: Entities
     
     When I follow "Pen"
     And I follow "Minus" within "#synonyms .attachment:first-child"
-    And I press "Speichern"
+    And I press "Save"
     Then I should be on the entity page for "Mona Lisa"
     And I should see "1688"
     And I should see "Alter"
@@ -84,12 +87,15 @@ Feature: Entities
     And I should not see "La Bella"
     And I should see "La Gioconde"
     
-  
+
+  @javascript  
   Scenario: I don't see the select as current link when I have no edit rights for no collection
-    Given I am logged in as "john"
-    And the entity "Mona Lisa" of kind "Werk/Werke"
+    Given the entity "Mona Lisa" of kind "Werk/Werke"
+    And user "john" is allowed to "view" collection "default" via credential "users"
+    And I am logged in as "john"
     When I go to the entity page for "Mona Lisa"
-    Then I should not see element "img[alt=Select]"
+    And I should see "Mona Lisa"
+    Then I should not see element "a[kor-current-button]"
     
     
   @javascript  
@@ -109,23 +115,25 @@ Feature: Entities
     And user "john" is allowed to "view/edit" collection "Nebensammlung" through credential "Nebenuser"
     And I am logged in as "john"
     When I go to the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
     And I follow "Pen"
     And I fill in "entity[name]" with "La Gioconde"
-    And I press "Speichern"
+    And I press "Save"
     Then I should be on the entity page for "La Gioconde"
     And I should see "La Gioconde"
 
 
+  @javascript
   Scenario: Try to create an entity with the same name twice (same collection)
     Given I am logged in as "admin"
     And the kind "Werk/Werke"
     And I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
+    And I press "Create"
     When I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
-    Then I should see "Name ist bereits vergeben"
+    And I press "Create"
+    Then I should see "name is already taken"
     
   
   Scenario: Try to create an entity with the same name twice (different collections)
@@ -135,22 +143,23 @@ Feature: Entities
     And I am logged in as "admin"
     And I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
+    And I press "Create"
     When I go to the new "Werk-Entity" page
     And I select "side" from "entity[collection_id]"
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
-    Then I should see "Name ist bereits vergeben"
+    And I press "Create"
+    Then I should see "name is already taken"
   
- 
+
+  @javascript
   Scenario: Try to create an entity with the same name within another collection
     Given the entity "Mona Lisa" of kind "Werk/Werke"
     And user "john" is allowed to "view/create" collection "Nebensammlung" through credential "Nebenuser"
     And I am logged in as "john"
     When I go to the new "Werk-Entity" page
     And I fill in "entity[name]" with "Mona Lisa"
-    And I press "Erstellen"
-    Then I should see "Konflikt mit Sammlung 'Default'"
+    And I press "Create"
+    Then I should see "conflict with collection 'Default'"
     
   
   @javascript
@@ -159,12 +168,12 @@ Feature: Entities
     And the setup "Many relationships with images"
     When I go to the entity page for "Mona Lisa"
     And I wait for "1" second
-    When I click element "img[alt='Pager_right']" within ".relation"
+    When I click element "img[data-name='pager_right']" within ".relation"
     And I follow "Triangle_up" within ".relationship"
     And I wait for "1" seconds
     And I hover element ".relationships .kor_medium_frame"
     And I click on ".kor_medium_frame .button_bar a[kor-to-clipboard]"
-    Then I should see "wurde in die Zwischenablage aufgenommen"
+    Then I should see "has been copied to the clipboard"
 
 
   @javascript
@@ -198,7 +207,7 @@ Feature: Entities
     And I should not see element "img[title=Pen]" within ".relationship"
 
 
-  @javascript
+  @javascript @nodelay
   Scenario: Click the big image on media to return to the entity screen
     Given I am logged in as "admin"
     And the medium "spec/fixtures/image_a.jpg"
@@ -224,3 +233,16 @@ Feature: Entities
     When I go to the entity page for "Leonardo"
     And I click on the upper triangle for relation "has created"
     Then I should see "2" kor images within the first relation on the page
+
+
+  @javascript
+  Scenario: Display creator and updater next in the master data
+    Given the user "jdoe"
+    And I am logged in as "admin"
+    And the entity "Mona Lisa" of kind "artwork/artworks"
+    And the entity "Mona Lisa" was created by "jdoe"
+    And the entity "Mona Lisa" was updated by "admin" 
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "by jdoe" within ".master_data"
+    And I should see "by administrator" within ".master_data"
+

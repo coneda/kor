@@ -1,4 +1,4 @@
-require "spec_helper"
+require 'rails_helper'
 
 describe UserGroup do
 
@@ -14,7 +14,7 @@ describe UserGroup do
 
     expect(user_group.valid?).to be_falsey
     expect(user_group.errors.full_messages).to include(
-      "Name kann keine Wörter mit mehr als 30 Buchstaben enthalten"
+      "Name cannot contain words longer than 30 characters"
     )
   end
 

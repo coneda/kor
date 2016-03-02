@@ -10,7 +10,6 @@ all:
     welcome_text: "*This text can be configured via the general settings*"
     current_history_length: 5
     max_foreground_group_download_size: 10
-    use_blaze: true
     max_file_upload_size: "100"
     source_code_url: "http://download.coneda.net/releases/coneda-kor.v{{version}}.tar.gz"
 
@@ -78,13 +77,13 @@ test:
         map_to: ldap
 
   app:
-    default_locale: de
+    default_locale: en
     gallery:
-      primary_relations: ['stellt dar']
-      secondary_relations: ['wurde erschaffen von']
+      primary_relations: ['shows']
+      secondary_relations: ['has been created by']
 
-    welcome_title: "Willkommen"
-    welcome_text: "Dies ist eine Testinstallation"
+    welcome_title: "Welcome"
+    welcome_text: "This is a testing installation"
 
     current_history_length: 5
     max_foreground_group_download_size: 10
@@ -95,12 +94,3 @@ test:
 
   dev:
     value_a: default.env
-
-  meta_data_profiles:
-    simple:
-      -
-        name: "stellt dar"
-        relations: 
-          - 
-            name: "wurde erschaffen von"
-

@@ -3,7 +3,11 @@ class KindsController < ApplicationController
 
   def index
     @kinds = Kind.all
-    render :layout => 'wide'
+
+    respond_to do |format|
+      format.html {render :layout => 'wide'}
+      format.json {render :json => @kinds}
+    end
   end
 
   def show
@@ -19,7 +23,7 @@ class KindsController < ApplicationController
   end
   
   def create
-    @kind = Kind.new(params[:kind])
+    @kind = Kind.new(kind_params)
 
     if @kind.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => Kind.model_name.human )
@@ -34,7 +38,7 @@ class KindsController < ApplicationController
 
     params[:kind][:settings][:tagging] ||= false
     
-    if @kind.update_attributes(params[:kind])
+    if @kind.update_attributes(kind_params)
       flash[:notice] = I18n.t( 'objects.update_success', :o => Kind.model_name.human )
       redirect_to :action => 'index'
     else
@@ -55,8 +59,17 @@ class KindsController < ApplicationController
   
   
   protected
+    
+    def kind_params
+      params.require(:kind).permit!
+    end
+
     def generally_authorized?
-      current_user.kind_admin?
+      if action_name == 'index'
+        true
+      else
+        current_user.kind_admin?
+      end
     end
 
 end

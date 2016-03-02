@@ -11,24 +11,56 @@ class Relation < ActiveRecord::Base
     :presence => true,
     :white_space => true
 
-  after_validation :on => :create do |model|
-    model.generate_uuid
-  end
-  def generate_uuid
-    write_attribute(:uuid, SecureRandom.uuid)
+  after_validation :generate_uuid, :on => :create
+  after_save :correct_directed
+
+  def correct_directed
+    if name_changed?
+      DirectedRelationship.
+        where(relation_name: name_was).
+        where(relation_id: id).
+        update_all(relation_name: name)
+    end
+
+    if reverse_name_changed?
+      DirectedRelationship.
+        where(relation_name: reverse_name_was).
+        where(relation_id: id).
+        update_all(relation_name: reverse_name)
+    end
   end
 
-  default_scope order(:name)
+  def generate_uuid
+    self[:uuid] ||= SecureRandom.uuid
+  end
+
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :allowed, lambda {|user, policies| all}
+  scope :pageit, lambda { |page, per_page|
+    page = (page || 1) - 1
+    per_page = [(per_page || 30).to_i, 500].min
+    limit(per_page).offset(per_page * page)
+  }
+  default_scope lambda { order(:name) }
   
 
   ######################### kinds ##############################################
 
   def from_kind_ids
-    self[:from_kind_ids] ||= []
+    unless self[:from_kind_ids]
+      self[:from_kind_ids] = []
+    end
+
+    self[:from_kind_ids]
   end
 
   def to_kind_ids
-    self[:to_kind_ids] ||= []
+    unless self[:to_kind_ids]
+      self[:to_kind_ids] = []
+    end
+
+    self[:to_kind_ids]
   end
 
   def from_kind_ids=(values)
@@ -82,13 +114,6 @@ class Relation < ActiveRecord::Base
       results << r.reverse_name if from_include_to and to_include_from
     end
     results.sort.uniq
-  end
-  
-
-  ######################### other ##############################################
-  # TODO This should also work with an array in the configfile
-  def has_name(name)
-    self.name == name or reverse_name == name
   end
   
   def self.primary_relation_names

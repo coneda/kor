@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  
+
   factory :kind do
 
     factory :works do
@@ -10,6 +10,7 @@ FactoryGirl.define do
     factory :media do
       name "Medium"
       plural_name "Media"
+      settings { {:naming => false} }
     end
 
     factory :locations do
@@ -46,7 +47,38 @@ FactoryGirl.define do
   end
   
   factory :medium do
-    document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
+
+    factory :medium_image_a do
+      document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
+    end
+
+    factory :medium_image_b do
+      document File.open("#{Rails.root}/spec/fixtures/image_b.jpg")
+    end
+
+    factory :medium_image_c do
+      document File.open("#{Rails.root}/spec/fixtures/image_c.jpg")
+    end
+
+    factory :medium_video_a do
+      document File.open("#{Rails.root}/spec/fixtures/video_a.m4v")
+    end
+
+    factory :medium_video_b do
+      document File.open("#{Rails.root}/spec/fixtures/video_b.flv")
+    end
+
+    factory :medium_audio_a do
+      document File.open("#{Rails.root}/spec/fixtures/audio_a.wav")
+    end
+
+    factory :medium_audio_b do
+      document File.open("#{Rails.root}/spec/fixtures/audio_b.mp3")
+    end
+
+    factory :medium_text_a do
+      document File.open("#{Rails.root}/spec/fixtures/text_file.txt")
+    end
   end
 
   factory :medium_without_swap, :class => Medium do
@@ -77,11 +109,11 @@ FactoryGirl.define do
   end
   
   factory :entity do
-    collection { Collection.find_or_create_by_name "default" }
+    collection { Collection.find_or_create_by :name => "default" }
 
     factory :work do
       name "A entity"
-      kind { Kind.find_or_create_by_name "Werk" }
+      kind { Kind.find_or_create_by :name => "Werk" }
 
       factory :mona_lisa do
         name "Mona Lisa"
@@ -103,11 +135,19 @@ FactoryGirl.define do
       factory :landscape do
         name "Landscape"
       end
+
+      factory :the_last_supper do
+        name "The Last Supper"
+      end
+
+      factory :artwork do
+        name "An artwork"
+      end
     end
 
     factory :location do
-      name "A entity"
-      kind { Kind.find_or_create_by_name "Ort" }
+      name "A location"
+      kind { Kind.find_or_create_by :name => "Ort" }
 
       factory :united_kingdom do
         name "United Kingdom"
@@ -116,11 +156,15 @@ FactoryGirl.define do
       factory :united_states do
         name "United States of America"
       end
+
+      factory :paris do
+        name "Paris"
+      end
     end
 
     factory :person do
       name "A person"
-      kind { Kind.find_or_create_by_name "Person" }
+      kind { Kind.find_or_create_by :name => "Person" }
 
       factory :jack do
         name "Jack"
@@ -129,24 +173,51 @@ FactoryGirl.define do
       factory :leonardo do
         name "Leonardo da Vinci"
       end
+
+      factory :tom do
+        name "Tom"
+      end
     end
 
     factory :institution do
-      name "A entity"
-      kind { Kind.find_or_create_by_name "Person" }
+      name "An institution"
+      kind { Kind.find_or_create_by :name => "Institution" }
     end
+
 
     factory :medium_entity do
       kind { Kind.medium_kind }
 
-      factory :image_a do
-        medium { FactoryGirl.build :medium }
+      factory :picture_a do
+        medium { FactoryGirl.build :medium_image_a }
       end
 
-      factory :image_b do
-        medium do
-          FactoryGirl.build :medium, :document => File.open("#{Rails.root}/spec/fixtures/image_b.jpg")
-        end
+      factory :picture_b do
+        medium { FactoryGirl.build :medium_image_b }
+      end
+
+      factory :picture_c do
+        medium { FactoryGirl.build :medium_image_c }
+      end
+
+      factory :video_a do
+        medium { FactoryGirl.build :medium_video_a }
+      end
+
+      factory :video_b do
+        medium { FactoryGirl.build :medium_video_b }
+      end
+
+      factory :audio_a do
+        medium { FactoryGirl.build :medium_audio_a }
+      end
+
+      factory :audio_b do
+        medium { FactoryGirl.build :medium_audio_b }
+      end
+
+      factory :text do
+        medium { FactoryGirl.build :medium_text_a }
       end
     end
 
@@ -157,8 +228,8 @@ FactoryGirl.define do
     reverse_name "is related to"
 
     factory :is_part_of do
-      name "ist Teil von"
-      reverse_name "besteht aus"
+      name "is part of"
+      reverse_name "consists of"
     end
 
     factory :shows do
@@ -179,6 +250,11 @@ FactoryGirl.define do
     factory :is_located_at do
       name "is located at"
       reverse_name "is location of"
+    end
+
+    factory :is_sibling_of do
+      name "is sibling of"
+      reverse_name "is sibling of"
     end
   end
 
@@ -206,10 +282,7 @@ FactoryGirl.define do
       password 'admin'
       
       admin true
-      user_admin true
       kind_admin true
-      collection_admin true
-      credential_admin true
       relation_admin true
       authority_group_admin true
     end
@@ -251,6 +324,20 @@ FactoryGirl.define do
         <span ng-show=\"locale() == 'en'\">English</span>
         <span ng-show=\"locale() == 'de'\">Deutsch</span>
       "
+    end
+  end
+
+  factory :authority_group_category do
+    factory :archive do
+      name 'archive'
+    end
+
+    factory :shelf_1 do
+      name 'shelf 1'
+    end
+
+    factory :shelf_2 do
+      name 'shelf 2'
     end
   end
 

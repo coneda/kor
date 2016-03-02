@@ -1,38 +1,23 @@
 class Collection < ActiveRecord::Base
 
-  # Associations
-
   has_many :entities
   has_many :grants, :dependent => :destroy
   has_many :credentials, :through => :grants
   has_one :owner, :class_name => 'User', :foreign_key => :collection_id
   
-  
-  # Scopes
-  
-  scope :personal, joins(:owner)
+  scope :personal, lambda { joins(:owner) }
   scope :non_personal, lambda {
     personal_ids = joins(:owner).select('collections.id').map{|c| c.id}
-    personal_ids.empty? ? scoped : where("id NOT IN (?)", personal_ids)
+    personal_ids.empty? ? all : where("id NOT IN (?)", personal_ids)
   }
-
-
-  # Settings
-  
-  serialize :policy_groups
-
-
-  # Validations
 
   validates :name,
     :presence => true,
     :uniqueness => true,
     :white_space => true  
 
-  
-  # Callbacks
-  
   after_save :update_personals
+
   def update_personals
     if personal? && propagate && @grants_by_policy_buffer
       collections = self.class.joins(:owner).where("collections.id != ?", self.id)
@@ -54,9 +39,6 @@ class Collection < ActiveRecord::Base
     end
   end
   
-
-  # Attributes
-  
   attr_writer :propagate
   
   def propagate
@@ -74,18 +56,10 @@ class Collection < ActiveRecord::Base
   def list_name
     name
   end
-  
-  
-  # Access control
+
+  # TODO: move all auth stuff to Kor::Auth
   
   def grant(policies, options = {})
-    options[:to] = case options[:to]
-      when nil then []
-      when Credential then [options[:to]]
-      else
-        options[:to]
-    end
-  
     policies = case policies
       when :all then self.policies
       when Symbol then [policies]
@@ -93,16 +67,41 @@ class Collection < ActiveRecord::Base
       else
         policies
     end
-    
-    policies.each do |policy|
-      if options[:to] == []
-        self.grants.with_policy(p).destroy_all
+
+    options[:to] = case options[:to]
+      when nil then []
+      when Credential then [options[:to]]
       else
-        options[:to].each do |credential|
-          self.grants << Grant.new(:collection => self, :policy => policy, :credential => credential)
-        end
+        options[:to]
+    end
+  
+    policies.each do |policy|
+      options[:to].each do |credential|
+        self.grants << Grant.new(policy: policy, credential: credential)
       end
     end
+  end
+
+  def revoke(policies, options = {})
+    policies = case policies
+      when :all then self.policies
+      when Symbol then [policies]
+      when String then [policies]
+      else
+        policies
+    end
+
+    options[:from] = case options[:from]
+      when nil then []
+      when Credential then [options[:from]]
+      else
+        options[:from]
+    end
+
+    self.grants.
+      with_policy(policies).
+      with_credential(options[:from]).
+      destroy_all
   end
   
   def grants_by_policy
@@ -133,8 +132,11 @@ class Collection < ActiveRecord::Base
     end
   end
   
-  
   def policies
+    self.class.policies
+  end
+  
+  def self.policies
     ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
   end
   

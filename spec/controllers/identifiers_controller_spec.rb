@@ -35,10 +35,4 @@ describe IdentifiersController, :type => :controller do
     expect(response).to redirect_to("/blaze#/entities/#{leonardo.id}")
   end
 
-  it "should resolve by wikidata_id" do
-    leonardo = FactoryGirl.create :leonardo, :wikidata_id => "762"
-    get :resolve, :id => "762"
-    expect(response).to redirect_to("/blaze#/entities/#{leonardo.id}")
-  end
-
 end

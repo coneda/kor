@@ -76,9 +76,9 @@ describe Kor::Auth do
     end
     
     it "should say if a user has more than one right" do
-      expect(Kor::Auth.authorized?(@admin, :view, @main)).to be_truthy
-      expect(Kor::Auth.authorized?(@admin, [:view, :edit], @main)).to be_truthy
-      expect(Kor::Auth.authorized?(@admin, [:view, :edit, :approve], @main)).to be_truthy
+      expect(Kor::Auth.allowed_to?(@admin, :view, @main)).to be_truthy
+      expect(Kor::Auth.allowed_to?(@admin, [:view, :edit], @main)).to be_truthy
+      expect(Kor::Auth.allowed_to?(@admin, [:view, :edit, :approve], @main)).to be_truthy
     end
     
     it "should give all authorized collections for a user and a set of policies" do
@@ -100,18 +100,18 @@ describe Kor::Auth do
     it "should not allow deleting entities without appropriate authorization" do
       set_side_collection_policies :view => [@admins]
 
-      result = described_class.authorized?(User.admin, :delete, side_entity.collection)
+      result = described_class.allowed_to?(User.admin, :delete, side_entity.collection)
       expect(result).to be_falsey
     end
 
     it "should not show unauthorized entities" do
-      result = described_class.authorized?(User.admin, :view, side_entity.collection)
+      result = described_class.allowed_to?(User.admin, :view, side_entity.collection)
       expect(result).to be_falsey
     end
 
     it "should allow to show authorized entities" do
       set_side_collection_policies :view => [@admins]
-      result = described_class.authorized?(User.admin, :view, side_entity.collection)
+      result = described_class.allowed_to?(User.admin, :view, side_entity.collection)
       expect(result).to be_truthy
     end
 

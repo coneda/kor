@@ -34,11 +34,11 @@ class PublishmentsController < ApplicationController
   end
 
   def new
-    @publishment = Publishment.owned_by(current_user).build(params[:publishment])
+    @publishment = Publishment.owned_by(current_user).build(publishment_params)
   end
 
   def create
-    @publishment = Publishment.owned_by(current_user).build(params[:publishment])
+    @publishment = Publishment.owned_by(current_user).build(publishment_params)
 
     if @publishment.save
       flash[:notice] = I18n.t('objects.create_success', :o => @publishment.name )
@@ -57,8 +57,13 @@ class PublishmentsController < ApplicationController
   end
   
   protected
+
+    def publishment_params
+      params.fetch(:publishment, {}).permit(:user_group_id, :name)
+    end
+
     def generally_authorized?
       current_user && current_user != User.guest
     end
-  
+
 end

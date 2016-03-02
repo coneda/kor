@@ -4,13 +4,18 @@
 # Mime::Type.register "text/richtext", :rtf
 # Mime::Type.register_alias "text/html", :iphone
 # Mime::Type.register "text/html", :mobile
-Mime::Type.register "application/rdf+xml", :rdf
 
+# required for paperclip to make it accept the .image file extension
 ["image/tiff", "image/jpeg", "image/png", "image/gif", "image/vnd.adobe.photoshop"].each do |mtn|
   if mt = MIME::Types[mtn].first
-    mt.extensions << "image"
-    MIME::Types.index_extensions mt
+    mt.add_extensions "image"
+    # mt.extensions << "image"
+    # MIME::Types.send :index_extensions, mt
   else
     puts mtn
   end
 end
+
+Paperclip.options[:content_type_mappings] = {
+  mp3: "application/octet-stream"
+}

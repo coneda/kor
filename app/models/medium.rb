@@ -1,7 +1,5 @@
 class Medium < ActiveRecord::Base
 
-  # DelayedPaperclip::Railtie.insert
-  
   has_one :entity
 
   # -------------------------------------------------------------- paperclip ---
@@ -14,14 +12,11 @@ class Medium < ActiveRecord::Base
   end
   
   has_attached_file :document, 
-    :path => "#{media_data_dir}/:style/:id_partition/document.:style_extension",
-    :url => "/media/images/:style/:id_partition/document.:style_extension",
-    :default_url => "/media/images/:style/:id_partition/image.:style_extension?:style_timestamp",
-    :styles => {:flash => {:format => :flv}},
-    :processors => Proc.new{ |a|
-      is_video = a.content_type.match(/^(video|application\/x-shockwave-flash)/)
-      is_video ? [:video] : [:empty]
-    }
+    path: "#{media_data_dir}/:style/:id_partition/document.:style_extension",
+    url: "/media/images/:style/:id_partition/document.:style_extension",
+    default_url: "/media/images/:style/:id_partition/image.:style_extension?:style_timestamp",
+    styles: lambda {|attachment| attachment.instance.custom_styles},
+    processors: lambda {|instance| instance.processors}
     
   has_attached_file :image,
     :path => "#{media_data_dir}/:style/:id_partition/image.:style_extension",
@@ -38,29 +33,43 @@ class Medium < ActiveRecord::Base
   process_in_background :document
   process_in_background :image
 
-  before_validation do |m|
-    if m.to_file(:document)
-      m.document.instance_write :content_type, `file --mime-type -b #{m.to_file(:document).path}`.strip.split(';').first
+  def custom_styles
+    result = {}
+
+    if document.present?
+      ct = document.content_type
+      if ct.match(/^(video\/|application\/x-shockwave-flash)/)
+        result.merge!(
+          mp4: {format: :mp4, content_type: 'video/mp4'},
+          ogg: {format: :ogv, content_type: 'video/ogg'},
+          webm: {format: :webm, content_type: 'video/webm'}
+        )
+      end
+      if ct.match(/^audio\//)
+        result.merge!(
+          mp3: {format: :mp3, content_type: 'audio/mp3'},
+          ogg: {format: :ogg, content_type: 'audio/ogg'}
+        )
+      end
     end
-  end
-  
-  def serializable_hash(*args)
-    {
-      :id => id,
-      :url => image.url(:preview),
-      :file_size => file_size,
-      :content_type => content_type
-    }
+
+    result
   end
 
+  def processors
+    if document.present?
+      ct = document.content_type
+      return [:video] if ct.match(/^(video\/|application\/x-shockwave-flash)/)
+      return [:audio] if ct.match(/^audio\//)
+    end
+      
+    []
+  end
+
+  
+  # TODO: fix for audio case or remove if not used
   def presentable?
     self.content_type.match /^(image|video|application\/x-shockwave-flash)/
-  end
-  
-  def custom_styles
-    {
-      :flash => {:file_extension => 'flv', :content_type => 'video/x-flv'}
-    }
   end
   
   def kind
@@ -90,9 +99,10 @@ class Medium < ActiveRecord::Base
   
   # Validation
 
-  validates_attachment_content_type :image, :content_type => /^image\/.+$/, :if => Proc.new{|medium| medium.image.file?}
-  validates_attachment_presence :document, :unless => Proc.new{|medium| medium.image.file?}, :message => :file_must_be_set
-  validates_uniqueness_of :datahash, :message => :file_exists
+  validates_attachment :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{|medium| medium.image.file?}}
+  validates_attachment :document, presence: {unless: Proc.new{|medium| medium.image.file?}, message: :file_must_be_set} 
+  validates :datahash, uniqueness: {:message => :file_exists}
+  
   validate :validate_no_two_images
   validate :validate_file_size
   
@@ -136,7 +146,7 @@ class Medium < ActiveRecord::Base
     elsif image_style?(style)
       "image/jpg"
     else
-      custom_styles[style][:content_type]
+      custom_styles[style.to_sym][:content_type]
     end.downcase
   end
   
@@ -177,7 +187,7 @@ class Medium < ActiveRecord::Base
     elsif image_style?(style)
       "#{entity.id}.#{style}.#{style_extension(style)}"
     else
-      "#{entity.id}.#{style}.#{custom_styles[style][:file_extension]}"
+      "#{entity.id}.#{style}.#{custom_styles[style.to_sym][:file_extension]}"
     end
   end
   
@@ -186,15 +196,15 @@ class Medium < ActiveRecord::Base
   end
   
   def custom_style_path(style)
-    "#{self.class.media_data_dir}/#{style}/#{ids}/document.#{custom_styles[style][:file_extension]}"
+    document.path(style.to_sym)
   end
   
   def custom_style_url(style)
-    "/media/images/#{style}/#{ids}/document.#{custom_styles[style][:file_extension]}?#{document.updated_at}"
+    document.url(style.to_sym)
   end
   
   def custom_style_data(style)
-    File.read custom_style_path(style)
+    File.read custom_style_path(style.to_sym)
   end
   
   def image_style?(style)
@@ -202,15 +212,19 @@ class Medium < ActiveRecord::Base
   end
   
   def url(style = :original)
-    result = if style == :original
-      document.url(:original)
-    elsif image_style?(style)
-      image.url(style)
+    if Rails.env.development? && !ENV['SHOW_MEDIA']
+      "/content_types/#{content_type}.gif"
     else
-      custom_style_url(style)
-    end
+      result = if style == :original
+        document.url(:original)
+      elsif image_style?(style)
+        image.url(style)
+      else
+        custom_style_url(style)
+      end
 
-    result.present? ? result.gsub(/%3F/, '?') : result
+      result.present? ? result.gsub(/%3F/, '?') : result
+    end
   end
   
   def path(style = :original)
@@ -228,7 +242,7 @@ class Medium < ActiveRecord::Base
   end
   
   def self.dummy_path(content_type)
-    group, type = content_type.split('/')
+    group, type = content_type.split('/').map{|t| t.gsub /\//, '_'}
   
     dir = "#{Rails.root}/public/content_types"
     group_dir = "#{dir}/#{group}"
@@ -263,13 +277,6 @@ class Medium < ActiveRecord::Base
     end
   end
 
-  def original_url=(value)
-    unless value.blank?
-      self [:original_url] = value
-      self.document = open URI(value)
-    end
-  end
-  
   def human_content_type
     group, type = content_type.split('/')
     I18n.t(type, :scope => ['mimes', group], :default => content_type)

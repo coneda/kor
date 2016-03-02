@@ -7,7 +7,9 @@
         <div class="current-box">
           {{'nouns.current_entity' | translate:{count: 1} }}
           <div class="hr"></div>
-          <div kor-simple-entity="current_entity()"></div>
+          <div class="kor-entity">
+            <div kor-entity-widget="current_entity()"></div>
+          </div>
         </div>
 
         <div class="previous-current-box">
@@ -15,7 +17,9 @@
           <div class="hr"></div>
           <div ng-repeat="entity in previous_current_entities()" class="item">
             <a kor-to-current="true" href="#">
-              <div kor-simple-entity="entity"></div>
+              <div class="kor-entity">
+                <div kor-entity-widget="entity"></div>
+              </div>
             </a>
           </div>
         </div>

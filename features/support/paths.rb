@@ -12,7 +12,10 @@ module NavigationHelpers
     when /the home\s?page/ then '/'
     when /the expert search/ then '/entities'
     when /the global groups page/ then '/authority_group_categories'
-    when /the gallery/ then '/entities/gallery'
+    when /^the gallery( page)?$/ then web_path(:anchor => "/entities/gallery")
+    when /^page "(\d+)" of the gallery$/
+      page = $1
+      web_path(:anchor => "/entities/gallery?page=#{page}")
     when /the new relationship page for "(.*)"/
       new_relationship_path(:relationship => {:from_id => Entity.find_by_name($1).id })
     when /the new publishment page/ then new_publishment_path
@@ -52,7 +55,6 @@ module NavigationHelpers
       new_entity_path(:kind_id => Kind.find_by_name($1).id)
     when /the denied page/ then denied_path
     when /the login page/ then login_path
-    when /the logout page/ then logout_path
     when /the new user group page/ then new_user_group_path
     when /the user group "([^\"]*)"/ then user_group_path(UserGroup.find_by_name($1))
     when /the edit page for user group "([^\"]*)"/ then edit_user_group_path(UserGroup.find_by_name($1))
@@ -74,6 +76,7 @@ module NavigationHelpers
     when /the multi upload page/ then web_path(:anchor => '/entities/multi_upload')
     when /the exception logs page/ then exception_logs_path
     when /welcome page/ then "/"
+    when /404/ then "/404.html"
     when /the path "([^\"]+)"/ then $1
 
     # Add more mappings here.

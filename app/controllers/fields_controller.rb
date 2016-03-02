@@ -14,7 +14,7 @@ class FieldsController < ApplicationController
   end
 
   def new
-    @field = params[:klass].constantize.new(params[:field])
+    @field = sanitize_field_class(params[:klass]).constantize.new(field_params)
     @form_url = kind_fields_path(@kind)
   end
   
@@ -27,7 +27,7 @@ class FieldsController < ApplicationController
     @field = Field.find(params[:id])
     @form_url = kind_field_path(@kind, @field)
     
-    if @field.update_attributes params[:field]
+    if @field.update_attributes field_params
       flash[:notice] = I18n.t('objects.update_success', :o => @field.show_label)
       redirect_to :action => 'index'
     else
@@ -36,7 +36,7 @@ class FieldsController < ApplicationController
   end
   
   def create
-    @field = params[:klass].constantize.new(params[:field])
+    @field = sanitize_field_class(params[:klass]).constantize.new(field_params)
     @form_url = kind_fields_path(@kind)
     
     if @field.save
@@ -54,27 +54,23 @@ class FieldsController < ApplicationController
     redirect_to :action => 'index'
   end
   
-  def edit_schema
-    @kind = Kind.find(params[:id])
-    @schema = @kind.schema
-    render :layout => 'small_normal'
-  end
-  
-  def drop_schema_field
-    @kind = Kind.find(params[:id])
-    @kind.fields = @kind.schema.reject do |f|
-      f.name == params[:name]
-    end
-    
-    if @kind.save
-      render :nothing => true
-    else
-      render :nothing => true, :status => :unacceptable
-    end
-  end
 
   protected
+
+    def field_params
+      params.fetch(:field, {}).permit(
+        :kind_id, :name, :search_label, :form_label, :show_label, :lock_version,
+        :show_on_entity, :type, :is_identifier
+      )
+    end
+
     def generally_authorized?
       current_user.kind_admin?
+    end
+
+    def sanitize_field_class(str)
+      if Kind.available_fields.map{|klass| klass.name}.include?(str)
+        str
+      end
     end
 end

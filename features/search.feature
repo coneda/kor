@@ -31,7 +31,7 @@ Feature: search
     Given the triple "Werk/Werke" "Bamberger Apokalypse" "befindet sich in/ist Ort von" "Ort/Orte" "Bamberg"
     When I go to the simple search page
     And I fill in "search_terms" with "Apokalypse"
-    And I press "Suchen"
+    And I press "Search"
     Then I should see "Bamberg" within ".entity_list"
     And I should see "Bamberger Apokalypse" within ".entity_list"
 
@@ -42,7 +42,7 @@ Feature: search
     And the entity "Bamberger Apokalypse" of kind "Werk/Werke"
     When I go to the expert search page
     And I fill in "query[name]" with "Bamberg"
-    And I press "Suchen"
+    And I press "Search"
     Then I should see "Bamberg" within ".entity_list"
     And I should see "Bamberger Apokalypse" within ".entity_list"
 
@@ -52,7 +52,7 @@ Feature: search
     Given the entity "Bamberger Apokalypse" of kind "Werk/Werke"
     When I go to the expert search page
     And I fill in "query[name]" with "Bamberger Apokalypse"
-    And I press "Suchen"
+    And I press "Search"
     Then I should be on the expert search path
     
     
@@ -64,7 +64,7 @@ Feature: search
     And everything is indexed
     When I go to the expert search
     And I fill in "query[name]" with "ödipus"
-    And I press "Suchen"
+    And I press "Search"
     Then I should see "Oedipus" within ".search_result"
 
 
@@ -77,13 +77,13 @@ Feature: search
     When I go to the expert search page
     And I select "Literatur" from "query[kind_id]"
     Then I should see "Isbn"
-    When I press "Suchen"
+    When I press "Search"
     Then I should see "Die Bibel" within ".search_result"
     When I fill in "query[dataset][isbn]" with "incorrect"
-    When I press "Suchen"
+    When I press "Search"
     Then I should not see "Die Bibel"
     When I fill in "query[dataset][isbn]" with "123456789"
-    When I press "Suchen"
+    When I press "Search"
     Then I should see "Die Bibel" within ".search_result"
 
 
@@ -96,13 +96,13 @@ Feature: search
     When I go to the expert search page
     And I select "Literatur" from "query[kind_id]"
     When I fill in "query[properties]" with "incorrect"
-    When I press "Suchen"
+    When I press "Search"
     Then I should not see "Die Bibel"
     When I fill in "query[properties]" with "123456789"
-    When I press "Suchen"
+    When I press "Search"
     Then I should see "Die Bibel" within ".search_result"
     When I fill in "query[properties]" with "isbn"
-    When I press "Suchen"
+    When I press "Search"
     Then I should see "Die Bibel" within ".search_result"
 
 
@@ -114,9 +114,9 @@ Feature: search
     When I go to the simple search page
     And I fill in "search_terms" with "Mona" and select term "Mona"
     And I click on element "input" within the row for "entity" "Mona Lisa"
-    Then I should see "wurde in die Zwischenablage aufgenommen"
+    Then I should see "has been copied to the clipboard"
     When I click on element "input" within the row for "entity" "Mona Lisa"
-    Then I should see "wurde aus der Zwischenablage entfernt"
+    Then I should see "has been removed from the clipboard"
 
 
   @javascript @elastic
@@ -136,8 +136,18 @@ Feature: search
     And the triple "Werk/Werke" "Bamberger Apokalypse" "befindet sich in/ist Ort von" "Ort/Orte" "Bamberg"
     And I go to the expert search page
     When I select "Werk" from "query_kind_id"
-    And I follow "Plus"
+    And I should see element ".entity_list"
+    And I click element "[data-name=plus]"
     And I select "befindet sich in" from "query_relationships__relation_name"
     And I fill in "query_relationships__entity_name" with "Bamberg"
-    And I press "Suchen"
+    And I press "Search"
     Then I should see "Bamberger Apokalypse" within ".search_result"
+
+
+  @javascript
+  Scenario: Expert search: see results after kind selection
+    Given I am logged in as "admin"
+    And the entity "Mona Lisa" of kind "Werk/Werke"
+    When I go to the expert search page
+    And I select "Werk" from "query[kind_id]"
+    Then I should see "Mona Lisa" within ".entity_list"

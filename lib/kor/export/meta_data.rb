@@ -1,7 +1,14 @@
 class Kor::Export::MetaData
   
-  def initialize(name)
-    @profile = (Kor.config['meta_data_profiles'] || {})[name] || []
+  def initialize(user)
+    @user = user
+    @profile = []
+    Relation.primary_relation_names.each do |pr|
+      @profile << {
+        'name' => pr,
+        'relations' => Relation.secondary_relation_names.map{|sr| {'name' => sr}}
+      }
+    end
   end
   
   def line(name, value, indent = 0)
@@ -24,18 +31,17 @@ class Kor::Export::MetaData
       value = entity.display_name + (options[:properties].blank? ? "" : " (#{options[:properties]})")
       result += line nil, value, options[:indent]
     end
-    
+
     options[:profile].each do |relation|
-      relationships = entity.relationships.only(:relation_names => relation['name'])
-      
+      relationships = entity.outgoing_relationships.by_relation_name(relation['name']).allowed(@user, :view)
+
       unless relationships.empty?
         result += line nil, relation['name'], options[:indent]
       end
-      
+
       relationships.each do |relationship|
-        related_entity = relationship.other_entity(entity)
-        result += render_entity(related_entity,
-          :properties => relationship.properties.join(', '),
+        result += render_entity(relationship.to,
+          :properties => relationship.relationship.properties.join(', '),
           :profile => relation['relations'] || [],
           :indent => options[:indent] + 1
         )

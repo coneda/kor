@@ -8,7 +8,7 @@ Feature: History
   Scenario: Use a direct link to show an entity without logging in
     Given the entity "Mona Lisa" of kind "Werk/Werke"
     When I go to the entity page for "Mona Lisa"
-    Then I should see "Der Zugriff wurde verweigert"
+    Then I should see "Access denied"
 
 
   @javascript
@@ -16,7 +16,7 @@ Feature: History
     Given I am logged in as "admin"
     And Leonardo, Mona Lisa and a medium as correctly related entities
     When I go to the entity page for "Mona Lisa"
-    And I follow "Leonardo da Vinci"
+    And I follow the link with text "Leonardo da Vinci"
     Then I should see "Leonardo da Vinci"
     When I ignore the next confirmation box
     And I wait for "2" seconds

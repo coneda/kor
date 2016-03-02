@@ -29,8 +29,6 @@ module Kor::Auth
         end
         data = File.read("#{dir}/stdout.log")
 
-        # binding.pry if password == "234567"
-
         if status
           return JSON.parse(data).merge(
             :parent_username => c["map_to"]
@@ -45,11 +43,9 @@ module Kor::Auth
 
     false
   end
-  
+
   def self.authorize(username, additional_attributes = true)
-    user = User.find_by_name(username, :include => :groups) || User.new(
-      :name => username
-    )
+    user = User.includes(:groups).find_or_initialize_by(:name => username)
 
     if additional_attributes.is_a?(Hash)
       user.assign_attributes additional_attributes
@@ -83,15 +79,27 @@ module Kor::Auth
       :credential_id => groups(user).map{|c| c.id}, 
       :policy => policies
     ).group(:collection_id).count
-    
+
     Collection.where(:id => result.keys).to_a
   end
+
+  def self.authorized_credentials(collection, policy = :view)
+    collection.grants.where(policy: policy).map do |grant|
+      grant.credential
+    end
+  end
   
-  def self.authorized?(user, policy = :view, collections = Collection.all, options = {})
+  def self.allowed_to?(user, policy = :view, collections = nil, options = {})
+    collections ||= Collection.all.to_a
     user ||= User.guest
+    policy = Collection.policies if policy == :all
     
     options.reverse_merge!(:required => :all)
-    collections = [collections] unless collections.is_a? Array
+    collections = if collections.is_a?(Collection)
+      [collections]
+    else
+      collections.to_a
+    end
     collections = collections.reject{|c| c.nil?}
     
     result = Grant.where(
@@ -106,5 +114,5 @@ module Kor::Auth
       result.keys.size > 0
     end
   end
-  
+
 end

@@ -24,7 +24,8 @@ class AuthorityGroupsController < GroupsController
   
   def add_to
     @authority_group = AuthorityGroup.find(params[:id])
-    entities = viewable_entities.find ArgumentArray(params[:entity_ids])
+    entity_ids = Kor.array_wrap(params[:entity_ids])
+    entities = viewable_entities.find entity_ids
     @authority_group.add_entities(entities)
     
     redirect_to @authority_group
@@ -32,7 +33,8 @@ class AuthorityGroupsController < GroupsController
 
   def remove_from
     @authority_group = AuthorityGroup.find(params[:id])
-    entities = viewable_entities.find ArgumentArray(params[:entity_ids])
+    entity_ids = Kor.array_wrap(params[:entity_ids])
+    entities = viewable_entities.find entity_ids
     @authority_group.remove_entities(entities)
 
     redirect_to @authority_group
@@ -43,12 +45,16 @@ class AuthorityGroupsController < GroupsController
 
   def show
     @authority_group = AuthorityGroup.find(params[:id])
-    @entities = @authority_group.entities.allowed(current_user, :view).paginate(:page => params[:page], :per_page => 16, :order => 'created_at DESC')
+    @entities = @authority_group.
+      entities.
+      allowed(current_user, :view).
+      paginate(:page => params[:page], :per_page => 16).
+      order('created_at DESC')
     render :layout => 'wide'
   end
 
   def new
-    @authority_group = AuthorityGroup.new(params[:authority_group])
+    @authority_group = AuthorityGroup.new(authority_group_params)
   end
 
   def edit
@@ -60,7 +66,7 @@ class AuthorityGroupsController < GroupsController
   end
 
   def create
-    @authority_group = AuthorityGroup.new(params[:authority_group])
+    @authority_group = AuthorityGroup.new(authority_group_params)
 
     if @authority_group.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => @authority_group.name )
@@ -73,7 +79,7 @@ class AuthorityGroupsController < GroupsController
   def update
     @authority_group = AuthorityGroup.find(params[:id])
 
-    if @authority_group.update_attributes(params[:authority_group])
+    if @authority_group.update_attributes(authority_group_params)
       flash[:notice] = I18n.t( 'objects.update_success', :o => @authority_group.name )
       redirect_to(@authority_group.authority_group_category || authority_group_categories_path)
     else
@@ -93,6 +99,10 @@ class AuthorityGroupsController < GroupsController
   end
   
   protected
+    def authority_group_params
+      params.fetch(:authority_group, {}).permit(:name, :lock_version, :authority_group_category_id)
+    end
+
     def generally_authorized?
       current_user.authority_group_admin?
     end

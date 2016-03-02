@@ -1,5 +1,5 @@
-class ApplicationController < ActionController::Base
-  
+class ApplicationController < BaseController
+
   helper :all
   helper_method :back, :back_save, :home_page, 
     :authorized?,
@@ -11,11 +11,13 @@ class ApplicationController < ActionController::Base
     :logged_in?,
     :blaze
   
-  before_filter :locale, :maintenance, :authentication, :authorization, :legal
+  before_filter :locale, :authentication, :authorization, :legal
 
   before_filter do
     @blaze = nil
   end
+
+  around_filter :profile
   
 
   private
@@ -27,27 +29,16 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    # redirects to the under_maintenance action of the static
-    # controller if Kor['dev']['down_for_maintenance'] is set to true
-    def maintenance
-      if Kor.under_maintenance?
-        redirect_to :controller => 'static', :action => 'under_maintenance'
-      end
-    end
-
-    # this method is called, when an exception ocurred while generating a
-    # response to a request which wasn't sent from localhost
-    
     if Rails.env == 'production'
-      rescue_from Exception, :with => :log_exception_and_notify_user
       rescue_from ActionController::RoutingError, :with => :not_found
       rescue_from ActiveRecord::RecordNotFound, :with => :not_found
+      rescue_from Exception, :with => :log_exception_and_notify_user
     end
     
     def not_found
       redirect_to '/404.html'
     end
-    
+
     def log_exception_and_notify_user(exception)
       ExceptionLog.create(
         :kind => exception.class.to_s,
@@ -93,7 +84,7 @@ class ApplicationController < ActionController::Base
           end
         end
       else
-        Kor.info("AUTH", "user '#{current_user.name}' has been seen")
+        Rails.logger.info("Auth: user '#{current_user.name}' has been seen")
         session[:expires_at] = Kor.session_expiry_time
       end
     end
@@ -106,9 +97,13 @@ class ApplicationController < ActionController::Base
     end
 
     def session_expired?
-      unless current_user.guest?
+      if !current_user.guest? && !api_auth?
         (session[:expires_at] || Time.now) <= Time.now
       end
+    end
+
+    def api_auth?
+      params[:api_key] && User.exists?(api_key: params[:api_key])
     end
     
     def generally_authorized?
@@ -126,9 +121,9 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    def authorized?(policy = :view, collections = Collection.all, options = {})
+    def authorized?(policy = :view, collections = nil, options = {})
       options.reverse_merge!(:required => :any)
-      ::Kor::Auth.authorized? current_user, policy, collections, options
+      Kor::Auth.allowed_to? current_user, policy, collections, options
     end
 
     def authorized_collections(policy)
@@ -144,21 +139,25 @@ class ApplicationController < ActionController::Base
     end
     
     def authorized_for_relationship?(relationship, policy = :view)
-      case policy
-        when :view
-          view_from = authorized?(:view, relationship.from.collection)
-          view_to = authorized?(:view, relationship.to.collection)
-          
-          view_from and view_to
-        when :create, :delete, :edit
-          view_from = authorized?(:view, relationship.from.collection)
-          view_to = authorized?(:view, relationship.to.collection)
-          edit_from = authorized?(:edit, relationship.from.collection)
-          edit_to = authorized?(:edit, relationship.to.collection)
-          
-          (view_from and edit_to) or (edit_from and view_to)
-        else
-          false
+      if relationship.to && relationship.from
+        case policy
+          when :view
+            view_from = authorized?(:view, relationship.from.collection)
+            view_to = authorized?(:view, relationship.to.collection)
+            
+            view_from and view_to
+          when :create, :delete, :edit
+            view_from = authorized?(:view, relationship.from.collection)
+            view_to = authorized?(:view, relationship.to.collection)
+            edit_from = authorized?(:edit, relationship.from.collection)
+            edit_to = authorized?(:edit, relationship.to.collection)
+            
+            (view_from and edit_to) or (edit_from and view_to)
+          else
+            false
+        end
+      else
+        true
       end
     end
 
@@ -199,13 +198,9 @@ class ApplicationController < ActionController::Base
     end
     
     def home_page
-      current_user.home_page || root_url
+      (current_user ? current_user.home_page : nil ) || root_url
     end
     
-    def current_user
-      @current_user ||= User.pickup_session_for(session[:user_id])
-    end
-
     def logged_in?
       current_user && current_user.name != 'guest'
     end
@@ -213,13 +208,39 @@ class ApplicationController < ActionController::Base
     def kor_graph
       @kor_graph ||= Kor::Graph.new(:user => current_user)
     end
-    
+
     def current_entity
       session[:current_entity]
     end
 
-    def blaze
-      @blaze ||= Kor::Blaze.new(current_user)
+    def entity_params
+      params.require(:entity).permit(
+        :lock_version,
+        :kind_id,
+        :collection_id,
+        :name, :distinct_name, :subtype, :comment, :no_name_statement,
+        :tag_list,
+        :synonyms => [],
+        :datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :new_datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :existing_datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :dataset => params[:entity][:dataset].try(:keys),
+        :properties => [:label, :value],
+        :medium_attributes => [:image, :document]
+      )
+    end
+
+    def profile
+      if ENV["PROFILE"]
+        require 'perftools'
+        path = request.path.gsub("/", "_")
+        path = "#{Rails.root}/tmp/profiles/#{path}"
+        PerfTools::CpuProfiler.start(path) do
+          yield
+        end
+      else
+        yield
+      end
     end
 
 end

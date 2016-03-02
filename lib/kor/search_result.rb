@@ -6,7 +6,7 @@ class Kor::SearchResult
     assign_attributes attrs
   end
 
-  attr_writer :uuids, :ids, :records, :total, :page, :per_page
+  attr_writer :uuids, :ids, :records, :total, :page, :per_page, :raw_records
 
   def uuids
     @uuids || []
@@ -32,12 +32,22 @@ class Kor::SearchResult
     @per_page || 20
   end
 
+  def raw_records
+    @raw_records || []
+  end
+
   def records
     @records ||= begin
-      if @uuids
+      if @ids.present?
+        Entity.where(:id => @ids).to_a.sort do |x, y|
+          @ids.index(x.id) <=> @ids.index(y.id)
+        end
+      elsif @uuids.present?
         Entity.where(:uuid => @uuids).to_a.sort do |x, y|
           @uuids.index(x.uuid) <=> @uuids.index(y.uuid)
         end
+      else
+        []
       end
     end
   end

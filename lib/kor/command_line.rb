@@ -59,6 +59,9 @@ class Kor::CommandLine
         @parser.on("-f DATE", "the lower bound for the time period to consider (YYYY-MM-DD)") {|v| @config[:from] = v }
         @parser.on("-t DATE", "the upper bound for the time period to consider (YYYY-MM-DD)") {|v| @config[:to] = v }
         @required += [:from, :to]
+      when 'list-permissions'
+        @parser.on('-e ENTITY', 'the id of an entity to limit the result list to') {|v| @config[:entity_id] = v}
+        @parser.on('-u USER', 'the id of a user to limit the result list to') {|v| @config[:user_id] = v}
     end
 
     @parser.order!(@args)
@@ -88,68 +91,33 @@ class Kor::CommandLine
         puts Time.now
       end
 
-      if @command == "version"
-        version
-      end
-
-      if @command == "export" && @config[:format] == "excel"
-        excel_export
-      end
-
-      if @command == "import" && @config[:format] == "excel"
-        excel_import
-      end
-
-      if @command == "reprocess-all"
-        reprocess_all
-      end
-
-      if @command == "index-all"
-        index_all
-      end
-
-      if @command == "group-to-zip"
-        group_to_zip
-      end
-
-      if @command == "notify-expiring-users"
-        notify_expiring_users
-      end
-
-      if @command == "recheck-invalid-entities"
-        recheck_invalid_entities
-      end
-
-      if @command == "delete-expired-downloads"
-        delete_expired_downloads
-      end
-
-      if @command == "editor-stats"
-        editor_stats
-      end
-
-      if @command == "exif-stats"
-        exif_stats
-      end
-
-      if @command == "reset-admin-account"
-        reset_admin_account
-      end
-
-      if @command == "to-neo"
-        to_neo
-      end
-
-      if @command == "connect-random"
-        connect_random
-      end
-
-      if @command == "cleanup-sessions"
-        cleanup_sessions
-      end
-
-      if @command.nil?
-        usage
+      case @command
+        when 'version' then version
+        when 'export'
+          if @config[:format] == 'excel'
+            excel_export
+          end
+        when 'import'
+          if @config[:format] == 'excel'
+            excel_import
+          end
+        when 'reprocess-all' then reprocess_all
+        when 'index-all' then index_all
+        when 'group-to-zip' then group_to_zip
+        when 'notify-expiring-users' then notify_expiring_users
+        when 'recheck-invalid-entities' then recheck_invalid_entities
+        when 'delete-expired-downloads' then delete_expired_downloads
+        when 'editor-stats' then editor_stats
+        when 'exif-stats' then exif_stats
+        when 'reset-admin-account' then reset_admin_account
+        when 'to-neo' then to_neo
+        when 'connect-random' then connect_random
+        when 'cleanup-sessions' then cleanup_sessions
+        when 'list-permissions' then list_permissions
+        when 'cleanup-exception-logs' then cleanup_exception_logs
+        else
+          puts "command '#{@command}' is not known"
+          usage
       end
     end
   end
@@ -230,9 +198,7 @@ class Kor::CommandLine
   end
 
   def notify_expiring_users
-    User.where("expires_at < ? AND expires_at > ?", 2.weeks.from_now, Time.now).each do |user|
-      UserMailer.deliver_upcoming_expiry(user)
-    end
+    Kor.notify_expiring_users
   end
 
   def recheck_invalid_entities
@@ -260,23 +226,6 @@ class Kor::CommandLine
     Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
   end
 
-  def reset_admin_account
-    User.admin.update_attributes(
-      :password => "admin",
-      :login_attempts => [],
-      :groups => Credential.all,
-      
-      :admin => true,
-      :relation_admin => true,
-      :authority_group_admin => true,
-      :user_admin => true,
-      :credential_admin => true,
-      :collection_admin => true,
-      :kind_admin => true,
-      :developer => false
-    )
-  end
-
   def to_neo
     require "ruby-progressbar"
     graph = Kor::NeoGraph.new(User.admin)
@@ -295,5 +244,57 @@ class Kor::CommandLine
     model.table_name = "sessions"
     model.where("created_at < ?", 5.days.ago).delete_all
   end
+
+  def reset_admin_account
+    puts "setting password of account 'admin' to 'admin' and granting all rights"
+    Kor.ensure_admin_account!
+  end
+
+  def list_permissions
+    puts "Entities: "
+    data = [['entity (id)', 'collection (id)'] + Collection.policies]
+    Entity.by_id(@config[:entity_id]).find_each do |entity|
+      record = [
+        "#{entity.name} (#{entity.id})",
+        "#{entity.collection.name} (#{entity.collection.id})"
+      ]
+
+      Collection.policies.each do |policy|
+        record << Kor::Auth.
+          authorized_credentials(entity.collection, policy).
+          map{|c| c.name}.
+          join(', ')
+      end
+
+      data << record
+    end
+    print_table data
+
+    puts "\nUsers: "
+    data = [['username (id)', 'credentials']]
+    User.by_id(@config[:user_id]).find_each do |user|
+      data << ["#{user.name} (#{user.id})", user.groups.map{|c| c.name}.join(', ')]
+    end
+    print_table data
+  end
+
+  def cleanup_exception_logs
+    ExceptionLog.delete_all
+  end
+
+
+  protected
+
+    def print_table(data)
+      maxes = {}
+      data.each do |record|
+        row = []
+        record.each_with_index do |field, i|
+          maxes[i] ||= data.map{|r| r[i].to_s.size}.max
+          row << "#{field.to_s.ljust(maxes[i])}"
+        end
+        puts '| ' + row.join(' | ') + ' |'
+      end
+    end
 
 end

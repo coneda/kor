@@ -1,25 +1,20 @@
 class UserGroup < EntityGroup
-  has_and_belongs_to_many :entities do
-    def only(kind)
-      kind_id = Array(kind).collect{|k| k.is_a?(Kind) ? k.id : k }
-      is_a(kind_id).alphabetically
-    end
-    
-    def images
-      only(Kind.medium_kind)
-    end
-    
-    def without_images
-      except(Kind.medium_kind)
-    end
-  end
-  belongs_to :owner, :class_name => 'User', :foreign_key => :user_id
-  
-  validates_uniqueness_of :name, :scope => :user_id
-  validates_format_of :name, :with => /\A[^\s]{,30}(\s[^\s]{,30})*\Z/, :message => :invalid_words
-  validates_presence_of :user_id
+  has_and_belongs_to_many :entities
+  belongs_to :owner, class_name: 'User', foreign_key: :user_id
+
+  validates(:name,
+    uniqueness: {:scope => :user_id}, 
+    format: {
+      :with => /\A[^\s]{,30}(\s[^\s]{,30})*\Z/, :message => :invalid_words
+    }
+  )
+  validates :user_id, presence: true
   
   scope :owned_by, lambda { |user| where(:user_id => user ? user.id : nil) }
-  scope :shared, where(:shared => true)
-  scope :latest_first, order('created_at DESC')
+  scope :shared, lambda { where(:shared => true) }
+  scope :latest_first, lambda { order('created_at DESC') }
+  scope :containing, lambda {|entity_ids|
+    joins('JOIN entities_user_groups ge on user_groups.id = ge.user_group_id').
+    where('ge.entity_id' => entity_ids)
+  }
 end

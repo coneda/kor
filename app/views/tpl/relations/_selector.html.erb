@@ -1,0 +1,9 @@
+<select 
+  ng-show="relations.length > 0"
+  ng-options="name for name in relations"
+  ng-model="relation_name"
+  name="relation_name"
+></select>
+<div ng-show="relations.length == 0">
+  {{'messages.no_relations_provided' | translate | capitalize}}
+</div>

@@ -53,8 +53,7 @@ function install_mysql {
 }
 
 function appliance {
-  source /vagrant/tmp/vagrant-env.sh || true
-  export OVA_FILENAME="deploy/build/coneda-kor.v$VERSION.ova"
+  export OVA_FILENAME="deploy/build/coneda-kor.$VERSION.ova"
 
   vagrant halt prod
 
@@ -125,7 +124,7 @@ function install_prod {
   sudo git clone /vagrant /opt/kor
   sudo chown -R vagrant. /opt/kor
   cd /opt/kor
-  git checkout v$VERSION
+  git checkout $VERSION
 }
 
 function configure_prod {

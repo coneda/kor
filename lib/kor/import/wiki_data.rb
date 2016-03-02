@@ -58,8 +58,8 @@ class Kor::Import::WikiData
     response = @client.request(method, url, params, headers, body)
 
     begin
-      Oj.load(response.body)
-    rescue Oj::ParseError => e
+      JSON.load(response.body)
+    rescue JSON::ParserError => e
       response
     end
   end
@@ -68,7 +68,7 @@ class Kor::Import::WikiData
     entity.kind.fields.each do |f|
       f.entity = entity
       if f.wikidata_id && f.value
-        response = find_by_attribute(f.wikidata_id, f.value.strip)
+        response = find_by_attribute(f.wikidata_id, f.value)
         id = response["items"].first.to_s
         return id if id.present?
       end

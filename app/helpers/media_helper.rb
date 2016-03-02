@@ -70,9 +70,7 @@ module MediaHelper
     medium = entity.medium
 
     if medium
-      if medium.content_type.match('video') && Kor.plugin_installed?("kor_video_player")
-        link_to I18n.t('verbs.play'), view_medium_path(medium.id)
-      elsif medium.content_type.match('image')
+      if medium.content_type.match(/^image\//)
         link_to(I18n.t('verbs.enlarge'), view_medium_path(medium.id)) + ' | ' +
         link_to(I18n.t('verbs.maximize'), maximize_medium_path(medium))
       else
@@ -106,20 +104,16 @@ module MediaHelper
         end
       end
 
-      result['video/x-flv'] = Proc.new do |entity, options|
-        render :partial => "video_player", :locals => {:entity => entity, :options => options}
-      end
-
       result['application/x-shockwave-flash'] = Proc.new do |entity, options|
         render :partial => "video_player", :locals => {:entity => entity, :options => options}
       end
 
       result['video'] = Proc.new do |entity, options|
-        if File.exists? entity.medium.path(:flash)
-          result['video/x-flv'].call(entity, options)
-        else
-          result['image'].call(entity, options)
-        end
+        render :partial => "video_player", :locals => {:entity => entity, :options => options}
+      end
+
+      result['audio'] = Proc.new do |entity, options|
+        render :partial => "video_player", :locals => {:entity => entity, :options => options}
       end
 
       result

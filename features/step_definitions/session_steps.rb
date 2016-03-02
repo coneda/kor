@@ -31,17 +31,17 @@ Given /^I am logged in as "([^\"]*)"/ do |user|
   step "I go to the login page"
   step "I fill in \"username\" with \"#{user}\""
   step "I fill in \"password\" with \"#{user}\""
-  step "I press \"Anmelden\""
+  step "I press \"Login\""
   sleep 1
 end
 
 Given /^I re\-login as "([^"]*)"$/ do |user|
-  step "I follow \"Abmelden\""
+  step "I log out"
   step "I am logged in as \"#{user}\""
 end
 
-Given /^I am logged out$/ do
-  step "I follow \"Abmelden\""
+Given /^I log out$/ do
+  step "I click element \"a[href='/logout']\""
 end
 
 When /^"([^\"]*)" is selected as current entity$/ do |name|
@@ -52,7 +52,7 @@ When /^I mark "([^\"]*)" as current entity$/ do |name|
   step "I am on the entity page for \"#{name}\""
   step "I should see \"#{name}\""
   find("a[kor-to-current]").click
-  step "I should see \"wurde als aktuelle Entität markiert\""
+  step "I should see \"has been marked as current entity\""
 end
 
 When(/^I put "(.*?)" into the clipboard$/) do |name|
@@ -60,7 +60,7 @@ When(/^I put "(.*?)" into the clipboard$/) do |name|
   step "I should see \"#{name}\""
   sleep 1
   find("a[kor-to-clipboard]").click
-  step "I should see \"wurde in die Zwischenablage aufgenommen\""
+  step "I should see \"has been copied to the clipboard\""
 end
 
 Given /^the session has expired$/ do
@@ -75,8 +75,8 @@ Given /^"([^\"]*)" is expanded$/ do |folded_menu_name|
   case folded_menu_name
   when "Administration" 
     click_link "Administration"
-  when "Gruppen"
-    click_link "Gruppen"
+  when "Groups"
+    click_link "Groups"
   end
 end
 
@@ -90,7 +90,7 @@ Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
     step "I should see \"#{entity.name}\""
     sleep 1
     find("a[kor-to-clipboard]").click
-    step "I should see \"wurde in die Zwischenablage aufgenommen\""
+    step "I should see \"has been copied to the clipboard\""
   end
 end
 

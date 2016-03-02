@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'rails_helper'
 
 RSpec::Matchers.define :parse do |input|

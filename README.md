@@ -11,6 +11,10 @@ To learn more and for installation instructions, please visit our
 
 We keep it updated at [CHANGELOG.md](CHANGELOG.md)
 
+## User documentation
+
+Please check out our [DOCS.md](DOCS.md)
+
 ## License ##
 
 see file COPYING
@@ -38,9 +42,10 @@ see file COPYING
 * Identify isolated entities
 * Merge entities to further normalize your data
 * External authentication (for example LDAP) by simple shell scripts
-* Easy identifier management
+* Easy identifier management and resolution
 * Many configurable aspects (welcome page, terms of use, help, primary
   relations, brand, …)
+* Access data via an OAI-PMH interface
 * Vagrant dev environment
 * good unit and integration test coverage
 
@@ -108,14 +113,129 @@ would deploy to instance02 according to the configuration above. On terminals
 that support it, the output is colorized according to the exit code of every
 command issued by the script.
 
+### Authentication
+
+On new installations, the default user is `admin` with password `admin`. He has
+all permissions to grant permissions and administer the installation. Also, he
+is member of the `Administrators` credential which allows him to see and edit
+all data.
+
+Authentication is performed via a web form at http://kor.example.com/login or by
+providing a valid `api_key` as `GET` or `POST` parameter. You may also specify a
+header `api_key` containing the key. Every user has a key which can be looked up
+by an administrator on the user's administration page.
+
+In order to be able to create user accounts, a user needs the `User admin` role.
+
+#### Unauthenticated access
+
+If you create a user with the username `guest`, every unauthenticated access
+will be treated as if user `guest` had made it. This gives enables you to define
+exactly what permissions to grant in this case. If it doesn't exist, the app
+will require authentication.
+
+#### Permission inheritance
+
+You may enter a parent username for every user. This way, the user will not only
+be able to access the parts of the application he is allowed to himself but also
+that his parent has access to.
+
+#### External authentication
+
+Additionally, one or more scripts may be written to carry out authentication
+with the credentials provided by the user from the login form. This allows
+flexible authentication via external sources such as PAM, LDAP or
+ActiveDirectory.
+
+Internal users take preceedence before users authenticated via a script.
+
+The script can be written in the language of your choice. Username and password
+are passed on to it through two environment variables `KOR_USERNAME_FILE` and
+`KOR_PASSWORD_FILE` which indicate files where the values can be extracted from.
+The script is expected to terminate with exit code 0 if authentication was
+successful and 1 otherwise. In the positive case, a valid JSON hash has to be
+written to STDOUT. The hash must contain attributes to create/update the user
+record with. Only 'email' is required. A user record is created unless the
+username exists.
+
+To activate the script as authenticator, configure it within `config/app.yml`.
+Optionally, the key map_to can be set. The effect is that all newly created or
+updated users have their parent user set to that username. This allows to grant
+users from a specific authenticator a specific set of permissions. You may
+configure as many authenticators as you wish.
+
+Example authenticator script `simple_auth.sh`:
+
+    #!/bin/bash
+
+    KOR_USERNAME=`cat $KOR_USERNAME_FILE`
+    KOR_PASSWORD=`cat $KOR_PASSWORD_FILE`
+
+    if [ "$KOR_USERNAME" == "jdoe" ] && [ "$KOR_PASSWORD" == "mysecret" ] ; then
+      echo "{\"email\": \"jdoe@example.com\"}"
+    else
+      echo "{}"
+      exit 1
+    fi
+
+Example configuration within `config/kor.yml`:
+
+    all:
+      auth:
+        sources:
+          simple:
+            script: /path/to/simple_auth.sh
+            map_to: simple_user
+          ldap:
+            script: /path/to/ldap_auth.pl
+            map_to: ldap_user
+
+The authentication system might need to create users when they authenticate via
+external sources. The above configuration would create new users and set their
+parent to `simple_user` or `ldap_user` depending on which authentication source
+succeeded. This allows you to grant default permissions for new users to come.
+
+
+### API
+
+ConedaKOR spawns four OAI-PMH endpoints for entities, kinds, relations and
+relationships:
+
+* http://kor.example.com/api/oai-pmh/entities.xml?verb=Identify
+* http://kor.example.com/api/oai-pmh/kinds.xml?verb=Identify
+* http://kor.example.com/api/oai-pmh/relations.xml?verb=Identify
+* http://kor.example.com/api/oai-pmh/relationships.xml?verb=Identify
+
+Please refer to the [OAI-PMH
+specification](https://www.openarchives.org/OAI/openarchivesprotocol.html) for
+further information on available verbs and on how to use them.
+
+The api will retrieve entities and relationships according to the authenticated
+user's permissions. Kinds and relations are available without authentication.
+Please check out [Authentication](#authentication) for how to use an api key.
+
+Two formats are available: `oai_dc` and `kor`. While the former is only
+maintained to fulfill the OAI-PMH specification, the latter gives full access to
+all content within the ConedaKOR installation. According to specification, you
+must choose the format like so `metadataPrefix=kor` as a request parameter. The
+kor format adheres to a schema we provide at
+
+https://kor.example.com/schema/1.0/kor.xsd
+
+as part of every installation (version 2.0.0 and above). We will add new
+versions, should the need arise.
+
 #### Generating a virtual appliance
 
 Versions after and including 1.9.2 can be packaged into a virtualbox appliance
 automatically. The version is specified as a shell parameter:
 
-    ./deploy/build.sh 1.9.2
+    ./deploy/build.sh v1.9.2
 
-The ova file and a checksum are generated within `deploy/build/`.
+The ova file and a checksum are generated within `deploy/build/`. Instead of
+`v1.9.2` you may choose any tag or branch available in the repository, although
+very old versions could not work because of unsatisfiable dependencies. Make
+sure you have pulled the most recent commits when using branches!
 
 ### Command line tool
 
@@ -174,3 +294,27 @@ Be aware that this will spawn a real browser to conduct the tests, If you prefer
 headless testing, you may use phantomjs by setting an environment variable:
 
     HEADLESS=true bundle exec cucumber features/
+
+#### Coverage reports
+
+You may run rspec or cucumber tests with the `COVERAGE` environment variable
+set, which will generate a coverage report to `./coverage`. For example:
+
+    COVERAGE=true HEADLESS=true bundle exec cucumber features/
+
+#### Profiling
+
+ConedaKOR will generate a detailed per-action profile when the environment
+variable PROFILE is set, for example in development:
+
+    PROFILE=true bundle exec rails s
+
+The reports will be generated in `./tmp/profiles`
+
+#### Showing media in development
+
+In the development environment, images are not being shown. Instead, a icon
+representing the medium's content_type is displayed. If you'd like to see the
+actual images nevertheless, use
+
+    SHOW_MEDIA=true bundle exec rails s

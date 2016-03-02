@@ -31,7 +31,7 @@ class Kor::Media::Transformations::Base
   end
   
   def valid_options?
-    self.class.operations.include? options[:operation]
+    self.class.operations.include? options[:operation].to_sym
   end
   
   def self.image_path(options = {})

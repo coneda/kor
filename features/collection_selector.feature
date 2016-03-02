@@ -13,9 +13,9 @@ Feature: Collection selector
   Scenario: One collection available
     Given I am logged in as "admin"
     And I am on the expert search page
-    Then I should not see "Sammlungen" within ".layout_panel.left form"
+    Then I should not see "Collections" within ".layout_panel.left form"
     When I fill in "query[name]" with "Mona Lisa"
-    And I press "Suchen"
+    And I press "Search"
     Then I should see "Mona Lisa" within ".search_result"
 
   
@@ -24,9 +24,9 @@ Feature: Collection selector
     Given user "admin" is allowed to "view" collection "Project" through credential "admins"
     And I am logged in as "admin"
     When I am on the expert search page
-    Then I should see /Sammlungen/ within ".layout_panel.left form"
+    Then I should see /Collections/ within ".layout_panel.left form"
     And I should see /Default, Project/ within ".layout_panel.left form"
-    When I press "Suchen"
+    When I press "Search"
     Then I should see "Mona Lisa" within ".entity_list"
     And I should see "Der Schrei" within ".entity_list"
     
@@ -37,8 +37,6 @@ Feature: Collection selector
     And I am logged in as "admin"
     When I am on the expert search page
     And I select "Project" from the collections selector
-    And I press "Suchen"
+    And I press "Search"
     Then I should see "Der Schrei" within ".search_result"
     And I should not see "Mona Lisa"
-    # And I wait for "3" seconds
-    # And I debug

@@ -5,7 +5,7 @@ describe Identifier do
   it "should require a type and a value" do
     id = described_class.new
     expect(id.valid?).to be_falsey
-    expect(id.errors.full_messages.size).to eq(3)
+    expect(id.errors.full_messages.size).to eq(2)
   end
 
   it "should not allow duplicate identifiers per kind" do
@@ -36,7 +36,7 @@ describe Identifier do
     expect(described_class.count).to eq(1)
 
     id = described_class.first
-    expect(id.entity_uuid).to eq(leonardo.uuid)
+    expect(id.entity_id).to eq(leonardo.id)
     expect(id.kind).to eq("gnd_id")
     expect(id.value).to eq("1234")
   end
@@ -52,6 +52,8 @@ describe Identifier do
   end
 
   it "should be removed when a field is not an identifier anymore" do
+    Delayed::Worker.delay_jobs = false
+
     people = FactoryGirl.create :people, :fields => [
       Field.new(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID")
     ]
@@ -62,15 +64,14 @@ describe Identifier do
   end
 
   it "should be created when a field becomes an identifier" do
+    Delayed::Worker.delay_jobs = false
+
     people = FactoryGirl.create :people
     leonardo = FactoryGirl.create :leonardo, :dataset => {"gnd_id" => "1234"}
-    people.fields = [
+    people.update_attributes fields: [
       Field.new(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID")
     ]
-    people.save
     
-    Delayed::Worker.new.work_off
-
     expect(described_class.count).to eq(1)
   end
 

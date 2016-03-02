@@ -10,7 +10,6 @@ $notice_background: #505050
 $session_background: #333333
 $kor-red: #CB1525
 
-
 /* global */
 
 body
@@ -27,10 +26,19 @@ body
 img
   border: 0px
 
+video, audio
+  max-width: 100%
+  margin: 0px auto
+  display: block
+
+audio
+  margin-top: 10em
+
 a
   color: $highlighted
   text-decoration: none
   outline: none
+  cursor: pointer
 
 ul
   padding: 0px
@@ -47,6 +55,9 @@ ul
 .kor-hidden
   visibility: hidden
 
+.kor-error
+  color: $error_background
+
 div.clear_both, .clearfix
   clear: both
 
@@ -60,7 +71,7 @@ ul li
   &.small_spacer
     height: 5px
 
-input, select, checkbox, textarea
+input, select, checkbox, textarea, button
   box-sizing: border-box
   font-family: arial
   border: 1px solid $frames
@@ -91,7 +102,7 @@ input
   &[type=text]
     padding-left: 4px
     padding-right: 4px
-  &[type=submit], &[type=button]
+  &[type=submit], &[type=reset], &[type=button]
     border: 0px
     padding-left: 4px
     padding-right: 4px
@@ -110,6 +121,21 @@ textarea
   font-weight: normal
   padding-left: 4px
   padding-right: 4px
+
+.input-with-button
+  box-sizing: border-box
+  display: table
+  width: 100%
+
+  & > *
+    display: table-cell
+
+  & > *:first-child
+    width: 100%
+
+  input
+    border-right: 0px
+
 
 table
   border-spacing: 0px
@@ -154,7 +180,6 @@ div
 
   &.ui-state-active.ui-state-hover
     background: #333
-  
 
 /* message area */
 
@@ -182,14 +207,14 @@ div
         &.positioner
           width: 1000px
         &.left
-          background: asset-url('clip_left.gif', 'image') top right
+          background: asset-url('clip_left.gif') top right
           height: 22px
           width: 16px
         &.center
-          background: asset-url('clip_center.gif', 'image') top
+          background: asset-url('clip_center.gif') top
           height: 22px
         &.right
-          background: asset-url('clip_right.gif', 'image') top left
+          background: asset-url('clip_right.gif') top left
           height: 22px
           width: 9px
           border: none
@@ -360,30 +385,30 @@ table.canvas
     > tr.top > td.left
       height: 25px
       width: 25px
-      background-image: asset-url('canvas/top_left.gif', 'image')
+      background-image: asset-url('canvas/top_left.gif')
       
     > tr.top > td.center
-      background: asset-url("canvas/top.gif", 'image') top left
+      background: asset-url("canvas/top.gif") top left
       
     > tr.top > td.right
       width: 25px
-      background: asset-url('canvas/top_right.gif', 'image') top right no-repeat
+      background: asset-url('canvas/top_right.gif') top right no-repeat
       
     > tr.middle > td.left
-      background: asset-url("canvas/left.gif", 'image') top left
+      background: asset-url("canvas/left.gif") top left
       
     > tr.middle > td.right
-      background: asset-url('canvas/right.gif', 'image') top left
+      background: asset-url('canvas/right.gif') top left
       
     > tr.bottom > td.left
       height: 25px
-      background: asset-url('canvas/bottom_left.gif', 'image') bottom left no-repeat
+      background: asset-url('canvas/bottom_left.gif') bottom left no-repeat
       
     > tr.bottom > td.center
-      background: asset-url('canvas/bottom.gif', 'image') top left
+      background: asset-url('canvas/bottom.gif') top left
       
     > tr.bottom > td.right
-      background: asset-url('canvas/bottom_right.gif', 'image') bottom right no-repeat
+      background: asset-url('canvas/bottom_right.gif') bottom right no-repeat
       
     
     > tr.middle > td.center
@@ -520,6 +545,8 @@ table.canvas
     textarea
       width: 100%
       height: 200px
+    textarea.small
+      height: 80px
     select
       width: 100%
       

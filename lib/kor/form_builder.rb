@@ -39,26 +39,6 @@ class Kor::FormBuilder < ActionView::Helpers::FormBuilder
     "#{@object_name}[#{name}]" + (options[:array] ? '[]' : '')
   end
   
-  # TODO this should return an array when the checkbox is selected
-  def kor_select(name, items, options = {})
-    options.reverse_merge!(
-      :label => items.first.class.model_name.human(:count => :other),
-      :multiple => false
-    )
-    
-    if items.size > 1
-      control = if options[:multiple]
-        collection_select name, items, :id, :name, {}, :multiple => true
-      else
-        collection_select name, items, :id, :name
-      end
-      
-      kor_input options[:label], :control => control
-    else
-      hidden_field name, :value => items.first.id
-    end
-  end
-  
   def collections_selector(name, policy = :view, options = {})
     options.reverse_merge!(
       :attribute => name,
@@ -109,22 +89,6 @@ class Kor::FormBuilder < ActionView::Helpers::FormBuilder
     @template.kor_input(@object, label, options)
   end
   
-  def search_field_for_dataset(config)
-    control = case config.search[:type]
-      when :check_box then check_box(config.name)
-      when :string then text_field(config.name)
-      when :text then text_area(config.name)
-      when :file then file_field(config.name)
-      when :select
-        config[:values].unshift if config.search[:can_be_empty]
-        select(config.name, config.search[:values])
-      else
-        raise "unrecognized form type '#{config.search[:type]}'"
-    end
-    
-    kor_input config[:label], :control => control, :translate => false
-  end
-
   def form_field_for_dataset(config)
     control = case config.form[:type]
       when :check_box then check_box(config.name)

@@ -1,14 +1,13 @@
 //= require jquery
 //= require jquery-ui
-//= require modules/vendor/swfobject
 //= require moxie
 //= require plupload.dev
 //= require plupload.settings
 //= require jquery_ujs
 //= require angular
 //= require angular-route
-//= require modules/vendor/web-utils-all.0.1.11.min
 
+//= require modules/vendor/web-utils-all.0.1.11.min
 //= require modules/web-utils
 
 //= require modules/old/application

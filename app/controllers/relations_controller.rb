@@ -1,9 +1,29 @@
 class RelationsController < ApplicationController
+  skip_before_action :authentication, :only => [:names, :index]
+
   layout 'normal_small'
 
   def index
-    @relations = Relation.paginate :page => params[:page], :per_page => 30
-    render :layout => 'wide'
+    @relations = if params[:entity_id]
+      Entity.find(params[:entity_id]).relation_counts(current_user)
+    else
+      Relation.paginate(:page => params[:page], :per_page => 30)
+    end
+
+    respond_to do |format|
+      format.json
+      format.html do
+        render layout: 'wide'
+      end
+    end
+  end
+
+  def names
+    @names = Relation.available_relation_names_for_kinds(params[:from_kind_ids])
+
+    respond_to do |format|
+      format.json {render :json => @names}
+    end
   end
 
   def show
@@ -19,7 +39,7 @@ class RelationsController < ApplicationController
   end
 
   def create
-    @relation = Relation.new(params[:relation])
+    @relation = Relation.new(relation_params)
 
     if @relation.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => I18n.t('nouns.relation', :count => 1) )
@@ -35,7 +55,7 @@ class RelationsController < ApplicationController
     
     @relation = Relation.find(params[:id])
     
-    if @relation.update_attributes(params[:relation])
+    if @relation.update_attributes(relation_params)
       flash[:notice] = I18n.t( 'objects.update_success', :o => I18n.t('nouns.relation', :count => 1) )
       redirect_to relations_path
     else
@@ -55,8 +75,17 @@ class RelationsController < ApplicationController
   end
   
   protected
+
+    def relation_params
+      params.require(:relation).permit!
+    end
+
     def generally_authorized?
-      current_user.relation_admin?
+      if ['names', 'index'].include?(params[:action])
+        true
+      else
+        current_user.relation_admin?
+      end
     end
   
 end
