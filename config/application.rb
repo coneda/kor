@@ -79,3 +79,5 @@ end
 # TODO: remove window.s = scope and similar
 # TODO: remove comments everywhere
 # TODO: move Dockerfiles files to kor repo
+# TODO: re-enable still extraction for videos
+# TODO: make an indicator for not-yet-processed media (use special dummy)
