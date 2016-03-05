@@ -39,6 +39,7 @@ module Kor
   end
 end
 
+# TODO: use Digest::SHA2 instead of Digest::SHA1
 # TODO: oai-pmh test resumptionToken
 # TODO: better test fields_controller.rb
 # TODO: better test generators_controller.rb

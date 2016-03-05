@@ -1,0 +1,18 @@
+<% content_for :small, render(:partial => 'search_form', :object => @entity) %>
+
+<% content_for :normal do %>
+  <% if params[:query] %>
+    <%= render :partial => 'search_result', :locals => {:results => @query.results} %>
+  <% else %>
+    <%= section_panel(:title => I18n.t('search_in')) do %>
+      <%= Entity.model_name.human(:count => :other) %>:
+      <%= Entity.count %>
+
+      <ul class="subitems">
+        <% Kind.all.each do |k| %>
+          <li><%= h k.plural_name %>: <%= k.entities.count %></li>
+        <% end %>    
+      </ul>
+    <% end %>
+  <% end %>
+<% end %>
