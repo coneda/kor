@@ -113,6 +113,7 @@ class Kor::CommandLine
         when 'cleanup-sessions' then cleanup_sessions
         when 'list-permissions' then list_permissions
         when 'cleanup-exception-logs' then cleanup_exception_logs
+        when 'secrets' then secrets
         else
           puts "command '#{@command}' is not known"
           usage
@@ -272,6 +273,19 @@ class Kor::CommandLine
 
   def cleanup_exception_logs
     ExceptionLog.delete_all
+  end
+
+  def secrets
+    data = {}
+    ['development', 'test', 'production'].each do |e|
+      data[e] = {
+        'secret_key_base' => Digest::SHA512.hexdigest("#{Time.now} #{rand}")
+      }
+    end
+
+    File.open "#{Rails.root}/config/secrets.yml", 'w' do |f|
+      f.write YAML.dump(data)
+    end
   end
 
 

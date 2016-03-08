@@ -8,7 +8,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.insert_key = false
 
   pe = {
-    "VERSION" => ENV["VERSION"] || File.read("config/version.txt")
+    "VERSION" => ENV["VERSION"] || `git rev-parse --abbrev-ref HEAD`
   }
 
   config.vm.define "dev", :primary => true do |c|
