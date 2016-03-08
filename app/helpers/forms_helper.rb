@@ -101,7 +101,10 @@ module FormsHelper
     if options[:from_id] && options[:to_id]
       from_kind_id = Entity.find(options[:from_id]).try(:kind).try(:id)
       to_kind_id = Entity.find(options[:to_id]).try(:kind).try(:id)
-      selectable_options = Relation.available_relation_names(from_kind_id, to_kind_id)
+      selectable_options = Relation.available_relation_names(
+        from_ids: from_kind_id,
+        to_ids: to_kind_id
+      )
     else
       selectable_options = Relation.available_relation_names
     end

@@ -43,7 +43,7 @@ describe Relation do
   it "should only return relation names available for a given 'from-kind'" do
     test_data
 
-    expect(Relation.available_relation_names(@artwork_kind.id).size).to eql(4)
+    expect(Relation.available_relation_names(from_ids: @artwork_kind.id).size).to eql(4)
   end
 
   it "should allow setting a custom uuid on creation" do
@@ -72,6 +72,35 @@ describe Relation do
     expect(DirectedRelationship.where(relation_name: 'has been created by').count).to eq(0)
     expect(DirectedRelationship.where(relation_name: 'has worked on').count).to eq(2)
     expect(DirectedRelationship.where(relation_name: 'has been worked on by').count).to eq(2)
+  end
+
+  it "should get a list of filtered relation names" do
+    default_setup
+
+    expect(Relation.available_relation_names).to(
+      eq(["has been created by", "has created", "is shown by", "shows"])
+    )
+    expect(Relation.available_relation_names(from_ids: [])).to(
+      eq(["has been created by", "has created", "is shown by", "shows"])
+    )
+    expect(Relation.available_relation_names(from_ids: nil)).to(
+      eq(["has been created by", "has created", "is shown by", "shows"])
+    )
+    expect(Relation.available_relation_names(from_ids: [], to_ids: [])).to(
+      eq(["has been created by", "has created", "is shown by", "shows"])
+    )
+    expect(Relation.available_relation_names(from_ids: nil, to_ids: nil)).to(
+      eq(["has been created by", "has created", "is shown by", "shows"])
+    )
+    expect(Relation.available_relation_names(from_ids: @media.id)).to(
+      eq(['shows'])
+    )
+    expect(Relation.available_relation_names(from_ids: @works.id)).to(
+      eq(["has been created by", "is shown by"])
+    )
+    expect(Relation.available_relation_names(to_ids: @works.id)).to(
+      eq(["has created", "shows"])
+    )
   end
 
 end

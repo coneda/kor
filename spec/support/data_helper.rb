@@ -82,8 +82,8 @@ module DataHelper
     @people = FactoryGirl.create :people
     @works = FactoryGirl.create :works
 
-    FactoryGirl.create :has_created
-    FactoryGirl.create :shows
+    FactoryGirl.create :has_created, from_kind_ids: [@people.id], to_kind_ids: [@works.id]
+    FactoryGirl.create :shows, from_kind_ids: [@media.id], to_kind_ids: [@works.id]
 
     @leonardo = FactoryGirl.create :leonardo
     @mona_lisa = FactoryGirl.create :mona_lisa
