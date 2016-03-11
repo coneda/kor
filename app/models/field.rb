@@ -16,6 +16,7 @@ class Field < ActiveRecord::Base
   before_validation do |f|
     f.form_label = f.show_label if f.form_label.blank?
     f.search_label = f.show_label if f.search_label.blank?
+    f.generate_uuid
   end
 
   after_save :synchronize_identifiers
@@ -26,6 +27,10 @@ class Field < ActiveRecord::Base
   end
   after_destroy do |f|
     f.class.delay.synchronize_storage(f.kind_id, f.name_was, nil)
+  end
+
+  def generate_uuid
+    self.uuid ||= SecureRandom.uuid
   end
 
   def synchronize_identifiers

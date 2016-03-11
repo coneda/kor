@@ -138,10 +138,12 @@ Some options can be configured via web interface: As an admin, navigate to
 
 #### Specific configuration options
 
-* `custom_css [path, relative to app root or absolute]`: if you specify a file 
+* `custom_css [path, default: data/custom.css`]: if you specify a file 
   here and given it exists, it will be included as a customized stylesheet after
   all other style sheets. The file has to be readable by the web server. This 
-  allows you to change the entire graphical design of ConedaKOR.
+  allows you to change the entire graphical design of ConedaKOR. To make this
+  file persist across upgrades, we recommend to choose a path below `data/`
+  which is usually symlinked to a permanent location.
 
 ### Authentication
 

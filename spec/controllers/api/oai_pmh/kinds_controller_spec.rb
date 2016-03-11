@@ -72,6 +72,9 @@ describe Api::OaiPmh::KindsController, :type => :controller do
 
   it "should return XML that validates against the OAI-PMH schema" do
     people = Kind.where(:name => "Person").first
+    people.update_attributes fields: [
+      Field.new(name: 'gnd', show_label: 'GND-ID')
+    ]
 
     # yes this sucks, check out
     # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
