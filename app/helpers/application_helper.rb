@@ -171,5 +171,16 @@ module ApplicationHelper
     result.gsub!("\r\n\r\n", '<br /><br />')
     result.html_safe
   end
-  
+
+  def custom_styles
+    filename = File.expand_path(Kor.config['custom_css_file'])
+    if filename and File.exists?(filename)
+      public_path = "#{Rails.root}/public/custom.css"
+      unless File.exists?(public_path)
+        system "ln -sfn #{filename} #{public_path}"
+      end
+      stylesheet_link_tag '/custom', media: 'screen'
+    end
+  end
+
 end

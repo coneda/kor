@@ -113,6 +113,36 @@ would deploy to instance02 according to the configuration above. On terminals
 that support it, the output is colorized according to the exit code of every
 command issued by the script.
 
+### Configuration & customizations
+
+Some aspects of ConedaKOR can be tuned to your specific needs. This sections explains those aspects and tells you how to modify configuration options in general.
+
+All configuration options can be set via YAML configuration files:
+
+  * `config/kor.defaults.yml`: You should never modify this file but it is a
+    good reference for available options
+  * `config/kor.yml`: this is the place for your changes
+  * `config/kor.<env>.yml`: here, developers can make environemnt-specific
+    overrides, for example for testing
+  * `config/kor.app.<environment>.yml`: this holds configuration changed from
+    within the web interface, see below.
+
+Files further down in that list override values from above. The files' content
+is generally organized under the keys development, production, test or all,
+designating one or all environments they apply to. Within this documentation, we
+will refer to specific options by their key. After changing the YAML
+files, be sure to restart the application for the changes to take effect.
+
+Some options can be configured via web interface: As an admin, navigate to 
+`Administration -> General` and then to one of the sub sections.
+
+#### Specific configuration options
+
+* `custom_css [path, relative to app root or absolute]`: if you specify a file 
+  here and given it exists, it will be included as a customized stylesheet after
+  all other style sheets. The file has to be readable by the web server. This 
+  allows you to change the entire graphical design of ConedaKOR.
+
 ### Authentication
 
 On new installations, the default user is `admin` with password `admin`. He has

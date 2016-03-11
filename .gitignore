@@ -8,6 +8,7 @@ tmp/*
 data/*
 db/*.sqlite3
 public/media
+public/custom.css
 
 
 # Configuration
