@@ -28,6 +28,7 @@ gem 'sass-rails'
 
 gem 'jbuilder'
 gem 'test-unit'
+gem 'colorize'
 
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load 

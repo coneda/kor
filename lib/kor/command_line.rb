@@ -114,6 +114,7 @@ class Kor::CommandLine
         when 'list-permissions' then list_permissions
         when 'cleanup-exception-logs' then cleanup_exception_logs
         when 'secrets' then secrets
+        when 'consistency-check' then consistency_check
         else
           puts "command '#{@command}' is not known"
           usage
@@ -285,6 +286,20 @@ class Kor::CommandLine
 
     File.open "#{Rails.root}/config/secrets.yml", 'w' do |f|
       f.write YAML.dump(data)
+    end
+  end
+
+  def consistency_check
+    Relationship.includes(:relation, :from, :to).inconsistent.each do |r|
+      puts [
+        "#{r.from.display_name} [#{r.from_id}, #{r.from.kind.name}]".colorize(:blue),
+        r.relation.name.colorize(:light_blue),
+        "#{r.to.display_name} [#{r.to_id}, #{r.to.kind.name}]".colorize(:blue),
+        'is unexpected, the relation expects:',
+        Kind.find(r.relation.from_kind_ids).map{|k| k.name}.join(','),
+        '->',
+        Kind.find(r.relation.to_kind_ids).map{|k| k.name}.join(',')
+      ].join(' ')
     end
   end
 
