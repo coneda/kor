@@ -273,4 +273,37 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
     verify_oaipmh_error 'badResumptionToken'
   end
 
+  it "should generate a resumptionToken if there are more pages available" do
+    admin = User.admin
+    ns = {
+      'oai' => 'http://www.openarchives.org/OAI/2.0/',
+      'kor' => 'https://coneda.net/XMLSchema/1.0/'
+    }
+    51.times do |i|
+      FactoryGirl.create :mona_lisa, name: "Mona Lisa #{i}"
+    end 
+
+    get(:list_records,
+      format: :xml,
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
+
+    doc = parse_xml(response.body)
+    expect(doc.xpath('//kor:entity', ns).count).to eq(50)
+
+    token = doc.xpath('//oai:resumptionToken', ns).first.text
+    get(:list_records,
+      format: :xml,
+      api_key: admin.api_key,
+      metadataPrefix: 'kor',
+      resumptionToken: token
+    )
+
+    doc = parse_xml(response.body)
+    expect(doc.xpath('//kor:entity', ns).count).to eq(3)
+
+    expect(doc.xpath('//oai:resumptionToken', ns).first). to be_nil
+  end
+
 end

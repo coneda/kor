@@ -3,7 +3,7 @@
     <%= render :partial => 'wrapper', :locals => {:record => record} %>
   <% end %>
 
-  <% if @records[:total] > 50 %>
+  <% if @records[:token] %>
     <resumptionToken
       expirationDate="<%= timestamp 24.hours.from_now %>"
       completeListSize="<%= @records[:total] %>"
