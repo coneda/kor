@@ -27,6 +27,7 @@ class AuthenticationController < ApplicationController
     redirect_to :action => 'form'
   end
   
+  # TODO: return status "403 Forbidden" if authentication fails
   def login
     account_without_password = User.find_by_name(params[:username])
     if account_without_password && account_without_password.too_many_login_attempts?
@@ -46,6 +47,8 @@ class AuthenticationController < ApplicationController
           flash[:error] = I18n.t("errors.account_inactive")
           redirect_to :action => "form"
         else
+          account.fix_cryptography(params[:password])
+
           session[:expires_at] = Kor.session_expiry_time
           session[:user_id] = account.id
           account.update_attributes(:last_login => Time.now)

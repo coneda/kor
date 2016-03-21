@@ -115,7 +115,7 @@ class Api::OaiPmh::BaseController < BaseController
     end
 
     def dump_query(params)
-      token = Digest::SHA1.hexdigest("resumptionToken #{Time.now} #{rand}")
+      token = Digest::SHA2.hexdigest("resumptionToken #{Time.now} #{rand}")
       base_dir = "#{Rails.root}/tmp/resumption_tokens"
       system "mkdir -p #{base_dir}"
       system "find #{base_dir} -mtime +1 -exec rm {} \;"
