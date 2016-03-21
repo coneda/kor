@@ -19,7 +19,10 @@ class RelationsController < ApplicationController
   end
 
   def names
-    @names = Relation.available_relation_names_for_kinds(params[:from_kind_ids])
+    @names = Relation.available_relation_names(
+      from_ids: params[:from_kind_ids],
+      to_ids: params[:to_kind_ids]
+    )
 
     respond_to do |format|
       format.json {render :json => @names}

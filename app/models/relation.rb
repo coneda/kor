@@ -70,52 +70,26 @@ class Relation < ActiveRecord::Base
   def to_kind_ids=(values)
     write_attribute :to_kind_ids, values.collect{|v|v.to_i}
   end
-  
-  def self.available_relation_names_for_kinds(from_kind_ids)
-    if from_kind_ids && !from_kind_ids.blank?
-      names = Array(from_kind_ids).map{|id| available_relation_names(id)}
 
-      result = names
-      
-      unless result.empty?
-        result = names.first
-        names.each do |n|
-          result &= n
-        end
-      end
-      
-      result.sort
-    else
-      available_relation_names
-    end
-  end
-  
-  def self.available_relation_names(from_kind_id = nil, to_kind_id = nil)
-    if from_kind_id == '-1' 
-      from_kind_id = nil
-    elsif from_kind_id.is_a? String
-      from_kind_id = from_kind_id.to_i
-    end
-    
-    if to_kind_id == '-1' 
-      to_kind_id = nil
-    elsif to_kind_id.is_a? String
-      to_kind_id = to_kind_id.to_i
-    end
-  
+  def self.available_relation_names(options = {})
+    from_ids = Kor.array_wrap(options[:from_ids] || []).map{|i| i.to_i}
+    to_ids = Kor.array_wrap(options[:to_ids] || []).map{|i| i.to_i}
+
     results = []
-    all.each do |r|
-      from_include_from = (r.from_kind_ids.include?(from_kind_id) or ! from_kind_id)
-      to_include_to = (r.to_kind_ids.include?(to_kind_id) or ! to_kind_id)
-      results << r.name if from_include_from and to_include_to
-
-      from_include_to = (r.from_kind_ids.include?(to_kind_id) or ! to_kind_id)
-      to_include_from = (r.to_kind_ids.include?(from_kind_id) or ! from_kind_id)
-      results << r.reverse_name if from_include_to and to_include_from
+    self.all.each do |relation|
+      condition = 
+        (!from_ids.present? || (from_ids & relation.from_kind_ids).present?) &&
+        (!to_ids.present? || (to_ids & relation.to_kind_ids).present?)
+      results << relation.name if condition
+      condition = 
+        (!from_ids.present? || (from_ids & relation.to_kind_ids).present?) &&
+        (!to_ids.present? || (to_ids & relation.from_kind_ids).present?)
+      results << relation.reverse_name if condition
     end
+
     results.sort.uniq
   end
-  
+
   def self.primary_relation_names
     Kor.config['app.gallery.primary_relations'] || []
   end

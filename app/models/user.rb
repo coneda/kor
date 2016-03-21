@@ -142,7 +142,7 @@ class User < ActiveRecord::Base
   def password=(value)
     self.plain_password = value
     unless value.blank?
-      write_attribute :password, User.password_hash_function(value)
+      write_attribute :password, User.crypt(value)
     end
   end
   
@@ -240,7 +240,8 @@ class User < ActiveRecord::Base
   end
   
   def self.authenticate(username, password)
-    where(:name => username, :password => User.password_hash_function(password)).first
+    hash_candidates = [crypt(password), legacy_crypt(password)]
+    where(name: username, password: hash_candidates).first
   end
   
   def self.pickup_session_for(id)
@@ -262,16 +263,26 @@ class User < ActiveRecord::Base
     self.password = User.generate_password
   end
 
-  def User.generate_password
-    User.password_hash_function(rand.to_s)[0,6]
+  def self.generate_password
+    User.crypt(rand.to_s)[0,6]
   end
   
   def User.generate_activation_hash
-    Digest::SHA1.hexdigest(rand.to_s)
+    User.crypt(rand.to_s)[0,12]
   end
 
-  def User.password_hash_function(password)
-    Digest::SHA1::hexdigest(password)
+  def self.legacy_crypt(value)
+    Digest::SHA1.hexdigest(value)
+  end
+
+  def self.crypt(value)
+    Digest::SHA2.hexdigest(value)
+  end
+
+  def fix_cryptography(password)
+    if self.password.size == 40
+      write_attribute :password, self.class.crypt(password)
+    end
   end
 
   def active

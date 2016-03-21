@@ -1,7 +1,7 @@
 %table.kor_table
   - @fields.each do |field|
     %tr{:id => "field_#{field.id}"}
-      %td.expanding= field.name
+      %td.expanding&= field.name
       %td.nowrap
         = link_to kor_command_image('pen'), edit_kind_field_path(@kind, field)
         = link_to kor_command_image('x'), kind_field_path(field, :kind_id => @kind.id), :method => :delete

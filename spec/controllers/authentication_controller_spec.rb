@@ -43,4 +43,12 @@ RSpec.describe AuthenticationController, :type => :controller do
     post :login, :username => "does_not_exist", :password => 'wrong'
     expect(response).to redirect_to(:action => 'form')
   end
+
+  it "should fix cryptography to use sha2" do
+    User.admin.update_column(:password, User.legacy_crypt('admin'))
+    expect(User.admin.password.size).to eq(40)
+
+    post :login, username: 'admin', password: 'admin'
+    expect(User.admin.password.size).to eq(64)
+  end
 end

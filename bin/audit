@@ -1,0 +1,13 @@
+#!/bin/bash
+
+rm -f tmp/brakeman.html tmp/rubocop.html
+
+brakeman -A -f html -o tmp/brakeman.html
+xdg-open tmp/brakeman.html
+
+rubocop -D -E -R -S \
+  -C false \
+  -f html \
+  --except Style/Documentation,Style/IndentationConsistency,Style/WordArray \
+  -o tmp/rubocop.html
+xdg-open tmp/rubocop.html 

@@ -39,22 +39,8 @@
         where("wikidata_id IS NOT NULL AND wikidata_id != ''").count %>
       <% Entity.group("kind_id").count.sort{|x, y| y.last - x.last}.each do |stat| %>
         <tr>
-          <td><%= Kind.find(stat.first).name %></td>
-          <td class="number text-right">
-            <strong><%= stat.last %></strong>
-            <div>
-              <i style="white-space: nowrap">
-                <%= with_id[stat.first] || 0 %>
-                <%= I18n.t "identified" %>
-              </i>
-            </div>
-            <div>
-              <i style="white-space: nowrap">
-                <%= with_wikidata_id[stat.first] || 0 %>
-                <%= I18n.t "wikidata_identified" %>
-              </i>
-            </div>
-          </td>
+          <td><%= h Kind.find(stat.first).name %></td>
+          <td class="number text-right"><%= stat.last %></td>
         </tr>
       <% end %>
     </tbody>
@@ -72,7 +58,7 @@
     <tbody>
       <% Relationship.group("relation_id").count.sort{|x, y| y.last - x.last}.each do |stat| %>
         <tr>
-          <td><%= Relation.find(stat.first).name %></td>
+          <td><%= h Relation.find(stat.first).name %></td>
           <td class="number text-right"><%= stat.last %></td>
         </tr>
       <% end %>

@@ -121,7 +121,9 @@ function configure_dev {
 }
 
 function install_prod {
-  sudo git clone /vagrant /opt/kor
+  if [ ! -d  /opt/kor ]; then
+    sudo git clone /vagrant /opt/kor
+  fi
   sudo chown -R vagrant. /opt/kor
   cd /opt/kor
   git checkout $VERSION
@@ -148,6 +150,7 @@ function configure_prod {
   bundle exec rake db:drop db:setup
   bundle exec rake assets:precompile
   bundle exec bin/kor index-all
+  bundle exec bin/kor secrets
 
   sudo service kor-bg start
 }

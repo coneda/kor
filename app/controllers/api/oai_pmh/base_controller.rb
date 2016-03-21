@@ -26,7 +26,7 @@ class Api::OaiPmh::BaseController < BaseController
 
   def list_identifiers
     record_params = params.select do |k, v|
-      ["metadataPrefix", "from", "to", "set", "resumptionToken"].include?(k)
+      ["metadataPrefix", "from", "to", "set", "resumptionToken", 'page', 'per_page'].include?(k)
     end
 
     @records = query(record_params)
@@ -40,7 +40,7 @@ class Api::OaiPmh::BaseController < BaseController
 
   def list_records
     record_params = params.select do |k, v|
-      ["metadataPrefix", "from", "to", "set", "resumptionToken"].include?(k)
+      ["metadataPrefix", "from", "to", "set", "resumptionToken", 'page', 'per_page'].include?(k)
     end
 
     @records = query(record_params)
@@ -103,7 +103,7 @@ class Api::OaiPmh::BaseController < BaseController
 
       offset_scope = scope.offset(params['page'] * params['per_page'])
 
-      token = if offset_scope.count > params['per_page']
+      token = if offset_scope.count > params['per_page'] * (params['page'] + 1)
         dump_query(params)
       end
 
@@ -115,7 +115,7 @@ class Api::OaiPmh::BaseController < BaseController
     end
 
     def dump_query(params)
-      token = Digest::SHA1.hexdigest("resumptionToken #{Time.now} #{rand}")
+      token = Digest::SHA2.hexdigest("resumptionToken #{Time.now} #{rand}")
       base_dir = "#{Rails.root}/tmp/resumption_tokens"
       system "mkdir -p #{base_dir}"
       system "find #{base_dir} -mtime +1 -exec rm {} \;"
@@ -123,20 +123,23 @@ class Api::OaiPmh::BaseController < BaseController
       File.open "#{base_dir}/#{token}.json", "w+" do |f|
         f.write JSON.dump(
           'page': params['page'],
-          'per_page': params['per_page']
+          'per_page': params['per_page'],
+          'metadataPrefix': params['metadataPrefix']
         )
       end
 
       token
     end
 
+    # TODO: write tests for resumptionTokens
     def load_query(token)
       base_dir = "#{Rails.root}/tmp/resumption_tokens"
       file = "#{base_dir}/#{token}.json"
 
       if File.exists?(file)
-        JSON.parse(File.read file)
+        data = JSON.parse(File.read file)
         system "rm #{file}"
+        data
       end
     end
 

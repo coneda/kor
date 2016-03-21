@@ -133,8 +133,35 @@ Feature: Inplace relationship editor
     Then I should not see "Leonardo" within "[kor-entity-selector]"
     But I should see "Der Schrei" within "[kor-entity-selector]"
 
-
+  @javascript
+  Scenario: Select a target entity and then deselect it again
+    Given I am logged in as "admin"
+    And I am on the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
+    When I click element "[data-name=plus]" within ".relationships"
+    And I fill in "terms" with "schrei"
+    And I click element "[kor-id='2']"
+    And I press "Save"
+    Then I should see "Relation has to be filled in" within ".kor-errors"
+    And I should not see "Target has to be filled in" within ".kor-errors"
+    When I click element "[kor-id='2']" again
+    And I press "Save"
+    Then I should see "Relation has to be filled in" within ".kor-errors"
+    And I should see "Target has to be filled in" within ".kor-errors"
+    
   @javascript
   Scenario: Select another entity which should limit the choices for the relation
-    Given pending: todo
-  
+    Given I am logged in as "admin"
+    And the entity "Leonardo" of kind "person/people"
+    And the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
+    When I go to the entity page for "Mona Lisa"
+    And I click element "[data-name=plus]" within ".relationships"
+    And I fill in "terms" with "leonardo"
+    And I click element "[kor-id='3']"
+    Then I should not see "is similar to" within "[kor-relation-selector]"
+    And I should see "is equivalent" within "[kor-relation-selector]"
+    When I wait for "1" second
+    And I click element "[kor-id='3']" again
+    Then I should see "is similar to" within "[kor-relation-selector]"
+    And I should see "is equivalent" within "[kor-relation-selector]"
+

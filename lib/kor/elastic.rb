@@ -65,7 +65,7 @@ class Kor::Elastic
             }
           },
           "id" => {"type" => "string", "index" => "not_analyzed"},
-          "uuid" => {"type" => "string", "index" => "not_analyzed"},
+          "uuid" => {"type" => "string", "analyzer" => "folding"},
           "tags" => {"type" => "string", "analyzer" => "keyword"},
           "related" => {"type" => "string", "analyzer" => "folding"},
 
@@ -267,12 +267,13 @@ class Kor::Elastic
     ]
 
     if query[:tags].present?
-      filters << {
-        "terms" => {
-          "tags" => to_array(query[:tags]),
-          "execution" => "and"
+      Kor.array_wrap(query[:tags]).each do |tag|
+        filters << {
+          "term" => {
+            "tags" => tag
+          }
         }
-      }
+      end
     end
 
     if query[:kind_id].present?

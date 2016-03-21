@@ -47,12 +47,13 @@ all:
 
   cache_dir: tmp/cache
   tmp_dir: tmp/kor
+  custom_css_file: data/custom.css
 
   kind_settings:
     defaults:
-      dating_label: Datierung
+      dating_label: Dating
       name_label: Name
-      distinct_name_label: Eindeutiger Name
+      distinct_name_label: distinct Name
 
   limits:
     max_file_upload_size: 30
@@ -60,11 +61,6 @@ all:
 
   search:
     entity_name: "Name / Titel / UUID"
-
-  dev:
-    value_a: default.all
-    value_b: default.all
-
 
 test:
   auth:
@@ -91,6 +87,3 @@ test:
   maintainer:
     name: Example Organization
     mail: admin@example.com
-
-  dev:
-    value_a: default.env

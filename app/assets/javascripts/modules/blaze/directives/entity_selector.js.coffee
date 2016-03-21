@@ -88,6 +88,11 @@ kor.directive "korEntitySelector", [
 
         scope.select = (entity, event) ->
           event.preventDefault()
-          scope.entity = entity
+
+          if scope.entity == entity
+            scope.entity = null
+          else
+            scope.entity = entity
+
     }
 ]

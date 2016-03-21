@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160228124411) do
+ActiveRecord::Schema.define(version: 20160311161604) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -198,6 +198,7 @@ ActiveRecord::Schema.define(version: 20160228124411) do
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
     t.boolean  "is_identifier"
+    t.string   "uuid",          limit: 255
   end
 
   create_table "generators", force: :cascade do |t|
