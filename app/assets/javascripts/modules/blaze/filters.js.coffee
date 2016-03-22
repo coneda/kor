@@ -67,7 +67,7 @@ kor.filter 'entity_display_name', [->
     if input
       if input.name
         return if input.distinct_name
-          "#{input.name} (#{input.distinct_name}"
+          "#{input.name} (#{input.distinct_name})"
         else
           input.name
     

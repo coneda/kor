@@ -125,6 +125,18 @@ class Relationship < ActiveRecord::Base
       :properties => properties
     )
   end
+
+  def self.related?(from_id, relation_name, to_id, properties = nil)
+    dr = DirectedRelationship.where(
+      from_id: from_id,
+      relation_name: relation_name,
+      to_id: to_id
+    ).first
+
+    if dr
+      properties == nil || dr.properties == properties
+    end
+  end
   
   def has_properties?
     !properties.blank?

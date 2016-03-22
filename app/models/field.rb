@@ -19,29 +19,38 @@ class Field < ActiveRecord::Base
     f.generate_uuid
   end
 
-  after_save :synchronize_identifiers
+  after_create do |f|
+    f.synchronize_identifiers :create
+  end
   after_update do |f|
+    f.synchronize_identifiers :update
     if name_changed?
       f.class.delay.synchronize_storage(f.kind_id, f.name_was, f.name)
     end
   end
   after_destroy do |f|
     f.class.delay.synchronize_storage(f.kind_id, f.name_was, nil)
+    f.destroy_identifiers
   end
 
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
   end
 
-  def synchronize_identifiers
+  def synchronize_identifiers(mode)
     if is_identifier_changed? || id_changed?
+      others_changed = false
+
       self.class.where(name: self.name).each do |f|
         if f.is_identifier != self.is_identifier
+          others_changed = true
           f.update_column :is_identifier, self.is_identifier
         end
 
         if is_identifier?
-          f.delay.create_identifiers
+          if (mode == :update || others_changed)
+            f.delay.create_identifiers
+          end
         else
           Identifier.where(:kind => name).delete_all
         end
@@ -50,8 +59,15 @@ class Field < ActiveRecord::Base
   end
 
   def create_identifiers
-    self.kind.entities.find_each batch_size: 100 do |entity|
+    kind_ids = self.class.where(name: self.name).map{|f| f.kind_id}
+    Entity.where(kind_id: kind_ids).find_each batch_size: 100 do |entity|
       entity.update_identifiers
+    end
+  end
+
+  def destroy_identifiers
+    if self.class.where(name: name).where('id != ?', id).count == 0
+      Identifier.where(kind: name).delete_all
     end
   end
 

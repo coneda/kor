@@ -66,11 +66,13 @@ describe Identifier do
   it "should be created when a field becomes an identifier" do
     Delayed::Worker.delay_jobs = false
 
-    people = FactoryGirl.create :people
-    leonardo = FactoryGirl.create :leonardo, :dataset => {"gnd_id" => "1234"}
-    people.update_attributes fields: [
-      Field.new(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID")
+    people = FactoryGirl.create :people, fields: [
+      Field.new(:name => "gnd_id", :show_label => "GND-ID")
     ]
+    leonardo = FactoryGirl.create :leonardo, :dataset => {"gnd_id" => "1234"}
+    expect(described_class.count).to eq(0)
+
+    people.fields.first.update_attributes is_identifier: true
     
     expect(described_class.count).to eq(1)
   end
@@ -85,6 +87,39 @@ describe Identifier do
 
     leonardo.destroy
     expect(described_class.count).to eq(0)
+  end
+
+  it "should be removed when the field is removed" do
+    people = FactoryGirl.create :people, :fields => [
+      Field.new(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID")
+    ]
+    leonardo = FactoryGirl.create :leonardo, :dataset => {"gnd_id" => "1234"}
+
+    people.fields.first.destroy
+
+    expect(described_class.count).to eq(0)
+  end
+
+  it "should not be removed when the field is removed but there are other identifier fields with the same name" do
+    people = FactoryGirl.create :people, :fields => [
+      Field.new(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID")
+    ]
+    leonardo = FactoryGirl.create :leonardo, :dataset => {"gnd_id" => "1234"}
+    works = FactoryGirl.create :locations, :fields => [
+      Field.new(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID")
+    ]
+
+    people.fields.first.destroy
+
+    expect(described_class.count).to eq(1)
+  end
+
+  it "should only iterate entities on update or if other fields were changed" do
+    Delayed::Worker.delay_jobs = false
+
+    expect_any_instance_of(Field).not_to receive(:create_identifiers)
+    people = FactoryGirl.create :people
+    people.fields.create(:name => "gnd_id", :is_identifier => true, :show_label => "GND-ID")
   end
 
 end
