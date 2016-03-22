@@ -102,7 +102,12 @@ class Field < ActiveRecord::Base
   end
 
   def show_on_entity=(value)
-    settings['show_on_entity'] = value
+    settings['show_on_entity'] = case value
+      when "1" then true
+      when "0" then false
+      else
+        !!value
+    end
   end
 
   def human
@@ -182,7 +187,7 @@ class Field < ActiveRecord::Base
   # Formats
   
   def serializable_hash(*args)
-    super(:methods => [:value], :root => false).stringify_keys
+    super(:methods => [:value, :show_on_entity], :root => false).stringify_keys
   end
   
 end

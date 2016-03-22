@@ -21,7 +21,7 @@ kor.controller('entity_controller', [
     scope.visible_entity_fields = ->
       if scope.entity
         scope.entity.fields.filter (field) ->
-          field.value
+          field.value && field.show_on_entity
       else
         []
 
