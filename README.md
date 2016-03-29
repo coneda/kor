@@ -113,6 +113,10 @@ would deploy to instance02 according to the configuration above. On terminals
 that support it, the output is colorized according to the exit code of every
 command issued by the script.
 
+This will also start the background process that converts images and does other
+heavy lifting. However, this does not ensure monitoring nor restarting of that
+process which can be done for example with upstart scripts or systemd.
+
 ### Configuration & customizations
 
 Some aspects of ConedaKOR can be tuned to your specific needs. This sections explains those aspects and tells you how to modify configuration options in general.
@@ -144,6 +148,58 @@ Some options can be configured via web interface: As an admin, navigate to
   allows you to change the entire graphical design of ConedaKOR. To make this
   file persist across upgrades, we recommend to choose a path below `data/`
   which is usually symlinked to a permanent location.
+
+### Backups
+
+Backups consist of
+
+* a database dump file
+* a copy of all configuration files
+* a copy of all data files containing your media and downloads (the data/
+  directory)
+* a reference to the version of ConedaKOR
+
+All other parts of the installation directory are either considered **source
+code** or **temporary**. Temporary files can be regenerated via a task. If you
+made modifications to the source code, you may have to backup those as well. We
+recommend to only modify the source code if those modifications are embedded
+within a development process that includes regular reconsiliation with upstream.
+
+For a consistent backup, you should aim to create the dump and file copies at
+the same point in time (or at least be confident that little changes happened in
+between). The dumpfile is created with mysqldump and the files can simply be
+copied with `cp` or `rsync`. The configuration files to be taken into account
+are:
+
+* kor.*.yml
+* config/contact.txt (if it exists)
+* config/legal.txt (if it exists)
+* help.yml (if it exists)
+* database.yml (this is deployment-specific, it depends on your scenario
+  whether it makes sense to include this in backups)
+* config/secrets.yml (deployment-specific: if this file has to be regenerated,
+  all current user sessions will be lost when the application is restored from a
+  backup, which is acceptable in most cases)
+
+If you used the deployment script described above, it creates a "shared"
+directory and symlinks the data and the configuration from that directory to the
+current deployment's directory. In this case, it is sufficient to backup the
+shared folder and to create a database dump.
+
+#### Restore
+
+To restore from a previous backup
+
+1. restore data and config files from the backup
+2. import the database dump and modify config/database.yml accordingly if needed
+3. deploy the relevant version of ConedaKOR
+4. if not using `deploy.sh`, compile all assets:
+   `RAILS_ENV=production bundle exec rake assets:precompile`
+5. regenerate config/secrets.yml if it's missing:
+   `RAILS_ENV=production bundle exec bin/kor secrets`
+6. refresh the elasticsearch index: 
+   `RAILS_ENV=production bundle exec bin/kor index-all`
+
 
 ### Authentication
 
@@ -257,7 +313,7 @@ https://kor.example.com/schema/1.0/kor.xsd
 as part of every installation (version 2.0.0 and above). We will add new
 versions, should the need arise.
 
-#### Generating a virtual appliance
+### Generating a virtual appliance
 
 Versions after and including 1.9.2 can be packaged into a virtualbox appliance
 automatically. The version is specified as a shell parameter:
