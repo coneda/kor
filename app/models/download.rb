@@ -23,6 +23,10 @@ class Download < ActiveRecord::Base
   # handling
   
   def copy_file
+    unless File.exists?(dir)
+      system "mkdir -p #{dir}"
+    end
+
     case new_data
       when File then FileUtils.copy(new_data.path, path)
       when String

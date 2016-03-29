@@ -24,6 +24,7 @@ commit history on GitHub.
 * the video player has been dropped in favor of native HTML5 functionality
 * some roles have been dropped: `user_admin`, `credentials_admin`,
   `collection_admin` and `developer` are now just `admin`
+* environment variables like `REMOTE_USER` can now be used for authentication
 
 ### Internal
 
