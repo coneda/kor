@@ -42,6 +42,15 @@ describe Kor::Auth do
     expect(user.name).to eq("jdoe")
   end
 
+  it "should default the source type to 'script'" do
+    sources = Kor.config['auth.sources']
+
+    expect(described_class.script_sources.size).to eq(2)
+    expect(described_class.script_sources.keys).to eq([
+      'credentials_via_file', 'credentials_via_env'
+    ])
+  end
+
   context "authorization" do
 
     include DataHelper

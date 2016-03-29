@@ -65,7 +65,13 @@ all:
 test:
   auth:
     sources:
+      remote_user:
+        type: 'env'
+        user: ['REMOTE_USER']
+        domain: 'example.com'
+        map_to: 'ldap'
       credentials_via_file:
+        type: script
         script: spec/fixtures/auth_script.file
         map_to: ldap
       credentials_via_env:

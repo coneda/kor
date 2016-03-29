@@ -240,6 +240,7 @@ class User < ActiveRecord::Base
   end
   
   def self.authenticate(username, password)
+    password ||= ""
     hash_candidates = [crypt(password), legacy_crypt(password)]
     where(name: username, password: hash_candidates).first
   end

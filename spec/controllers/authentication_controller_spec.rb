@@ -51,4 +51,39 @@ RSpec.describe AuthenticationController, :type => :controller do
     post :login, username: 'admin', password: 'admin'
     expect(User.admin.password.size).to eq(64)
   end
+
+  context 'with environment variables' do
+
+    it 'should login users via environment variables' do
+      jdoe = FactoryGirl.create :jdoe
+      FactoryGirl.create :ldap_template
+
+      request.env['HTTP_REMOTE_USER'] = 'jdoe'
+
+      get :form
+      expect(response.status).to eq(200)
+
+      request.env['REMOTE_USER'] = 'jdoe'
+
+      get :form
+      expect(response.status).to eq(302)
+
+      expect(session[:user_id]).to eq(jdoe.id)
+    end
+
+    it 'should create users authenticated via environment variables' do
+      FactoryGirl.create :ldap_template
+
+      request.env['REMOTE_USER'] = 'jdoe'
+
+      get :form
+      expect(response.status).to eq(302)
+
+      jdoe = User.where(name: 'jdoe').first
+      expect(session[:user_id]).to eq(jdoe.id)
+    end
+
+  end
+
+
 end

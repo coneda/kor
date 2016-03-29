@@ -272,9 +272,11 @@ Example configuration within `config/kor.yml`:
       auth:
         sources:
           simple:
+            type: script
             script: /path/to/simple_auth.sh
             map_to: simple_user
           ldap:
+            type: script
             script: /path/to/ldap_auth.pl
             map_to: ldap_user
 
@@ -283,6 +285,28 @@ external sources. The above configuration would create new users and set their
 parent to `simple_user` or `ldap_user` depending on which authentication source
 succeeded. This allows you to grant default permissions for new users to come.
 
+#### Authentication via request env
+
+It is also possible to configure variables to be used for authentication based
+on the request environment. A common use case are Apache authentication modules
+that set the `REMOTE_USER` environment variable. An example configuration can
+look like this:
+
+    all:
+      auth:
+        sources:
+          remote_user:
+            type: env
+            user: ['REMOTE_USER']
+            domain: example.com
+            map_to: my_user_template
+
+This may be combined with script based authentication sources. Authentication is
+only triggered on the `/authentication/form` which only renders the login form
+if the environment authentication was not successfull. The `domain` value is
+used to extend the username to an email address. So for example, with the above
+configuration, a user logging in as jdoe would be created with an email address
+`jdoe@example.com`.
 
 ### API
 

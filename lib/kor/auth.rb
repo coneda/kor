@@ -14,7 +14,7 @@ module Kor::Auth
         f.write password
       end
 
-      (Kor.config["auth.sources"] || []).each do |method, c|
+      script_sources.each do |method, c|
         command = "bash -c \"#{c["script"]}\""
         status = Bundler.with_clean_env do
           system(
@@ -44,6 +44,34 @@ module Kor::Auth
     false
   end
 
+  def self.env_login(env)
+    env_sources.each do |key, source|
+      source['user'].each do |k|
+        if username = env[k]
+          return authorize(username,
+            parent_username: source['map_to'],
+            email: "#{username}@#{source['domain']}"
+          )
+        end
+      end
+    end
+
+    false
+  end
+
+  def self.script_sources
+    (Kor.config['auth.sources'] || []).select do |key, source|
+      type = source['type'] || 'script'
+      type == 'script'
+    end
+  end
+
+  def self.env_sources
+    (Kor.config['auth.sources'] || []).select do |key, source|
+      source['type'] == 'env'
+    end
+  end
+
   def self.authorize(username, additional_attributes = true)
     user = User.includes(:groups).find_or_initialize_by(:name => username)
 
@@ -54,6 +82,7 @@ module Kor::Auth
     if user.save
       user
     else
+      binding.pry
       nil
     end
   end

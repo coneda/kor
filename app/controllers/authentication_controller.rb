@@ -5,7 +5,12 @@ class AuthenticationController < ApplicationController
   skip_before_filter :authentication, :authorization, :legal
   
   def form
-    render :layout => 'small_normal_bare'
+    if user = Kor::Auth.env_login(request.env)
+      create_session(user)
+      redirect_after_login
+    else
+      render :layout => 'small_normal_bare'
+    end
   end
   
   def password_forgotten
@@ -48,18 +53,9 @@ class AuthenticationController < ApplicationController
           redirect_to :action => "form"
         else
           account.fix_cryptography(params[:password])
+          create_session(account)
 
-          session[:expires_at] = Kor.session_expiry_time
-          session[:user_id] = account.id
-          account.update_attributes(:last_login => Time.now)
-          r_to = (back || current_user.home_page) || Kor.config['app.default_home_page'] || root_path
-
-          if params[:fragment].present?
-            params[:fragment] = nil if params[:fragment].match('{{')
-            r_to += "##{params[:fragment]}" if params[:fragment].present?
-          end
-
-          redirect_to r_to
+          redirect_after_login
         end
       else
         if account_without_password
@@ -96,6 +92,25 @@ class AuthenticationController < ApplicationController
   end
 
   private
+
+    def create_session(user)
+      session[:expires_at] = Kor.session_expiry_time
+      session[:user_id] = user.id
+      user.update_attributes(last_login: Time.now)
+    end
+
+    def redirect_after_login
+      r_to = (back || current_user.home_page) || Kor.config['app.default_home_page'] || root_path
+
+      if params[:fragment].present?
+        params[:fragment] = nil if params[:fragment].match('{{')
+        r_to += "##{params[:fragment]}" if params[:fragment].present?
+      end
+
+      redirect_to r_to
+    end
+
+    # TODO: still needed?
     def remote_ip_with_name
       "#{request.ip} (#{Resolv.getname(request.ip)})"
     rescue Resolv::ResolvError => e
