@@ -349,6 +349,17 @@ The ova file and a checksum are generated within `deploy/build/`. Instead of
 very old versions could not work because of unsatisfiable dependencies. Make
 sure you have pulled the most recent commits when using branches!
 
+### Generating docker images
+
+`deploy/dockerize.sh can be used to build docker images for commits >= v2.0.0.
+`Because of a different set of tools required for each environment, it has to be
+`selected when building the images. For example:
+
+    ./deploy/dockerize.sh master production
+
+Will build a production image based on the master branch. You may also base
+images on tags or commits.
+
 ### Command line tool
 
 The kor command provides access to functionality which is not easily provided 

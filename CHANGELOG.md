@@ -39,6 +39,8 @@ commit history on GitHub.
 * added brakeman for security audits
 * added rubocop to improve code style
 * media are not shown in development anymore (override with `SHOW_MEDIA`)
+* included docker images build scripts for development, test and production
+  images
 
 ## Version 1.9.2
 
