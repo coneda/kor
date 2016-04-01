@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
   validates :name,
     :presence => true,
     :uniqueness => {:allow_blank => false},
-    :format => {:with => /\A[a-zA-Z0-9_\.]+\Z/, :allow_blank => true},
+    :format => {:with => /\A[a-zA-Z0-9_\.\@\-\!\:\/]+\Z/, :allow_blank => true},
     :white_space => true
   validates :email,
     :presence => true,

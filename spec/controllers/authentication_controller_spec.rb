@@ -52,12 +52,13 @@ RSpec.describe AuthenticationController, :type => :controller do
     expect(User.admin.password.size).to eq(64)
   end
 
+  # TODO: move this to auth_spec.rb
   context 'with environment variables' do
 
     it 'should login users via environment variables' do
       jdoe = FactoryGirl.create :jdoe
       FactoryGirl.create :ldap_template
-
+      request.env['mail'] = 'jdoe@example.com'
       request.env['HTTP_REMOTE_USER'] = 'jdoe'
 
       get :form
@@ -73,7 +74,7 @@ RSpec.describe AuthenticationController, :type => :controller do
 
     it 'should create users authenticated via environment variables' do
       FactoryGirl.create :ldap_template
-
+      request.env['mail'] = 'jdoe@example.com'
       request.env['REMOTE_USER'] = 'jdoe'
 
       get :form
@@ -81,6 +82,36 @@ RSpec.describe AuthenticationController, :type => :controller do
 
       jdoe = User.where(name: 'jdoe').first
       expect(session[:user_id]).to eq(jdoe.id)
+    end
+
+    it 'should override the users email address' do
+      FactoryGirl.create :ldap_template
+      request.env['REMOTE_USER'] = 'jdoe'
+      request.env['mail'] = 'jdoe@example.com'
+
+      get :form
+      expect(response.status).to eq(302)
+    end
+
+    it 'should use a splitter if given' do
+      FactoryGirl.create :ldap_template
+      request.env['REMOTE_USER'] = 'jdoe;John Doe'
+      request.env['mail'] = 'jdoe@example.com;john.doe@example.com'
+
+      get :form
+      expect(response.status).to eq(302)
+    end
+
+    it "should respect a display name if given and configured" do
+      FactoryGirl.create :ldap_template
+      request.env['REMOTE_USER'] = 'jdoe'
+      request.env['mail'] = 'jdoe@example.com'
+      request.env['full_name'] = 'John Carl Doe'
+
+      get :form
+      expect(response.status).to eq(302)
+
+      expect(User.where(name: 'jdoe').first.full_name).to eq('John Carl Doe')
     end
 
   end

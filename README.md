@@ -313,10 +313,10 @@ configuration, a user logging in as jdoe would be created with an email address
 ConedaKOR spawns four OAI-PMH endpoints for entities, kinds, relations and
 relationships:
 
-* http://kor.example.com/api/oai-pmh/entities.xml?verb=Identify
-* http://kor.example.com/api/oai-pmh/kinds.xml?verb=Identify
-* http://kor.example.com/api/oai-pmh/relations.xml?verb=Identify
-* http://kor.example.com/api/oai-pmh/relationships.xml?verb=Identify
+* http://kor.example.com/api/oai-pmh/entities?verb=Identify
+* http://kor.example.com/api/oai-pmh/kinds?verb=Identify
+* http://kor.example.com/api/oai-pmh/relations?verb=Identify
+* http://kor.example.com/api/oai-pmh/relationships?verb=Identify
 
 Please refer to the [OAI-PMH
 specification](https://www.openarchives.org/OAI/openarchivesprotocol.html) for

@@ -46,12 +46,26 @@ module Kor::Auth
 
   def self.env_login(env)
     env_sources.each do |key, source|
-      source['user'].each do |k|
-        if username = env[k]
-          return authorize(username,
-            parent_username: source['map_to'],
-            email: "#{username}@#{source['domain']}"
-          )
+      source['user'].each do |ku|
+        source['mail'].each do |km|
+          if (username = env[ku]) && (mail = env[km])
+            full_name = nil
+            source['full_name'].each do |kf|
+              full_name ||= env[kf]
+            end
+
+            if s = source['splitter']
+              username = username.split(Regexp.new(s)).first
+              mail = mail.split(Regexp.new(s)).first
+              full_name = full_name.split(Regexp.new(s)).first if full_name
+            end
+            
+            return authorize(username,
+              parent_username: source['map_to'],
+              email: mail,
+              full_name: full_name
+            )
+          end
         end
       end
     end
@@ -82,7 +96,7 @@ module Kor::Auth
     if user.save
       user
     else
-      binding.pry
+      # binding.pry
       nil
     end
   end

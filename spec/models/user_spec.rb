@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe User do
 
-  it "should not allow special charactors within the name" do
+  it "should not allow special characters within the name" do
     user = User.new :name => "test 01"
     user.valid?
     expect(user.errors[:name]).not_to be_empty
@@ -12,6 +12,22 @@ describe User do
     expect(user.errors[:name]).not_to be_empty
 
     user.name = "test_01"
+    user.valid?
+    expect(user.errors[:name]).to be_empty
+  end
+
+  it "should allow SAML principals as username" do
+    user = User.new name: 'user123@university-abc.de'
+    user.valid?
+    expect(user.errors[:name]).to be_empty
+  end
+
+  it "should allow SAML persistent ids as username" do
+    user = User.new name: [
+      'https://idp.university-abc.de/idp/shibboleth',
+      'https://kor.example.com/shibboleth',
+      'ccdeyjdlashdcdasdfasdf'
+    ].join('!')
     user.valid?
     expect(user.errors[:name]).to be_empty
   end

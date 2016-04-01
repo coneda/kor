@@ -68,7 +68,9 @@ test:
       remote_user:
         type: 'env'
         user: ['REMOTE_USER']
-        domain: 'example.com'
+        mail: ['mail']
+        full_name: ['full_name']
+        splitter: '[,;]+'
         map_to: 'ldap'
       credentials_via_file:
         type: script
