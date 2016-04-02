@@ -3,7 +3,7 @@ sudo: required
 services:
   - docker
 
-before_install:
+before_script:
   - docker pull mysql
   - docker pull elasticsearch:2.2.0
   - deploy/dockerize.sh $TRAVIS_COMMIT test
