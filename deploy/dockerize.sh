@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 COMMIT=$1
 RAILS_ENV=$2

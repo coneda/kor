@@ -69,6 +69,9 @@ end
 
 group :production do
   gem 'puma'
+end
+
+group :production, :test do
   gem 'therubyracer'
   gem 'uglifier'
 end
