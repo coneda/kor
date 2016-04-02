@@ -29,7 +29,7 @@ RUN ln -sfn /opt/kor/shared/database.yml /opt/kor/current/config/database.yml &&
 <% else %>
 RUN mkdir -p /opt/kor/current/data && \
     mkdir -p /opt/kor/current/log && \
-    cp /opt/kor/shared/database.yml.example /opt/kor/current/config/database.yml && \
+    cp /opt/kor/current/database.yml.example /opt/kor/current/config/database.yml && \
     touch /opt/kor/current/config/kor.yml && \
     touch /opt/kor/current/config/kor.app.yml && \
     cp /opt/kor/current/config/legal.txt.example /opt/kor/current/config/legal.txt && \
