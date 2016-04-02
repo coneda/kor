@@ -11,6 +11,6 @@ before_install:
   - docker run -d --name elastic elasticsearch:2.2.0
 
 script:
-  - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net/kor:$TRAVIS_COMMIT bundle exec rake db:setup
-  - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net/kor:$TRAVIS_COMMIT bundle exec rspec spec
-  - docker run --rm --link mysql:mysql --link elastic:elastic -e HEADLESS=true docker.coneda.net/kor:$TRAVIS_COMMIT bundle exec cucumber features
+  - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rake db:setup
+  - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rspec spec
+  - docker run --rm --link mysql:mysql --link elastic:elastic -e HEADLESS=true docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec cucumber features
