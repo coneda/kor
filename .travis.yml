@@ -10,6 +10,8 @@ before_install:
   - docker run -d -e MYSQL_ROOT_PASSWORD=root --name mysql mysql
   - docker run -d --name elastic elasticsearch:2.2.0
 
+install: true
+
 script:
   - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rake db:setup
   - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rspec --format=progress

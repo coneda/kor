@@ -23,7 +23,7 @@ kor.service "session_service", [
         else
           false
       allowed_to_any: (policy) ->
-        if kd.info && kd.info.session.user.auth
+        if kd.info && kd.info.session.user && kd.info.session.user.auth
           kd.info.session.user.auth.collections[policy].length != 0
         else
           false

@@ -31,7 +31,7 @@ end
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app,
     # debug: true,
-    js_errors: false,
+    js_errors: true,
     inspector: false
   )
 end

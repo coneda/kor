@@ -23,6 +23,7 @@ Feature: Session
     When I click element "td.commands"
     And I should not see an image within "#session_info"
     And I click element "[data-name=select]"
+    And I wait for "1" second
     And I should see an image within "#session_info"
     When I go to the entity page for "The Last Supper"
     And I should see "The Last Supper"
