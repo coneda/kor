@@ -3,8 +3,9 @@
 COMMIT=$1
 RAILS_ENV=$2
 
-RUBY_VERSION=$(git show master:.ruby-version)
+RUBY_VERSION=$(git show $COMMIT:.ruby-version)
 
+mkdir -p tmp
 git archive $COMMIT > tmp/kor.tar
 
 sudo docker run --rm \
