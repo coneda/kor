@@ -7,8 +7,8 @@ before_install:
   - deploy/dockerize.sh $TRAVIS_COMMIT test
   - docker pull mysql
   - docker pull elasticsearch:2.2.0
-  - docker run --rm -d -e MYSQL_ROOT_PASSWORD=root -n mysql mysql
-  - docker run --rm -d -n elastic elasticsearch:2.2.0
+  - docker run -d -e MYSQL_ROOT_PASSWORD=root --name mysql mysql
+  - docker run -d --name elastic elasticsearch:2.2.0
 
 script:
   - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net/kor:$TRAVIS_COMMIT bundle exec rake db:setup
