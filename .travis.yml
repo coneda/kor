@@ -3,10 +3,10 @@ sudo: required
 services:
   - docker
 
-before_script:
+before_install:
+  - deploy/dockerize.sh $TRAVIS_COMMIT test
   - docker pull mysql
   - docker pull elasticsearch:2.2.0
-  - deploy/dockerize.sh $TRAVIS_COMMIT test
   - docker run --rm -d --e MYSQL_ROOT_PASSWORD=root -n mysql mysql
   - docker run --rm -d -n elastic elasticsearch:2.2.0
 
