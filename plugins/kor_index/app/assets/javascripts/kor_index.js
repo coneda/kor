@@ -194,8 +194,8 @@ ComponentSearch.draw = function() {
 
 ComponentSearch.setup_pagination = function() {
   var paginate = $('.entity_list div.pagination');
-  var left = paginate.find('img[alt=Pager_left]').parent();
-  var right = paginate.find('img[alt=Pager_right]').parent();
+  var left = paginate.find('img[data-name=Pager_left]').parent();
+  var right = paginate.find('img[data-name=pager_right]').parent();
   var select = paginate.find('select');
   var input = paginate.find('input');
   
@@ -235,8 +235,8 @@ ComponentSearch.paginate = function() {
   if (this.results.total > 10) {
     var select = paginate.find('select');
     var input = paginate.find('input');
-    var left = paginate.find('img[alt=Pager_left]').parent();
-    var right = paginate.find('img[alt=Pager_right]').parent();
+    var left = paginate.find('img[data-name=pager_left]').parent();
+    var right = paginate.find('img[data-name=pager_right]').parent();
     
     var old_str = $('.pagination.ajax .amount').html();
     new_str = old_str.replace(/[\d]+/, ComponentSearch.results.pages);
