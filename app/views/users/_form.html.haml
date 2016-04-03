@@ -40,7 +40,7 @@
   
   = f.kor_input :groups, :control => f.collection_select(:group_ids,
       Credential.non_personal.ordered, :id, :name,
-      { }, { :selected => 1 , :multiple => true }), 
+      { }, { :selected => 1 , :multiple => true }),
     :count => :other
   
   .hr
@@ -48,7 +48,7 @@
   = f.kor_input :authority_group_admin, :control => f.check_box(:authority_group_admin)
   = f.kor_input :relation_admin, :control => f.check_box(:relation_admin)
   = f.kor_input :kind_admin, :control => f.check_box(:kind_admin)
-  = f.kor_input :admin, :control => f.check_box(:admin)  
+  = f.kor_input :admin, :control => f.check_box(:admin)
   
   .hr
 

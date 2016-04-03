@@ -281,7 +281,7 @@ class User < ActiveRecord::Base
   end
 
   def fix_cryptography(password)
-    if self.password.size == 40
+    if self.password == self.class.legacy_crypt(password)
       write_attribute :password, self.class.crypt(password)
     end
   end
