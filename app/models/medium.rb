@@ -137,7 +137,9 @@ class Medium < ActiveRecord::Base
       image.staged_path || image.path(style)
     end
 
-    path ? File.open(path) : nil
+    if path && File.exists?(path)
+      File.open(path)
+    end
   end
 
   def content_type(style = :original)
@@ -213,7 +215,7 @@ class Medium < ActiveRecord::Base
   
   def url(style = :original)
     if Rails.env.development? && !ENV['SHOW_MEDIA']
-      "/content_types/#{content_type}.gif"
+      dummy_url
     else
       result = if style == :original
         document.url(:original)

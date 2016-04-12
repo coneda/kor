@@ -41,6 +41,7 @@ commit history on GitHub.
 * media are not shown in development anymore (override with `SHOW_MEDIA`)
 * included docker images build scripts for development, test and production
   images
+* upgraded some gems to their most recent bugfix release
 
 ## Version 1.9.2
 

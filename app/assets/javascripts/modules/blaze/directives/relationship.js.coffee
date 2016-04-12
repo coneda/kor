@@ -53,7 +53,7 @@ kor.directive "korRelationship", ["entities_service", "session_service",
         scope.destroy = (event) ->
           event.preventDefault()
 
-          if confirm($(event.target).attr('kor-confirm'))
+          if confirm($(event.target).parent().attr('kor-confirm'))
             rss.destroy(scope.directed_relationship.relationship_id).success (data) ->
               kd.set_notice(data.message)
               scope.$emit 'relationship-saved'

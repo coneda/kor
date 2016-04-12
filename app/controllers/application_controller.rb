@@ -226,7 +226,7 @@ class ApplicationController < BaseController
         :existing_datings_attributes => [:id, :_destroy, :label, :dating_string],
         :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
-        :medium_attributes => [:image, :document]
+        :medium_attributes => [:id, :image, :document]
       )
     end
 

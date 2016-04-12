@@ -5,6 +5,7 @@ class DirectedRelationshipsController < ApplicationController
   def index
     if user = (current_user || User.guest)
       @directed_relationships = DirectedRelationship.
+        order_by_name.
         by_entity(params[:entity_id]).
         by_relation_name(params[:relation_name]).
         by_to_kind(params[:kind_id]).

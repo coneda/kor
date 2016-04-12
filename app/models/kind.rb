@@ -48,7 +48,7 @@ class Kind < ActiveRecord::Base
   # Other
   
   def self.medium_kind
-    find_by_name('Medium')
+    find_by(name: ['medium', 'Medium'])
   end
   
   def self.find_ids(ids)
@@ -103,8 +103,7 @@ class Kind < ActiveRecord::Base
   end
   
   def requires_naming?
-    settings[:naming] = true if settings[:naming].nil?
-    settings[:naming]
+    self.class.medium_kind.id != id
   end
   
   def can_have_synonyms?

@@ -1,6 +1,6 @@
 Kor.config['maintainer.email'] = 'admin@localhost'
 
-administrators = Credential.create!(:name => "Administrators")
+administrators = Credential.create!(:name => "admins")
 
 Kor.ensure_admin_account!
 

@@ -97,7 +97,7 @@ When /^the "([^"]*)" "([^"]*)" is updated behind the scenes$/ do |klass, name|
   item.update_column :lock_version, item.lock_version + 1
 end
 
-Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" (?:through|via) credential "([^"]*)"$/ do |user, policy, collection, credential|
+Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" (?:through|via)(?: credential)? "([^"]*)"$/ do |user, policy, collection, credential|
   step "the user \"#{user}\""
   step "the collection \"#{collection}\""
   step "the credential \"#{credential}\""
@@ -108,6 +108,18 @@ Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" (?:through|v
 
   user.groups << credential unless user.groups.include? credential
   
+  policy.split("/").each do |p|
+    collection.grant p, :to => credential
+  end
+end
+
+Given(/^"([^"]*)" are allowed to "([^"]*)" collection "([^"]*)"$/) do |credential, policy, collection|
+  step "the collection \"#{collection}\""
+  step "the credential \"#{credential}\""
+
+  collection = Collection.find_by_name(collection)
+  credential = Credential.find_by_name(credential)
+
   policy.split("/").each do |p|
     collection.grant p, :to => credential
   end
