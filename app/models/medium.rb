@@ -21,7 +21,7 @@ class Medium < ActiveRecord::Base
   has_attached_file :image,
     :path => "#{media_data_dir}/:style/:id_partition/image.:style_extension",
     :url => "/media/images/:style/:id_partition/image.:style_extension",
-    :default_url => "/content_types/:medium_content_type.gif",
+    :default_url => lambda {|attachment| attachment.instance.dummy_url},
     :styles => {
       :icon => ['80x80>', :jpg],
       :thumbnail => ['140x140>', :jpg],
@@ -231,34 +231,41 @@ class Medium < ActiveRecord::Base
     if style == :original
       document.path(:original) || image.path(:original)
     elsif image_style?(style)
-      (image.path(style) && File.exists?(image.path(style))) ? image.path(style) : self.class.dummy_path(content_type)
+      if image.path(style) && File.exists?(image.path(style))
+        image.path(style)
+      else
+        dummy_path
+      end
     else
       custom_style_path(style)
     end
   end
-  
-  def self.dummy_data(content_type)
-    File.read dummy_path(content_type)
+
+  def dummy_path
+    self.class.dummy_path(content_type)
+  end
+
+  def self.dummy_path(content_type)
+    "#{Rails.root}/public#{self.dummy_url content_type}"
+  end
+
+  def dummy_url
+    self.class.dummy_url(content_type)
   end
   
-  def self.dummy_path(content_type)
+  def self.dummy_url(content_type)
     group, type = content_type.split('/').map{|t| t.gsub /\//, '_'}
   
     dir = "#{Rails.root}/public/content_types"
     group_dir = "#{dir}/#{group}"
-    dummy = "#{group_dir}/#{type}.gif"
-    
-    unless File.exists? dummy
-      FileUtils.mkdir_p group_dir
-      
-      if File.exists? "#{group_dir}.gif"
-        FileUtils.ln_sf "../#{group}.gif", dummy
-      else
-        FileUtils.ln_sf "../default.gif", dummy
-      end
+
+    if File.exists?("#{group_dir}/#{type}.gif")
+      "/content_types/#{group}/#{type}.gif"
+    elsif File.exists?("#{group_dir}.gif")
+      "/content_types/#{group}.gif"
+    else
+      "/content_types/default.gif"
     end
-    
-    dummy
   end
   
   def uri=(value)

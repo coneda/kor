@@ -57,12 +57,6 @@ class MediaController < ApplicationController
     end
   end
 
-  def dummy
-    content_type = "#{params['content_type_group']}/#{params['content_type']}"
-    target = Medium.dummy_path(content_type)
-    redirect_to URI.parse(target).path
-  end
-
   def transform
     @medium = Medium.find params[:id]
 

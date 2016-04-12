@@ -344,7 +344,11 @@ When(/^I click on entity "([^"]*)"$/) do |name|
 end
 
 Then(/^I should see "([^"]*)" gallery items?$/) do |amount|
+  begin
   all('.gallery_item > div', count: amount.to_i, visible: true)
+  rescue Capybara::ExpectationNotMet => e
+    binding.pry
+  end
 end
 
 Then(/^the current js page should be "([^"]*)"$/) do |expected|

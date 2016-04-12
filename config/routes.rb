@@ -119,7 +119,6 @@ Rails.application.routes.draw do
   end
 
   match '/downloads/:uuid', :to => 'downloads#show', :via => :get
-  match 'content_types/:content_type_group/:content_type.gif', :to => 'media#dummy', :as => :media_dummy, :content_type => /[a-z0-9\.\-]+/, :via => :get
   
   scope '/media', :controller => 'media' do
     match 'maximize/:id', :action => 'show', :style => 'normal', :as => :maximize_medium, :via => :get

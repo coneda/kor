@@ -24,9 +24,11 @@ Feature: Pagination
     When I go to the gallery
     Then I should see "16" gallery items
     And the current js page should be "1"
+    And I wait for "0.2" seconds
     When I click element "img[data-name='pager_right']"
     And I should see "16" gallery items
     And the current js page should be "2"
+    And I wait for "0.2" seconds
     When I click element "img[data-name='pager_right']"
     And I should see "1" gallery item
     And the current js page should be "3"
@@ -37,9 +39,10 @@ Feature: Pagination
     And I should see "1" gallery item
     And the current js page should be "3"
 
+    And I wait for "0.2" seconds
     When I click element "img[data-name='pager_left']"
-    And I should see "16" gallery items
     And the current js page should be "2"
+    And I should see "16" gallery items
 
 
   @javascript @nodelay
