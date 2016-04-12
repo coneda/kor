@@ -8,6 +8,7 @@ RUBY_VERSION=$(git show $COMMIT:.ruby-version)
 mkdir -p tmp
 git archive $COMMIT > tmp/kor.tar
 
+mkdir -p log
 for f in log/*.log; do
   >| $f
 done
