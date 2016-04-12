@@ -29,6 +29,7 @@ Feature: Entities
     Then I should see element ".pagination input"
     And I wait for "1" seconds
     When I click element "img[data-name='pager_right']" within ".relation"
+    And I wait for "1" seconds
     And I follow "Triangle_up" within ".relation"
     Then I should see "ENDE" within ".relationships"
 

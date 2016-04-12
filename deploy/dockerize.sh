@@ -8,6 +8,10 @@ RUBY_VERSION=$(git show $COMMIT:.ruby-version)
 mkdir -p tmp
 git archive $COMMIT > tmp/kor.tar
 
+for f in log/*.log; do
+  >| $f
+done
+
 sudo docker run --rm \
   -v $(pwd)/deploy/docker/Dockerfile.erb:/template.erb \
   ruby:$RUBY_VERSION \
