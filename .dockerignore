@@ -1,5 +1,6 @@
 coverage
 tmp/*
+!tmp/kor.tar
 log/*
 data/*
 deploy/build
