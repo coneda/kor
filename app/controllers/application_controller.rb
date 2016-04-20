@@ -227,7 +227,11 @@ class ApplicationController < BaseController
         :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
         :medium_attributes => [:id, :image, :document]
-      )
+      ).tap do |e|
+        e[:properties] ||= []
+        e[:existing_datings_attributes] ||= {}
+        e[:synonyms] ||= []
+      end
     end
 
     def profile
