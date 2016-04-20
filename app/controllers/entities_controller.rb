@@ -116,8 +116,12 @@ class EntitiesController < ApplicationController
     else
       if params[:terms]
         @results = kor_graph.search(:attribute,
-          criteria: {name: params[:terms], relation_name: params[:relation_name]},
-          per_page: params[:per_page]
+          criteria: {
+            name: params[:terms],
+            relation_name: params[:relation_name]
+          },
+          per_page: params[:per_page],
+          page: params[:page]
         )
         render :json => {
           "ids" => @results.ids,

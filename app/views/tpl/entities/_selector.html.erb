@@ -30,9 +30,26 @@
 
 <div ng-show="tab == 'search'">
   <input name="terms" ng-model="terms" />
+  <div
+    kor-pagination="search_page"
+    kor-total="results.total"
+    kor-per-page="9"
+  ></div>
 </div>
-<div ng-show="tab == 'visited'"></div>
-<div ng-show="tab == 'created'"></div>
+<div ng-show="tab == 'visited'">
+  <div
+    kor-pagination="visited_page"
+    kor-total="results.total"
+    kor-per-page="9"
+  ></div>
+</div>
+<div ng-show="tab == 'created'">
+  <div
+    kor-pagination="created_page"
+    kor-total="results.total"
+    kor-per-page="9"
+  ></div>
+</div>
 <div ng-show="tab == 'existing'"></div>
 
 <div class="entities">

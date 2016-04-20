@@ -175,7 +175,7 @@ class ApplicationController < BaseController
       if url.present? && url != root_url
         session[:history] << url 
       end
-      session[:history].shift if session[:history].size > 20
+      session[:history].shift if session[:history].size > 50
     end
     
     def back
