@@ -1,0 +1,6 @@
+coverage
+tmp/*
+log/*
+data/*
+deploy/build
+.vagrant
