@@ -28,7 +28,7 @@
 <script type="text/x-kor-tpl" data-id="entity-widget">
   <span ng-show="entity.id">
     <span ng-hide="entity.kind_id == 1">
-      <div class="name" ng-bind-html="entity.name"></div>
+      <div class="name" ng-bind-html="name()"></div>
       <div class="kind" ng-bind-html="kind_name()"></div>
     </span>
     <img 
