@@ -87,7 +87,6 @@ Application.setup_ajax = function() {
 Application.setup = function() {
   Kor.setup_blaze();
 
-  Kor.load_settings();
   Application.setup_ajax();
   
   this.setup_kor_command_image_events();
@@ -120,10 +119,6 @@ Kor.setup_blaze = function() {
   });
 }
 
-Kor.load_settings = function() {
-  Kor.options = Settings;
-}
-
 Kor.ajax_loading = function() {$('#ajax_loading_indicator').fadeIn(200);}
 Kor.ajax_not_loading = function() {$('#ajax_loading_indicator').fadeOut(200);}
 
@@ -139,15 +134,6 @@ Kor.notice = function(msg) {
   notices_div = message_area.find('.notices');
   notices_div.append(msg);
 }
-
-Kor.config = function() {
-  if (!this.settings) {
-    this.settings = $.parseJSON($('#settings').val());
-  }
-  
-  return this.settings;
-}
-
 
 Kor.cleanup_message_area = function() {
   $('#message_area').empty();

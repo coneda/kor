@@ -34,12 +34,15 @@ kor.service "session_service", [
         if kd.info
           kd.info.session.flash = {}
       read_legacy_flash: ->
-        if Settings.legacy_flash
-          if message = Settings.legacy_flash.notice
-            service.flash 'notice', message
-          if message = Settings.legacy_flash.error
-            service.flash 'error', message
-          Settings.legacy_flash = {}
+        el = $("script[type='text/x-kor-message'][data-id='notice']")
+        if message = $.trim(el.text())
+          service.flash 'notice', message
+          el.text('')
+
+        el = $("script[type='text/x-kor-message'][data-id='error']")
+        if message = $.trim(el.text())
+          service.flash 'error', message
+          el.text('')
       in_clipboard: (entity) ->
         if kd.info && entity
           kd.info.session.clipboard ||= []

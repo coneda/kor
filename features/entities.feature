@@ -20,21 +20,6 @@ Feature: Entities
 
 
   @javascript
-  Scenario: Show an entity with 12 relationships of the same kind
-    Given I am logged in as "admin"
-    And the entity "Nürnberg" of kind "Ort/Orte"
-    And the entity "Nürnberg" has 12 relationships
-    When I go to the entity page for "Nürnberg"
-    Then I should see "Nürnberg"
-    Then I should see element ".pagination input"
-    And I wait for "3" seconds
-    When I paginate right in the relations
-    And I should see "Test Entity" within ".relation"
-    And I follow "Triangle_up" within ".relation"
-    Then I should see "ENDE" within ".relationships"
-
-
-  @javascript
   Scenario: Upload a medium
     Given I am logged in as "admin"
     When I go to the legacy upload page
