@@ -84,4 +84,3 @@ end
 # TODO: make an indicator for not-yet-processed media (use special dummy)
 # TODO: use https://github.com/bkeepers/dotenv
 # TODO: session panel is not visible on welcome page
-# TODO: fix source code link on loading screen, specifically for non-release deployments

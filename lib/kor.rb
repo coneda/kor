@@ -47,8 +47,22 @@ module Kor
     File.read("#{Rails.root}/config/version.txt").strip
   end
 
+  def self.commit
+    File.read "#{Rails.root}/REVISION"
+  rescue Errno::ENOENT => e
+    nil
+  end
+
   def self.source_code_url
-    Kor.config["app.source_code_url"].gsub(/\{\{version\}\}/, Kor.version)
+    if version.match(/\-pre$/)
+      if self.commit
+        Kor.config["app.sources.pre_release"].gsub(/\{\{commit\}\}/, Kor.commit)
+      else
+        Kor.config['app.sources.default']
+      end
+    else
+      Kor.config["app.sources.release"].gsub(/\{\{version\}\}/, Kor.version)
+    end
   end
 
   def self.repository_uuid

@@ -11,7 +11,11 @@ all:
     current_history_length: 5
     max_foreground_group_download_size: 10
     max_file_upload_size: "100"
-    source_code_url: "http://download.coneda.net/releases/coneda-kor.v{{version}}.tar.gz"
+
+    sources:
+      release: "https://github.com/coneda/kor/releases/tag/{{version}}"
+      pre_release: "https://github.com/coneda/kor/commit/{{commit}}"
+      default: "https://github.com/coneda/kor"
 
   maintainer:
     name: Example Organization
