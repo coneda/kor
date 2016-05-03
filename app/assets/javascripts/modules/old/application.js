@@ -218,26 +218,26 @@ ImageQuickButtons.register_events = function() {
     $(event.currentTarget).find('.button_bar').hide();
   });
 
-  $(document).on('click', ".kor_medium_frame .button_bar img[alt=Target]", function(event) {
+  $(document).on('click', ".kor_medium_frame .button_bar img[data-name=target]", function(event) {
     var cT = $(event.currentTarget).parent();
     var entity_id = cT.parents('.kor_medium_frame').attr('id').split('_').pop();
     
     ImageQuickButtons.mark('mark', entity_id);
   
     cT.hide();
-    cT.parents('.button_bar').find('img[alt=Target_hit]').parent().show();
+    cT.parents('.button_bar').find('img[data-name=target_hit]').parent().show();
     
     return(false);
   });
   
-  $(document).on('click', ".kor_medium_frame .button_bar img[alt=Target_hit]", function(event) {
+  $(document).on('click', ".kor_medium_frame .button_bar img[data-name=target_hit]", function(event) {
     var cT = $(event.currentTarget).parent();
     var entity_id = cT.parents('.kor_medium_frame').attr('id').split('_').pop();
     
     ImageQuickButtons.mark('unmark', entity_id);
   
     cT.hide();
-    cT.parents('.button_bar').find('img[alt=Target]').parent().show();
+    cT.parents('.button_bar').find('img[data-name=target]').parent().show();
     
     return(false);
   });
