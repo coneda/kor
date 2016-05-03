@@ -306,7 +306,9 @@ only triggered on the `/authentication/form` which only renders the login form
 if the environment authentication was not successfull. The `domain` value is
 used to extend the username to an email address. So for example, with the above
 configuration, a user logging in as jdoe would be created with an email address
-`jdoe@example.com`.
+`jdoe@example.com`. Additionally, the keys mail and full_name can be specified
+which would make the system update successfully authenticated users with those
+attributes.
 
 ### API
 
