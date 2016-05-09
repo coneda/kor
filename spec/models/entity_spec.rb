@@ -137,10 +137,10 @@ describe Entity do
     end
 
     it "should validate the dataset" do
-      people = Kind.where(:name => "person").first
+      people = Kind.where(:name => "Person").first
       people.fields << FactoryGirl.create(:isbn)
 
-      entity = FactoryGirl.build :jack, :dataset => {'isbn' => 'invalid ISBN'}
+      entity = FactoryGirl.build :jack, dataset: {'isbn' => 'invalid ISBN'}
       expect(entity.save).to be_falsey
       expect(entity.errors.full_messages).to include("ISBN is invalid")
     end

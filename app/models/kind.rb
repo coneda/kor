@@ -12,6 +12,7 @@ class Kind < ActiveRecord::Base
     :white_space => true
 
   validates :plural_name,
+    :presence => true,
     :white_space => true
   
   default_scope lambda { order(:name) }
