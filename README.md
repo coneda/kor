@@ -117,6 +117,34 @@ This will also start the background process that converts images and does other
 heavy lifting. However, this does not ensure monitoring nor restarting of that
 process which can be done for example with upstart scripts or systemd.
 
+### Database and elasticsearch
+
+For normal operation, ConedaKOR requires an mysql and elasticsearch instances to
+be running and reachable via network. The connection specifics can are
+configured in `config/database.yml`. Here is an example taken from
+`config/database.yml.example`:
+
+    production:
+      adapter: mysql2
+      host: 127.0.0.1
+      database: kor
+      username: kor
+      password: kor
+      encoding: utf8
+      collation: utf8_general_ci
+      reconnect: true
+
+      elastic:
+        host: 127.0.0.1
+        port: 9200
+        index: kor
+
+When adding content via the web interface, ConedaKOR stores information in mysql
+and elasticsearch automatically and keeps the index updated in most cases. Since
+there are still some rare conditions under which the elasticsearch index is not
+up to date, there is a task that regenerates it from scratch, please have a look
+at the [command line tool documentation](#command-line-tool) below.
+
 ### Configuration & customizations
 
 Some aspects of ConedaKOR can be tuned to your specific needs. This sections explains those aspects and tells you how to modify configuration options in general.
@@ -386,6 +414,13 @@ Those sheets may be modified and imported later on.
   delete the entity on import.
 * timestamps are not imported: they will be changed if the entity will be
   changed by the import.
+
+#### Rebuilding elastic index
+
+Sometimes the elasticsearch index has to be rebuilt from scratch. This is done
+like so:
+
+    bundle exec bin/kor index-all
 
 ### Development
 

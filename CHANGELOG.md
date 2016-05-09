@@ -25,6 +25,7 @@ commit history on GitHub.
 * some roles have been dropped: `user_admin`, `credentials_admin`,
   `collection_admin` and `developer` are now just `admin`
 * environment variables like `REMOTE_USER` can now be used for authentication
+* kinds now require their plural name to be specified
 
 ### Internal
 
