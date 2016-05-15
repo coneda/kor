@@ -183,7 +183,6 @@ GEM
       ast (~> 2.2)
     parslet (1.7.1)
       blankslate (>= 2.0, <= 4.0)
-    perftools.rb (2.0.4)
     plupload-rails (1.2.1)
       rails (>= 3.1)
     poltergeist (1.9.0)
@@ -359,7 +358,6 @@ DEPENDENCIES
   mysql2
   paperclip
   parslet
-  perftools.rb
   plupload-rails
   poltergeist
   pry
@@ -384,4 +382,4 @@ DEPENDENCIES
   will_paginate (~> 3.0.3)
 
 BUNDLED WITH
-   1.11.2
+   1.12.3

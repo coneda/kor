@@ -147,7 +147,6 @@ module Kor
     )
   end
 
-
   def self.array_wrap(object)
     if object.is_a?(Array)
       object
@@ -162,6 +161,10 @@ module Kor
     else
       object.is_a?(ActiveRecord::Base) ? object.id : object
     end
+  end
+
+  def self.video_processor
+    system('hash avconv') ? 'avconv' : 'ffmpeg'
   end
 
 end

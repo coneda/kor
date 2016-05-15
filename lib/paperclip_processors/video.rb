@@ -14,7 +14,7 @@ class Paperclip::Video < Paperclip::Processor
     outfile = Tempfile.new(rand.to_s).path + '.mp4'
     args = "-c:v libx264 -crf 28 -c:a aac -b:a 256k -strict experimental"
     args = "-i #{file.path} #{args} #{outfile}"
-    Paperclip.run "avconv", args
+    Paperclip.run(Kor.video_processor, args)
     File.open(outfile)
   end
 
@@ -22,7 +22,7 @@ class Paperclip::Video < Paperclip::Processor
     outfile = Tempfile.new(rand.to_s).path + '.ogv'
     args = "-c:v libtheora -qscale:v 7 -c:a libvorbis -qscale:a 7"
     args = "-i #{file.path} #{args} #{outfile}"
-    Paperclip.run "avconv", args
+    Paperclip.run(Kor.video_processor, args)
     File.open(outfile)
   end
 
@@ -30,7 +30,7 @@ class Paperclip::Video < Paperclip::Processor
     outfile = Tempfile.new(rand.to_s).path + '.webm'
     args = "-c:v libvpx -crf 10 -b:v 1M -c:a libvorbis -qscale:a 7"
     args = "-i #{file.path} #{args} #{outfile}"
-    Paperclip.run "avconv", args
+    Paperclip.run(Kor.video_processor, args)
     File.open(outfile)
   end
 
