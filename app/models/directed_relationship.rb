@@ -27,7 +27,7 @@ class DirectedRelationship < ActiveRecord::Base
     kind_id.present? ? with_to.where('tos.kind_id IN (?)', kind_id) : all
   }
   scope :order_by_name, lambda {
-    with_to.order('tos.name')
+    with_to.order('tos.name ASC, directed_relationships.relationship_id ASC')
   }
 
 end

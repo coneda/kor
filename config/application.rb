@@ -84,3 +84,4 @@ end
 # TODO: make an indicator for not-yet-processed media (use special dummy)
 # TODO: use https://github.com/bkeepers/dotenv
 # TODO: session panel is not visible on welcome page
+# TODO: add https://www.ruby-lang.org/en/documentation/installation/ to the install docs

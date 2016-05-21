@@ -49,14 +49,14 @@ kor.service "entities_service", [
         page ||= 1
         
         http(
-          method: 'get',
+          method: 'get'
           url: "/entities/#{entity_id}/relationships.json"
           params: {page: page, relation_name: relation_name}
         )
 
       media_relation_load: (entity_id, relation_name, page) ->
         http(
-          method: 'get',
+          method: 'get'
           url: "/entities/#{entity_id}/relationships.json"
           params: {page: page, relation_name: relation_name, kind_id: 1}
         )
