@@ -109,8 +109,8 @@ Feature: Inplace relationship editor
     Given I am logged in as "admin"
     And the entity "Leonardo" of kind "person/people"
     When I go to the entity page for "Leonardo"
+    And I wait for "2" seconds
     And I click element "[data-name=plus]" within ".relationships"
-    And I save a screenshot
     Then I should see "There is no relation provided for this combination of entity types"
     Given the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
     When I refresh the page
