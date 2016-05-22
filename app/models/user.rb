@@ -317,7 +317,7 @@ class User < ActiveRecord::Base
   end
 
   def serializable_hash(options = {})
-    super options.merge(:except => [:password, :activation_hash])
+    super options.merge(:except => [:password, :activation_hash, :api_key])
   end
 
   def allowed_to?(policy = :view, collections = nil, options = {})

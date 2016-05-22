@@ -111,30 +111,36 @@ class EntitiesController < ApplicationController
   end
 
   def index
-    if params[:query] && @entity = viewable_entities.find_by(:uuid => params[:query][:name])
-      redirect_to web_path(:anchor => entity_path(@entity))
-    else
-      if params[:terms]
+    respond_to do |format|
+      format.json do
         @results = kor_graph.search(:attribute,
           criteria: {
             name: params[:terms],
-            relation_name: params[:relation_name]
+            relation_name: params[:relation_name],
+            kind_id: params[:kind_id]
           },
+          media: params[:include_media],
           per_page: params[:per_page],
           page: params[:page]
         )
+
         render :json => {
           "ids" => @results.ids,
           "total" => @results.total,
           "records" => @results.items,
           "raw_records" => @results.items.as_json(:methods => [:kind])
         }
-      else
-        @query = kor_graph.search(:attribute,
-          criteria: params[:query],
-          page: params[:page]
-        )
-        render :layout => 'small_normal_bare'
+      end
+      format.html do
+        if params[:query] && @entity = viewable_entities.find_by(:uuid => params[:query][:name])
+          redirect_to web_path(:anchor => entity_path(@entity))
+        else
+          @query = kor_graph.search(:attribute,
+            criteria: params[:query],
+            page: params[:page]
+          )
+          render :layout => 'small_normal_bare'
+        end
       end
     end
   end

@@ -1,5 +1,5 @@
 class RelationsController < ApplicationController
-  skip_before_action :authentication, :only => [:names, :index]
+  skip_before_action :authentication, :only => [:names, :index, :show]
 
   layout 'normal_small'
 
@@ -11,7 +11,7 @@ class RelationsController < ApplicationController
     end
 
     respond_to do |format|
-      format.json
+      format.json {render json: @relations}
       format.html do
         render layout: 'wide'
       end
@@ -30,7 +30,13 @@ class RelationsController < ApplicationController
   end
 
   def show
-    redirect_to root_path
+    @relation = Relation.find(params[:id])
+    
+    respond_to do |format|
+      format.json do
+        render :json => @relation
+      end
+    end
   end
 
   def new

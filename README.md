@@ -338,7 +338,7 @@ configuration, a user logging in as jdoe would be created with an email address
 which would make the system update successfully authenticated users with those
 attributes.
 
-### API
+### OAI-PMH Interface
 
 ConedaKOR spawns four OAI-PMH endpoints for entities, kinds, relations and
 relationships:
@@ -366,6 +366,51 @@ https://kor.example.com/schema/1.0/kor.xsd
 
 as part of every installation (version 2.0.0 and above). We will add new
 versions, should the need arise.
+
+### JSON API
+
+This API is undergoing a lot of change. This is why we are not showing all of
+the possible requests here. Instead, we'll just listing the ones that we hope
+will not change anymore in the forseeable future.
+
+The request paths all end with `.json` to hint the desired JSON content type for
+the response. But also the request body has to be in the JSON format and the
+request's `content-type` header has to be `application/json`
+
+Have a look at [Authentication](#authentication) to see how you can provide
+authentication credentials.
+
+* `/kinds.json`: returns array of all kinds
+* `/kinds/1.json`: returns kind with id 1
+* `/relations.json`: returns array of all relations
+* `/relations/1.json`: returns relation with id 1
+* `/entities.json`: search for entities, returns only viewable content, resultset of directed relationships
+    * `terms`: searches for entities with matching name or synonyms (uses the
+      elasticsearch index)
+    * `relation_name`: limits to entities that can be used as targets for the
+      given relation name
+    * `kind_id`: limits to entities that are of the given kind
+    * `include_media`: whether to include media entities (default: false)
+    * `page`: requests a specific page from the resultset (default: 1)
+    * `per_page`: sets the page size (default: 10)
+* `/entities/1.json`: returns the entity with id 1, requires `view` permissions for that entity
+* `/entities/1/relationships.json`: returns the relationships for that entity, returns only viewable content, returns array
+    * `kind_id`: limits by the target's kind
+    * `relation_name`: limits by relation name
+    * `page`: requests a specific page from the resultset (default: 1)
+    * `per_page`: sets the page size (default: 10)
+
+Resultsets are JSON objects having this structure:
+
+    {
+      total: 133,
+      page: 1,
+
+      ids: [13,89,1333],
+      records: [ ... ],
+    }
+
+while `ìds` and `records` are optional.
 
 ### Generating a virtual appliance
 

@@ -11,7 +11,13 @@ class KindsController < ApplicationController
   end
 
   def show
-    redirect_to :action => 'index'
+    @kind = Kind.find(params[:id])
+    
+    respond_to do |format|
+      format.json do
+        render :json => @kind
+      end
+    end
   end
 
   def new

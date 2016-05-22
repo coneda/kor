@@ -123,4 +123,3 @@ would access a field (defined on the entity type, see above) and display a link
 to the German National Library the value is set.
 
 <!-- ### Application settings -->
-

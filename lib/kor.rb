@@ -164,7 +164,9 @@ module Kor
   end
 
   def self.video_processor
-    system('hash avconv') ? 'avconv' : 'ffmpeg'
+    @video_processor ||= begin
+      system('avconv -version &> /dev/null') ? 'avconv' : 'ffmpeg'
+    end
   end
 
 end
