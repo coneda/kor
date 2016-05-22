@@ -33,7 +33,7 @@ class KindsController < ApplicationController
 
     if @kind.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => Kind.model_name.human )
-      redirect_to(@kind)
+      redirect_to :action => 'index'
     else
       render :action => "new"
     end

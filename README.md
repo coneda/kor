@@ -384,7 +384,7 @@ authentication credentials.
 * `/kinds/1.json`: returns kind with id 1
 * `/relations.json`: returns array of all relations
 * `/relations/1.json`: returns relation with id 1
-* `/entities.json`: search for entities, returns only viewable content, resultset of directed relationships
+* `/entities.json`: search for entities, returns only viewable content, returns resultset of entities
     * `terms`: searches for entities with matching name or synonyms (uses the
       elasticsearch index)
     * `relation_name`: limits to entities that can be used as targets for the
