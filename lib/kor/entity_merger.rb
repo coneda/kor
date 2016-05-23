@@ -3,22 +3,26 @@ class Kor::EntityMerger
   def run(options = {})
     Entity.transaction do
       Relationship.transaction do
-        process(options)
+        DirectedRelationship.transaction do
+          process(options)
+        end
       end
     end
+  rescue ActiveRecord::RecordInvalid => e
+    @entity
   end
 
   def process(options = {})
-    entity = nil
+    @entity = nil
 
     if Entity.find(options[:old_ids].first).is_medium?
       options[:old_ids].reject!{|id| id == options[:attributes][:id]}
-      entity = Entity.find(options[:attributes][:id])
-      merge_groups(options[:old_ids], entity.id)
+      @entity = Entity.find(options[:attributes][:id])
+      merge_groups(options[:old_ids], @entity.id)
     else
-      entity = Entity.new(Entity.find(options[:old_ids]).first.attributes)
-      entity.id = nil
-      entity.assign_attributes options[:attributes]
+      @entity = Entity.new(Entity.find(options[:old_ids]).first.attributes)
+      @entity.id = nil
+      @entity.assign_attributes options[:attributes]
     end
   
     # delete the entities but keep their datings and relationships
@@ -26,12 +30,12 @@ class Kor::EntityMerger
       e.delete
       e
     end
-    entity.save
-    merge_externals options[:old_ids], entity.id
+    @entity.save!
+    merge_externals options[:old_ids], @entity.id
     old_entities.each do |e|
       e.after_merge
     end
-    entity
+    @entity
   end
   
   def merge_externals(old_ids, new_id)

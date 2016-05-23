@@ -204,7 +204,7 @@ Feature: Entities
     Then I should be on the last entity's page
 
 
-  @javascript
+  @javascript @nodelay
   Scenario: It should expand all relationships for a relation in one go
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "Work/Works"
