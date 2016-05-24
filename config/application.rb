@@ -9,7 +9,6 @@ Bundler.require(*Rails.groups)
 $: << File.expand_path('../../lib', __FILE__)
 
 require 'kor'
-require 'kor/config'
 require 'securerandom'
 
 module Kor
@@ -36,6 +35,16 @@ module Kor
     config.active_record.raise_in_transactional_callbacks = true
 
     config.active_job.queue_adapter = :delayed_job
+
+    initializer 'action_mailer.set_configs' do
+      if mc = Kor::Config.instance['mail']
+        dm = mc['delivery_method'].to_sym
+        config.action_mailer.delivery_method = dm
+        c = (mc["#{dm}_settings"] || {}).symbolize_keys
+        config.action_mailer.send("#{dm}_settings=".to_sym, c)
+      end
+    end
+
   end
 end
 

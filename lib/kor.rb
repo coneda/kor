@@ -1,31 +1,7 @@
 module Kor
   
-  def self.env_part
-    Rails.env == 'production' ? '' : "#{Rails.env}."
-  end
-  
-  def self.config_root
-    "#{Rails.root}/config"
-  end
-
-  def self.default_config_file
-    "#{config_root}/kor.defaults.yml"
-  end
-  
-  def self.config_file
-    "#{config_root}/kor.yml"
-  end
-  
-  def self.app_config_file
-    "#{config_root}/kor.app.#{env_part}yml"
-  end
-
   def self.config(reload = (Rails.env == 'development'))
-    if reload || @config.blank?
-      @config = Kor::Config.new(default_config_file, config_file, app_config_file)
-    end
-    
-    @config
+    Kor::Config.instance(reload)
   end
   
   def self.help(controller, action)
@@ -68,7 +44,7 @@ module Kor
   def self.repository_uuid
     unless Kor.config["maintainer.repository_uuid"]
       Kor.config["maintainer.repository_uuid"] = SecureRandom.uuid
-      Kor.config(false).store Kor.app_config_file
+      Kor.config(false).store Kor::Config.app_config_file
     end
 
     Kor.config["maintainer.repository_uuid"]
@@ -79,34 +55,6 @@ module Kor
       (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
   end
 
-
-  # TODO: remove if tests pass
-  # def self.logger
-  #   unless @logger
-  #     @logger = Logger.new( Kor.config['logging']['file'] )
-  #     @logger.level = case Kor.config['logging']['level']
-  #       when 'debug' then Logger::DEBUG
-  #       when 'info' then Logger::INFO
-  #       when 'warn' then Logger::WARN
-  #       when 'error' then Logger::ERROR
-  #       when 'fatal' then Logger::FATAL
-  #       else Logger::UNKNOWN
-  #     end
-  #   end
-  #   @logger
-  # end
-
-  # def self.log_message(progname, message)
-  #   "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} >> #{progname}: #{message}"
-  # end
-
-  # def self.debug(progname, message)
-  #   logger.debug log_message(progname, message)
-  # end
-
-  # def self.info(progname, message)
-  #   logger.info log_message(progname, message)
-  # end
 
   ####################### expiries #############################################
 

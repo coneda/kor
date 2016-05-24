@@ -35,13 +35,6 @@ all:
   #   url: "https://analytics.example.com"
   #   id: "1"
 
-  mail_delivery_method: smtp
-  mail:
-    host: 127.0.0.1
-    port: 25
-    domain: localhost
-    enable_starttls_auto: false
-
   logging:
     file: log/kor.log
     # possible options: debug < info < warn < error < fatal < (all other entries)
@@ -65,6 +58,17 @@ all:
 
   search:
     entity_name: "Name / Titel / UUID"
+
+
+production:
+  mail:
+    delivery_method: smtp
+    smtp_settings:
+      host: 127.0.0.1
+      port: 25
+      enable_starttls_auto: false
+      # domain: localhost
+
 
 test:
   auth:
@@ -99,3 +103,6 @@ test:
   maintainer:
     name: Example Organization
     mail: admin@example.com
+
+  mail:
+    delivery_method: test

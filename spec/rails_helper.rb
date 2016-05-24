@@ -38,7 +38,7 @@ RSpec.configure do |config|
 
     ActionMailer::Base.deliveries = []
     system "rm -rf #{Medium.media_data_dir}/*"
-    system "rm -f #{Kor.app_config_file}"
+    system "rm -f #{Kor::Config.app_config_file}"
     system "rm -rf #{Rails.root}/tmp/export_spec"
     Kor.config(true)
   end

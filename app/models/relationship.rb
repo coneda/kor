@@ -53,6 +53,9 @@ class Relationship < ActiveRecord::Base
     end
   end
 
+  # TODO: this is done before validation. should it not be done afterwards, so
+  # that it doesn't send modified data back to the forms when it actually
+  # doesn't validate?
   def ensure_direction
     if @relation_name
       if relation = Relation.where(name: @relation_name).first
