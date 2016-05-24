@@ -27,11 +27,8 @@
     .form_subsection.config_section
       .highlighted_subtitle= link_to(human_config_section_name(:mail))
       .switcheable.sub_content{:style => 'display: none'}
-        = config_value "mail.host"
-        = config_value "mail.port"
         = config_value "mail.sender_name"
         = config_value "mail.sender_address"
-        = config_value "mail.tls", :type => :check_box
 
     .form_subsection.config_section
       .highlighted_subtitle= link_to(human_config_section_name(:app))
