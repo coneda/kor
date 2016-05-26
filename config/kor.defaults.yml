@@ -59,6 +59,10 @@ all:
   search:
     entity_name: "Name / Titel / UUID"
 
+development:
+  mail:
+    delivery_method: test
+
 
 production:
   mail:
