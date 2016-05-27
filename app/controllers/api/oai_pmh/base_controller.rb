@@ -125,9 +125,9 @@ class Api::OaiPmh::BaseController < BaseController
 
       File.open "#{base_dir}/#{token}.json", "w+" do |f|
         f.write JSON.dump(
-          'page': params['page'],
-          'per_page': params['per_page'],
-          'metadataPrefix': params['metadataPrefix']
+          'page' => params['page'],
+          'per_page' => params['per_page'],
+          'metadataPrefix' => params['metadataPrefix']
         )
       end
 
