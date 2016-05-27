@@ -11,7 +11,7 @@ class ApplicationController < BaseController
     :logged_in?,
     :blaze
   
-  before_filter :locale, :authentication, :authorization, :legal
+  before_filter :locale, :authentication, :authorization, :legal, :cors
 
   before_filter do
     @blaze = nil
@@ -21,6 +21,12 @@ class ApplicationController < BaseController
   
 
   private
+
+    def cors
+      if request.format.json?
+        headers['Access-Control-Allow-Origin'] = '*'
+      end
+    end
 
     # redirects to the legal page if terms have not been accepted
     def legal
