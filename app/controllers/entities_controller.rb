@@ -112,11 +112,13 @@ class EntitiesController < ApplicationController
 
   def index
     params[:include] = param_to_array(params[:include])
+    params[:ids] = param_to_array(params[:ids])
     
     respond_to do |format|
       format.json do
         @results = kor_graph.search(:attribute,
           criteria: {
+            entity_id: params[:ids],
             name: params[:terms],
             relation_name: params[:relation_name],
             kind_id: params[:kind_id]

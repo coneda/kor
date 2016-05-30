@@ -59,14 +59,14 @@ kor.service "entities_service", [
         http(
           method: 'get'
           url: "/entities/#{entity_id}/relationships.json"
-          params: {page: page, relation_name: relation_name, kind_id: 1}
+          params: {page: page, relation_name: relation_name, to_kind_id: 1}
         )
 
       deep_media_load: (entity_id, page = 1) ->
         http(
           method: 'get'
           url: "/entities/#{entity_id}/relationships.json"
-          params: {page: page, per_page: 9, kind_id: 1}
+          params: {page: page, per_page: 9, to_kind_id: 1}
         )
     }
 ]

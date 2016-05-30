@@ -524,6 +524,18 @@ RSpec.describe EntitiesController, :type => :controller do
       expect(data['records'].first['groups']).to eq([])
     end
 
+    it 'should filter by comma-separated ids' do
+      @der_schrei = FactoryGirl.create :der_schrei
+
+      get :index, format: 'json', ids: "#{@mona_lisa.id},#{@leonardo.id}"
+      data = JSON.parse(response.body)
+      expect(data['ids']).to eq([@leonardo.id, @mona_lisa.id])
+
+      get :index, format: 'json', ids: [@mona_lisa.id, @leonardo.id]
+      data = JSON.parse(response.body)
+      expect(data['ids']).to eq([@leonardo.id, @mona_lisa.id])
+    end
+
   end
   
 end

@@ -91,4 +91,41 @@ describe DirectedRelationshipsController, type: :controller do
     expect(data['id']).to eq(directed_relationship.id)
   end
 
+  it 'should allow for multiple ids' do
+    default_setup relationships: true
+    FactoryGirl.create :relation
+    FactoryGirl.create :is_located_at
+    paris = FactoryGirl.create :paris
+    Relationship.relate_and_save @mona_lisa, 'is related to', @last_supper
+    Relationship.relate_and_save @mona_lisa, 'is located at', paris
+
+    allow_any_instance_of(described_class).to receive(:current_user) do
+      User.admin
+    end
+
+    get :index, from_kind_id: @people.id
+    expect(JSON.parse(response.body).size).to eq(2)
+
+    get :index, from_kind_id: @works.id
+    expect(JSON.parse(response.body).size).to eq(5)
+
+    get :index, from_kind_id: "#{@works.id},#{@people.id}"
+    expect(JSON.parse(response.body).size).to eq(7)
+
+    get :index, to_kind_id: @people.id
+    expect(JSON.parse(response.body).size).to eq(2)
+
+    get :index, to_kind_id: @works.id
+    expect(JSON.parse(response.body).size).to eq(5)
+
+    get :index, to_kind_id: "#{@works.id},#{@people.id}"
+    expect(JSON.parse(response.body).size).to eq(7)
+
+    get :index, from_entity_id: "#{@last_supper.id},#{paris.id}"
+    expect(JSON.parse(response.body).size).to eq(3)
+
+    get :index, to_entity_id: "#{@last_supper.id},#{paris.id}"
+    expect(JSON.parse(response.body).size).to eq(3)
+  end
+
 end
