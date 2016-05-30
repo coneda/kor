@@ -41,11 +41,6 @@ kor.filter('human_size', [ ->
       return "#{Math.round(input / (1024 * 1024 * 1024) * 100) / 100} GB"
 ])
 
-kor.filter('image_size', [ ->
-  return (input, size) ->
-    if input then input.replace(/preview/, size) else ""
-])
-
 kor.filter 'human_date', ["korTranslate", (kt) ->
   (input) -> kt.localize input
 ]

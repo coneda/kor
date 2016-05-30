@@ -14,15 +14,15 @@
                 <xs:element name="fields">
                     <xs:complexType>
                         <xs:sequence>
-                        <xs:element name="field" type="kor:fieldtype" maxOccurs="unbounded"/>
-                    </xs:sequence>
+                            <xs:element name="field" type="kor:fieldtype" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="generators">
                     <xs:complexType>
                         <xs:sequence>
-                        <xs:element name="generator" type="kor:generatortype" maxOccurs="unbounded"/>
-                    </xs:sequence>
+                            <xs:element name="generator" type="kor:generatortype" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
@@ -41,14 +41,14 @@
             <xs:element name="from-types">
               <xs:complexType>
                 <xs:sequence>
-                  <xs:element name="type" type="kor:typetype" maxOccurs="unbounded"/>
+                  <xs:element name="type" type="kor:typetype" minOccurs="0" maxOccurs="unbounded"/>
                 </xs:sequence>
               </xs:complexType>
             </xs:element>
             <xs:element name="to-types">
               <xs:complexType>
                 <xs:sequence>
-                  <xs:element name="type" type="kor:typetype" maxOccurs="unbounded"/>
+                  <xs:element name="type" type="kor:typetype" minOccurs="0" maxOccurs="unbounded"/>
                 </xs:sequence>
               </xs:complexType>
             </xs:element>
@@ -180,11 +180,11 @@
 
     <xs:complexType name="generatortype">
         <xs:sequence>
-            <xs:element name="created-at" type="xs:dateTime"/>
-            <xs:element name="updated-at" type="xs:dateTime"/>
-            <xs:element name="local-id" type="xs:integer"/>
+            <xs:element name="id" type="xs:integer"/>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="directive" type="xs:string"/>
+            <xs:element name="created-at" type="xs:dateTime"/>
+            <xs:element name="updated-at" type="xs:dateTime"/>
         </xs:sequence>
     </xs:complexType>
 

@@ -117,7 +117,6 @@ FactoryGirl.define do
 
       factory :mona_lisa do
         name "Mona Lisa"
-        # datings [EntityDating.where(:dating_string => "1533").first || FactoryGirl.build(:d1533)]
 
         dataset do
           {:gnd => '12345'}

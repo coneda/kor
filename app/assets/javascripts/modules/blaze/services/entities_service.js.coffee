@@ -43,6 +43,7 @@ kor.service "entities_service", [
           method: 'get'
           headers: {accept: 'application/json'}
           url: "/entities/#{id}"
+          params: {include: 'all'}
         )
 
       relation_load: (entity_id, relation_name, page) ->

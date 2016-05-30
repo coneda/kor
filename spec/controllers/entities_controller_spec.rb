@@ -297,5 +297,233 @@ RSpec.describe EntitiesController, :type => :controller do
     end
 
   end
+
+  context 'JSON API' do
+
+    before :each do
+      @media = FactoryGirl.create :media
+      @default = FactoryGirl.create :default
+      @admins = FactoryGirl.create :admins
+      @admin = FactoryGirl.create :admin, groups: [@admins]
+      @default.grant :all, :to => @admins
+      @works = FactoryGirl.create(:works,
+        generators: [FactoryGirl.create(:language_indicator)],
+        fields: [Field.new(name: 'viaf_id', show_label: 'stack')]
+      )
+      @mona_lisa = FactoryGirl.create(:mona_lisa, 
+        synonyms: ['La Gioconda'],
+        datings: [FactoryGirl.build(:d1533)],
+        properties: [{'label' => 'shoe size', 'value' => '42'}],
+        creator: @admin,
+        updater: @admin,
+        tag_list: ['nice', 'expensive']
+      )
+      @leonardo = FactoryGirl.create(:leonardo)
+      FactoryGirl.create :has_created
+      Relationship.relate_and_save @leonardo, 'has created', @mona_lisa
+      @user_group = FactoryGirl.create :user_group, name: 'my stuff', owner: @admin
+      @authority_group = FactoryGirl.create :authority_group, name: 'important stuff'
+      @user_group.add_entities @mona_lisa
+      @authority_group.add_entities @mona_lisa
+
+      request.headers['api_key'] = @admin.api_key
+    end
+
+    it 'should include the datings on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['datings']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['datings'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['datings']).to be_a(Array)
+      expect(data['datings'].size).to eq(1)
+      expect(data['datings'].first['dating_string']).to eq('1533')
+    end
+
+    it 'should include the dataset on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['dataset']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['dataset'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['dataset']['gnd']).to eq('12345')
+    end
+
+    it 'should include the relations on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['relations']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['relations'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['relations']).to eq(
+        'has been created by' => 1  
+      )
+    end
+
+    it 'should include the relations on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['media_relations']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['media_relations'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['media_relations']).to eq({})
+    end
+
+    it 'should include synonyms on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['synonyms']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['synonyms'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['synonyms']).to eq(['La Gioconda'])
+    end
+
+    it 'should include properties on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['properties']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['properties'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['properties']).to eq([
+        {'label' => 'shoe size', 'value' => '42'}
+      ])
+    end
+
+    it 'should include kind on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['kind_id']).to eq(@mona_lisa.kind_id)
+      expect(data['kind']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['kind'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['kind_id']).to eq(@mona_lisa.kind_id)
+      expect(data['kind']['name']).to eq(@mona_lisa.kind.name)
+    end
+
+    it 'should include collection on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['collection_id']).to eq(@mona_lisa.collection_id)
+      expect(data['collection']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['collection'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['collection_id']).to eq(@mona_lisa.collection_id)
+      expect(data['collection']['name']).to eq(@mona_lisa.collection.name)
+    end
+
+    it 'should include user groups on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['user_groups']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['user_groups'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['user_groups'].first['name']).to eq('my stuff')
+    end
+
+    it 'should include groups on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['groups']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['groups'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['groups'].first['name']).to eq('important stuff')
+    end
+
+    it 'should include technical info on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['created_at']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['technical'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['created_at']).not_to be_nil
+    end
+
+    it 'should calculate the degree on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['degree']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['degree'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['degree']).to eq(1)
+    end
+
+    it 'should include the editing users on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['creator_id']).to eq(@mona_lisa.creator_id)
+      expect(data['creator']).to be_nil
+      expect(data['updater_id']).to eq(@mona_lisa.updater_id)
+      expect(data['updater']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['users'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['creator_id']).to eq(@mona_lisa.creator_id)
+      expect(data['creator']['name']).to eq('admin')
+      expect(data['updater_id']).to eq(@mona_lisa.updater_id)
+      expect(data['updater']['name']).to eq('admin')
+    end
+
+    it 'should include fields on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['fields']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['fields'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['fields'].first['name']).to eq('viaf_id')
+    end
+
+    
+    it 'should include generators on demand' do
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['generators']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['generators'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['generators'].first['name']).to eq('language_indicator')
+    end
+
+    it 'should include all on demand' do
+      get :show, id: @mona_lisa.id, include: ['all'], format: 'json'
+      data = JSON.parse(response.body)
+
+      expect(data['datings'].first['dating_string']).to eq('1533')
+      expect(data['dataset']['gnd']).to eq('12345')
+      expect(data['relations']).to eq(
+        'has been created by' => 1  
+      )
+      expect(data['synonyms']).to eq(['La Gioconda'])
+      expect(data['properties']).to eq([
+        {'label' => 'shoe size', 'value' => '42'}
+      ])
+      expect(data['kind']['name']).to eq(@mona_lisa.kind.name)
+      expect(data['collection']['name']).to eq(@mona_lisa.collection.name)
+      expect(data['user_groups'].first['name']).to eq('my stuff')
+      expect(data['groups'].first['name']).to eq('important stuff')
+      expect(data['created_at']).not_to be_nil
+      expect(data['degree']).to eq(1)
+    end
+
+    it 'should apply the customized view to the index action' do
+      get :index, format: 'json', include: ['all']
+      data = JSON.parse(response.body)
+      expect(data['records'].size).to eq(2)
+      expect(data['records'].first['groups']).to eq([])
+    end
+
+  end
   
 end

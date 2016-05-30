@@ -90,7 +90,7 @@ kor.directive "korEntitySelector", [
         scope.group = -> 
           if scope.results
             scope.grouped_records = kt.in_groups_of(
-              scope.results.raw_records, scope.grid_width, true
+              scope.results.records, scope.grid_width, true
             )
 
         scope.current = -> ss.get_current()

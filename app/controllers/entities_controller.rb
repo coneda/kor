@@ -55,7 +55,7 @@ class EntitiesController < ApplicationController
   def isolated
     if authorized? :edit
       entities = Entity.allowed(current_user, :view).isolated.newest_first.includes(:kind)
-      @result = Kor::SearchResult.new(
+      @results = Kor::SearchResult.new(
         total: entities.count,
         page: params[:page],
         per_page: 16,
@@ -74,7 +74,7 @@ class EntitiesController < ApplicationController
       by_relation_name(params[:relation_name]).
       newest_first.includes(:kind)
 
-    @result = Kor::SearchResult.new(
+    @results = Kor::SearchResult.new(
       total: entities.count,
       page: params[:page],
       per_page: 9,
@@ -100,7 +100,7 @@ class EntitiesController < ApplicationController
       includes(:kind).
       newest_first
 
-    @result = Kor::SearchResult.new(
+    @results = Kor::SearchResult.new(
       total: entities.count,
       page: params[:page],
       per_page: 9,
@@ -111,6 +111,8 @@ class EntitiesController < ApplicationController
   end
 
   def index
+    params[:include] = param_to_array(params[:include])
+    
     respond_to do |format|
       format.json do
         @results = kor_graph.search(:attribute,
@@ -123,13 +125,6 @@ class EntitiesController < ApplicationController
           per_page: params[:per_page],
           page: params[:page]
         )
-
-        render :json => {
-          "ids" => @results.ids,
-          "total" => @results.total,
-          "records" => @results.items,
-          "raw_records" => @results.items.as_json(:methods => [:kind])
-        }
       end
       format.html do
         if params[:query] && @entity = viewable_entities.find_by(:uuid => params[:query][:name])
@@ -146,6 +141,8 @@ class EntitiesController < ApplicationController
   end
 
   def show
+    params[:include] = param_to_array(params[:include])
+
     @entity = Entity.includes(
       :medium, :kind, :collection, :datings, :creator, :updater, 
       authority_groups: :authority_group_category

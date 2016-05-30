@@ -160,7 +160,7 @@ Feature: Inplace relationship editor
     And I click element "[kor-id='3']"
     Then I should not see "is similar to" within "[kor-relation-selector]"
     And I should see "is equivalent" within "[kor-relation-selector]"
-    When I wait for "1" second
+    When I wait for "2" second
     And I click element "[kor-id='3']" again
     Then I should see "is similar to" within "[kor-relation-selector]"
     And I should see "is equivalent" within "[kor-relation-selector]"

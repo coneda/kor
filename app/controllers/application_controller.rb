@@ -109,7 +109,8 @@ class ApplicationController < BaseController
     end
 
     def api_auth?
-      params[:api_key] && User.exists?(api_key: params[:api_key])
+      key = params[:api_key] || request.headers['api_key']
+      key && User.exists?(api_key: key)
     end
     
     def generally_authorized?
@@ -142,6 +143,17 @@ class ApplicationController < BaseController
     
     def editable_entities
       Entity.allowed current_user, :edit
+    end
+
+    def param_to_array(value)
+      case value
+        when String then value.split(',')
+        when Fixnum then [value]
+        when Array then value.map{|v| param_to_array(v)}.flatten
+        when nil then []
+        else
+          raise "unknown param format to convert to array: #{value}"
+      end
     end
     
     def authorized_for_relationship?(relationship, policy = :view)

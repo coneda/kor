@@ -27,7 +27,7 @@ kor.controller('entity_controller', [
 
     scope.authority_groups = ->
       if scope.entity
-        @authority_groups_with_ancestry ||= for group in scope.entity.authority_groups
+        @authority_groups_with_ancestry ||= for group in scope.entity.groups
           result = {
             name: group.name
             ancestry: []
