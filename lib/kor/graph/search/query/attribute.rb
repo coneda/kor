@@ -71,7 +71,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
         
         @total = tmp_result.count("entities.id")
         
-        tmp_result.alphabetically.paginate(page: page, per_page: per_page)
+        tmp_result.alphabetically.pageit(page, per_page)
       end
     end
   

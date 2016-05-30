@@ -7,6 +7,7 @@ class DirectedRelationshipsController < ApplicationController
 
     params[:from_entity_id] = param_to_array(params[:from_entity_id])
     params[:to_entity_id] = param_to_array(params[:to_entity_id])
+    params[:relation_name] = param_to_array(params[:relation_name])
     params[:from_kind_id] = param_to_array(params[:from_kind_id])
     params[:to_kind_id] = param_to_array(params[:to_kind_id])
 
@@ -18,8 +19,7 @@ class DirectedRelationshipsController < ApplicationController
         by_relation_name(params[:relation_name]).
         by_from_kind(params[:from_kind_id]).
         by_to_kind(params[:to_kind_id]).
-        allowed(user, :view).
-        pageit(params[:page], params[:per_page])
+        allowed(user, :view)
     else
       render :nothing => true, :status => 401
     end

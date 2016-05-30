@@ -44,7 +44,7 @@ describe DirectedRelationshipsController, type: :controller do
 
     get :index
     expect(response.status).to eq(200)
-    expect(JSON.parse(response.body).size).to eq(0)
+    expect(JSON.parse(response.body)['total']).to eq(0)
 
     current_user = jdoe
     allow_any_instance_of(described_class).to receive(:current_user) do
@@ -52,30 +52,30 @@ describe DirectedRelationshipsController, type: :controller do
     end
 
     get :index
-    expect(JSON.parse(response.body).size).to eq(10)
+    expect(JSON.parse(response.body)['records'].size).to eq(10)
 
     get :index, :page => 1
-    expect(JSON.parse(response.body).size).to eq(10)
+    expect(JSON.parse(response.body)['records'].size).to eq(10)
 
     get :index, :page => 3
-    expect(JSON.parse(response.body).size).to eq(2)
+    expect(JSON.parse(response.body)['records'].size).to eq(2)
 
     get :index, :per_page => 30
-    expect(JSON.parse(response.body).size).to eq(22)
+    expect(JSON.parse(response.body)['records'].size).to eq(22)
 
     get :index, :per_page => 22
-    expect(JSON.parse(response.body).size).to eq(22)
+    expect(JSON.parse(response.body)['records'].size).to eq(22)
 
     current_user = admin
 
     get :index, :per_page => 30
-    expect(JSON.parse(response.body).size).to eq(26)
+    expect(JSON.parse(response.body)['records'].size).to eq(26)
 
     get :index, :per_page => 20, :entity_id => side_artist.id
-    expect(JSON.parse(response.body).size).to eq(1)
+    expect(JSON.parse(response.body)['records'].size).to eq(1)
 
     get :index, per_page: 20, relation_name: 'shows'
-    expect(JSON.parse(response.body).size).to eq(1)
+    expect(JSON.parse(response.body)['records'].size).to eq(1)
   end
 
   it "should response with a single directed relationship" do
@@ -104,28 +104,28 @@ describe DirectedRelationshipsController, type: :controller do
     end
 
     get :index, from_kind_id: @people.id
-    expect(JSON.parse(response.body).size).to eq(2)
+    expect(JSON.parse(response.body)['total']).to eq(2)
 
     get :index, from_kind_id: @works.id
-    expect(JSON.parse(response.body).size).to eq(5)
+    expect(JSON.parse(response.body)['total']).to eq(5)
 
     get :index, from_kind_id: "#{@works.id},#{@people.id}"
-    expect(JSON.parse(response.body).size).to eq(7)
+    expect(JSON.parse(response.body)['total']).to eq(7)
 
     get :index, to_kind_id: @people.id
-    expect(JSON.parse(response.body).size).to eq(2)
+    expect(JSON.parse(response.body)['total']).to eq(2)
 
     get :index, to_kind_id: @works.id
-    expect(JSON.parse(response.body).size).to eq(5)
+    expect(JSON.parse(response.body)['total']).to eq(5)
 
     get :index, to_kind_id: "#{@works.id},#{@people.id}"
-    expect(JSON.parse(response.body).size).to eq(7)
+    expect(JSON.parse(response.body)['total']).to eq(7)
 
     get :index, from_entity_id: "#{@last_supper.id},#{paris.id}"
-    expect(JSON.parse(response.body).size).to eq(3)
+    expect(JSON.parse(response.body)['total']).to eq(3)
 
     get :index, to_entity_id: "#{@last_supper.id},#{paris.id}"
-    expect(JSON.parse(response.body).size).to eq(3)
+    expect(JSON.parse(response.body)['total']).to eq(3)
   end
 
 end

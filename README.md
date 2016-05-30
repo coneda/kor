@@ -391,14 +391,19 @@ authentication credentials.
       given relation name
     * `kind_id`: limits to entities that are of the given kind
     * `include_media`: whether to include media entities (default: false)
+    * `include`: a list of aspects to include within each entity, comma separated, choose one or more of `technical`, `synonyms`, `datings`, `dataset`, `properties`, `relations`, `media_relations`, `kind`, `collection`, `user_groups`, `groups`, `degree`, `users`, `fields`, `generators` and `all`.
     * `page`: requests a specific page from the resultset (default: 1)
-    * `per_page`: sets the page size (default: 10)
+    * `per_page`: sets the page size (default: 10, max 100)
 * `/entities/1.json`: returns the entity with id 1, requires `view` permissions for that entity
-* `/entities/1/relationships.json`: returns the relationships for that entity, returns only viewable content, returns array
-    * `kind_id`: limits by the target's kind
-    * `relation_name`: limits by relation name
+    * `include`: see parameters for `/entities.json`
+* `/entities/1/relationships.json`, or `/relationships`: returns the relationships (for that entity), returns only viewable content, returns resultset of directed relationships
+    * `from_entity_id`: limits by the source entity, comma-separated
+    * `to_entity_id` or `entity_id`: limits by the target entity, comma-separated
+    * `relation_name`: limits by relation name, comma-separated
+    * `from_kind_id`: limits by the source's kind, comma-separated
+    * `to_kind_id`: limits by the target's kind, comma-separated
     * `page`: requests a specific page from the resultset (default: 1)
-    * `per_page`: sets the page size (default: 10)
+    * `per_page`: sets the page size (default: 10, max 500)
 
 Resultsets are JSON objects having this structure:
 

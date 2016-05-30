@@ -60,7 +60,7 @@ Rails.application.routes.draw do
   end
 
   scope format: :json do
-    resources :directed_relationships, only: [:index, :show]
+    resources :relationships, only: [:index, :show], controller: 'directed_relationships'
     resources :relationships, only: [:create, :update, :destroy]
   end
   

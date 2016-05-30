@@ -19,7 +19,7 @@ kor.directive "korRelation", ["entities_service", 'templates_service',
         fetch = ->
           es.relation_load(scope.entity.id, scope.relation_name, scope.page).success (data) ->
             # console.log data
-            scope.relationships = data
+            scope.relationships = data.records
 
         scope.$watchGroup ["page", "count"], fetch
         scope.$on 'relationship-saved', fetch
