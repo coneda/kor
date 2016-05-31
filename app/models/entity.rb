@@ -323,7 +323,10 @@ class Entity < ActiveRecord::Base
   end
 
   def media_count(user)
-    outgoing_relationships.with_to.where('tos.kind_id = 1').count
+    outgoing_relationships
+      .with_to
+      .where('tos.kind_id = ?', Kind.medium_kind_id)
+      .count
   end
 
   

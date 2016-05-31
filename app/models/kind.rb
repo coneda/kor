@@ -1,5 +1,7 @@
 class Kind < ActiveRecord::Base
 
+  MEDIA_UUID = '93a03d5c-e439-4294-a8d4-d4921c4d0dbc'
+
   serialize :settings
   
   has_many :entities, :dependent => :destroy
@@ -49,7 +51,11 @@ class Kind < ActiveRecord::Base
   # Other
   
   def self.medium_kind
-    find_by(name: ['medium', 'Medium'])
+    find_by(uuid: MEDIA_UUID)
+  end
+
+  def self.medium_kind_id
+    @medium_kind_id ||= medium_kind.id
   end
   
   def self.find_ids(ids)
@@ -114,5 +120,5 @@ class Kind < ActiveRecord::Base
   def serializable_hash(*args)
     super :methods => [:defines_schema?, :tagging]
   end
-  
+
 end

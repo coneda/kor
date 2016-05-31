@@ -50,4 +50,5 @@ kor.service('korData', [
         hash["notice"] = value
     }
 
+    window.d = service
 ])

@@ -10,6 +10,7 @@ FactoryGirl.define do
     factory :media do
       name "Medium"
       plural_name "Media"
+      uuid Kind::MEDIA_UUID
       settings { {:naming => false} }
     end
 

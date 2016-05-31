@@ -82,3 +82,15 @@ kor.filter 'entity_kind_name', [
     result.$stateful = true
     result
 ]
+
+kor.filter 'is_medium', [
+  'kor_data',
+  (kd) ->
+    (input) ->
+      if input.kind_id
+        input.kind_id == kd.info.medium_kind_id
+      else if input.kind && input.kind.id
+        input.kind.id == kd.info.medium_kind_id
+      else
+        throw "can't determine kind id for #{input}"
+]

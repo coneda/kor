@@ -27,12 +27,12 @@
 
 <script type="text/x-kor-tpl" data-id="entity-widget">
   <span ng-show="entity.id">
-    <span ng-hide="entity.kind_id == 1">
+    <span ng-hide="entity | is_medium">
       <div class="name" ng-bind-html="name()"></div>
       <div class="kind" ng-bind-html="kind_name()"></div>
     </span>
     <img 
-      ng-show="entity.kind_id == 1"
+      ng-show="entity | is_medium"
       ng-src="{{entity.url || entity.medium.url}}"
     />
   </span>

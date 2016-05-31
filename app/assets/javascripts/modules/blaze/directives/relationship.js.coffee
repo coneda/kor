@@ -8,7 +8,7 @@ kor.directive "korRelationship", ["entities_service", "session_service",
         entity: "=korEntity"
         master_toggle: "=korMasterToggle"
         existing: "@korExisting"
-        is_medium: "@korIsMedium"
+        kor_is_medium: "@korIsMedium"
       }
       replace: true
       link: (scope, element, attrs) ->
@@ -60,7 +60,7 @@ kor.directive "korRelationship", ["entities_service", "session_service",
 
         load_media = ->
           es.deep_media_load(scope.directed_relationship.to_id, scope.page).success (data) ->
-            scope.media = kt.in_groups_of(data, 3, true)
+            scope.media = kt.in_groups_of(data.records, 3, true)
 
         scope.close_editor =  -> scope.editing = false
 

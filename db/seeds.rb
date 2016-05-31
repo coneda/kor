@@ -10,9 +10,12 @@ default.policies.each do |policy|
   Grant.create! :collection => default, :policy => policy, :credential => administrators
 end
 
-Kind.create(:name => Medium.model_name.human, :plural_name => Medium.model_name.human(:count => :other),
-  :settings => {
-    :naming => false
+Kind.create(
+  name: Medium.model_name.human,
+  plural_name: Medium.model_name.human(count: :other),
+  uuid: Kind::MEDIA_UUID,
+  settings: {
+    naming: false
   }
 )
 
