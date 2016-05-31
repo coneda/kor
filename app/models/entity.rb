@@ -385,7 +385,10 @@ class Entity < ActiveRecord::Base
   ############################ kind related ####################################
 
   def is_medium?
-    (self[:medium_id] || self.medium || self.kind == Kind.medium_kind) ? true : false
+    !!self[:medium_id] ||
+    !!self.medium || 
+    (self.kind == Kind.medium_kind) ||
+    (self.kind_id == Kind.medium_kind_id)
   end
 
 

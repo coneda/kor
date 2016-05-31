@@ -35,6 +35,9 @@ class DirectedRelationship < ActiveRecord::Base
   scope :by_to_kind, lambda { |kind_id|
     kind_id.present? ? with_to.where('tos.kind_id IN (?)', kind_id) : all
   }
+  scope :except_to_kind, lambda { |kind_id|
+    kind_id.present? ? with_to.where('tos.kind_id NOT IN (?)', kind_id) : all
+  }
   scope :order_by_name, lambda {
     with_to.order('tos.name ASC, directed_relationships.relationship_id ASC')
   }

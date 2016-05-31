@@ -1,6 +1,6 @@
 kor.service "entities_service", [
-  "$http",
-  (http) ->
+  "$http", 'korData',
+  (http, kd) ->
     service = {
       index: (params = {}) ->
         http(
@@ -52,21 +52,33 @@ kor.service "entities_service", [
         http(
           method: 'get'
           url: "/entities/#{entity_id}/relationships.json"
-          params: {page: page, relation_name: relation_name}
+          params: {
+            page: page
+            relation_name: relation_name
+            except_to_kind_id: kd.info.medium_kind_id
+          }
         )
 
       media_relation_load: (entity_id, relation_name, page) ->
         http(
           method: 'get'
           url: "/entities/#{entity_id}/relationships.json"
-          params: {page: page, relation_name: relation_name, to_kind_id: 1}
+          params: {
+            page: page
+            relation_name: relation_name
+            to_kind_id: kd.info.medium_kind_id
+          }
         )
 
       deep_media_load: (entity_id, page = 1) ->
         http(
           method: 'get'
           url: "/entities/#{entity_id}/relationships.json"
-          params: {page: page, per_page: 9, to_kind_id: 1}
+          params: {
+            page: page
+            per_page: 9
+            to_kind_id: kd.info.medium_kind_id
+          }
         )
     }
 ]

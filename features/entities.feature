@@ -159,7 +159,6 @@ Feature: Entities
     And I follow "Triangle_up" within ".relationship"
     And I wait for "1" seconds
     And I hover element ".relationships .kor_medium_frame"
-    And I debug
     And I click on ".kor_medium_frame .button_bar a[kor-to-clipboard]"
     Then I should see "has been copied to the clipboard"
 

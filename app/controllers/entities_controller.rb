@@ -111,7 +111,7 @@ class EntitiesController < ApplicationController
   end
 
   def index
-    params[:include] = param_to_array(params[:include])
+    params[:include] = param_to_array(params[:include], ids: false)
     params[:ids] = param_to_array(params[:ids])
     
     respond_to do |format|
@@ -143,7 +143,7 @@ class EntitiesController < ApplicationController
   end
 
   def show
-    params[:include] = param_to_array(params[:include])
+    params[:include] = param_to_array(params[:include], ids: false)
 
     @entity = Entity.includes(
       :medium, :kind, :collection, :datings, :creator, :updater, 

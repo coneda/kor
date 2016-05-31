@@ -145,11 +145,15 @@ class ApplicationController < BaseController
       Entity.allowed current_user, :edit
     end
 
-    def param_to_array(value)
+    def param_to_array(value, options = {})
+      options.reverse_merge! ids: true
+
       case value
-        when String then value.split(',')
+        when String
+          results = value.split(',')
+          options[:ids] ? results.map{|v| v.to_i} : results
         when Fixnum then [value]
-        when Array then value.map{|v| param_to_array(v)}.flatten
+        when Array then value.map{|v| param_to_array(v, options)}.flatten
         when nil then []
         else
           raise "unknown param format to convert to array: #{value}"
