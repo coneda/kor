@@ -3,6 +3,7 @@ require 'rails_helper'
 describe Kor::SearchResult do
   
   it 'should retrieve items from uuids' do
+    FactoryGirl.create :media
     @works = FactoryGirl.create :works
     @mona_lisa = FactoryGirl.create :mona_lisa
     @der_schrei = FactoryGirl.create :der_schrei
