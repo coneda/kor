@@ -1,5 +1,6 @@
 class BaseController < ActionController::Base
-  protect_from_forgery with: :exception
+  # TODO: reactivate once its clear where it should be active
+  # protect_from_forgery with: :exception
 
   helper_method :current_user
 

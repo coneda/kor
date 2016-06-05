@@ -84,15 +84,11 @@ module MediaHelper
       presenters[content_type] || presenters[content_type.split('/').first] || presenters[:unknown]
     end
 
-    def media_dummy_path(content_type)
-      "/content_types/#{content_type}.gif"
-    end
-
     def presenters
       result = {}
 
       result[:unknown] = Proc.new do |entity, options|
-        image_tag media_dummy_path(entity.medium.content_type)
+        image_tag Medium.dummy_path(entity.medium.content_type)
       end
 
       result['image'] = Proc.new do |entity, options|

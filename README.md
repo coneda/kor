@@ -113,6 +113,38 @@ would deploy to instance02 according to the configuration above. On terminals
 that support it, the output is colorized according to the exit code of every
 command issued by the script.
 
+This will also start the background process that converts images and does other
+heavy lifting. However, this does not ensure monitoring nor restarting of that
+process which can be done for example with upstart scripts or systemd.
+
+### Database and elasticsearch
+
+For normal operation, ConedaKOR requires an mysql and elasticsearch instances to
+be running and reachable via network. The connection specifics can are
+configured in `config/database.yml`. Here is an example taken from
+`config/database.yml.example`:
+
+    production:
+      adapter: mysql2
+      host: 127.0.0.1
+      database: kor
+      username: kor
+      password: kor
+      encoding: utf8
+      collation: utf8_general_ci
+      reconnect: true
+
+      elastic:
+        host: 127.0.0.1
+        port: 9200
+        index: kor
+
+When adding content via the web interface, ConedaKOR stores information in mysql
+and elasticsearch automatically and keeps the index updated in most cases. Since
+there are still some rare conditions under which the elasticsearch index is not
+up to date, there is a task that regenerates it from scratch, please have a look
+at the [command line tool documentation](#command-line-tool) below.
+
 ### Configuration & customizations
 
 Some aspects of ConedaKOR can be tuned to your specific needs. This sections explains those aspects and tells you how to modify configuration options in general.
@@ -144,6 +176,58 @@ Some options can be configured via web interface: As an admin, navigate to
   allows you to change the entire graphical design of ConedaKOR. To make this
   file persist across upgrades, we recommend to choose a path below `data/`
   which is usually symlinked to a permanent location.
+
+### Backups
+
+Backups consist of
+
+* a database dump file
+* a copy of all configuration files
+* a copy of all data files containing your media and downloads (the data/
+  directory)
+* a reference to the version of ConedaKOR
+
+All other parts of the installation directory are either considered **source
+code** or **temporary**. Temporary files can be regenerated via a task. If you
+made modifications to the source code, you may have to backup those as well. We
+recommend to only modify the source code if those modifications are embedded
+within a development process that includes regular reconsiliation with upstream.
+
+For a consistent backup, you should aim to create the dump and file copies at
+the same point in time (or at least be confident that little changes happened in
+between). The dumpfile is created with mysqldump and the files can simply be
+copied with `cp` or `rsync`. The configuration files to be taken into account
+are:
+
+* kor.*.yml
+* config/contact.txt (if it exists)
+* config/legal.txt (if it exists)
+* help.yml (if it exists)
+* database.yml (this is deployment-specific, it depends on your scenario
+  whether it makes sense to include this in backups)
+* config/secrets.yml (deployment-specific: if this file has to be regenerated,
+  all current user sessions will be lost when the application is restored from a
+  backup, which is acceptable in most cases)
+
+If you used the deployment script described above, it creates a "shared"
+directory and symlinks the data and the configuration from that directory to the
+current deployment's directory. In this case, it is sufficient to backup the
+shared folder and to create a database dump.
+
+#### Restore
+
+To restore from a previous backup
+
+1. restore data and config files from the backup
+2. import the database dump and modify config/database.yml accordingly if needed
+3. deploy the relevant version of ConedaKOR
+4. if not using `deploy.sh`, compile all assets:
+   `RAILS_ENV=production bundle exec rake assets:precompile`
+5. regenerate config/secrets.yml if it's missing:
+   `RAILS_ENV=production bundle exec bin/kor secrets`
+6. refresh the elasticsearch index: 
+   `RAILS_ENV=production bundle exec bin/kor index-all`
+
 
 ### Authentication
 
@@ -216,9 +300,11 @@ Example configuration within `config/kor.yml`:
       auth:
         sources:
           simple:
+            type: script
             script: /path/to/simple_auth.sh
             map_to: simple_user
           ldap:
+            type: script
             script: /path/to/ldap_auth.pl
             map_to: ldap_user
 
@@ -227,16 +313,40 @@ external sources. The above configuration would create new users and set their
 parent to `simple_user` or `ldap_user` depending on which authentication source
 succeeded. This allows you to grant default permissions for new users to come.
 
+#### Authentication via request env
 
-### API
+It is also possible to configure variables to be used for authentication based
+on the request environment. A common use case are Apache authentication modules
+that set the `REMOTE_USER` environment variable. An example configuration can
+look like this:
+
+    all:
+      auth:
+        sources:
+          remote_user:
+            type: env
+            user: ['REMOTE_USER']
+            domain: example.com
+            map_to: my_user_template
+
+This may be combined with script based authentication sources. Authentication is
+only triggered on the `/authentication/form` which only renders the login form
+if the environment authentication was not successfull. The `domain` value is
+used to extend the username to an email address. So for example, with the above
+configuration, a user logging in as jdoe would be created with an email address
+`jdoe@example.com`. Additionally, the keys mail and full_name can be specified
+which would make the system update successfully authenticated users with those
+attributes.
+
+### OAI-PMH Interface
 
 ConedaKOR spawns four OAI-PMH endpoints for entities, kinds, relations and
 relationships:
 
-* http://kor.example.com/api/oai-pmh/entities.xml?verb=Identify
-* http://kor.example.com/api/oai-pmh/kinds.xml?verb=Identify
-* http://kor.example.com/api/oai-pmh/relations.xml?verb=Identify
-* http://kor.example.com/api/oai-pmh/relationships.xml?verb=Identify
+* http://kor.example.com/api/oai-pmh/entities?verb=Identify
+* http://kor.example.com/api/oai-pmh/kinds?verb=Identify
+* http://kor.example.com/api/oai-pmh/relations?verb=Identify
+* http://kor.example.com/api/oai-pmh/relationships?verb=Identify
 
 Please refer to the [OAI-PMH
 specification](https://www.openarchives.org/OAI/openarchivesprotocol.html) for
@@ -257,7 +367,57 @@ https://kor.example.com/schema/1.0/kor.xsd
 as part of every installation (version 2.0.0 and above). We will add new
 versions, should the need arise.
 
-#### Generating a virtual appliance
+### JSON API
+
+This API is undergoing a lot of change. This is why we are not showing all of
+the possible requests here. Instead, we'll just listing the ones that we hope
+will not change anymore in the forseeable future.
+
+The request paths all end with `.json` to hint the desired JSON content type for
+the response. But also the request body has to be in the JSON format and the
+request's `content-type` header has to be `application/json`
+
+Have a look at [Authentication](#authentication) to see how you can provide
+authentication credentials.
+
+* `/kinds.json`: returns array of all kinds
+* `/kinds/1.json`: returns kind with id 1
+* `/relations.json`: returns array of all relations
+* `/relations/1.json`: returns relation with id 1
+* `/entities.json`: search for entities, returns only viewable content, returns resultset of entities
+    * `terms`: searches for entities with matching name or synonyms (uses the
+      elasticsearch index)
+    * `relation_name`: limits to entities that can be used as targets for the
+      given relation name
+    * `kind_id`: limits to entities that are of the given kind
+    * `include_media`: whether to include media entities (default: false)
+    * `include`: a list of aspects to include within each entity, comma separated, choose one or more of `technical`, `synonyms`, `datings`, `dataset`, `properties`, `relations`, `media_relations`, `kind`, `collection`, `user_groups`, `groups`, `degree`, `users`, `fields`, `generators` and `all`.
+    * `page`: requests a specific page from the resultset (default: 1)
+    * `per_page`: sets the page size (default: 10, max 100)
+* `/entities/1.json`: returns the entity with id 1, requires `view` permissions for that entity
+    * `include`: see parameters for `/entities.json`
+* `/entities/1/relationships.json`, or `/relationships`: returns the relationships (for that entity), returns only viewable content, returns resultset of directed relationships
+    * `from_entity_id`: limits by the source entity, comma-separated
+    * `to_entity_id` or `entity_id`: limits by the target entity, comma-separated
+    * `relation_name`: limits by relation name, comma-separated
+    * `from_kind_id`: limits by the source's kind, comma-separated
+    * `to_kind_id`: limits by the target's kind, comma-separated
+    * `page`: requests a specific page from the resultset (default: 1)
+    * `per_page`: sets the page size (default: 10, max 500)
+
+Resultsets are JSON objects having this structure:
+
+    {
+      total: 133,
+      page: 1,
+
+      ids: [13,89,1333],
+      records: [ ... ],
+    }
+
+while `ìds` and `records` are optional.
+
+### Generating a virtual appliance
 
 Versions after and including 1.9.2 can be packaged into a virtualbox appliance
 automatically. The version is specified as a shell parameter:
@@ -268,6 +428,17 @@ The ova file and a checksum are generated within `deploy/build/`. Instead of
 `v1.9.2` you may choose any tag or branch available in the repository, although
 very old versions could not work because of unsatisfiable dependencies. Make
 sure you have pulled the most recent commits when using branches!
+
+### Generating docker images
+
+`deploy/dockerize.sh can be used to build docker images for commits >= v2.0.0.
+`Because of a different set of tools required for each environment, it has to be
+`selected when building the images. For example:
+
+    ./deploy/dockerize.sh master production
+
+Will build a production image based on the master branch. You may also base
+images on tags or commits.
 
 ### Command line tool
 
@@ -293,6 +464,13 @@ Those sheets may be modified and imported later on.
   delete the entity on import.
 * timestamps are not imported: they will be changed if the entity will be
   changed by the import.
+
+#### Rebuilding elastic index
+
+Sometimes the elasticsearch index has to be rebuilt from scratch. This is done
+like so:
+
+    bundle exec bin/kor index-all
 
 ### Development
 

@@ -29,7 +29,7 @@ Feature: User administration
     And the credential "AAAs"
     When I go to the users page
     And I follow "Plus"
-    Then I should see "AAAs" before "Administrators"
+    Then I should see "AAAs" before "admins"
 
 
   @javascript

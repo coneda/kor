@@ -53,6 +53,9 @@ class Relationship < ActiveRecord::Base
     end
   end
 
+  # TODO: this is done before validation. should it not be done afterwards, so
+  # that it doesn't send modified data back to the forms when it actually
+  # doesn't validate?
   def ensure_direction
     if @relation_name
       if relation = Relation.where(name: @relation_name).first
@@ -86,6 +89,27 @@ class Relationship < ActiveRecord::Base
   }
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :inconsistent, lambda {
+    result = joins('LEFT JOIN directed_relationships dr ON relationships.normal_id = dr.id')
+            .joins('LEFT JOIN entities froms ON froms.id = dr.from_id')
+            .joins('LEFT JOIN entities tos ON tos.id = dr.to_id')
+    conditions = []
+    values = []
+
+    Relation.all.each do |r|
+      if r.from_kind_ids.present? && r.to_kind_ids.present?
+        conditions << "(froms.kind_id IN (?) AND tos.kind_id IN (?))"
+        values += [r.from_kind_ids, r.to_kind_ids]
+
+        if r.name == r.reverse_name
+          conditions << "(froms.kind_id IN (?) AND tos.kind_id IN (?))"
+          values += [r.to_kind_ids, r.from_kind_ids]
+        end
+      end
+    end
+
+    result = result.where('NOT (' + conditions.join(' OR ') + ')', *values)
+  }  
 
   def self.relate_and_save( from_id, relation_name, to_id, properties = [] )
     r = relate(from_id, relation_name, to_id, properties)
@@ -103,6 +127,18 @@ class Relationship < ActiveRecord::Base
       :to_id => to_id,
       :properties => properties
     )
+  end
+
+  def self.related?(from_id, relation_name, to_id, properties = nil)
+    dr = DirectedRelationship.where(
+      from_id: from_id,
+      relation_name: relation_name,
+      to_id: to_id
+    ).first
+
+    if dr
+      properties == nil || dr.properties == properties
+    end
   end
   
   def has_properties?

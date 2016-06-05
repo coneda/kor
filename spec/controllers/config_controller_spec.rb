@@ -6,20 +6,20 @@ RSpec.describe ConfigController, :type => :controller do
   before :each do
     test_data_for_auth
     
-    allow(Kor).to receive(:app_config_file).and_return('config/kor.app.test.yml')
-    file = "#{Rails.root}/config/#{Kor.app_config_file}"
+    allow(Kor::Config).to receive(:app_config_file).and_return('config/kor.app.test.yml')
+    file = "#{Rails.root}/config/#{Kor::Config.app_config_file}"
     FileUtils.rm file if File.exists? file
   
     session[:user_id] = User.admin.id
     session[:expires_at] = Kor.session_expiry_time
   end
   
-  it "should save the config to #{Kor.app_config_file}" do
+  it "should save the config to #{Kor::Config.app_config_file}" do
     post :save_general, :config => {
       'maintainer' => {'name' => 'John Doe'}
     }
     
-    expect(Kor::Config.new(Kor.app_config_file)['maintainer.name']).to eql('John Doe')
+    expect(Kor::Config.new(Kor::Config.app_config_file)['maintainer.name']).to eql('John Doe')
   end
   
   it "should reload the config after saving" do
@@ -34,7 +34,7 @@ RSpec.describe ConfigController, :type => :controller do
     Kor::Config.new(
       'test' => 'value',
       'maintainer' => {'name' => 'James Kirk'}
-    ).store(Kor.app_config_file)
+    ).store(Kor::Config.app_config_file)
     
     post :save_general, :config => {
       'maintainer' => {'name' => 'John Doe'}

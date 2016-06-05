@@ -10,18 +10,17 @@
     = stylesheet_link_tag 'blaze'
     = custom_styles
     
-    = javascript_include_tag 'blaze'
-    
     = render :partial => 'layouts/javascript_settings'
+    = javascript_include_tag 'blaze'
     
     = render :partial => 'layouts/title'
     
-    %style{:type => "text/javascript"}
+    %style{:type => "text/css"}
       [ng-cloak] {display: none;}
 
     = render :partial => 'tpl/misc'
 
-  %body.blaze_style{'style' => "background-color: #1e1e1e !important"}
+  %body.blaze_style
     = render :partial => "layouts/blaze_header"
     = render :partial => "layouts/menu"
     

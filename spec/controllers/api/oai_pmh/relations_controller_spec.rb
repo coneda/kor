@@ -74,7 +74,11 @@ describe Api::OaiPmh::RelationsController, :type => :controller do
     # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
     # for a reason why it has to be done like this
     xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
-    get :get_record, :format => :xml, :identifier => relation.uuid
+    get(:get_record,
+      format: :xml,
+      identifier: relation.uuid,
+      metadataPrefix: 'kor'
+    )
     doc = parse_xml(response.body)
 
     expect(xsd.validate(doc)).to be_empty

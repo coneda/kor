@@ -18,8 +18,8 @@
 
         <% if session[:current_entity] %>
           <% relation_names = Relation.available_relation_names(
-            Kind.medium_kind.id, 
-            Entity.find(session[:current_entity]).kind.id
+            from_ids: Kind.medium_kind.id, 
+            to_ids: Entity.find(session[:current_entity]).kind.id
           ) %>
       
           <% unless relation_names.empty? %>

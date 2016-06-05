@@ -9,7 +9,6 @@ Bundler.require(*Rails.groups)
 $: << File.expand_path('../../lib', __FILE__)
 
 require 'kor'
-require 'kor/config'
 require 'securerandom'
 
 module Kor
@@ -36,10 +35,20 @@ module Kor
     config.active_record.raise_in_transactional_callbacks = true
 
     config.active_job.queue_adapter = :delayed_job
+
+    initializer 'action_mailer.set_configs' do
+      if mc = Kor::Config.instance['mail']
+        dm = mc['delivery_method'].to_sym
+        config.action_mailer.delivery_method = dm
+        c = (mc["#{dm}_settings"] || {}).symbolize_keys
+        config.action_mailer.send("#{dm}_settings=".to_sym, c)
+      end
+    end
+
   end
 end
 
-# TODO: use Digest::SHA2 instead of Digest::SHA1
+# TODO: fix redirection after login
 # TODO: oai-pmh test resumptionToken
 # TODO: better test fields_controller.rb
 # TODO: better test generators_controller.rb
@@ -82,3 +91,6 @@ end
 # TODO: move Dockerfiles files to kor repo
 # TODO: re-enable still extraction for videos
 # TODO: make an indicator for not-yet-processed media (use special dummy)
+# TODO: use https://github.com/bkeepers/dotenv
+# TODO: session panel is not visible on welcome page
+# TODO: add https://www.ruby-lang.org/en/documentation/installation/ to the install docs

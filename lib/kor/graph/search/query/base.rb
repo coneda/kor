@@ -22,6 +22,10 @@ class Kor::Graph::Search::Query::Base
   def items
     run
   end
+
+  def records
+    items
+  end
   
   def hashes
     items.map{|e| e.attributes}

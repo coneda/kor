@@ -20,7 +20,9 @@ Feature: Session
     And the entity "The Last Supper" of kind "artwork/artworks"
     When I go to the entity page for the last medium
     Then I should see "medium 1"
-    When I click element "td.commands"
+    And I wait for "0.2" seconds
+    When I click element "[ng-click='toggle_session_panel()']"
+    And I wait for "0.5" seconds
     And I should not see an image within "#session_info"
     And I click element "[data-name=select]"
     And I should see an image within "#session_info"

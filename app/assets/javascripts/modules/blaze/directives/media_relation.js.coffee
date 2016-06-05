@@ -17,12 +17,15 @@ kor.directive "korMediaRelation", ["entities_service", "session_service",
           event.preventDefault()
           scope.visible = !scope.visible
 
-        scope.$watchGroup ["page", "count"], ->
+        fetch = ->
           es.media_relation_load(scope.entity.id, scope.relation_name, scope.page).success (data) ->
             # console.log data
-            scope.relationships = data
+            scope.relationships = data.records
 
         scope.allowed_to = (policy) -> ss.allowed_to(policy, scope.entity)
         scope.allowed_to_any = ss.allowed_to_any
+
+        scope.$watchGroup ["page", "count"], fetch
+        scope.$on 'relationship-saved', fetch
     }
 ]

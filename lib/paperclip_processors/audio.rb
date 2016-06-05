@@ -13,7 +13,7 @@ class Paperclip::Audio < Paperclip::Processor
     outfile = Tempfile.new(rand.to_s).path + '.mp3'
     args = "-qscale 3"
     args = "-i #{file.path} #{args} #{outfile}"
-    Paperclip.run "avconv", args
+    Paperclip.run(Kor.video_processor, args)
     File.open(outfile)
   end
 
@@ -21,7 +21,7 @@ class Paperclip::Audio < Paperclip::Processor
     outfile = Tempfile.new(rand.to_s).path + '.ogg'
     args = "-qscale 7"
     args = "-i #{file.path} #{args} #{outfile}"
-    Paperclip.run "avconv", args
+    Paperclip.run(Kor.video_processor, args)
     File.open(outfile)
   end
 

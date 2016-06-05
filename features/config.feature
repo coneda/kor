@@ -9,7 +9,6 @@ Feature: Config
     And I am on the config page
     Then I should see "Site operator"
     And I should see "Server"
-    And I should see "Email"
     And I should see "Application"
     When I follow "Site operator"
     Then I should see element "input[name='config[maintainer][mail]']"

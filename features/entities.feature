@@ -20,19 +20,6 @@ Feature: Entities
 
 
   @javascript
-  Scenario: Show an entity with 12 relationships of the same kind
-    Given I am logged in as "admin"
-    And the entity "Nürnberg" of kind "Ort/Orte"
-    And the entity "Nürnberg" has 12 relationships
-    When I go to the entity page for "Nürnberg"
-    Then I should see "Nürnberg"
-    Then I should see element ".pagination input"
-    When I click element "img[data-name='pager_right']" within ".relation"
-    And I follow "Triangle_up" within ".relation"
-    Then I should see "ENDE" within ".relationships"
-
-
-  @javascript
   Scenario: Upload a medium
     Given I am logged in as "admin"
     When I go to the legacy upload page
@@ -217,7 +204,7 @@ Feature: Entities
     Then I should be on the last entity's page
 
 
-  @javascript
+  @javascript @nodelay
   Scenario: It should expand all relationships for a relation in one go
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "Work/Works"

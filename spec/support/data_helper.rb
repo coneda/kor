@@ -49,11 +49,7 @@ module DataHelper
   end
   
   def test_kinds
-    @medium_kind = Kind.create!(:name => Medium.model_name.human, :plural_name => Medium.model_name.human(:count => :other),
-      :settings => {
-        :naming => false
-      }
-    )
+    @medium_kind = FactoryGirl.create :media
     @person_kind = FactoryGirl.create :people
     @artwork_kind = FactoryGirl.create :works
     @institution_kind = FactoryGirl.create :institutions

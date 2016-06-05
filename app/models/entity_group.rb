@@ -1,7 +1,7 @@
 class EntityGroup < ActiveRecord::Base
   self.abstract_class = true
   
-  scope :named_like, lambda { |pattern| where("name LIKE ?", "%#{pattern}%") }
+  scope :named_like, lambda {|pattern| where("name LIKE ?", "%#{pattern}%") }
 
   validates :name,
     :presence => true,

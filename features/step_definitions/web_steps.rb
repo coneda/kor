@@ -375,6 +375,14 @@ Then(/^I should (not )?see an image$/) do |negation|
   if negation == 'not '
     expect(page).not_to have_selector("img[src]")
   else
-    expect(page).to have_selector("img[src]")
+    expect(page).to have_selector('img[src]')
+  end
+end
+
+When(/^I paginate right in the relations$/) do
+  within '.relation' do
+    page.find("img[data-name='pager_right']").click
+    # puts page.find("input[type=number]").value
+    # expect(page).to have_content('ENDE')
   end
 end

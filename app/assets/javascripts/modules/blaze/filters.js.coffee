@@ -41,11 +41,6 @@ kor.filter('human_size', [ ->
       return "#{Math.round(input / (1024 * 1024 * 1024) * 100) / 100} GB"
 ])
 
-kor.filter('image_size', [ ->
-  return (input, size) ->
-    if input then input.replace(/preview/, size) else ""
-])
-
 kor.filter 'human_date', ["korTranslate", (kt) ->
   (input) -> kt.localize input
 ]
@@ -67,7 +62,7 @@ kor.filter 'entity_display_name', [->
     if input
       if input.name
         return if input.distinct_name
-          "#{input.name} (#{input.distinct_name}"
+          "#{input.name} (#{input.distinct_name})"
         else
           input.name
     
@@ -86,4 +81,19 @@ kor.filter 'entity_kind_name', [
         ""
     result.$stateful = true
     result
+]
+
+kor.filter 'is_medium', [
+  'korData',
+  (kd) ->
+    (input) ->
+      return false unless input
+
+      if input.kind_id
+        input.kind_id == kd.info.medium_kind_id
+      else if input.kind && input.kind.id
+        input.kind.id == kd.info.medium_kind_id
+      else
+        throw "can't determine kind id for #{input}"
+        false
 ]

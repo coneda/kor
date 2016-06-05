@@ -18,9 +18,9 @@ describe Medium do
     medium.reload
 
     expect(medium.path(:original)).to eql("#{Rails.root}/data/media.test/original/#{medium.ids}/document.txt")
-    expect(medium.path(:icon)).to eql("#{Rails.root}/public/content_types/text/plain.gif")
+    expect(medium.path(:icon)).to eql("#{Rails.root}/public/content_types/text.gif")
     expect(medium.url(:original)).to eql("/media/images/original/#{medium.ids}/document.txt?#{medium.document.updated_at}")
-    expect(medium.url(:icon)).to eql('/content_types/text/plain.gif')
+    expect(medium.url(:icon)).to eql('/content_types/text.gif')
     
     medium.update_attributes(:image => File.open("#{Rails.root}/spec/fixtures/image_a.jpg"))
     medium.reload

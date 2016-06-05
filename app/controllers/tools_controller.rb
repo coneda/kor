@@ -339,7 +339,7 @@ class ToolsController < ApplicationController
           )
         )
         
-        if @entity
+        if @entity.valid?
           flash[:notice] = I18n.t('notices.merge_success')
           redirect_to web_path(:anchor => "/entities/#{@entity.id}")
         else

@@ -79,7 +79,7 @@
               ></div>
             </li>
             <li class="spacer"></li>
-            <li class="tags" ng-show="entity.kind.tagging == '1' && (entity.tags || allowed_to('tagging', entity.collection_id))">
+            <li class="tags" ng-show="entity.kind.settings.tagging == '1' && (entity.tags || allowed_to('tagging', entity.collection_id))">
               <div
                 class="column"
                 kor-inplace-column="entity.tags"
@@ -140,7 +140,7 @@
 
           <div class="content">
             <div
-              ng-repeat="(name, count) in entity.relation_counts"
+              ng-repeat="(name, count) in entity.relations"
               kor-entity="entity"
               kor-relation="name"
               kor-count="count"
@@ -217,25 +217,25 @@
         <div class="title" ng-bind="'activerecord.models.medium' | translate | capitalize"></div>
         
         <div class="kor_medium_frame" id="kor_medium_frame_{{entity.id}}">
-          <a href="/media/{{entity.medium.id}}">
-            <img alt="Image" class="kor_medium" ng-src="{{entity.medium.url | image_size:'preview'}}">
+          <a href="/media/{{entity.medium_id}}">
+            <img alt="Image" class="kor_medium" ng-src="{{entity.medium.url.preview}}">
           </a>
         </div>
         
         <div class="commands">
-          <a href="/media/transform/{{entity.medium.id}}/image?operation=flip">
+          <a href="/media/transform/{{entity.medium_id}}/image?operation=flip">
             <img alt="Flip" src="<%= image_path('media/transformations/image/flip.gif') %>">
           </a>
-          <a href="/media/transform/{{entity.medium.id}}/image?operation=flop">
+          <a href="/media/transform/{{entity.medium_id}}/image?operation=flop">
             <img alt="Flop" src="<%= image_path('media/transformations/image/flop.gif') %>">
           </a>
-          <a href="/media/transform/{{entity.medium.id}}/image?operation=rotate_cw">
+          <a href="/media/transform/{{entity.medium_id}}/image?operation=rotate_cw">
             <img alt="Rotate_cw" src="<%= image_path('media/transformations/image/rotate_cw.gif') %>">
           </a>
-          <a href="/media/transform/{{entity.medium.id}}/image?operation=rotate_ccw">
+          <a href="/media/transform/{{entity.medium_id}}/image?operation=rotate_ccw">
             <img alt="Rotate_ccw" src="<%= image_path('media/transformations/image/rotate_ccw.gif') %>">
           </a>
-          <a href="/media/transform/{{entity.medium.id}}/image?operation=rotate_180">
+          <a href="/media/transform/{{entity.medium_id}}/image?operation=rotate_180">
             <img alt="Rotate_180" src="<%= image_path('media/transformations/image/rotate_180.gif') %>">
           </a>
         </div>
@@ -263,7 +263,7 @@
         </div>
       </div>
       
-      <div class="related_images" ng-hide="entity.medium_id">
+      <div class="related_images">
         <div class="title" ng-bind="'nouns.related_medium' | translate:{count: 'other'} | capitalize"></div>
         
         <div class="highlighted_subtitle" ng-show="allowed_to_any('create')">
@@ -272,7 +272,7 @@
         <br>
 
         <div
-          ng-repeat="(name, count) in entity.media_relation_counts"
+          ng-repeat="(name, count) in entity.media_relations"
           kor-entity="entity"
           kor-media-relation="name"
           kor-count="count"

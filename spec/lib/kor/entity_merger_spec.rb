@@ -72,4 +72,79 @@ describe Kor::EntityMerger do
     expect(Identifier.first.entity_id).to eq(merged.id)
   end
 
+  it "should transfer relationships to the merged entity" do
+    Delayed::Worker.delay_jobs = false
+
+    admins = FactoryGirl.create :admins
+    admin = FactoryGirl.create :admin, groups: [admins]
+    default = FactoryGirl.create :default
+    default.grant :view, to: [admins]
+    FactoryGirl.create :media
+    mona_lisa = FactoryGirl.create :mona_lisa, :name => 'Mona Lysa'
+    other_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Liza"
+    third_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Lica"
+    leonardo = FactoryGirl.create :leonardo
+    institution = FactoryGirl.create :institution
+    FactoryGirl.create :is_located_at
+    FactoryGirl.create :has_created
+    Relationship.relate_and_save mona_lisa, 'is located at', institution
+    Relationship.relate_and_save other_mona_lisa, 'has been created by', leonardo
+    Relationship.relate_and_save third_mona_lisa, 'has been created by', leonardo
+
+    merged = described_class.new.run(
+      old_ids: [mona_lisa.id, other_mona_lisa.id, third_mona_lisa.id],
+      attributes: {name: 'Mona Lisa'}
+    )
+
+    expect(Entity.count).to eq(3)
+    expect(DirectedRelationship.count).to eq(6)
+    expect(Relationship.count).to eq(3)
+    expect(merged.in_rels.count).to eq(2)
+    expect(merged.in_rels.first.from).to eq(leonardo)
+    expect(merged.in_rels.last.from).to eq(leonardo)
+    expect(merged.out_rels.count).to eq(1)
+    expect(merged.out_rels.first.to).to eq(institution)
+
+    expect(merged.incoming_relationships.count).to eq(3)
+    expect(merged.outgoing_relationships.count).to eq(3)
+
+    expect(merged.relation_counts(admin)).to eq(
+      'is located at' => 1,
+      'has been created by' => 2,
+    )
+  end
+
+  it "should fail the whole transaction when the merge result is invalid" do
+    Delayed::Worker.delay_jobs = false
+
+    admins = FactoryGirl.create :admins
+    admin = FactoryGirl.create :admin, groups: [admins]
+    default = FactoryGirl.create :default
+    default.grant :view, to: [admins]
+    FactoryGirl.create :media
+    conflicting_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Lisa"
+    mona_lisa = FactoryGirl.create :mona_lisa, :name => 'Mona Lysa'
+    other_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Liza"
+    third_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Lica"
+    leonardo = FactoryGirl.create :leonardo
+    institution = FactoryGirl.create :institution
+    FactoryGirl.create :is_located_at
+    FactoryGirl.create :has_created
+    Relationship.relate_and_save mona_lisa, 'is located at', institution
+    Relationship.relate_and_save other_mona_lisa, 'has been created by', leonardo
+    Relationship.relate_and_save third_mona_lisa, 'has been created by', leonardo
+
+    merged = described_class.new.run(
+      old_ids: [mona_lisa.id, other_mona_lisa.id, third_mona_lisa.id],
+      attributes: {name: conflicting_mona_lisa.name}
+    )
+
+    expect(merged).not_to be_valid
+    expect(merged).to be_new_record
+
+    expect(Entity.count).to eq(6)
+    expect(DirectedRelationship.count).to eq(6)
+    expect(Relationship.count).to eq(3)
+  end
+
 end

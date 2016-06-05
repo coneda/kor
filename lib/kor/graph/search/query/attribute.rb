@@ -12,6 +12,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
   # Parameters
   
   define_params(
+    :entity_id => nil,
     :identifier => nil,
     :relationships => [],
     :kind_id => nil,
@@ -51,6 +52,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
           first
       else
         tmp_result = Entity.allowed(user, :view).
+          by_id(criteria[:entity_id]).
           is_a(criteria[:kind_id]).
           named_like(user, criteria[:name]).
           has_property(user, criteria[:properties]).
@@ -69,7 +71,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
         
         @total = tmp_result.count("entities.id")
         
-        tmp_result.alphabetically.paginate(page: page, per_page: per_page)
+        tmp_result.alphabetically.pageit(page, per_page)
       end
     end
   

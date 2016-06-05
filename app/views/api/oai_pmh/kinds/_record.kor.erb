@@ -26,4 +26,15 @@
       </kor:field>
     <% end %>
   </kor:fields>
+  <kor:generators>
+    <% record.generators.each do |generator| %>
+      <kor:generator>
+        <kor:id><%= generator.id %></kor:id>
+        <kor:name><%= generator.name %></kor:name>
+        <kor:directive><%= generator.directive %></kor:directive>
+        <kor:created-at><%= timestamp generator.created_at %></kor:created-at>
+        <kor:updated-at><%= timestamp generator.updated_at %></kor:updated-at>
+      </kor:generator>
+    <% end %>
+  </kor:generators>
 </kor:kind>

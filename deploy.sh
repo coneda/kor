@@ -16,7 +16,11 @@
 function deploy {
   setup
 
-  within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop || true"
+  if git cat-file -e $REVISION:bin/delayed_job ; then
+    within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec bin/delayed_job stop || true"
+  else
+    within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop || true"
+  fi
 
   deploy_code
   cleanup
@@ -35,12 +39,18 @@ function deploy {
 
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake db:migrate"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake assets:precompile"
-  within_do $CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job start"
+  if git cat-file -e $REVISION:bin/delayed_job ; then
+    within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec bin/delayed_job start"
+  else
+    within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job start"
+  fi
 
   remote "mkdir -p $CURRENT_PATH/public/media/images"
   remote "ln -sfn $SHARED_PATH/data/media/preview $CURRENT_PATH/public/media/images/preview"
   remote "ln -sfn $SHARED_PATH/data/media/thumbnail $CURRENT_PATH/public/media/images/thumbnail"
   remote "ln -sfn $SHARED_PATH/data/media/icon $CURRENT_PATH/public/media/images/icon"
+
+  within_do $CURRENT_PATH "RAILS_ENV=production bundle exec bin/kor secrets"
 
   remote "touch $CURRENT_PATH/tmp/restart.txt"
 

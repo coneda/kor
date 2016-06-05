@@ -10,10 +10,6 @@ Paperclip.interpolates :style_extension do |attachment, style|
   end
 end
 
-Paperclip.interpolates :medium_content_type do |attachment, style|
-  attachment.instance.content_type
-end
-
 Paperclip.interpolates :style_timestamp do |attachment, style|
   if attachment.file?
     attachment.updated_at.to_i
@@ -22,6 +18,7 @@ Paperclip.interpolates :style_timestamp do |attachment, style|
   end
 end
 
+# TODO: still needed?
 Paperclip.interpolates :image_timestamp do |attachment, style|
   attachment.instance.image.updated_at.to_i
 end

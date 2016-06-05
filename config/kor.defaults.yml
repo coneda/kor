@@ -11,7 +11,11 @@ all:
     current_history_length: 5
     max_foreground_group_download_size: 10
     max_file_upload_size: "100"
-    source_code_url: "http://download.coneda.net/releases/coneda-kor.v{{version}}.tar.gz"
+
+    sources:
+      release: "https://github.com/coneda/kor/releases/tag/{{version}}"
+      pre_release: "https://github.com/coneda/kor/commit/{{commit}}"
+      default: "https://github.com/coneda/kor"
 
   maintainer:
     name: Example Organization
@@ -30,13 +34,6 @@ all:
   # piwik:
   #   url: "https://analytics.example.com"
   #   id: "1"
-
-  mail_delivery_method: smtp
-  mail:
-    host: 127.0.0.1
-    port: 25
-    domain: localhost
-    enable_starttls_auto: false
 
   logging:
     file: log/kor.log
@@ -62,10 +59,33 @@ all:
   search:
     entity_name: "Name / Titel / UUID"
 
+development:
+  mail:
+    delivery_method: test
+
+
+production:
+  mail:
+    delivery_method: smtp
+    smtp_settings:
+      host: 127.0.0.1
+      port: 25
+      enable_starttls_auto: false
+      # domain: localhost
+
+
 test:
   auth:
     sources:
+      remote_user:
+        type: 'env'
+        user: ['REMOTE_USER']
+        mail: ['mail']
+        full_name: ['full_name']
+        splitter: '[,;]+'
+        map_to: 'ldap'
       credentials_via_file:
+        type: script
         script: spec/fixtures/auth_script.file
         map_to: ldap
       credentials_via_env:
@@ -87,3 +107,6 @@ test:
   maintainer:
     name: Example Organization
     mail: admin@example.com
+
+  mail:
+    delivery_method: test

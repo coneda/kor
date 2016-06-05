@@ -24,21 +24,18 @@ commit history on GitHub.
 * the video player has been dropped in favor of native HTML5 functionality
 * some roles have been dropped: `user_admin`, `credentials_admin`,
   `collection_admin` and `developer` are now just `admin`
+* environment variables like `REMOTE_USER` can now be used for authentication
+* kinds now require their plural name to be specified
+* email configuration removed from web-ui, site operator is used as sender and
+  email server configuration is exclusively done in the config file
+* started refactoring the JSON api, see README.md
 
 ### Internal
 
-* added VCR gem to enable testing against predictable external API responses
 * switched from rails 3.2 to 4.2
 * sped up the test suites by about 20%
-<<<<<<< HEAD
 * identifier handling and resolution
-* wikidata id for entities, kinds, fields, relations and relationships
-* automatic wikidata id lookup through other identifiers
-
-### Internal
-
 * added VCR gem to enable testing against predictable external API responses
-=======
 * added a development environment via `vagrant up`
 * relationships are now saved as two records per link (in and out). This greatly
   simplyfies queries and enhances performance
@@ -47,7 +44,10 @@ commit history on GitHub.
 * added brakeman for security audits
 * added rubocop to improve code style
 * media are not shown in development anymore (override with `SHOW_MEDIA`)
->>>>>>> master
+* included docker images build scripts for development, test and production
+  images
+* upgraded some gems to their most recent bugfix release
+
 
 ## Version 1.9.2
 

@@ -11,7 +11,7 @@ class ApplicationController < BaseController
     :logged_in?,
     :blaze
   
-  before_filter :locale, :authentication, :authorization, :legal
+  before_filter :locale, :authentication, :authorization, :legal, :cors
 
   before_filter do
     @blaze = nil
@@ -21,6 +21,12 @@ class ApplicationController < BaseController
   
 
   private
+
+    def cors
+      if request.format.json?
+        headers['Access-Control-Allow-Origin'] = '*'
+      end
+    end
 
     # redirects to the legal page if terms have not been accepted
     def legal
@@ -103,7 +109,8 @@ class ApplicationController < BaseController
     end
 
     def api_auth?
-      params[:api_key] && User.exists?(api_key: params[:api_key])
+      key = params[:api_key] || request.headers['api_key']
+      key && User.exists?(api_key: key)
     end
     
     def generally_authorized?
@@ -136,6 +143,21 @@ class ApplicationController < BaseController
     
     def editable_entities
       Entity.allowed current_user, :edit
+    end
+
+    def param_to_array(value, options = {})
+      options.reverse_merge! ids: true
+
+      case value
+        when String
+          results = value.split(',')
+          options[:ids] ? results.map{|v| v.to_i} : results
+        when Fixnum then [value]
+        when Array then value.map{|v| param_to_array(v, options)}.flatten
+        when nil then []
+        else
+          raise "unknown param format to convert to array: #{value}"
+      end
     end
     
     def authorized_for_relationship?(relationship, policy = :view)
@@ -175,7 +197,7 @@ class ApplicationController < BaseController
       if url.present? && url != root_url
         session[:history] << url 
       end
-      session[:history].shift if session[:history].size > 20
+      session[:history].shift if session[:history].size > 50
     end
     
     def back
@@ -226,8 +248,12 @@ class ApplicationController < BaseController
         :existing_datings_attributes => [:id, :_destroy, :label, :dating_string],
         :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
-        :medium_attributes => [:image, :document]
-      )
+        :medium_attributes => [:id, :image, :document]
+      ).tap do |e|
+        e[:properties] ||= []
+        e[:existing_datings_attributes] ||= {}
+        e[:synonyms] ||= []
+      end
     end
 
     def profile

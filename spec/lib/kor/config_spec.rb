@@ -78,5 +78,5 @@ describe Kor::Config do
     
     expect(config['mail']).to eql(nil)
   end
-  
+
 end

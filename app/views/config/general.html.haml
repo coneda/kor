@@ -25,15 +25,6 @@
         = config_value "host.port"
       
     .form_subsection.config_section
-      .highlighted_subtitle= link_to(human_config_section_name(:mail))
-      .switcheable.sub_content{:style => 'display: none'}
-        = config_value "mail.host"
-        = config_value "mail.port"
-        = config_value "mail.sender_name"
-        = config_value "mail.sender_address"
-        = config_value "mail.tls", :type => :check_box
-
-    .form_subsection.config_section
       .highlighted_subtitle= link_to(human_config_section_name(:app))
       .switcheable.sub_content{:style => 'display: none'}
         = config_value "app.default_locale", :control => select_tag("config[app][default_locale]", options_for_select(I18n.available_locales, :selected => Kor.config['app.default_locale']))

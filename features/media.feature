@@ -29,3 +29,17 @@ Feature: Media
     When I go to the entity page for the last medium
     And I click on the player link
     Then I should see the video player
+
+
+  @javascript
+  Scenario: Change the collection of an existing medium entity
+    Given the collection "side collection"
+    And "admins" are allowed to "view/create/edit" collection "side collection"
+    Given I am logged in as "admin"
+    And the medium "spec/fixtures/image_a.jpg"
+    And I go to the entity page for the last medium
+    Then I should see "medium"
+    When I click on element "img[data-name=pen]"
+    And I select "side collection" from "entity[collection_id]"
+    And I press "Save"
+    Then I should not see "Errors occurred"

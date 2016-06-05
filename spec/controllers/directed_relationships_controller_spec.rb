@@ -44,7 +44,7 @@ describe DirectedRelationshipsController, type: :controller do
 
     get :index
     expect(response.status).to eq(200)
-    expect(JSON.parse(response.body).size).to eq(0)
+    expect(JSON.parse(response.body)['total']).to eq(0)
 
     current_user = jdoe
     allow_any_instance_of(described_class).to receive(:current_user) do
@@ -52,30 +52,30 @@ describe DirectedRelationshipsController, type: :controller do
     end
 
     get :index
-    expect(JSON.parse(response.body).size).to eq(10)
+    expect(JSON.parse(response.body)['records'].size).to eq(10)
 
     get :index, :page => 1
-    expect(JSON.parse(response.body).size).to eq(10)
+    expect(JSON.parse(response.body)['records'].size).to eq(10)
 
     get :index, :page => 3
-    expect(JSON.parse(response.body).size).to eq(2)
+    expect(JSON.parse(response.body)['records'].size).to eq(2)
 
     get :index, :per_page => 30
-    expect(JSON.parse(response.body).size).to eq(22)
+    expect(JSON.parse(response.body)['records'].size).to eq(22)
 
     get :index, :per_page => 22
-    expect(JSON.parse(response.body).size).to eq(22)
+    expect(JSON.parse(response.body)['records'].size).to eq(22)
 
     current_user = admin
 
     get :index, :per_page => 30
-    expect(JSON.parse(response.body).size).to eq(26)
+    expect(JSON.parse(response.body)['records'].size).to eq(26)
 
     get :index, :per_page => 20, :entity_id => side_artist.id
-    expect(JSON.parse(response.body).size).to eq(1)
+    expect(JSON.parse(response.body)['records'].size).to eq(1)
 
     get :index, per_page: 20, relation_name: 'shows'
-    expect(JSON.parse(response.body).size).to eq(1)
+    expect(JSON.parse(response.body)['records'].size).to eq(1)
   end
 
   it "should response with a single directed relationship" do
@@ -89,6 +89,43 @@ describe DirectedRelationshipsController, type: :controller do
     expect(response.status).to eq(200)
     data = JSON.parse(response.body)
     expect(data['id']).to eq(directed_relationship.id)
+  end
+
+  it 'should allow for multiple ids' do
+    default_setup relationships: true
+    FactoryGirl.create :relation
+    FactoryGirl.create :is_located_at
+    paris = FactoryGirl.create :paris
+    Relationship.relate_and_save @mona_lisa, 'is related to', @last_supper
+    Relationship.relate_and_save @mona_lisa, 'is located at', paris
+
+    allow_any_instance_of(described_class).to receive(:current_user) do
+      User.admin
+    end
+
+    get :index, from_kind_id: @people.id
+    expect(JSON.parse(response.body)['total']).to eq(2)
+
+    get :index, from_kind_id: @works.id
+    expect(JSON.parse(response.body)['total']).to eq(5)
+
+    get :index, from_kind_id: "#{@works.id},#{@people.id}"
+    expect(JSON.parse(response.body)['total']).to eq(7)
+
+    get :index, to_kind_id: @people.id
+    expect(JSON.parse(response.body)['total']).to eq(2)
+
+    get :index, to_kind_id: @works.id
+    expect(JSON.parse(response.body)['total']).to eq(5)
+
+    get :index, to_kind_id: "#{@works.id},#{@people.id}"
+    expect(JSON.parse(response.body)['total']).to eq(7)
+
+    get :index, from_entity_id: "#{@last_supper.id},#{paris.id}"
+    expect(JSON.parse(response.body)['total']).to eq(3)
+
+    get :index, to_entity_id: "#{@last_supper.id},#{paris.id}"
+    expect(JSON.parse(response.body)['total']).to eq(3)
   end
 
 end

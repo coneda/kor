@@ -93,7 +93,7 @@ Feature: Own entities
     
     When I go to the collections page
     And I follow "Edit personal collections"
-    And I select "Administrators" from "collection[grants_by_policy][view][]"
+    And I select "admins" from "collection[grants_by_policy][view][]"
     And I unselect "owner" from "collection[grants_by_policy][delete][]"
     And I press "Save"
     Then user "gerhard" should have the following access rights
@@ -115,22 +115,22 @@ Feature: Own entities
 
     Then user "admin" should have the following access rights
       | collection | credential     | policy             |
-      | Default    | Administrators | create             |
-      | Default    | Administrators | delete             |
-      | Default    | Administrators | download_originals |
-      | Default    | Administrators | edit               |
-      | Default    | Administrators | tagging            |
-      | Default    | Administrators | view               |
-      | Default    | Administrators | view_meta          |
-      | harald     | Administrators | view               |
-      | gerhard    | Administrators | view               |
+      | Default    | admins | create             |
+      | Default    | admins | delete             |
+      | Default    | admins | download_originals |
+      | Default    | admins | edit               |
+      | Default    | admins | tagging            |
+      | Default    | admins | view               |
+      | Default    | admins | view_meta          |
+      | harald     | admins | view               |
+      | gerhard    | admins | view               |
 
 
   @javascript
   Scenario: Apply existing personal collection rights to new personal collections
     When I go to the collections page
     And I follow "Edit personal collections"
-    And I select "Administrators" from "collection[grants_by_policy][view][]"
+    And I select "admins" from "collection[grants_by_policy][view][]"
     And I unselect "owner" from "collection[grants_by_policy][delete][]"
     And I press "Save"
     
@@ -160,15 +160,15 @@ Feature: Own entities
 
     Then user "admin" should have the following access rights
       | collection | credential     | policy             |
-      | Default    | Administrators | create             |
-      | Default    | Administrators | delete             |
-      | Default    | Administrators | download_originals |
-      | Default    | Administrators | edit               |
-      | Default    | Administrators | tagging            |
-      | Default    | Administrators | view               |
-      | Default    | Administrators | view_meta          |
-      | harald     | Administrators | view               |
-      | gerhard    | Administrators | view               |
+      | Default    | admins | create             |
+      | Default    | admins | delete             |
+      | Default    | admins | download_originals |
+      | Default    | admins | edit               |
+      | Default    | admins | tagging            |
+      | Default    | admins | view               |
+      | Default    | admins | view_meta          |
+      | harald     | admins | view               |
+      | gerhard    | admins | view               |
       
 
   @javascript      

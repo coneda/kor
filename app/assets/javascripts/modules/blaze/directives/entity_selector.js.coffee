@@ -35,9 +35,13 @@ kor.directive "korEntitySelector", [
           scope.grouped_records = []
           scope.load_entities()
 
-        scope.$watch "terms", -> scope.load_entities()
+        scope.$watch 'terms', -> scope.load_entities()
+        scope.$watch 'search_page', -> scope.load_entities()
+        scope.$watch 'visited_page', -> scope.load_entities()
+        scope.$watch 'created_page', -> scope.load_entities()
 
         scope.load_entities = ->
+          # TODO: still needed?
           if scope.tab == 'current'
             scope.results = {
               raw_records: [scope.current()]
@@ -45,19 +49,23 @@ kor.directive "korEntitySelector", [
             scope.group()
 
           if scope.tab == 'created'
-            params = {relation_name: scope.relation_name}
+            params = {
+              relation_name: scope.relation_name
+              page: scope.created_page
+            }
             es.recently_created(params).success (data) ->
-              scope.results = {
-                raw_records: data.records
-              }
+              scope.results = data
+              scope.results.raw_records = data.records
               scope.group()
 
           if scope.tab == 'visited'
-            params = {relation_name: scope.relation_name}
+            params = {
+              relation_name: scope.relation_name
+              page: scope.visited_page
+            }
             es.recently_visited(params).success (data) ->
-              scope.results = {
-                raw_records: data.records
-              }
+              scope.results = data
+              scope.results.raw_records = data.records
               scope.group()
 
           if scope.tab == 'existing'
@@ -72,8 +80,9 @@ kor.directive "korEntitySelector", [
                 relation_name: scope.relation_name
                 terms: scope.terms
                 per_page: 9
+                page: scope.search_page
               }
-              es.index(params).success (data) -> 
+              es.index(params).success (data) ->
                 scope.results = data
                 scope.group()
 
@@ -81,7 +90,7 @@ kor.directive "korEntitySelector", [
         scope.group = -> 
           if scope.results
             scope.grouped_records = kt.in_groups_of(
-              scope.results.raw_records, scope.grid_width, true
+              scope.results.records, scope.grid_width, true
             )
 
         scope.current = -> ss.get_current()

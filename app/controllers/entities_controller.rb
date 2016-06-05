@@ -55,7 +55,7 @@ class EntitiesController < ApplicationController
   def isolated
     if authorized? :edit
       entities = Entity.allowed(current_user, :view).isolated.newest_first.includes(:kind)
-      @result = Kor::SearchResult.new(
+      @results = Kor::SearchResult.new(
         total: entities.count,
         page: params[:page],
         per_page: 16,
@@ -74,7 +74,7 @@ class EntitiesController < ApplicationController
       by_relation_name(params[:relation_name]).
       newest_first.includes(:kind)
 
-    @result = Kor::SearchResult.new(
+    @results = Kor::SearchResult.new(
       total: entities.count,
       page: params[:page],
       per_page: 9,
@@ -100,7 +100,7 @@ class EntitiesController < ApplicationController
       includes(:kind).
       newest_first
 
-    @result = Kor::SearchResult.new(
+    @results = Kor::SearchResult.new(
       total: entities.count,
       page: params[:page],
       per_page: 9,
@@ -111,31 +111,40 @@ class EntitiesController < ApplicationController
   end
 
   def index
-    if params[:query] && @entity = viewable_entities.find_by(:uuid => params[:query][:name])
-      redirect_to web_path(:anchor => entity_path(@entity))
-    else
-      if params[:terms]
+    params[:include] = param_to_array(params[:include], ids: false)
+    params[:ids] = param_to_array(params[:ids])
+    
+    respond_to do |format|
+      format.json do
         @results = kor_graph.search(:attribute,
-          criteria: {name: params[:terms], relation_name: params[:relation_name]},
-          per_page: params[:per_page]
-        )
-        render :json => {
-          "ids" => @results.ids,
-          "total" => @results.total,
-          "records" => @results.items,
-          "raw_records" => @results.items.as_json(:methods => [:kind])
-        }
-      else
-        @query = kor_graph.search(:attribute,
-          criteria: params[:query],
+          criteria: {
+            entity_id: params[:ids],
+            name: params[:terms],
+            relation_name: params[:relation_name],
+            kind_id: params[:kind_id]
+          },
+          media: params[:include_media],
+          per_page: params[:per_page],
           page: params[:page]
         )
-        render :layout => 'small_normal_bare'
+      end
+      format.html do
+        if params[:query] && @entity = viewable_entities.find_by(:uuid => params[:query][:name])
+          redirect_to web_path(:anchor => entity_path(@entity))
+        else
+          @query = kor_graph.search(:attribute,
+            criteria: params[:query],
+            page: params[:page]
+          )
+          render :layout => 'small_normal_bare'
+        end
       end
     end
   end
 
   def show
+    params[:include] = param_to_array(params[:include], ids: false)
+
     @entity = Entity.includes(
       :medium, :kind, :collection, :datings, :creator, :updater, 
       authority_groups: :authority_group_category

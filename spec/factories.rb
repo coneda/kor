@@ -10,6 +10,7 @@ FactoryGirl.define do
     factory :media do
       name "Medium"
       plural_name "Media"
+      uuid Kind::MEDIA_UUID
       settings { {:naming => false} }
     end
 
@@ -113,11 +114,10 @@ FactoryGirl.define do
 
     factory :work do
       name "A entity"
-      kind { Kind.find_or_create_by :name => "Werk" }
+      kind { Kind.find_or_create_by name: 'Werk', plural_name: 'Werke' }
 
       factory :mona_lisa do
         name "Mona Lisa"
-        # datings [EntityDating.where(:dating_string => "1533").first || FactoryGirl.build(:d1533)]
 
         dataset do
           {:gnd => '12345'}
@@ -147,7 +147,7 @@ FactoryGirl.define do
 
     factory :location do
       name "A location"
-      kind { Kind.find_or_create_by :name => "Ort" }
+      kind { Kind.find_or_create_by name: "Ort", plural_name: 'Orte' }
 
       factory :united_kingdom do
         name "United Kingdom"
@@ -164,7 +164,7 @@ FactoryGirl.define do
 
     factory :person do
       name "A person"
-      kind { Kind.find_or_create_by :name => "Person" }
+      kind { Kind.find_or_create_by name: 'Person', plural_name: 'People' }
 
       factory :jack do
         name "Jack"
@@ -181,7 +181,7 @@ FactoryGirl.define do
 
     factory :institution do
       name "An institution"
-      kind { Kind.find_or_create_by :name => "Institution" }
+      kind { Kind.find_or_create_by name: 'Institution', plural_name: 'Institutionen' }
     end
 
 

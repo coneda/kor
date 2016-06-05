@@ -11,7 +11,13 @@ class KindsController < ApplicationController
   end
 
   def show
-    redirect_to :action => 'index'
+    @kind = Kind.find(params[:id])
+    
+    respond_to do |format|
+      format.json do
+        render :json => @kind
+      end
+    end
   end
 
   def new
@@ -27,7 +33,7 @@ class KindsController < ApplicationController
 
     if @kind.save
       flash[:notice] = I18n.t( 'objects.create_success', :o => Kind.model_name.human )
-      redirect_to(@kind)
+      redirect_to :action => 'index'
     else
       render :action => "new"
     end

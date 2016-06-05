@@ -8,7 +8,7 @@ kor.directive "korRelationship", ["entities_service", "session_service",
         entity: "=korEntity"
         master_toggle: "=korMasterToggle"
         existing: "@korExisting"
-        is_medium: "@korIsMedium"
+        kor_is_medium: "@korIsMedium"
       }
       replace: true
       link: (scope, element, attrs) ->
@@ -53,14 +53,14 @@ kor.directive "korRelationship", ["entities_service", "session_service",
         scope.destroy = (event) ->
           event.preventDefault()
 
-          if confirm($(event.target).attr('kor-confirm'))
+          if confirm($(event.target).parent().attr('kor-confirm'))
             rss.destroy(scope.directed_relationship.relationship_id).success (data) ->
               kd.set_notice(data.message)
               scope.$emit 'relationship-saved'
 
         load_media = ->
           es.deep_media_load(scope.directed_relationship.to_id, scope.page).success (data) ->
-            scope.media = kt.in_groups_of(data, 3, true)
+            scope.media = kt.in_groups_of(data.records, 3, true)
 
         scope.close_editor =  -> scope.editing = false
 

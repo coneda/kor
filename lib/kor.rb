@@ -1,31 +1,7 @@
 module Kor
   
-  def self.env_part
-    Rails.env == 'production' ? '' : "#{Rails.env}."
-  end
-  
-  def self.config_root
-    "#{Rails.root}/config"
-  end
-
-  def self.default_config_file
-    "#{config_root}/kor.defaults.yml"
-  end
-  
-  def self.config_file
-    "#{config_root}/kor.yml"
-  end
-  
-  def self.app_config_file
-    "#{config_root}/kor.app.#{env_part}yml"
-  end
-
   def self.config(reload = (Rails.env == 'development'))
-    if reload || @config.blank?
-      @config = Kor::Config.new(default_config_file, config_file, app_config_file)
-    end
-    
-    @config
+    Kor::Config.instance(reload)
   end
   
   def self.help(controller, action)
@@ -47,14 +23,28 @@ module Kor
     File.read("#{Rails.root}/config/version.txt").strip
   end
 
+  def self.commit
+    File.read "#{Rails.root}/REVISION"
+  rescue Errno::ENOENT => e
+    nil
+  end
+
   def self.source_code_url
-    Kor.config["app.source_code_url"].gsub(/\{\{version\}\}/, Kor.version)
+    if version.match(/\-pre$/)
+      if self.commit
+        Kor.config["app.sources.pre_release"].gsub(/\{\{commit\}\}/, Kor.commit)
+      else
+        Kor.config['app.sources.default']
+      end
+    else
+      Kor.config["app.sources.release"].gsub(/\{\{version\}\}/, Kor.version)
+    end
   end
 
   def self.repository_uuid
     unless Kor.config["maintainer.repository_uuid"]
       Kor.config["maintainer.repository_uuid"] = SecureRandom.uuid
-      Kor.config(false).store Kor.app_config_file
+      Kor.config(false).store Kor::Config.app_config_file
     end
 
     Kor.config["maintainer.repository_uuid"]
@@ -65,34 +55,6 @@ module Kor
       (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
   end
 
-
-  # TODO: remove if tests pass
-  # def self.logger
-  #   unless @logger
-  #     @logger = Logger.new( Kor.config['logging']['file'] )
-  #     @logger.level = case Kor.config['logging']['level']
-  #       when 'debug' then Logger::DEBUG
-  #       when 'info' then Logger::INFO
-  #       when 'warn' then Logger::WARN
-  #       when 'error' then Logger::ERROR
-  #       when 'fatal' then Logger::FATAL
-  #       else Logger::UNKNOWN
-  #     end
-  #   end
-  #   @logger
-  # end
-
-  # def self.log_message(progname, message)
-  #   "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} >> #{progname}: #{message}"
-  # end
-
-  # def self.debug(progname, message)
-  #   logger.debug log_message(progname, message)
-  # end
-
-  # def self.info(progname, message)
-  #   logger.info log_message(progname, message)
-  # end
 
   ####################### expiries #############################################
 
@@ -133,7 +95,6 @@ module Kor
     )
   end
 
-
   def self.array_wrap(object)
     if object.is_a?(Array)
       object
@@ -147,6 +108,12 @@ module Kor
       object.collect{|o| id_for_model(o) }
     else
       object.is_a?(ActiveRecord::Base) ? object.id : object
+    end
+  end
+
+  def self.video_processor
+    @video_processor ||= begin
+      system('avconv -version > /dev/null 2> /dev/null') ? 'avconv' : 'ffmpeg'
     end
   end
 

@@ -109,8 +109,8 @@ Feature: Inplace relationship editor
     Given I am logged in as "admin"
     And the entity "Leonardo" of kind "person/people"
     When I go to the entity page for "Leonardo"
+    And I wait for "2" seconds
     And I click element "[data-name=plus]" within ".relationships"
-    And I save a screenshot
     Then I should see "There is no relation provided for this combination of entity types"
     Given the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
     When I refresh the page
@@ -160,7 +160,7 @@ Feature: Inplace relationship editor
     And I click element "[kor-id='3']"
     Then I should not see "is similar to" within "[kor-relation-selector]"
     And I should see "is equivalent" within "[kor-relation-selector]"
-    When I wait for "1" second
+    When I wait for "2" second
     And I click element "[kor-id='3']" again
     Then I should see "is similar to" within "[kor-relation-selector]"
     And I should see "is equivalent" within "[kor-relation-selector]"

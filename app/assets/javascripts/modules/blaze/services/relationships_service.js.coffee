@@ -5,7 +5,7 @@ kor.service "relationships_service", [
       show: (id) ->
         request = {
           method: "get"
-          url: "/directed_relationships/#{id}.json"
+          url: "/relationships/#{id}.json"
         }
         http(request)
 

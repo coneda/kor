@@ -118,13 +118,16 @@ class Api::OaiPmh::BaseController < BaseController
       token = Digest::SHA2.hexdigest("resumptionToken #{Time.now} #{rand}")
       base_dir = "#{Rails.root}/tmp/resumption_tokens"
       system "mkdir -p #{base_dir}"
-      system "find #{base_dir} -mtime +1 -exec rm {} \;"
+
+      # TODO catch the case where no files are found. Currently this writes to
+      # stderr: find: missing argument to `-exec'
+      system "find #{base_dir} -mtime +1 -exec rm {} \\;"
 
       File.open "#{base_dir}/#{token}.json", "w+" do |f|
         f.write JSON.dump(
-          'page': params['page'],
-          'per_page': params['per_page'],
-          'metadataPrefix': params['metadataPrefix']
+          'page' => params['page'],
+          'per_page' => params['per_page'],
+          'metadataPrefix' => params['metadataPrefix']
         )
       end
 

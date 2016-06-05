@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 4.2.5'
+gem 'rails', '~> 4.2.6'
 gem 'responders', '~> 2.0'
 
 gem 'delayed_paperclip'
@@ -29,6 +29,7 @@ gem 'sass-rails'
 gem 'jbuilder'
 gem 'test-unit'
 gem 'ruby-progressbar'
+gem 'colorize'
 
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load 
@@ -56,7 +57,7 @@ end
 group :development do
   gem 'method_profiler'
   gem 'debase-ruby_core_source'
-  gem 'perftools.rb'
+  # gem 'perftools.rb'
   gem 'rubocop', require: false
   gem 'brakeman', require: false
 end
@@ -69,6 +70,9 @@ end
 
 group :production do
   gem 'puma'
+end
+
+group :production, :test do
   gem 'therubyracer'
   gem 'uglifier'
 end
