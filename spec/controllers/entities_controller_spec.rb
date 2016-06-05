@@ -31,7 +31,7 @@ RSpec.describe EntitiesController, :type => :controller do
     expect(Entity.last.synonyms.first).to eql("Nouremberg")
   end
   
-  it "should handle property attributes" do
+  it "should handle property attributes", elastic: true do
     default_setup
     current_user @admin
 
