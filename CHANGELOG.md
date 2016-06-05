@@ -26,6 +26,9 @@ commit history on GitHub.
   `collection_admin` and `developer` are now just `admin`
 * environment variables like `REMOTE_USER` can now be used for authentication
 * kinds now require their plural name to be specified
+* email configuration removed from web-ui, site operator is used as sender and
+  email server configuration is exclusively done in the config file
+* started refactoring the JSON api, see README.md
 
 ### Internal
 
