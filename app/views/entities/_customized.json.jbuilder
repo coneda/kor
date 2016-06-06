@@ -102,13 +102,13 @@ if additions.include?('degree') || additions.include?('all')
 end
 
 if additions.include?('users') || additions.include?('all')
-  if entity.creator
+  if entity.creator_id && entity.creator
     json.creator do
       json.partial! 'users/customized', user: entity.creator
     end
   end
 
-  if entity.updater_id
+  if entity.updater_id && entity.updater
     json.updater do
       json.partial! 'users/customized', user: entity.updater
     end
