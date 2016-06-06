@@ -10,6 +10,4 @@
   = f.kor_input :description
   = f.kor_input :to_kind_ids, :control => f.select(:to_kind_ids, Kind.for_select, {}, :multiple => true)
 
-  = f.kor_input :wikidata_id
-
   = f.kor_submit :data => {:confirm => I18n.t('confirm.long_time_warning')}

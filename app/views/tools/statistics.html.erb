@@ -34,9 +34,6 @@
       </tr>
     </thead>
     <tbody>
-      <% with_id = Entity.joins(:identifiers).group("kind_id").count %>
-      <% with_wikidata_id = Entity.group(:kind_id).
-        where("wikidata_id IS NOT NULL AND wikidata_id != ''").count %>
       <% Entity.group("kind_id").count.sort{|x, y| y.last - x.last}.each do |stat| %>
         <tr>
           <td><%= h Kind.find(stat.first).name %></td>
