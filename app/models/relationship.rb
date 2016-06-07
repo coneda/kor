@@ -111,7 +111,7 @@ class Relationship < ActiveRecord::Base
     result = result.where('NOT (' + conditions.join(' OR ') + ')', *values)
   }  
 
-  def self.relate_and_save( from_id, relation_name, to_id, properties = [] )
+  def self.relate_and_save(from_id, relation_name, to_id, properties = [])
     r = relate(from_id, relation_name, to_id, properties)
     r.save
     r

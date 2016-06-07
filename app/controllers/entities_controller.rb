@@ -113,6 +113,7 @@ class EntitiesController < ApplicationController
   def index
     params[:include] = param_to_array(params[:include], ids: false)
     params[:ids] = param_to_array(params[:ids])
+    params[:kind_id] = param_to_array(params[:kind_id])
     
     respond_to do |format|
       format.json do
