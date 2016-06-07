@@ -11,6 +11,8 @@ all:
     current_history_length: 5
     max_foreground_group_download_size: 10
     max_file_upload_size: "100"
+    max_results_per_request: 500
+    max_included_results_per_result: 4
 
     sources:
       release: "https://github.com/coneda/kor/releases/tag/{{version}}"

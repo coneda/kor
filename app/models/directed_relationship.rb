@@ -17,7 +17,7 @@ class DirectedRelationship < ActiveRecord::Base
   end
   scope :pageit, lambda { |page, per_page|
     page = (page || 1).to_i - 1
-    per_page = [(per_page || 10).to_i, 500].min
+    per_page = [(per_page || 10).to_i, Kor.config['app']['max_results_per_request']].min
     limit(per_page).offset(per_page * page)
   }
   scope :by_from_entity, lambda { |entity_id| 

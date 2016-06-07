@@ -170,12 +170,17 @@ Some options can be configured via web interface: As an admin, navigate to
 
 #### Specific configuration options
 
-* `custom_css [path, default: data/custom.css`]: if you specify a file 
+* `custom_css [path, default: data/custom.css]`: if you specify a file 
   here and given it exists, it will be included as a customized stylesheet after
   all other style sheets. The file has to be readable by the web server. This 
   allows you to change the entire graphical design of ConedaKOR. To make this
   file persist across upgrades, we recommend to choose a path below `data/`
   which is usually symlinked to a permanent location.
+* `max_results_per_request [integer, default: 500]`: the maximum allowed
+  page size when requesting multiple items via JSON.
+* `max_included_results_per_result [integer, default: 4]`: the maximum allowed
+  page size items related to the requested one. If only a single item is
+  requested, `max_results_per_request` applies instead.
 
 ### Backups
 
@@ -391,11 +396,17 @@ authentication credentials.
       given relation name
     * `kind_id`: limits to entities that are of the given kind
     * `include_media`: whether to include media entities (default: false)
-    * `include`: a list of aspects to include within each entity, comma separated, choose one or more of `technical`, `synonyms`, `datings`, `dataset`, `properties`, `relations`, `media_relations`, `kind`, `collection`, `user_groups`, `groups`, `degree`, `users`, `fields`, `generators` and `all`.
+    * `include`: a list of aspects to include within each entity, comma separated, choose one or more of `technical`, `synonyms`, `datings`, `dataset`, `properties`, `relations`, `media_relations`,`related`, `kind`, `collection`, `user_groups`, `groups`, `degree`, `users`, `fields`, `generators` and `all`.
     * `page`: requests a specific page from the resultset (default: 1)
-    * `per_page`: sets the page size (default: 10, max 100)
+    * `per_page`: sets the page size (default: 10, max: 500)
+    * `related_kind_id`: sets a filter for kind ids on related entities
+    * `related_relation_name`: sets a filter for relation names on related entities
+    * `related_per_page`: sets the page size for related entities [default: 1, max: 4]
 * `/entities/1.json`: returns the entity with id 1, requires `view` permissions for that entity
     * `include`: see parameters for `/entities.json`
+    * `related_kind_id`: see parameters for `/entities.json`
+    * `related_relation_name`: see parameters for `/entities.json`
+    * `related_per_page`: see parameters for `/entities.json` [different max of 500]
 * `/entities/1/relationships.json`, or `/relationships`: returns the relationships (for that entity), returns only viewable content, returns resultset of directed relationships
     * `from_entity_id`: limits by the source entity, comma-separated
     * `to_entity_id` or `entity_id`: limits by the target entity, comma-separated
@@ -403,7 +414,7 @@ authentication credentials.
     * `from_kind_id`: limits by the source's kind, comma-separated
     * `to_kind_id`: limits by the target's kind, comma-separated
     * `page`: requests a specific page from the resultset (default: 1)
-    * `per_page`: sets the page size (default: 10, max 500)
+    * `per_page`: sets the page size (default: 10, max: 500)
 
 Resultsets are JSON objects having this structure:
 
@@ -416,6 +427,10 @@ Resultsets are JSON objects having this structure:
     }
 
 while `ìds` and `records` are optional.
+
+Be aware that, if you are requesting related entities to be embedded within
+other entities, those are embedded as a list of directed relationships which
+in turn contain the entity itself.
 
 ### Generating a virtual appliance
 

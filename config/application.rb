@@ -94,3 +94,6 @@ end
 # TODO: use https://github.com/bkeepers/dotenv
 # TODO: session panel is not visible on welcome page
 # TODO: add https://www.ruby-lang.org/en/documentation/installation/ to the install docs
+# TODO: unify test setup steps
+# TODO: unify default params and sanitation for pagination scopes
+# TODO: instead of describing config defaults in the readme, refer to kor.defaults.yml which should also yield descriptions

@@ -310,6 +310,7 @@ RSpec.describe EntitiesController, :type => :controller do
         generators: [FactoryGirl.create(:language_indicator)],
         fields: [Field.new(name: 'viaf_id', show_label: 'stack')]
       )
+      @people = FactoryGirl.create :people
       @mona_lisa = FactoryGirl.create(:mona_lisa, 
         synonyms: ['La Gioconda'],
         datings: [FactoryGirl.build(:d1533)],
@@ -363,7 +364,7 @@ RSpec.describe EntitiesController, :type => :controller do
       )
     end
 
-    it 'should include the relations on demand' do
+    it 'should include the media relations on demand' do
       get :show, id: @mona_lisa.id, format: 'json'
       data = JSON.parse(response.body)
       expect(data['media_relations']).to be_nil
@@ -371,6 +372,64 @@ RSpec.describe EntitiesController, :type => :controller do
       get :show, id: @mona_lisa.id, include: ['media_relations'], format: 'json'
       data = JSON.parse(response.body)
       expect(data['media_relations']).to eq({})
+    end
+
+    it 'should include related entities on demand' do
+      mona = FactoryGirl.create :person, name: 'Mona'
+      der_schrei = FactoryGirl.create :der_schrei
+      picture_a = FactoryGirl.create :picture_a
+      picture_b = FactoryGirl.create :picture_b
+      FactoryGirl.create :shows
+      FactoryGirl.create :depicts
+      Relationship.relate_and_save picture_a, 'shows', @mona_lisa
+      Relationship.relate_and_save picture_b, 'depicts', @mona_lisa
+      # Relationship.relate_and_save picture_a, 'shows', mona
+      # Relationship.relate_and_save @mona_lisa, 'shows', 
+      # Relationship.relate_and_save picture_b, 'shows', der_schrei
+
+      get :show, id: @mona_lisa.id, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['related']).to be_nil
+
+      get :show, id: @mona_lisa.id, include: ['related'], format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['related'].size).to eq(3)
+      expect(data['related'][0]['relation_name']).to eq('has been created by')
+      expect(data['related'][0]['to']['name']).to eq('Leonardo da Vinci')
+      expect(data['related'][1]['relation_name']).to eq('is shown by')
+      expect(data['related'][1]['to']['id']).to eq(picture_a.id)
+      expect(data['related'][1]['to']['medium']['url']).to include(
+        'icon', 'thumbnail', 'preview', 'screen', 'normal', 'original'
+      )
+      expect(data['related'][2]['relation_name']).to eq('is depicted by')
+      expect(data['related'][2]['to']['id']).to eq(picture_b.id)
+
+      get(:show,
+        id: @mona_lisa.id,
+        include: ['related'],
+        format: 'json',
+        related_kind_id: @people.id
+      )
+      data = JSON.parse(response.body)
+      expect(data['related'].size).to eq(1)
+
+      get(:show,
+        id: @mona_lisa.id,
+        include: ['related'],
+        format: 'json',
+        related_relation_name: 'is depicted by'
+      )
+      data = JSON.parse(response.body)
+      expect(data['related'].size).to eq(1)
+
+      get(:show,
+        id: @mona_lisa.id,
+        include: ['related'],
+        format: 'json',
+        related_relation_name: ['is depicted by', 'is shown by']
+      )
+      data = JSON.parse(response.body)
+      expect(data['related'].size).to eq(2)
     end
 
     it 'should include synonyms on demand' do

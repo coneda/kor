@@ -114,7 +114,13 @@ class EntitiesController < ApplicationController
     params[:include] = param_to_array(params[:include], ids: false)
     params[:ids] = param_to_array(params[:ids])
     params[:kind_id] = param_to_array(params[:kind_id])
-    
+    params[:related_per_page] = [
+      (params[:related_per_page] || 1).to_i,
+      Kor.config['app']['max_included_results_per_result']
+    ].min
+    params[:related_relation_name] = param_to_array(params[:related_relation_name], ids: false)
+    params[:related_kind_id] = param_to_array(params[:related_kind_id])
+
     respond_to do |format|
       format.json do
         @results = kor_graph.search(:attribute,
@@ -145,6 +151,12 @@ class EntitiesController < ApplicationController
 
   def show
     params[:include] = param_to_array(params[:include], ids: false)
+    params[:related_per_page] = [
+      (params[:related_per_page] || 10).to_i,
+      Kor.config['app']['max_results_per_request']
+    ].min
+    params[:related_relation_name] = param_to_array(params[:related_relation_name], ids: false)
+    params[:related_kind_id] = param_to_array(params[:related_kind_id])
 
     @entity = Entity.includes(
       :medium, :kind, :collection, :datings, :creator, :updater, 

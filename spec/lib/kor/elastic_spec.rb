@@ -300,4 +300,13 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records.size).to eq(2)
   end
 
+  it 'should allow searching within several kinds' do
+    @works = FactoryGirl.create :works
+    FactoryGirl.create :mona_lisa
+    described_class.index_all
+
+    results = @elastic.search(kind_id: [@works.id, @locations.id])
+    expect(results.records.size).to eq(3)
+  end
+
 end
