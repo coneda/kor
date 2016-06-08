@@ -563,7 +563,7 @@ class Entity < ActiveRecord::Base
   }
   scope :pageit, lambda { |page, per_page|
     page = [(page || 1).to_i, 1].max
-    per_page = [(per_page || 20).to_i, 100].min
+    per_page = [(per_page || 20).to_i, Kor.config['app']['max_results_per_request']].min
 
     offset((page - 1) * per_page).limit(per_page)
   }
