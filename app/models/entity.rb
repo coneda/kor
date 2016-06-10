@@ -470,12 +470,6 @@ class Entity < ActiveRecord::Base
       all
     end
   }
-  # TODO: this is the same as 'only_kinds'
-  scope :is_a, lambda { |kind_id|
-    kind = Kind.find_by_name(kind_id.to_s)
-    kind ||= Kind.find_by_id(kind_id)
-    kind ? where("entities.kind_id = ?", kind_id) : all
-  }
   # TODO: still needed?
   scope :named_exactly_like, lambda {|value| where("name like :value or concat(name,' (',distinct_name,')') like :value", :value => value) }
   # TODO: rewrite this not to collect singular entity ids

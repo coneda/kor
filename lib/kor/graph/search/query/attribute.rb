@@ -53,7 +53,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
       else
         tmp_result = Entity.allowed(user, :view).
           by_id(criteria[:entity_id]).
-          is_a(criteria[:kind_id]).
+          only_kinds(criteria[:kind_id]).
           named_like(user, criteria[:name]).
           has_property(user, criteria[:properties]).
           dated_in(criteria[:dating_string]).
