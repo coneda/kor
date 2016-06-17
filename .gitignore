@@ -14,6 +14,7 @@ public/custom.css
 config/kor.yml
 config/kor.test.yml
 config/kor.development.yml
+config/kor.app.development.yml
 config/database.yml
 config/legal.txt
 config/contact.txt

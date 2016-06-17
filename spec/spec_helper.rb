@@ -2,6 +2,8 @@ require 'simplecov'
 
 require 'vcr'
 
+p "LOADING"
+
 RSpec.configure do |config|
   config.order = "random"
 
