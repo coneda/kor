@@ -52,6 +52,7 @@ RSpec.describe EntitiesController, :type => :controller do
   end
   
   it "should handle dating attributes" do
+    FactoryGirl.create :media
     FactoryGirl.create :location, name: 'Nürnberg', datings_attributes: [
       {label: 'Datierung', dating_string: '1599'},
       {label: 'Datierung',  dating_string: '1843'}

@@ -36,7 +36,12 @@ Capybara.register_driver :poltergeist do |app|
   )
 end
 
+Capybara.register_driver :chromium do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+end
+
 Capybara.default_max_wait_time = 5
+Capybara.javascript_driver = :chromium
 
 if ENV['HEADLESS']
   Capybara.javascript_driver = :poltergeist
