@@ -20,8 +20,8 @@ RSpec.configure do |config|
 
     XmlHelper.compile_validator
 
-    DatabaseCleaner.strategy = :deletion
-    DatabaseCleaner.clean_with :deletion
+    DatabaseCleaner.clean_with :truncation
+    DatabaseCleaner.strategy = :transaction
   end
 
   config.around(:each) do |example|
@@ -32,8 +32,12 @@ RSpec.configure do |config|
 
   config.before :each do |example|
     FactoryGirl.reload
+
     if example.metadata[:elastic]
+      Kor::Elastic.enable
       Kor::Elastic.reset_index
+    else
+      Kor::Elastic.disable
     end
 
     ActionMailer::Base.deliveries = []

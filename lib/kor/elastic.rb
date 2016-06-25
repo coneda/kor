@@ -11,16 +11,25 @@ class Kor::Elastic
     end
   end
 
-  def self.enabled?
-    !!config
-  end
-
   def self.config
     @config ||= Rails.configuration.database_configuration[Rails.env]['elastic']
   end
 
   def self.enabled?
-    config.present?
+    case @enabled
+      when true then true
+      when false then false
+      else
+        !Rails.env.test?
+    end
+  end
+
+  def self.enable
+    @enabled = true
+  end
+
+  def self.disable
+    @enabled = false
   end
 
   def self.create_index
@@ -100,6 +109,8 @@ class Kor::Elastic
   end
 
   def self.index_all(options = {})
+    return unless enabled?
+
     options.reverse_merge! :full => false, :progress => false
 
     @cache = {}
@@ -334,6 +345,8 @@ class Kor::Elastic
   end
 
   def count
+    return 0 unless self.class.enabled?
+
     response = self.class.request('get', '/entities/_count')
     
     if response.first == 404

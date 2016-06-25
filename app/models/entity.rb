@@ -386,9 +386,11 @@ class Entity < ActiveRecord::Base
 
   def is_medium?
     !!self[:medium_id] ||
-    !!self.medium || 
-    (self.kind == Kind.medium_kind) ||
-    (self.kind_id == Kind.medium_kind_id)
+    !!self.medium ||
+    !!Kind.medium_kind && (
+      (self.kind_id == Kind.medium_kind_id) ||
+      (self.kind == Kind.medium_kind)
+    )
   end
 
 

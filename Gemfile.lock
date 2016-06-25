@@ -49,7 +49,7 @@ GEM
     acts-as-taggable-on (3.5.0)
       activerecord (>= 3.2, < 5)
     addressable (2.4.0)
-    angularjs-rails (1.4.8)
+    angularjs-rails (1.5.6)
     arel (6.0.3)
     ast (2.2.0)
     awesome_nested_set (3.0.3)
@@ -299,6 +299,8 @@ GEM
     terminal-table (1.5.2)
     test-unit (3.1.7)
       power_assert
+    test_after_commit (1.1.0)
+      activerecord (>= 3.2)
     therubyracer (0.11.4)
       libv8 (~> 3.11.8.12)
       ref
@@ -335,7 +337,7 @@ DEPENDENCIES
   RedCloth
   activerecord-session_store
   acts-as-taggable-on (~> 3.5)
-  angularjs-rails (~> 1.4.8)
+  angularjs-rails (~> 1.5.2)
   awesome_nested_set (~> 3.0.0)
   brakeman
   capybara
@@ -376,6 +378,7 @@ DEPENDENCIES
   spreadsheet
   sprockets-rails
   test-unit
+  test_after_commit
   therubyracer
   thin
   uglifier

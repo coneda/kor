@@ -21,7 +21,7 @@ gem 'acts-as-taggable-on', '~> 3.5'
 gem 'sprockets-rails'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'angularjs-rails', '~> 1.4.8'
+gem 'angularjs-rails', '~> 1.5.2'
 gem 'plupload-rails'
 gem 'coffee-rails'
 gem 'sass-rails'
@@ -51,6 +51,7 @@ group :test do
   gem 'vcr'
   gem 'webmock'
   gem 'simplecov', require: false
+  gem 'test_after_commit'
 end
 
 group :development do
