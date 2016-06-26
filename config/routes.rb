@@ -132,6 +132,7 @@ Rails.application.routes.draw do
     match '/authentication/denied', :action => 'denied', :as => :denied, :format => :html, :via => :get
     match '/authenticate', :action => 'login', :via => :post
     match '/login', :action => 'form', :as => :login, :via => :get
+    match '/login', :action => 'login', :via => :post
     match '/logout', :action => 'logout', :as => :logout, :via => :get
     match '/password_forgotten', :action => 'password_forgotten', :via => :get
     match '/password_reset', :action => 'personal_password_reset', :via => :post

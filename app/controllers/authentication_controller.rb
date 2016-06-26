@@ -45,12 +45,33 @@ class AuthenticationController < ApplicationController
         account.update_attributes(:login_attempts => [])
 
         if account.expires_at && (account.expires_at <= Time.now)
-          flash[:error] = I18n.t("errors.account_expired")
-          redirect_to :action => "form"
+          respond_to do |format|
+            format.html do
+              flash[:error] = I18n.t("errors.account_expired")
+              redirect_to action: "form"
+            end
+            format.json do
+              render(
+                json: {'message' => I18n.t("errors.account_expired")},
+                status: 400
+              )
+            end
+          end
         elsif !account.active
           reset_session
-          flash[:error] = I18n.t("errors.account_inactive")
-          redirect_to :action => "form"
+
+          respond_to do |format|
+            format.html do
+              flash[:error] = I18n.t("errors.account_inactive")
+              redirect_to action: 'form'
+            end
+            format.json do
+              render(
+                json: {'message' => I18n.t("errors.account_inactive")},
+                status: 400
+              )
+            end
+          end
         else
           account.fix_cryptography(params[:password])
           create_session(account)
@@ -62,10 +83,21 @@ class AuthenticationController < ApplicationController
           account_without_password.add_login_attempt
           account_without_password.save
         end
-        # reset_session cant be done here because of http://railsforum.com/viewtopic.php?id=1611
+        # reset_session cant be done here because of http://railsforum.com/viewtopic.php?id=1611 (dead link)
         # reset_session
-        flash[:error] = I18n.t("errors.user_or_pass_refused")
-        redirect_to :action => "form"
+
+        respond_to do |format|
+          format.html do
+            flash[:error] = I18n.t("errors.user_or_pass_refused")
+            redirect_to :action => "form"
+          end
+          format.json do
+            render(
+              json: {'message' => I18n.t("errors.user_or_pass_refused")},
+              status: 400
+            )
+          end
+        end
       end
     end
   end
@@ -100,14 +132,21 @@ class AuthenticationController < ApplicationController
     end
 
     def redirect_after_login
-      r_to = (back || current_user.home_page) || Kor.config['app.default_home_page'] || root_path
+      respond_to do |format|
+        format.html do
+          r_to = (back || current_user.home_page) || Kor.config['app.default_home_page'] || root_path
 
-      if params[:fragment].present?
-        params[:fragment] = nil if params[:fragment].match('{{')
-        r_to += "##{params[:fragment]}" if params[:fragment].present?
+          if params[:fragment].present?
+            params[:fragment] = nil if params[:fragment].match('{{')
+            r_to += "##{params[:fragment]}" if params[:fragment].present?
+          end
+
+          redirect_to r_to
+        end
+        format.json do
+          redirect_to '/api/1.0/info'
+        end
       end
-
-      redirect_to r_to
     end
 
     # TODO: still needed?

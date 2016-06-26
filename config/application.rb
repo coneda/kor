@@ -97,3 +97,4 @@ end
 # TODO: unify test setup steps
 # TODO: unify default params and sanitation for pagination scopes
 # TODO: instead of describing config defaults in the readme, refer to kor.defaults.yml which should also yield descriptions
+# TODO: clean up translation files (remove obsolete models)
