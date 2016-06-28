@@ -25,7 +25,7 @@ class ConfigController < ApplicationController
     config = Kor::Config.new(Kor::Config.app_config_file)
     config.update(params[:config])
     config.store(Kor::Config.app_config_file)
-    Kor.config true
+    Kor::Config.reload!
     system "touch #{Rails.root}/tmp/restart.txt"
     flash[:message] = I18n.t('messages.app_settings_stored')
     I18n.default_locale = Kor.config["app.default_locale"] || :en

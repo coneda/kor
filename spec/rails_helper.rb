@@ -13,9 +13,6 @@ RSpec.configure do |config|
   # config.infer_spec_type_from_file_location!
 
   config.before :all do
-    system "rm -f #{Rails.root}/config/kor.app.test.yml"
-    Kor.config true
-
     system "cat /dev/null >| #{Rails.root}/log/test.log"
 
     XmlHelper.compile_validator
@@ -44,6 +41,6 @@ RSpec.configure do |config|
     system "rm -rf #{Medium.media_data_dir}/*"
     system "rm -f #{Kor::Config.app_config_file}"
     system "rm -rf #{Rails.root}/tmp/export_spec"
-    Kor.config(true)
+    Kor::Config.reload!
   end
 end

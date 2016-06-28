@@ -1,7 +1,7 @@
 module Kor
   
-  def self.config(reload = (Rails.env == 'development'))
-    Kor::Config.instance(reload)
+  def self.config
+    Kor::Config.instance
   end
   
   def self.help(controller, action)
@@ -44,7 +44,7 @@ module Kor
   def self.repository_uuid
     unless Kor.config["maintainer.repository_uuid"]
       Kor.config["maintainer.repository_uuid"] = SecureRandom.uuid
-      Kor.config(false).store Kor::Config.app_config_file
+      Kor.config.store Kor::Config.app_config_file
     end
 
     Kor.config["maintainer.repository_uuid"]

@@ -31,13 +31,16 @@ module Kor
       "#{config_root}/kor.app.#{env_part}yml"
     end
 
-    def self.instance(reload = nil)
-      reload = (env == 'development') if reload == nil
-      if reload || [nil, {}].include?(@config)
-        @config = new(default_config_file, config_file, app_config_file)
+    def self.instance
+      if @instance.blank? || env == 'development'
+        reload!
       end
-      
-      @config
+
+      @instance
+    end
+
+    def self.reload!
+      @instance = new(default_config_file, config_file, app_config_file)
     end
 
     def initialize(*args)
@@ -69,7 +72,7 @@ module Kor
         FileUtils.mkdir_p File.dirname(file)
         {}
       end
-      
+
       data = self.class.deep_merge(old_state, env => @config)
       data = self.class.remove_indifferent_access(data)
       data = YAML.dump(data)
