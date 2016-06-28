@@ -97,3 +97,11 @@ kor.filter 'is_medium', [
         throw "can't determine kind id for #{input}"
         false
 ]
+
+kor.filter 'remove_ws', [->
+  (input) ->
+    try
+      input.replace(/\s+/g, '')
+    catch e
+      input
+]
