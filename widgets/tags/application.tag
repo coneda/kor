@@ -17,9 +17,17 @@
     @keyframes kor-appear {
       from {
         opacity: 0;
-        transform: rotateY(180deg)
+        transform: rotateY(180deg);
       };
       to {opacity: 100;};
+    }
+
+    @keyframes kor-fade {
+      from {opacity: 100;}
+      to {
+        opacity: 0;
+        transform: rotateY(90deg);
+      }
     }
 
     #page-container {
@@ -33,8 +41,11 @@
       animation-duration: 1s;
     }
 
-    kor-page {
-      /*background-color: yellow;*/
+    .kor-fade-animation {
+      transform-style: preserve-3d;
+      display: block;
+      animation-name: kor-fade;
+      animation-duration: 1s;
     }
   </style>
 

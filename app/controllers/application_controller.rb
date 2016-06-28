@@ -35,27 +35,25 @@ class ApplicationController < BaseController
       end
     end
 
+    rescue_from Exception do |e|
+      binding.pry
+    end
+
     if Rails.env == 'production'
-      rescue_from ActionController::RoutingError, :with => :not_found
-      rescue_from ActiveRecord::RecordNotFound, :with => :not_found
-      rescue_from Exception, :with => :log_exception_and_notify_user
+      Kor::ExceptionLogger.log exception, params: params
+      respond_to do |format|
+        format.html {raise exception}
+        format.json {render json: exception}
+      end
+    else
+      rescue_from StandardError do
+        respond_to do |format|
+          format.html {raise exception}
+          format.json {render json: exception}
+        end
+      end 
     end
     
-    def not_found
-      redirect_to '/404.html'
-    end
-
-    def log_exception_and_notify_user(exception)
-      ExceptionLog.create(
-        :kind => exception.class.to_s,
-        :message => exception.message,
-        :backtrace => exception.backtrace,
-        :params => params
-      )
-      
-      redirect_to '/500.html'
-    end
-
     def authentication
       session[:user_id] ||= if User.guest
         session[:expires_at] = Kor.session_expiry_time

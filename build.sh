@@ -12,6 +12,7 @@ function deps {
     -o $TMP/deps.js
 
   cp widgets/vendor/bootstrap.min.css public/bootstrap.min.css
+  cp -a node_modules/bootstrap/fonts public/
 }
 
 function tags {

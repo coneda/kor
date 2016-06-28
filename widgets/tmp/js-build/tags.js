@@ -1,4 +1,4 @@
-riot.tag2('kor-application', '  <div class="container">\n    <a href="#/login">login</a>\n    <a href="#/welcome">welcome</a>\n    <a href="#/search">search</a>\n  </div>\n\n  <kor-js-extensions></kor-js-extensions>\n  <kor-router></kor-router>\n  <kor-notifications></kor-notifications>\n\n  <div id="page-container" class="container">\n    <kor-page class="kor-appear-animation"></kor-page>\n  </div>\n', '@keyframes kor-appear { from { opacity: 0; transform: rotateY(180deg); } to { opacity: 100; } } #page-container { perspective: 1000px; } .kor-appear-animation { transform-style: preserve-3d; display: block; animation-name: kor-appear; animation-duration: 1s; } kor-page { }', '', function(opts) {
+riot.tag2('kor-application', '  <div class="container">\n    <a href="#/login">login</a>\n    <a href="#/welcome">welcome</a>\n    <a href="#/search">search</a>\n  </div>\n\n  <kor-js-extensions></kor-js-extensions>\n  <kor-router></kor-router>\n  <kor-notifications></kor-notifications>\n\n  <div id="page-container" class="container">\n    <kor-page class="kor-appear-animation"></kor-page>\n  </div>\n', '@keyframes kor-appear { from { opacity: 0; transform: rotateY(180deg); } to { opacity: 100; } } @keyframes kor-fade { from { opacity: 100; } to { opacity: 0; transform: rotateY(90deg); } } #page-container { perspective: 1000px; } .kor-appear-animation { transform-style: preserve-3d; display: block; animation-name: kor-appear; animation-duration: 1s; } .kor-fade-animation { transform-style: preserve-3d; display: block; animation-name: kor-fade; animation-duration: 1s; }', '', function(opts) {
 var mount_page, self;
 
 self = this;
@@ -62,7 +62,7 @@ self = this;
 });
 riot.tag2('kor-loading', '  <span>... loading ...</span>\n', '', '', function(opts) {
 });
-riot.tag2('kor-login', '  <div class="row">\n    <div class="col-md-3 col-md-offset-4">\n      <h3>Login</h3>\n\n      <form class="form" onsubmit="{submit}">\n        <div class="control-group">\n          <label for="kor-login-form-username">Username</label>\n          <input type="text" name="username" class="form-control" id="kor-login-form-username">\n        </div>\n        <div class="control-group">\n          <label for="kor-login-form-password">Password</label>\n          <input type="password" name="password" class="form-control" id="kor-login-form-password">\n        </div>\n        <div class="form-group text-right"></div>\n          <input type="submit" class="form-control btn btn-default">\n        </div>\n      </form>\n    </div>\n  </div>\n', '', '', function(opts) {
+riot.tag2('kor-login', '  <div class="row">\n    <div class="col-md-3 col-md-offset-4">\n      <div class="panel panel-default">\n        <div class="panel-heading">Login</div>\n        <div class="panel-body">\n          <form class="form" onsubmit="{submit}">\n            <div class="control-group">\n              <label for="kor-login-form-username">Username</label>\n              <input type="text" name="username" class="form-control" id="kor-login-form-username">\n            </div>\n            <div class="control-group">\n              <label for="kor-login-form-password">Password</label>\n              <input type="password" name="password" class="form-control" id="kor-login-form-password">\n            </div>\n            <div class="form-group text-right"></div>\n              <input type="submit" class="form-control btn btn-default">\n            </div>\n          </form>\n        </div>\n      </div>\n    </div>\n  </div>\n', '', '', function(opts) {
 var self;
 
 self = this;
@@ -88,7 +88,7 @@ self.submit = function() {
   });
 };
 });
-riot.tag2('kor-notifications', '\n  <ul>\n    <li each="{data in messages}">{data.message}</li>\n  </ul>\n', '', '', function(opts) {
+riot.tag2('kor-notifications', '\n  <ul>\n    <li each="{data in messages}" class="bg-warning" onanimationend="{alert(data)}">\n      <i class="glyphicon glyphicon-exclamation-sign"></i>\n      {data.message}\n    </li>\n  </ul>\n', 'kor-notifications ul { perspective: 1000px; position: absolute; top: 0px; right: 0px; } kor-notifications ul li { padding: 1rem; list-style-type: none; }', '', function(opts) {
 var fading, self;
 
 self = this;
@@ -97,14 +97,17 @@ self.messages = [];
 
 self.history = [];
 
+self.animend = function() {
+  return console.log(arguments);
+};
+
 fading = function(data) {
+  var li;
   self.messages.push(data);
+  self.update();
+  li = $(self.root).find('li').last();
   return setTimeout((function() {
-    var i;
-    i = self.messages.indexOf(data);
-    self.history.push(self.messages[i]);
-    self.messages.splice(i, 1);
-    return self.update();
+    return li.addClass('kor-fade-animation');
   }), 2000);
 };
 
