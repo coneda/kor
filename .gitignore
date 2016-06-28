@@ -5,6 +5,7 @@ log/*
 tmp/*
 data/*
 db/*.sqlite3
+node_modules
 public/media
 public/custom.css
 
