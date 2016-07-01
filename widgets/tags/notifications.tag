@@ -3,8 +3,8 @@
   <ul>
     <li
       each={data in messages}
-      class="bg-warning"
-      onanimationend={alert(data)}
+      class="bg-warning {kor-fade-animation: data.remove}"
+      onanimationend={parent.animend}
     >
       <i class="glyphicon glyphicon-exclamation-sign"></i>
       {data.message}
@@ -32,26 +32,24 @@
     self.messages = []
     self.history = []
 
-    self.animend = -> console.log arguments
+    self.animend = (event) ->
+      i = self.messages.indexOf(event.item.data)
+      self.history.push(self.messages[i])
+      self.messages.splice(i, 1)
+      self.update()
 
     fading = (data) ->
       self.messages.push(data)
       self.update()
 
-      li = $(self.root).find('li').last()
-
       setTimeout(
         (->
-          li.addClass 'kor-fade-animation'
-
+          data.remove = true
+          self.update()
           # $(li).one 'animationend', (event) ->
           #   console.log 'ae'
-          #   i = self.messages.indexOf(data)
-          #   self.history.push(self.messages[i])
-          #   self.messages.splice(i, 1)
-          #   self.update()
         ),
-        2000
+        5000
       )
 
       # setTimeout(

@@ -9,6 +9,7 @@ function deps {
   uglifyjs \
     node_modules/zepto/zepto.min.js \
     node_modules/riot/riot.js \
+    node_modules/riot-route/dist/route.min.js \
     -o $TMP/deps.js
 
   cp widgets/vendor/bootstrap.min.css public/bootstrap.min.css
@@ -20,6 +21,8 @@ function tags {
 }
 
 function build {
+  echo "building on $(date)"
+
   deps
   tags
 

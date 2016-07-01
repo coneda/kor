@@ -9,7 +9,8 @@
     "node-sass": "^3.8.0",
     "onchange": "^2.5.0",
     "parallelshell": "^2.0.0",
-    "riot": "^2.4.1",
+    "riot": "^3.0.0-alpha.5",
+    "riot-route": "^2.4.0",
     "uglify-js": "^2.6.4",
     "zepto": "^1.0.1"
   },

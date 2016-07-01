@@ -4,7 +4,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">Login</div>
         <div class="panel-body">
-          <form class="form" onsubmit={submit} >
+          <form class="form" method="POST" onsubmit={submit}>
             <div class="control-group">
               <label for="kor-login-form-username">Username</label>
               <input
@@ -35,22 +35,14 @@
   <script type="text/coffee">
     self = this
 
-    self.submit = ->
-      $.ajax(
-        type: 'post',
-        url: "#{kor.url}/login"
-        data: JSON.stringify(
-          username: $(self['kor-login-form-username']).val()
-          password: $(self['kor-login-form-password']).val()
-        )
-        success: (data) ->
-          kor.info = data
-          kor.bus.trigger 'data.info'
+    self.on 'mount', -> $(self.root).find('input')[0].focus()
 
-          if to = riot.route.query()['redirect']
-            riot.route decodeURIComponent(to)
-          else
-            riot.route '/welcome', 'Welcome', false
+    self.submit = (event) ->
+      event.preventDefault()
+      kor.login(
+        $(self['kor-login-form-username']).val()
+        $(self['kor-login-form-password']).val()
       )
+
   </script>
 </kor-login>

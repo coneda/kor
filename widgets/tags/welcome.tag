@@ -1,3 +1,3 @@
 <kor-welcome>
-  <span>Welcome!</span>
+  <h2>Welcome</h2>
 </kor-welcome>

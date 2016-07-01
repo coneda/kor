@@ -12,12 +12,13 @@
             placeholder="fulltext search ..."
             class="form-control"
             id="kor-search-form-terms"
+            onchange={changed}
           />
         </div>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-12 collections">
         <button
           class="btn btn-default btn-xs allnone"
           onclick={allnone}
@@ -31,7 +32,7 @@
         </div>
       </div>
 
-      <div class="col-md-12">
+      <div class="col-md-12 kinds">
         <button
           class="btn btn-default btn-xs allnone"
           onclick={allnone}
@@ -39,7 +40,12 @@
 
         <div class="checkbox-inline" each={kind in kinds}>
           <label>
-            <input type="checkbox" value={kind.id} checked="true" />
+            <input
+              type="checkbox"
+              value={kind.id}
+              checked="true"
+              onchange={changed}
+            />
             {kind.plural_name}
           </label>
         </div>
@@ -58,6 +64,7 @@
 
   <script type="text/coffee">
     self = this
+    window.x = this
 
     self.on 'mount', ->
       $.ajax(
@@ -74,6 +81,21 @@
         success: (data) ->
           self.collections = data
           self.update()
+      )
+
+    self.changed = (event) ->
+      kind_ids = []
+      for cb in $(self.root).find('.kindss input[type=checkbox]')
+        if $(cb).is(':checked')
+          kind_ids.push cb.attr
+      collection_ids = []
+      for cb in $(self.root).find('.collections input[type=checkbox]')
+        if $(cb).is(':checked')
+          collection_ids.push cb.attr
+      self.kor.routing.update(
+        terms: $(self.terms).val()
+        collection_ids: collection_ids
+        kinds_ids: kind_ids
       )
 
     self.allnone = (event) ->

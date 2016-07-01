@@ -46,7 +46,7 @@ class ApplicationController < BaseController
         format.json {render json: exception}
       end
     else
-      rescue_from StandardError do
+      rescue_from StandardError do |exception|
         respond_to do |format|
           format.html {raise exception}
           format.json {render json: exception}

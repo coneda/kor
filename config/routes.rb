@@ -133,7 +133,7 @@ Rails.application.routes.draw do
     match '/authenticate', :action => 'login', :via => :post
     match '/login', :action => 'form', :as => :login, :via => :get
     match '/login', :action => 'login', :via => :post
-    match '/logout', :action => 'logout', :as => :logout, :via => :get
+    match '/logout', :action => 'logout', :as => :logout, :via => [:get, :delete]
     match '/password_forgotten', :action => 'password_forgotten', :via => :get
     match '/password_reset', :action => 'personal_password_reset', :via => :post
   end

@@ -647,6 +647,7 @@ de:
     session_expired: "Ihre Sitzung ist abgelaufen"
     maintenance_done: "die Wartungsarbeiten wurden abgeschlossen"
     logged_out: "Sie haben sich erfolgreich abgemeldet"
+    logged_in: "Sie haben sich erfolgreich angemeldet"
 
   errors:
     too_many_entities_for_zip: "Die Gruppe enthält zu viele Abbildungen"

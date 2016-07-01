@@ -76,7 +76,12 @@ class AuthenticationController < ApplicationController
           account.fix_cryptography(params[:password])
           create_session(account)
 
-          redirect_after_login
+          respond_to do |format|
+            format.html {redirect_after_login}
+            format.json do
+              render json: {'message' => I18n.t('notices.logged_in')}
+            end
+          end
         end
       else
         if account_without_password
@@ -104,8 +109,14 @@ class AuthenticationController < ApplicationController
   
   def logout
     reset_session
-    flash[:notice] = I18n.t("notices.logged_out")    
-    redirect_to root_path
+
+    respond_to do |format|
+      format.html do
+        flash[:notice] = I18n.t("notices.logged_out")
+        redirect_to root_path
+      end
+      format.json {render json: {'message' => I18n.t("notices.logged_out")}}
+    end
   end
   
   def denied
@@ -132,21 +143,14 @@ class AuthenticationController < ApplicationController
     end
 
     def redirect_after_login
-      respond_to do |format|
-        format.html do
-          r_to = (back || current_user.home_page) || Kor.config['app.default_home_page'] || root_path
+      r_to = (back || current_user.home_page) || Kor.config['app.default_home_page'] || root_path
 
-          if params[:fragment].present?
-            params[:fragment] = nil if params[:fragment].match('{{')
-            r_to += "##{params[:fragment]}" if params[:fragment].present?
-          end
-
-          redirect_to r_to
-        end
-        format.json do
-          redirect_to '/api/1.0/info'
-        end
+      if params[:fragment].present?
+        params[:fragment] = nil if params[:fragment].match('{{')
+        r_to += "##{params[:fragment]}" if params[:fragment].present?
       end
+
+      redirect_to r_to
     end
 
     # TODO: still needed?
