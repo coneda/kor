@@ -60,7 +60,6 @@
           if new_state != old_state
             self.kor.bus.trigger 'query.data', routing.state.get()
             old_state = new_state
-
     }
     self.kor.routing = routing
     routing.register()
@@ -71,7 +70,7 @@
       if kor.info.session.user
         self.route = route.create()
         self.route 'welcome', -> kor.bus.trigger 'page.welcome'
-        self.route 'search', -> kor.bus.trigger 'page.search'
+        self.route 'search..', -> kor.bus.trigger 'page.search'
         self.route 'entities/*', (id) -> kor.bus.trigger 'page.entity', id: id
         self.route 'logout', -> kor.logout()
         route.exec()

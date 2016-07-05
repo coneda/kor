@@ -281,7 +281,7 @@ kor.bus.on('data.info', function() {
     self.route('welcome', function() {
       return kor.bus.trigger('page.welcome');
     });
-    self.route('search', function() {
+    self.route('search..', function() {
       return kor.bus.trigger('page.search');
     });
     self.route('entities/*', function(id) {
@@ -300,12 +300,14 @@ kor.bus.on('data.info', function() {
 
 route.start();
 });
-riot.tag2('kor-search', '\n  <h1>Search</h1>\n\n  <form class="form">\n    <div class="row">\n      <div class="col-md-3">\n        <div class="form-group">\n          <input type="text" name="terms" placeholder="fulltext search ..." class="form-control" id="kor-search-form-terms" onchange="{changed}">\n        </div>\n      </div>\n    </div>\n    <div class="row">\n      <div class="col-md-12 collections">\n        <button class="btn btn-default btn-xs allnone" onclick="{allnone}">all/none</button>\n\n        <div class="checkbox-inline" each="{collection in collections}">\n          <label>\n            <input type="checkbox" value="{collection.id}" checked="true">\n            {collection.name}\n          </label>\n        </div>\n      </div>\n\n      <div class="col-md-12 kinds">\n        <button class="btn btn-default btn-xs allnone" onclick="{allnone}">all/none</button>\n\n        <div class="checkbox-inline" each="{kind in kinds}">\n          <label>\n            <input type="checkbox" value="{kind.id}" checked="true" onchange="{changed}">\n            {kind.plural_name}\n          </label>\n        </div>\n      </div>\n    </div>\n  </form>\n', 'kor-search .allnone, [data-is=\'kor-search\'] .allnone { margin-right: 1rem; margin-top: -3px; }', '', function(opts) {
+riot.tag2('kor-search', '\n  <h1>Search</h1>\n\n  <form class="form">\n    <div class="row">\n      <div class="col-md-3">\n        <div class="form-group">\n          <input type="text" name="terms" placeholder="fulltext search ..." class="form-control" id="kor-search-form-terms" onchange="{form_to_url}" value="{params.terms}">\n        </div>\n      </div>\n    </div>\n    <div class="row">\n      <div class="col-md-12 collections">\n        <button class="btn btn-default btn-xs allnone" onclick="{allnone}">all/none</button>\n\n        <div class="checkbox-inline" each="{collection in collections}">\n          <label>\n            <input type="checkbox" value="{collection.id}" __checked="{parent.is_collection_checked(collection)}" onchange="{parent.form_to_url}">\n            {collection.name}\n          </label>\n        </div>\n      </div>\n    </div>\n\n    <div class="row">\n      <div class="col-md-12 kinds">\n        <button class="btn btn-default btn-xs allnone" onclick="{allnone}">all/none</button>\n\n        <div class="checkbox-inline" each="{kind in kinds}">\n          <label>\n            <input type="checkbox" value="{kind.id}" __checked="{parent.is_kind_checked(kind)}" onchange="{parent.form_to_url}">\n            {kind.plural_name}\n          </label>\n        </div>\n      </div>\n    </div>\n\n    <div class="row">\n      <div class="col-md-3 kinds" each="{field in fields}">\n        <div class="form-group">\n          <input type="text" name="{field.name}" placeholder="{field.search_label}" class="kor-dataset-field form-control" id="kor-search-form-dataset-{field.name}" onchange="{parent.form_to_url}" value="{parent.params.dataset[field.name]}">\n        </div>\n      </div>\n    </div>\n  </form>\n', 'kor-search .allnone, [data-is=\'kor-search\'] .allnone { margin-right: 1rem; margin-top: -3px; }', '', function(opts) {
 var self;
 
 self = this;
 
 window.x = this;
+
+self.params = {};
 
 self.on('mount', function() {
   $.ajax({
@@ -316,7 +318,7 @@ self.on('mount', function() {
       return self.update();
     }
   });
-  return $.ajax({
+  $.ajax({
     type: 'get',
     url: kor.url + "/collections",
     success: function(data) {
@@ -324,46 +326,82 @@ self.on('mount', function() {
       return self.update();
     }
   });
+  self.url_to_params();
+  return self.update();
 });
 
-self.changed = function(event) {
+self.kor.bus.on('query.data', function() {
+  self.url_to_params();
+  return self.update();
+});
+
+self.is_kind_checked = function(kind) {
+  return self.params['kind_ids'] === void 0 || self.params['kind_ids'].indexOf(kind.id) > -1;
+};
+
+self.is_collection_checked = function(collection) {
+  return self.params['collection_ids'] === void 0 || self.params['collection_ids'].indexOf(collection.id) > -1;
+};
+
+self.url_to_params = function() {
+  self.params = self.kor.routing.state.get();
+  self.load_fields();
+  return self.update();
+};
+
+self.form_to_url = function() {
   var cb, collection_ids, i, j, kind_ids, len, len1, ref, ref1;
   kind_ids = [];
-  ref = $(self.root).find('.kindss input[type=checkbox]');
+  ref = $(self.root).find('.kinds input[type=checkbox]:checked');
   for (i = 0, len = ref.length; i < len; i++) {
     cb = ref[i];
-    if ($(cb).is(':checked')) {
-      kind_ids.push(cb.attr);
-    }
+    kind_ids.push(parseInt($(cb).val()));
   }
   collection_ids = [];
-  ref1 = $(self.root).find('.collections input[type=checkbox]');
+  ref1 = $(self.root).find('.collections input[type=checkbox]:checked');
   for (j = 0, len1 = ref1.length; j < len1; j++) {
     cb = ref1[j];
-    if ($(cb).is(':checked')) {
-      collection_ids.push(cb.attr);
-    }
+    collection_ids.push(parseInt($(cb).val()));
   }
-  return self.kor.routing.update({
-    terms: $(self.terms).val(),
+  return self.kor.routing.state.update({
+    terms: $(x.root).find('[name=terms]').val(),
     collection_ids: collection_ids,
-    kinds_ids: kind_ids
+    kind_ids: kind_ids
   });
+};
+
+self.load_fields = function() {
+  var id;
+  if (self.params.kind_ids.length === 1) {
+    id = self.params.kind_ids[0];
+    return $.ajax({
+      type: 'get',
+      url: kor.url + "/kinds/" + id + "/fields",
+      success: function(data) {
+        console.log(data);
+        self.fields = data;
+        return self.update();
+      }
+    });
+  } else {
+    return self.fields = [];
+  }
 };
 
 self.allnone = function(event) {
   var box, boxes, i, len;
+  event.preventDefault();
   boxes = $(event.target).parent().find('input[type=checkbox]');
   for (i = 0, len = boxes.length; i < len; i++) {
     box = boxes[i];
-    console.log($(box).is(':checked'));
     if (!$(box).is(':checked')) {
-      console.log(boxes);
       boxes.prop('checked', true);
+      self.form_to_url();
       return;
     }
   }
-  return boxes.prop('checked', null);
+  boxes.prop('checked', null);
+  return self.form_to_url();
 };
 });
 riot.tag2('kor-welcome', '  <h2>Welcome</h2>\n', '', '', function(opts) {

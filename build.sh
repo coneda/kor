@@ -8,6 +8,7 @@ mkdir -p $TMP
 function deps {
   uglifyjs \
     node_modules/zepto/zepto.min.js \
+    node_modules/lockr/lockr.min.js \
     node_modules/riot/riot.js \
     node_modules/riot-route/dist/route.min.js \
     -o $TMP/deps.js

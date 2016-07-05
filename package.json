@@ -6,10 +6,11 @@
   "devDependencies": {
     "bootstrap": "^3.3.6",
     "coffee-script": "^1.10.0",
+    "lockr": "^0.8.4",
     "node-sass": "^3.8.0",
     "onchange": "^2.5.0",
     "parallelshell": "^2.0.0",
-    "riot": "^3.0.0-alpha.5",
+    "riot": "^2.4.1",
     "riot-route": "^2.4.0",
     "uglify-js": "^2.6.4",
     "zepto": "^1.0.1"

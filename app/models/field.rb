@@ -180,7 +180,9 @@ class Field < ActiveRecord::Base
   end
   
   def value
-    entity.dataset[name]
+    if entity
+      entity.dataset[name]
+    end
   end
   
   
