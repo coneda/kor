@@ -8,6 +8,8 @@ class ToolsController < ApplicationController
 
   skip_before_filter :authentication, :only => 'history'
 
+  skip_before_action :verify_authenticity_token, only: ['history']
+
   layout 'normal_small'
 
 

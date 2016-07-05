@@ -16,7 +16,7 @@ Before do |scenario|
   eval File.read("#{Rails.root}/db/seeds.rb")
 
   system "rm -f #{Rails.root}/config/kor.app.test.yml"
-  Kor.config true
+  Kor::Config.reload!
 
   if scenario.tags.any?{|st| st.name == "@elastic"}
     Kor::Elastic.enable
