@@ -45,6 +45,8 @@ module Kor::Auth
   end
 
   def self.env_login(env)
+    Rails.logger.info "Trying environment auth with env: #{env.inspect}"
+
     env_sources.each do |key, source|
       source['user'].each do |ku|
         source['mail'].each do |km|

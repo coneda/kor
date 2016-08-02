@@ -4,7 +4,7 @@ module Kor
   class Config
 
     def self.env
-      ENV['RAILS_ENV'] || 'development'
+      Rails.env.to_s
     end
 
     def self.rails_root
