@@ -45,12 +45,19 @@ module Kor::Auth
   end
 
   def self.env_login(env)
-    Rails.logger.info "Trying environment auth with env: #{env.inspect}"
+    Rails.logger.info "environment auth with env: #{env.inspect}"
 
     env_sources.each do |key, source|
       source['user'].each do |ku|
         source['mail'].each do |km|
-          if (username = env[ku]) && (mail = env[km])
+          Rails.logger.info "trying attributes user:#{ku} and mail:#{km}"
+
+          username = env[ku]
+          mail = env[km]
+
+          if username && mail
+            Rails.logger.info "user found #{username} (#{mail})"
+
             full_name = nil
             source['full_name'].each do |kf|
               full_name ||= env[kf]
@@ -62,11 +69,17 @@ module Kor::Auth
               full_name = full_name.split(Regexp.new(s)).first if full_name
             end
             
-            return authorize(username,
+            data = {
               parent_username: source['map_to'],
               email: mail,
               full_name: full_name
-            )
+            }
+
+            Rails.logger.info "authorizing user #{username} with data #{data.inspect}"
+            return authorize(username, data)
+          else
+            Rails.logger.info "no values for username and/or mail found: values found: #{username}/#{mail}"
+            false
           end
         end
       end
@@ -99,6 +112,7 @@ module Kor::Auth
       user
     else
       # binding.pry
+      Rails.logger.info "user couldn't be created: #{user.errors.full_messages.inspect}"
       nil
     end
   end
