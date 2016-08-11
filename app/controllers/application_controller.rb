@@ -33,25 +33,21 @@ class ApplicationController < BaseController
       binding.pry
     end
 
-    if Rails.env == 'production'
-      Kor::ExceptionLogger.log exception, params: params
+    rescue_from StandardError do |exception|
+      if Rails.env == 'production'
+        Kor::ExceptionLogger.log exception, params: params
+      end
+
       respond_to do |format|
         format.html {raise exception}
-        format.json {render json: exception}
-      end
-    else
-      rescue_from StandardError do |exception|
-        respond_to do |format|
-          format.html {raise exception}
-          format.json {
-            render json: {
-              'message' => exception.message,
-              'backtrace' => exception.backtrace
-            }
+        format.json {
+          render json: {
+            'message' => exception.message,
+            'backtrace' => exception.backtrace
           }
-        end
-      end 
-    end
+        }
+      end
+    end 
     
     def authentication
       session[:user_id] ||= if User.guest
