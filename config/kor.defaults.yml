@@ -61,6 +61,8 @@ all:
   search:
     entity_name: "Name / Titel / UUID"
 
+  allowed_origins: ['localhost:8000']
+
 development:
   mail:
     delivery_method: test
