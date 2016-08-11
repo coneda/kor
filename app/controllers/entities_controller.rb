@@ -162,7 +162,12 @@ class EntitiesController < ApplicationController
       :medium, :kind, :collection, :datings, :creator, :updater, 
       authority_groups: :authority_group_category
     )
-    @entity = scope.find_by(id: params[:id]) || scope.find_by!(uuid: params[:id])
+    id = (params[:id] || '').strip.presence
+    if id.size == 36
+      @entity = scope.find_by!(uuid: params[:id])
+    else
+      @entity = scope.find_by!(id: params[:id])
+    end
 
     respond_to do |format|
       if allowed_to?(:view, @entity.collection)
