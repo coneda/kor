@@ -38,7 +38,7 @@ module Kor
 
     config.middleware.insert_before 0, "Rack::Cors" do
       allow do
-        origins Kor::Config.instance['allowed_origins']
+        origins *Kor::Config.instance['allowed_origins']
         resource '*', headers: :any, methods: [:get, :options]
       end
     end
