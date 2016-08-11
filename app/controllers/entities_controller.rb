@@ -158,10 +158,11 @@ class EntitiesController < ApplicationController
     params[:related_relation_name] = param_to_array(params[:related_relation_name], ids: false)
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
 
-    @entity = Entity.includes(
+    scope = Entity.includes(
       :medium, :kind, :collection, :datings, :creator, :updater, 
       authority_groups: :authority_group_category
-    ).where('id = :id OR uuid = :id', id: params[:id]).first!
+    )
+    @entity = scope.find_by(id: params[:id]) || scope.find_by!(uuid: params[:id])
 
     respond_to do |format|
       if allowed_to?(:view, @entity.collection)

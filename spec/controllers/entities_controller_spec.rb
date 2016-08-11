@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe EntitiesController, :type => :controller do
+RSpec.describe EntitiesController, type: :controller do
   render_views
   
   include DataHelper
@@ -329,6 +329,16 @@ RSpec.describe EntitiesController, :type => :controller do
       @authority_group.add_entities @mona_lisa
 
       request.headers['api_key'] = @admin.api_key
+    end
+
+    it 'should retrieve entities by id or uuid' do
+      get :show, id: @leonardo.id.to_s, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['id']).to eq(@leonardo.id)
+
+      get :show, id: @leonardo.uuid, format: 'json'
+      data = JSON.parse(response.body)
+      expect(data['id']).to eq(@leonardo.id)
     end
 
     it 'should include the datings on demand' do

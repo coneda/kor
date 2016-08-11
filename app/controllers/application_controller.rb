@@ -41,7 +41,7 @@ class ApplicationController < BaseController
       respond_to do |format|
         format.html {raise exception}
         format.json {
-          render json: {
+          render status: 500, json: {
             'message' => exception.message,
             'backtrace' => exception.backtrace
           }

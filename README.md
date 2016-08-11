@@ -416,7 +416,14 @@ example:
       </body>
     </html>
 
-The following widgets can then be used on that page.
+In addition, you will have to list the origin in the configuration parameter
+`allowed_origins` so that the CORS header is set accordingly, e.g.
+
+    ...
+      allowed_origins: ['https://kor.example.com']
+    ...
+
+The following widgets can then be used on the integrating page:
 
 #### `<kor-entity>`
 
