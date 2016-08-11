@@ -161,7 +161,7 @@ class EntitiesController < ApplicationController
     @entity = Entity.includes(
       :medium, :kind, :collection, :datings, :creator, :updater, 
       authority_groups: :authority_group_category
-    ).find(params[:id])
+    ).where('id = :id OR uuid = :id', id: params[:id]).first!
 
     respond_to do |format|
       if allowed_to?(:view, @entity.collection)

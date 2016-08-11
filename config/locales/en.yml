@@ -65,6 +65,7 @@ en:
 
   users:
     administrator: "administrator"
+    guest: "guest"
 
   tagging:
     placeholder: "click here to edit"
@@ -703,9 +704,6 @@ en:
       medium:
         one: medium
         other: media
-      snapshot:
-        one: state
-        other: state
       credential:
         one: user group
         other: user groups
@@ -718,21 +716,12 @@ en:
       entity_dating:
         one: dating
         other: dating information
-      kor_image:
-        one: reproduction
-        other: reproductions
-      credential:
-        one: user group
-        other: user groups
       exception_log:
         one: error report
         other: error reports
       kind:
         one: entity type
         other: entity types
-      property:
-        one: additional property
-        other: additional properties
       publishment:
         one: published group
         other: published groups
@@ -745,9 +734,6 @@ en:
       relationship:
         one: link
         other: links
-      synonym:
-        one: synonym
-        other: synonyms
       tag:
         one: tag
         other: tags
@@ -795,10 +781,6 @@ en:
         original: original file
         original_extension: file type of the original
         datahash: data hash
-      snapshot:
-        comment: comment
-        created_at: created at
-        user_id: user
       credential:
         name: name
         description: description
@@ -912,28 +894,9 @@ en:
           one: additional property
           other: additional properties
         wikidata_id: Wikidata ID
-      property:
-        search: additional property
-        label: additional field description
-        value: value
       publishment:
         name: description
         group: group to be released
-      kor_image:
-        transit: "transit"
-        file: file
-        datahash: file
-      artwork:
-        dimensions: dimensions
-        material_technique: material and technique
-        subtype: type
-      textual:
-        text: text
-      literature:
-        isbn: ISBN
-        year_of_publication: year of publication
-        edition: edition
-        publisher: publisher
       user_group:
         owner: owner
         shared:

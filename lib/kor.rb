@@ -95,6 +95,15 @@ module Kor
     )
   end
 
+  def self.ensure_guest_account!
+    u = User.find_or_initialize_by name: 'guest'
+    u.update_attributes(
+      terms_accepted: true,
+      full_name: u.full_name || I18n.t('users.guest'),
+      email: u.email || 'guest@example.com'
+    )
+  end
+
   def self.array_wrap(object)
     if object.is_a?(Array)
       object

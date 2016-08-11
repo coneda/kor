@@ -4,6 +4,7 @@
       = form_tag({:controller => "authentication", :action => "login"}, :class => "kor_form") do
 
         = hidden_field_tag :fragment, nil, :value => "{{fragment()}}"
+        = hidden_field_tag :return_to, nil, value: params[:return_to]
         
         = kor_input_tag :username, :control => text_field_tag(:username, nil), :class => User
         

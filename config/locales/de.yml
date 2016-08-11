@@ -66,6 +66,7 @@ de:
 
   users:
     administrator: "Administrator"
+    guest: "Gast"
 
   tagging:
     placeholder: "zum bearbeiten hier klicken"
@@ -705,9 +706,6 @@ de:
       medium:
         one: Medium
         other: Medien
-      snapshot:
-        one: Zustand
-        other: Zustände
       credential:
         one: Benutzergruppe
         other: Benutzergruppen
@@ -720,21 +718,12 @@ de:
       entity_dating:
         one: Datierung
         other: Datierungsangaben
-      kor_image:
-        one: Abbildung
-        other: Abbildungen
-      credential:
-        one: Benutzergruppe
-        other: Benutzergruppen
       exception_log:
         one: Fehlerbericht
         other: Fehlerberichte
       kind:
         one: Entitätstyp
         other: Entitätstypen
-      property:
-        one: weitere Eigenschaft
-        other: weitere Eigenschaften
       publishment:
         one: veröffentlichte Gruppe
         other: veröffentlichte Gruppen
@@ -747,9 +736,6 @@ de:
       relationship:
         one: Verknüpfung
         other: Verknüpfungen
-      synonym:
-        one: Synonym
-        other: Synonyme
       tag:
         one: Tag
         other: Tags
@@ -797,10 +783,6 @@ de:
         original: Orginaldatei
         original_extension: Dateityp des Orginals
         datahash: Prüfsumme
-      snapshot:
-        comment: Kommentar
-        created_at: erstellt
-        user_id: Benutzer
       credential:
         name: Name
         description: Beschreibung
@@ -914,28 +896,9 @@ de:
           one: weitere Eigenschaft
           other: weitere Eigenschaften
         wikidata_id: Wikidata ID
-      property:
-        search: weitere Eigenschaft
-        label: zusätzlicher Feldname
-        value: Wert
       publishment:
         name: Bezeichnung
         group: zu veröffentlichende Gruppe
-      kor_image:
-        transit: "Transit"
-        file: Datei
-        datahash: Datei
-      artwork:
-        dimensions: Maße
-        material_technique: Material und Technik
-        subtype: Typ
-      textual:
-        text: Text
-      literature:
-        isbn: ISBN
-        year_of_publication: Publikationsjahr
-        edition: Ausgabe
-        publisher: Verlag
       user_group:
         owner: Besitzer
         shared:

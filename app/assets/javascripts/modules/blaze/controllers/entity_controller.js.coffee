@@ -9,7 +9,10 @@ kor.controller('entity_controller', [
     update = ->
       promise = es.show(rp.id)
       promise.success (data) -> scope.entity = data
-      promise.error (data) -> l.path("/denied")
+      promise.error (data) ->
+        return_to = document.location.href
+        l.path("/denied")
+        l.search('return_to': return_to)
     update()
 
     scope.$on 'relationship-saved', update

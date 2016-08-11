@@ -49,6 +49,4 @@ kor.service('korData', [
         hash = hash.flash ||= {}
         hash["notice"] = value
     }
-
-    window.d = service
 ])

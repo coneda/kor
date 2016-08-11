@@ -189,7 +189,7 @@ class Field < ActiveRecord::Base
   # Formats
   
   def serializable_hash(*args)
-    super(:methods => [:value, :show_on_entity], :root => false).stringify_keys
+    super(methods: [:value, :show_on_entity]).stringify_keys
   end
   
 end

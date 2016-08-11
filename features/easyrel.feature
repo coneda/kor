@@ -115,7 +115,7 @@ Feature: Inplace relationship editor
     Given the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
     When I refresh the page
     Then I should see "Leonardo"
-    When I click element "img[data-name=plus]"
+    When I click element "img[data-name=plus]" within ".relationships"
     Then I should see "is equivalent to" within "[kor-relation-selector]"
 
   @javascript

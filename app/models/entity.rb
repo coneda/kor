@@ -31,30 +31,6 @@ class Entity < ActiveRecord::Base
   has_many :incoming_relationships, class_name: "DirectedRelationship", foreign_key: :to_id
   has_many :incoming, through: :incoming_relationships, source: :from
 
-  # TODO: get rid of this
-  def grouped_related_entities(user, policies, options = {})
-    options.reverse_merge!(:media => :no, :limit => false)
-  
-    relation_conditions =  "(from_id = #{self[:id]} OR to_id = #{self[:id]})"
-    collection_conditions = "IF(from_id = #{self[:id]},tos_relationships.collection_id,entities.collection_id) IN (?)"
-    media_conditions = case options[:media]
-      when :no then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) != #{Kind.medium_kind.id}"
-      when :yes then "IF(from_id = #{self[:id]},tos_relationships.kind_id,entities.kind_id) = #{Kind.medium_kind.id}"
-      when :both then ""
-    end
-    
-    relationships = Relationship.includes(:from, :relation, :to).order("tos_relationships.name, entities.name")
-    relationships = relationships.
-      where(media_conditions).
-      where(relation_conditions).
-      where(
-        collection_conditions,
-        Kor::Auth.authorized_collections(user, policies).map{|c| c.id}
-      )
-    
-    relationships.group_by{|r| r.relation_name_for_entity(self)}
-  end
-  
   accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
 
   validates_associated :datings
@@ -180,7 +156,6 @@ class Entity < ActiveRecord::Base
   
   before_validation :generate_uuid, :sanitize_distinct_name
   before_save :generate_uuid, :add_to_user_group
-  after_update :save_datings
   after_commit :update_elastic
   after_save :update_identifiers
   
@@ -190,13 +165,6 @@ class Entity < ActiveRecord::Base
   
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
-  end
-  
-  # TODO: why is this necessary?
-  def save_datings
-    datings.each do |dating|
-      dating.save(:validate => false)
-    end
   end
   
   def update_elastic
@@ -396,28 +364,11 @@ class Entity < ActiveRecord::Base
 
   ############################ dating ##########################################
 
-  # TODO: can this method be removed?
-  def new_datings_attributes=(values)
-    values.each do |v|
-      datings.build v
-    end
-  end
-
-  # TODO: can this method be removed?
-  def existing_datings_attributes=(values)
-    datings.reject(&:new_record?).each do |d|
-      attributes = values[d.id.to_s]
-      if attributes
-        d.attributes = attributes
-      else
-        datings.delete(d)
-      end
-    end
-  end
-
-
   def media(user)
-    @media ||= grouped_related_entities(user, :view, :media => :yes).values.flatten.map{|r| r.other_entity(self)}.uniq
+    @media ||= outgoing_relationships.
+      by_to_kind_id(Kind.medium_kind.id).
+      allowed(user).
+      map{|dr| dr.to}
   end
 
   # ----------------------------------------------------------------- search ---
@@ -429,9 +380,6 @@ class Entity < ActiveRecord::Base
       where('tags.name LIKE ?', "%#{term}%")
   end
   
-  # Finds all entities given in <tt>ids</tt> and keeps the same order as the
-  # ids in the parameter. Ids which refer to non existing entities are
-  # transparently ignored.
   def self.find_all_by_id_keep_order(ids)
     tmp_entities = where(:id => ids).to_a
     Array(ids).collect{|id| tmp_entities.find{|e| e.id.to_i == id.to_i } }.reject{|e| e.blank? }
@@ -458,22 +406,14 @@ class Entity < ActiveRecord::Base
   scope :alphabetically, lambda { order("name asc, distinct_name asc") }
   scope :newest_first, lambda { order("created_at DESC") }
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
-  # TODO: the next two should use
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
-  # TODO: the next three should use 'only_kinds'
-  scope :searcheable, lambda { where("entities.kind_id != ?", Kind.medium_kind.id) }
-  scope :media, lambda { where("entities.kind_id = ?", Kind.medium_kind.id) }
+  scope :media, lambda { only_kinds(Kind.medium_kind.id) }
+  scope :searcheable, lambda { media }
   scope :without_media, lambda { 
-    if id = Kind.medium_kind.try(:id)
-      where("entities.kind_id != ?", id) 
-    else
-      all
-    end
+    where("entities.kind_id != ?", Kind.medium_kind.id)
   }
-  # TODO: still needed?
-  scope :named_exactly_like, lambda {|value| where("name like :value or concat(name,' (',distinct_name,')') like :value", :value => value) }
   # TODO: rewrite this not to collect singular entity ids
   scope :valid, lambda { |valid|
     ids = Tag.invalid_tag.entities.collect{|e| e.id}

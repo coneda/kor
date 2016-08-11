@@ -37,6 +37,7 @@ db/*.sqlite3
 .yardoc
 .sass-cache
 coverage
+npm-debug.log
 
 # Testing
 screenshot.png
@@ -45,3 +46,5 @@ screenshot.png
 
 deploy.config.sh
 .vagrant
+
+widgets/tmp

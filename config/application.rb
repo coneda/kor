@@ -36,6 +36,13 @@ module Kor
 
     config.active_job.queue_adapter = :delayed_job
 
+    config.middleware.insert_before 0, "Rack::Cors" do
+      allow do
+        origins '*'
+        resource '*', headers: :any, methods: [:get, :options]
+      end
+    end
+
     initializer 'action_mailer.set_configs' do
       if mc = Kor::Config.instance['mail']
         dm = mc['delivery_method'].to_sym
@@ -48,8 +55,6 @@ module Kor
   end
 end
 
-# TODO: fix redirection after login
-# TODO: oai-pmh test resumptionToken
 # TODO: better test fields_controller.rb
 # TODO: better test generators_controller.rb
 # TODO: test putting a whole authority group to the clipboard
@@ -57,20 +62,16 @@ end
 # TODO: test mailers and that they are used
 # TODO: move all js templates to misc.html.erb or partial them from there
 # TODO: test downloads_controller
-# TODO: document elastic token
-# TODO: finalize integration of brakeman and rubocop
 # TODO: make sure there are tests for storing serialized attributes: dataset,
 #       properties, datings, synonyms, relationship properties
 # TODO: merge entity group tables?
 # TODO: add @javascript tag to all feature tests
-# TODO: what happened here: https://testing-2-0.coneda.net/blaze#/entities/166 ?
 # TODO: when deleting relationships and that completely empties the second or a
 #       higher page, the previous page should be loaded
 # TODO: integration tests for tools: mass_destroy, add_to_authority_group, 
 #       add_to_user_group, move_to_collection, remove_from_authority_group,
 #       remove_from_user_group
 # TODO: integration test for reset clipboard
-# TODO: remove one of the two web-utils versions
 # TODO: make sure in js kind_id == 1 isn't assumed to ensure medium kind
 # TODO: remove new_datings_attributes and existing_datings_attributes
 # TODO: upgrade elasticsearch
@@ -85,16 +86,13 @@ end
 # TODO: replace fake_authentication and classic data_helper
 # TODO: check helpers for redundant code
 # TOTO: remove redundant code and comments from old js files
-# TODO: remove console.log
-# TODO: remove window.s = scope and similar
 # TODO: remove comments everywhere
-# TODO: move Dockerfiles files to kor repo
 # TODO: re-enable still extraction for videos
 # TODO: make an indicator for not-yet-processed media (use special dummy)
 # TODO: use https://github.com/bkeepers/dotenv
 # TODO: session panel is not visible on welcome page
-# TODO: add https://www.ruby-lang.org/en/documentation/installation/ to the install docs
 # TODO: unify test setup steps
 # TODO: unify default params and sanitation for pagination scopes
 # TODO: instead of describing config defaults in the readme, refer to kor.defaults.yml which should also yield descriptions
 # TODO: clean up translation files (remove obsolete models)
+# TODO: when replacing sprockets, simulate checksum behaviour to provoke correct cache expiries

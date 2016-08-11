@@ -15,6 +15,8 @@ RSpec.describe AuthenticationController, :type => :controller do
   end
   
   it "should deny access if there were too many login attempts in one hour" do
+    request.headers['HTTP_REFERER'] = 'http://test.host/login'
+    
     for i in 1..3 do
       post :login, :username => 'admin', :password => 'wrong'
       expect(response).to redirect_to(:action => 'form')
@@ -40,6 +42,7 @@ RSpec.describe AuthenticationController, :type => :controller do
   end
   
   it "should not crash when supplying a non existing username" do
+    request.headers['HTTP_REFERER'] = 'http://test.host/login'
     post :login, :username => "does_not_exist", :password => 'wrong'
     expect(response).to redirect_to(:action => 'form')
   end

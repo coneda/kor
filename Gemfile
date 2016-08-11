@@ -29,6 +29,7 @@ gem 'sass-rails'
 gem 'jbuilder'
 gem 'test-unit'
 gem 'colorize'
+gem 'rack-cors', :require => 'rack/cors'
 
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load 

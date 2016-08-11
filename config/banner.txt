@@ -5,6 +5,7 @@ Commands:
  import                     import data (for now, only excel format is supported)
  export                     export data (for now, only excel format is supported)
  reset-admin-account        set the password for user admin to "admin"
+ reset-guest-account        ensure a working guest account
  index-all                  refresh all indices within elasticsearch
  reprocess-all              re-generate all image versions (caution: takes a very long time)
  recheck-invalid-entities   re-validate all entities that have previously been marked as invalid previously

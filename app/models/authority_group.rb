@@ -15,7 +15,7 @@ class AuthorityGroup < EntityGroup
   }
 
   def serializable_hash(options = {})
-    options.merge! :root => false, :include => :authority_group_category
+    options.merge! include: :authority_group_category
     super options
   end
 end

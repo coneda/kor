@@ -90,7 +90,7 @@ end
 if additions.include?('collection') || additions.include?('all')
   json.collection do
     json.partial! 'collections/customized', locals: {
-      collection: entity.collection
+      kor_collection: entity.collection
     }
   end
 end

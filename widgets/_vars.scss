@@ -1,0 +1,14 @@
+$background: #1e1e1e;
+$text: #bbbbbb;
+
+.kor {
+  font-family: verdana;
+  font-size: 11px;
+  background-color: $background;
+  color: $text;
+
+  a {
+    text-decoration: underline;
+    color: $text;
+  }
+}

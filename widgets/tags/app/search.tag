@@ -133,7 +133,6 @@
       for cb in $(self.root).find('.collections input[type=checkbox]:checked')
         collection_ids.push parseInt($(cb).val())
       dataset = {}
-      for i in $(self.root).find('input.form-field')
       self.kor.routing.state.update(
         terms: $(x.root).find('[name=terms]').val()
         collection_ids: collection_ids

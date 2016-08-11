@@ -7,7 +7,7 @@ class InplaceController < ApplicationController
       @entity.tag_list += params[:value].split(/,\s*/) unless params[:value].blank?
       
       if @entity.save
-        render :text => @entity.tag_list
+        render :json => @entity.tag_list
       else
         render json: @entity.errors, status: 406
       end

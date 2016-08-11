@@ -1,6 +1,6 @@
 kor.controller('root_controller', [
-  '$scope', 'korData', "session_service",
-  (scope, kd, ss) ->
+  '$scope', 'korData', "session_service", "$location",
+  (scope, kd, ss, l) ->
     scope.$on 'kor-session-load-complete', -> scope.info = kd.info
 
     scope.previous_current_entities = ->
@@ -32,6 +32,13 @@ kor.controller('root_controller', [
     scope.flash_notice = -> kd.notice()
 
     scope.is_guest = ss.is_guest
+
+    scope.login_url = ->
+      result = "/login"
+      if rt = l.search()['return_to']
+        "#{result}?return_to=#{rt}"
+      else
+        result
 
     kd.session_load()
 ])

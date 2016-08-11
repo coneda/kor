@@ -8,7 +8,6 @@
 //= require angular-route
 
 //= require modules/vendor/web-utils-all.0.1.11.min
-//= require modules/web-utils
 
 //= require modules/old/application
 //= require modules/old/clipboard

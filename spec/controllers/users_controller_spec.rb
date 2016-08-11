@@ -24,7 +24,7 @@ RSpec.describe UsersController, :type => :controller do
   it "should only grant access to the user admin to authorized users" do
     fake_authentication :user => FactoryGirl.create(:jdoe)
     get :index
-    expect(response).to redirect_to('/authentication/denied')
+    expect(response).to redirect_to("/authentication/denied?return_to=#{url_encode 'http://test.host/users'}")
   end
 
   it "should render a json formatted list of users for autocomplete inputs" do

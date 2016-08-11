@@ -32,12 +32,11 @@ class AuthenticationController < ApplicationController
     redirect_to :action => 'form'
   end
   
-  # TODO: return status "403 Forbidden" if authentication fails
   def login
     account_without_password = User.find_by_name(params[:username])
     if account_without_password && account_without_password.too_many_login_attempts?
       flash[:error] = I18n.t('errors.too_many_login_attempts')
-      redirect_to :action => 'form'
+      redirect_to :back
     else
       account = Kor::Auth.login(params[:username], params[:password])
 
@@ -48,12 +47,12 @@ class AuthenticationController < ApplicationController
           respond_to do |format|
             format.html do
               flash[:error] = I18n.t("errors.account_expired")
-              redirect_to action: "form"
+              redirect_to :back
             end
             format.json do
               render(
                 json: {'message' => I18n.t("errors.account_expired")},
-                status: 400
+                status: 403
               )
             end
           end
@@ -63,18 +62,19 @@ class AuthenticationController < ApplicationController
           respond_to do |format|
             format.html do
               flash[:error] = I18n.t("errors.account_inactive")
-              redirect_to action: 'form'
+              redirect_to :back
             end
             format.json do
               render(
                 json: {'message' => I18n.t("errors.account_inactive")},
-                status: 400
+                status: 403
               )
             end
           end
         else
           account.fix_cryptography(params[:password])
           create_session(account)
+          @current_user = nil
 
           respond_to do |format|
             format.html {redirect_after_login}
@@ -94,12 +94,12 @@ class AuthenticationController < ApplicationController
         respond_to do |format|
           format.html do
             flash[:error] = I18n.t("errors.user_or_pass_refused")
-            redirect_to :action => "form"
+            redirect_to :back
           end
           format.json do
             render(
               json: {'message' => I18n.t("errors.user_or_pass_refused")},
-              status: 400
+              status: 403
             )
           end
         end
@@ -143,7 +143,11 @@ class AuthenticationController < ApplicationController
     end
 
     def redirect_after_login
-      r_to = (back || current_user.home_page) || Kor.config['app.default_home_page'] || root_path
+      r_to = 
+        params[:return_to].presence ||
+        (back || current_user.home_page) ||
+        Kor.config['app.default_home_page'] ||
+        root_path
 
       if params[:fragment].present?
         params[:fragment] = nil if params[:fragment].match('{{')
@@ -151,13 +155,6 @@ class AuthenticationController < ApplicationController
       end
 
       redirect_to r_to
-    end
-
-    # TODO: still needed?
-    def remote_ip_with_name
-      "#{request.ip} (#{Resolv.getname(request.ip)})"
-    rescue Resolv::ResolvError => e
-      request.ip
     end
 
 end

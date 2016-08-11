@@ -11,22 +11,16 @@ class ApplicationController < BaseController
     :logged_in?,
     :blaze
   
-  before_filter :locale, :authentication, :authorization, :legal, :cors
+  before_filter :locale, :authentication, :authorization, :legal
 
   before_filter do
     @blaze = nil
   end
 
   around_filter :profile
-  
+
 
   private
-
-    def cors
-      if request.format.json?
-        headers['Access-Control-Allow-Origin'] = '*'
-      end
-    end
 
     # redirects to the legal page if terms have not been accepted
     def legal
@@ -49,7 +43,12 @@ class ApplicationController < BaseController
       rescue_from StandardError do |exception|
         respond_to do |format|
           format.html {raise exception}
-          format.json {render json: exception}
+          format.json {
+            render json: {
+              'message' => exception.message,
+              'backtrace' => exception.backtrace
+            }
+          }
         end
       end 
     end
@@ -95,8 +94,15 @@ class ApplicationController < BaseController
     
     def authorization
       unless generally_authorized?
-        flash[:error] = I18n.t('notices.access_denied')
-        redirect_to denied_path
+        respond_to do |format|
+          format.html do
+            flash[:error] = I18n.t('notices.access_denied')
+            redirect_to denied_path(:return_to => request.url)
+          end
+          format.json do
+            render json: {message: I18n.t('notices.access_denied')}, status: 403
+          end
+        end
       end
     end
 
