@@ -18,8 +18,8 @@ kor.filter('strftime', [ ->
       if !(input instanceof Date)
         input = new Date(input)
         
-      result = new FormattedDate(input)
-      result.strftime format
+      result = new Strftime(input)
+      result.render format
     catch error
       ""
 ])

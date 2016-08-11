@@ -37,6 +37,10 @@ RSpec.configure do |config|
       Kor::Elastic.disable
     end
 
+    if example.metadata[:seed]
+      Rails.application.load_seed
+    end
+
     ActionMailer::Base.deliveries = []
     system "rm -rf #{Medium.media_data_dir}/*"
     system "rm -f #{Kor::Config.app_config_file}"

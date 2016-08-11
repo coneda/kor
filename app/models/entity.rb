@@ -297,6 +297,13 @@ class Entity < ActiveRecord::Base
       .count
   end
 
+  def media(user)
+    @media ||= outgoing_relationships.
+      by_to_kind(Kind.medium_kind.id).
+      allowed(user).
+      map{|dr| dr.to}
+  end
+
   
   ############################ naming ##########################################
   
@@ -364,11 +371,23 @@ class Entity < ActiveRecord::Base
 
   ############################ dating ##########################################
 
-  def media(user)
-    @media ||= outgoing_relationships.
-      by_to_kind_id(Kind.medium_kind.id).
-      allowed(user).
-      map{|dr| dr.to}
+  # TODO: can this method be removed?
+  def new_datings_attributes=(values)
+    values.each do |v|
+      datings.build v
+    end
+  end
+
+  # TODO: can this method be removed?
+  def existing_datings_attributes=(values)
+    datings.reject(&:new_record?).each do |d|
+      attributes = values[d.id.to_s]
+      if attributes
+        d.attributes = attributes
+      else
+        datings.delete(d)
+      end
+    end
   end
 
   # ----------------------------------------------------------------- search ---
@@ -410,9 +429,13 @@ class Entity < ActiveRecord::Base
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
   scope :media, lambda { only_kinds(Kind.medium_kind.id) }
-  scope :searcheable, lambda { media }
+  scope :searcheable, lambda { without_media }
   scope :without_media, lambda { 
-    where("entities.kind_id != ?", Kind.medium_kind.id)
+    if media = Kind.medium_kind
+      where("entities.kind_id != ?", media.id)
+    else
+      all
+    end
   }
   # TODO: rewrite this not to collect singular entity ids
   scope :valid, lambda { |valid|

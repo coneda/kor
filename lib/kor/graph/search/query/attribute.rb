@@ -62,7 +62,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
           within_collections(collection_ids).
           by_relation_name(criteria[:relation_name]).
           includes(:medium)
-          
+        
         unless tag_list.empty?
           tmp_result = tmp_result.tagged_with(tag_list.split(/,\s*/))
         end
