@@ -434,6 +434,8 @@ The following widgets can then be used on the integrating page:
 
 This shows the entity (also supports media entities) referenced by `id`. If you
 add the `kor-style` attribute, the widget will apply some basic styling.
+However, the styles will always mix with the existing styles on the page so some
+CSS adjustments might be necessary.
 
 ### JSON API
 
