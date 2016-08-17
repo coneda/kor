@@ -29,6 +29,7 @@ commit history on GitHub.
 * email configuration removed from web-ui, site operator is used as sender and
   email server configuration is exclusively done in the config file
 * started refactoring the JSON api, see README.md
+* added widget layer to facilitate integration with other websites
 
 ### Internal
 
