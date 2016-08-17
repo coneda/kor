@@ -388,6 +388,8 @@ versions, should the need arise.
 
 ### Widgets
 
+ATTENTION: This feature is experimental and subject to future change.
+
 We are working on creating a complete widget library so that the entire frontend
 is just a composition of widgets. Since that requires extensive refactoring of
 most of the code base, this process is going to take some time. However, some
@@ -435,7 +437,10 @@ The following widgets can then be used on the integrating page:
 This shows the entity (also supports media entities) referenced by `id`. If you
 add the `kor-style` attribute, the widget will apply some basic styling.
 However, the styles will always mix with the existing styles on the page so some
-CSS adjustments might be necessary.
+CSS adjustments might be necessary. with `kor-include` you may supply a space
+separated list of information to include (currently supports `kind`). The
+attribute `kor-image-size` allows you to specify witch image resultion should
+be loaded (icon, thumbnail, preview, screen, normal) for media.
 
 ### JSON API
 

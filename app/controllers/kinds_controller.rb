@@ -40,12 +40,21 @@ class KindsController < ApplicationController
           render :action => "new"
         end
       end
+      format.json do
+        if @kind.save
+          render action: 'show'
+        else
+          render json: @kind.errors, status: 406
+        end
+      end
     end
   end
 
   def update
     @kind = Kind.find(params[:id])
 
+    params[:kind] ||= {}
+    params[:kind][:settings] ||= {}
     params[:kind][:settings][:tagging] ||= false
     
     respond_to do |format|
@@ -55,6 +64,13 @@ class KindsController < ApplicationController
           redirect_to :action => 'index'
         else
           render :action => "edit"
+        end
+      end
+      format.json do
+        if @kind.update_attributes(kind_params)
+          render action: 'show'
+        else
+          render json: @kind.errors, status: 406
         end
       end
     end
@@ -70,6 +86,15 @@ class KindsController < ApplicationController
           redirect_to(kinds_url)
         else
           redirect_to denied_path
+        end
+      end
+      format.json do
+        unless @kind == Kind.medium_kind
+          render action: 'show'
+        else
+          render status: 403, json: {
+            message: "the medium kind can't be deleted"
+          }
         end
       end
     end

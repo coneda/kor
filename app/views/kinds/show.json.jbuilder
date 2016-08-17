@@ -1,4 +1,4 @@
 json.partial!('customized',
-  directed_relationship: @directed_relationship,
+  kind: @kind,
   additions: ['all']
 )

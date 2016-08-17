@@ -1,11 +1,10 @@
 additions ||= []
 dr = directed_relationship
 
-json.relationship_id dr.relationship_id
-json.from_id dr.from_id
-json.to_id dr.to_id
-json.is_reverse dr.is_reverse
-json.relation_name dr.relation_name
+json.extract!(dr,
+  :id, :relationship_id, :from_id, :to_id, :is_reverse, :relation_name,
+  :relation_id,
+)
 
 if additions.include?('technical') || additions.include?('all')
   json.created_at dr.created_at
@@ -16,4 +15,21 @@ if additions.include?('to') || additions.include?('all')
   json.to do
     json.partial! 'entities/customized', entity: dr.to
   end
+end
+
+if additions.include?('properties') || additions.include?('all')
+  json.properties dr.relationship.properties
+end
+
+
+if additions.include?('relationship') || additions.include?('all')
+  json.relationship do
+    json.partial!('relationships/normal',
+      relationship: dr.relationship
+    )
+  end
+end
+
+if additions.include?('media_relations') || additions.include?('all')
+  json.media_relations dr.to.media_count(current_user)
 end

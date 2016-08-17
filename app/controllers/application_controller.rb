@@ -29,9 +29,14 @@ class ApplicationController < BaseController
       end
     end
 
-    rescue_from Exception do |e|
-      binding.pry
-    end
+    # unless Rails.env.production?
+    #   p "bla"
+    #   rescue_from Exception do |e|
+    #     p "bla"
+    #     raise e
+    #     binding.pry
+    #   end
+    # end
 
     rescue_from StandardError do |exception|
       if Rails.env == 'production'
@@ -41,10 +46,14 @@ class ApplicationController < BaseController
       respond_to do |format|
         format.html {raise exception}
         format.json {
-          render status: 500, json: {
-            'message' => exception.message,
-            'backtrace' => exception.backtrace
-          }
+          if Rails.env.test?
+            raise exception
+          else
+            render status: 500, json: {
+              'message' => exception.message,
+              'backtrace' => exception.backtrace
+            }
+          end
         }
       end
     end 

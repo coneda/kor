@@ -1,4 +1,4 @@
-<kor-entity class="kor {'kor-style': opts.korStyle}">
+<kor-entity class="{'kor-style': opts.korStyle, 'kor': opts.korStyle}">
   
   <div class="auth" if={!authorized}>
     <strong>Info</strong>
@@ -10,14 +10,10 @@
   </div>
 
   <a href={url()} if={authorized} target="_blank">
-    <div if={data.medium}>
-      <img src={image_url()} />
-      <em>{data.medium.content_type}, {human_size()} MiB</em>
-
-    </div>
+    <img if={data.medium} src={image_url()} />
     <div if={!data.medium}>
       <h3>{data.display_name}</h3>
-      <em>
+      <em if={include('kind')}>
         {data.kind_name}
         <span show={data.subtype}>({data.subtype})</span>
       </em>
@@ -28,13 +24,13 @@
     @import "widgets/vars.scss";
 
     kor-entity, [data-is=kor-entity] {
-      display: inline-block;
 
       &.kor-style {
+        display: inline-block;
+        vertical-align: bottom;
         box-sizing: border-box;
         width: 200px;
         max-height: 200px;
-        margin: 1rem;
         padding: 0.5rem;
 
         & > a {
@@ -88,9 +84,17 @@
       return_to = document.location.href
       "#{base}/login?return_to=#{return_to}"
 
+    self.image_size = ->
+      self.opts.korImageSize || 'preview'
+
     self.image_url = ->
       base = $('script[kor-url]').attr('kor-url') || ""
-      "#{base}#{self.data.medium.url.preview}"
+      size = self.image_size()
+      "#{base}#{self.data.medium.url[size]}"
+
+    self.include = (what) ->
+      includes = (self.opts.korInclude || "").split(/\s+/)
+      includes.indexOf(what) != -1
 
     self.url = ->
       base = $('[kor-url]').attr('kor-url') || ""

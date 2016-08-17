@@ -31,7 +31,7 @@ json.session do
   end
   json.history session[:history]
   json.current_history @current_entities do |entity|
-    json.partial! 'entities/minimal', entity: entity
+    json.partial! 'entities/customized', entity: entity
   end
   json.show_panel session[:show_session_info]
   json.clipboard session[:clipboard] || []

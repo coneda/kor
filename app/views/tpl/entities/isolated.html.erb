@@ -19,7 +19,7 @@
             <td ng-repeat="entity in row" class="gallery_item">
               <a href="/blaze#/entities/{{entity.id}}">
                 <span ng-bind="entity.name"></span>
-                <img ng-src="{{entity.url}}" />
+                <img ng-src="{{entity.medium.url.thumbnail}}" />
               </a>
             </td>
           </tr>

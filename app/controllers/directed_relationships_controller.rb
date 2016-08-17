@@ -5,6 +5,7 @@ class DirectedRelationshipsController < ApplicationController
   def index
     params[:from_entity_id] ||= params[:entity_id]
 
+    params[:include] = param_to_array(params[:include], ids: false)
     params[:from_entity_id] = param_to_array(params[:from_entity_id])
     params[:to_entity_id] = param_to_array(params[:to_entity_id])
     params[:relation_name] = param_to_array(params[:relation_name], ids: false)

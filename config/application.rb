@@ -96,3 +96,5 @@ end
 # TODO: instead of describing config defaults in the readme, refer to kor.defaults.yml which should also yield descriptions
 # TODO: clean up translation files (remove obsolete models)
 # TODO: when replacing sprockets, simulate checksum behaviour to provoke correct cache expiries
+# TODO: use json.extract! whenever possible
+# TODO: replace extended json views with customized json views

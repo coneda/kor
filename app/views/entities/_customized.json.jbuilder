@@ -76,7 +76,7 @@ if additions.include?('related') || additions.include?('all')
   json.related directed_relationships do |dr|
     json.partial! 'directed_relationships/customized', {
       directed_relationship: dr,
-      additions: ['to']
+      additions: ['to', 'properties']
     }
   end
 end
