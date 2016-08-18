@@ -111,9 +111,20 @@ module Kor::Auth
     if user.save
       user
     else
-      # binding.pry
-      Rails.logger.info "user couldn't be created: #{user.errors.full_messages.inspect}"
-      nil
+      if user.new_record?
+        Rails.logger.info "user couldn't be created: #{user.errors.full_messages.inspect}"
+        nil
+      else
+        Rails.logger.info "user couldn't be updated: #{user.errors.full_messages.inspect}"
+
+        if Kor.config['auth.fail_on_update_errors']
+          Rails.logger.info "authentication failed due to update errors"
+          nil
+        else
+          Rails.logger.info "allowing authentication despite update errors"
+          user
+        end
+      end
     end
   end
   

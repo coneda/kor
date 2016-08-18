@@ -3,14 +3,18 @@ require "resolv"
 class AuthenticationController < ApplicationController
   layout 'small_normal'
   skip_before_filter :authentication, :authorization, :legal
-  
-  def form
+
+  def env_auth
     if user = Kor::Auth.env_login(request.env)
       create_session(user)
       redirect_after_login
     else
-      render :layout => 'small_normal_bare'
+      redirect_to action: 'form', return_to: params[:return_to]
     end
+  end
+  
+  def form
+    
   end
   
   def password_forgotten

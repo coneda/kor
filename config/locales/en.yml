@@ -565,6 +565,9 @@ en:
 
   prompt:
     email_for_personal_password_reset: "please insert your email address"
+    federation_login: |
+      This installation allows authentication through a federation. If you would
+      like to use it, please click the button below.
 
   mailer:
     subjects:

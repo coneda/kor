@@ -131,6 +131,7 @@ Rails.application.routes.draw do
   controller 'authentication' do
     match '/authentication/denied', :action => 'denied', :as => :denied, :format => :html, :via => :get
     match '/authenticate', :action => 'login', :via => :post
+    match '/env_auth', action: 'env_auth', via: :get
     match '/login', :action => 'form', :as => :login, :via => :get
     match '/login', :action => 'login', :via => :post
     match '/logout', :action => 'logout', :as => :logout, :via => [:get, :delete]

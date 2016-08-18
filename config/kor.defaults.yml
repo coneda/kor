@@ -1,13 +1,13 @@
 all:
-
   host:
     protocol: http
     host: example.com
     port: 80
 
   app:
-    welcome_title: "*This text can be configured via the general settings*"
-    welcome_text: "*This text can be configured via the general settings*"
+    default_locale: "en"
+    welcome_title: "Welcome to ConedaKOR"
+    welcome_text: "This text can be configured in the general settings"
     current_history_length: 5
     max_foreground_group_download_size: 10
     max_file_upload_size: "100"
@@ -28,7 +28,10 @@ all:
   auth:
     session_lifetime: 2:00:00
     publishment_lifetime: 14
+    # TODO: test this
     default_groups: []
+    env_auth_button_label: "federated login"
+    fail_on_update_errors: true
 
   # google_analytics:
   #   id: "12345"
@@ -37,15 +40,6 @@ all:
   #   url: "https://analytics.example.com"
   #   id: "1"
 
-  logging:
-    file: log/kor.log
-    # possible options: debug < info < warn < error < fatal < (all other entries)
-    level: debug
-
-  umask: 0002
-
-  cache_dir: tmp/cache
-  tmp_dir: tmp/kor
   custom_css_file: data/custom.css
 
   kind_settings:
@@ -61,12 +55,11 @@ all:
   search:
     entity_name: "Name / Titel / UUID"
 
+  # CORS: set the hosts that are allowed to make AJAX requests to this instance
   allowed_origins: ['localhost:8000']
 
-development:
   mail:
     delivery_method: test
-
 
 production:
   mail:
@@ -76,7 +69,6 @@ production:
       port: 25
       enable_starttls_auto: false
       # domain: localhost
-
 
 test:
   auth:
@@ -97,20 +89,6 @@ test:
         map_to: ldap
 
   app:
-    default_locale: en
     gallery:
       primary_relations: ['shows']
       secondary_relations: ['has been created by']
-
-    welcome_title: "Welcome"
-    welcome_text: "This is a testing installation"
-
-    current_history_length: 5
-    max_foreground_group_download_size: 10
-
-  maintainer:
-    name: Example Organization
-    mail: admin@example.com
-
-  mail:
-    delivery_method: test

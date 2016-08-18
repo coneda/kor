@@ -1,0 +1,88 @@
+<% content_for :small do %>
+  <div class="login_form" ng-controller="login_controller">
+    <%= section_panel :title => I18n.t("nouns.login") do %>
+
+      <% if any_env_auth? %>
+        <div class="hr"></div>
+
+        <p>
+          <%= I18n.t 'prompt.federation_login' %>
+        </p>
+
+        <a href="/env_auth" class="kor-button">
+          <%= Kor.config['auth.env_auth_button_label'].capitalize_first_letter %>
+        </a>
+
+        <div class="hr"></div>
+      <% end %>
+
+      <%= form_tag({:controller => "authentication", :action => "login"}, :class => "kor_form") do %>
+        <%= hidden_field_tag :fragment, nil, :value => "{{fragment()}}" %>
+        <%= hidden_field_tag :return_to, nil, value: params[:return_to] %>
+        <%= kor_input_tag :username, :control => text_field_tag(:username, nil), :class => User %>
+        <%= kor_input_tag :password, :control => password_field_tag(:password), :class => User %>
+        <%= kor_submit_tag :name => I18n.t("verbs.login") %>
+      <% end %>
+
+      <div id="password_forgotten">
+        <div class="line">
+          <%= link_to I18n.t('password_forgotten_question'), :action => 'password_forgotten' %>
+          <% unless registration_notice.blank? %>
+            <div class="line">
+              <%= link_to I18n.t('nouns.registration'), nil, {
+                class: 'dialog_popup',
+                id: 'registration_notice'
+              } %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="login_footer subtitle">
+        <%= version_info :newline => true %>
+      </div>
+
+      <div class="login_footer subtitle">
+        <%= I18n.t("provided_by").capitalize %>
+        <div class="highlighted_subtitle">
+          <%= Kor.config['maintainer.name'] %>
+          <br />
+          <%= Kor.config['maintainer.city'] %>
+        </div>
+      </div>
+
+      <div class="login_footer subtitle">
+        <%= I18n.t("nouns.license", :count => 1) %>
+        <div class=""highlighted_subtitle">
+          <%= link_to I18n.t("nouns.agpl"), "http://www.gnu.org/licenses/agpl-3.0.txt",
+            target: "_blank"
+          %>
+        </div>
+      </div>
+
+      <div class="login_footer subtitle">
+        <a href="<%= Kor.source_code_url %>">
+          &raquo;
+          <%= I18n.t("objects.download",
+            o: I18n.t("nouns.source_code",
+            count: 1))
+          %>
+        </a>
+      </div>
+
+    <% end %>
+  </div>
+<% end %>
+
+<% content_for :normal do %>
+  <div id="login_form_blend"></div>
+<% end %>
+
+<% content_for :templates do %>
+  <div
+    class="dialog_popup registration_notice"
+    title="<%= I18n.t('nouns.registration') %>"
+  >
+<% end %>

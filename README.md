@@ -349,13 +349,23 @@ look like this:
             map_to: my_user_template
 
 This may be combined with script based authentication sources. Authentication is
-only triggered on GET `/login` which only renders the login form if the
+only triggered on GET `/env_auth` which redirects to the login form if the
 environment authentication was not successfull. The `domain` value is used to
 extend the username to an email address. So for example, with the above
 configuration, a user logging in as jdoe would be created with an email address
 `jdoe@example.com`. Additionally, the keys mail and full_name can be specified
 which would make the system update successfully authenticated users with those
 attributes.
+
+When the environment yields updated user information like a changed email
+address, the user is updated automatically. However, if that update fails, the
+authentication is considered unsuccessful. This behavior can be deactivated with
+the config option `auth.fail_on_update_errors`.
+
+If you configure any env auth sources, a button will appear above the login form
+to notify users of that possibility. If they choose to use it, they are
+redirected to `/env_auth` where the magic happens. The label for the button can
+be configured with the `auth.env_auth_button_label` option.
 
 ### OAI-PMH Interface
 

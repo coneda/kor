@@ -566,6 +566,9 @@ de:
 
   prompt:
     email_for_personal_password_reset: "Bitte geben Sie Ihre Emailadresse ein"
+    federation_login: |
+      Diese Installation stellt eine Authentifizierung durch eine übergeordnete
+      Vereinigung bereit. Klicken Sie dazu bitte auf den folgenden Button.
 
   mailer:
     subjects:

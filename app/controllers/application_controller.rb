@@ -29,15 +29,6 @@ class ApplicationController < BaseController
       end
     end
 
-    # unless Rails.env.production?
-    #   p "bla"
-    #   rescue_from Exception do |e|
-    #     p "bla"
-    #     raise e
-    #     binding.pry
-    #   end
-    # end
-
     rescue_from StandardError do |exception|
       if Rails.env == 'production'
         Kor::ExceptionLogger.log exception, params: params
