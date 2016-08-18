@@ -47,6 +47,21 @@ ul
     margin-left: 10px
   list-style-type: none
 
+  li.spacer
+    height: 18px
+
+  li.small_spacer
+    height: 5px
+
+.text
+  ul
+    padding-left: 2.5em
+    list-style-type: inherit
+
+h1, h2, h3, h4, h5, h6, h7
+  &:first-child
+    margin-top: 0px
+
 /* remove images before lists but enable them in the redcloth syntax */
 
 .text-right
@@ -64,12 +79,6 @@ div.clear_both, .clearfix
 span.text ul
   list-style-position: inside
   list-style-type: inherit
-
-ul li
-  &.spacer
-    height: 18px
-  &.small_spacer
-    height: 5px
 
 input, select, checkbox, textarea, button, a.kor-button
   box-sizing: border-box

@@ -30,6 +30,7 @@ commit history on GitHub.
   email server configuration is exclusively done in the config file
 * started refactoring the JSON api, see README.md
 * added widget layer to facilitate integration with other websites
+* made headlines and lists work within textile-enabled text fields
 
 ### Internal
 
