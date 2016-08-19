@@ -8,7 +8,7 @@
         <%= render(
           partial: 'entities/gallery',
           locals: {
-            top_left: I18n.t('pages.random_entities').capitalize,
+            top_left: I18n.t('pages.random_entities').capitalize_first_letter,
             results: @entities,
             top_right: ""
           }

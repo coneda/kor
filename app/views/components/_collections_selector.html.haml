@@ -1,6 +1,6 @@
 .form_field
   = hidden_field_tag(name, :value => checked_collection_ids.join(','))
-  %span.label= Collection.model_name.human(:count => :other).capitalize
+  %span.label= Collection.model_name.human(:count => :other).capitalize_first_letter
   %span.value= Collection.where(:id => checked_collection_ids).map{|c| c.name}.join(', ')
   %span.select_collections
     %a= kor_command_image('pen')
