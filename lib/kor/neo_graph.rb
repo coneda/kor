@@ -17,10 +17,10 @@ class Kor::NeoGraph
     ].join(" ")
     x = STDIN.gets
 
-    # simple_cypher "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
-    # simple_cypher "MATCH ()-[r]-() DELETE r"
-    # simple_cypher "DROP INDEX ON :entity(id)"
-    # simple_cypher "DROP INDEX ON :entity(kind_id)"
+    # cypher "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
+    # cypher "MATCH ()-[r]-() DELETE r"
+    # cypher "DROP INDEX ON :entity(id)"
+    # cypher "DROP INDEX ON :entity(kind_id)"
   end
 
   def new_progress_bar(title, total)
@@ -48,7 +48,7 @@ class Kor::NeoGraph
       from = Entity.offset((max * rand).to_i).first.id
       to = Entity.offset((max * rand).to_i).first.id
 
-      results = simple_cypher("MATCH (a),(b), p = shortestPath((a)-[r*..25]->(b)) WHERE a.id = #{from} AND b.id = #{to} RETURN nodes(p), [r IN relationships(p) | type(r)]")
+      results = cypher("MATCH (a),(b), p = shortestPath((a)-[r*..25]->(b)) WHERE a.id = #{from} AND b.id = #{to} RETURN nodes(p), [r IN relationships(p) | type(r)]")
 
       if results["results"].first["data"].empty?
         puts "!!!#{from} -> #{to}: no connection"
@@ -71,8 +71,8 @@ class Kor::NeoGraph
       store(batch)
     end
 
-    simple_cypher "CREATE INDEX ON :entity(id)"
-    simple_cypher "CREATE INDEX ON :entity(kind_id)"
+    cypher "CREATE INDEX ON :entity(id)"
+    cypher "CREATE INDEX ON :entity(kind_id)"
 
     new_progress_bar "importing relationships", Relationship.count
     Relationship.includes(:relation).find_in_batches :batch_size => 1000 do |batch|
@@ -138,13 +138,14 @@ class Kor::NeoGraph
   end
 
   def cypher(statements = [])
-    statements = [statements] unless statements.is_a?(Array)
-    # puts "CYPHER QUERY:"
-    # statements.each do |s|
-    #   puts "  #{s}"
-    # end
+    data = case statements
+      when String then [{'statement' => statements}]
+      when Hash then [statements]
+      else
+        statements
+    end
     response = request "post", "/db/data/transaction/commit", {}, JSON.dump(
-      "statements" => statements
+      "statements" => data
     )
 
     if response.ok?
@@ -160,10 +161,6 @@ class Kor::NeoGraph
       puts response.body, response.status
       nil
     end    
-  end
-
-  def simple_cypher(statement)
-    cypher("statement" => statement)
   end
 
   protected
