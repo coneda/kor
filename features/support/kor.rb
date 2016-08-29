@@ -4,21 +4,25 @@ require "cucumber/rspec/doubles"
 require 'capybara/poltergeist'
 require 'factory_girl_rails'
 
+DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :truncation
-Cucumber::Rails::Database.javascript_strategy = :truncation
+# Cucumber::Rails::Database.javascript_strategy = :truncation
+
+Around do |scenario, block|
+  DatabaseCleaner.cleaning(&block)
+end
 
 Before do |scenario|
-  DatabaseCleaner.clean
   eval File.read("#{Rails.root}/db/seeds.rb")
 
   system "rm -f #{Rails.root}/config/kor.app.test.yml"
-  Kor.config true
+  Kor::Config.reload!
 
   if scenario.tags.any?{|st| st.name == "@elastic"}
+    Kor::Elastic.enable
     Kor::Elastic.reset_index
   else
-    allow(Kor::Elastic).to receive(:enabled?).and_return(false)
-    allow(Kor::Elastic).to receive(:request).and_return([200, {}, {}])
+    Kor::Elastic.disable
   end
 
   if scenario.tags.any?{|st| st.name == "@nodelay"}
@@ -36,17 +40,33 @@ Capybara.register_driver :poltergeist do |app|
   )
 end
 
+Capybara.register_driver :chromium do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+end
+
+Capybara.register_driver :marionette do |app|
+  Selenium::WebDriver.for :firefox, marionette: true
+end
+
 Capybara.default_max_wait_time = 5
+Capybara.javascript_driver = :chromium
+# once marionette works
+# Capybara.javascript_driver = :marionette
 
 if ENV['HEADLESS']
   Capybara.javascript_driver = :poltergeist
 end
+
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassettes'
   c.hook_into :webmock
   c.default_cassette_options = {:record => :new_episodes}
   c.allow_http_connections_when_no_cassette = true
+  c.ignore_request do |request|
+    uri = URI.parse(request.uri)
+    uri.port == 7055
+  end
 end
 
 VCR.cucumber_tags do |t|

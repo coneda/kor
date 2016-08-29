@@ -18,8 +18,8 @@ kor.filter('strftime', [ ->
       if !(input instanceof Date)
         input = new Date(input)
         
-      result = new FormattedDate(input)
-      result.strftime format
+      result = new Strftime(input)
+      result.render format
     catch error
       ""
 ])
@@ -96,4 +96,12 @@ kor.filter 'is_medium', [
       else
         throw "can't determine kind id for #{input}"
         false
+]
+
+kor.filter 'remove_ws', [->
+  (input) ->
+    try
+      input.replace(/\s+/g, '')
+    catch e
+      input
 ]

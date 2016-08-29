@@ -18,14 +18,14 @@ describe Kor::Elastic, :elastic => true do
     described_class.index_all
   end
 
-  it "should be enabled only when configuration for elasticsearch is present" do
+  it 'should be enabled by rspec metadata' do
     expect(described_class.enabled?).to be_truthy
 
-    allow(described_class).to receive(:config).and_return(nil)
+    described_class.disable
     expect(described_class.enabled?).to be_falsey
 
-    allow(described_class).to receive(:config).and_return({})
-    expect(described_class.enabled?).to be_falsey   
+    described_class.enable
+    expect(described_class.enabled?).to be_truthy
   end
 
   it "should index an entity" do
@@ -298,6 +298,15 @@ describe Kor::Elastic, :elastic => true do
   it "should not fail on short query terms" do
     results = @elastic.search(query: "xx")
     expect(results.records.size).to eq(2)
+  end
+
+  it 'should allow searching within several kinds' do
+    @works = FactoryGirl.create :works
+    FactoryGirl.create :mona_lisa
+    described_class.index_all
+
+    results = @elastic.search(kind_id: [@works.id, @locations.id])
+    expect(results.records.size).to eq(3)
   end
 
 end

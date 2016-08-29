@@ -3,14 +3,18 @@ require "resolv"
 class AuthenticationController < ApplicationController
   layout 'small_normal'
   skip_before_filter :authentication, :authorization, :legal
-  
-  def form
+
+  def env_auth
     if user = Kor::Auth.env_login(request.env)
       create_session(user)
       redirect_after_login
     else
-      render :layout => 'small_normal_bare'
+      redirect_to action: 'form', return_to: params[:return_to]
     end
+  end
+  
+  def form
+    
   end
   
   def password_forgotten
@@ -32,12 +36,11 @@ class AuthenticationController < ApplicationController
     redirect_to :action => 'form'
   end
   
-  # TODO: return status "403 Forbidden" if authentication fails
   def login
     account_without_password = User.find_by_name(params[:username])
     if account_without_password && account_without_password.too_many_login_attempts?
       flash[:error] = I18n.t('errors.too_many_login_attempts')
-      redirect_to :action => 'form'
+      redirect_to :back
     else
       account = Kor::Auth.login(params[:username], params[:password])
 
@@ -45,35 +48,79 @@ class AuthenticationController < ApplicationController
         account.update_attributes(:login_attempts => [])
 
         if account.expires_at && (account.expires_at <= Time.now)
-          flash[:error] = I18n.t("errors.account_expired")
-          redirect_to :action => "form"
+          respond_to do |format|
+            format.html do
+              flash[:error] = I18n.t("errors.account_expired")
+              redirect_to :back
+            end
+            format.json do
+              render(
+                json: {'message' => I18n.t("errors.account_expired")},
+                status: 403
+              )
+            end
+          end
         elsif !account.active
           reset_session
-          flash[:error] = I18n.t("errors.account_inactive")
-          redirect_to :action => "form"
+
+          respond_to do |format|
+            format.html do
+              flash[:error] = I18n.t("errors.account_inactive")
+              redirect_to :back
+            end
+            format.json do
+              render(
+                json: {'message' => I18n.t("errors.account_inactive")},
+                status: 403
+              )
+            end
+          end
         else
           account.fix_cryptography(params[:password])
           create_session(account)
+          @current_user = nil
 
-          redirect_after_login
+          respond_to do |format|
+            format.html {redirect_after_login}
+            format.json do
+              render json: {'message' => I18n.t('notices.logged_in')}
+            end
+          end
         end
       else
         if account_without_password
           account_without_password.add_login_attempt
           account_without_password.save
         end
-        # reset_session cant be done here because of http://railsforum.com/viewtopic.php?id=1611
+        # reset_session cant be done here because of http://railsforum.com/viewtopic.php?id=1611 (dead link)
         # reset_session
-        flash[:error] = I18n.t("errors.user_or_pass_refused")
-        redirect_to :action => "form"
+
+        respond_to do |format|
+          format.html do
+            flash[:error] = I18n.t("errors.user_or_pass_refused")
+            redirect_to :back
+          end
+          format.json do
+            render(
+              json: {'message' => I18n.t("errors.user_or_pass_refused")},
+              status: 403
+            )
+          end
+        end
       end
     end
   end
   
   def logout
     reset_session
-    flash[:notice] = I18n.t("notices.logged_out")    
-    redirect_to root_path
+
+    respond_to do |format|
+      format.html do
+        flash[:notice] = I18n.t("notices.logged_out")
+        redirect_to root_path
+      end
+      format.json {render json: {'message' => I18n.t("notices.logged_out")}}
+    end
   end
   
   def denied
@@ -100,7 +147,11 @@ class AuthenticationController < ApplicationController
     end
 
     def redirect_after_login
-      r_to = (back || current_user.home_page) || Kor.config['app.default_home_page'] || root_path
+      r_to = 
+        params[:return_to].presence ||
+        (back || current_user.home_page) ||
+        Kor.config['app.default_home_page'] ||
+        root_path
 
       if params[:fragment].present?
         params[:fragment] = nil if params[:fragment].match('{{')
@@ -108,13 +159,6 @@ class AuthenticationController < ApplicationController
       end
 
       redirect_to r_to
-    end
-
-    # TODO: still needed?
-    def remote_ip_with_name
-      "#{request.ip} (#{Resolv.getname(request.ip)})"
-    rescue Resolv::ResolvError => e
-      request.ip
     end
 
 end

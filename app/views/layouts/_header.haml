@@ -43,7 +43,7 @@
           = version_info
         - if current_user
           %td
-            = I18n.t('logged_in_as').capitalize
+            = I18n.t('logged_in_as').capitalize_first_letter
             - unless current_user == User.guest
               %span.username= link_to current_user.display_name, edit_self_user_path(current_user)
             - else

@@ -1,0 +1,121 @@
+<kor-application>
+  <div class="container">
+    <a href="#/login">login</a>
+    <a href="#/welcome">welcome</a>
+    <a href="#/search">search</a>
+    <a href="#/logout">logout</a>
+  </div>
+
+  <kor-js-extensions />
+  <kor-router />
+  <kor-notifications />
+
+  <div id="page-container" class="container">
+    <kor-page class="kor-appear-animation" />
+  </div>
+
+  <style type="text/scss">
+    @keyframes kor-appear {
+      from {
+        opacity: 0;
+        /*transform: rotateY(180deg);*/
+        transform: translateX(100%);
+      };
+      to {
+        opacity: 100;
+        transform: translateX(0%);
+      };
+    }
+
+    @keyframes kor-fade {
+      from {opacity: 100;}
+      to {
+        opacity: 0;
+        transform: rotateY(90deg);
+      }
+    }
+
+    #page-container {
+      perspective: 1000px;
+    }
+
+    .kor-appear-animation {
+      transform-style: preserve-3d;
+      display: block;
+      animation-name: kor-appear;
+      animation-duration: 500ms;
+    }
+
+    .kor-fade-animation {
+      transform-style: preserve-3d;
+      display: block;
+      animation-name: kor-fade;
+      animation-duration: 500ms;
+    }
+  </style>
+
+  <script type="text/coffee">
+    self = this
+
+    window.kor = {
+      # init: ->
+      #   this.on 'mount', ->
+          # console.log this
+      url: self.opts.baseUrl || ''
+      bus: riot.observable()
+      load_session: ->
+        $.ajax(
+          type: 'get'
+          url: "#{kor.url}/api/1.0/info"
+          success: (data) ->
+            kor.info = data
+            kor.bus.trigger 'data.info'
+        )
+      login: (username, password) ->
+        console.log arguments
+        $.ajax(
+          type: 'post',
+          url: "#{kor.url}/login"
+          data: JSON.stringify(
+            username: username
+            password: password
+          )
+          success: (data) -> kor.load_session()
+        )
+      logout: ->
+        $.ajax(
+          type: 'delete'
+          url: "#{kor.url}/logout"
+          success: -> kor.load_session()
+        )
+    }
+    riot.mixin(kor: kor)
+
+    $.extend $.ajaxSettings, {
+      contentType: 'application/json'
+      dataType: 'json'
+      error: (request) ->
+        console.log request
+        kor.bus.trigger 'notify', JSON.parse(request.response)
+    }
+
+    mount_page = (tag) ->
+      if self.mounted_page != tag
+        self.page_tag.unmount(true) if self.page_tag
+        element = $(self.root).find('kor-page')
+        self.page_tag = (riot.mount element[0], tag)[0]
+        element.detach()
+        $(self['page-container']).append(element)
+        self.mounted_page = tag
+
+    self.on 'mount', ->
+      mount_page 'kor-loading'
+      kor.load_session()
+    
+    kor.bus.on 'page.welcome', -> mount_page('kor-welcome')
+    kor.bus.on 'page.login', -> mount_page('kor-login')
+    kor.bus.on 'page.entity', -> mount_page('kor-entity')
+    kor.bus.on 'page.search', -> mount_page('kor-search')
+
+  </script>
+</kor-application>

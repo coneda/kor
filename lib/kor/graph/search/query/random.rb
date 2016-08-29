@@ -29,7 +29,7 @@ class Kor::Graph::Search::Query::Random < Kor::Graph::Search::Query::Base
         o = 0
         Array.new(limit).map do |i|
           o += [(rand(c) / limit).round, 1].max
-          viewable_media_entities.limit(1).offset(o).load_fully.first
+          viewable_media_entities.limit(1).offset(o).load_fully.to_a.first
         end
       end
     end

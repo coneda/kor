@@ -65,19 +65,6 @@ Feature: Authentication and Authorization
     Then I should see "Access denied"
 
     
-  Scenario Outline: Direct Actions
-    Given I am logged in as "<username>"
-    When I send a "<method>" request to "<url>" with params "<params>"
-    Then I should get access "<access>"
-    
-    Examples:
-      | username | method | url             | params | access |
-      | admin    | GET    | /kinds          |        | yes    |
-      | john     | GET    | /kinds          |        | yes    |
-      | admin    | GET    | /config/general |        | yes    |
-      | john     | GET    | /config/general |        | no     |
-
-  
   @javascript
   Scenario: Don't show group menu when not logged in
     Given the user "guest"

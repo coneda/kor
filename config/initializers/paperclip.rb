@@ -18,11 +18,6 @@ Paperclip.interpolates :style_timestamp do |attachment, style|
   end
 end
 
-# TODO: still needed?
-Paperclip.interpolates :image_timestamp do |attachment, style|
-  attachment.instance.image.updated_at.to_i
-end
-
 module Paperclip::Interpolations
   def id_partition attachment, style_name
     case id = attachment.instance.id

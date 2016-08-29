@@ -24,17 +24,17 @@
           <tr ng-repeat="row in result.grouped_records">
             <td ng-repeat="entity in row" class="gallery_item">
               <div ng-if="entity.id">
-                <div class="kor_medium_frame" ng-show="entity.url">
+                <div class="kor_medium_frame" ng-show="entity.medium">
                   <a href="/blaze#/entities/{{entity.id}}">
                     <span ng-bind="entity.name"></span>
-                    <img ng-src="{{entity.url}}" />
+                    <img ng-src="{{entity.medium.url.thumbnail}}" />
                   </a>
                   <span class="button_bar" style="display: none;">
                     <div kor-current-button="entity" />
                     <div kor-to-clipboard="entity" />
                   </span>
                 </div>
-                <div ng-show="entity.url">
+                <div ng-show="entity.medium">
                   <div>
                     <small>
                       {{'activerecord.attributes.medium.content_type' | translate}}

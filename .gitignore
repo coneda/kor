@@ -5,6 +5,7 @@ log/*
 tmp/*
 data/*
 db/*.sqlite3
+node_modules
 public/media
 public/custom.css
 
@@ -14,6 +15,7 @@ public/custom.css
 config/kor.yml
 config/kor.test.yml
 config/kor.development.yml
+config/kor.app.development.yml
 config/database.yml
 config/legal.txt
 config/contact.txt
@@ -35,6 +37,7 @@ db/*.sqlite3
 .yardoc
 .sass-cache
 coverage
+npm-debug.log
 
 # Testing
 screenshot.png
@@ -43,3 +46,5 @@ screenshot.png
 
 deploy.config.sh
 .vagrant
+
+widgets/tmp

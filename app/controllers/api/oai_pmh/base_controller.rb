@@ -134,7 +134,6 @@ class Api::OaiPmh::BaseController < BaseController
       token
     end
 
-    # TODO: write tests for resumptionTokens
     def load_query(token)
       base_dir = "#{Rails.root}/tmp/resumption_tokens"
       file = "#{base_dir}/#{token}.json"

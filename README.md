@@ -2,9 +2,11 @@
 
 ConedaKOR allows you to store arbitrary documents and interconnect them with
 relationships. You can build huge semantic networks for an unlimited amount of
-domains.
+domains. This integrates a sophisticated ontology management tool with an easy
+to use media database.
 
-To learn more and for installation instructions, please visit our
+To learn more and for installation instructions, please have a look at the
+feature list below or visit
 [our website (German)](http://coneda.net/pages/download)
 
 ## Changelog
@@ -48,12 +50,20 @@ see file COPYING
 * Access data via an OAI-PMH interface
 * Vagrant dev environment
 * good unit and integration test coverage
+* a growing javascript widget library allowing easy integration into other apps
 
 
 ## Documentation
 
 These instructions are intended for system operators who wish to deploy the 
 software for their users.
+
+### Requirements
+
+* ruby (>= 2.1.0)
+* mysql server (>= 5.5)
+* elasticsearch (>= 1.7.2)
+* web server (optional but highly recommended)
 
 ### Deployment
 
@@ -62,7 +72,7 @@ backup the database and the `$DEPLOY_TO/shared` directory**. In practice, this
 is achieved by dumping the database to a file and creating a snapshot of the VM
 that contains the above directory.
 
-ConedaKOR includes a deployment script `deploy.sh` that facilitats installs and
+ConedaKOR includes a deployment script `deploy.sh` that facilitates installs and
 upgrades via SSH. It is a plain bash script that connects to the server
 remotely, deploys the code to the specified directory and runs the necessary
 tasks (compiling assets, starting background jobs, …). The functionality does
@@ -138,12 +148,16 @@ configured in `config/database.yml`. Here is an example taken from
         host: 127.0.0.1
         port: 9200
         index: kor
+        token: <secret token>
 
 When adding content via the web interface, ConedaKOR stores information in mysql
 and elasticsearch automatically and keeps the index updated in most cases. Since
 there are still some rare conditions under which the elasticsearch index is not
 up to date, there is a task that regenerates it from scratch, please have a look
-at the [command line tool documentation](#command-line-tool) below.
+at the [command line tool documentation](#command-line-tool) below. The optional
+token will be sent as query string parameter to elasticsearch with every
+request. This allows to secure it behind a proxy which denies access unless the
+token is present.
 
 ### Configuration & customizations
 
@@ -170,12 +184,17 @@ Some options can be configured via web interface: As an admin, navigate to
 
 #### Specific configuration options
 
-* `custom_css [path, default: data/custom.css`]: if you specify a file 
+* `custom_css [path, default: data/custom.css]`: if you specify a file 
   here and given it exists, it will be included as a customized stylesheet after
   all other style sheets. The file has to be readable by the web server. This 
   allows you to change the entire graphical design of ConedaKOR. To make this
   file persist across upgrades, we recommend to choose a path below `data/`
   which is usually symlinked to a permanent location.
+* `max_results_per_request [integer, default: 500]`: the maximum allowed
+  page size when requesting multiple items via JSON.
+* `max_included_results_per_result [integer, default: 4]`: the maximum allowed
+  page size items related to the requested one. If only a single item is
+  requested, `max_results_per_request` applies instead.
 
 ### Backups
 
@@ -330,13 +349,23 @@ look like this:
             map_to: my_user_template
 
 This may be combined with script based authentication sources. Authentication is
-only triggered on the `/authentication/form` which only renders the login form
-if the environment authentication was not successfull. The `domain` value is
-used to extend the username to an email address. So for example, with the above
+only triggered on GET `/env_auth` which redirects to the login form if the
+environment authentication was not successfull. The `domain` value is used to
+extend the username to an email address. So for example, with the above
 configuration, a user logging in as jdoe would be created with an email address
 `jdoe@example.com`. Additionally, the keys mail and full_name can be specified
 which would make the system update successfully authenticated users with those
 attributes.
+
+When the environment yields updated user information like a changed email
+address, the user is updated automatically. However, if that update fails, the
+authentication is considered unsuccessful. This behavior can be deactivated with
+the config option `auth.fail_on_update_errors`.
+
+If you configure any env auth sources, a button will appear above the login form
+to notify users of that possibility. If they choose to use it, they are
+redirected to `/env_auth` where the magic happens. The label for the button can
+be configured with the `auth.env_auth_button_label` option.
 
 ### OAI-PMH Interface
 
@@ -367,6 +396,62 @@ https://kor.example.com/schema/1.0/kor.xsd
 as part of every installation (version 2.0.0 and above). We will add new
 versions, should the need arise.
 
+### Widgets
+
+ATTENTION: This feature is experimental and subject to future change.
+
+We are working on creating a complete widget library so that the entire frontend
+is just a composition of widgets. Since that requires extensive refactoring of
+most of the code base, this process is going to take some time. However, some
+components are usable already. We will list those below and describe how they
+work and extend the list continuously.
+
+In general, widgets have the form of custom html tags. They are all prefixed
+with `kor-`. There are two types: application-widgets and standalone-widgets.
+The former are additionally prefixed with `app-`, the latter are not. An example
+for an application-widget would thus be `<kor-app-router>` and `<kor-entity>` is
+a standalone widget. The main difference is that  standalone-widgets try to be
+usable outside of the ConedaKOR context, within other web applications.
+
+To use any of the widgets, the library has to be added to the integrating page.
+The best position for this is directly below the closing body tag, so for
+example:
+
+    <html>
+      ...
+      <body>
+        ...
+        <script
+          src="https://kor.example.com/widgets.js"
+          kor-url="https://kor.example.com"
+        ></script>
+      </body>
+    </html>
+
+In addition, you will have to list the origin in the configuration parameter
+`allowed_origins` so that the CORS header is set accordingly, e.g.
+
+    ...
+      allowed_origins: ['https://kor.example.com']
+    ...
+
+The following widgets can then be used on the integrating page:
+
+#### `<kor-entity>`
+
+    <kor-entity
+      id="<id or uuid>"
+      kor-style="true"
+    />
+
+This shows the entity (also supports media entities) referenced by `id`. If you
+add the `kor-style` attribute, the widget will apply some basic styling.
+However, the styles will always mix with the existing styles on the page so some
+CSS adjustments might be necessary. with `kor-include` you may supply a space
+separated list of information to include (currently supports `kind`). The
+attribute `kor-image-size` allows you to specify witch image resultion should
+be loaded (icon, thumbnail, preview, screen, normal) for media.
+
 ### JSON API
 
 This API is undergoing a lot of change. This is why we are not showing all of
@@ -380,30 +465,36 @@ request's `content-type` header has to be `application/json`
 Have a look at [Authentication](#authentication) to see how you can provide
 authentication credentials.
 
-* `/kinds.json`: returns array of all kinds
-* `/kinds/1.json`: returns kind with id 1
-* `/relations.json`: returns array of all relations
-* `/relations/1.json`: returns relation with id 1
-* `/entities.json`: search for entities, returns only viewable content, returns resultset of entities
+* `GET /kinds.json`: returns array of all kinds
+* `GET /kinds/1.json`: returns kind with id 1
+* `GET /relations.json`: returns array of all relations
+* `GET /relations/1.json`: returns relation with id 1
+* `GET /entities.json`: search for entities, returns only viewable content, returns resultset of entities
     * `terms`: searches for entities with matching name or synonyms (uses the
       elasticsearch index)
     * `relation_name`: limits to entities that can be used as targets for the
       given relation name
     * `kind_id`: limits to entities that are of the given kind
     * `include_media`: whether to include media entities (default: false)
-    * `include`: a list of aspects to include within each entity, comma separated, choose one or more of `technical`, `synonyms`, `datings`, `dataset`, `properties`, `relations`, `media_relations`, `kind`, `collection`, `user_groups`, `groups`, `degree`, `users`, `fields`, `generators` and `all`.
+    * `include`: a list of aspects to include within each entity, comma separated, choose one or more of `technical`, `synonyms`, `datings`, `dataset`, `properties`, `relations`, `media_relations`,`related`, `kind`, `collection`, `user_groups`, `groups`, `degree`, `users`, `fields`, `generators` and `all`.
     * `page`: requests a specific page from the resultset (default: 1)
-    * `per_page`: sets the page size (default: 10, max 100)
-* `/entities/1.json`: returns the entity with id 1, requires `view` permissions for that entity
+    * `per_page`: sets the page size (default: 10, max: 500)
+    * `related_kind_id`: sets a filter for kind ids on related entities
+    * `related_relation_name`: sets a filter for relation names on related entities
+    * `related_per_page`: sets the page size for related entities [default: 1, max: 4]
+* `GET /entities/1.json`: returns the entity with id 1, requires `view` permissions for that entity
     * `include`: see parameters for `/entities.json`
-* `/entities/1/relationships.json`, or `/relationships`: returns the relationships (for that entity), returns only viewable content, returns resultset of directed relationships
+    * `related_kind_id`: see parameters for `/entities.json`
+    * `related_relation_name`: see parameters for `/entities.json`
+    * `related_per_page`: see parameters for `/entities.json` [different max of 500]
+* `GET /entities/1/relationships.json`, or `/relationships`: returns the relationships (for that entity), returns only viewable content, returns resultset of directed relationships
     * `from_entity_id`: limits by the source entity, comma-separated
     * `to_entity_id` or `entity_id`: limits by the target entity, comma-separated
     * `relation_name`: limits by relation name, comma-separated
     * `from_kind_id`: limits by the source's kind, comma-separated
     * `to_kind_id`: limits by the target's kind, comma-separated
     * `page`: requests a specific page from the resultset (default: 1)
-    * `per_page`: sets the page size (default: 10, max 500)
+    * `per_page`: sets the page size (default: 10, max: 500)
 
 Resultsets are JSON objects having this structure:
 
@@ -416,6 +507,10 @@ Resultsets are JSON objects having this structure:
     }
 
 while `ìds` and `records` are optional.
+
+Be aware that, if you are requesting related entities to be embedded within
+other entities, those are embedded as a list of directed relationships which
+in turn contain the entity itself.
 
 ### Generating a virtual appliance
 

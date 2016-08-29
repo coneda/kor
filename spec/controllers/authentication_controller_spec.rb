@@ -15,6 +15,8 @@ RSpec.describe AuthenticationController, :type => :controller do
   end
   
   it "should deny access if there were too many login attempts in one hour" do
+    request.headers['HTTP_REFERER'] = 'http://test.host/login'
+    
     for i in 1..3 do
       post :login, :username => 'admin', :password => 'wrong'
       expect(response).to redirect_to(:action => 'form')
@@ -40,6 +42,7 @@ RSpec.describe AuthenticationController, :type => :controller do
   end
   
   it "should not crash when supplying a non existing username" do
+    request.headers['HTTP_REFERER'] = 'http://test.host/login'
     post :login, :username => "does_not_exist", :password => 'wrong'
     expect(response).to redirect_to(:action => 'form')
   end
@@ -61,13 +64,13 @@ RSpec.describe AuthenticationController, :type => :controller do
       request.env['mail'] = 'jdoe@example.com'
       request.env['HTTP_REMOTE_USER'] = 'jdoe'
 
-      get :form
-      expect(response.status).to eq(200)
+      get :env_auth
+      expect(response).to redirect_to('/login')
 
       request.env['REMOTE_USER'] = 'jdoe'
 
-      get :form
-      expect(response.status).to eq(302)
+      get :env_auth
+      expect(response).not_to redirect_to('/login')
 
       expect(session[:user_id]).to eq(jdoe.id)
     end
@@ -77,8 +80,8 @@ RSpec.describe AuthenticationController, :type => :controller do
       request.env['mail'] = 'jdoe@example.com'
       request.env['REMOTE_USER'] = 'jdoe'
 
-      get :form
-      expect(response.status).to eq(302)
+      get :env_auth
+      expect(response).not_to redirect_to('/login')
 
       jdoe = User.where(name: 'jdoe').first
       expect(session[:user_id]).to eq(jdoe.id)
@@ -89,8 +92,8 @@ RSpec.describe AuthenticationController, :type => :controller do
       request.env['REMOTE_USER'] = 'jdoe'
       request.env['mail'] = 'jdoe@example.com'
 
-      get :form
-      expect(response.status).to eq(302)
+      get :env_auth
+      expect(response).not_to redirect_to('/login')
     end
 
     it 'should use a splitter if given' do
@@ -98,8 +101,7 @@ RSpec.describe AuthenticationController, :type => :controller do
       request.env['REMOTE_USER'] = 'jdoe;John Doe'
       request.env['mail'] = 'jdoe@example.com;john.doe@example.com'
 
-      get :form
-      expect(response.status).to eq(302)
+      expect(response).not_to redirect_to('/login')
     end
 
     it "should respect a display name if given and configured" do
@@ -108,10 +110,25 @@ RSpec.describe AuthenticationController, :type => :controller do
       request.env['mail'] = 'jdoe@example.com'
       request.env['full_name'] = 'John Carl Doe'
 
-      get :form
-      expect(response.status).to eq(302)
+      get :env_auth
+      expect(response).not_to redirect_to('/login')
 
       expect(User.where(name: 'jdoe').first.full_name).to eq('John Carl Doe')
+    end
+
+    it "should allow authentication success despite faulty user data" do
+      FactoryGirl.create :jdoe
+      request.env['REMOTE_USER'] = 'jdoe'
+      request.env['mail'] = 'jdoe@example.com'
+      request.env['full_name'] = 'John Carl Doe'
+
+      expect(Kor.config['auth.fail_on_update_errors']).to be_truthy
+      Kor.config['auth.fail_on_update_errors'] = false
+
+      # should provoke error on update: map_to user doesn't exist
+      get :env_auth
+      expect(response).not_to redirect_to('/login')
+      expect(User.where(name: 'jdoe').first.full_name).to eq('John Doe')
     end
 
   end

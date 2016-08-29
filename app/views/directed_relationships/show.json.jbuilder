@@ -1,1 +1,4 @@
-json.partial! 'extended', directed_relationship: @directed_relationship
+json.partial!('customized',
+  directed_relationship: @directed_relationship,
+  additions: ['all']
+)

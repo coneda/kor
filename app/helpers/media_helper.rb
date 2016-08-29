@@ -100,6 +100,10 @@ module MediaHelper
         end
       end
 
+      result['application/mp4'] = Proc.new do |entity, options|
+        render :partial => "video_player", :locals => {:entity => entity, :options => options}
+      end      
+
       result['application/x-shockwave-flash'] = Proc.new do |entity, options|
         render :partial => "video_player", :locals => {:entity => entity, :options => options}
       end

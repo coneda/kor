@@ -237,6 +237,11 @@ FactoryGirl.define do
       reverse_name "is shown by"
     end
 
+    factory :depicts do
+      name 'depicts'
+      reverse_name 'is depicted by'
+    end
+
     factory :has_created do
       name "has created"
       reverse_name "has been created by"

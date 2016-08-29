@@ -128,4 +128,15 @@ describe DirectedRelationshipsController, type: :controller do
     expect(JSON.parse(response.body)['total']).to eq(3)
   end
 
+  it 'should include properties when requested' do
+    default_setup
+    Relationship.relate_and_save(@leonardo, 'has created', @mona_lisa, [
+      'perhaps'
+    ])
+
+    get :index, api_key: User.admin.api_key, include: 'properties'
+    rs_data = JSON.parse(response.body)['records'].first
+    expect(rs_data['properties']).to eq(['perhaps'])
+  end
+
 end

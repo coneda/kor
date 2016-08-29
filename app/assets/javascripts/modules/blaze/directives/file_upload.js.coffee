@@ -13,7 +13,8 @@ kor.directive "korFileUpload", [
           file_data_name: "entity[medium_attributes][document]"
         )
 
-        scope.max_file_size = -> kd.info.config.max_file_size
+        scope.max_file_size = -> 
+          if kd.info then kd.info.config.max_file_size else 0
         scope.$watch 'max_file_size()', (new_value) ->
           v = parse_int(new_value)
           setting = if v < 1

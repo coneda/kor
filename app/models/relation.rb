@@ -39,7 +39,7 @@ class Relation < ActiveRecord::Base
   scope :allowed, lambda {|user, policies| all}
   scope :pageit, lambda { |page, per_page|
     page = (page || 1) - 1
-    per_page = [(per_page || 30).to_i, 500].min
+    per_page = [(per_page || 30).to_i, Kor.config['app']['max_results_per_request']].min
     limit(per_page).offset(per_page * page)
   }
   default_scope lambda { order(:name) }

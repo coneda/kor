@@ -180,14 +180,16 @@ class Field < ActiveRecord::Base
   end
   
   def value
-    entity.dataset[name]
+    if entity
+      entity.dataset[name]
+    end
   end
   
   
   # Formats
   
   def serializable_hash(*args)
-    super(:methods => [:value, :show_on_entity], :root => false).stringify_keys
+    super(methods: [:value, :show_on_entity]).stringify_keys
   end
   
 end

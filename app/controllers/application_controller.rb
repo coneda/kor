@@ -11,22 +11,16 @@ class ApplicationController < BaseController
     :logged_in?,
     :blaze
   
-  before_filter :locale, :authentication, :authorization, :legal, :cors
+  before_filter :locale, :authentication, :authorization, :legal
 
   before_filter do
     @blaze = nil
   end
 
   around_filter :profile
-  
+
 
   private
-
-    def cors
-      if request.format.json?
-        headers['Access-Control-Allow-Origin'] = '*'
-      end
-    end
 
     # redirects to the legal page if terms have not been accepted
     def legal
@@ -35,27 +29,26 @@ class ApplicationController < BaseController
       end
     end
 
-    if Rails.env == 'production'
-      rescue_from ActionController::RoutingError, :with => :not_found
-      rescue_from ActiveRecord::RecordNotFound, :with => :not_found
-      rescue_from Exception, :with => :log_exception_and_notify_user
-    end
+    rescue_from StandardError do |exception|
+      if Rails.env == 'production'
+        Kor::ExceptionLogger.log exception, params: params
+      end
+
+      respond_to do |format|
+        format.html {raise exception}
+        format.json {
+          if Rails.env.test?
+            raise exception
+          else
+            render status: 500, json: {
+              'message' => exception.message,
+              'backtrace' => exception.backtrace
+            }
+          end
+        }
+      end
+    end 
     
-    def not_found
-      redirect_to '/404.html'
-    end
-
-    def log_exception_and_notify_user(exception)
-      ExceptionLog.create(
-        :kind => exception.class.to_s,
-        :message => exception.message,
-        :backtrace => exception.backtrace,
-        :params => params
-      )
-      
-      redirect_to '/500.html'
-    end
-
     def authentication
       session[:user_id] ||= if User.guest
         session[:expires_at] = Kor.session_expiry_time
@@ -97,8 +90,15 @@ class ApplicationController < BaseController
     
     def authorization
       unless generally_authorized?
-        flash[:error] = I18n.t('notices.access_denied')
-        redirect_to denied_path
+        respond_to do |format|
+          format.html do
+            flash[:error] = I18n.t('notices.access_denied')
+            redirect_to denied_path(:return_to => request.url)
+          end
+          format.json do
+            render json: {message: I18n.t('notices.access_denied')}, status: 403
+          end
+        end
       end
     end
 

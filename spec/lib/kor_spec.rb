@@ -20,7 +20,8 @@ describe Kor do
     
     uuid = Kor.repository_uuid
     expect(uuid).not_to be_nil
-    expect(Kor.config(true)["maintainer.repository_uuid"]).to eq(uuid)
+    Kor::Config.reload!
+    expect(Kor.config["maintainer.repository_uuid"]).to eq(uuid)
   end
 
 end

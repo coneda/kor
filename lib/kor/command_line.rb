@@ -110,6 +110,7 @@ class Kor::CommandLine
         when 'editor-stats' then editor_stats
         when 'exif-stats' then exif_stats
         when 'reset-admin-account' then reset_admin_account
+        when 'reset-guest-account' then reset_guest_account
         when 'to-neo' then to_neo
         when 'connect-random' then connect_random
         when 'cleanup-sessions' then cleanup_sessions
@@ -239,6 +240,10 @@ class Kor::CommandLine
   def connect_random
     graph = Kor::NeoGraph.new(User.admin)
     graph.connect_random
+  end
+
+  def reset_guest_account
+    Kor.ensure_guest_account!
   end
 
   def cleanup_sessions

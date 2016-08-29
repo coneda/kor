@@ -73,7 +73,7 @@ class Relationship < ActiveRecord::Base
 
   scope :pageit, lambda { |page, per_page|
     page = (page || 1) - 1
-    per_page = [(per_page || 10).to_i, 500].min
+    per_page = [(per_page || 10).to_i, Kor.config['app']['max_results_per_request']].min
     limit(per_page).offset(per_page * page)
   }
   scope :with_ends, lambda {
@@ -111,7 +111,7 @@ class Relationship < ActiveRecord::Base
     result = result.where('NOT (' + conditions.join(' OR ') + ')', *values)
   }  
 
-  def self.relate_and_save( from_id, relation_name, to_id, properties = [] )
+  def self.relate_and_save(from_id, relation_name, to_id, properties = [])
     r = relate(from_id, relation_name, to_id, properties)
     r.save
     r
@@ -165,20 +165,4 @@ class Relationship < ActiveRecord::Base
     "'#{from_name}' [#{r}] #{relation_name} '#{to_name}'"
   end
 
-  # TODO: remove with grouped_related_entities
-  def other_entity(entity)
-    from_id == entity.id ? to : from
-  end
-
-  # TODO: remove with grouped_related_entities
-  def relation_name_for_entity(entity)
-    if from_id == entity.id
-      relation.name
-    elsif to_id == entity.id
-      relation.reverse_name
-    else
-      raise "entity not part of relationship"
-    end
-  end
-  
 end

@@ -1,7 +1,7 @@
 .entity_list
   = kor_paginate results
 
-  .title= I18n.t('nouns.search_results').capitalize
+  .title= I18n.t('nouns.search_results').capitalize_first_letter
 
   - if results.empty?
     .message= I18n.t('objects.none_found', :o => Entity.model_name.human(:count => :other))

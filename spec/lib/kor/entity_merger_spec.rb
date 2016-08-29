@@ -38,6 +38,7 @@ describe Kor::EntityMerger do
   end
 
   it "should push the merge result to elasticsearch", elastic: true do
+    FactoryGirl.create :media
     mona_lisa = FactoryGirl.create :mona_lisa
     other_mona_lisa = FactoryGirl.create :mona_lisa, :name => "Mona Liza"
 
@@ -54,6 +55,7 @@ describe Kor::EntityMerger do
   end
 
   it "should not leave old identifiers behind" do
+    FactoryGirl.create :media
     artworks = FactoryGirl.create :works, fields: [
       Field.new(name: 'gnd', show_label: 'GND-ID', is_identifier: true)
     ]

@@ -21,7 +21,7 @@ gem 'acts-as-taggable-on', '~> 3.5'
 gem 'sprockets-rails'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'angularjs-rails', '~> 1.4.8'
+gem 'angularjs-rails', '~> 1.5.2'
 gem 'plupload-rails'
 gem 'coffee-rails'
 gem 'sass-rails'
@@ -30,6 +30,7 @@ gem 'jbuilder'
 gem 'test-unit'
 gem 'ruby-progressbar'
 gem 'colorize'
+gem 'rack-cors', :require => 'rack/cors'
 
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load 
@@ -52,6 +53,7 @@ group :test do
   gem 'vcr'
   gem 'webmock'
   gem 'simplecov', require: false
+  gem 'test_after_commit'
 end
 
 group :development do

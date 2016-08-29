@@ -22,7 +22,7 @@
 
       - if logged_in?
         %li.inactive_item
-          = link_to I18n.t('nouns.group', :count => :other).capitalize, nil, :class => "menu_toggle"
+          = link_to I18n.t('nouns.group', :count => :other).capitalize_first_letter, nil, :class => "menu_toggle"
         %li
           %ul.toggling_menu#groups_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_group_menu]}"}
             = navigation_item model_specifier(AuthorityGroup, :other), authority_group_categories_path 
@@ -37,7 +37,7 @@
       - if authorized? :create
         %li
           = form_for :new_entity, :url => {:controller => 'entities', :action => 'new'}, :method => :get, :builder => Kor::FormBuilder do |f|
-            = f.kind_selector :kind_id, {:no_selection_name => I18n.t('objects.new', :o => I18n.t('nouns.entity', :count => 1)).capitalize, :media => true}
+            = f.kind_selector :kind_id, {:no_selection_name => I18n.t('objects.new', :o => I18n.t('nouns.entity', :count => 1)).capitalize_first_letter, :media => true}
         
         = navigation_item I18n.t('nouns.mass_upload'), web_path(:anchor => "/entities/multi_upload")
       
@@ -53,7 +53,7 @@
 
       - if current_user.any_admin?
         %li.inactive_item
-          = link_to I18n.t('nouns.config', :count => :other).capitalize, nil, :class => "menu_toggle"
+          = link_to I18n.t('nouns.config', :count => :other).capitalize_first_letter, nil, :class => "menu_toggle"
         %li
           %ul.toggling_menu#config_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_config_menu]}"}
             = navigation_item I18n.t('general'), config_path(:action => 'general') if current_user.admin?

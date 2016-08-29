@@ -183,4 +183,8 @@ module ApplicationHelper
     end
   end
 
+  def any_env_auth?
+    Kor::Auth.env_sources.present?
+  end
+
 end

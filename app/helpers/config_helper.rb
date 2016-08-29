@@ -29,7 +29,7 @@ module ConfigHelper
   end
   
   def human_config_section_name(name)
-    Kor::Config.human_section_name(Kor::Config.array_for(name).last).capitalize
+    Kor::Config.human_section_name(Kor::Config.array_for(name).last).capitalize_first_letter
   end
     
   def config_section(name, &block)
@@ -54,7 +54,7 @@ module ConfigHelper
     )
   
     options[:label] ||= options[:translate] ? human_config_value_name(name) : name
-    options[:label] = options[:label].capitalize if options[:capitalize]
+    options[:label] = options[:label].capitalize_first_letter if options[:capitalize]
 
     options[:control] ||= case options[:type]
       when :check_box then check_box_tag(options[:field_name], options[:value], Kor.config(true)[name])

@@ -53,7 +53,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
       else
         tmp_result = Entity.allowed(user, :view).
           by_id(criteria[:entity_id]).
-          is_a(criteria[:kind_id]).
+          only_kinds(criteria[:kind_id]).
           named_like(user, criteria[:name]).
           has_property(user, criteria[:properties]).
           dated_in(criteria[:dating_string]).
@@ -62,7 +62,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
           within_collections(collection_ids).
           by_relation_name(criteria[:relation_name]).
           includes(:medium)
-          
+        
         unless tag_list.empty?
           tmp_result = tmp_result.tagged_with(tag_list.split(/,\s*/))
         end

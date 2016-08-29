@@ -40,6 +40,6 @@
             - row.each do |e|
               %td
                 = f.radio_button :id, e.id
-                = kor_image e.dataset, 'icon'
+                = kor_medium e, style: :icon, link: false, buttons: false, wrap: false
     
     = f.kor_submit

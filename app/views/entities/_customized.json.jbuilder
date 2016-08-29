@@ -67,6 +67,20 @@ if additions.include?('media_relations') || additions.include?('all')
   json.media_relations entity.relation_counts(current_user, media: true)
 end
 
+if additions.include?('related') || additions.include?('all')
+  directed_relationships = entity.outgoing_relationships.
+    by_relation_name(related_relation_name).
+    by_to_kind(related_kind_id).
+    pageit(1, related_per_page)
+
+  json.related directed_relationships do |dr|
+    json.partial! 'directed_relationships/customized', {
+      directed_relationship: dr,
+      additions: ['to', 'properties']
+    }
+  end
+end
+
 if additions.include?('kind') || additions.include?('all')
   json.kind do
     json.partial! 'kinds/customized', kind: entity.kind, additions: ['settings']
@@ -76,7 +90,7 @@ end
 if additions.include?('collection') || additions.include?('all')
   json.collection do
     json.partial! 'collections/customized', locals: {
-      collection: entity.collection
+      kor_collection: entity.collection
     }
   end
 end
@@ -102,13 +116,13 @@ if additions.include?('degree') || additions.include?('all')
 end
 
 if additions.include?('users') || additions.include?('all')
-  if entity.creator
+  if entity.creator_id && entity.creator
     json.creator do
       json.partial! 'users/customized', user: entity.creator
     end
   end
 
-  if entity.updater_id
+  if entity.updater_id && entity.updater
     json.updater do
       json.partial! 'users/customized', user: entity.updater
     end

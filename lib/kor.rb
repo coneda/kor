@@ -1,7 +1,7 @@
 module Kor
   
-  def self.config(reload = (Rails.env == 'development'))
-    Kor::Config.instance(reload)
+  def self.config
+    Kor::Config.instance
   end
   
   def self.help(controller, action)
@@ -44,7 +44,7 @@ module Kor
   def self.repository_uuid
     unless Kor.config["maintainer.repository_uuid"]
       Kor.config["maintainer.repository_uuid"] = SecureRandom.uuid
-      Kor.config(false).store Kor::Config.app_config_file
+      Kor.config.store Kor::Config.app_config_file
     end
 
     Kor.config["maintainer.repository_uuid"]
@@ -92,6 +92,15 @@ module Kor
 
       full_name: u.full_name || I18n.t('users.administrator'),
       email: u.email || Kor.config['maintainer.mail']
+    )
+  end
+
+  def self.ensure_guest_account!
+    u = User.find_or_initialize_by name: 'guest'
+    u.update_attributes(
+      terms_accepted: true,
+      full_name: u.full_name || I18n.t('users.guest'),
+      email: u.email || 'guest@example.com'
     )
   end
 

@@ -4,6 +4,8 @@ class ComponentSearchController < ApplicationController
     respond_to do |format|
       format.html {render :layout => 'small_normal_bare'}
       format.json do
+        params[:kind_id] = param_to_array(params[:kind_id])
+
         @results = elastic.search(
           :query => params[:terms],
           :kind_id => params[:kind_id],

@@ -79,4 +79,19 @@ describe Kor::Config do
     expect(config['mail']).to eql(nil)
   end
 
+  it 'should update config twice and store it in different files' do
+    config.update 'mail' => {'sender_name' => 'Admin'}
+    config.store "#{Rails.root}/tmp/testing.01.app.yml"
+    config.update 'mail' => {'address' => 'admin@example.com'}
+    config.store "#{Rails.root}/tmp/testing.02.app.yml"
+
+    expect(config['mail.sender_name']).to eql('Admin')
+    expect(config['mail.address']).to eql('admin@example.com')
+
+    loaded = described_class.new("#{Rails.root}/tmp/testing.02.app.yml")
+
+    expect(loaded['mail.sender_name']).to eql('Admin')
+    expect(loaded['mail.address']).to eql('admin@example.com')
+  end
+
 end

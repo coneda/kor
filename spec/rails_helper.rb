@@ -13,15 +13,12 @@ RSpec.configure do |config|
   # config.infer_spec_type_from_file_location!
 
   config.before :all do
-    system "rm -f #{Rails.root}/config/kor.app.test.yml"
-    Kor.config true
-
     system "cat /dev/null >| #{Rails.root}/log/test.log"
 
     XmlHelper.compile_validator
 
-    DatabaseCleaner.strategy = :deletion
-    DatabaseCleaner.clean_with :deletion
+    DatabaseCleaner.clean_with :truncation
+    DatabaseCleaner.strategy = :transaction
   end
 
   config.around(:each) do |example|
@@ -32,14 +29,22 @@ RSpec.configure do |config|
 
   config.before :each do |example|
     FactoryGirl.reload
+
     if example.metadata[:elastic]
+      Kor::Elastic.enable
       Kor::Elastic.reset_index
+    else
+      Kor::Elastic.disable
+    end
+
+    if example.metadata[:seed]
+      Rails.application.load_seed
     end
 
     ActionMailer::Base.deliveries = []
     system "rm -rf #{Medium.media_data_dir}/*"
     system "rm -f #{Kor::Config.app_config_file}"
     system "rm -rf #{Rails.root}/tmp/export_spec"
-    Kor.config(true)
+    Kor::Config.reload!
   end
 end

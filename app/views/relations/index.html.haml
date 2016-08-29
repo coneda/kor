@@ -2,7 +2,7 @@
 - content_for :commands, link_to(kor_command_image('plus'), new_relation_path)
 - content_for :content do
   - if @relations.empty?
-    = I18n.t('objects.none_found', o: Relation.model_name.human(count: :other)).capitalize
+    = I18n.t('objects.none_found', o: Relation.model_name.human(count: :other)).capitalize_first_letter
   - else
     %table.kor_table.relations
       %colgroup
@@ -16,8 +16,8 @@
           = will_paginate @relations, :previous_label => '«', :next_label => '»'
 
       %tr
-        %th= Relation.human_attribute_name(:name).capitalize
-        %th= Kind.model_name.human(:count => :other).capitalize
+        %th= Relation.human_attribute_name(:name).capitalize_first_letter
+        %th= Kind.model_name.human(:count => :other).capitalize_first_letter
         %th= I18n.t("usage_count")
         %th
 
@@ -36,10 +36,10 @@
                 = o.description
             %td
               %div
-                = I18n.t(:from).capitalize + ":"
+                = I18n.t(:from).capitalize_first_letter + ":"
                 = Kind.where(:id => o.from_kind_ids).map{|k| k.name}.join(', ')
               %div
-                = I18n.t(:to).capitalize + ":"
+                = I18n.t(:to).capitalize_first_letter + ":"
                 = Kind.where(:id => o.to_kind_ids).map{|k| k.name}.join(', ')
             %td{:style => "text-align: right"}
               = o.relationships.count

@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-COMMIT=$1
-RAILS_ENV=$2
+COMMIT=${1:-master}
+RAILS_ENV=${2:-production}
 
 RUBY_VERSION=$(git show $COMMIT:.ruby-version)
 

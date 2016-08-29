@@ -3,7 +3,10 @@
   = I18n.t("messages.access_denied")
   .hr
   .subtitle
-    = link_to I18n.t('verbs.login'), :controller => "authentication", :action => "form"
+    - if params[:return_to]
+      = link_to I18n.t('verbs.login'), controller: "authentication", action: "form", return_to: params[:return_to]
+    - else
+      = link_to I18n.t('verbs.login'), controller: "authentication", action: "form"
     |
     = link_to I18n.t('back'), back_save
 

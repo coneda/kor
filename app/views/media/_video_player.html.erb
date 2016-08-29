@@ -1,4 +1,7 @@
-<% if entity.medium.content_type.match(/^video\//) || entity.medium.content_type == 'application/x-shockwave-flash' %>
+<% if entity.medium.content_type.match(/^video\//) || 
+      entity.medium.content_type == 'application/x-shockwave-flash' ||
+      entity.medium.content_type == 'application/mp4'
+%>
   <video controls mute autoplay>
     <source src="<%= entity.medium.document.url(:mp4) %>" type="video/mp4">
     <source src="<%= entity.medium.document.url(:webm) %>" type="video/webm">

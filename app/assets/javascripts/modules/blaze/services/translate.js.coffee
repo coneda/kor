@@ -29,8 +29,8 @@ kor.service('korTranslate', ["korData", (korData) ->
     localize: (input, format_name = 'default') ->
       try
         format = service.translate "date.formats.#{format_name}"
-        result = new FormattedDate(input)
-        result.strftime format
+        result = new Strftime(input)
+        result.render format
       catch error
         ""
   }

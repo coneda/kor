@@ -19,7 +19,7 @@
 
       <span class="nowrap">
         <span class="text italic" ng-bind="directed_relationship.to.kind_name"></span>
-        <span class="relationship_switch" ng-show="directed_relationship.media_count > 0">
+        <span class="relationship_switch" ng-show="directed_relationship.media_relations > 0">
           <a href="#" ng-click="switch(false, null, $event)">
             <img alt="Triangle_up" src="<%= image_path('triangle_up.gif') %>" ng-hide="visible">
             <img alt="Triangle_down" src="<%= image_path('triangle_down.gif') %>" ng-show="visible">
@@ -54,7 +54,7 @@
         id="kor_medium_frame_{{directed_relationship.to.id}}"
       >
         <a href="/blaze#/entities/{{directed_relationship.to.id}}">
-          <img alt="Image" class="kor_medium" ng-src="{{directed_relationship.to.url}}">
+          <img alt="Image" class="kor_medium" ng-src="{{directed_relationship.to.medium.url.preview}}">
         </a>
         <span class="button_bar" style="display: none;">
           <div kor-current-button="directed_relationship.to" />
@@ -87,7 +87,7 @@
 
     <div
       kor-pagination="page"
-      kor-total="directed_relationship.media_count"
+      kor-total="directed_relationship.media_relations"
       kor-per-page="9"
       kor-use-search="false"
     ></div>
@@ -98,7 +98,7 @@
           <td class="image" ng-repeat="rel in row">
             <div class="kor_medium_frame" id="kor_medium_frame_{{rel.to.id}}" ng-show="rel.to.id">
               <a href="/blaze#/entities/{{rel.to.id}}">
-                <img alt="Image" class="kor_medium" ng-src="{{rel.to.url}}">
+                <img alt="Image" class="kor_medium" ng-src="{{rel.to.medium.url.thumbnail}}">
               </a>
               <span class="button_bar" style="display: none">
                 <div kor-to-clipboard="rel.to" ></div>

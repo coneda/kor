@@ -31,35 +31,72 @@ class KindsController < ApplicationController
   def create
     @kind = Kind.new(kind_params)
 
-    if @kind.save
-      flash[:notice] = I18n.t( 'objects.create_success', :o => Kind.model_name.human )
-      redirect_to :action => 'index'
-    else
-      render :action => "new"
+    respond_to do |format|
+      format.html do
+        if @kind.save
+          flash[:notice] = I18n.t( 'objects.create_success', :o => Kind.model_name.human )
+          redirect_to :action => 'index'
+        else
+          render :action => "new"
+        end
+      end
+      format.json do
+        if @kind.save
+          render action: 'show'
+        else
+          render json: @kind.errors, status: 406
+        end
+      end
     end
   end
 
   def update
     @kind = Kind.find(params[:id])
 
+    params[:kind] ||= {}
+    params[:kind][:settings] ||= {}
     params[:kind][:settings][:tagging] ||= false
     
-    if @kind.update_attributes(kind_params)
-      flash[:notice] = I18n.t( 'objects.update_success', :o => Kind.model_name.human )
-      redirect_to :action => 'index'
-    else
-      render :action => "edit"
+    respond_to do |format|
+      format.html do
+        if @kind.update_attributes(kind_params)
+          flash[:notice] = I18n.t( 'objects.update_success', :o => Kind.model_name.human )
+          redirect_to :action => 'index'
+        else
+          render :action => "edit"
+        end
+      end
+      format.json do
+        if @kind.update_attributes(kind_params)
+          render action: 'show'
+        else
+          render json: @kind.errors, status: 406
+        end
+      end
     end
   end
 
   def destroy
     @kind = Kind.find(params[:id])
     
-    unless @kind == Kind.medium_kind
-      @kind.destroy
-      redirect_to(kinds_url)
-    else
-      redirect_to denied_path
+    respond_to do |format|
+      format.html do
+        unless @kind == Kind.medium_kind
+          @kind.destroy
+          redirect_to(kinds_url)
+        else
+          redirect_to denied_path
+        end
+      end
+      format.json do
+        unless @kind == Kind.medium_kind
+          render action: 'show'
+        else
+          render status: 403, json: {
+            message: "the medium kind can't be deleted"
+          }
+        end
+      end
     end
   end
   
@@ -71,7 +108,7 @@ class KindsController < ApplicationController
     end
 
     def generally_authorized?
-      if action_name == 'index'
+      if action_name == 'index' || action_name == 'show'
         true
       else
         current_user.kind_admin?

@@ -38,7 +38,7 @@ class Medium < ActiveRecord::Base
 
     if document.present?
       ct = document.content_type
-      if ct.match(/^(video\/|application\/x-shockwave-flash)/)
+      if ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
         result.merge!(
           mp4: {format: :mp4, content_type: 'video/mp4'},
           ogg: {format: :ogv, content_type: 'video/ogg'},
@@ -59,7 +59,7 @@ class Medium < ActiveRecord::Base
   def processors
     if document.present?
       ct = document.content_type
-      return [:video] if ct.match(/^(video\/|application\/x-shockwave-flash)/)
+      return [:video] if ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
       return [:audio] if ct.match(/^audio\//)
     end
       
@@ -69,7 +69,7 @@ class Medium < ActiveRecord::Base
   
   # TODO: fix for audio case or remove if not used
   def presentable?
-    self.content_type.match /^(image|video|application\/x-shockwave-flash)/
+    self.content_type.match /^(image|video|application\/x-shockwave-flash|application\/mp4)/
   end
   
   def kind
