@@ -2,4 +2,4 @@
 
 REPO=$1
 
-git archive --format=tar --remote=$REPO master | tar xf
+git archive --format=tar --remote=$REPO master | tar xf -

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+
+    <title>Widget Boilerplate</title>
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="<%= stylesheet_path('vendor.css') %>"
+    />
+  </head>
+  <body>
+    <w-app></w-app>
+
+    <script type="text/javascript" src="<%= script_path('app.js') %>"></script>
+    <script type="text/javascript">
+      riot.mount('w-app');
+    </script>
+  </body>
+</html>
