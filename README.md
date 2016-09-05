@@ -422,7 +422,7 @@ example:
       <body>
         ...
         <script
-          src="https://kor.example.com/widgets.js"
+          src="https://kor.example.com/app.js"
           kor-url="https://kor.example.com"
         ></script>
       </body>

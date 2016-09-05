@@ -11,22 +11,6 @@
     </li>
   </ul>
 
-  <style type="text/scss">
-    kor-notifications {
-      ul {
-        perspective: 1000px;
-        position: absolute;
-        top: 0px;
-        right: 0px;
-
-        li {
-          padding: 1rem;
-          list-style-type: none;
-        }
-      }
-    }
-  </style>
-
   <script type="text/coffee">
     self = this
     self.messages = []

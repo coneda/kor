@@ -52,6 +52,11 @@ function deploy {
 
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec bin/kor secrets"
 
+  local "npm run build"
+  upload public/widget-test.html $CURRENT_PATH/public/widget-test.html
+  upload public/*.js $CURRENT_PATH/public/
+  upload public/*.css $CURRENT_PATH/public/
+
   remote "touch $CURRENT_PATH/tmp/restart.txt"
 
   finalize
@@ -127,6 +132,14 @@ function cleanup {
 
 function finalize {
   echo -e "${GREEN}deployment successful${NOCOLOR}"
+}
+
+function upload {
+  FROM=$1
+  TO=$2
+  OPTS="-rvqtzh --rsh=ssh -e 'ssh -p $PORT'"
+
+  local "rsync $OPTS $FROM $HOST:$TO"
 }
 
 

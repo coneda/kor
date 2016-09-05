@@ -20,38 +20,6 @@
     </div>
   </a>
 
-  <style type="text/scss">
-    @import "widgets/vars.scss";
-
-    kor-entity, [data-is=kor-entity] {
-
-      &.kor-style {
-        display: inline-block;
-        vertical-align: bottom;
-        box-sizing: border-box;
-        width: 200px;
-        max-height: 200px;
-        padding: 0.5rem;
-
-        & > a {
-          display: block;
-          text-decoration: none;
-        }
-
-        h3 {
-          margin: 0px;
-          color: white;
-        }
-
-        img {
-          display: block;
-          max-width: 100%;
-          max-height: 160px;
-        }
-      }
-    }
-  </style>
-
   <script type="text/coffee">
     self = this
     self.authorized = true

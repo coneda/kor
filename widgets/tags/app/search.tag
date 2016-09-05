@@ -77,15 +77,6 @@
     </div>
   </form>
 
-  <style type="text/scss">
-    kor-search, [data-is='kor-search'] {
-      .allnone {
-        margin-right: 1rem;
-        margin-top: -3px;
-      }
-    }
-  </style>
-
   <script type="text/coffee">
     self = this
     window.x = this

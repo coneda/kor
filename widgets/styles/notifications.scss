@@ -1,0 +1,13 @@
+kor-notifications {
+  ul {
+    perspective: 1000px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+
+    li {
+      padding: 1rem;
+      list-style-type: none;
+    }
+  }
+}

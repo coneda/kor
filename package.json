@@ -1,24 +1,24 @@
 {
-  "name": "kor",
+  "name": "kor-frontend",
   "version": "1.0.0",
   "description": "ConedaKOR frontend",
   "main": "index.js",
   "devDependencies": {
-    "bootstrap": "^3.3.6",
     "coffee-script": "^1.10.0",
-    "lockr": "^0.8.4",
+    "ejs": "^2.5.1",
+    "font-awesome": "^4.6.3",
     "node-sass": "^3.8.0",
-    "onchange": "^2.5.0",
+    "node-static": "^0.7.8",
+    "onchange": "^3.0.0",
     "parallelshell": "^2.0.0",
-    "riot": "^2.4.1",
-    "riot-route": "^2.4.0",
-    "uglify-js": "^2.6.4",
+    "riot": "^2.5.0",
+    "uglifyjs": "^2.4.10",
     "zepto": "^1.0.1"
   },
   "scripts": {
     "build": "widgets/build.sh build",
     "watch": "widgets/build.sh watch",
-    "serve": "cd public && python3 -m http.server --bind 127.0.0.1 8000"
+    "serve": "widgets/build.sh server"
   },
   "repository": {
     "type": "git",
