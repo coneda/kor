@@ -2,11 +2,7 @@ class Kor::NeoGraph
 
   def initialize(user, options = {})
     @user = user
-    @options = options.reverse_merge(
-      :base_dir => "/opt/neo4j-community-2.1.4",
-      :base_url => "http://localhost:7474"
-    )
-    @entities_done = {}
+    @options = Rails.configuration.database_configuration[Rails.env]['neo']
   end
 
   def reset!
@@ -175,7 +171,8 @@ class Kor::NeoGraph
         "Accept" => "application/json"
       )
 
-      client.request(method, "#{@options[:base_url]}#{path}", params, body, headers)
+      base_url = "http://#{@options['host']}:#{@options['port']}"
+      client.request(method, "#{base_url}#{path}", params, body, headers)
     end
 
 end
