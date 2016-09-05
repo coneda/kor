@@ -15,7 +15,7 @@ Feature: Welcome
   Scenario: Welcome page as guest
     Given I am on the welcome page
     Then I should see "Welcome"
-    And I should see "This is a testing installation"
+    And I should see "Welcome to ConedaKOR"
     And I should not see "Randomly selected entries"
     And I should not see "Mona Lisa"
     And I should not see "Leonardo"
@@ -26,7 +26,7 @@ Feature: Welcome
     Given I am logged in as "admin"
     And I am on the welcome page
     Then I should see "Welcome"
-    And I should see "This is a testing installation"
+    And I should see "Welcome to ConedaKOR"
     And I should see "Randomly selected entries"
     And I should see "Mona Lisa"
     And I should see "Leonardo"
