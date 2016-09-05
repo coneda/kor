@@ -28,7 +28,7 @@
     "media",
     "repository"
   ],
-  "author": "Moritz Schepp",
+  "author": "Moritz Schepp <moritz.schepp@gmail.com>",
   "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/coneda/kor/issues"
