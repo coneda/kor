@@ -1,13 +1,10 @@
 <w-app>
+  <w-style />
 
   <div class="w-content"></div>
 
   <w-modal />
   <w-messaging />
-
-  <style type="text/scss">
-    @import "widgets/styles/vars.scss";
-  </style>
 
   <script type="text/coffee">
     self = this
@@ -26,5 +23,4 @@
       window.scrollTo(0, 0)
 
   </script>
-
 </w-app>

@@ -9,31 +9,6 @@
     {message.content}
   </div>
 
-  <style type="text/scss">
-    @import "widgets/styles/vars.scss";
-
-    w-messaging, [data-is=w-messaging] {
-      position: fixed;
-      right: 0px;
-      top: 0px;
-
-      .message {
-        padding: 1rem;
-        margin-bottom: 1px;
-      }
-
-      .error {
-        background-color: $color-secondary-2-4;
-        color: white;
-      }
-
-      .notice {
-        background-color: $color-secondary-1-4;
-        color: white;
-      }
-    }
-  </style>
-
   <script type="text/coffee">
     self = this
 

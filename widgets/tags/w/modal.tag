@@ -2,27 +2,6 @@
 
   <div name="receiver"></div>
 
-  <style type="text/scss">
-    w-modal, [data-is=w-modal] {
-      position: fixed;
-      top: 0px;
-      height: 100%;
-      left: 0px;
-      width: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      z-index: 10000;
-
-      [name=receiver] {
-        position: fixed;
-        z-index: 10001;
-        background-color: white;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      }
-    }
-  </style>
-
   <script type="text/coffee">
     self = this
     self.active = false

@@ -1,0 +1,20 @@
+w-messaging, [data-is=w-messaging] {
+  position: fixed;
+  right: 0px;
+  top: 0px;
+
+  .message {
+    padding: 1rem;
+    margin-bottom: 1px;
+  }
+
+  .error {
+    background-color: red;
+    color: white;
+  }
+
+  .notice {
+    background-color: blue;
+    color: white;
+  }
+}
