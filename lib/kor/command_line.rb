@@ -111,6 +111,8 @@ class Kor::CommandLine
         when 'exif-stats' then exif_stats
         when 'reset-admin-account' then reset_admin_account
         when 'reset-guest-account' then reset_guest_account
+        when 'to-neo' then to_neo
+        when 'connect-random' then connect_random
         when 'cleanup-sessions' then cleanup_sessions
         when 'list-permissions' then list_permissions
         when 'cleanup-exception-logs' then cleanup_exception_logs
@@ -227,11 +229,17 @@ class Kor::CommandLine
     Kor::Statistics::Exif.new(@config[:from], @config[:to], :verbose => true).run
   end
 
-  def reset_admin_account
-    User.admin.update_attributes(
-      :password => "admin",
-      :login_attempts => []
-    )
+  def to_neo
+    require "ruby-progressbar"
+    graph = Kor::NeoGraph.new(User.admin)
+
+    graph.reset!
+    graph.import_all
+  end
+
+  def connect_random
+    graph = Kor::NeoGraph.new(User.admin)
+    graph.connect_random
   end
 
   def reset_guest_account

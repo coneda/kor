@@ -8,7 +8,6 @@ class Entity < ActiveRecord::Base
 
   # Associations
 
-  
   belongs_to :kind
   belongs_to :collection
   belongs_to :creator, :class_name => "User", :foreign_key => :creator_id
@@ -16,6 +15,7 @@ class Entity < ActiveRecord::Base
  
   has_many :identifiers, :dependent => :destroy
   has_many :datings, :class_name => "EntityDating", :dependent => :destroy
+
   belongs_to :medium, :dependent => :destroy
 
   has_and_belongs_to_many :system_groups

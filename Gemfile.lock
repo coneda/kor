@@ -373,6 +373,7 @@ DEPENDENCIES
   responders (~> 2.0)
   rspec-rails (~> 3.1)
   rubocop
+  ruby-progressbar
   sass
   sass-rails
   selenium-webdriver

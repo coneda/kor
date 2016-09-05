@@ -34,9 +34,10 @@ commit history on GitHub.
 
 ### Internal
 
-* added VCR gem to enable testing against predictable external API responses
 * switched from rails 3.2 to 4.2
 * sped up the test suites by about 20%
+* identifier handling and resolution
+* added VCR gem to enable testing against predictable external API responses
 * added a development environment via `vagrant up`
 * relationships are now saved as two records per link (in and out). This greatly
   simplyfies queries and enhances performance
@@ -48,6 +49,7 @@ commit history on GitHub.
 * included docker images build scripts for development, test and production
   images
 * upgraded some gems to their most recent bugfix release
+
 
 ## Version 1.9.2
 

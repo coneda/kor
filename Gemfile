@@ -28,6 +28,7 @@ gem 'sass-rails'
 
 gem 'jbuilder'
 gem 'test-unit'
+gem 'ruby-progressbar'
 gem 'colorize'
 gem 'rack-cors', :require => 'rack/cors'
 
