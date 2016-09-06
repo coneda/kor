@@ -30,8 +30,8 @@ FactoryGirl.define do
     end
 
     factory :people do
-      name "Person"
-      plural_name "People"
+      name "person"
+      plural_name "people"
     end
   end
 

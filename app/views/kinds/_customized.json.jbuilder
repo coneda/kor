@@ -1,11 +1,13 @@
 additions ||= []
 
-json.id kind.id
-json.description kind.description
-json.name kind.name
-json.plural_name kind.plural_name
+json.extract!(kind,
+  :id,
+  :parent_id, :lft, :rgt, :abstract, :children_count,
+  :name, :plural_name,
+  :description
+)
 
-if additions.include?('settings')
+if additions.include?('settings') || additions.include?('all')
   json.settings do
     json.merge! kind.settings
     json.name_label kind.name_label
@@ -17,9 +19,17 @@ if additions.include?('settings')
   end
 end
 
-if additions.include?('technical')
+if additions.include?('technical') || additions.include?('all')
   json.uuid kind.uuid
   json.created_at kind.created_at
   json.updated_at kind.updated_at
   json.lock_version kind.lock_version
+end
+
+if additions.include?('children') || additions.include?('all')
+  json.children do
+    json.array! kind.children do |child|
+      json.partial! 'customized', kind: child, additions: additions
+    end
+  end
 end

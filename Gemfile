@@ -37,7 +37,7 @@ if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # (and configure) it in app/controllers/application_controller.rb
   gem 'activerecord-session_store'
   gem 'delayed_job_active_record'
-  gem 'awesome_nested_set', '~> 3.0.0'
+  gem 'awesome_nested_set', '~> 3.1.1'
   gem 'factory_girl_rails'
 end
 

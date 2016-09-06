@@ -22,11 +22,16 @@ kor.factory 'timeoutHttpIntercept', [
     }
 ]
 
+load_template = (id) ->
+  $("script[type='text/x-kor-tpl'][data-id='#{id}']").html()
+
 kor.config([ 
   "$httpProvider", "$sceProvider", "$routeProvider",
   (hp, sce, rp) ->
     sce.enabled(false)
 
+    rp.when "/kinds/:id", resolve: {tag: -> 'kor-kind-list'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    # rp.when "/kinds/:id", resolve: {tag: -> 'kor-kind-list'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
     rp.when "/entities/gallery", templateUrl: ((params) -> "/tpl/entities/gallery"), reloadOnSearch: false, controller: "record_history_controller"
     rp.when "/entities/multi_upload", templateUrl: ((params) -> "/tpl/entities/multi_upload?#{Math.random()}"), reloadOnSearch: false, controller: "record_history_controller"
     rp.when "/entities/isolated", templateUrl: ((params) -> "/tpl/entities/isolated"), reloadOnSearch: false, controller: "record_history_controller"

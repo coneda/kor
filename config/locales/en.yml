@@ -883,6 +883,7 @@ en:
         dataset_class: field extension
         dataset_profile: profile for extensions
         wikidata_id: Wikidata ID
+        parent: parent type
       relation:
         name: name
         reverse_name: inversion
@@ -956,6 +957,7 @@ en:
         whitespace_end: "can't end with a space"
         whitespace_consecutive: "can't contain consecutive spaces"
         can_not_be_empty: "has to be filled in"
+        does_not_exist: "doesn't exist"
 
 
   # Mime types

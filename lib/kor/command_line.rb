@@ -118,6 +118,7 @@ class Kor::CommandLine
         when 'cleanup-exception-logs' then cleanup_exception_logs
         when 'secrets' then secrets
         when 'consistency-check' then consistency_check
+        when 'import-erlangen-crm' then import_erlangen_crm
         else
           puts "command '#{@command}' is not known"
           usage
@@ -313,6 +314,50 @@ class Kor::CommandLine
         '->',
         Kind.find(r.relation.to_kind_ids).map{|k| k.name}.join(',')
       ].join(' ')
+    end
+  end
+
+  def import_erlangen_crm
+    Kind.without_media.delete_all
+
+    url = 'http://erlangen-crm.org/ontology/ecrm/ecrm_current.owl'
+    response = HTTPClient.new.get(url)
+    if response.status == 200
+      doc = Nokogiri::XML(response.body)
+      parent_map = {}
+      doc.xpath('/rdf:RDF/owl:Class').each do |klass|
+        kind = Kind.create(
+          url: klass['rdf:about'],
+          name: klass.xpath('rdfs:label').text.gsub(/^E\d+\s/, ''),
+          plural_name: klass.xpath('rdfs:label').text.gsub(/E\d+\s/, '').pluralize,
+          description: (
+            klass.xpath('rdfs:label').text + "\n\n" + 
+            klass.xpath('rdfs:comment').text 
+          ),
+          abstract: true
+        )
+
+        unless kind.valid?
+          p kind.errors.full_messages
+          binding.pry
+        end
+
+        if parent = klass.xpath('rdfs:subClassOf/owl:Class').first
+          parent_map[kind.url] = parent['rdf:about']
+        end
+
+        if parent = klass.xpath('rdfs:subClassOf[@rdf:resource]/@rdf:resource').first
+          parent_map[kind.url] = parent.text
+        end
+      end
+
+      parent_map.each do |child_url, parent_url|
+        child = Kind.where(url: child_url).first
+        parent = Kind.where(url: parent_url).first
+        child.move_to_child_of(parent) if child && parent
+      end
+    else
+      raise "request failed: GET #{url} (#{response.status} #{response.body})"
     end
   end
 

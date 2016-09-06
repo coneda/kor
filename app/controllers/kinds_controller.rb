@@ -2,11 +2,11 @@ class KindsController < ApplicationController
   layout 'normal_small'
 
   def index
-    @kinds = Kind.all
+    @kinds = Kind.by_parent(params[:parent_id])
 
     respond_to do |format|
       format.html {render :layout => 'wide'}
-      format.json {render :json => @kinds}
+      format.json
     end
   end
 
@@ -42,9 +42,10 @@ class KindsController < ApplicationController
       end
       format.json do
         if @kind.save
-          render action: 'show'
+          @message = I18n.t( 'objects.create_success', :o => Kind.model_name.human )
+          render action: 'save'
         else
-          render json: @kind.errors, status: 406
+          render action: 'save', status: 406
         end
       end
     end
@@ -68,9 +69,10 @@ class KindsController < ApplicationController
       end
       format.json do
         if @kind.update_attributes(kind_params)
-          render action: 'show'
+          @message = I18n.t( 'objects.update_success', :o => Kind.model_name.human)
+          render action: 'save'
         else
-          render json: @kind.errors, status: 406
+          render action: 'save', status: 406
         end
       end
     end
@@ -90,11 +92,12 @@ class KindsController < ApplicationController
       end
       format.json do
         unless @kind == Kind.medium_kind
-          render action: 'show'
+          @kind.destroy
+          @message = I18n.t( 'objects.destroy_success', :o => Kind.model_name.human)
+          render action: 'save'
         else
-          render status: 403, json: {
-            message: "the medium kind can't be deleted"
-          }
+          @message = "the medium kind can't be deleted"
+          render action: 'save', status: 403
         end
       end
     end

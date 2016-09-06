@@ -51,6 +51,8 @@ see file COPYING
 * Vagrant dev environment
 * good unit and integration test coverage
 * a growing javascript widget library allowing easy integration into other apps
+* support for using Erlangen CRM and similar standards as basis for your
+  ontology (including a convenient OWL import tool)
 
 
 ## Documentation
@@ -561,6 +563,15 @@ Those sheets may be modified and imported later on.
   delete the entity on import.
 * timestamps are not imported: they will be changed if the entity will be
   changed by the import.
+
+#### Importing Erlangen CRM classes
+
+The task will import all classes from
+http://erlangen-crm.org/ontology/ecrm/ecrm_current.owl, documented by
+http://erlangen-crm.org/docs/ecrm/current/index.html into the installation as
+entity types. The types will be set up according to their hierarchy and they
+will be set to be "abstract" which prevents them from showing up in the
+interface.
 
 #### Rebuilding elastic index
 

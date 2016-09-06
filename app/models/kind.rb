@@ -2,6 +2,8 @@ class Kind < ActiveRecord::Base
 
   MEDIA_UUID = '93a03d5c-e439-4294-a8d4-d4921c4d0dbc'
 
+  acts_as_nested_set dependent: :destroy, counter_cache: :children_count
+
   serialize :settings
   
   has_many :entities, :dependent => :destroy
@@ -16,12 +18,21 @@ class Kind < ActiveRecord::Base
   validates :plural_name,
     :presence => true,
     :white_space => true
+
+  validates_each :parent_id, allow_nil: true do |record, attr, value|
+    unless record.parent
+      record.errors.add :parent, :does_not_exist
+    end
+  end
   
   default_scope lambda { order(:name) }
   scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :allowed, lambda {|user, policies| all}
+  scope :by_parent, lambda {|parent_id|
+    parent_id.present? ? children_of(parent_id) : roots
+  }
 
   before_validation :generate_uuid
 
@@ -76,11 +87,15 @@ class Kind < ActiveRecord::Base
   # Settings
   
   def settings
-    unless self[:settings]
-      self[:settings] = {}
-    end
+    if destroyed?
+      (self[:settings] || {}).symbolize_keys
+    else
+      unless self[:settings]
+        self[:settings] = {}
+      end
 
-    self[:settings].symbolize_keys!
+      self[:settings].symbolize_keys!
+    end
   end
   
   def settings=(values)

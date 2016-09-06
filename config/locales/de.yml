@@ -885,6 +885,7 @@ de:
         dataset_class: Felderweiterungen
         dataset_profile: Profil für Erweiterungen
         wikidata_id: Wikidata ID
+        parent: Stammtyp
       relation:
         name: Name
         reverse_name: Umkehrung
@@ -958,6 +959,7 @@ de:
         whitespace_end: "kann nicht mit einem Leerzeichen enden"
         whitespace_consecutive: "kann keine aufeinander folgende Leerzeichen beinhalten"
         can_not_be_empty: "muss ausgefüllt werden"
+        does_not_exist: "existiert nicht"
 
 
   # Mime types

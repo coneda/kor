@@ -1,0 +1,14 @@
+kor-kind-tree, [data-is=kor-kind-tree] {
+  & > ul {
+    padding-left: 1rem;
+  }
+
+  & > a {
+    position: absolute;
+  }
+
+  & > .content {
+    margin-left: 1rem;
+    float: left;
+  }
+}
