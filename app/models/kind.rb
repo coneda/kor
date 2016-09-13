@@ -21,7 +21,11 @@ class Kind < ActiveRecord::Base
 
   validates_each :parent_id, allow_nil: true do |record, attr, value|
     unless record.parent
-      record.errors.add :parent, :does_not_exist
+      record.errors.add :parent_id, :does_not_exist
+    end
+
+    if record.parent_id == record.id
+      record.errors.add :parent_id, :cannot_be_its_own_parent
     end
   end
   
@@ -31,7 +35,11 @@ class Kind < ActiveRecord::Base
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :allowed, lambda {|user, policies| all}
   scope :by_parent, lambda {|parent_id|
-    parent_id.present? ? children_of(parent_id) : roots
+    if parent_id.to_s == 'all'
+      all
+    else
+      parent_id.present? ? children_of(parent_id) : roots
+    end
   }
 
   before_validation :generate_uuid
@@ -106,6 +114,10 @@ class Kind < ActiveRecord::Base
   def name_label
     settings[:name_label] ||= Entity.human_attribute_name(:name)
   end
+
+  def name_label=(value)
+    settings[:name_label] = value
+  end
   
   def tagging
     settings[:tagging] = true if settings[:tagging].nil?
@@ -119,9 +131,17 @@ class Kind < ActiveRecord::Base
   def dating_label
     settings[:dating_label] ||= EntityDating.model_name.human
   end
+
+  def dating_label=(value)
+    settings[:dating_label] = value
+  end
   
   def distinct_name_label
     settings[:distinct_name_label] ||= Entity.human_attribute_name(:distinct_name)
+  end
+
+  def distinct_name_label=(value)
+    settings[:distinct_name_label] = value
   end
   
   def requires_naming?

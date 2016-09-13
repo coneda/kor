@@ -107,7 +107,11 @@ class KindsController < ApplicationController
   protected
     
     def kind_params
-      params.require(:kind).permit!
+      params.require(:kind).permit(
+        :name, :plural_name, :description,
+        :tagging, :name_label, :dating_label, :distinct_name_label,
+        :parent_id
+      )
     end
 
     def generally_authorized?

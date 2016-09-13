@@ -47,3 +47,4 @@ end
 json.translations I18n.backend.send(:translations)
 json.locale I18n.locale
 json.medium_kind_id Kind.medium_kind_id
+json.medium_kind_uuid Kind::MEDIA_UUID

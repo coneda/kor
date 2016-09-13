@@ -23,26 +23,7 @@ wApp.utils = {
       parseInt(value)
     else
       value
-  translate: (input, options = {}) ->
-    try
-      options.count ||= 1
-      parts = input.split(".")
-      result = wApp.data.translations[wApp.data.session.locale]
-      
-      for part in parts
-        result = result[part]
-      
-      count = if options.count == 1 then 'one' else 'other'
-      result = result[count] || result
-      
-      for key, value of options.interpolations
-        regex = new RegExp("%\{#{key}\}", "g")
-        tvalue = wApp.utils.translate(value)
-        value = tvalue if tvalue && (tvalue != value)
-        result = result.replace regex, value
-        
-      result
-    catch error
-      console.log error
-      ""
+  capitalize: (value) ->
+    value.charAt(0).toUpperCase() + value.slice(1)
+
 }

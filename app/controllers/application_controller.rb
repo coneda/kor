@@ -34,19 +34,21 @@ class ApplicationController < BaseController
         Kor::ExceptionLogger.log exception, params: params
       end
 
-      respond_to do |format|
-        format.html {raise exception}
-        format.json {
-          if Rails.env.test?
-            raise exception
-          else
-            render status: 500, json: {
-              'message' => exception.message,
-              'backtrace' => exception.backtrace
-            }
-          end
-        }
-      end
+      raise exception
+
+      # respond_to do |format|
+      #   format.html {raise exception}
+      #   format.json {
+      #     if Rails.env.test?
+      #       raise exception
+      #     else
+      #       render status: 500, json: {
+      #         'message' => exception.message,
+      #         'backtrace' => exception.backtrace
+      #       }
+      #     end
+      #   }
+      # end
     end 
     
     def authentication

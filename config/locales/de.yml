@@ -60,6 +60,7 @@ de:
   recently_visited: zuletzt angesehen
   recently_created: zuletzt angelegt
   currently_linked: bestehende Verknüpfung
+  nothing_selected: nichts ausgewählt
 
   search_term: 
     one: Suchbegriff
@@ -75,16 +76,6 @@ de:
   social_bookmarking:
     digg: "Auf Digg veröffentlichen"
     delicious: "Auf Delicous verlinken"
-
-  kind_settings:
-    dating_label: "Voreingestellte Bezeichnung für Datierungen"
-    distinct_name_label: "Bezeichnung für den eindeutigen Namen"
-    name_label: "Bezeichnung für den Namen"
-    keywords: "Schlagworte"
-    no_keywords: "keine"
-    all_keywords: "freie Eingabe"
-    predefined_keywords: "voreingestellte Liste"
-    tagging: Tagging
 
   prompts:
     please_select: "bitte auswählen"
@@ -882,10 +873,13 @@ de:
         name: Name
         plural_name: Name im Plural
         description: Beschreibung
-        dataset_class: Felderweiterungen
-        dataset_profile: Profil für Erweiterungen
         wikidata_id: Wikidata ID
         parent: Stammtyp
+        abstract: abstrakt
+        dating_label: "Voreingestellte Bezeichnung für Datierungen"
+        distinct_name_label: "Bezeichnung für den eindeutigen Namen"
+        name_label: "Bezeichnung für den Namen"
+        tagging: Tagging für diesen Entitätstyp aktivieren
       relation:
         name: Name
         reverse_name: Umkehrung
@@ -960,6 +954,7 @@ de:
         whitespace_consecutive: "kann keine aufeinander folgende Leerzeichen beinhalten"
         can_not_be_empty: "muss ausgefüllt werden"
         does_not_exist: "existiert nicht"
+        cannot_be_its_own_parent: kann nicht sein eigener Stammtyp sein
 
 
   # Mime types

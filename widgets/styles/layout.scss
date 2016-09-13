@@ -1,0 +1,33 @@
+kor-layout-panel, [data-is=kor-layout-panel] {
+  box-sizing: border-box;
+
+  &.left {
+    float: left;
+    border-right: 2px solid #181818;
+  }
+
+  &.right {
+    float: left;
+  }
+
+  &.top {
+    border-bottom: 2px solid #181818;
+  }
+
+  &.small {
+    width: 33.33%;
+    width: calc(100% / 3);
+  }
+
+  &.large {
+    width: 66.66%;
+    width: calc(100% / 3 * 2);
+  }
+}
+
+kor-panel, [data-is=kor-panel] {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: 1rem;
+}

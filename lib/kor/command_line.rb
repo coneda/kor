@@ -328,7 +328,7 @@ class Kor::CommandLine
       doc.xpath('/rdf:RDF/owl:Class').each do |klass|
         kind = Kind.create(
           url: klass['rdf:about'],
-          name: klass.xpath('rdfs:label').text.gsub(/^E\d+\s/, ''),
+          name: klass.xpath('rdfs:label').text,
           plural_name: klass.xpath('rdfs:label').text.gsub(/E\d+\s/, '').pluralize,
           description: (
             klass.xpath('rdfs:label').text + "\n\n" + 

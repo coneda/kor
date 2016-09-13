@@ -6,7 +6,15 @@
   </a>
 
   <div class="content">
-    <span show={opts.kind.id}>{opts.kind.name}/{opts.kind.plural_name}</span>
+    <div class="name" show={opts.kind.id}>
+      <a href="#" onclick={edit(opts.kind)}>
+        {opts.kind.name}/{opts.kind.plural_name}
+        <i class="fa fa-edit"></i>
+      </a>
+      <a href="#" onclick={delete(opts.kind)}>
+        <i class="fa fa-remove"></i>
+      </a>
+    </div>
 
     <ul show={!opts.kind.id || (expanded && opts.kind.children)}>
       <li each={child in opts.kind.children}>
@@ -19,6 +27,8 @@
 
   <script type="text/coffee">
     tag = this
+    tag.mixin 'bubble'
+    tag.expanded = true
 
     tag.on 'mount', ->
       tag.on 'expand-all', tag.expand
@@ -30,26 +40,43 @@
         tag.expanded = true
         fetch()
 
-    fetch = (parent_id) ->
+    fetch = ->
+      # console.log tag.opts
       if !tag.opts.kind || !tag.opts.kind.children
         $.ajax(
           type: 'get'
           url: '/kinds'
-          data: {parent_id: parent_id}
+          data: {parent_id: 'all'}
           success: (data) ->
-            tag.opts.kind ||= {}
-            tag.opts.kind.children = data.records
+            lookup = {}
+            for kind in data.records
+              lookup[kind.id] = kind
+            results = []
+            for kind in data.records
+              if kind.parent_id
+                lookup[kind.parent_id].children ||= []
+                lookup[kind.parent_id].children.push(kind)
+              else
+                results.push(kind)
+            tag.opts.kind = {children: results}
             tag.update()
         )
 
-    tag.has_children = -> tag.opts.kind.children_count > 0
+    tag.edit = (kind) ->
+      (event) ->
+        event.preventDefault()
+        tag.trigger('kor-kind-edit', kind)
+    tag.delete = (kind) ->
+      (event) ->
+        event.preventDefault()
+        tag.trigger('kor-kind-delete', kind)
 
+    tag.has_children = -> tag.opts.kind.children_count > 0
     tag.expand = (event) -> tag.toggle event, true
     tag.collapse = (event) -> tag.toggle event, false
     tag.toggle = (event, force = undefined) ->
       event.preventDefault() if event
       tag.expanded = (if force == undefined then !tag.expanded else force)
-      fetch(tag.opts.kind.id)
       tag.update()
   </script>
 
