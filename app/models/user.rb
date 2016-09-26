@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
 
 
   serialize :login_attempts
+  serialize :storage, JSON
 
   # ----------------------------------------------------------- associations ---
   has_and_belongs_to_many :groups, :class_name => "Credential"
@@ -122,6 +123,81 @@ class User < ActiveRecord::Base
   attr_accessor :custom_extension
   attr_accessor :plain_password
   attr_writer :make_personal
+
+  def storage
+    if self[:storage].blank?
+      self[:storage] = {'history' => [], 'clipboard' => []}
+    end
+
+    self[:storage]
+  end
+
+  def storage_update
+    clipboard_cleanup
+    history_cleanup
+    update_column :storage, storage
+  end
+
+  def history
+    storage['history']
+  end
+
+  def clipboard
+    storage['clipboard']
+  end
+
+  def history_push(url)
+    if url.present?
+      storage['history'].push url
+      storage_update
+    end
+  end
+
+  def history_pop
+    history_cleanup
+    result = storage['history'].pop
+    storage_update
+    result
+  end
+
+  def history_cleanup
+    storage['history'].uniq!
+    storage['history'].select! do |url|
+      if url.match /\/(entities|blaze)\/[0-9]+$/
+        id = url.scan(/[0-9]+$/).first
+        Entity.exists?(id)
+      else
+        true
+      end
+    end
+    if storage['history'].size > 50
+      storage['history'] = storage['history'][0..49]
+    end
+  end
+
+  def clipboard_add(id)
+    if id.present?
+      if id.is_a?(Array)
+        storage['clipboard'] += id
+      else
+        storage['clipboard'].push id
+      end
+      storage_update
+    end
+  end
+
+  def clipboard_remove(id)
+    if id.present?
+      storage['clipboard'] -= [id]
+      storage_update
+    end
+  end
+
+  def clipboard_cleanup
+    storage['clipboard'].map!{|e| e.to_i}
+    storage['clipboard'].uniq!
+    storage['clipboard'].select!{|e| Entity.exists?(e)}
+  end
   
   def make_personal
     if @make_personal.nil?

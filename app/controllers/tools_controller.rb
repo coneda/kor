@@ -1,14 +1,12 @@
 class ToolsController < ApplicationController
   
+  skip_before_action :authentication, :only => 'history'
+  skip_before_action :verify_authenticity_token, only: ['history']
   skip_before_filter :authorization, :except => [ 
     'remove_from_invalid_entities', 
     'add_to_authority_group', 
     'remove_from_authority_group' 
   ]
-
-  skip_before_filter :authentication, :only => 'history'
-
-  skip_before_action :verify_authenticity_token, only: ['history']
 
   layout 'normal_small'
 
@@ -18,27 +16,18 @@ class ToolsController < ApplicationController
     render :nothing => true
   end
 
-
-  ####################### statistics ###########################################
-
-  # gathers statistics to be shown to the user
   def statistics
-  end
-  
 
-  ####################### clipboard ############################################
+  end
 
   # TODO: handle the whole clipboard functionality with localstorage, e.g.
   # https://github.com/tsironis/lockr
   def clipboard
-    session[:clipboard] ||= Array.new
-    @entities = viewable_entities.where(:id => session[:clipboard])
-    
-    session[:clipboard] = @entities.collect{|e| e.id} if @entities.size < session[:clipboard].size
+    if current_user && !current_user.guest?
+      @entities = viewable_entities.where(:id => current_user.clipboard)
+    end
   end
 
-  # marks an entity as the current entity which makes it available for
-  # new relationships
   def mark_as_current
     if params[:id]
       session[:current_history] ||= Array.new
@@ -71,32 +60,27 @@ class ToolsController < ApplicationController
     redirect_to "/blaze#/entities/multi_upload"
   end
 
-  # puts an entity into the clipboard or removes it thereof. this action works
-  # with ajax (triggered by the checkboxes in the search result panel) or with
-  # simple html requests (triggered by buttons at the top of the entity screen)
   def mark
-    unless params[:mark] == 'reset'
-      ids = (params[:id].is_a? Array) ? params[:id] : [ params[:id] ]
-      entity = viewable_entities.find(params[:id])
-    
-      entity_name = (entity.is_medium? ? entity.id : "'#{entity.display_name}'")
-    
-      if params[:mark] == 'mark'
-        flash[:notice] = I18n.t("objects.marked_entity_success", :o => entity_name)
-        session[:clipboard] ||= Array.new
-        session[:clipboard] = (session[:clipboard] + ids).uniq
-      elsif params[:mark] == 'unmark'
-        flash[:notice] = I18n.t("objects.unmarked_entity_success", :o => entity_name)
-        session[:clipboard] ||= Array.new
-        session[:clipboard].delete params[:id].to_i
-      else
-        raise "invalid mark operation: #{params[:mark]}"
-      end
-      
-      session[:clipboard].map!{|id| id.to_i}
-    else
+    if params[:mark] == 'reset'
       flash[:notice] = I18n.t("notices.reset_clipboard_success")
       session[:clipboard] = Array.new
+    else
+      entity = viewable_entities.find(params[:id])
+      entity_name = (entity.is_medium? ? entity.id : "'#{entity.display_name}'")
+    
+      if current_user && !current_user.guest?
+        if params[:mark] == 'mark'
+          current_user.clipboard_add(params[:id])
+          flash[:notice] = I18n.t("objects.marked_entity_success", :o => entity_name)
+        elsif params[:mark] == 'unmark'
+          flash[:notice] = I18n.t("objects.unmarked_entity_success", :o => entity_name)
+          current_user.clipboard_remove(params[:id])
+        else
+          raise "invalid mark operation: #{params[:mark]}"
+        end
+      else
+        raise 'no user logged in, clipboard unavailable'
+      end
     end
 
     respond_to do |format|
@@ -109,7 +93,7 @@ class ToolsController < ApplicationController
       end
       format.json do
         message = flash[:notice]
-        render :json => {:message => message, :clipboard => session[:clipboard]}
+        render :json => {:message => message, :clipboard => current_user.clipboard}
         flash.discard
       end
     end
@@ -131,9 +115,6 @@ class ToolsController < ApplicationController
   end
 
 
-  # ------------------------------------------------------------------- ajax ---
-  # supplies the search_form with the required fields for the dataset type we
-  # are searching for.
   def dataset_fields
     begin
       @kind = Kind.find(params[:kind_id])

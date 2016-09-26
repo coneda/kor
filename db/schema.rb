@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160530232205) do
+ActiveRecord::Schema.define(version: 20160926101319) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -221,15 +221,24 @@ ActiveRecord::Schema.define(version: 20160530232205) do
   add_index "identifiers", ["value"], name: "index_identifiers_on_value", using: :btree
 
   create_table "kinds", force: :cascade do |t|
-    t.string   "uuid",         limit: 255
-    t.string   "name",         limit: 255
-    t.text     "description",  limit: 65535
-    t.text     "settings",     limit: 65535
+    t.string   "uuid",           limit: 255
+    t.string   "name",           limit: 255
+    t.text     "description",    limit: 65535
+    t.text     "settings",       limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version", limit: 4,     default: 0
-    t.string   "plural_name",  limit: 255
+    t.integer  "lock_version",   limit: 4,     default: 0
+    t.string   "plural_name",    limit: 255
+    t.boolean  "abstract"
+    t.string   "url",            limit: 255
+    t.integer  "parent_id",      limit: 4
+    t.integer  "lft",            limit: 4
+    t.integer  "rgt",            limit: 4
+    t.integer  "children_count", limit: 4,     default: 0, null: false
   end
+
+  add_index "kinds", ["parent_id", "lft", "rgt"], name: "list_index", using: :btree
+  add_index "kinds", ["rgt"], name: "right_index", using: :btree
 
   create_table "media", force: :cascade do |t|
     t.integer "lock_version",          limit: 4
@@ -294,16 +303,6 @@ ActiveRecord::Schema.define(version: 20160530232205) do
   add_index "relationships", ["to_id"], name: "index_relationships_on_to_id", using: :btree
   add_index "relationships", ["uuid"], name: "index_relationships_on_uuid", using: :btree
 
-  create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", limit: 255,   default: "", null: false
-    t.text     "data",       limit: 65535
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", using: :btree
-  add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
-
   create_table "system_groups", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
     t.string   "name",         limit: 255
@@ -356,9 +355,9 @@ ActiveRecord::Schema.define(version: 20160530232205) do
     t.string   "locale",                limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",          limit: 4,   default: 0
+    t.integer  "lock_version",          limit: 4,     default: 0
     t.datetime "expires_at"
-    t.boolean  "terms_accepted",                    default: false
+    t.boolean  "terms_accepted",                      default: false
     t.string   "login_attempts",        limit: 255
     t.boolean  "relation_admin"
     t.boolean  "authority_group_admin"
@@ -370,6 +369,7 @@ ActiveRecord::Schema.define(version: 20160530232205) do
     t.integer  "credential_id",         limit: 4
     t.string   "parent_username",       limit: 255
     t.string   "api_key",               limit: 255
+    t.text     "storage",               limit: 65535
   end
 
   add_index "users", ["name"], name: "index_users_on_name", unique: true, using: :btree

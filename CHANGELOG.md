@@ -31,6 +31,7 @@ commit history on GitHub.
 * started refactoring the JSON api, see README.md
 * added widget layer to facilitate integration with other websites
 * made headlines and lists work within textile-enabled text fields
+* the clipboard now persists beyond a user session
 
 ### Internal
 
@@ -49,6 +50,8 @@ commit history on GitHub.
 * included docker images build scripts for development, test and production
   images
 * upgraded some gems to their most recent bugfix release
+* switched from active_record_store for sessions to the cookie_store. Now
+  handling history and clipboard with a serialized attribute on the user model
 
 
 ## Version 1.9.2

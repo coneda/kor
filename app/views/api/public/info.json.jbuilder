@@ -21,6 +21,10 @@ json.session do
       json.email current_user.email
       json.auth current_user.full_auth
       json.locale current_user.locale
+
+      unless current_user.guest?
+        json.history current_user.history
+      end
     end
   end
   json.flash do
@@ -29,7 +33,6 @@ json.session do
       json.error flash[:error]
     end
   end
-  json.history session[:history]
   json.current_history @current_entities do |entity|
     json.partial! 'entities/customized', entity: entity
   end

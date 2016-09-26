@@ -85,7 +85,7 @@ class EntitiesController < ApplicationController
   end
 
   def recently_visited
-    history_entity_ids = session[:history].map do |url|
+    history_entity_ids = current_user.history.map do |url|
       if m = url.match(/\/blaze\#\/entities\/(\d+)$/)
         m[1].to_i
       else

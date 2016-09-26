@@ -193,29 +193,18 @@ class ApplicationController < BaseController
     
     def history_store(url = nil)
       url ||= request.url
-      session[:history] ||= []
-      if url.present? && url != root_url
-        session[:history] << url 
+      if current_user && !current_user.guest?
+        current_user.history_push url
       end
-      session[:history].shift if session[:history].size > 50
     end
     
     def back
-      session[:history] ||= []
-      session[:history].pop
-    end
-    
-    def cleanup_history
-      session[:history] = (session[:history] || []).select do |url|
-        if url.match /\/(entities|blaze)\/[0-9]+$/
-          id = url.scan(/[0-9]+$/).first
-          Entity.exists?(id)
-        end
+      if current_user && !current_user.guest?
+        current_user.history_pop
       end
     end
     
     def back_save
-      cleanup_history
       back || home_page || root_url
     end
     

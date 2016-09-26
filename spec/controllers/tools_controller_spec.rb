@@ -17,11 +17,11 @@ RSpec.describe ToolsController, :type => :controller do
       :google_maps => 'Deutsche Straße 12, Frankfurt'
     }
 
-    session[:clipboard] = [
+    User.admin.clipboard_add([
       Entity.find_by_name("Mona Lisa").id,
       Entity.find_by_name("Monalisa").id
-    ]
-    
+    ])
+
     get :mark, :mark => 'reset'
 
     expect(response).to be_redirect
@@ -34,10 +34,10 @@ RSpec.describe ToolsController, :type => :controller do
       :google_maps => 'Deutsche Straße 12, Frankfurt'
     }
 
-    session[:clipboard] = [
+    User.admin.clipboard_add([
       Entity.find_by_name("Mona Lisa").id,
       Entity.find_by_name("Monalisa").id
-    ]
+    ])
 
     get :clipboard
     expect(response).to be_success
@@ -48,8 +48,8 @@ RSpec.describe ToolsController, :type => :controller do
   it "should render a mass relate form only with allowed relations" do
     @mona_lisa = Entity.find_by_name('Mona Lisa')
     @leonardo = FactoryGirl.create :leonardo
-    
-    session[:clipboard] = [ @leonardo.id ]
+
+    User.admin.clipboard_add [@leonardo.id]
     session[:current_entity] = @mona_lisa.id
   
     post :new_clipboard_action, :clipboard_action => 'mass_relate', :selected_entity_ids => [@leonardo.id]

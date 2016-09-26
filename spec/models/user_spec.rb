@@ -125,4 +125,48 @@ describe User do
     expect(hmustermann.reload.expires_at).to eq(time)
   end
 
+  it 'should have default values for storage' do
+    expect(User.new.storage).to eq(
+      'history' => [],
+      'clipboard' => []
+    )
+  end
+
+  it 'should save a new url to the history' do
+    admin = FactoryGirl.create :admin
+    admin.history_push 'https://coneda.net'
+    expect(admin.history).to eq(['https://coneda.net'])
+    admin.reload
+    expect(admin.history).to eq(['https://coneda.net'])
+  end
+
+  it 'should add ids to the clipboard if the entity exists' do
+    admin = FactoryGirl.create :admin
+    mona_lisa = FactoryGirl.create :mona_lisa
+
+    admin.clipboard_add(mona_lisa.id + 1)
+    expect(admin.clipboard).to be_empty
+
+    admin.clipboard_add mona_lisa.id
+    expect(admin.clipboard).to eq([mona_lisa.id])
+    admin.reload
+    expect(admin.clipboard).to eq([mona_lisa.id])
+  end
+
+  it 'should remove ids from the clipboard' do
+    admin = FactoryGirl.create :admin
+    mona_lisa = FactoryGirl.create :mona_lisa
+    leonardo = FactoryGirl.create :leonardo
+
+    admin.clipboard_add [mona_lisa.id, leonardo.id]
+    expect(admin.clipboard).to eq([mona_lisa.id, leonardo.id])
+
+    admin.clipboard_remove leonardo.id
+    expect(admin.clipboard).to eq([mona_lisa.id])
+    admin.reload
+    expect(admin.clipboard).to eq([mona_lisa.id])
+  end
+
+  it 'should empty the clipboard'
+
 end
