@@ -3,6 +3,8 @@ require "rails_helper"
 describe Kor::NeoGraph do
 
   it "should create nodes" do
+    pending 'not integrated within the dependencies yet'
+
     admin = FactoryGirl.create :admin
     graph = described_class.new(admin)
 

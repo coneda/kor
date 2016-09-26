@@ -6,9 +6,8 @@ class AuthorityGroupsController < GroupsController
   def mark
     @authority_group = AuthorityGroup.find(params[:id])
     ids = @authority_group.entities.allowed(current_user, :view).map{|e| e.id}
-    
-    session[:clipboard] ||= Array.new
-    session[:clipboard] = (session[:clipboard] + ids).uniq
+
+    current_user.clipboard_add ids
     
     flash[:notice] = I18n.t("objects.marked_entities_success")
     

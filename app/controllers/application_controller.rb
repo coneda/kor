@@ -54,7 +54,7 @@ class ApplicationController < BaseController
         session[:expires_at] = Kor.session_expiry_time
         User.guest.id
       end
-      
+
       if !current_user
         respond_to do |format|
           format.html do
@@ -104,7 +104,7 @@ class ApplicationController < BaseController
 
     def session_expired?
       if !current_user.guest? && !api_auth?
-        (session[:expires_at] || Time.now) <= Time.now
+        !!(session[:expires_at] && (session[:expires_at] < Time.now))
       end
     end
 

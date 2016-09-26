@@ -5,9 +5,8 @@ class UserGroupsController < GroupsController
     @user_group = UserGroup.owned_by(current_user).find_by_id(params[:id])
     @user_group ||= UserGroup.shared.find(params[:id])
     ids = @user_group.entities.allowed(current_user, :view).map{|e| e.id}
-    
-    session[:clipboard] ||= Array.new
-    session[:clipboard] = (session[:clipboard] + ids).uniq
+
+    current_user.clipboard_add ids
     
     flash[:notice] = I18n.t("objects.marked_entities_success")
     

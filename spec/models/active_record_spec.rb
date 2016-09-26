@@ -22,9 +22,7 @@ describe ActiveRecord do
     test_data_for_auth
     test_kinds
     test_entities
-    test_authority_groups
-    
-    group = AuthorityGroup.first
+    group = FactoryGirl.create :authority_group
     
     group.entities << Entity.first
     group.entities << Entity.first

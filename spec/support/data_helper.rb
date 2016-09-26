@@ -24,7 +24,7 @@ module DataHelper
     test_entities
     
     if options[:groups]
-      test_authority_groups
+      FactoryGirl.create :authority_group
     end
   end
 
@@ -61,10 +61,6 @@ module DataHelper
     @mona_lisa = FactoryGirl.create :mona_lisa, :datings => [FactoryGirl.build(:d1533)]
   end
   
-  def test_authority_groups
-    FactoryGirl.create :authority_group, :name => 'Sander'
-  end
-
   def default_setup(options = {})
     options.reverse_merge!(
       pictures: false,

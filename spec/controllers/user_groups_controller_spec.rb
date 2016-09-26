@@ -16,6 +16,20 @@ RSpec.describe UserGroupsController, :type => :controller do
     get :show, :id => user_group.id
     expect(response).to be_success
   end
+
+  it 'should put all entities within a group into the clipboard' do
+    leonardo = FactoryGirl.create :leonardo
+    mona_lisa = Entity.find_by name: 'Mona Lisa'
+
+    admin = User.admin
+    allow_any_instance_of(AuthorityGroupsController).to receive(:current_user).and_return(admin)
+    group = FactoryGirl.create :user_group, user_id: admin.id
+    group.add_entities [mona_lisa, leonardo]
+
+    get :mark, id: group.id
+
+    expect(User.admin.clipboard).to include(mona_lisa.id, leonardo.id)
+  end
   
 end
   

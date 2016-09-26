@@ -347,7 +347,7 @@ FactoryGirl.define do
   end
 
   factory :authority_group do
-    name "A authority group"
+    name "An authority group"
   end
 
   factory :user_group do
