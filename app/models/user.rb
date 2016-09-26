@@ -198,6 +198,11 @@ class User < ActiveRecord::Base
     storage['clipboard'].uniq!
     storage['clipboard'].select!{|e| Entity.exists?(e)}
   end
+
+  def clipboard_reset
+    storage['clipboard'] = []
+    storage_update
+  end
   
   def make_personal
     if @make_personal.nil?

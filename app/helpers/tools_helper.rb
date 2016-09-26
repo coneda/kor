@@ -18,7 +18,7 @@ module ToolsHelper
   end
   
   def clipboard
-    session[:clipboard]
+    current_user ? current_user.clipboard : []
   end
   
   def clipboard_entities

@@ -45,8 +45,8 @@ kor.service "session_service", [
           el.text('')
       in_clipboard: (entity) ->
         if kd.info && entity
-          kd.info.session.clipboard ||= []
-          kd.info.session.clipboard.indexOf(entity.id) != -1
+          kd.info.session.user.clipboard ||= []
+          kd.info.session.user.clipboard.indexOf(entity.id) != -1
         else
           false
       is_current: (entity) ->
@@ -69,7 +69,7 @@ kor.service "session_service", [
           params: {id: id, mark: "mark"}
         )
         promise.success (data) -> 
-          kd.info.session.clipboard = data.clipboard
+          kd.info.session.user.clipboard = data.clipboard
           service.flash 'notice', data.message
           rs.$broadcast 'clipboard-changed'
       from_clipboard: (entity) ->
@@ -81,7 +81,7 @@ kor.service "session_service", [
           params: {id: id, mark: "unmark"}
         )
         promise.success (data) -> 
-          kd.info.session.clipboard = data.clipboard
+          kd.info.session.user.clipboard = data.clipboard
           service.flash 'notice', data.message
       to_current: (entity) ->
         promise = http(

@@ -63,7 +63,7 @@ class ToolsController < ApplicationController
   def mark
     if params[:mark] == 'reset'
       flash[:notice] = I18n.t("notices.reset_clipboard_success")
-      session[:clipboard] = Array.new
+      current_user.clipboard_reset
     else
       entity = viewable_entities.find(params[:id])
       entity_name = (entity.is_medium? ? entity.id : "'#{entity.display_name}'")

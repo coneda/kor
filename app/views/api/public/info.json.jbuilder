@@ -24,6 +24,7 @@ json.session do
 
       unless current_user.guest?
         json.history current_user.history
+        json.clipboard current_user.clipboard
       end
     end
   end
@@ -37,7 +38,6 @@ json.session do
     json.partial! 'entities/customized', entity: entity
   end
   json.show_panel session[:show_session_info]
-  json.clipboard session[:clipboard] || []
 end
 
 json.config do

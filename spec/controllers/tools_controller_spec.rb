@@ -25,7 +25,7 @@ RSpec.describe ToolsController, :type => :controller do
     get :mark, :mark => 'reset'
 
     expect(response).to be_redirect
-    expect(session[:clipboard]).to be_empty
+    expect(User.admin.clipboard).to be_empty
   end
   
   it "should show the clipboard when entities are in it" do
