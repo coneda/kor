@@ -48,7 +48,10 @@
 
     tag.checked = -> if tag.type() == 'checkbox' then tag.value() else false
     tag.selected = (key) -> tag.value() == key
-    tag.value = -> tag.opts.value || tag.opts.model[tag.opts.fieldId]
+    tag.value = -> tag.opts.value || if tag.opts.model
+      tag.opts.model[tag.opts.fieldId]
+    else
+      undefined
 
     tag.val = ->
       element = $(tag.root).find('input, textarea, select')

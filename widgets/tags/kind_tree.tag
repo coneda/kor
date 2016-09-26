@@ -1,6 +1,16 @@
 <kor-kind-tree>
 
-  <a href="#" onclick={toggle} show={opts.kind.id && has_children()}>
+  <form onsubmit={submit}>
+    <kor-field
+      field-id="terms"
+    />
+
+    <kor-field type="submit" />
+  </form>
+
+  <div class="kor-graph"></div>
+
+  <!-- <a href="#" onclick={toggle} show={opts.kind.id && has_children()}>
     <i show={!expanded} class="fa fa-chevron-right"></i>
     <i show={expanded} class="fa fa-chevron-down"></i>
   </a>
@@ -21,14 +31,21 @@
         <kor-kind-tree kind={child} />
       </li>
     </ul>
-  </div>
+  </div> -->
 
-  <div class="clearfix"></div>
+  <!-- <div class="clearfix"></div> -->
+
+  <style type="text/scss">
+    .kor-graph {
+      height: 600px;
+    }
+  </style>
 
   <script type="text/coffee">
     tag = this
     tag.mixin 'bubble'
     tag.expanded = true
+    tag.filters = {}
 
     tag.on 'mount', ->
       tag.on 'expand-all', tag.expand
@@ -40,6 +57,101 @@
         tag.expanded = true
         fetch()
 
+    tag.submit = (event) ->
+      event.preventDefault()
+      console.log "bla"
+      tag.filters.terms = tag.tags['kor-field'][0].val()
+      render_graph()
+
+    filtered_records = ->
+      results = []
+
+      for kind in tag.data.records
+        if t = tag.filters.terms
+          re = new RegExp("#{t}")
+          if kind.name.match(re)
+            k = kind
+            while k
+              unless results.indexOf(k) == -1
+                results.push(k)
+              k = tag.lookup[k.parent_id]
+
+
+    render_graph = ->
+      nodes = []
+      edges = []
+      for kind in filtered_records()
+        kind.label = kind.name
+        kind.group = 'real' if !kind.abstract
+        nodes.push(kind)
+        if kind.parent_id
+          edges.push(to: kind.id, from: kind.parent_id)
+      edges.push(from: 929, to: 927)
+      data = {
+        nodes: new vis.DataSet(nodes)
+        edges: new vis.DataSet(edges)
+      }
+
+      if tag.network
+        tag.network.setData(data)
+      else
+        container = $(tag.root).find('.kor-graph')[0]
+        tag.network = new vis.Network(container, data,
+          interaction: {
+            # zoomView: false
+          }
+          physics: {
+            enabled: false
+            hierarchicalRepulsion: {
+              # nodeDistance: 400
+            }
+          }
+          layout: {
+            hierarchical: {
+              enabled: true
+              edgeMinimization: false
+              levelSeparation: 400
+              # nodeSpacing: 200
+              # blockShifting: false
+              sortMethod: 'directed'
+              direction: 'LR'
+            }
+          }
+          nodes: {
+            shape: 'box'
+            labelHighlightBold: false
+            color: {
+              highlight: '#565656'
+              background: '#1E1E1E'
+              border: '#ffffff'
+            }
+            font: {
+              color: '#ffffff'
+              size: 20
+              face: 'verdana'
+            }
+          }
+          edges: {
+            arrows: {
+              to: {
+                enabled: true
+              }
+            }
+            color: {
+              color: '#ffffff'
+            }
+          }
+          groups: {
+            real: {
+              color: {
+                background: 'blue'
+              }
+            }
+          }
+        )
+
+      # console.log tag.network.getScale()
+
     fetch = ->
       # console.log tag.opts
       if !tag.opts.kind || !tag.opts.kind.children
@@ -48,17 +160,20 @@
           url: '/kinds'
           data: {parent_id: 'all'}
           success: (data) ->
-            lookup = {}
+            tag.data = data
+            tag.lookup = {}
             for kind in data.records
-              lookup[kind.id] = kind
-            results = []
-            for kind in data.records
-              if kind.parent_id
-                lookup[kind.parent_id].children ||= []
-                lookup[kind.parent_id].children.push(kind)
-              else
-                results.push(kind)
-            tag.opts.kind = {children: results}
+              tag.lookup[kind.id] = kind
+            render_graph()
+
+            # results = []
+            # for kind in data.records
+            #   if kind.parent_id
+            #     lookup[kind.parent_id].children ||= []
+            #     lookup[kind.parent_id].children.push(kind)
+            #   else
+            #     results.push(kind)
+            # tag.opts.kind = {children: results}
             tag.update()
         )
 

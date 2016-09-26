@@ -13,6 +13,7 @@
     "parallelshell": "^2.0.0",
     "riot": "^2.6.1",
     "uglifyjs": "^2.4.10",
+    "vis": "^4.16.1",
     "zepto": "^1.0.1"
   },
   "scripts": {
