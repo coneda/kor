@@ -161,7 +161,9 @@ token is present.
 
 ### Configuration & customizations
 
-Some aspects of ConedaKOR can be tuned to your specific needs. This sections explains those aspects and tells you how to modify configuration options in general.
+Some aspects of ConedaKOR can be tuned to your specific needs. This sections
+explains those aspects and tells you how to modify configuration options in
+general.
 
 All configuration options can be set via YAML configuration files:
 

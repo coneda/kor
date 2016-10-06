@@ -181,4 +181,13 @@ RSpec.describe ToolsController, :type => :controller do
     expect(Entity.find_by_name('Mona Lisa').comment).to eql("comment 1")
   end
 
+  it 'should remove a single entity from the clipboard' do
+    entity = Entity.find_by_name("Mona Lisa")
+    User.admin.clipboard_add([entity.id])
+
+    get :mark, :mark => 'unmark', id: entity.id
+    
+    expect(User.admin.reload.clipboard).to be_empty
+  end
+
 end

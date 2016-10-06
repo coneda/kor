@@ -25,7 +25,7 @@
               = hidden_field_tag "kind[]", entity.kind.id
               = check_box_tag "entity_ids[]", entity.id, true
             %td.expanding
-              = kor_entity entity, :include_kind => true
+              = kor_entity entity, include_kind: true, buttons: false
             %td.nowrap
               = link_to kor_command_image('select'), mark_as_current_path(:id => entity.id)
               = link_to kor_command_image('minus'), put_in_clipboard_path(:id => entity.id, :mark => 'unmark')

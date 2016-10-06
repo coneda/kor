@@ -98,4 +98,3 @@ Feature: Clipboard
     Then the checkbox should not be checked within the row for "entity" "Mona Lisa"
     And I select "Work" from "clipboard_entity_selector"
     Then the checkbox should be checked within the row for "entity" "Mona Lisa"
-

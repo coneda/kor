@@ -83,6 +83,7 @@ kor.service "session_service", [
         promise.success (data) -> 
           kd.info.session.user.clipboard = data.clipboard
           service.flash 'notice', data.message
+          rs.$broadcast 'clipboard-changed'
       to_current: (entity) ->
         promise = http(
           method: "get"

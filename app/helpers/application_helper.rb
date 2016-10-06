@@ -2,22 +2,23 @@ module ApplicationHelper
 
   def kor_entity(entity, options = {})
     options.reverse_merge!(
-      :include_kind => false,
-      :include_content_type => true,
-      :short => false,
-      :how_short => 30,
-      :link => true,
-      :url => web_path(:anchor => entity_path(entity)),
-      :style => :icon
+      include_kind: false,
+      include_content_type: true,
+      short: false,
+      how_short: 30,
+      link: true,
+      url: web_path(:anchor => entity_path(entity)),
+      style: :icon,
+      buttons: true
     )
 
     entity = Entity.find_by_id(entity) unless entity.is_a?(Entity)
     name = h(entity.display_name)
     
     render :partial => 'layouts/kor_entity', :locals => {
-      :entity => entity,
-      :name => name,
-      :options => options
+      entity: entity,
+      name: name,
+      options: options
     }
   end
 
@@ -145,13 +146,13 @@ module ApplicationHelper
 
   def section_panel(options = {}, &block)
     options.reverse_merge!(
-      :title => '',
-      :capitalize_title => true,
-      :subtitle => '',
-      :capitalize_subtitle => true,
-      :commands => '',
-      :content => block_given? ? capture(&block) : nil,
-      :switch => false
+      title: '',
+      capitalize_title: true,
+      subtitle: '',
+      capitalize_subtitle: true,
+      commands: '',
+      content: block_given? ? capture(&block) : nil,
+      switch: false
     )
     
     if options[:subtitle]

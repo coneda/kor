@@ -188,7 +188,7 @@ class User < ActiveRecord::Base
 
   def clipboard_remove(id)
     if id.present?
-      storage['clipboard'] -= [id]
+      storage['clipboard'] -= [id.to_i]
       storage_update
     end
   end
