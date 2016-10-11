@@ -10,9 +10,10 @@ w-modal, [data-is=w-modal] {
   [name=receiver] {
     position: fixed;
     z-index: 10001;
-    background-color: white;
+    background-color: inherit;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    overflow-y: scroll;
   }
 }

@@ -17,5 +17,9 @@ class Fields::Regex < Field
   def regex
     ::Regexp.new(settings[:regex] ||= '')
   end
+
+  def self.fields
+    [{'name' => 'regex'}]
+  end
   
 end

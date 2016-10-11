@@ -30,7 +30,11 @@ Rails.application.routes.draw do
     end
   end
   resources :kinds do
-    resources :fields, :except => 'show'
+    resources :fields, :except => 'show' do
+      collection do
+        get :types
+      end
+    end
     resources :generators
   end
   resources :relations do

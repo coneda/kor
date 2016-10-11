@@ -305,7 +305,7 @@ class Kor::CommandLine
 
   def consistency_check
     Relationship.includes(:relation, :from, :to).inconsistent.each do |r|
-      puts [
+        puts [
         "#{r.from.display_name} [#{r.from_id}, #{r.from.kind.name}]".colorize(:blue),
         r.relation.name.colorize(:light_blue),
         "#{r.to.display_name} [#{r.to_id}, #{r.to.kind.name}]".colorize(:blue),
@@ -343,18 +343,24 @@ class Kor::CommandLine
         end
 
         if parent = klass.xpath('rdfs:subClassOf/owl:Class').first
-          parent_map[kind.url] = parent['rdf:about']
+          parent_map[kind.url] ||= []
+          parent_map[kind.url] << parent['rdf:about']
         end
 
-        if parent = klass.xpath('rdfs:subClassOf[@rdf:resource]/@rdf:resource').first
-          parent_map[kind.url] = parent.text
+        klass.xpath('rdfs:subClassOf[@rdf:resource]/@rdf:resource').each do |parent|
+          parent_map[kind.url] ||= []
+          parent_map[kind.url] << parent.text
         end
       end
 
-      parent_map.each do |child_url, parent_url|
-        child = Kind.where(url: child_url).first
-        parent = Kind.where(url: parent_url).first
-        child.move_to_child_of(parent) if child && parent
+      parent_map.each do |child_url, parent_urls|
+        parent_urls.each do |parent_url|
+          if parent = Kind.where(url: parent_url).first
+            if child = Kind.where(url: child_url).first
+              parent.children << child
+            end
+          end
+        end
       end
     else
       raise "request failed: GET #{url} (#{response.status} #{response.body})"

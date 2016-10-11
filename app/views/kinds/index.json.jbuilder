@@ -4,7 +4,7 @@ json.records do
   json.array! @kinds do |kind|
     json.partial! 'customized', {
       kind: kind,
-      additions: ['all']
+      additions: params[:include]
     }
   end
 end

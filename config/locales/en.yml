@@ -60,6 +60,7 @@ en:
   recently_created: recently created
   currently_linked: currently linked
   nothing_selected: nothing selected
+  hide_abstract: hide abstract
 
   search_term:
     one: search term
@@ -554,6 +555,7 @@ en:
     reset_clipboard: "Do you really want to empty the clipboard?"
     long_time_warning: "This operation could take several minutes. Do you want to continue?"
     delete_publishment: "Do you really want to delete this published group?"
+    general: "Are you sure?"
 
   prompt:
     email_for_personal_password_reset: "please insert your email address"
@@ -880,6 +882,7 @@ en:
         distinct_name_label: "label for the distinct name"
         name_label: "label for the entity name"
         tagging: activate tagging for this entity type
+        url: schema url
       relation:
         name: name
         reverse_name: inversion
@@ -955,6 +958,7 @@ en:
         can_not_be_empty: "has to be filled in"
         does_not_exist: "doesn't exist"
         cannot_be_its_own_parent: can't be its own parent
+        cannot_produce_cycle: can't be part of a cyclic dependency
 
 
   # Mime types

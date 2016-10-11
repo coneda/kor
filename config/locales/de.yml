@@ -61,6 +61,7 @@ de:
   recently_created: zuletzt angelegt
   currently_linked: bestehende Verknüpfung
   nothing_selected: nichts ausgewählt
+  hide_abstract: abstrakte verbergen
 
   search_term: 
     one: Suchbegriff
@@ -555,6 +556,7 @@ de:
     reset_clipboard: "Sind Sie sicher, dass Sie die Zwischenablage leeren wollen?"
     long_time_warning: "Diese Operation kann mehrere Minuten dauern, wollen Sie trotzdem fortfahren?"
     delete_publishment: "Die veröffentlichte Gruppe wirklich löschen?"
+    general: "Sind Sie sicher?"
 
   prompt:
     email_for_personal_password_reset: "Bitte geben Sie Ihre Emailadresse ein"
@@ -880,6 +882,7 @@ de:
         distinct_name_label: "Bezeichnung für den eindeutigen Namen"
         name_label: "Bezeichnung für den Namen"
         tagging: Tagging für diesen Entitätstyp aktivieren
+        url: Schema Url
       relation:
         name: Name
         reverse_name: Umkehrung
@@ -955,6 +958,7 @@ de:
         can_not_be_empty: "muss ausgefüllt werden"
         does_not_exist: "existiert nicht"
         cannot_be_its_own_parent: kann nicht sein eigener Stammtyp sein
+        cannot_produce_cycle: kann keine zyklischen Abhängigkeiten definieren
 
 
   # Mime types

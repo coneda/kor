@@ -14,7 +14,7 @@
 
     $(document).on 'ajaxComplete', (event, request, options) ->
       try
-        data = JSON.parse(request.response)
+        data = request.responseJSON || JSON.parse(request.response)
         # console.log data
         if data.message
           type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'

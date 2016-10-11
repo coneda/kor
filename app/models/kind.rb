@@ -2,13 +2,16 @@ class Kind < ActiveRecord::Base
 
   MEDIA_UUID = '93a03d5c-e439-4294-a8d4-d4921c4d0dbc'
 
-  acts_as_nested_set dependent: :destroy, counter_cache: :children_count
-
   serialize :settings
   
   has_many :entities, :dependent => :destroy
   has_many :fields, :dependent => :destroy
   has_many :generators, :dependent => :destroy
+
+  has_many :kind_parent_inheritances, class_name: 'KindInheritance', foreign_key: :child_id, dependent: :destroy
+  has_many :kind_child_inheritances, class_name: 'KindInheritance', foreign_key: :parent_id, dependent: :destroy
+  has_many :parents, through: :kind_parent_inheritances
+  has_many :children, through: :kind_child_inheritances
   
   validates :name,
     :presence => true,
@@ -19,16 +22,22 @@ class Kind < ActiveRecord::Base
     :presence => true,
     :white_space => true
 
-  validates_each :parent_id, allow_nil: true do |record, attr, value|
-    unless record.parent
-      record.errors.add :parent_id, :does_not_exist
+  validate do |kind|
+    to_check = kind.parents.to_a
+    cycle = false
+    while (k = to_check.pop) && !cycle
+      if k.id == kind.id
+        cycle = true
+      else
+        to_check += k.parents.to_a
+      end
     end
 
-    if record.parent_id == record.id
-      record.errors.add :parent_id, :cannot_be_its_own_parent
+    if cycle
+      kind.errors[:base].add :cannot_produce_cycle
     end
   end
-  
+
   default_scope lambda { order(:name) }
   scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
@@ -43,6 +52,18 @@ class Kind < ActiveRecord::Base
   }
 
   before_validation :generate_uuid
+
+  def parent_ids
+    kind_parent_inheritances.pluck(:parent_id)
+  end
+
+  def child_ids
+    kind_child_inheritances.pluck(:child_id)
+  end
+
+  def url
+    self[:url] || "#{Kor.base_url}/kinds/#{id}"
+  end
 
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
@@ -63,6 +84,7 @@ class Kind < ActiveRecord::Base
     end
   end
   
+  # TODO: still needed?
   def defines_schema?
     !self.fields.empty?
   end

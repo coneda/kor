@@ -1,4 +1,4 @@
-wApp.bubbling_events = ['kor-kind-edit']
+wApp.bubbling_events = []
 
 riot.mixin 'bubble', {
   init: ->

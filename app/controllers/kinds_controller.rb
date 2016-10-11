@@ -1,8 +1,11 @@
+# TODO: remove non-json responses
 class KindsController < ApplicationController
   layout 'normal_small'
 
   def index
-    @kinds = Kind.by_parent(params[:parent_id])
+    params[:include] = param_to_array(params[:include])
+
+    @kinds = Kind.all
 
     respond_to do |format|
       format.html {render :layout => 'wide'}
@@ -91,13 +94,16 @@ class KindsController < ApplicationController
         end
       end
       format.json do
-        unless @kind == Kind.medium_kind
+        if @kind == Kind.medium_kind
+          @message = "the medium kind can't be deleted"
+          render action: 'save', status: 403
+        elsif @kind.children.present?
+          @message = "kinds with children can't be deleted"
+          render action: 'save', status: 403
+        else
           @kind.destroy
           @message = I18n.t( 'objects.destroy_success', :o => Kind.model_name.human)
           render action: 'save'
-        else
-          @message = "the medium kind can't be deleted"
-          render action: 'save', status: 403
         end
       end
     end
@@ -109,8 +115,7 @@ class KindsController < ApplicationController
     def kind_params
       params.require(:kind).permit(
         :name, :plural_name, :description,
-        :tagging, :name_label, :dating_label, :distinct_name_label,
-        :parent_id
+        :tagging, :name_label, :dating_label, :distinct_name_label
       )
     end
 

@@ -2,9 +2,11 @@ additions ||= []
 
 json.extract!(kind,
   :id, :url,
-  :parent_id, :lft, :rgt, :abstract, :children_count,
+  :abstract,
   :name, :plural_name,
-  :description
+  :description,
+  :parent_ids,
+  :child_ids
 )
 
 if additions.include?('settings') || additions.include?('all')
@@ -21,4 +23,22 @@ if additions.include?('technical') || additions.include?('all')
   json.created_at kind.created_at
   json.updated_at kind.updated_at
   json.lock_version kind.lock_version
+end
+
+if additions.include?('fields') || additions.include?('all')
+  json.fields kind.fields do |field|
+    json.partial! 'fields/customized', additions: additions, field: field
+  end
+end
+
+if additions.include?('generators') || additions.include?('all')
+  json.fields kind.generators do |generator|
+    json.partial! 'generators/customized', additions: additions, generator: generator
+  end
+end
+
+if additions.include?('ancestry') || additions.include?('all')
+  json.parents kind.parents do |parent|
+    json.partial! 'kinds/customized', additions: additions, kind: parent
+  end
 end

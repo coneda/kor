@@ -26,4 +26,6 @@ wApp.utils = {
   capitalize: (value) ->
     value.charAt(0).toUpperCase() + value.slice(1)
 
+  confirm: (string) -> window.confirm(string)
+
 }

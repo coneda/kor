@@ -142,7 +142,12 @@ class Field < ActiveRecord::Base
   
   
   # Accessors
+
+  def self.fields
+    []
+  end
   
+  # TODO remove all of those once the kind/field/generator editor is complete
   def self.partial_name
     to_s.split('::').last.underscore
   end

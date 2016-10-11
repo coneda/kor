@@ -1,31 +1,41 @@
-<w-modal style="display: none">
+<w-modal style="display: none" onclick={backPanelClick}>
 
-  <div name="receiver"></div>
+  <div name="receiver">
+    <div class="target"></div>
+  </div>
 
   <script type="text/coffee">
-    self = this
-    self.active = false
+    tag = this
+    tag.active = false
+    window.t = tag
 
-    wApp.bus.on 'modal', (tag, opts = {}) ->
-      # console.log arguments
-      opts.modal = self
-      riot.mount self.receiver, tag, opts
-      $(self.root).show()
-      self.active = true
+    wApp.bus.on 'modal', (tagName, opts = {}) ->
+      opts.modal = tag
+      tag.active = true
+      tag.innerTag = riot.mount($(tag.root).find('.target')[0], tagName, opts)[0]
+      console.log tag.innerTag
+      $(tag.root).show()
+      fixHeight()
 
+    tag.backPanelClick = (event) ->
+      if event.target == tag.root
+        tag.trigger 'close'
+      true
+
+    tag.on 'close', ->
+      if tag.active
+        $(tag.root).hide()
+        tag.innerTag.unmount(true)
+        tag.active = false
+
+    fixHeight = ->
+      new_height = Math.max($(window).height() - 100, 300)
+      $(tag.root).find('[name=receiver]').css 'height', new_height
+
+    $(window).on 'resize', fixHeight
     $(document).on 'keydown', (event) ->
       if event.key == 'Escape'
-        self.trigger 'close'
-
-    self.on 'mount', ->
-      $(self.root).on 'click', (event) ->
-        if event.target == self.root
-          self.trigger 'close'
-
-    self.on 'close', ->
-      if self.active
-        $(self.root).hide()
-        self.active = false
+        tag.trigger 'close'
 
   </script>
 

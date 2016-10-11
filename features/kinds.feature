@@ -33,7 +33,7 @@ Feature: Kinds
 
 
   @javascript
-  Scenario: delete kind
+  Scenario: remove kind
     Given I am logged in as "admin"
     And the kind "Kind girl/Kind girls"
     When I go to the kinds page
@@ -105,3 +105,16 @@ Feature: Kinds
     And I go to the new "Medium-Entity" page
     Then I should not see "Name"
 
+
+  Scenario: show multiple selected parents within the select tag
+  Scenario: create kind as child of another
+  Scenario: move child to another parent
+  Scenario: add child to several parents
+  Scenario: display inherited fields from several parents and generations
+  Scenario: display inherited generators from several parents and generations
+  Scenario: get error when building circular dependencies
+  Scenario: display inherited fields from the same parent just once (diamond case)
+  Scenario: display inherited generators from the same parent just once (diamond case)
+  Scenario: prohibit changing field type after creation
+
+  

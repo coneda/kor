@@ -8,6 +8,8 @@ kor-layout-panel, [data-is=kor-layout-panel] {
 
   &.right {
     float: left;
+    border-left: 2px solid #181818;
+    margin-left: -2px;
   }
 
   &.top {

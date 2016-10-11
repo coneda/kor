@@ -1,142 +1,50 @@
 <kor-kind-editor>
 
-  <h2>
-    <kor-t
-      key="objects.edit"
-      with={ {'interpolations': {'o': opts.kind.name}} }
-    />
-  </h2>
+  <kor-layout-panel class="left small">
+    <kor-panel>
+      <a href="#" onclick={switchTo('general')}>
+        » {wApp.i18n.translate('general', {capitalize: true})}
+      </a><br />
+      <a href="#" onclick={switchTo('fields')} if={opts.kind.id}>
+        » {wApp.i18n.translate('activerecord.models.field', {count: 'other', capitalize: true})}
+      </a><br />
+      <a href="#" onclick={switchTo('generators')} if={opts.kind.id}>
+        » {wApp.i18n.translate('activerecord.models.generator', {count: 'other', capitalize: true})}
+      </a><br />
 
-  <form onsubmit={submit}>
-    
-    <kor-field
-      field-id="name"
-      label-key="kind.name"
-      model={opts.kind}
-      errors={errors.name}
-    />
+      <div class="hr"></div>
+      <div class="text-right">
+        <button onclick={closeModal}>close</button>
+      </div>
+    </kor-panel>
+  </kor-layout-panel>
 
-    <kor-field
-      field-id="plural_name"
-      label-key="kind.plural_name"
-      model={opts.kind}
-      errors={errors.plural_name}
-    />
-
-    <kor-field
-      field-id="description"
-      type="textarea"
-      label-key="kind.description"
-      model={opts.kind}
-    />
-
-    <kor-field
-      field-id="url"
-      label-key="kind.url"
-      model={opts.kind}
-    />    
-
-    <kor-field
-      field-id="parent_id"
-      type="select"
-      options={possible_parents}
-      label-key="kind.parent"
-      model={opts.kind}
-      errors={errors.parent_id}
-    />
-
-    <kor-field
-      field-id="abstract"
-      type="checkbox"
-      label-key="kind.abstract"
-      model={opts.kind}
-    />
-
-    <kor-field
-      field-id="tagging"
-      type="checkbox"
-      label-key="kind.tagging"
-      model={opts.kind}
-    />
-
-    <div if={!is_media()}>
-      <kor-field
-        field-id="dating_label"
-        label-key="kind.dating_label"
-        model={opts.kind}
+  <kor-layout-panel class="right large ">
+    <kor-panel>
+      <kor-kind-general-editor kind={opts.kind} if={tab == 'general'} />
+      <kor-kind-fields-editor
+        kind={opts.kind}
+        if={tab == 'fields' && opts.kind.id}
       />
-
-      <kor-field
-        field-id="name_label"
-        label-key="kind.name_label"
-        model={opts.kind}
+      <kor-kind-generators-editor
+        kind={opts.kind}
+        if={tab == 'generators' && opts.kind.id}
       />
-
-      <kor-field
-        field-id="distinct_name_label"
-        label-key="kind.distinct_name_label"
-        model={opts.kind}
-      />
-    </div>
-
-    <div class="hr"></div>
-
-    <kor-submit />
-
-  </form>
+    </kor-panel>
+  </kor-layout-panel>
 
   <script type="text/coffee">
     tag = this
+    tag.tab = 'general'
 
-    tag.on 'mount', ->
-      $.ajax(
-        type: 'get'
-        url: '/kinds'
-        data: {parent_id: 'all'}
-        success: (data) ->
-          console.log data
-          tag.possible_parents = []
-          for kind in data.records
-            tag.possible_parents.push(
-              label: kind.name
-              value: kind.id
-            )
-          tag.update()
-      )
+    tag.switchTo = (name) ->
+      (event) ->
+        tag.tab = name
+        tag.update()
 
-    tag.is_media = ->
-      opts.kind.uuid == wApp.data.medium_kind_uuid
-
-    tag.values = ->
-      result = {}
-      for field in tag.tags['kor-field']
-        result[field.fieldId()] = field.val()
-      result
-
-    tag.submit = (event) ->
-      event.preventDefault()
-      if tag.opts.kind
-        $.ajax(
-          type: 'patch'
-          url: "/kinds/#{tag.opts.kind.id}"
-          data: JSON.stringify(kind: tag.values())
-          success: (data) ->
-            console.log data
-            tag.errors = null
-          error: (request) -> 
-            data = request.responseJSON
-            tag.errors = data.errors
-          complete: ->
-            tag.update()
-        )
-      else
-        $.ajax(
-          type: 'post'
-          url: '/kinds'
-          data: {kind: tag.values()}
-          success: (data) -> console.log data
-          error: () -> console.log arguments
-        )
+    tag.closeModal = ->
+      if tag.opts.modal
+        tag.opts.modal.trigger 'close'
 
   </script>
 

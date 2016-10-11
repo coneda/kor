@@ -13,6 +13,10 @@ class FieldsController < ApplicationController
     
   end
 
+  def types
+    @types = Kind.available_fields
+  end
+
   def new
     @field = sanitize_field_class(params[:klass]).constantize.new(field_params)
     @form_url = kind_fields_path(@kind)

@@ -1,4 +1,5 @@
 $.extend $.ajaxSettings, {
+  type: 'get'
   dataType: 'json'
   contentType: 'application/json'
 }
