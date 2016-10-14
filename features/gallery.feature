@@ -44,6 +44,7 @@ Feature: Show media in the gallery and show certain related entities
   Scenario: View gallery when no secondary relationships exist
     Given I am logged in as "admin"
     And Mona Lisa and a medium as correctly related entities
+    And I wait for "1" second
     When I go to the gallery
     Then I should see "New entries" within ".canvas"
     And I should not see "Leonardo da Vinci"
