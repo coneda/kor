@@ -92,7 +92,6 @@ class EntitiesController < ApplicationController
         nil
       end
     end
-    binding.pry
 
     entities = Entity.
       allowed(current_user, :view).
