@@ -221,24 +221,15 @@ ActiveRecord::Schema.define(version: 20160926101319) do
   add_index "identifiers", ["value"], name: "index_identifiers_on_value", using: :btree
 
   create_table "kinds", force: :cascade do |t|
-    t.string   "uuid",           limit: 255
-    t.string   "name",           limit: 255
-    t.text     "description",    limit: 65535
-    t.text     "settings",       limit: 65535
+    t.string   "uuid",         limit: 255
+    t.string   "name",         limit: 255
+    t.text     "description",  limit: 65535
+    t.text     "settings",     limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",   limit: 4,     default: 0
-    t.string   "plural_name",    limit: 255
-    t.boolean  "abstract"
-    t.string   "url",            limit: 255
-    t.integer  "parent_id",      limit: 4
-    t.integer  "lft",            limit: 4
-    t.integer  "rgt",            limit: 4
-    t.integer  "children_count", limit: 4,     default: 0, null: false
+    t.integer  "lock_version", limit: 4,     default: 0
+    t.string   "plural_name",  limit: 255
   end
-
-  add_index "kinds", ["parent_id", "lft", "rgt"], name: "list_index", using: :btree
-  add_index "kinds", ["rgt"], name: "right_index", using: :btree
 
   create_table "media", force: :cascade do |t|
     t.integer "lock_version",          limit: 4
