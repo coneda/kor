@@ -90,6 +90,7 @@ Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
     step "I should see \"#{entity.name}\""
     sleep 2
     find("a[kor-to-clipboard]").click
+    sleep 2
     step "I should see \"has been copied to the clipboard\""
   end
 end

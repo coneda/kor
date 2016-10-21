@@ -216,4 +216,22 @@ describe Entity do
     }.to change{DirectedRelationship.count}.by(-4)
   end
 
+  it 'should retrieve entities by an array of ids keeping the order' do
+    ml = FactoryGirl.create :mona_lisa
+    ds = FactoryGirl.create :der_schrei
+
+    expect(Entity.by_ordered_id_array(ml.id, ds.id).pluck(:id)).to eq([ml.id, ds.id])
+    expect(Entity.by_ordered_id_array([ml.id, ds.id]).pluck(:id)).to eq([ml.id, ds.id])
+    expect(Entity.by_ordered_id_array(ds.id, ml.id).pluck(:id)).to eq([ds.id, ml.id])
+    expect(Entity.by_ordered_id_array([ds.id, ml.id]).pluck(:id)).to eq([ds.id, ml.id])
+
+    expect {
+      Entity.includes(:kind).by_relation_name('related to').by_ordered_id_array(1,2).to_a
+    }.not_to raise_error
+
+    expect {
+      Entity.by_ordered_id_array([]).to_a
+    }.not_to raise_error
+  end
+
 end

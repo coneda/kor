@@ -92,10 +92,11 @@ class EntitiesController < ApplicationController
         nil
       end
     end
+    binding.pry
 
     entities = Entity.
       allowed(current_user, :view).
-      where(id: history_entity_ids).
+      by_ordered_id_array(history_entity_ids.reverse).
       by_relation_name(params[:relation_name]).
       includes(:kind).
       newest_first

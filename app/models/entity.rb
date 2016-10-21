@@ -399,16 +399,14 @@ class Entity < ActiveRecord::Base
       where('tags.name LIKE ?', "%#{term}%")
   end
   
-  def self.find_all_by_id_keep_order(ids)
-    tmp_entities = where(:id => ids).to_a
-    Array(ids).collect{|id| tmp_entities.find{|e| e.id.to_i == id.to_i } }.reject{|e| e.blank? }
-  end
-  
-  def self.find_all_by_uuid_keep_order(uuids)
-    tmp_entities = where(:uuid => uuids).to_a
-    Array(uuids).collect{|uuid| tmp_entities.find{|e| e.uuid == uuid } }.reject{|e| e.blank? }
-  end
-
+  scope :by_ordered_id_array, lambda { |*ids|
+    if ids.present? && ids.flatten.compact.present?
+      ids = ids.flatten.compact
+      where(id: ids).order("FIELD(id,#{ids.join(',')})")
+    else
+      all
+    end
+  }
   scope :by_relation_name, lambda {|relation_name|
     if relation_name
       kind_ids = Relation.where(name: relation_name).map{|r| r.to_kind_ids}
