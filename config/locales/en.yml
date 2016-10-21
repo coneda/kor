@@ -61,6 +61,7 @@ en:
   currently_linked: currently linked
   nothing_selected: nothing selected
   hide_abstract: hide abstract
+  inherited_from: inherited from
 
   search_term:
     one: search term
@@ -959,6 +960,7 @@ en:
         does_not_exist: "doesn't exist"
         cannot_be_its_own_parent: can't be its own parent
         cannot_produce_cycle: can't be part of a cyclic dependency
+        cannot_be_changed: can't be changed
 
 
   # Mime types

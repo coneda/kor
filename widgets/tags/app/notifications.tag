@@ -30,21 +30,9 @@
         (->
           data.remove = true
           self.update()
-          # $(li).one 'animationend', (event) ->
-          #   console.log 'ae'
         ),
         5000
       )
-
-      # setTimeout(
-      #   (->
-      #     i = self.messages.indexOf(data)
-      #     self.history.push(self.messages[i])
-      #     self.messages.splice(i, 1)
-      #     self.update()
-      #   ),
-      #   2900 
-      # )
 
     kor.bus.on 'notify', (data) ->
       type = data.type || 'default'

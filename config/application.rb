@@ -98,3 +98,9 @@ end
 # TODO: when replacing sprockets, simulate checksum behaviour to provoke correct cache expiries
 # TODO: use json.extract! whenever possible
 # TODO: replace extended json views with customized json views
+# TODO: in json responses, include errors for models
+# TODO: unify save.json.jbuilder files
+# TODO: handle base errors on riot pages
+# TODO: make the busy wheel only show when necessary (e.g. doesn't switch off after error)
+# TODO: make all json endpoints comply with response policy
+# TODO: rename Field.show_label to Field.label

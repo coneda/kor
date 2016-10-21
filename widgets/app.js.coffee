@@ -2,6 +2,7 @@ $.extend $.ajaxSettings, {
   type: 'get'
   dataType: 'json'
   contentType: 'application/json'
+  accept: 'application/json'
 }
 
 window.wApp = {

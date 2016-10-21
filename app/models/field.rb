@@ -8,11 +8,17 @@ class Field < ActiveRecord::Base
   
   validates :name,
     :presence => true,
-    :format => {:with => /\A[a-z0-9_]+\z/},
+    :format => {:with => /\A[a-z0-9_]+\z/, allow_blank: true},
     :uniqueness => {:scope => :kind_id},
     :white_space => true
   validates :show_label, :form_label, :search_label, presence: true
-  
+
+  validate do |f|
+    if !f.new_record? && f.type_changed?
+      f.errors.add :type, :cannot_be_changed
+    end
+  end
+
   before_validation do |f|
     f.form_label = f.show_label if f.form_label.blank?
     f.search_label = f.show_label if f.search_label.blank?

@@ -17,8 +17,13 @@
       if={has_select()}
       name={opts.fieldId}
       multiple={opts.multiple}
+      disabled={opts.isDisabled}
     >
-      <option selected={!!value()}>{wApp.i18n.t('nothing_selected')}</option>
+      <option
+        if={opts.allowNoSelection}
+        value={undefined}
+        selected={!!value()}
+      >{wApp.i18n.t('nothing_selected')}</option>
       <option
         each={o in opts.options}
         value={o.value}
@@ -32,6 +37,16 @@
 
   <script type="text/coffee">
     tag = this
+
+    tag.on 'mount', ->
+      if tag.parent
+        tag.parent.formFields ||= {}
+        tag.parent.formFields[tag.fieldId()] = tag
+
+    tag.on 'unmount', ->
+      if tag.parent
+        tag.parent.formFields ||= {}
+        delete tag.parent.formFields[tag.fieldId()]
 
     tag.on 'updated', ->
       if tag.has_select()

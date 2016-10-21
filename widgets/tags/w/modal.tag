@@ -13,7 +13,6 @@
       opts.modal = tag
       tag.active = true
       tag.innerTag = riot.mount($(tag.root).find('.target')[0], tagName, opts)[0]
-      console.log tag.innerTag
       $(tag.root).show()
       fixHeight()
 

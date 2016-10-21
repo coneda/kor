@@ -52,4 +52,8 @@ Feature: Fields
     And I fill in "entity[dataset][material]" with "Öl auf Leinwand"
     And I press "Create"
     Then the harmful code should not have been executed
-    
+
+  
+  Scenario: create and use a string field
+  Scenario: create and use a regex field
+  Scenario: create and use an isbn field

@@ -15,5 +15,22 @@ w-modal, [data-is=w-modal] {
     top: 50%;
     transform: translate(-50%, -50%);
     overflow-y: scroll;
+
+    .target {
+      height: 100%;
+    }
+
+    .target:before, .target:after {
+      content: " ";
+      display: table;
+    }
+
+    .target:after {
+      clear: both
+    }
+
+    .target {
+      *zoom: 1;
+    }
   }
 }

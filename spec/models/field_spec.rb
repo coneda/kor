@@ -38,4 +38,6 @@ describe Field do
     expect(der_schrei.reload.dataset['viaf']).to be_nil
   end
 
+  it 'should fall back to the show label for other labels'
+
 end

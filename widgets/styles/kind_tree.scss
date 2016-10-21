@@ -1,19 +1,19 @@
-// kor-kind-tree, [data-is=kor-kind-tree] {
-//   ul {
-//     box-sizing: border-box;
-//   }
+kor-kind-tree, [data-is=kor-kind-tree] {
+  display: block;
+  padding: 1rem;
 
-//   & > a {
-//     position: absolute;
-//   }
+  td {
+    .icon {
+      float: right;
+      margin-left: 0.5rem;
+    }
+  }
 
-//   & > .content {
-//     box-sizing: border-box;
-//     padding-left: 1rem;
-//     // float: left;
+  td.parent {
+    background-color: lighten(#1e1e1e, 10%) !important;
+  }
 
-//     .name {
-//       // white-space: nowrap;
-//     }
-//   }
-// }
+  td.self {
+    background-color: lighten(#1e1e1e, 20%) !important;
+  }
+}

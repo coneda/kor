@@ -62,6 +62,7 @@ de:
   currently_linked: bestehende Verknüpfung
   nothing_selected: nichts ausgewählt
   hide_abstract: abstrakte verbergen
+  inherited_from: vererbt von
 
   search_term: 
     one: Suchbegriff
@@ -959,7 +960,7 @@ de:
         does_not_exist: "existiert nicht"
         cannot_be_its_own_parent: kann nicht sein eigener Stammtyp sein
         cannot_produce_cycle: kann keine zyklischen Abhängigkeiten definieren
-
+        cannot_be_changed: kann nicht geändert werden
 
   # Mime types
 

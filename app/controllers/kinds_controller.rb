@@ -3,7 +3,7 @@ class KindsController < ApplicationController
   layout 'normal_small'
 
   def index
-    params[:include] = param_to_array(params[:include])
+    params[:include] = param_to_array(params[:include], ids: false)
 
     @kinds = Kind.all
 
@@ -14,13 +14,9 @@ class KindsController < ApplicationController
   end
 
   def show
+    params[:include] = param_to_array(params[:include], ids: false)
+
     @kind = Kind.find(params[:id])
-    
-    respond_to do |format|
-      format.json do
-        render :json => @kind
-      end
-    end
   end
 
   def new
@@ -64,15 +60,15 @@ class KindsController < ApplicationController
     respond_to do |format|
       format.html do
         if @kind.update_attributes(kind_params)
-          flash[:notice] = I18n.t( 'objects.update_success', :o => Kind.model_name.human )
-          redirect_to :action => 'index'
+          flash[:notice] = I18n.t('objects.update_success', o: Kind.model_name.human )
+          redirect_to action: 'index'
         else
-          render :action => "edit"
+          render action: 'edit'
         end
       end
       format.json do
         if @kind.update_attributes(kind_params)
-          @message = I18n.t( 'objects.update_success', :o => Kind.model_name.human)
+          @message = I18n.t('objects.update_success', o: Kind.model_name.human)
           render action: 'save'
         else
           render action: 'save', status: 406
@@ -115,7 +111,8 @@ class KindsController < ApplicationController
     def kind_params
       params.require(:kind).permit(
         :name, :plural_name, :description,
-        :tagging, :name_label, :dating_label, :distinct_name_label
+        :tagging, :name_label, :dating_label, :distinct_name_label, :url,
+        :abstract, parent_ids: [], child_ids: [],
       )
     end
 

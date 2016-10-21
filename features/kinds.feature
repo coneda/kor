@@ -116,5 +116,12 @@ Feature: Kinds
   Scenario: display inherited fields from the same parent just once (diamond case)
   Scenario: display inherited generators from the same parent just once (diamond case)
   Scenario: prohibit changing field type after creation
+  Scenario: add a field
+  Scenario: change field
+  Scenario: remove a field
+  Scenario: add a generator
+  Scenario: change generator
+  Scenario: remove a generator
+  Scenario: create a kind and try to add a field/generator before saving
 
   

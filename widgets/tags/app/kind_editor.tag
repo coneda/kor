@@ -2,6 +2,8 @@
 
   <kor-layout-panel class="left small">
     <kor-panel>
+      <h1>{opts.kind.name}</h1>
+
       <a href="#" onclick={switchTo('general')}>
         » {wApp.i18n.translate('general', {capitalize: true})}
       </a><br />
@@ -16,19 +18,29 @@
       <div class="text-right">
         <button onclick={closeModal}>close</button>
       </div>
+
+      <div class="hr" if={tab == 'fields' || tab == 'generators'}></div>
+
+      <kor-fields
+        kind={opts.kind}
+        if={tab == 'fields'}
+        notify={opts.notify}
+      />
     </kor-panel>
   </kor-layout-panel>
 
   <kor-layout-panel class="right large ">
     <kor-panel>
       <kor-kind-general-editor kind={opts.kind} if={tab == 'general'} />
-      <kor-kind-fields-editor
+      <kor-field-editor
         kind={opts.kind}
         if={tab == 'fields' && opts.kind.id}
+        notify={opts.notify}
       />
       <kor-kind-generators-editor
         kind={opts.kind}
         if={tab == 'generators' && opts.kind.id}
+        notify={opts.notify}
       />
     </kor-panel>
   </kor-layout-panel>

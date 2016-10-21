@@ -469,6 +469,55 @@ request's `content-type` header has to be `application/json`
 Have a look at [Authentication](#authentication) to see how you can provide
 authentication credentials.
 
+In general, there are three types of responses:
+
+Requests that **retrieve a single record** will always answered with a
+simple object containing just that record, e.g.
+
+    GET /kinds/1.json
+
+    {
+      "id": 123,
+      "name": "person",
+      "plural_name": "people",
+      ...
+    }
+
+Requests that **retrieve a series of records** (resultsets) will always be
+answered with the objects themselves but also the total number of records, the
+current page and the amount of records per page. Sometimes not full records are
+returned but only their ids in which case the `records` array will be empty and
+there will be an `ids` array instead, e.g.
+
+    GET /kinds.json
+    
+    {
+      "records": [...],
+      "total": 120,
+      "per_page": 10,
+      "page": 7
+    }
+
+Requests that **modify a record** will always be answered with the modified
+record as well as a message indicating the modification applied. Also the
+response code will reflect a successful change (200) or incorrect new data
+(406). This applies to create (POST), update (PATCH) and destroy (DELETE)
+requests, e.g.
+
+    POST /kinds.json
+    with JSON {"kind": {"name": "person", "plural_name": "people"}}
+
+    {
+      "message": "the kind 'person' has been created",
+      "record": {
+        "id": 123,
+        "name": "person",
+        "plural_name": "people",
+        ...
+      }
+    }
+
+
 * `GET /kinds.json`: returns array of all kinds
 * `GET /kinds/1.json`: returns kind with id 1
 * `GET /relations.json`: returns array of all relations
@@ -499,18 +548,6 @@ authentication credentials.
     * `to_kind_id`: limits by the target's kind, comma-separated
     * `page`: requests a specific page from the resultset (default: 1)
     * `per_page`: sets the page size (default: 10, max: 500)
-
-Resultsets are JSON objects having this structure:
-
-    {
-      total: 133,
-      page: 1,
-
-      ids: [13,89,1333],
-      records: [ ... ],
-    }
-
-while `ìds` and `records` are optional.
 
 Be aware that, if you are requesting related entities to be embedded within
 other entities, those are embedded as a list of directed relationships which

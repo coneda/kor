@@ -34,7 +34,7 @@ class Kind < ActiveRecord::Base
     end
 
     if cycle
-      kind.errors[:base].add :cannot_produce_cycle
+      kind.errors.add :parent_ids, :cannot_produce_cycle
     end
   end
 
@@ -43,13 +43,6 @@ class Kind < ActiveRecord::Base
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :allowed, lambda {|user, policies| all}
-  scope :by_parent, lambda {|parent_id|
-    if parent_id.to_s == 'all'
-      all
-    else
-      parent_id.present? ? children_of(parent_id) : roots
-    end
-  }
 
   before_validation :generate_uuid
 
@@ -57,8 +50,16 @@ class Kind < ActiveRecord::Base
     kind_parent_inheritances.pluck(:parent_id)
   end
 
+  def parent_ids=(values)
+    self.parents = Kind.where(id: values).to_a
+  end
+
   def child_ids
     kind_child_inheritances.pluck(:child_id)
+  end
+
+  def child_ids=(values)
+    self.children = Kind.where(id: values).to_a
   end
 
   def url

@@ -4,12 +4,14 @@ kor-layout-panel, [data-is=kor-layout-panel] {
   &.left {
     float: left;
     border-right: 2px solid #181818;
+    min-height: 100%;
   }
 
   &.right {
     float: left;
     border-left: 2px solid #181818;
     margin-left: -2px;
+    min-height: 100%;
   }
 
   &.top {

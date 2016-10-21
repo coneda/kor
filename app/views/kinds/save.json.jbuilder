@@ -1,3 +1,5 @@
 json.message @message
-json.record @kind
+json.record do
+  json.partial! 'customized', kind: @kind
+end
 json.errors @kind.errors

@@ -2,8 +2,8 @@
 
   <h2>
     <kor-t
-      key="objects.edit"
-      with={ {'interpolations': {'o': opts.kind.name}} }
+      key="general"
+      with={ {capitalize: true} }
       show={opts.kind.id}
     />
     <kor-t
@@ -50,6 +50,7 @@
       label-key="kind.parent"
       model={opts.kind}
       errors={errors.parent_ids}
+      allow-no-selection={true}
     />
 
     <kor-field
