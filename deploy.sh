@@ -52,10 +52,17 @@ function deploy {
 
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec bin/kor secrets"
 
-  local "npm run build"
-  upload "public/widget-test.html" "$CURRENT_PATH/public/widget-test.html"
-  upload "public/*.js" "$CURRENT_PATH/public/"
-  upload "public/*.css" "$CURRENT_PATH/public/"
+  if which npm > /dev/null ; then
+    local "npm install"
+    local "npm run build"
+    upload "public/widget-test.html" "$CURRENT_PATH/public/widget-test.html"
+    upload "public/*.js" "$CURRENT_PATH/public/"
+    upload "public/*.css" "$CURRENT_PATH/public/"
+  else
+    echo "WARNING, npm was not found so some assets can't be compiled. As a"
+    echo "fallback, the assets included within the youngest release in this"
+    echo "branch will be deployed"
+  fi
 
   remote "touch $CURRENT_PATH/tmp/restart.txt"
 

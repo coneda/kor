@@ -11,14 +11,14 @@
     "node-static": "^0.7.8",
     "onchange": "^3.0.0",
     "parallelshell": "^2.0.0",
-    "riot": "^2.5.0",
+    "riot": "^2.6.4",
     "uglifyjs": "^2.4.10",
     "zepto": "^1.0.1"
   },
   "scripts": {
     "build": "widgets/build.sh build",
     "watch": "widgets/build.sh watch",
-    "serve": "widgets/build.sh server"
+    "server": "widgets/build.sh server"
   },
   "repository": {
     "type": "git",
