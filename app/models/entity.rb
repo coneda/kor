@@ -404,7 +404,7 @@ class Entity < ActiveRecord::Base
       ids = ids.flatten.compact
       where(id: ids).order("FIELD(id,#{ids.join(',')})")
     else
-      all
+      none
     end
   }
   scope :by_relation_name, lambda {|relation_name|
