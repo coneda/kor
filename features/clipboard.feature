@@ -68,6 +68,7 @@ Feature: Clipboard
     When I select "relate" from "clipboard_action"
     Then I should see "all selected entities"
     And I press "Send"
+    Then I should see "Leonardo"
     Then "Leonardo" should have "created" "Mona Lisa"
 
   @javascript
