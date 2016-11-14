@@ -170,7 +170,7 @@ class User < ActiveRecord::Base
       end
     end
     if storage['history'].size > 50
-      storage['history'] = storage['history'][0..49]
+      storage['history'] = storage['history'][-50..-1]
     end
   end
 
