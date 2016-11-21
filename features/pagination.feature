@@ -5,7 +5,7 @@ Feature: Pagination
   
   
   @javascript @nodelay
-  Scenario: Paginate 11 search results
+  Scenario: Paginate 11 search results and paginate back
     Given I am logged in as "admin"
     And there are "11" entities named "Werk X" of kind "Werk/Werke"
     When I go to the expert search page
@@ -15,6 +15,8 @@ Feature: Pagination
     And I click element "img[data-name=pager_right]"
     Then I should see "Search results"
     And I should see "Werk 9"
+    When I click element "img[data-name=pager_left]"
+    And I should see "Werk 1"
 
   
   @javascript @nodelay
