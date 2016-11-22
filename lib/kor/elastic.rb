@@ -365,6 +365,7 @@ class Kor::Elastic
 
     def self.request(method, path, query = {}, body = nil, headers = {})
       return :disabled if !enabled?
+      query ||= {}
 
       if config['token']
         query['token'] = config['token']

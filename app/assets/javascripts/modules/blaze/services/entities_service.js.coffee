@@ -48,6 +48,8 @@ kor.service "entities_service", [
 
       relation_load: (entity_id, relation_name, page) ->
         page ||= 1
+
+        kind_id = if kd.info then kd.info.medium_kind_id else 1
         
         http(
           method: 'get'
@@ -55,7 +57,7 @@ kor.service "entities_service", [
           params: {
             page: page
             relation_name: relation_name
-            except_to_kind_id: kd.info.medium_kind_id
+            except_to_kind_id: kind_id
           }
         )
 

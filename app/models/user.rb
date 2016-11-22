@@ -147,7 +147,7 @@ class User < ActiveRecord::Base
   end
 
   def history_push(url)
-    if url.present?
+    if url.present? && storage['history'].last != url
       storage['history'].push url
       storage_update
     end
@@ -161,7 +161,6 @@ class User < ActiveRecord::Base
   end
 
   def history_cleanup
-    storage['history'].uniq!
     storage['history'].select! do |url|
       if url.match /\/(entities|blaze)\/[0-9]+$/
         id = url.scan(/[0-9]+$/).first
@@ -171,7 +170,7 @@ class User < ActiveRecord::Base
       end
     end
     if storage['history'].size > 50
-      storage['history'] = storage['history'][0..49]
+      storage['history'] = storage['history'][-50..-1]
     end
   end
 

@@ -15,8 +15,12 @@ function install_requirements {
 }
 
 function install_test_requirements {
+  PHANTOMJS_VERSION="2.1.1"
   install_requirements
-  apt-get install -y phantomjs
+  cd /opt
+  wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
+  tar xjf phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
+  ln -sfn /opt/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/bin/phantomjs
 }
 
 function install_dev_requirements {

@@ -19,7 +19,7 @@ development:
 
 test:
   adapter: mysql2
-  host: mysql
+  host: 127.0.0.1
   database: kor_test
   username: root
   password: root
@@ -28,12 +28,12 @@ test:
   reconnect: true
 
   elastic:
-    host: elastic
+    host: 127.0.0.1
     port: 9200
     index: kor_test
 
   neo:
-    host: neo
+    host: 127.0.0.1
     port: 7474
 
 production:

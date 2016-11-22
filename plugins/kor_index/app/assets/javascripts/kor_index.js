@@ -194,7 +194,7 @@ ComponentSearch.draw = function() {
 
 ComponentSearch.setup_pagination = function() {
   var paginate = $('.entity_list div.pagination');
-  var left = paginate.find('img[data-name=Pager_left]').parent();
+  var left = paginate.find('img[data-name=pager_left]').parent();
   var right = paginate.find('img[data-name=pager_right]').parent();
   var select = paginate.find('select');
   var input = paginate.find('input');

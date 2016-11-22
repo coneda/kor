@@ -32,7 +32,7 @@ function lib {
 
 function tags {
   log "compiling tags"
-  node_modules/.bin/riot widgets/tags public/tags.js 2> /dev/null
+  node_modules/.bin/riot widgets/tags public/tags.js > /dev/null
 }
 
 function app {

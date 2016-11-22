@@ -17,7 +17,6 @@ gem 'sass'
 gem 'httpclient'
 gem 'acts-as-taggable-on', '~> 3.5'
 
-
 gem 'sprockets-rails'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
@@ -35,7 +34,6 @@ gem 'rack-cors', :require => 'rack/cors'
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load 
   # (and configure) it in app/controllers/application_controller.rb
-  gem 'activerecord-session_store'
   gem 'delayed_job_active_record'
   gem 'awesome_nested_set', '~> 3.1.1'
   gem 'factory_girl_rails'

@@ -8,7 +8,7 @@
           .hr
           %table#current_entity_history
             %tr
-              - Entity.find_all_by_id_keep_order(session[:current_history]).each_with_index do |e, i|
+              - Entity.by_ordered_id_array(session[:current_history]).each_with_index do |e, i|
                 - unless i == 0
                   %td &raquo;
                 

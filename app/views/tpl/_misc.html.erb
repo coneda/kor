@@ -26,7 +26,7 @@
 </script>
 
 <script type="text/x-kor-tpl" data-id="entity-widget">
-  <span ng-show="entity.id">
+  <span ng-if="entity.id">
     <span ng-hide="entity | is_medium">
       <div class="name" ng-bind-html="name()"></div>
       <div class="kind" ng-bind-html="kind_name()"></div>
@@ -73,4 +73,16 @@
     <div class="w-messaging"></div>
     <div class="riot-content"></div>
   </div>
+</script>
+
+<script type="text/x-kor-tpl" data-id="entity-show">
+  <%= render partial: 'tpl/entities/show' %>
+</script>
+
+<script type="text/x-kor-tpl" data-id="gallery">
+  <%= render partial: 'tpl/entities/gallery' %>
+</script>
+
+<script type="text/x-kor-tpl" data-id="isolated">
+  <%= render partial: 'tpl/entities/isolated' %>
 </script>

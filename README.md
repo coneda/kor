@@ -446,7 +446,7 @@ The following widgets can then be used on the integrating page:
     <kor-entity
       id="<id or uuid>"
       kor-style="true"
-    />
+    ></kor-entity>
 
 This shows the entity (also supports media entities) referenced by `id`. If you
 add the `kor-style` attribute, the widget will apply some basic styling.

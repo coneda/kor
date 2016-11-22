@@ -1,17 +1,12 @@
 additions ||= []
 
-json.id entity.id
-json.collection_id entity.collection_id
-json.kind_id entity.kind_id
-json.kind_name entity.kind.name
-json.name entity.name
-json.distinct_name entity.distinct_name
-json.display_name entity.display_name
-json.comment entity.comment
-json.subtype entity.subtype
-json.creator_id entity.creator_id
-json.updater_id entity.updater_id
-json.tags entity.tag_list
+json.extract!(entity,
+  :id, :collection_id, :kind_id, :creator_id, :updater_id,
+  :kind_name,
+  :name, :distinct_name, :display_name,
+  :comment, :subtype,
+  :tags
+)
 
 if entity.is_medium?
   json.medium_id entity.medium_id
