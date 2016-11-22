@@ -44,7 +44,7 @@ kor.directive "korEntitySelector", [
           # TODO: still needed?
           if scope.tab == 'current'
             scope.results = {
-              raw_records: [scope.current()]
+              records: [scope.current()]
             }
             scope.group()
 
@@ -55,7 +55,7 @@ kor.directive "korEntitySelector", [
             }
             es.recently_created(params).success (data) ->
               scope.results = data
-              scope.results.raw_records = data.records
+              scope.results.records = data.records
               scope.group()
 
           if scope.tab == 'visited'
@@ -65,12 +65,12 @@ kor.directive "korEntitySelector", [
             }
             es.recently_visited(params).success (data) ->
               scope.results = data
-              scope.results.raw_records = data.records
+              scope.results.records = data.records
               scope.group()
 
           if scope.tab == 'existing'
             scope.results = {
-              raw_records: [scope.entity]
+              records: [scope.entity]
             }
             scope.group()
 
