@@ -80,12 +80,12 @@
   <script type="text/coffee">
     tag = this
 
-    tag.opts.notify.on 'add', ->
+    tag.opts.notify.on 'add-field', ->
       tag.field = {type: 'Fields::String'}
       tag.showForm = true
       tag.updateSpecialFields()
 
-    tag.opts.notify.on 'edit', (field) ->
+    tag.opts.notify.on 'edit-field', (field) ->
       tag.field = field
       tag.showForm = true
       tag.updateSpecialFields()
@@ -137,7 +137,6 @@
           tag.showForm = false
         error: (request) ->
           tag.field = request.responseJSON.record
-          tag.field.errors = request.responseJSON.errors
         complete: ->
           tag.update()
       )

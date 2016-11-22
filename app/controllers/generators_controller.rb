@@ -1,6 +1,6 @@
 class GeneratorsController < ApplicationController
 
-  layout 'small_normal'
+  skip_before_filter :authentication, :authorization, only: ['types', 'index']
 
   before_filter do
     @kind = Kind.find(params[:kind_id])
@@ -11,28 +11,14 @@ class GeneratorsController < ApplicationController
     
   end
 
-  def show
-    @generator = Generator.find(params[:id])
-    render :inline => @generator.directive
-  end
-  
-  def new
-    @generator = Generator.new(generator_params)
-    @generator.kind = @kind
-  end
-  
-  def edit
-    @generator = @generators.find(params[:id])
-  end
-  
   def update
     @generator = @generators.find(params[:id])
 
     if @generator.update_attributes(generator_params)
-      flash[:notice] = I18n.t('objects.update_success', :o => @generator.name)
-      redirect_to :action => 'index'
+      @message = I18n.t('objects.update_success', :o => @generator.name)
+      render :action => 'save'
     else
-      render :action => 'edit'
+      render :action => 'save', status: 406
     end
   end
   
@@ -40,18 +26,18 @@ class GeneratorsController < ApplicationController
     @generator = @generators.new(generator_params)
     
     if @generator.save
-      flash[:notice] = I18n.t('objects.create_success', :o => @generator.name)
-      redirect_to :action => 'index'
+      @message =  I18n.t('objects.create_success', :o => @generator.name)
+      render :action => 'save'
     else
-      render :action => 'new'
+      render :action => 'save', status: 406
     end
   end
   
   def destroy
     @generator = @generators.find(params[:id])
     @generator.destroy
-    flash[:notice] = I18n.t('objects.destroy_success', :o => @generator.name)
-    redirect_to :action => 'index'
+    @message = I18n.t('objects.destroy_success', :o => @generator.name)
+    render :action => 'save'
   end
   
   protected

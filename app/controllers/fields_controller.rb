@@ -1,6 +1,6 @@
 class FieldsController < ApplicationController
 
-  layout 'small_normal'
+  skip_before_filter :authentication, :authorization, only: ['types', 'index']
 
   before_filter do
     params[:klass] ||= 'Fields::String'
@@ -17,16 +17,6 @@ class FieldsController < ApplicationController
     @types = Kind.available_fields
   end
 
-  def new
-    @field = sanitize_field_class(params[:klass]).constantize.new(field_params)
-    @form_url = kind_fields_path(@kind)
-  end
-  
-  def edit
-    @field = Field.find(params[:id])
-    @form_url = kind_field_path(@kind, @field)
-  end
-  
   def update
     @field = Field.find(params[:id])
 
@@ -40,20 +30,17 @@ class FieldsController < ApplicationController
   
   def create
     @klass = sanitize_field_class(params[:klass])
+    @field = (@klass ?
+      @klass.constantize.new(field_params) : 
+      Field.new(field_params)
+    )
+    @field.kind_id = params[:kind_id]
 
-    if @klass
-      @field = @klass.constantize.new(field_params)
-      @field.kind_id = params[:kind_id]
-
-      if @field.save
-        @message = I18n.t('objects.create_success', o: @field.show_label)
-        render action: 'save'
-      else
-        render action: 'save', status: 406
-      end
+    if @field.save
+      @message = I18n.t('objects.create_success', o: @field.show_label)
+      render action: 'save'
     else
-      # TODO: finish this!
-      render :action 'save', status: 406
+      render action: 'save', status: 406
     end
   end
   
@@ -85,6 +72,8 @@ class FieldsController < ApplicationController
     def sanitize_field_class(str)
       if Kind.available_fields.map{|klass| klass.name}.include?(str)
         str
+      else
+        'Fields::String'
       end
     end
 end

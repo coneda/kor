@@ -961,6 +961,7 @@ en:
         cannot_be_its_own_parent: can't be its own parent
         cannot_produce_cycle: can't be part of a cyclic dependency
         cannot_be_changed: can't be changed
+        field_type_invalid: field type invalid
 
 
   # Mime types

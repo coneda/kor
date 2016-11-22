@@ -15,7 +15,23 @@ describe FieldsController, type: :controller do
   end
 
 
-  it 'should restrict write access to kind admins'
+  it 'allow read access to field types' do
+    get :types, kind_id: @people.id
+    expect(response.status).to eq(200)
+    expect(data).to include({'name' => 'Fields::String', 'label' => 'String'})
+  end
+
+  it 'should allow read access to everybody' do
+    get :index, kind_id: @people.id
+    expect(response.status).to eq(200)
+  end
+
+  it 'should deny write access to non-kind-admins' do
+    @guest = FactoryGirl.create :guest
+
+    post :create, kind_id: @people.id
+    expect(response.status).to eq(403)
+  end
 
   context 'as admin' do
     before :each do
@@ -25,7 +41,7 @@ describe FieldsController, type: :controller do
     it 'should sanitize the class string' do
       post :create, kind_id: @people.id, klass: "Wrong::Class"
       expect(response.status).to eq(406)
-      expect(data['record']['errors']['type']).to eq["doesn't exist"]
+      expect(data['record']['type']).to eq('Fields::String')
     end
 
     it 'should comply with response policy' do
@@ -73,7 +89,8 @@ describe FieldsController, type: :controller do
       post :create, kind_id: @people.id, klass: 'Fields::String', field: {
         name: 'gnd_id', show_label: 'GND-ID',
         form_label: 'GND', search_label: 'GND',
-        is_identifier: true, show_on_entity: false
+        is_identifier: true, show_on_entity: false,
+        abstract: true
       }
       expect(response.status).to eq(200)
       expect(data['record']['name']).to eq('gnd_id')
@@ -84,9 +101,6 @@ describe FieldsController, type: :controller do
       expect(data['record']['show_on_entity']).to eq(false)
     end
 
-    it 'should allow to set the abstract attribute'
-    it 'should allow to set the parents via a list of ids'
-    it 'should allow to set the children via a list of ids'
   end
 
 end

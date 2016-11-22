@@ -1,7 +1,7 @@
 additions ||= []
 
 json.extract!(field,
-  :id, :name, :kind_id, :value, :is_identifier, :show_on_entity,
+  :type, :id, :name, :kind_id, :value, :is_identifier, :show_on_entity,
   :show_label, :form_label, :search_label, :errors
 )
 

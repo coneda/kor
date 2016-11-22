@@ -5,7 +5,7 @@ class Field < ActiveRecord::Base
   serialize :settings, Hash
   
   belongs_to :kind
-  
+
   validates :name,
     :presence => true,
     :format => {:with => /\A[a-z0-9_]+\z/, allow_blank: true},
@@ -22,6 +22,7 @@ class Field < ActiveRecord::Base
   before_validation do |f|
     f.form_label = f.show_label if f.form_label.blank?
     f.search_label = f.show_label if f.search_label.blank?
+    f.type ||= 'Fields::String'
     f.generate_uuid
   end
 

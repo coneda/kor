@@ -29,13 +29,13 @@ Rails.application.routes.draw do
       get 'cleanup'
     end
   end
-  resources :kinds do
-    resources :fields, :except => 'show' do
+  resources :kinds, except: ['edit', 'new'] do
+    resources :fields, except: ['show', 'edit', 'new'] do
       collection do
         get :types
       end
     end
-    resources :generators
+    resources :generators, except: ['show', 'edit', 'new']
   end
   resources :relations do
     collection do

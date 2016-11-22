@@ -26,6 +26,12 @@
         if={tab == 'fields'}
         notify={opts.notify}
       />
+
+      <kor-generators
+        kind={opts.kind}
+        if={tab == 'generators'}
+        notify={opts.notify}
+      />
     </kor-panel>
   </kor-layout-panel>
 
@@ -37,7 +43,7 @@
         if={tab == 'fields' && opts.kind.id}
         notify={opts.notify}
       />
-      <kor-kind-generators-editor
+      <kor-generator-editor
         kind={opts.kind}
         if={tab == 'generators' && opts.kind.id}
         notify={opts.notify}

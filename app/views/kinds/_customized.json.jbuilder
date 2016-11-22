@@ -32,7 +32,7 @@ if additions.include?('fields') || additions.include?('all')
 end
 
 if additions.include?('generators') || additions.include?('all')
-  json.fields kind.generators do |generator|
+  json.generators kind.generators do |generator|
     json.partial! 'generators/customized', additions: additions, generator: generator
   end
 end

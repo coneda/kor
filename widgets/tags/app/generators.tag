@@ -1,34 +1,34 @@
-<kor-fields>
+<kor-generators>
 
   <div class="pull-right">
-    <a href="#/kinds/{opts.kind.id}/fields/new" onclick={add}>
+    <a href="#/kinds/{opts.kind.id}/generators/new" onclick={add}>
       <i class="fa fa-plus-square"></i>
     </a>
   </div>
   
   <strong>
     <kor-t
-      key="activerecord.models.field"
+      key="activerecord.models.generator"
       with={ {count: 'other', capitalize: true} }>
     />
   </strong>
   <ul>
-    <li each={field in kind.fields}>
+    <li each={generator in kind.generators}>
       <div class="pull-right">
-        <a href="#" onclick={edit(field)}><i class="fa fa-edit"></i></a>
-        <a href="#" onclick={remove(field)}><i class="fa fa-remove"></i></a>
+        <a href="#" onclick={edit(generator)}><i class="fa fa-edit"></i></a>
+        <a href="#" onclick={remove(generator)}><i class="fa fa-remove"></i></a>
       </div>
-      <a href="#" onclick={edit(field)}>{field.name}</a>
+      <a href="#" onclick={edit(generator)}>{generator.name}</a>
     </li>
   </ul>
 
-  <div each={k in ancestry} show={k.fields.length > 0}>
+  <div each={k in ancestry} show={k.generators.length > 0}>
     <strong>
       <kor-t key="inherited_from" />
       {k.name}
     </strong>
     <ul>
-      <li each={field in k.fields}>{field.name}</li>
+      <li each={generator in k.generators}>{generator.name}</li>
     </ul>
   </div>
 
@@ -38,17 +38,17 @@
     tag.on 'mount', -> refresh()
     tag.opts.notify.on 'refresh', -> refresh()
 
-    tag.add = -> tag.opts.notify.trigger 'add-field'
+    tag.add = -> tag.opts.notify.trigger 'add-generator'
 
-    tag.edit = (field) ->
-      (event) -> tag.opts.notify.trigger 'edit-field', field
+    tag.edit = (generator) ->
+      (event) -> tag.opts.notify.trigger 'edit-generator', generator
 
-    tag.remove = (field) ->
+    tag.remove = (generator) ->
       (event) ->
         if wApp.utils.confirm wApp.i18n.translate('confirm.general')
           $.ajax(
             type: 'delete'
-            url: "/kinds/#{tag.opts.kind.id}/fields/#{field.id}"
+            url: "/kinds/#{tag.opts.kind.id}/generators/#{generator.id}"
             success: -> refresh()
           )
 
@@ -66,7 +66,7 @@
     refresh = ->
       $.ajax(
         url: "/kinds/#{tag.opts.kind.id}"
-        data: {include: 'fields,ancestry'}
+        data: {include: 'generators,ancestry'}
         success: (data) ->
           tag.kind = data
           tag.build_ancestry()
@@ -75,4 +75,4 @@
 
 
   </script>
-</kor-fields>
+</kor-generators>
