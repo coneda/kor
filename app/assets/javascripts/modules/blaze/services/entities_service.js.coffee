@@ -62,13 +62,17 @@ kor.service "entities_service", [
         )
 
       media_relation_load: (entity_id, relation_name, page) ->
+        page ||= 1
+
+        kind_id = if kd.info then kd.info.medium_kind_id else 1
+
         http(
           method: 'get'
           url: "/entities/#{entity_id}/relationships.json"
           params: {
             page: page
             relation_name: relation_name
-            to_kind_id: kd.info.medium_kind_id
+            to_kind_id: kind_id
           }
         )
 
