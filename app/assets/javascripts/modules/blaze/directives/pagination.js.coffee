@@ -24,6 +24,7 @@ kor.directive "korPagination", [
         scope.total_pages = -> Math.ceil(scope.total / scope.per_page)
 
         scope.$watch "page_model", (new_value) -> 
+          scope.page_input_model = new_value
           if new_value
             scope.update()
 
@@ -48,13 +49,13 @@ kor.directive "korPagination", [
 
           event.preventDefault() if event
 
-        $(element).on "click", "input[type=number]", (event) -> $(event.target).select()
+        $(element).on "keyup", "input[type=number]", (event) ->
+          if event.which == 13
+            scope.update(scope.page_input_model)
+            scope.$apply()
 
-        scope.page_input_handler = (value = null) ->
-          if value == null
-            parseInt(scope.page_model)
-          else
-            scope.page_model = parseInt(value)
+        $(element).on "blur", "input[type=number]", (event) ->
+          $(event.target).val(sanitize scope.page_model)
 
     } 
 ]
