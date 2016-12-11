@@ -5,6 +5,17 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+## Version 2.0.1
+
+### User
+
+* pagination back-button doesn't work (#2192 redmine)
+* weird focus and click behaviour on pagination number input (#2183 redmine)
+* initial page load somethimes leads to race condition (#2182 redmine)
+* 'recently visited' tab (relationship editor) doesn't show expected entities
+  (#2161 redmine). The resolution also has the side effect of the history of
+  visited entities is now remembered across sessions.
+
 ## Version 2.0.0
 
 ### User
