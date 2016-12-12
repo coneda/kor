@@ -14,17 +14,25 @@ Given /^the collection "([^\"]*)"$/ do |name|
   end
 end
 
-Given /^the kind "([^\"]*)"$/ do |names|
+Given /^the kind "([^\"]*)"(?: inheriting from "([^\"]*)")?$/ do |names, parents|
   components = names.split('/')
   singular = components[0..(components.size / 2 - 1)].join('/')
   plural = components[(components.size / 2)..-1].join('/')
-  Kind.find_or_create_by(:name => singular, :plural_name => plural)
+  kind = Kind.find_or_initialize_by(:name => singular, :plural_name => plural)
+  if parents.present?
+    parents.split(',').each do |parent|
+      kind.parents << Kind.find_by(name: parent)
+    end
+  end
+  kind.save
 end
 
 Given(/^the generator "(.*?)" for kind "(.*?)"$/) do |name, kind_name|
   step "the kind \"#{kind_name}\""
   generator = FactoryGirl.build name
-  Kind.where(:name => kind_name.split('/').first).first.generators << generator
+  kind = Kind.find_by(name: kind_name.split('/').first)
+  kind.generators << generator
+  kind.save
 end
 
 Given /^the relation "([^\"]*)"$/ do |names|
@@ -395,4 +403,9 @@ Given(/^there are "([^"]*)" media entities$/) do |amount|
     )
     system "rm #{file}"
   end
+end
+
+Given(/^the kind "([^"]*)" has identifier "([^"]*)" labelled "([^"]*)"$/) do |kind, field, label|
+  kind = Kind.find_by(name: kind)
+  kind.fields << Field.create(name: field, show_label: label, is_identifier: true)
 end

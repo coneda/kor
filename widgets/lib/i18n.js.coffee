@@ -3,7 +3,7 @@ wApp.i18n = {
     try
       options.count ||= 1
       parts = input.split(".")
-      result = wApp.data.translations[wApp.data.session.locale]
+      result = wApp.data.translations[wApp.data.locale]
       
       for part in parts
         result = result[part]

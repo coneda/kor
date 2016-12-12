@@ -109,11 +109,6 @@ class ToolsController < ApplicationController
     render :nothing => true
   end
   
-  def input_menu
-    session[:expand_input_menu] = params[:folding] == 'expand'
-    render :nothing => true
-  end
-
 
   def dataset_fields
     begin

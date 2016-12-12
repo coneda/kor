@@ -25,9 +25,11 @@ Feature: Clipboard
   @javascript
   Scenario: Create user groups on the fly
     Given I am logged in as "admin"
-    And the medium "spec/fixtures/image_a.jpg"
-    And all entities of kind "Medium/Media" are in the clipboard
+    And the entity "Mona Lisa" of kind "work/works"
     And the user group "Alte Gruppe"
+    When I go to the entity page for "Mona Lisa"
+    And I click element "[data-name=target]"
+    Then I should see "has been copied to the clipboard"
     When I go to the clipboard
     And I select "add to one of your own groups" from "clipboard_action"
     And I follow the link with text "create"

@@ -83,7 +83,7 @@
     self.params = {}
     
     self.on 'mount', ->
-      $.ajax(
+      Zepto.ajax(
         type: 'get'
         url: "#{kor.url}/kinds"
         success: (data) ->
@@ -91,7 +91,7 @@
           self.update()
       )
 
-      $.ajax(
+      Zepto.ajax(
         type: 'get'
         url: "#{kor.url}/collections"
         success: (data) ->
@@ -118,21 +118,21 @@
       self.update()
     self.form_to_url = ->
       kind_ids = []
-      for cb in $(self.root).find('.kinds input[type=checkbox]:checked')
-        kind_ids.push parseInt($(cb).val())
+      for cb in Zepto(self.root).find('.kinds input[type=checkbox]:checked')
+        kind_ids.push parseInt(Zepto(cb).val())
       collection_ids = []
-      for cb in $(self.root).find('.collections input[type=checkbox]:checked')
-        collection_ids.push parseInt($(cb).val())
+      for cb in Zepto(self.root).find('.collections input[type=checkbox]:checked')
+        collection_ids.push parseInt(Zepto(cb).val())
       dataset = {}
       self.kor.routing.state.update(
-        terms: $(x.root).find('[name=terms]').val()
+        terms: Zepto(x.root).find('[name=terms]').val()
         collection_ids: collection_ids
         kind_ids: kind_ids
       )
     self.load_fields = ->
       if self.params.kind_ids.length == 1
         id = self.params.kind_ids[0]
-        $.ajax(
+        Zepto.ajax(
           type: 'get'
           url: "#{kor.url}/kinds/#{id}/fields"
           success: (data) ->
@@ -145,9 +145,9 @@
 
     self.allnone = (event) ->
       event.preventDefault()
-      boxes = $(event.target).parent().find('input[type=checkbox]')
+      boxes = Zepto(event.target).parent().find('input[type=checkbox]')
       for box in boxes
-        if !$(box).is(':checked')
+        if !Zepto(box).is(':checked')
           boxes.prop 'checked', true
           self.form_to_url()
           return

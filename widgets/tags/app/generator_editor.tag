@@ -59,8 +59,8 @@
 
 
     create = ->
-      $.ajax(
-        type: 'post'
+      Zepto.ajax(
+        type: 'POST'
         url: "/kinds/#{tag.opts.kind.id}/generators"
         data: JSON.stringify(params())
         success: ->
@@ -73,8 +73,8 @@
       )
 
     update = ->
-      $.ajax(
-        type: 'patch'
+      Zepto.ajax(
+        type: 'PATCH'
         url: "/kinds/#{tag.opts.kind.id}/generators/#{tag.generator.id}"
         data: JSON.stringify(params())
         success: ->

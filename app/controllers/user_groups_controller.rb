@@ -117,7 +117,7 @@ class UserGroupsController < GroupsController
   def create
     @user_group = UserGroup.new(user_group_params)
     @user_group.user_id = current_user.id
-    
+
     if @user_group.save
       respond_to do |format|
         format.html do
@@ -126,7 +126,7 @@ class UserGroupsController < GroupsController
         end
         
         format.json do
-          render :nothing => true, :status => 200
+          render json: {}
         end
       end
     else

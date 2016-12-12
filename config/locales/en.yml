@@ -874,8 +874,6 @@ en:
         name: name
         plural_name: plural name
         description: description
-        dataset_class: field extension
-        dataset_profile: profile for extensions
         wikidata_id: Wikidata ID
         parent: parent type
         abstract: abstract
@@ -959,9 +957,10 @@ en:
         can_not_be_empty: "has to be filled in"
         does_not_exist: "doesn't exist"
         cannot_be_its_own_parent: can't be its own parent
-        cannot_produce_cycle: can't be part of a cyclic dependency
+        would_result_in_cycle: would result in a circular schema
         cannot_be_changed: can't be changed
         field_type_invalid: field type invalid
+        cannot_be_changed: can't be changed for medium type
 
 
   # Mime types

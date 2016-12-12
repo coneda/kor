@@ -55,6 +55,10 @@
     tag = this
     tag.tab = 'general'
 
+    tag.on 'kind-changed', (new_kind) ->
+      tag.opts.kind = new_kind
+      tag.update()
+
     tag.switchTo = (name) ->
       (event) ->
         tag.tab = name

@@ -91,7 +91,7 @@
       tag.updateSpecialFields()
 
     tag.on 'mount', ->
-      $.ajax(
+      Zepto.ajax(
         url: "/kinds/#{tag.opts.kind.id}/fields/types"
         success: (data) ->
           tag.types = {}
@@ -105,7 +105,7 @@
     tag.updateSpecialFields = (event) ->
       if tag.showForm
         # get the tag selection or fall back to the model value
-        typeName = $('[name=type]').val() || tag.field.type
+        typeName = Zepto('[name=type]').val() || tag.field.type
         # update the model
         tag.field.type = typeName
         if types = tag.types
@@ -128,22 +128,23 @@
 
 
     create = ->
-      $.ajax(
-        type: 'post'
+      Zepto.ajax(
+        type: 'POST'
         url: "/kinds/#{tag.opts.kind.id}/fields"
         data: JSON.stringify(params())
         success: ->
           tag.opts.notify.trigger 'refresh'
           tag.showForm = false
         error: (request) ->
-          tag.field = request.responseJSON.record
+          data = JSON.parse(request.response)
+          tag.field = data.record
         complete: ->
           tag.update()
       )
 
     update = ->
-      $.ajax(
-        type: 'patch'
+      Zepto.ajax(
+        type: 'PATCH'
         url: "/kinds/#{tag.opts.kind.id}/fields/#{tag.field.id}"
         data: JSON.stringify(params())
         success: ->

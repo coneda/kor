@@ -1,3 +1,1 @@
-additions ||= []
-
-json.partial! 'customized', kind: @kind, additions: additions
+json.partial! 'customized', kind: @kind, additions: params[:include]

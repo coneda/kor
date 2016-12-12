@@ -42,8 +42,4 @@ kor.config([
   ]
 )
 
-kor.run([ ->
-  
-])
-
 this.kor = kor

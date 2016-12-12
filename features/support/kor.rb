@@ -35,13 +35,13 @@ end
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app,
     # debug: true,
-    js_errors: false,
+    js_errors: true,
     inspector: false
   )
 end
 
 Capybara.register_driver :chromium do |app|
-  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+  Capybara::Selenium::Driver.new(app, browser: :chrome)
 end
 
 Capybara.register_driver :marionette do |app|
@@ -49,6 +49,7 @@ Capybara.register_driver :marionette do |app|
 end
 
 Capybara.default_max_wait_time = 5
+Capybara.wait_on_first_by_default = true
 Capybara.javascript_driver = :chromium
 # once marionette works
 # Capybara.javascript_driver = :marionette

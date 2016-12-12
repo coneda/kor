@@ -12,8 +12,8 @@
     wApp.bus.on 'modal', (tagName, opts = {}) ->
       opts.modal = tag
       tag.active = true
-      tag.innerTag = riot.mount($(tag.root).find('.target')[0], tagName, opts)[0]
-      $(tag.root).show()
+      tag.innerTag = riot.mount(Zepto(tag.root).find('.target')[0], tagName, opts)[0]
+      Zepto(tag.root).show()
       fixHeight()
 
     tag.backPanelClick = (event) ->
@@ -23,16 +23,16 @@
 
     tag.on 'close', ->
       if tag.active
-        $(tag.root).hide()
+        Zepto(tag.root).hide()
         tag.innerTag.unmount(true)
         tag.active = false
 
     fixHeight = ->
-      new_height = Math.max($(window).height() - 100, 300)
-      $(tag.root).find('[name=receiver]').css 'height', new_height
+      new_height = Math.max(Zepto(window).height() - 100, 300)
+      Zepto(tag.root).find('[name=receiver]').css 'height', new_height
 
-    $(window).on 'resize', fixHeight
-    $(document).on 'keydown', (event) ->
+    Zepto(window).on 'resize', fixHeight
+    Zepto(document).on 'keydown', (event) ->
       if event.key == 'Escape'
         tag.trigger 'close'
 

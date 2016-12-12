@@ -23,7 +23,7 @@
         if={opts.allowNoSelection}
         value={undefined}
         selected={!!value()}
-      >{wApp.i18n.t('nothing_selected')}</option>
+      >{noSelectionLabel()}</option>
       <option
         each={o in opts.options}
         value={o.value}
@@ -50,7 +50,7 @@
 
     tag.on 'updated', ->
       if tag.has_select()
-        $(tag.root).find('select option[selected]').prop('selected', true)
+        Zepto(tag.root).find('select option[selected]').prop('selected', true)
 
     tag.fieldId = -> tag.opts.fieldId
     tag.label = ->
@@ -68,6 +68,8 @@
     tag.has_input = -> !tag.has_textarea() && !tag.has_select()
     tag.has_textarea = -> tag.inputType() == 'textarea'
     tag.has_select = -> tag.inputType() == 'select'
+    tag.noSelectionLabel = ->
+      tag.opts.noSelectionLabel || wApp.i18n.t('nothing_selected')
 
     tag.checked = -> if tag.inputType() == 'checkbox' then tag.value() else false
     tag.selected = (key) ->
@@ -88,7 +90,7 @@
     tag.has_errors = -> tag.errors().length > 0
 
     tag.val = ->
-      element = $(tag.root).find('input, textarea, select')
+      element = Zepto(tag.root).find('input, textarea, select')
       if tag.inputType() == 'checkbox'
         element.prop('checked')
       else

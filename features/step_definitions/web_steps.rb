@@ -32,9 +32,11 @@ When(/^I follow the link with text "([^"]*)"$/) do |text|
 end
 
 
-When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |field, quoted, value|
+When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |locator, quoted, value|
   value = "\"#{value}\"" if quoted == ' quoted'
-  field = all(:css, field).first || find(:fillable_field, field)
+  field = page.first(:field, locator) || all(:css, locator).first
+  # field = all(:css, locator).first || find(:fillable_field, locator)
+  # binding.pry if locator.match /Label/
   field.set value
 end
 
@@ -64,8 +66,9 @@ When /^(?:|I )attach the file "([^"]*)" to "([^"]*)"$/ do |path, field|
   attach_file(field, File.expand_path(path))
 end
 
-Then /^(?:|I )should see "([^"]*)"$/ do |text|
-  expect(page).to have_content(text)
+Then /^(?:|I )should see "([^"]*)"(?: exactly "(\d+)" times?)?$/ do |text, amount|
+  amount = amount.to_i if amount
+  expect(page).to have_content(text, count: amount)
 end
 
 Then /^(?:|I )should see \/([^\/]*)\/$/ do |regexp|
@@ -275,15 +278,6 @@ When /^I wait for "([^"]*)" seconds?$/ do |num|
   sleep num.to_f
 end
 
-When /^I fill in "([^"]*)" with harmful code$/ do |field_name|
-  harmful_code = "\\#\\{system 'touch tmp/harmful.txt'\\}"
-  step "I fill in \"#{field_name}\" with \"#{harmful_code}\""
-end
-
-Then /^the harmful code should not have been executed$/ do
-  expect(File.exists? "#{Rails.root}/tmp/harmful.txt").to be_falsey
-end
-
 When /^I click on the player link$/ do
   page.find('.viewer .kor_medium_frame a').click
 end
@@ -384,5 +378,38 @@ When(/^I paginate right in the relations$/) do
     page.find("img[data-name='pager_right']").click
     # puts page.find("input[type=number]").value
     # expect(page).to have_content('ENDE')
+  end
+end
+
+Then(/^the select "([^"]*)" should have value "([^"]*)"$/) do |name, value|
+  field = page.find_field(name)
+  values = field.all('option[selected]').map{|o| o.text}
+  if field['multiple'].present?
+    expect(values).to eql(value.split ',')
+  else
+    expect(values.first).to eql(value)
+  end
+end
+
+Then(/^"([^"]*)" should not have option "([^"]*)"$/) do |name, value|
+  field = page.find_field(name)
+  options = field.all('option').map{|o| o.text}
+  expect(options).not_to include(value)
+end
+
+When(/^I click icon "([^"]*)"$/) do |name|
+  page.find("i.fa.fa-#{name}").click
+end
+
+Then(/^select "([^"]*)" should be disabled$/) do |label|
+  field = page.find_field(label, disabled: :all) 
+  expect(field['disabled']).to be_present
+end
+
+Then(/^I should( not)? see icon "([^"]*)"$/) do |negation, icon|
+  if negation
+    expect(page).to have_no_css("i.fa.fa-#{icon}")
+  else
+    expect(page).to have_css("i.fa.fa-#{icon}")
   end
 end

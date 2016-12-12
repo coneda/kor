@@ -1,5 +1,9 @@
 <kor-kind-tree>
 
+  <h1>{t('activerecord.models.kind', {capitalize: true, count: 'other'})}</h1>
+
+  <div class="hr"></div>
+
   <form class="kor-horizontal" >
 
     <kor-field
@@ -56,6 +60,8 @@
     tag.on 'mount', -> fetch()
     wApp.bus.on 'kinds-changed', -> fetch()
 
+    tag.t = wApp.i18n.translate
+
     tag.add = ->
       wApp.bus.trigger 'modal', 'kor-kind-editor', notify: tag.bus
 
@@ -66,7 +72,7 @@
     tag.delete = (kind) ->
       (event) ->
         if wApp.utils.confirm wApp.i18n.translate('confirm.general')
-          $.ajax(
+          Zepto.ajax(
             type: 'delete'
             url: "/kinds/#{kind.id}"
             success: ->
@@ -100,12 +106,6 @@
       tag.delayedTimeout = window.setTimeout(tag.submit, 300)
       true
 
-    ancestry_for = (kind) ->
-      results = [kind]
-      for parent_id in kind.parent_ids
-        results = results.concat ancestry_for(tag.lookup[parent_id])
-      results
-
     index_records = ->
       tag.lookup = {}
       tag.roots = []
@@ -134,7 +134,7 @@
       tag.grouped_records = wApp.utils.in_groups_of(5, tag.filtered_records)
 
     fetch = ->
-      $.ajax(
+      Zepto.ajax(
         type: 'get'
         url: '/kinds'
         success: (data) ->

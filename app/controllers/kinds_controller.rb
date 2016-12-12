@@ -10,6 +10,8 @@ class KindsController < ApplicationController
   end
 
   def show
+    params[:include] = param_to_array(params[:include], ids: false)
+    
     @kind = Kind.find(params[:id])
   end
 
@@ -30,7 +32,7 @@ class KindsController < ApplicationController
     params[:kind] ||= {}
     params[:kind][:settings] ||= {}
     params[:kind][:settings][:tagging] ||= false
-    
+
     if @kind.update_attributes(kind_params)
       @message = I18n.t('objects.update_success', o: Kind.model_name.human)
       render action: 'save'

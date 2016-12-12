@@ -12,7 +12,7 @@
   <script type="text/coffee">
     self = this
 
-    $(document).on 'ajaxComplete', (event, request, options) ->
+    Zepto(document).on 'ajaxComplete', (event, request, options) ->
       try
         data = request.responseJSON || JSON.parse(request.response)
         # console.log data

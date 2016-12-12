@@ -21,6 +21,7 @@ module NavigationHelpers
     when /the new publishment page/ then new_publishment_path
     when /the publishments page/ then publishments_path
     when /the new relation page/ then new_relation_path
+    when /the new entity page/ then new_entity_path
     when /the authority groups page/ then authority_group_categories_path
     when /the authority group categories page/ then authority_group_categories_path
     when /the user group page for "([^\"]*)"/

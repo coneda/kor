@@ -23,7 +23,7 @@ gem 'jquery-ui-rails'
 gem 'angularjs-rails', '~> 1.5.2'
 gem 'plupload-rails'
 gem 'coffee-rails'
-gem 'sass-rails'
+gem 'sass-rails', '~> 5.0.6'
 
 gem 'jbuilder'
 gem 'test-unit'

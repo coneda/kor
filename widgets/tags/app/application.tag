@@ -24,7 +24,7 @@
       url: self.opts.baseUrl || ''
       bus: riot.observable()
       load_session: ->
-        $.ajax(
+        Zepto.ajax(
           type: 'get'
           url: "#{kor.url}/api/1.0/info"
           success: (data) ->
@@ -33,7 +33,7 @@
         )
       login: (username, password) ->
         console.log arguments
-        $.ajax(
+        Zepto.ajax(
           type: 'post',
           url: "#{kor.url}/login"
           data: JSON.stringify(
@@ -43,7 +43,7 @@
           success: (data) -> kor.load_session()
         )
       logout: ->
-        $.ajax(
+        Zepto.ajax(
           type: 'delete'
           url: "#{kor.url}/logout"
           success: -> kor.load_session()
@@ -51,7 +51,7 @@
     }
     riot.mixin(kor: kor)
 
-    $.extend $.ajaxSettings, {
+    Zepto.extend Zepto.ajaxSettings, {
       contentType: 'application/json'
       dataType: 'json'
       error: (request) ->
@@ -62,10 +62,10 @@
     mount_page = (tag) ->
       if self.mounted_page != tag
         self.page_tag.unmount(true) if self.page_tag
-        element = $(self.root).find('kor-page')
+        element = Zepto(self.root).find('kor-page')
         self.page_tag = (riot.mount element[0], tag)[0]
         element.detach()
-        $(self['page-container']).append(element)
+        Zepto(self['page-container']).append(element)
         self.mounted_page = tag
 
     self.on 'mount', ->

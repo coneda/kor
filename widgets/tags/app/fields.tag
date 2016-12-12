@@ -46,7 +46,7 @@
     tag.remove = (field) ->
       (event) ->
         if wApp.utils.confirm wApp.i18n.translate('confirm.general')
-          $.ajax(
+          Zepto.ajax(
             type: 'delete'
             url: "/kinds/#{tag.opts.kind.id}/fields/#{field.id}"
             success: -> refresh()
@@ -54,20 +54,24 @@
 
     tag.build_ancestry = ->
       results = []
+      result_ids = []
       todo = tag.kind.parents
       while todo.length > 0
         new_todo = []
         for k in todo
-          results.push(k)
-          new_todo = new_todo.concat(k.parents)
+          if result_ids.indexOf(k.id) == -1
+            results.push(k)
+            result_ids.push(k.id)
+            new_todo = new_todo.concat(k.parents)
         todo = new_todo
       tag.ancestry = results
 
     refresh = ->
-      $.ajax(
+      Zepto.ajax(
         url: "/kinds/#{tag.opts.kind.id}"
         data: {include: 'fields,ancestry'}
         success: (data) ->
+          console.log data
           tag.kind = data
           tag.build_ancestry()
           tag.update()

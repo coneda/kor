@@ -248,33 +248,18 @@ ImageQuickButtons.register_events();
 var Menu = new Object();
 
 Menu.setup = function() {
-  $('.menu_toggle').click(function(event) {
+  $('#menu').on('click', '.menu_toggle', function(event) {
     var link = $(event.currentTarget);
-    var menu = link.parent().next().children().first();
+    var id = link.attr('data-toggle');
+    menu = $('#' + id);
+    url = {
+      'config_menu': '/config/menu',
+      'groups_menu': '/tools/groups_menu'
+    }[id];
     var folding = $(menu).is(':visible') ? 'collapse' : 'expand';
-    var url = null;
-    switch(menu.attr('id')) {
-      case 'config_menu':
-        url = '/config/menu';
-        break;
-      case 'groups_menu':
-        url = '/tools/groups_menu';
-        break;
-      case 'input_menu':
-        url = '/tools/input_menu';
-        break;
-    }
     $.get(url, {'folding': folding});
-    $(menu).toggle();
-    return false;
-  });
-  
-  $('#new_entity_kind_id').change(function(event){
-    var input = $('#new_entity_kind_id');
-  
-    if (input.val() != -1) {
-      location.href = '/entities/new?kind_id=' + input.val();
-    }
+    menu.toggle();
+    event.preventDefault();
   });
 }
 

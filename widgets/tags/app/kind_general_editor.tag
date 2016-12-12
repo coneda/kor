@@ -40,7 +40,7 @@
       field-id="url"
       label-key="kind.url"
       model={opts.kind}
-    />    
+    />
 
     <kor-field
       field-id="parent_ids"
@@ -50,7 +50,6 @@
       label-key="kind.parent"
       model={opts.kind}
       errors={errors.parent_ids}
-      allow-no-selection={true}
     />
 
     <kor-field
@@ -99,16 +98,17 @@
     tag.on 'mount', ->
       # tag.opts.kind ||= {}
 
-      $.ajax(
+      Zepto.ajax(
         type: 'get'
         url: '/kinds'
         success: (data) ->
           tag.possible_parents = []
           for kind in data.records
-            tag.possible_parents.push(
-              label: kind.name
-              value: kind.id
-            )
+            if !tag.opts.kind || (tag.opts.kind.id != kind.id && tag.opts.kind.id != 1)
+              tag.possible_parents.push(
+                label: kind.name
+                value: kind.id
+              )
           tag.update()
       )
 
@@ -126,11 +126,12 @@
 
     success = (data) ->
       wApp.bus.trigger 'kinds-changed'
+      tag.parent.trigger 'kind-changed', data.record
       tag.update()
 
     error = (response) ->
       data = response.responseJSON
-      console.log data
+      # console.log data
       tag.errors = data.errors
       tag.opts.kind = data.record
       tag.update()
@@ -138,16 +139,16 @@
     tag.submit = (event) ->
       event.preventDefault()
       if tag.new_record()
-        $.ajax(
-          type: 'post'
+        Zepto.ajax(
+          type: 'POST'
           url: '/kinds'
           data: JSON.stringify(kind: tag.values())
           success: success
           error: error
         )
       else
-        $.ajax(
-          type: 'patch'
+        Zepto.ajax(
+          type: 'PATCH'
           url: "/kinds/#{tag.opts.kind.id}"
           data: JSON.stringify(kind: tag.values())
           success: success

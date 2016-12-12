@@ -35,13 +35,13 @@
   <script type="text/coffee">
     self = this
 
-    self.on 'mount', -> $(self.root).find('input')[0].focus()
+    self.on 'mount', -> Zepto(self.root).find('input')[0].focus()
 
     self.submit = (event) ->
       event.preventDefault()
       kor.login(
-        $(self['kor-login-form-username']).val()
-        $(self['kor-login-form-password']).val()
+        Zepto(self['kor-login-form-username']).val()
+        Zepto(self['kor-login-form-password']).val()
       )
 
   </script>

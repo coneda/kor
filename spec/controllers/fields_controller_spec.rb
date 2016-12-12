@@ -82,7 +82,7 @@ describe FieldsController, type: :controller do
         type: 'Fields::Regex'
       }
       expect(response.status).to eq(406)
-      expect(data['record']['errors']['type']).to eq(["can't be changed"])
+      expect(data['record']['errors']['type']).to eq(["can't be changed for medium type"])
     end
 
     it 'should allow to set attributes' do

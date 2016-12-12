@@ -1,7 +1,7 @@
 additions ||= []
 
 json.extract!(kind,
-  :id, :url,
+  :id, :uuid, :url,
   :abstract,
   :name, :plural_name,
   :description,
@@ -10,12 +10,14 @@ json.extract!(kind,
 )
 
 if additions.include?('settings') || additions.include?('all')
-  json.name_label kind.name_label
-  json.tagging kind.tagging
-  json.dating_label kind.dating_label
-  json.distinct_name_label kind.distinct_name_label
-  json.requires_naming kind.requires_naming?
-  json.can_have_synonyms kind.can_have_synonyms?
+  json.settings do
+    json.name_label kind.name_label
+    json.tagging kind.tagging
+    json.dating_label kind.dating_label
+    json.distinct_name_label kind.distinct_name_label
+    json.requires_naming kind.requires_naming?
+    json.can_have_synonyms kind.can_have_synonyms?
+  end
 end
 
 if additions.include?('technical') || additions.include?('all')

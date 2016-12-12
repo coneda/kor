@@ -959,8 +959,10 @@ de:
         can_not_be_empty: "muss ausgefüllt werden"
         does_not_exist: "existiert nicht"
         cannot_be_its_own_parent: kann nicht sein eigener Stammtyp sein
-        cannot_produce_cycle: kann keine zyklischen Abhängigkeiten definieren
-        cannot_be_changed: kann nicht geändert werden
+        cannot_result_in_cycle: würde eine zyklisches Schema definieren
+        cannot_be_changed: kann für Typ 'Medium' nicht geändert werden
+        would_result_in_cycle: would result in a circular schema
+        field_type_invalid: field Typ ist ungültig
 
   # Mime types
 

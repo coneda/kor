@@ -19,7 +19,7 @@
           'some-tag'
         else
           'some-default-tag'
-      riot.mount $('.w-content')[0], tag, opts
+      riot.mount Zepto('.w-content')[0], tag, opts
       window.scrollTo(0, 0)
 
   </script>

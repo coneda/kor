@@ -3,14 +3,8 @@ Feature: Identifiers
 @javascript @nodelay
 Scenario: Create a resolvable entity and resolve it
   Given I am logged in as "admin"
-  And the kind "Person/People"
-  And I go to the kinds page
-  And I follow "Three bars" within the row for "kind" "Person"
-  And I follow "Plus"
-  And I fill in "field[name]" with "gnd_id"
-  And I fill in "field[show_label]" with "GND-ID"
-  And I check "field[is_identifier]"
-  And I press "Create"
+  And the kind "person/people"
+  And the kind "person" has identifier "gnd_id" labelled "GND-ID"
   And I go to the new "Person-Entity" page
   And I fill in "entity[name]" with "Leonardo da Vinci"
   And I fill in "entity[dataset][gnd_id]" with "1234"

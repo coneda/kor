@@ -34,7 +34,7 @@ class Kind < ActiveRecord::Base
     end
 
     if cycle
-      kind.errors.add :parent_ids, :cannot_produce_cycle
+      kind.errors.add :parent_ids, :would_result_in_cycle
     end
   end
 

@@ -56,7 +56,7 @@ Feature: Inplace relationship editor
     Then I should see "Mona Lisa"
     When I click element "[data-name=pen]" within ".relationships"
     And I click button "Add" within ".relationships"
-    And I fill in ".properties > .input-with-button:first-child input" with "this is almost certain"
+    And I fill in ".properties input" with "this is almost certain"
     And I press "Save"
     And I should not see "Edit link"
     And I should see "Relationship has been changed"
