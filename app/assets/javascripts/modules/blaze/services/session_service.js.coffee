@@ -15,7 +15,7 @@ kor.service "session_service", [
           else
             object
 
-          if kd.info.session.user.auth
+          if kd.info.session.user && kd.info.session.user.auth
             kd.info.session.user.auth.collections[policy] ||= []
             kd.info.session.user.auth.collections[policy].indexOf(collection_id) != -1
           else
@@ -44,7 +44,7 @@ kor.service "session_service", [
           service.flash 'error', message
           el.text('')
       in_clipboard: (entity) ->
-        if kd.info && entity
+        if kd.info && kd.info.session.user && entity
           kd.info.session.user.clipboard ||= []
           kd.info.session.user.clipboard.indexOf(entity.id) != -1
         else

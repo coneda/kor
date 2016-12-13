@@ -1,0 +1,23 @@
+kor-menu, [data-is=kor-menu] {
+  margin-top: 40px;
+  margin-bottom: 85px;
+  display: block;
+  float: left;
+  width: 180px;
+  font-weight: bold;
+
+  a {
+    color: #bbbbbb !important;
+  }
+
+  li {
+    margin-bottom: 0.1rem;
+  }
+
+  kor-sub-menu, [data-is=kor-sub-menu] {
+    .content {
+      padding-top: 0.2rem;
+      padding-left: 0.5rem;
+    }
+  }
+}

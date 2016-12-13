@@ -29,10 +29,12 @@ end
 Then(/^kind "([^"]*)" should( not)? have parent "([^"]*)"$/) do |child, negation, parent|
   child = Kind.find_by(name: child)
   parent = Kind.find_by(name: parent)
+  debugger if !child || !parent
+
   if negation
-    expect(child.parents).not_to include(parent)
+    expect(child.parents.to_a).not_to include(parent)
   else
-    expect(child.parents).to include(parent)
+    expect(child.parents.to_a).to include(parent)
   end
 end
 

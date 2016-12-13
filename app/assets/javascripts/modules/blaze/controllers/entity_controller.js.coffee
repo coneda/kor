@@ -8,7 +8,8 @@ kor.controller('entity_controller', [
 
     update = ->
       promise = es.show(rp.id)
-      promise.success (data) -> scope.entity = data
+      promise.success (data) ->
+        scope.entity = data
       promise.error (data) ->
         return_to = document.location.href
         l.path("/denied")
@@ -27,6 +28,14 @@ kor.controller('entity_controller', [
           field.value && field.show_on_entity
       else
         []
+
+    scope.show_tags = ->
+      if scope.entity
+        scope.entity.kind.settings.tagging &&
+        (
+          (scope.entity.tags && scope.entity.tags.length > 0) ||
+          scope.allowed_to('tagging', scope.entity.collection_id)
+        )
 
     scope.authority_groups = ->
       if scope.entity

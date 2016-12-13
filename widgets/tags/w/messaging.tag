@@ -10,7 +10,7 @@
   </div>
 
   <script type="text/coffee">
-    self = this
+    tag = this
 
     Zepto(document).on 'ajaxComplete', (event, request, options) ->
       try
@@ -22,20 +22,21 @@
       catch e
         console.log e
 
-    self.on 'mount', -> self.messages = []
+    tag.on 'mount', ->
+      tag.messages = []
     wApp.bus.on 'message', (type, message) -> 
-      self.messages.push {
+      tag.messages.push {
         type: type,
         content: message
       }
-      window.setTimeout(self.drop, self.opts.duration || 5000)
-      self.update()
+      window.setTimeout(tag.drop, tag.opts.duration || 5000)
+      tag.update()
 
-    self.drop = ->
-      self.messages.shift()
-      self.update()
-    self.error = (message) -> message.type == 'error'
-    self.notice = (message) -> message.type == 'notice'
+    tag.drop = ->
+      tag.messages.shift()
+      tag.update()
+    tag.error = (message) -> message.type == 'error'
+    tag.notice = (message) -> message.type == 'notice'
   </script>
 
 </w-messaging>

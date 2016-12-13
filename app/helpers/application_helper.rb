@@ -132,14 +132,6 @@ module ApplicationHelper
     end
   end
   
-  def submenu_section(&block)
-    content = capture(&block).strip.html_safe
-    result = content_tag('li', nil, :class => 'small_spacer') + content
-    unless content.empty?
-      result.html_safe
-    end
-  end
-
   def reset_tag(value = I18n.t('verbs.reset'))
     "<input value=\"#{value}\" type=\"reset\">"
   end

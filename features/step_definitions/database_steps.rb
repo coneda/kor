@@ -409,3 +409,8 @@ Given(/^the kind "([^"]*)" has identifier "([^"]*)" labelled "([^"]*)"$/) do |ki
   kind = Kind.find_by(name: kind)
   kind.fields << Field.create(name: field, show_label: label, is_identifier: true)
 end
+
+Given(/^tagging is activated for kind "([^"]*)"$/) do |name|
+  kind = Kind.find_by(name: name)
+  binding.pry
+end

@@ -6,7 +6,6 @@ require 'factory_girl_rails'
 
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :truncation
-# Cucumber::Rails::Database.javascript_strategy = :truncation
 
 Around do |scenario, block|
   DatabaseCleaner.cleaning(&block)
@@ -30,6 +29,20 @@ Before do |scenario|
   else
     Delayed::Worker.delay_jobs = true
   end
+end
+
+Before('@javascript') do
+  @local_storage_flushed = false
+
+  orig = Capybara.current_session.method(:visit)
+  allow(Capybara.current_session).to receive(:visit){ |*args|
+    result = orig.call(*args)
+    unless @local_storage_flushed
+      page.execute_script('Lockr.flush()')
+      @local_storage_flushed = true
+    end
+    result
+  }
 end
 
 Capybara.register_driver :poltergeist do |app|

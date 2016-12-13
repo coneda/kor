@@ -79,7 +79,7 @@
               ></div>
             </li>
             <li class="spacer"></li>
-            <li class="tags" ng-show="entity.kind.settings.tagging == '1' && (entity.tags || allowed_to('tagging', entity.collection_id))">
+            <li class="tags" ng-show="show_tags()">
               <div
                 class="column"
                 kor-inplace-column="entity.tags"
