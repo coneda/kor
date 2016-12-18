@@ -19,7 +19,7 @@ wApp.utils = {
       result.push(current)
     result
   to_integer: (value) ->
-    if $.isNumeric(value)
+    if Zepto.isNumeric(value)
       parseInt(value)
     else
       value

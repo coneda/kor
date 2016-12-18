@@ -1,0 +1,40 @@
+$blue: #1eaedb;
+$gray: #e1e1e1;
+$yellow: #dbaa1e;
+$pink: #db1e4f;
+$highlight: #f4f4f4;
+
+a {
+  cursor: pointer;
+}
+
+.w-text-right {
+  text-align: right;
+}
+
+.w-text-left {
+  text-align: left; 
+}
+
+.w-text-center {
+  text-align: center;
+}
+
+.w-nowrap {
+  white-space: nowrap;
+}
+
+.w-errors {
+  margin-top: -1.6rem;
+  font-size: 1rem;
+  color: red;
+
+  li {
+    list-style-type: disc;
+    margin: 0px;
+  }
+}
+
+.w-clearfix {
+  clear: both;
+}

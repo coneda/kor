@@ -1,4 +1,4 @@
-$.extend $.ajaxSettings, {
+Zepto.extend Zepto.ajaxSettings, {
   dataType: 'json'
   contentType: 'application/json'
 }
