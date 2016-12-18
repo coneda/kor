@@ -51,7 +51,7 @@ function lib {
 
 function tags {
   log "compiling tags"
-  node_modules/.bin/riot widgets/tags public/tags.js
+  node_modules/.bin/riot widgets/tags public/tags.js > /dev/null
 }
 
 function app {

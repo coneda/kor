@@ -16,10 +16,12 @@
       wApp.routing.setup()
     
     wApp.bus.on 'routing:path', (parts) ->
-      tag = 'some-tag'
+      tag = null
       opts = {}
-      riot.mount Zepto('.w-content')[0], tag, opts
-      window.scrollTo(0, 0)
+
+      if tag
+        riot.mount Zepto('.w-content')[0], tag, opts
+        window.scrollTo(0, 0)
 
   </script>
 
