@@ -14,6 +14,7 @@ function all {
   tags
   app
   html
+  css
 }
 
 function watch {
@@ -24,7 +25,8 @@ function watch {
     "widgets/build.sh watch_lib" \
     "widgets/build.sh watch_tags" \
     "widgets/build.sh watch_app" \
-    "widgets/build.sh watch_html"
+    "widgets/build.sh watch_html" \
+    "widgets/build.sh watch_css"
 }
 
 function server {
@@ -68,6 +70,12 @@ function html {
   done
 }
 
+function css {
+  log "compiling css"
+  node-sass widgets/app.scss > public/tags.css
+  cat public/vendor.css public/tags.css > public/all.css
+}
+
 function watch_vendor {
   onchange widgets/vendor -- widgets/build.sh vendor
 }
@@ -86,6 +94,10 @@ function watch_app {
 
 function watch_html {
   onchange public/app.js public/vendor.* widgets/*.html.ejs -- widgets/build.sh html
+}
+
+function watch_css {
+  onchange widgets/styles widgets/app.scss -- widgets/build.sh css
 }
 
 function log {

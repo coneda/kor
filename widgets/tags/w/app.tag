@@ -5,14 +5,11 @@
   <w-modal />
   <w-messaging />
 
-  <style type="text/scss">
-    @import "widgets/app.scss";
-  </style>
-
   <script type="text/coffee">
-    self = this
+    tag = this
 
-    self.on 'mount', ->
+    tag.on 'mount', ->
+      console.log(tag)
       wApp.routing.setup()
     
     wApp.bus.on 'routing:path', (parts) ->
