@@ -1,7 +1,7 @@
 class ToolsController < ApplicationController
   
   skip_before_action :authentication, :only => 'history'
-  skip_before_action :verify_authenticity_token, only: ['history']
+  skip_before_action :verify_authenticity_token, only: ['history', :mark_as_current]
   skip_before_filter :authorization, :except => [ 
     'remove_from_invalid_entities', 
     'add_to_authority_group', 
@@ -30,6 +30,7 @@ class ToolsController < ApplicationController
 
   def mark_as_current
     if params[:id]
+      session[:bla] = ',p'
       session[:current_history] ||= Array.new
       session[:current_history] << params[:id].to_i unless session[:current_history].last == params[:id].to_i
       session[:current_history] = session[:current_history].last(Kor.config['app.current_history_length'].to_i)

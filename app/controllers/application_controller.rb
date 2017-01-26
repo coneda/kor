@@ -36,6 +36,7 @@ class ApplicationController < BaseController
 
       raise exception
 
+      # TODO: remove?
       # respond_to do |format|
       #   format.html {raise exception}
       #   format.json {

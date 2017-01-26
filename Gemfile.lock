@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/jlindsey/semantic
+  revision: 1bb06848c42e0ad2db0ee9f1dec1106d454e747b
+  specs:
+    semantic (1.5.0)
+
 PATH
   remote: ./plugins/kor_index
   specs:
@@ -372,6 +378,7 @@ DEPENDENCIES
   sass
   sass-rails (~> 5.0.6)
   selenium-webdriver
+  semantic!
   simplecov
   spreadsheet
   sprockets-rails

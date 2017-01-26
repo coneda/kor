@@ -103,8 +103,9 @@ textarea.monospace
 select option
   background-color: $input_background
 
-.focused
-  background-color: $input_background + 14
+input[type=text], input[type=password], textarea
+  &:focus
+    background-color: $input_background + 14
 
 select
   padding-left: 0px
@@ -125,8 +126,9 @@ input
     margin-left: 20px
   &[type=radio]:first-child
     margin-left: 0px
-  &.highlighted_button
-    background-color: $input_background + 65
+
+input[type=submit]:hover
+  background-color: $input_background + 65
     
 textarea
   font-family: Helvetica, Arial, Geneva, sans-serif

@@ -24,7 +24,7 @@
       = f.kor_input @entity.kind.distinct_name_label, :attribute => :distinct_name, :translate => false
     
     = f.kor_input :subtype
-    
+
   - if @entity.is_medium?
     = f.fields_for :medium, :builder => Kor::FormBuilder do |m|
       = f.kor_input :document, :control => m.file_field(:document)

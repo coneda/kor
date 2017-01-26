@@ -20,12 +20,7 @@ class Kor::NeoGraph
   end
 
   def new_progress_bar(title, total)
-    @progress = ProgressBar.create(
-      :title => title,
-      :total => total,
-      :format => "%t: |%B|%a|%E|",
-      :throttle_rate => 0.5
-    )
+    @progress = Kor.progress_bar(title, total)
   end
 
   def increment(i = 1)
@@ -63,7 +58,7 @@ class Kor::NeoGraph
 
   def import_all
     new_progress_bar "importing entities", Entity.count
-    Entity.find_in_batches :batch_size => 100 do |batch|
+    Entity.includes(:kind).find_in_batches :batch_size => 100 do |batch|
       store(batch)
     end
 
@@ -82,9 +77,9 @@ class Kor::NeoGraph
     case items.first
       when Entity
         cypher(
-          "statement" => "CREATE (n:entity {e}) RETURN n.id, id(n)",
+          "statement" => "UNWIND $props AS map CREATE (n:entity) SET n = map",
           "parameters" => {
-            "e" => items.map{ |item|
+            "props" => items.map{ |item|
               increment
               {
                 "id" => item.id,
@@ -95,6 +90,7 @@ class Kor::NeoGraph
                 "subtype" => item.subtype || "",
                 "medium_id" => item.medium_id || 0,
                 "kind_id" => item.kind_id,
+                'kind' => item.kind.name,
                 "synonyms" => item.synonyms,
                 "created_at" => item.created_at.to_f,
                 "updated_at" => item.updated_at.to_f
@@ -107,9 +103,9 @@ class Kor::NeoGraph
           {
             "statement" => [
               "MATCH (a:entity),(b:entity)",
-              "WHERE a.id = {from_id} AND b.id = {to_id}",
-              "CREATE (a)-[rn:`#{item.relation.name}` {data}]->(b)",
-              "CREATE (b)-[rr:`#{item.relation.reverse_name}` {data}]->(a)"
+              "WHERE a.id = $from_id AND b.id = $to_id",
+              "CREATE (a)-[rn:`#{item.relation.name}` $data]->(b)",
+              "CREATE (b)-[rr:`#{item.relation.reverse_name}` $data]->(a)"
             ].join(" "),
             "parameters" => {
               "from_id" => item.from_id,
@@ -162,7 +158,15 @@ class Kor::NeoGraph
   protected
 
     def client
-      @client ||= HTTPClient.new
+      @client ||= begin
+        c = HTTPClient.new
+        c.set_auth(
+          "http://#{@options['host']}:#{@options['port']}",
+          @options['username'],
+          @options['password']
+        )
+        c
+      end
     end
 
     def request(method, path, params = {}, body = "", headers = {})

@@ -104,3 +104,8 @@ end
 # TODO: make the busy wheel only show when necessary (e.g. doesn't switch off after error)
 # TODO: make all json endpoints comply with response policy
 # TODO: rename Field.show_label to Field.label
+# TODO: fix spinning wheel for riot, angular and all other ajax
+# TODO: use zlib from stdlib instead of the gem?
+# TODO: use "un" from stdlib to find graph communities?
+# TODO: use neo transactions to effectively clear the store after tests
+# 

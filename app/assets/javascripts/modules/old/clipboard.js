@@ -13,7 +13,6 @@ Clipboard.add_user_group = function() {
       dataType: 'html',
       error: function() {console.log(arguments)},
       success: function(data){
-        console.log('bla', arguments);
         $('#clipboard_action_supplement').load('/tools/new_clipboard_action', {
           clipboard_action: 'add_to_user_group',
           selected_entity_ids: Clipboard.selected_entity_ids()

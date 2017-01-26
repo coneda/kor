@@ -32,56 +32,80 @@ class Kor::Elastic
     @enabled = false
   end
 
+  def self.server_version
+    response = raw_request('get', '/')
+    require_ok(response)
+    version = JSON.parse(response.body)['version']['number']
+    Semantic::Version.new(version)
+  end
+
   def self.create_index
     unless index_exists?
       request 'put', '/', nil, {
         "settings" => {
           "analysis" => {
             "analyzer" => {
-              "folding" => {
-                "tokenizer" => "standard",
-                "filter" => ["lowercase", "asciifolding"]
+              "default" => {
+                'type' => 'custom',
+                "tokenizer" => 'gram',
+                "filter" => ['asciifolding', 'lowercase']
+              },
+              'default_search' => {
+                'type' => 'custom',
+                'tokenizer' => 'gram',
+                'filter' => ['asciifolding', 'lowercase']
               }
+            },
+            'tokenizer' => {
+              'gram' => {
+                'type' => 'ngram',
+                'min_gram' => 2,
+                'max_gram' => 30
+              }
+            }
+            # 'tokenizer' => {
+            #   'gram' => {
+            #     'type' => 'ngram',
+            #     'min_gram' => 3,
+            #     'max_gram' => 30
+            #     # 'token_chars' => ['letter']
+            #   }
+            # }
+          }
+        },
+        'mappings' => {
+          "entities" => {
+            "properties" => {
+              "name" => {"type" => "string"},
+              "distinct_name" => {"type" => "string"},
+              "subtype" => {"type" => "string"},
+              "synonyms" => {"type" => "string"},
+              "comment" => {"type" => "string"},
+              "dataset" => {
+                "type" => "object",
+                "properties" => {
+                  "_default_" => {"type" => "string"}
+                }
+              },
+              "properties" => {
+                "type" => "object", 
+                "properties" => {
+                  "label" => {"type" => "string"},
+                  "value" => {"type" => "string"}
+                }
+              },
+              "id" => {"type" => "string", "index" => "not_analyzed"},
+              "uuid" => {"type" => "string"},
+              "tags" => {"type" => "string", "analyzer" => "keyword"},
+              "related" => {"type" => "string"},
+              'degree' => {'type' => 'float'},
+
+              "sort" => {"type" => "string", "index" => "not_analyzed"},
             }
           }
         }
       }
-
-      mapping!
     end
-  end
-
-  def self.mapping!
-    request "put", "/entities/_mapping", nil, {
-      "entities" => {
-        "properties" => {
-          "name" => {"type" => "string", "analyzer" => "folding"},
-          "distinct_name" => {"type" => "string", "analyzer" => "folding"},
-          "subtype" => {"type" => "string", "analyzer" => "folding"},
-          "synonyms" => {"type" => "string", "analyzer" => "folding"},
-          "comment" => {"type" => "string", "analyzer" => "folding"},
-          "dataset" => {
-            "type" => "object",
-            "properties" => {
-              "_default_" => {"type" => "string", "analyzer" => "folding"}
-            }
-          },
-          "properties" => {
-            "type" => "object", 
-            "properties" => {
-              "label" => {"type" => "string", "analyzer" => "folding"},
-              "value" => {"type" => "string", "analyzer" => "folding"}
-            }
-          },
-          "id" => {"type" => "string", "index" => "not_analyzed"},
-          "uuid" => {"type" => "string", "analyzer" => "folding"},
-          "tags" => {"type" => "string", "analyzer" => "keyword"},
-          "related" => {"type" => "string", "analyzer" => "folding"},
-
-          "sort" => {"type" => "string", "index" => "not_analyzed"}
-        }
-      }
-    }
   end
 
   def self.drop_index
@@ -91,7 +115,7 @@ class Kor::Elastic
   end
 
   def self.index_exists?
-    response = raw_request 'head', '/'
+    response = raw_request 'head', "/#{config['index']}"
     response.status != 404
   end
 
@@ -115,28 +139,27 @@ class Kor::Elastic
 
     @cache = {}
 
-    total = Entity.without_media.count
-    done = 0
-
-    Entity.includes(:tags).without_media.find_each do |entity|
-      index(entity, options)
-      done += 1
-
-      if options[:progress] && done % 100 == 0
-        puts "indexed #{done}/#{total}"
-      end
-
-      # return if done == 1000
+    progress = Kor.progress_bar('indexing entities', Entity.without_media.count)
+    scope = Entity.includes(:tags).without_media
+    scope.find_in_batches do |batch|
+      data = []
+      batch.map do |e|
+        data << JSON.dump('index' => {'_id' => e.uuid})
+        data << JSON.dump(data_for(e, options))
+        progress.increment if options[:progress]
+      end.join("\n")
+      bulk(data.join "\n")
     end
 
     refresh
   end
 
   def self.get(entity)
-    request 'get', "/entities/#{entity.uuid}"
+    request = request 'get', "/entities/#{entity.uuid}"
+    require_ok(request)
   end
 
-  def self.index(entity, options = {})
+  def self.data_for(entity, options = {})
     options.reverse_merge! :full => false
 
     data = {
@@ -153,13 +176,13 @@ class Kor::Elastic
       "properties" => entity.properties,
       "dataset" => entity.dataset,
 
+      'degree' => entity.degree,
       "sort" => entity.display_name
     }
 
     if options[:full]
       scope = entity.
         outgoing.
-        includes(:kind).
         without_media.
         select([:id, :name, :kind_id, :attachment])
 
@@ -170,6 +193,11 @@ class Kor::Elastic
       end.flatten.select{|e| e.present?}
     end
 
+    data
+  end
+
+  def self.index(entity, options = {})
+    data = data_for(entity, options)
     request 'put', "/entities/#{entity.uuid}", nil, data
   end
 
@@ -179,6 +207,12 @@ class Kor::Elastic
 
   def self.empty_result
     ::Kor::SearchResult.new(:total => 0, :uuids => [])
+  end
+
+  def self.bulk(data)
+    data << "\n" unless data.match(/\n$/)
+    response = raw_request 'post', "/#{config['index']}/entities/_bulk", nil, data
+    require_ok(response)
   end
 
   def initialize(user)
@@ -204,7 +238,11 @@ class Kor::Elastic
       q += if query[:raw]
         [query[:query]]
       else
-        result = wildcardize(escape tokenize(query[:query]))
+        result = if Kor.is_uuid?(query[:query])
+          [query[:query]]
+        else
+          escape tokenize(query[:query])
+        end
         result.empty? ? [] : [result.join(' ')]
       end
     end
@@ -224,7 +262,7 @@ class Kor::Elastic
     end
 
     if query[:synonyms].present?
-      v = wildcardize(escape tokenize(query[:synonyms])).join(' ')
+      v = escape(tokenize(query[:synonyms])).join(' ')
       q << "synonyms:(#{v})"
     end
 
@@ -235,8 +273,12 @@ class Kor::Elastic
         "query_string" => {
           "query" => q,
           "default_operator" => "AND",
-          "analyzer" => query[:analyzer],
+          # "analyzer" => query[:analyzer],
           "analyze_wildcard" => true,
+          'allow_leading_wildcard' => true,
+          # 'lowercase_expanded_terms' => false,
+          # 'auto_generate_phrase_queries' => true,
+          'use_dis_max' => true,
           "fields" => [
             'uuid^20',
             'name^10',
@@ -252,12 +294,6 @@ class Kor::Elastic
           ]
         }
       }
-
-      highlight_component = {
-        "fields" => {"name" => {}}
-      }
-    else
-      size = 10
     end
 
     collection_ids = ::Kor::Auth.authorized_collections(@user).map(&:id)
@@ -295,52 +331,91 @@ class Kor::Elastic
       }
     end
 
-    data = {
-      "size" => per_page,
-      "from" => (page - 1) * per_page,
-      "query" => {
-        "filtered" => {
-          "filter" => {
-            "bool" => {
-              "must" => filters
+    sorting = [{'sort' => 'asc'}]
+    if query[:query].present? || query[:tags].present?
+      sorting.unshift 'degree' => 'desc'
+      sorting.unshift '_score'
+    end
+
+    data = build_request(
+      page: page,
+      per_page: per_page,
+      queries: (query_component ? [query_component] : []),
+      filters: filters,
+      sorting: sorting
+    )
+    # puts JSON.pretty_generate(data)
+
+    data['explain'] = true unless Rails.env.production?
+    response = self.class.request "post", "/entities/_search", nil, data
+    # puts JSON.pretty_generate(response)
+    # binding.pry
+
+    ::Kor::SearchResult.new(
+      :total => response['hits']['total'],
+      :uuids => response['hits']['hits'].map{|hit| hit['_id']},
+      :ids => response['hits']['hits'].map{|hit| hit['_source']['id']},
+      :raw_records => response['hits']['hits'],
+      :page => page
+    )
+  end
+
+  def build_request(options = {})
+    if false #self.class.server_version < '5.0.0'
+      data = {
+        'size' => options[:per_page],
+        'from' => (options[:page] - 1) * options[:per_page],
+        'query' => {
+          'filtered' => {
+            'filter' => {
+              'bool' => {
+                'must' => options[:filters]
+              }
             }
           }
         }
       }
-    }
 
-    if query[:query].blank? && query[:tags].blank?
-      data["sort"] = {"sort" => "asc"}
-    end
+      unless options[:queries].blank?
+        data["query"]["filtered"]["query"] = options[:queries].first
+      end
 
-    if query_component
-      data["query"]["filtered"]["query"] = query_component
-    end
-
-    if highlight_component
-      data["highlight"] = highlight_component
-    end
-
-    # puts JSON.pretty_generate(data)
-
-    response = self.class.request "post", "/entities/_search", nil, data
-
-    # puts JSON.pretty_generate(response)
-    # binding.pry
-
-    if response.first == 200
-      # binding.pry
-
-      ::Kor::SearchResult.new(
-        :total => response.last['hits']['total'],
-        :uuids => response.last['hits']['hits'].map{|hit| hit['_id']},
-        :ids => response.last['hits']['hits'].map{|hit| hit['_source']['id']},
-        :raw_records => response.last['hits']['hits'],
-        :page => page
-      )
+      unless options[:sorting].blank?
+        data['sort'] = options[:sorting]
+      end
+      data
     else
-      p response
-      response
+      data = {
+        'size' => options[:per_page],
+        'from' => (options[:page] - 1) * options[:per_page],
+        'sort' => options[:sorting],
+        'query' => {
+          'bool' => {
+            'filter' => options[:filters],
+            'must' => options[:queries]
+            # 'should' => [
+            #   # {
+            #   #   'function_score' => {
+            #   #     'query' => {'match_all' => {}},
+            #   #     'functions' => [
+            #   #       # {
+            #   #       #   'script_score' => {
+            #   #       #     'script' => "doc['name'] ? doc['name'].length : 0.0"
+            #   #       #   }
+            #   #       # }
+            #   #       # {
+            #   #       #   'field_value_factor' => {
+            #   #       #     'field' => 'degree',
+            #   #       #     'factor' => 0.01
+            #   #       #   }
+            #   #       # }
+            #   #     ]
+            #   #   }
+            #   # }
+            # ]
+          }
+        }
+      }
     end
   end
 
@@ -348,12 +423,7 @@ class Kor::Elastic
     return 0 unless self.class.enabled?
 
     response = self.class.request('get', '/entities/_count')
-    
-    if response.first == 404
-      self.class.create_index
-    else
-      response.last['count']
-    end
+    response['count']
   end
 
 
@@ -366,19 +436,14 @@ class Kor::Elastic
     def self.request(method, path, query = {}, body = nil, headers = {})
       return :disabled if !enabled?
       query ||= {}
-
-      if config['token']
-        query['token'] = config['token']
-      end
-
+      path = "/#{config['index']}#{path}"
+      body = (body ? JSON.dump(body) : nil)
+      url = "http://#{config['host']}:#{config['port']}#{path}"
       response = raw_request(method, path, query, body, headers)
-      # Rails.logger.info "ELASTIC RESPONSE: #{response.inspect}"
+      require_ok(response)
 
-      if response.status >= 200 && response.status <= 299
-        [response.status, response.headers, JSON.load(response.body)]
-      else
-        raise Exception.new("error", [response.status, response.headers, JSON.load(response.body)])
-      end
+      # Rails.logger.debug "ELASTIC RESPONSE: #{response.inspect}"
+      JSON.load(response.body)
     end
 
     def self.raw_request(method, path, query = {}, body = nil, headers = {})
@@ -386,9 +451,16 @@ class Kor::Elastic
 
       Rails.logger.info "ELASTIC REQUEST: #{method} #{path}\n#{body.inspect}"
 
+      query['token'] = config['token'] if config['token']
       headers.reverse_merge 'content-type' => 'application/json', 'accept' => 'application/json'
-      url = "http://#{config['host']}:#{config['port']}/#{config['index']}#{path}"
-      client.request(method, url, query, (body ? JSON.dump(body) : nil), headers)      
+      url = "http://#{config['host']}:#{config['port']}#{path}"
+      client.request(method, url, query, body, headers)
+    end
+
+    def self.require_ok(response)
+      if response.status < 200 || response.status >= 300
+        raise Exception.new("error", [response.status, response.headers, JSON.load(response.body)])
+      end
     end
 
     def tokenize(query_string)
@@ -406,12 +478,6 @@ class Kor::Elastic
           '\\' + m
         end
         # + - && || ! ( ) { } [ ] ^ ~ * ? : \ /
-      end
-    end
-
-    def wildcardize(tokens)
-      tokens.map do |term|
-        "*#{term}*"
       end
     end
 

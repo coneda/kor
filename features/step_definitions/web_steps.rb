@@ -265,15 +265,6 @@ Then /^I should have access: (yes|no)$/ do |yesno|
   end
 end
 
-When /I debug/ do
-  binding.pry
-  x = 15
-end
-
-When(/^I print the url$/) do
-  p current_url
-end
-
 When /^I wait for "([^"]*)" seconds?$/ do |num|
   sleep num.to_f
 end
@@ -412,4 +403,12 @@ Then(/^I should( not)? see icon "([^"]*)"$/) do |negation, icon|
   else
     expect(page).to have_css("i.fa.fa-#{icon}")
   end
+end
+
+And(/^I should see a message containing "([^"]*)"$/) do |pattern|
+  page.find("#message_area", text: /#{pattern}/)
+end
+
+Then(/^select "([^"]*)" should have selected "([^"]*)"$/) do |field, value|
+  expect(find_field(field).value).to eq(value)
 end

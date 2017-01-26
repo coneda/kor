@@ -3,7 +3,15 @@ Zepto.extend Zepto.ajaxSettings, {
   dataType: 'json'
   contentType: 'application/json'
   accept: 'application/json'
+  beforeSend: (xhr) -> Kor.ajax_loading()
+  complete: (xhr) -> Kor.ajax_not_loading()
 }
+
+$.ajaxSetup(
+  dataType: "json"
+  beforeSend: (xhr) -> Kor.ajax_loading()
+  complete: (xhr) -> Kor.ajax_not_loading()
+)
 
 window.wApp = {
   bus: riot.observable()

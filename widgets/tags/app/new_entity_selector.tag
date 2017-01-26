@@ -26,8 +26,9 @@
           tag.update()
       )
     
-    tag.on 'mount', fetch
-    wApp.bus.on 'kinds-changed', fetch
+    tag.on 'mount', ->
+      wApp.bus.on 'kinds-changed', fetch
+      fetch()
 
     tag.noSelectionLabel = ->
       e = wApp.i18n.t('activerecord.models.entity')

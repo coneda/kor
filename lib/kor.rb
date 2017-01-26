@@ -126,4 +126,20 @@ module Kor
     end
   end
 
+  def self.progress_bar(title, total, options = {})
+    options.reverse_merge!(
+      :title => title,
+      :total => total,
+      :format => "%t: |%B|%R/s|%c/%C (%P%%)|%a%E|",
+      :throttle_rate => 0.5
+    )
+
+    ProgressBar.create(options)
+  end
+
+  def self.is_uuid?(value)
+    value.is_a?(String) &&
+    !!value.match(/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/i)
+  end
+
 end

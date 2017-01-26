@@ -64,7 +64,7 @@ describe EntityDating do
   it "should parse '1957 bis ?'" do
     dating = EntityDating.create(label: "Date", dating_string: "1957 bis ?")
     expect(dating.from_day).to eq(2435840)
-    expect(dating.to_day).to eq(2438030)
+    expect(dating.to_day).to eq(2438395)
   end
 
 end

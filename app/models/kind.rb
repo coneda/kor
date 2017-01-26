@@ -135,7 +135,7 @@ class Kind < ActiveRecord::Base
   end
   
   def name_label
-    settings[:name_label] ||= Entity.human_attribute_name(:name)
+    settings[:name_label].presence || Entity.human_attribute_name(:name)
   end
 
   def name_label=(value)
@@ -160,7 +160,7 @@ class Kind < ActiveRecord::Base
   end
   
   def distinct_name_label
-    settings[:distinct_name_label] ||= Entity.human_attribute_name(:distinct_name)
+    settings[:distinct_name_label].presence || Entity.human_attribute_name(:distinct_name)
   end
 
   def distinct_name_label=(value)

@@ -10,7 +10,5 @@ class MakeKindsANestedSet < ActiveRecord::Migration
 
     add_index :kinds, :rgt, name: 'right_index'
     add_index :kinds, [:parent_id, :lft, :rgt], name: 'list_index'
-
-    Kind.rebuild!
   end
 end

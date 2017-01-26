@@ -1,39 +1,3 @@
-- if current_user
-  #session_info{:style => "display: none"}
-    #session_info_slide{:style => "#{session[:show_session_info] ? '' : 'display: none'}"}
-      #session_info_content.subtitle
-
-        - unless session[:current_history].blank?
-          = I18n.t('nouns.current_entity', :count => :other).capitalize_first_letter
-          .hr
-          %table#current_entity_history
-            %tr
-              - Entity.by_ordered_id_array(session[:current_history]).each_with_index do |e, i|
-                - unless i == 0
-                  %td &raquo;
-                
-                %td
-                  = kor_entity(e,
-                    :short => true,
-                    :how_short => 25,
-                    :url => url_for(:controller => 'tools', :action => 'mark_as_current', :id => e.id),
-                    :image_buttons => false)
-
-    - if current_user && current_user != User.guest
-      .clip
-        %table{:cellpadding => 0, :cellspacing => 0}
-          %tr
-            %td.positioner
-            %td.left
-            %td.commands.center.subtitle
-              = link_to I18n.t('nouns.session', :count => 1)
-                
-            %td.right
-  
-  = javascript_tag "if (!$('#session_info_content').is(':empty')) {$('#session_info').show()}"
-
-.clear_both
-
 #header
   #userinfo.highlighted_subtitle
     %table

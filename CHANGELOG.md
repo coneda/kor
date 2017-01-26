@@ -11,6 +11,12 @@ commit history on GitHub.
 
 * added lockr.js for localStorage
 
+### User
+
+* compatibility with elasticsearch 5.1
+* increased full index speed by using elasticsearch bulk api
+* simple search now sorts on degree of connectivity when score is equal
+
 ## Version 2.0.0
 
 ### User

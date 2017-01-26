@@ -129,6 +129,7 @@ class Relationship < ActiveRecord::Base
     )
   end
 
+  # This doesn probably not work as expected with/without properties
   def self.related?(from_id, relation_name, to_id, properties = nil)
     dr = DirectedRelationship.where(
       from_id: from_id,
