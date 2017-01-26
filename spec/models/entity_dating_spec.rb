@@ -62,6 +62,9 @@ describe EntityDating do
   end
 
   it "should parse '1957 bis ?'" do
+    today = Date.new 2016, 10, 15
+    expect(Kor::Dating::Transform).to receive(:today).twice.and_return(today)
+
     dating = EntityDating.create(label: "Date", dating_string: "1957 bis ?")
     expect(dating.from_day).to eq(2435840)
     expect(dating.to_day).to eq(2438030)
