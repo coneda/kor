@@ -132,6 +132,11 @@ process can be managed manually with the command (on the server):
 
 See `--help` for details.
 
+After deployment has succeeded and you log in the first time, make sure to add
+the application scheme, host and port to "Administration -> General -> Server".
+This is necessary because the information can't always be inferred from all
+contexts.
+
 ### Database and elasticsearch
 
 For normal operation, ConedaKOR requires an mysql and elasticsearch instances to
