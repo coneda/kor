@@ -125,7 +125,12 @@ command issued by the script.
 
 This will also start the background process that converts images and does other
 heavy lifting. However, this does not ensure monitoring nor restarting of that
-process which can be done for example with upstart scripts or systemd.
+process which can be done for example with upstart scripts or systemd. The
+process can be managed manually with the command (on the server):
+
+    RAILS_ENV=production bundle exec bin/delayed_job
+
+See `--help` for details.
 
 ### Database and elasticsearch
 
