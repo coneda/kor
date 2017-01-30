@@ -50,11 +50,12 @@ Feature: Cross collection relationships
       And I should not see element ".relationship"
 
 
+  @javascript
   Scenario Outline: cross_collection_actions (mark entity)
     And the user "<username>" with credential "<credential>"
     And I am logged in as "<username>"
     And the triple "Werk/Werke" "Frankfurter Dom" "Standort in/Standort von" "Ort/Orte" "Kreuzberg"
-    When I send the mark request for entity "<entity>"
+    When I mark "<entity>" as current entity
     Then I should have access: <access>
     
     Examples:
@@ -64,11 +65,12 @@ Feature: Cross collection relationships
       | Fadmin   | Admin Frankfurt | Neukölln        | yes    |
       
 
+  @javascript
   Scenario Outline: cross_collection_actions (mark entity as current)
     And the user "<username>" with credential "<credential>"
     And I am logged in as "<username>"
     And the triple "Werk/Werke" "Frankfurter Dom" "Standort in/Standort von" "Ort/Orte" "Kreuzberg"
-    When I send the mark as current request for entity "<entity>"
+    When I mark "<entity>" as current entity
     Then I should have access: <access>
     
     Examples:

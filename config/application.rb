@@ -98,3 +98,4 @@ end
 # TODO: when replacing sprockets, simulate checksum behaviour to provoke correct cache expiries
 # TODO: use json.extract! whenever possible
 # TODO: replace extended json views with customized json views
+# TODO: change denied redirect to denied action rendering

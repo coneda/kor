@@ -41,12 +41,11 @@ Feature: Kinds
     Then I should not see "Kind girl" within "table.canvas"
     
 
-  Scenario: do not allow to destroy the medium kind
+  @javascript
+  Scenario: do not show the delete link for the medium kind
     Given I am logged in as "admin"
     When I go to the kinds page
     Then I should not see "img[data-name=x]" within "table.kor_table"
-    When I send the delete request for "kind" "Medium"
-    Then I should be on the denied page
 
 
   Scenario: Do not allow to rename the medium kind

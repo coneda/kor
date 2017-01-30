@@ -68,11 +68,9 @@ class ApplicationController < BaseController
           end
         end
       elsif session_expired?
+        session[:user_id] = nil
+        
         respond_to do |format|
-          # TODO: this is working but strictly speaking not correct behavior:
-          # no session data should persist through an expired session
-          session[:user_id] = nil
-
           format.html do
             history_store unless request.path.match(/^\/blaze/)
             flash[:notice] = I18n.t('notices.session_expired')
@@ -93,7 +91,8 @@ class ApplicationController < BaseController
         respond_to do |format|
           format.html do
             flash[:error] = I18n.t('notices.access_denied')
-            redirect_to denied_path(:return_to => request.url)
+            render template: 'authentication/denied', status: 403
+            # redirect_to denied_path(:return_to => request.url)
           end
           format.json do
             render json: {message: I18n.t('notices.access_denied')}, status: 403

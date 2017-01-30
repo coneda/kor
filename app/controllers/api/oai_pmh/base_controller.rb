@@ -59,6 +59,7 @@ class Api::OaiPmh::BaseController < BaseController
 
   protected
 
+
     def ensure_metadata_prefix
       available = ["kor", "oai_dc"]
       unless available.include?(params[:metadataPrefix])
@@ -114,14 +115,19 @@ class Api::OaiPmh::BaseController < BaseController
       }
     end
 
-    def dump_query(params)
-      token = Digest::SHA2.hexdigest("resumptionToken #{Time.now} #{rand}")
-      base_dir = "#{Rails.root}/tmp/resumption_tokens"
-      system "mkdir -p #{base_dir}"
+    def base_dir
+      "#{Rails.root}/tmp/resumption_tokens"
+    end
 
-      # TODO catch the case where no files are found. Currently this writes to
-      # stderr: find: missing argument to `-exec'
-      system "find #{base_dir} -mtime +1 -exec rm {} \\;"
+    def dump_query(params)
+      system "mkdir -p #{base_dir}"
+      token = Digest::SHA2.hexdigest("resumptionToken #{Time.now} #{rand}")
+
+      Dir["#{base_dir}/*.json"].each do |f|
+        if File.stat(f).mtime < 1.day.ago
+          File.delete(f)
+        end
+      end
 
       File.open "#{base_dir}/#{token}.json", "w+" do |f|
         f.write JSON.dump(
@@ -135,7 +141,6 @@ class Api::OaiPmh::BaseController < BaseController
     end
 
     def load_query(token)
-      base_dir = "#{Rails.root}/tmp/resumption_tokens"
       file = "#{base_dir}/#{token}.json"
 
       if File.exists?(file)

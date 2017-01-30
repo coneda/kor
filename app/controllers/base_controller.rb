@@ -1,6 +1,10 @@
 class BaseController < ActionController::Base
-  # TODO: reactivate once its clear where it should be active
-  # protect_from_forgery with: :exception
+
+  if Rails.env.production?
+    protect_from_forgery with: :null_session
+  else
+    protect_from_forgery with: :exception
+  end
 
   helper_method :current_user
 

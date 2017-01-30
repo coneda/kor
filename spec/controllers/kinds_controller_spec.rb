@@ -76,6 +76,13 @@ RSpec.describe KindsController, type: :controller do
       patch :destroy, api_key: admin.api_key, id: works.id
       expect(response.status).to eq(200)
     end
+
+    it 'should deny deleting the medium kind' do
+      media = FactoryGirl.create :media
+
+      delete :destroy, id: media.id
+      expect(response.status).to eq(403)
+    end
   end
 
 end
