@@ -74,13 +74,13 @@ describe Kor::Auth do
     
     def set_side_collection_policies(policies = {})
       policies.each do |p, c|
-        side_collection.grant p, :to => c
+        Kor::Auth.grant side_collection, p, :to => c
       end
     end
     
     def set_main_collection_policies(policies = {})
       policies.each do |p, c|
-        @main.grant p, :to => c
+        Kor::Auth.grant @main, p, :to => c
       end
     end
     

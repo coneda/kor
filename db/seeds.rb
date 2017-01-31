@@ -7,7 +7,7 @@ Kor.ensure_guest_account!
 
 default = Collection.create! :name => "Default"
 
-default.policies.each do |policy|
+Kor::Auth.policies.each do |policy|
   Grant.create! :collection => default, :policy => policy, :credential => administrators
 end
 

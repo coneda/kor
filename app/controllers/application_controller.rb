@@ -90,15 +90,22 @@ class ApplicationController < BaseController
       unless generally_authorized?
         respond_to do |format|
           format.html do
-            flash[:error] = I18n.t('notices.access_denied')
-            render template: 'authentication/denied', status: 403
-            # redirect_to denied_path(:return_to => request.url)
+            render_denied_page
           end
           format.json do
-            render json: {message: I18n.t('notices.access_denied')}, status: 403
+            render_denied_json
           end
         end
       end
+    end
+
+    def render_denied_page
+      flash[:error] = I18n.t('notices.access_denied')
+      render template: 'authentication/denied', status: 403
+    end
+
+    def render_denied_json
+      render json: {message: I18n.t('notices.access_denied')}, status: 403
     end
 
     def session_expired?

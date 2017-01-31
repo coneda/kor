@@ -196,11 +196,6 @@ When /^I send a "([^\"]*)" request to "([^\"]*)" with params "([^\"]*)"$/ do |me
   end
 end
 
-Then /^I should get access "([^\"]*)"$/ do |access|
-  step "I should not be on the denied page" if access == 'yes'
-  step "I should be on the denied page"   if access == 'no'
-end
-
 When /^I ignore the next confirmation box$/ do
   page.evaluate_script('window.confirm = function() { return true; }')
 end

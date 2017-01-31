@@ -69,7 +69,7 @@ class UsersController < ApplicationController
   
   def edit_self
     if current_user.guest?
-      redirect_to denied_path
+      render_denied_page
     else
       @user = User.find(current_user.id)
     end

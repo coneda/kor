@@ -18,7 +18,7 @@ RSpec.describe UsersController, :type => :controller do
   
     patch :update_self, :user => {:home_page => '/entities/gallery'}
     
-    expect(response).not_to redirect_to(denied_path)
+    expect(response.status).not_to eq(403)
   end
   
   it "should only grant access to the user admin to authorized users" do

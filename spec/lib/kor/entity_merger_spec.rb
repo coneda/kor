@@ -80,7 +80,7 @@ describe Kor::EntityMerger do
     admins = FactoryGirl.create :admins
     admin = FactoryGirl.create :admin, groups: [admins]
     default = FactoryGirl.create :default
-    default.grant :view, to: [admins]
+    Kor::Auth.grant default, :view, to: [admins]
     FactoryGirl.create :media
     mona_lisa = FactoryGirl.create :mona_lisa, :name => 'Mona Lysa'
     other_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Liza"
@@ -122,7 +122,7 @@ describe Kor::EntityMerger do
     admins = FactoryGirl.create :admins
     admin = FactoryGirl.create :admin, groups: [admins]
     default = FactoryGirl.create :default
-    default.grant :view, to: [admins]
+    Kor::Auth.grant default, :view, to: [admins]
     FactoryGirl.create :media
     conflicting_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Lisa"
     mona_lisa = FactoryGirl.create :mona_lisa, :name => 'Mona Lysa'

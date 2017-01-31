@@ -193,7 +193,7 @@ class ToolsController < ApplicationController
         flash[:notice] = I18n.t('messages.entities_moved_to_collection', :o => collection.name)
         redirect_to clipboard_path
       else
-        redirect_to denied_path
+        render_denied_page
       end
     end
   
@@ -214,7 +214,7 @@ class ToolsController < ApplicationController
           redirect_to back_save
         end
       else
-        redirect_to denied_path
+        render_denied_page
       end
     end
 
@@ -230,7 +230,7 @@ class ToolsController < ApplicationController
           redirect_to back_save
         end
       else
-        redirect_to denied_path
+        render_denied_page
       end
     end
 
@@ -268,7 +268,7 @@ class ToolsController < ApplicationController
       
       if @entities.blank?
         flash[:error] = I18n.t("errors.merge_access_denied_on_entities")
-        redirect_to denied_path
+        render_denied_page
       elsif @entities.collect{|e| e.kind.id}.uniq.size != 1
         flash[:error] = I18n.t("errors.only_same_kind")
         redirect_to :controller => 'tools', :action => 'clipboard', :entity_ids => params[:entity_ids]
@@ -330,7 +330,7 @@ class ToolsController < ApplicationController
           redirect_to :action => 'clipboard'
         end
       else
-        redirect_to denied_path
+        render_denied_page
       end
     end
 

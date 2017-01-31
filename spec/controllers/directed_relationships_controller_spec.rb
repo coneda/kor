@@ -34,8 +34,8 @@ describe DirectedRelationshipsController, type: :controller do
     admins = FactoryGirl.create :admins
     admin = FactoryGirl.create :admin, :groups => [admins]
     jdoe = FactoryGirl.create :jdoe, :groups => [students]
-    default.grant :view, :to => [admins, students]
-    side.grant :view, :to => [admins]
+    Kor::Auth.grant default, :view, :to => [admins, students]
+    Kor::Auth.grant side, :view, :to => [admins]
 
     get :index
     expect(response.status).to eq(401)

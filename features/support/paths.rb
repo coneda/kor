@@ -53,7 +53,6 @@ module NavigationHelpers
     when /the clipboard/ then '/tools/clipboard'
     when /the new "([^\"]*)-Entity" page/
       new_entity_path(:kind_id => Kind.find_by_name($1).id)
-    when /the denied page/ then denied_path
     when /the login page/ then login_path
     when /the new user group page/ then new_user_group_path
     when /the user group "([^\"]*)"/ then user_group_path(UserGroup.find_by_name($1))

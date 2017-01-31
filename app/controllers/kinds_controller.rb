@@ -85,7 +85,7 @@ class KindsController < ApplicationController
           @kind.destroy
           redirect_to(kinds_url)
         else
-          redirect_to denied_path
+          render_denied_page
         end
       end
       format.json do

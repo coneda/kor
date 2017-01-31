@@ -21,24 +21,24 @@ describe Grant do
   end
 
   it "should add a single grant" do
-    expect {@priv.grant :edit, to: @students}.to change{Grant.count}.by(1)
+    expect {Kor::Auth.grant @priv, :edit, to: @students}.to change{Grant.count}.by(1)
     expect(@jdoe.allowed_to?([:view, :edit], @priv, require: :all)).to be_truthy
   end
 
   it "should add several grants" do
     policies = [:edit, :create, :delete]
-    expect {@priv.grant policies, to: @students}.to change{Grant.count}.by(3)
+    expect {Kor::Auth.grant @priv, policies, to: @students}.to change{Grant.count}.by(3)
     expect(@jdoe.allowed_to?(policies, @priv, require: :all)).to be_truthy
   end
 
   it "should revoke a single grant" do
-    expect {@default.revoke :tagging, from: @admins}.to change{Grant.count}.by(-1)
+    expect {Kor::Auth.revoke @default, :tagging, from: @admins}.to change{Grant.count}.by(-1)
     expect(@admin.allowed_to?(:tagging, @default)).to be_falsey
   end
 
   it "should revoke several grants" do
     policies = [:tagging, :view_meta, :delete]
-    expect {@default.revoke policies, from: @admins}.to change{Grant.count}.by(-3)
+    expect {Kor::Auth.revoke @default, policies, from: @admins}.to change{Grant.count}.by(-3)
     expect(@admin.allowed_to?(policies, @default)).to be_falsey
   end
 

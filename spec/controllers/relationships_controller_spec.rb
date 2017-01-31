@@ -23,15 +23,15 @@ RSpec.describe RelationshipsController, :type => :controller do
   
   def set_side_collection_policies(policies = {})
     policies.each do |p, c|
-      side_collection.revoke :all, from: c
-      side_collection.grant(p, :to => c)
+      Kor::Auth.grant side_collection, :all, from: c
+      Kor::Auth.grant side_collection, p, :to => c
     end
   end
   
   def set_main_collection_policies(policies = {})
     policies.each do |p, c|
-      @main.revoke :all, from: c
-      @main.grant p, :to => c
+      Kor::Auth.revoke @main, :all, from: c
+      Kor::Auth.grant @main, p, :to => c
     end
   end
 
@@ -155,8 +155,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
   it "should create a relationship by relation name" do
     default_setup
-    @default.grant :edit, to: [@admins]
-    @priv.grant :edit, to: [@admins]
+    Kor::Auth.grant @default, :edit, to: [@admins]
+    Kor::Auth.grant @priv, :edit, to: [@admins]
 
     post(:create, 
       api_key: @admin.api_key,
@@ -178,8 +178,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
   it "should create a relationship by reverse relation name" do
     default_setup
-    @default.grant :edit, to: [@admins]
-    @priv.grant :edit, to: [@admins]
+    Kor::Auth.grant @default, :edit, to: [@admins]
+    Kor::Auth.grant @priv, :edit, to: [@admins]
 
     post(:create, 
       api_key: @admin.api_key,
@@ -201,8 +201,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
   it "should update a relationship" do
     default_setup
-    @default.grant :edit, to: [@admins]
-    @priv.grant :edit, to: [@admins]
+    Kor::Auth.grant @default, :edit, to: [@admins]
+    Kor::Auth.grant @priv, :edit, to: [@admins]
     relationship = Relationship.relate_and_save(
       @leonardo, 'has created', @mona_lisa
     )
@@ -227,8 +227,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
   it "should destroy a relationship" do
     default_setup
-    @default.grant :edit, to: [@admins]
-    @priv.grant :edit, to: [@admins]
+    Kor::Auth.grant @default, :edit, to: [@admins]
+    Kor::Auth.grant @priv, :edit, to: [@admins]
     relationship = Relationship.relate_and_save(
       @leonardo, 'has created', @mona_lisa
     )

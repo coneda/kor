@@ -123,20 +123,6 @@ class AuthenticationController < ApplicationController
     end
   end
   
-  def denied
-    respond_to do |format|
-      format.html do
-        if !current_user
-          redirect_to :controller => 'authentication', :action => 'form'
-        else
-          render :layout => 'normal_small'
-        end
-      end
-      format.json do
-        render :json => {:message => I18n.t('notices.access_denied')}, :status => 403
-      end
-    end
-  end
 
   private
 

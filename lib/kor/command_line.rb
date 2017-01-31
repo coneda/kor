@@ -259,14 +259,14 @@ class Kor::CommandLine
 
   def list_permissions
     puts "Entities: "
-    data = [['entity (id)', 'collection (id)'] + Collection.policies]
+    data = [['entity (id)', 'collection (id)'] + Kor::Auth.policies]
     Entity.by_id(@config[:entity_id]).find_each do |entity|
       record = [
         "#{entity.name} (#{entity.id})",
         "#{entity.collection.name} (#{entity.collection.id})"
       ]
 
-      Collection.policies.each do |policy|
+      Kor::Auth.policies.each do |policy|
         record << Kor::Auth.
           authorized_credentials(entity.collection, policy).
           map{|c| c.name}.

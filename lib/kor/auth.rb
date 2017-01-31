@@ -162,7 +162,7 @@ module Kor::Auth
   def self.allowed_to?(user, policy = :view, collections = nil, options = {})
     collections ||= Collection.all.to_a
     user ||= User.guest
-    policy = Collection.policies if policy == :all
+    policy = self.policies if policy == :all
     
     options.reverse_merge!(:required => :all)
     collections = if collections.is_a?(Collection)
@@ -183,6 +183,55 @@ module Kor::Auth
     else
       result.keys.size > 0
     end
+  end
+
+  def self.grant(collection, policies, options = {})
+    policies = case policies
+      when :all then self.policies
+      when Symbol then [policies]
+      when String then [policies]
+      else
+        policies
+    end
+
+    options[:to] = case options[:to]
+      when nil then []
+      when Credential then [options[:to]]
+      else
+        options[:to]
+    end
+  
+    policies.each do |policy|
+      options[:to].each do |credential|
+        collection.grants << Grant.new(policy: policy, credential: credential)
+      end
+    end
+  end
+
+  def self.revoke(collection, policies, options = {})
+    policies = case policies
+      when :all then self.policies
+      when Symbol then [policies]
+      when String then [policies]
+      else
+        policies
+    end
+
+    options[:from] = case options[:from]
+      when nil then []
+      when Credential then [options[:from]]
+      else
+        options[:from]
+    end
+
+    collection.grants.
+      with_policy(policies).
+      with_credential(options[:from]).
+      destroy_all
+  end
+
+  def self.policies
+    ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
   end
 
 end

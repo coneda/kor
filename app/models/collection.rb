@@ -57,53 +57,6 @@ class Collection < ActiveRecord::Base
     name
   end
 
-  # TODO: move all auth stuff to Kor::Auth
-  
-  def grant(policies, options = {})
-    policies = case policies
-      when :all then self.policies
-      when Symbol then [policies]
-      when String then [policies]
-      else
-        policies
-    end
-
-    options[:to] = case options[:to]
-      when nil then []
-      when Credential then [options[:to]]
-      else
-        options[:to]
-    end
-  
-    policies.each do |policy|
-      options[:to].each do |credential|
-        self.grants << Grant.new(policy: policy, credential: credential)
-      end
-    end
-  end
-
-  def revoke(policies, options = {})
-    policies = case policies
-      when :all then self.policies
-      when Symbol then [policies]
-      when String then [policies]
-      else
-        policies
-    end
-
-    options[:from] = case options[:from]
-      when nil then []
-      when Credential then [options[:from]]
-      else
-        options[:from]
-    end
-
-    self.grants.
-      with_policy(policies).
-      with_credential(options[:from]).
-      destroy_all
-  end
-  
   def grants_by_policy
     grants.group_by do |grant|
       grant.policy
@@ -113,7 +66,7 @@ class Collection < ActiveRecord::Base
   def grants_by_policy=(value)
     @grants_by_policy_buffer = value
   
-    policies.each do |policy|
+    Kor::Auth.policies.each do |policy|
       if grants_by_policy[policy]
         grants_by_policy[policy].each do |old_grant|
           new_credentials = value[policy] || []
@@ -131,17 +84,5 @@ class Collection < ActiveRecord::Base
       end
     end
   end
-  
-  def policies
-    self.class.policies
-  end
-  
-  def self.policies
-    ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
-  end
-  
-  def authorized_user_groups(policies)
-    grants.with_policy(policies).map{|g| g.credential}
-  end
-  
+
 end

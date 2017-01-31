@@ -37,7 +37,7 @@ class EntitiesController < ApplicationController
       @group = SystemGroup.find_or_create_by(:name => 'invalid')
       @entities = @group.entities.allowed(current_user, :delete).paginate :page => params[:page], :per_page => 30
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
   
@@ -48,7 +48,7 @@ class EntitiesController < ApplicationController
         per_page: 30
       )
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
 
@@ -186,7 +186,7 @@ class EntitiesController < ApplicationController
       @entity.no_name_statement = 'enter_name'
       @entity.medium = Medium.new if @entity.kind_id == Kind.medium_kind.id
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
   
@@ -196,11 +196,11 @@ class EntitiesController < ApplicationController
 
   def edit
     @entity = Entity.find(params[:id])
-    
+
     if authorized? :edit, @entity.collection
       render :action => 'edit'  
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
 
@@ -252,7 +252,7 @@ class EntitiesController < ApplicationController
         end
       end
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
 
@@ -264,9 +264,10 @@ class EntitiesController < ApplicationController
     authorized_to_move = if @entity.collection_id == params[:entity][:collection_id].to_i
       true
     else
-      authorized?(:delete, @entity.collection) && authorized?(:create, Collection.find(params[:entity][:collection_id]))
+      authorized?(:delete, @entity.collection) && 
+      authorized?(:create, Collection.find(params[:entity][:collection_id]))
     end
-    
+
     if authorized_to_edit && authorized_to_move
       @entity.updater_id = current_user.id
 
@@ -278,11 +279,11 @@ class EntitiesController < ApplicationController
         render action: "edit"
       end
     else
-      redirect_to denied_path
+      render_denied_page
     end
   rescue ActiveRecord::StaleObjectError
     flash[:error] = I18n.t('activerecord.errors.messages.stale_entity_update')
-    redirect_to action: 'edit'
+    render action: 'edit'
   end
 
   def destroy
@@ -291,7 +292,7 @@ class EntitiesController < ApplicationController
       @entity.destroy
       redirect_to back_save
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
 

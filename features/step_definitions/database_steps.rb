@@ -109,7 +109,7 @@ Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" (?:through|v
   user.groups << credential unless user.groups.include? credential
   
   policy.split("/").each do |p|
-    collection.grant p, :to => credential
+    Kor::Auth.grant collection, p, :to => credential
   end
 end
 
@@ -121,7 +121,7 @@ Given(/^"([^"]*)" are allowed to "([^"]*)" collection "([^"]*)"$/) do |credentia
   credential = Credential.find_by_name(credential)
 
   policy.split("/").each do |p|
-    collection.grant p, :to => credential
+    Kor::Auth.grant collection, p, :to => credential
   end
 end
 
