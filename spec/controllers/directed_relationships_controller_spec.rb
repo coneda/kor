@@ -78,7 +78,7 @@ describe DirectedRelationshipsController, type: :controller do
     expect(JSON.parse(response.body)['records'].size).to eq(1)
   end
 
-  it "should response with a single directed relationship" do
+  it "should respond with a single directed relationship" do
     default_setup relationships: true
 
     directed_relationship = Relationship.first.normal

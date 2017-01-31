@@ -5,6 +5,12 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+## Version ???
+
+### User
+
+* when access is denied there is no more redirect, which makes the page linkable
+
 ## Version 2.0.1
 
 ### User

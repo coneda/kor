@@ -78,6 +78,7 @@ class Entity < ActiveRecord::Base
     end
   end
   
+  # TODO: still needed?
   def simple_errors
     result = []
     errors.each do |a, m|
@@ -422,12 +423,10 @@ class Entity < ActiveRecord::Base
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
   scope :alphabetically, lambda { order("name asc, distinct_name asc") }
   scope :newest_first, lambda { order("created_at DESC") }
-  # TODO the scopes are not combinable e.g. id-conditions overwrite each other
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
   scope :media, lambda { only_kinds(Kind.medium_kind.id) }
-  scope :searcheable, lambda { without_media }
   scope :without_media, lambda { 
     if media = Kind.medium_kind
       where("entities.kind_id != ?", media.id)
@@ -435,13 +434,8 @@ class Entity < ActiveRecord::Base
       all
     end
   }
+  # TODO the scopes are not combinable e.g. id-conditions overwrite each other
   # TODO: rewrite this not to collect singular entity ids
-  scope :valid, lambda { |valid|
-    ids = Tag.invalid_tag.entities.collect{|e| e.id}
-    valid ?
-      where('id NOT IN (?)', ids) :
-      where(:id => ids)
-  }
   scope :named_like, lambda { |user, pattern|
     if pattern.blank?
       all
@@ -470,7 +464,6 @@ class Entity < ActiveRecord::Base
       where("entities.id IN (?)", ids.uniq)
     end
   }
-  # TODO: rewrite this to use directed relationships
   scope :related_to, lambda { |user, spec|
     entity_ids = nil
     spec ||= []
@@ -478,30 +471,33 @@ class Entity < ActiveRecord::Base
     relation_names = spec.map{|s| s["relation_name"]}.select{|e| e.present?}
     entity_names = spec.map{|s| s["entity_name"]}.select{|e| e.present?}
 
-    if !relation_names.empty? && !entity_names.empty?
-      conds = []
-      vars = []
-      entity_names.select{|en| en.present?}.each do |n|
-        conds << "tos.name LIKE ? OR froms.name LIKE ?"
-        vars += ["%#{n}%", "%#{n}%"]
-      end
+    scope = all
+    if relation_names.present?
+      scope = scope.joins(:outgoing).where(
+        'directed_relationships.relation_name' => relation_names
+      )
+    end
+    if entity_names.present?
+      query = entity_names.map{|n| 'outgoings_entities.name LIKE ?'}
+      query = "(#{query.join ') OR ('})"
+      names = entity_names.map{|n| "%#{n}%" }
+      scope = scope.joins(:outgoing).where(query, names)
+    end
 
-      result = select("distinct entities.id AS joinid, entities.*").
-      joins("LEFT JOIN relationships rf ON rf.from_id = entities.id").
-      joins("LEFT JOIN relations relf ON relf.id = rf.relation_id").
-      joins("LEFT JOIN entities tos ON tos.id = rf.to_id").
-      joins("LEFT JOIN relationships rr ON rr.to_id = entities.id").
-      joins("LEFT JOIN relations relr ON relr.id = rr.relation_id").
-      joins("LEFT JOIN entities froms ON froms.id = rr.from_id").
-      where("relf.name IN (?) OR relr.reverse_name IN (?)", relation_names, relation_names).
-      where(conds.join(' OR '), *vars)
+    scope
+  }
+  scope :dated_in, lambda {|dating|
+    if dating.present?
+      if parsed = EntityDating.parse(dating)
+        joins(:datings).
+        where("entity_datings.to_day > ?", EntityDating.julian_date_for(parsed[:from])).
+        where("entity_datings.from_day < ?", EntityDating.julian_date_for(parsed[:to]))
+      else
+        none
+      end
     else
       all
     end
-  }
-  # TODO: rewrite this to use joins
-  scope :dated_in, lambda {|dating|
-    dating.blank? ? all : where("entities.id IN (?)", EntityDating.between(dating).collect{|ed| ed.entity_id }.uniq)
   }
   scope :dataset_attributes, lambda { |user, dataset|
     dataset ||= {}

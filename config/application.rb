@@ -99,3 +99,4 @@ end
 # TODO: use json.extract! whenever possible
 # TODO: replace extended json views with customized json views
 # TODO: change denied redirect to denied action rendering
+# TODO: use http://errbit.com/ instead of custom exception logger

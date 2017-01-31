@@ -5,12 +5,12 @@ class Kor::Import::Excel < Kor::Export::Excel
   def initialize(source_dir, options = {})
     @source_dir = source_dir
     @options = options.reverse_merge(
-      :ignore_stale => false,
-      :username => "admin",
-      :obey_permissions => false,
-      :simulate => false,
-      :verbose => true,
-      :ignore_validations => false
+      ignore_stale: false,
+      username: "admin",
+      obey_permissions: false,
+      simulate: false,
+      verbose: true,
+      ignore_validations: false
     )
     @options[:verbose] = true if @options[:simulate]
     @user = User.find_by_name!(@options[:username])
@@ -63,18 +63,18 @@ class Kor::Import::Excel < Kor::Export::Excel
             )
 
             entity.assign_attributes(
-              :name => row[3],
-              :distinct_name => row[4],
-              :no_name_statement => row[5],
-              :collection_id => row[6],
-              :subtype => row[12],
-              :comment => row[14],
-              :datings => datings,
-              :synonyms => synonyms,
-              :dataset => dataset,
-              :properties => properties,
-              :updater => @user,
-              :kind_id => row[8]
+              name: row[3],
+              distinct_name: row[4],
+              no_name_statement: row[5],
+              collection_id: row[6],
+              subtype: row[12],
+              comment: row[14],
+              datings: datings,
+              synonyms: synonyms,
+              dataset: dataset,
+              properties: properties,
+              updater: @user,
+              kind_id: row[8]
             )
 
             unless @options[:ignore_stale]

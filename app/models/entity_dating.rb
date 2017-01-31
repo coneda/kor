@@ -15,15 +15,11 @@ class EntityDating < ActiveRecord::Base
   # ----------------------------------------------------------------- scopes ---
   scope :after, lambda { |dating|
     parsed = parse(dating)
-    parsed ?
-      where("to_day > ?", julian_date_for(parsed[:from])) : 
-      where("1 = 2")
+    parsed ? where("to_day > ?", julian_date_for(parsed[:from])) : none
   }
   scope :before, lambda { |dating|
     parsed = parse(dating)
-    parsed ?
-      where("from_day < ?", julian_date_for(parsed[:to])) :
-      where("1 = 2")
+    parsed ? where("from_day < ?", julian_date_for(parsed[:to])) : none
   }
   def self.between(dating)
     after(dating).before(dating)  

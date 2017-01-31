@@ -43,7 +43,7 @@ class EntitiesController < ApplicationController
   
   def recent
     if authorized? :edit
-      @entities = editable_entities.latest(1.week).searcheable.newest_first.within_collections(params[:collection_id]).paginate(
+      @entities = editable_entities.latest(1.week).without_media.newest_first.within_collections(params[:collection_id]).paginate(
         page: params[:page],
         per_page: 30
       )

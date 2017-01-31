@@ -61,6 +61,10 @@ FactoryGirl.define do
       document File.open("#{Rails.root}/spec/fixtures/image_c.jpg")
     end
 
+    factory :medium_image_exif do
+      document File.open("#{Rails.root}/spec/fixtures/image_exif.tiff")
+    end
+
     factory :medium_video_a do
       document File.open("#{Rails.root}/spec/fixtures/video_a.m4v")
     end
@@ -198,6 +202,10 @@ FactoryGirl.define do
 
       factory :picture_c do
         medium { FactoryGirl.build :medium_image_c }
+      end
+
+      factory :picture_exif do
+        medium { FactoryGirl.build :medium_image_exif }
       end
 
       factory :video_a do

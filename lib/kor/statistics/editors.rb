@@ -1,7 +1,7 @@
-class Kor::Statistics::Users < Kor::Statistics::Simple
+class Kor::Statistics::Editors < Kor::Statistics::Simple
   
   def items
-    User.scoped
+    User.all
   end
   
   def create_counts
@@ -49,10 +49,11 @@ class Kor::Statistics::Users < Kor::Statistics::Simple
   end
   
   def report
-    puts "counted entities for #{total} users"
-    puts Hirb::Helpers::AutoTable.render(ordered_statistics,
+    result = "counted entities for #{total} users\n"
+    result << Hirb::Helpers::AutoTable.render(ordered_statistics,
       :fields => [:name, :days, :created, :updated, :created_per_day, :updated_per_day]
     )
+    result
   end
   
 end

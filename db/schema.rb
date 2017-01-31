@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160926101319) do
+ActiveRecord::Schema.define(version: 20170131122409) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -77,10 +77,10 @@ ActiveRecord::Schema.define(version: 20160926101319) do
   add_index "credentials_users", ["user_id"], name: "index_credentials_users_on_user_id", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
-    t.integer  "priority",   limit: 4,     default: 0
-    t.integer  "attempts",   limit: 4,     default: 0
-    t.text     "handler",    limit: 65535
-    t.text     "last_error", limit: 65535
+    t.integer  "priority",   limit: 4,        default: 0
+    t.integer  "attempts",   limit: 4,        default: 0
+    t.text     "handler",    limit: 16777215
+    t.text     "last_error", limit: 16777215
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
