@@ -2,6 +2,8 @@ class Relation < ActiveRecord::Base
   serialize :from_kind_ids
   serialize :to_kind_ids
 
+  acts_as_paranoid
+
   has_many :relationships, :dependent => :destroy
   
   validates :reverse_name,

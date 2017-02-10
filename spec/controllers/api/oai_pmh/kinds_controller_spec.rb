@@ -25,6 +25,9 @@ describe Api::OaiPmh::KindsController, :type => :controller do
     post :identify, :format => :xml
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
+
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:deletedRecord").first.text).to eq('persistent')
   end
 
   it "should respond to 'ListMetadataFormats'" do
@@ -137,7 +140,7 @@ describe Api::OaiPmh::KindsController, :type => :controller do
   end
 
   it "should return 'noRecordsMatch' if the criteria do not yield any records" do
-    Kind.destroy_all
+    Kind.all.each{|r| r.really_destroy!}
     admin = User.admin
 
     get :list_identifiers, format: :xml
@@ -149,6 +152,40 @@ describe Api::OaiPmh::KindsController, :type => :controller do
       metadataPrefix: 'kor'
     )
     verify_oaipmh_error 'noRecordsMatch'
+  end
+
+  it 'should include deleted records' do
+    admin = User.admin
+    people = Kind.find_by(name: 'person')
+    people.destroy
+
+    get(:list_records,
+      format: :xml, 
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
+    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(2)
+    expect(doc.xpath("//xmlns:metadata").count).to eq(2)
+
+    get(:list_identifiers,
+      format: :xml, 
+      api_key: admin.api_key
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
+    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(2)
+    expect(doc.xpath("//xmlns:metadata").count).to eq(0)
+
+    get(:get_record,
+      format: :xml,
+      identifier: people.uuid,
+      metadataPrefix: 'kor'
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
+    expect(doc.xpath("//xmlns:metadata").count).to eq(0)
   end
 
 end

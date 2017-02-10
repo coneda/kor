@@ -176,6 +176,8 @@ GEM
       cocaine (~> 0.5.5)
       mime-types
       mimemagic (= 0.3.0)
+    paranoia (2.2.0)
+      activerecord (>= 4.0, < 5.1)
     parser (2.3.0.7)
       ast (~> 2.2)
     parslet (1.7.1)
@@ -357,6 +359,7 @@ DEPENDENCIES
   method_profiler
   mysql2
   paperclip
+  paranoia (~> 2.2)
   parslet
   plupload-rails
   poltergeist
@@ -385,4 +388,4 @@ DEPENDENCIES
   will_paginate (~> 3.0.3)
 
 BUNDLED WITH
-   1.13.6
+   1.13.7

@@ -1,9 +1,16 @@
 <ListIdentifiers>
   <% @records[:items].each do |item| %>
-    <header>
-      <identifier><%= item.uuid %></identifier>
-      <datestamp><%= timestamp item.updated_at %></datestamp>
-    </header>
+    <% if item.deleted? %>
+      <header status="deleted">
+        <identifier><%= item.uuid %></identifier>
+        <datestamp><%= timestamp item.deleted_at %></datestamp>
+      </header>
+    <% else %>
+      <header>
+        <identifier><%= item.uuid %></identifier>
+        <datestamp><%= timestamp item.updated_at %></datestamp>
+      </header>
+    <% end %>
   <% end %>
 
   <% if @records[:token] %>

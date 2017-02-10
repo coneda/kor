@@ -5,6 +5,7 @@ class Entity < ActiveRecord::Base
   serialize :attachment, JSON
   
   acts_as_taggable_on :tags
+  acts_as_paranoid
 
   # Associations
 
@@ -51,7 +52,7 @@ class Entity < ActiveRecord::Base
     :validate_distinct_name_needed, :validate_dataset, :validate_properties,
     :attached_file
   )
- 
+
   def attached_file
     if is_medium?
       if medium
@@ -157,8 +158,7 @@ class Entity < ActiveRecord::Base
   
   before_validation :generate_uuid, :sanitize_distinct_name
   before_save :generate_uuid, :add_to_user_group
-  after_commit :update_elastic
-  after_save :update_identifiers
+  after_commit :update_elastic, :update_identifiers
   
   def sanitize_distinct_name
     self.distinct_name = nil if self.distinct_name == ""
@@ -170,7 +170,7 @@ class Entity < ActiveRecord::Base
   
   def update_elastic
     unless is_medium?
-      if destroyed?
+      if deleted?
         Kor::Elastic.drop self
       else
         Kor::Elastic.index self, :full => true
@@ -179,7 +179,7 @@ class Entity < ActiveRecord::Base
   end
 
   def update_identifiers
-    if self.destroyed?
+    if self.deleted?
       self.identifiers.destroy_all
     else
       kind.fields.identifiers.each do |field|

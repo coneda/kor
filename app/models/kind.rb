@@ -4,6 +4,8 @@ class Kind < ActiveRecord::Base
 
   serialize :settings
   
+  acts_as_paranoid
+  
   has_many :entities, :dependent => :destroy
   has_many :fields, :dependent => :destroy
   has_many :generators, :dependent => :destroy

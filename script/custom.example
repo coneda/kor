@@ -14,13 +14,14 @@ require "#{KOR_ROOT}/config/environment" unless defined?(Rails)
 
 # we are wrapping the code to catch validation errors
 begin
-  # destroy all users, groups, entities, kinds, relations and collections
-  Entity.destroy_all
-  User.without_predefined.destroy_all # all but the admin and the guest
+  # destroy all users, credentials and collections but the admin and the guest
+  User.without_predefined.destroy_all
   Credential.destroy_all
-  Kind.without_media.destroy_all # all but the Medium kind
-  Relation.destroy_all
   Collection.destroy_all
+
+  # destroy all kinds, entities, relations and relationships except the Medium kind
+  Kind.without_media.each{|r| r.really_destroy!}
+  Relation.all.each{|r| r.really_destroy!}
 
   # create a user and fetch the admin user
   jdoe = User.create!(:name => "jdoe", :password => "secret", :email => "jdoe@example.com")

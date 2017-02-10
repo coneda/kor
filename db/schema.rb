@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160926101319) do
+ActiveRecord::Schema.define(version: 20170207140235) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -135,11 +135,13 @@ ActiveRecord::Schema.define(version: 20160926101319) do
     t.string   "subtype",           limit: 255
     t.integer  "medium_id",         limit: 4
     t.text     "attachment",        limit: 65535
+    t.datetime "deleted_at"
   end
 
   add_index "entities", ["collection_id", "kind_id"], name: "collections_kinds", using: :btree
   add_index "entities", ["created_at"], name: "index_entities_on_created_at", using: :btree
   add_index "entities", ["creator_id"], name: "index_entities_on_user_id", using: :btree
+  add_index "entities", ["deleted_at"], name: "index_entities_on_deleted_at", using: :btree
   add_index "entities", ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
   add_index "entities", ["name"], name: "index_entities_on_name", using: :btree
   add_index "entities", ["uuid"], name: "index_entities_on_uuid", using: :btree
@@ -229,7 +231,10 @@ ActiveRecord::Schema.define(version: 20160926101319) do
     t.datetime "updated_at"
     t.integer  "lock_version", limit: 4,     default: 0
     t.string   "plural_name",  limit: 255
+    t.datetime "deleted_at"
   end
+
+  add_index "kinds", ["deleted_at"], name: "index_kinds_on_deleted_at", using: :btree
 
   create_table "media", force: :cascade do |t|
     t.integer "lock_version",          limit: 4
@@ -269,8 +274,10 @@ ActiveRecord::Schema.define(version: 20160926101319) do
     t.text     "from_kind_ids", limit: 65535
     t.text     "to_kind_ids",   limit: 65535
     t.text     "description",   limit: 65535
+    t.datetime "deleted_at"
   end
 
+  add_index "relations", ["deleted_at"], name: "index_relations_on_deleted_at", using: :btree
   add_index "relations", ["name"], name: "index_relations_on_name", using: :btree
   add_index "relations", ["reverse_name"], name: "index_relations_on_reverse_name", using: :btree
 
@@ -286,8 +293,10 @@ ActiveRecord::Schema.define(version: 20160926101319) do
     t.integer  "lock_version", limit: 4,     default: 0
     t.integer  "normal_id",    limit: 4
     t.integer  "reversal_id",  limit: 4
+    t.datetime "deleted_at"
   end
 
+  add_index "relationships", ["deleted_at"], name: "index_relationships_on_deleted_at", using: :btree
   add_index "relationships", ["from_id"], name: "index_relationships_on_from_id", using: :btree
   add_index "relationships", ["relation_id", "from_id", "to_id"], name: "index_relationships_on_relation_id_and_from_id_and_to_id", using: :btree
   add_index "relationships", ["relation_id"], name: "index_relationships_on_relation_id", using: :btree

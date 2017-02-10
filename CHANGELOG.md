@@ -10,6 +10,8 @@ commit history on GitHub.
 ### User
 
 * when access is denied there is no more redirect, which makes the page linkable
+* OAI-PMH responses now all fully support deleted records à la
+  `<deletedRecord>persistent</deletedRecord>`
 
 ## Version 2.0.1
 

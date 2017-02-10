@@ -13,7 +13,7 @@ class Api::OaiPmh::RelationsController < Api::OaiPmh::BaseController
   protected
 
     def records
-      Relation.all
+      Relation.with_deleted
     end
 
     def base_url

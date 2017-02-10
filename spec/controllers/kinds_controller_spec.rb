@@ -83,6 +83,7 @@ RSpec.describe KindsController, type: :controller do
       delete :destroy, id: media.id
       expect(response.status).to eq(403)
     end
+
   end
 
 end

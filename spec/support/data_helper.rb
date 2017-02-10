@@ -1,5 +1,6 @@
 module DataHelper
 
+  # TODO: remove this and instead use current_user(...) from below
   def fake_authentication(options = {})
     options.reverse_merge!(:persist => false)
     

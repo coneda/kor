@@ -32,9 +32,6 @@ class Kor::EntityMerger
     end
     @entity.save!
     merge_externals options[:old_ids], @entity.id
-    old_entities.each do |e|
-      e.after_merge
-    end
     @entity
   end
   

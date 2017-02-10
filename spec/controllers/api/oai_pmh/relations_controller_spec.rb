@@ -131,7 +131,7 @@ describe Api::OaiPmh::RelationsController, :type => :controller do
   end
 
   it "should return 'noRecordsMatch' if the criteria do not yield any records" do
-    Relation.destroy_all
+    Relation.all.each{|r| r.really_destroy!}
     admin = User.admin
 
     get :list_identifiers, format: :xml
@@ -143,6 +143,40 @@ describe Api::OaiPmh::RelationsController, :type => :controller do
       metadataPrefix: 'kor'
     )
     verify_oaipmh_error 'noRecordsMatch'
+  end
+
+  it 'should include deleted records' do
+    admin = User.admin
+    has_created = Relation.find_by(name: 'has created')
+    has_created.destroy
+
+    get(:list_records,
+      format: :xml, 
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
+    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(1)
+    expect(doc.xpath("//xmlns:metadata").count).to eq(1)
+
+    get(:list_identifiers,
+      format: :xml, 
+      api_key: admin.api_key
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
+    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(1)
+    expect(doc.xpath("//xmlns:metadata").count).to eq(0)
+
+    get(:get_record,
+      format: :xml,
+      identifier: has_created.uuid,
+      metadataPrefix: 'kor'
+    )
+    doc = parse_xml(response.body)
+    expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
+    expect(doc.xpath("//xmlns:metadata").count).to eq(0)
   end
 
 end
