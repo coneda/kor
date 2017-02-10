@@ -48,7 +48,13 @@ class Kor::Export::Excel
           entity.subtype,
           JSON.dump(entity.synonyms),
           entity.comment,
-          JSON.dump(entity.datings.map{|d| d.serializable_hash_for_export}),
+          JSON.dump(
+            entity.datings.map{|d| {
+              "id" => d.id,
+              "label" => d.label,
+              "dating_string" => d.dating_string
+            }}
+          ),
           JSON.dump(entity.dataset),
           JSON.dump(entity.properties),
           entity.lock_version

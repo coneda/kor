@@ -240,5 +240,38 @@ RSpec.describe RelationshipsController, :type => :controller do
 
     expect(Relationship.count).to eq(0)
   end
+
+  it 'should allow to set dating attributes' do
+    admins = FactoryGirl.create :admins
+    admin = FactoryGirl.create :admin, groups: [admins]
+    default = FactoryGirl.create :default
+    leonardo = FactoryGirl.create :leonardo
+    mona_lisa = FactoryGirl.create :mona_lisa
+    has_created = FactoryGirl.create :has_created
+
+    Kor::Auth.grant default, [:view, :edit], to: admins
+
+    current_user admin
+
+    post :create, relationship: {
+      relation_id: has_created.id,
+      from_id: leonardo.id,
+      to_id: mona_lisa.id,
+      datings_attributes: [
+        {label: 'Zeitspanne', dating_string: '15. Jahrhundert'},
+        {label: 'zweite Phase', dating_string: '16. Jahrhundert'}
+      ]
+    }
+    expect(Relationship.count).to eq(1)
+    expect(Relationship.first.datings.count).to eq(2)
+
+    patch :update, id: Relationship.first.id, relationship: {
+      datings_attributes: [
+        {id: Relationship.first.datings.first.id, _destroy: true}
+      ]
+    }
+    expect(Relationship.count).to eq(1)
+    expect(Relationship.first.datings.count).to eq(1)
+  end
   
 end

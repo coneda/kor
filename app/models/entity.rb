@@ -357,9 +357,6 @@ class Entity < ActiveRecord::Base
     read_attribute(:no_name_statement) || 'enter_name'
   end
   
-  
-  ############################ kind related ####################################
-
   def is_medium?
     !!self[:medium_id] ||
     !!self.medium ||
@@ -369,29 +366,6 @@ class Entity < ActiveRecord::Base
     )
   end
 
-
-  ############################ dating ##########################################
-
-  # TODO: can this method be removed?
-  def new_datings_attributes=(values)
-    values.each do |v|
-      datings.build v
-    end
-  end
-
-  # TODO: can this method be removed?
-  def existing_datings_attributes=(values)
-    datings.reject(&:new_record?).each do |d|
-      attributes = values[d.id.to_s]
-      if attributes
-        d.attributes = attributes
-      else
-        datings.delete(d)
-      end
-    end
-  end
-
-  # ----------------------------------------------------------------- search ---
   def self.filtered_tag_counts(term, options = {})
     options.reverse_merge!(:limit => 10)
     
@@ -488,8 +462,9 @@ class Entity < ActiveRecord::Base
   }
   scope :dated_in, lambda {|dating|
     if dating.present?
-      if parsed = EntityDating.parse(dating)
+      if parsed = Dating.parse(dating)
         joins(:datings).
+        distinct(:entity_id).
         where("entity_datings.to_day > ?", EntityDating.julian_date_for(parsed[:from])).
         where("entity_datings.from_day < ?", EntityDating.julian_date_for(parsed[:to]))
       else

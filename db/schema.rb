@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170207140235) do
+ActiveRecord::Schema.define(version: 20170210134514) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -280,6 +280,15 @@ ActiveRecord::Schema.define(version: 20170207140235) do
   add_index "relations", ["deleted_at"], name: "index_relations_on_deleted_at", using: :btree
   add_index "relations", ["name"], name: "index_relations_on_name", using: :btree
   add_index "relations", ["reverse_name"], name: "index_relations_on_reverse_name", using: :btree
+
+  create_table "relationship_datings", force: :cascade do |t|
+    t.integer "relationship_id", limit: 4
+    t.string  "label",           limit: 255
+    t.string  "dating_string",   limit: 255
+    t.integer "from_day",        limit: 4
+    t.integer "to_day",          limit: 4
+    t.integer "lock_version",    limit: 4
+  end
 
   create_table "relationships", force: :cascade do |t|
     t.string   "uuid",         limit: 255

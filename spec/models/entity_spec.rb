@@ -42,7 +42,7 @@ describe Entity do
     end
 
     it "should accept nested attributes for entity datings" do
-      leonardo = FactoryGirl.create :leonardo, :new_datings_attributes => [
+      leonardo = FactoryGirl.create :leonardo, :datings_attributes => [
         { :label => 'Datierung',  :dating_string => "15. Jahrhundert" },
         { :label => 'Datierung',  :dating_string => "15.12.1933" }
       ]

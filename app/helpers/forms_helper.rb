@@ -186,15 +186,10 @@ module FormsHelper
 
   def form_fields_for_entity_dating(entity_dating = nil)
     prefix = "new"
-    label = @entity.kind.dating_label
-
-    if entity_dating && !entity_dating.new_record?
-      prefix = "existing"
-      label = entity_dating.label
-    end
+    label = (entity_dating ? entity_dating.label : @entity.kind.dating_label)
     entity_dating ||= EntityDating.new
 
-    fields_for "entity[#{prefix}_datings_attributes][]", entity_dating, :builder => Kor::FormBuilder do |ed|
+    fields_for "entity[datings_attributes][]", entity_dating, :builder => Kor::FormBuilder do |ed|
       ed.hidden_field(:lock_version).html_safe +
       ed.kor_input(:label, :control => ed.text_field(:label, :value => label)).html_safe +
       ed.kor_input(:dating_string).html_safe

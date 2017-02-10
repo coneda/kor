@@ -103,6 +103,7 @@ class Kor::NeoGraph
           }  
         )
       when Relationship
+        # TODO: add relationship datings
         statements = items.map do |item|
           {
             "statement" => [
@@ -120,7 +121,7 @@ class Kor::NeoGraph
                 "relation_name" => item.relation.name,
                 "relation_reverse_name" => item.relation.reverse_name,
                 "created_at" => item.created_at.to_f,
-                "updated_at" => item.updated_at.to_f    
+                "updated_at" => item.updated_at.to_f
               }
             }
           }

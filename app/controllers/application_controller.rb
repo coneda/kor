@@ -239,14 +239,11 @@ class ApplicationController < BaseController
         :tag_list,
         :synonyms => [],
         :datings_attributes => [:id, :_destroy, :label, :dating_string],
-        :new_datings_attributes => [:id, :_destroy, :label, :dating_string],
-        :existing_datings_attributes => [:id, :_destroy, :label, :dating_string],
         :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
         :medium_attributes => [:id, :image, :document]
       ).tap do |e|
         e[:properties] ||= []
-        e[:existing_datings_attributes] ||= {}
         e[:synonyms] ||= []
       end
     end
