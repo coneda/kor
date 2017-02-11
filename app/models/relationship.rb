@@ -14,6 +14,7 @@ class Relationship < ActiveRecord::Base
   has_many :datings, :class_name => "RelationshipDating", :dependent => :destroy
 
   validates :from_id, :to_id, :relation_id, presence: true
+  validates_associated :datings
   
   before_validation :ensure_direction
   after_validation :ensure_uuid, :ensure_unique_properties, :ensure_directed

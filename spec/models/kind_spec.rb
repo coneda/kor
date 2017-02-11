@@ -65,4 +65,15 @@ describe Kind do
     expect(Kind.with_deleted.count).to eq(2)
   end
 
+  it 'should set updated_at when deleted' do
+    @works = FactoryGirl.create :works
+    sleep 1.1
+    @works.destroy
+
+    works = Kind.with_deleted.find_by name: 'Werk'
+
+    expect(works.created_at).to be < works.updated_at
+    expect(works.deleted_at).to eq(works.updated_at)
+  end
+
 end

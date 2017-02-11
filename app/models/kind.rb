@@ -30,7 +30,7 @@ class Kind < ActiveRecord::Base
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
   end
-  
+
   def field_instances(object)
     self.fields.each do |field|
       field.entity = object

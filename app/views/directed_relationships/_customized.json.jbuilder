@@ -21,12 +21,15 @@ if additions.include?('properties') || additions.include?('all')
   json.properties dr.relationship.properties
 end
 
+if additions.include?('datings') || additions.include?('all')
+  json.datings dr.relationship.datings do |dating|
+    json.extract! dating, :id, :label, :dating_string, :lock_version
+  end
+end
 
 if additions.include?('relationship') || additions.include?('all')
   json.relationship do
-    json.partial!('relationships/normal',
-      relationship: dr.relationship
-    )
+    json.partial! 'relationships/normal', relationship: dr.relationship
   end
 end
 

@@ -179,6 +179,7 @@ ActiveRecord::Schema.define(version: 20170210134514) do
   end
 
   add_index "entity_datings", ["entity_id"], name: "index_entity_datings_on_entity_id", using: :btree
+  add_index "entity_datings", ["from_day", "to_day"], name: "timely", using: :btree
 
   create_table "exception_logs", force: :cascade do |t|
     t.string   "kind",       limit: 255
@@ -289,6 +290,9 @@ ActiveRecord::Schema.define(version: 20170210134514) do
     t.integer "to_day",          limit: 4
     t.integer "lock_version",    limit: 4
   end
+
+  add_index "relationship_datings", ["from_day", "to_day"], name: "timely", using: :btree
+  add_index "relationship_datings", ["relationship_id"], name: "rely", using: :btree
 
   create_table "relationships", force: :cascade do |t|
     t.string   "uuid",         limit: 255

@@ -19,12 +19,14 @@ kor.directive "korRelationshipEditor", [
         scope.relation_name
         scope.target = {}
         scope.properties = []
+        scope.datings = []
 
         if scope.directed_relationship
           scope.relation_name = scope.directed_relationship.relation_name
           scope.target = scope.directed_relationship.to
           scope.properties = for prop in scope.directed_relationship.relationship.properties
             {value: prop}
+          scope.datings = scope.directed_relationship.datings
 
         scope.cancel = -> scope.close()
 
@@ -34,6 +36,7 @@ kor.directive "korRelationshipEditor", [
             relation_name: scope.relation_name
             to_id: (scope.target || {}).id
             properties: (prop.value for prop in scope.properties)
+            datings_attributes: scope.datings
           }
 
           promise = if scope.existing
@@ -57,7 +60,22 @@ kor.directive "korRelationshipEditor", [
 
         scope.remove_property = (property, event) ->
           event.preventDefault() if event
-          index = scope.properties.indexOf(property)
-          scope.properties.splice(index, 1) unless index == -1
+          if property.id
+            propert._destroy = true
+          else
+            index = scope.properties.indexOf(property)
+            scope.properties.splice(index, 1) unless index == -1
+
+        scope.add_dating = (event) ->
+          event.preventDefault()
+          scope.datings.push {}
+
+        scope.remove_dating = (dating, event) ->
+          event.preventDefault() if event
+          if dating.id
+            dating._destroy = true
+          else
+            index = scope.datings.indexOf(dating)
+            scope.datings.splice(index, 1) unless index == -1
     }
 ]

@@ -396,3 +396,10 @@ Given(/^there are "([^"]*)" media entities$/) do |amount|
     system "rm #{file}"
   end
 end
+
+Given(/^the relationship has a dating "([^"]*)"$/) do |dating|
+  l, ds = dating.split('|')
+  Relationship.last.update_attributes(
+    datings_attributes: [{label: l, dating_string: ds}]
+  )
+end

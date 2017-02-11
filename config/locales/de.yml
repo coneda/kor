@@ -878,6 +878,11 @@ de:
         dating_string: Datierung
         from_day: von
         to_day: bis
+      dating:
+        label: Art der Datierung
+        dating_string: Datierung
+        from_day: von
+        to_day: bis
       kind:
         name: Name
         plural_name: Name im Plural
@@ -899,6 +904,9 @@ de:
         property:
           one: weitere Eigenschaft
           other: weitere Eigenschaften
+        dating:
+          one: Datierung
+          other: Datierungen
         wikidata_id: Wikidata ID
       publishment:
         name: Bezeichnung

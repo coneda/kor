@@ -31,7 +31,6 @@ When(/^I follow the link with text "([^"]*)"$/) do |text|
   click_link(text)
 end
 
-
 When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |field, quoted, value|
   value = "\"#{value}\"" if quoted == ' quoted'
   field = all(:css, field).first || find(:fillable_field, field)
@@ -350,4 +349,8 @@ When(/^I paginate right in the relations$/) do
     # puts page.find("input[type=number]").value
     # expect(page).to have_content('ENDE')
   end
+end
+
+Then(/^field "([^"]*)" should have value "([^"]*)"$/) do |field, value|
+  expect(find_field(field).value).to eq(value)
 end

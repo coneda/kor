@@ -876,6 +876,11 @@ en:
         dating_string: dating
         from_day: from
         to_day: to
+      dating:
+        label: type of dating
+        dating_string: dating
+        from_day: from
+        to_day: to
       kind:
         name: name
         plural_name: plural name
@@ -897,6 +902,9 @@ en:
         property:
           one: additional property
           other: additional properties
+        dating:
+          one: dating
+          other: datings
         wikidata_id: Wikidata ID
       publishment:
         name: description

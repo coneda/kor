@@ -8,5 +8,10 @@ class CreateRelationshipDatings < ActiveRecord::Migration
       t.integer :to_day
       t.integer :lock_version
     end
+
+    add_index :relationship_datings, :relationship_id, name: 'rely'
+    add_index :relationship_datings, [:from_day, :to_day], name: 'timely'
+
+    add_index :entity_datings, [:from_day, :to_day], name: 'timely'
   end
 end
