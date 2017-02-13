@@ -31,7 +31,6 @@ When(/^I follow the link with text "([^"]*)"$/) do |text|
   click_link(text)
 end
 
-
 When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |locator, quoted, value|
   value = "\"#{value}\"" if quoted == ' quoted'
   field = page.first(:field, locator) || all(:css, locator).first
@@ -192,46 +191,11 @@ When /^I select "([^\"]*)" from the autocomplete$/ do |pattern|
   end.click
 end
 
-When /^I send the credential "([^\"]*)"$/ do |attributes|
-  fields = attributes.split(',').map{|a| a.split(':')}
-  attributes = {}
-  fields.each{|f| attributes[f.first.to_sym] = f.last}
-  Capybara.current_session.driver.send :post, '/credentials', :credential => attributes
-  Capybara.current_session.driver.browser.follow_redirect!
-end
-
-When /^I send the delete request for "([^\"]*)" "([^\"]*)"$/ do |object_type, object_name|
-  object = object_type.classify.constantize.find_by_name(object_name)
-  Capybara.current_session.driver.send :delete, send(object_type + '_path', object)
-  Capybara.current_session.driver.browser.follow_redirect!
-end
-
-When /^I send the mark request for entity "([^\"]*)"$/ do |entity|
-  entity = Entity.find_by_name(entity)
-  Capybara.current_session.driver.send :delete, put_in_clipboard_path(:id => entity.id, :mark => 'mark')
-  if page.status_code >= 300 && page.status_code < 400
-    Capybara.current_session.driver.browser.follow_redirect!
-  end
-end
-
-When /^I send the mark as current request for entity "([^\"]*)"$/ do |entity|
-  entity = Entity.find_by_name(entity)
-  Capybara.current_session.driver.send :delete, mark_as_current_path(:id => entity.id), {}, {'HTTP_REFERER' => '/'}
-  if page.status_code >= 300 && page.status_code < 400
-    Capybara.current_session.driver.browser.follow_redirect!
-  end
-end
-
 When /^I send a "([^\"]*)" request to "([^\"]*)" with params "([^\"]*)"$/ do |method, url, params|
   Capybara.current_session.driver.send method.downcase.to_sym, url, eval(params)
   if page.status_code >= 300 && page.status_code < 400
     Capybara.current_session.driver.browser.follow_redirect!
   end
-end
-
-Then /^I should get access "([^\"]*)"$/ do |access|
-  step "I should not be on the denied page" if access == 'yes'
-  step "I should be on the denied page"   if access == 'no'
 end
 
 When /^I ignore the next confirmation box$/ do
@@ -410,5 +374,9 @@ And(/^I should see a message containing "([^"]*)"$/) do |pattern|
 end
 
 Then(/^select "([^"]*)" should have selected "([^"]*)"$/) do |field, value|
+  expect(find_field(field).value).to eq(value)
+end
+
+Then(/^field "([^"]*)" should have value "([^"]*)"$/) do |field, value|
   expect(find_field(field).value).to eq(value)
 end

@@ -52,12 +52,6 @@ Feature: Authentication and Authorization
     Then I should see "Access denied"
 
 
-  Scenario: create credential without authorization
-    Given I am logged in as "john"
-    When I send the credential "name:Freaks,description:The KOR-Freaks"
-    Then I should see "Access denied"
-
-
   Scenario: delete credential without authorization	
     Given I am logged in as "john"
     And the credential "Freaks" described by "The KOR-Freaks"

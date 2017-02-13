@@ -133,7 +133,6 @@ Rails.application.routes.draw do
   end
 
   controller 'authentication' do
-    match '/authentication/denied', :action => 'denied', :as => :denied, :format => :html, :via => :get
     match '/authenticate', :action => 'login', :via => :post
     match '/env_auth', action: 'env_auth', via: :get
     match '/login', :action => 'form', :as => :login, :via => :get

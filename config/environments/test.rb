@@ -24,7 +24,7 @@ Rails.application.configure do
   config.action_dispatch.show_exceptions = true
 
   # Disable request forgery protection in test environment.
-  config.action_controller.allow_forgery_protection = false
+  config.action_controller.allow_forgery_protection = true
 
   # This is instead set by the kor config files through config/application.rb
   # config.action_mailer.delivery_method = :test

@@ -22,7 +22,7 @@ class UserGroupsController < GroupsController
       zip_download @user_group, @entities
     else
       flash[:error] = I18n.t('errors.access_denied')
-      redirect_to denied_path
+      render_denied_page
     end
   end
 
@@ -102,7 +102,7 @@ class UserGroupsController < GroupsController
       render :layout => 'wide'
     else
       flash[:error] = I18n.t('errors.access_denied')
-      redirect_to denied_path
+      render_denied_page
     end
   end
 

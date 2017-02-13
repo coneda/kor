@@ -36,7 +36,7 @@ Feature: Entities
     Given I am logged in as "john"
     And the kind "Werk/Werke"
     When I go to the new "Werk-Entity" page
-    Then I should be on the denied page
+    Then I should see "Access denied"
     
   
   @javascript

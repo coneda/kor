@@ -20,6 +20,8 @@
 
     = render :partial => 'tpl/misc'
 
+    = csrf_meta_tags
+
   %body.blaze_style
     = render :partial => "layouts/blaze_header"
     = render :partial => "layouts/menu"

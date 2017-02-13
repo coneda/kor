@@ -54,13 +54,13 @@ Feature: Inplace relationship editor
     And the relationship "Mona Lisa" "is similar to" "Der Schrei"
     When I go to the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    When I click element "[data-name=pen]" within ".relationships"
-    And I click button "Add" within ".relationships"
-    And I fill in ".properties input" with "this is almost certain"
+    When I click element "[data-name=pen]" within ".relationship"
+    And I click button "Add" within ".relationship .properties"
+    And I fill in ".property input" with "this is almost certain"
     And I press "Save"
     And I should not see "Edit link"
     And I should see "Relationship has been changed"
-    And I should see "this is almost certain" within ".relationships"
+    And I should see "this is almost certain" within ".relationship"
 
   @javascript
   Scenario: Delete relationship
@@ -166,3 +166,78 @@ Feature: Inplace relationship editor
     Then I should see "is similar to" within "[kor-relation-selector]"
     And I should see "is equivalent" within "[kor-relation-selector]"
 
+  # @javascript
+  # Scenario: make use of the relation's default dating label
+  #   Given I am logged in as "admin"
+  #   And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+  #   When I go to the entity page for "Mona Lisa"
+  #   When I click element "[data-name=pen]" within ".relationship"
+  #   When I click button "Add" within ".datings"
+  #   Then field "Type of dating" should have value "Datierung"
+
+  @javascript
+  Scenario: add a dating
+    Given I am logged in as "admin"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    When I go to the entity page for "Mona Lisa"
+    When I click element "[data-name=pen]" within ".relationship"
+    Then I should see "Datings"
+    When I click button "Add" within ".datings"
+    And I fill in "Type of dating" with "first phase"
+    And I fill in "Dating" with "15. Jahrhundert"
+    And I press "Save" within ".relationship"
+    Then I should see "first phase: 15. Jahrhundert" within ".relationship"
+
+  @javascript
+  Scenario: remove a dating
+    Given I am logged in as "admin"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    And the relationship has a dating "Datierung|1888"
+    When I go to the entity page for "Mona Lisa"
+    When I click element "[data-name=pen]" within ".relationship"
+    And I press "remove" within ".relationship .dating"
+    And I press "Save" within ".relationship"
+    Then I should not see "Datierung: 1888"
+
+
+  @javascript
+  Scenario: add and remove a dating without reloading the page
+    Given I am logged in as "admin"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    When I go to the entity page for "Mona Lisa"
+    When I click element "[data-name=pen]" within ".relationship"
+    Then I should see "Datings"
+    When I click button "Add" within ".datings"
+    And I fill in "Type of dating" with "first phase"
+    And I fill in "Dating" with "15. Jahrhundert"
+    And I press "Save" within ".relationship"
+    Then I should see "first phase: 15. Jahrhundert"
+    When I click element "[data-name=pen]" within ".relationship"
+    And I press "remove" within ".relationship .dating"
+    And I press "Save" within ".relationship"
+    Then I should not see "Datierung: 1888"
+
+  @javascript
+  Scenario: add and remove a dating without closing the editor
+    Given I am logged in as "admin"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    When I go to the entity page for "Mona Lisa"
+    When I click element "[data-name=pen]" within ".relationship"
+    Then I should see "Datings"
+    When I click button "Add" within ".datings"
+    And I fill in "Type of dating" with "first phase"
+    And I fill in "Dating" with "15. Jahrhundert"
+    And I press "remove" within ".relationship .dating"
+    And I press "Save" within ".relationship"
+    Then I should not see "Datierung: 1888"
+
+  @javascript
+  Scenario: enter an incorrect dating string
+    Given I am logged in as "admin"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    When I go to the entity page for "Mona Lisa"
+    And I click element "[data-name=pen]" within ".relationship"
+    When I click button "Add" within ".datings"
+    And I fill in "Dating" with "1522 perhaps?"
+    And I press "Save"
+    Then I should see "Dating is invalid"

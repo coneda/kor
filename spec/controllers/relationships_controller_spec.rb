@@ -23,15 +23,15 @@ RSpec.describe RelationshipsController, :type => :controller do
   
   def set_side_collection_policies(policies = {})
     policies.each do |p, c|
-      side_collection.revoke :all, from: c
-      side_collection.grant(p, :to => c)
+      Kor::Auth.grant side_collection, :all, from: c
+      Kor::Auth.grant side_collection, p, :to => c
     end
   end
   
   def set_main_collection_policies(policies = {})
     policies.each do |p, c|
-      @main.revoke :all, from: c
-      @main.grant p, :to => c
+      Kor::Auth.revoke @main, :all, from: c
+      Kor::Auth.grant @main, p, :to => c
     end
   end
 
@@ -155,8 +155,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
   it "should create a relationship by relation name" do
     default_setup
-    @default.grant :edit, to: [@admins]
-    @priv.grant :edit, to: [@admins]
+    Kor::Auth.grant @default, :edit, to: [@admins]
+    Kor::Auth.grant @priv, :edit, to: [@admins]
 
     post(:create, 
       api_key: @admin.api_key,
@@ -178,8 +178,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
   it "should create a relationship by reverse relation name" do
     default_setup
-    @default.grant :edit, to: [@admins]
-    @priv.grant :edit, to: [@admins]
+    Kor::Auth.grant @default, :edit, to: [@admins]
+    Kor::Auth.grant @priv, :edit, to: [@admins]
 
     post(:create, 
       api_key: @admin.api_key,
@@ -201,8 +201,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
   it "should update a relationship" do
     default_setup
-    @default.grant :edit, to: [@admins]
-    @priv.grant :edit, to: [@admins]
+    Kor::Auth.grant @default, :edit, to: [@admins]
+    Kor::Auth.grant @priv, :edit, to: [@admins]
     relationship = Relationship.relate_and_save(
       @leonardo, 'has created', @mona_lisa
     )
@@ -227,8 +227,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
   it "should destroy a relationship" do
     default_setup
-    @default.grant :edit, to: [@admins]
-    @priv.grant :edit, to: [@admins]
+    Kor::Auth.grant @default, :edit, to: [@admins]
+    Kor::Auth.grant @priv, :edit, to: [@admins]
     relationship = Relationship.relate_and_save(
       @leonardo, 'has created', @mona_lisa
     )
@@ -239,6 +239,39 @@ RSpec.describe RelationshipsController, :type => :controller do
     expect(response.status).to eq(200)
 
     expect(Relationship.count).to eq(0)
+  end
+
+  it 'should allow to set dating attributes' do
+    admins = FactoryGirl.create :admins
+    admin = FactoryGirl.create :admin, groups: [admins]
+    default = FactoryGirl.create :default
+    leonardo = FactoryGirl.create :leonardo
+    mona_lisa = FactoryGirl.create :mona_lisa
+    has_created = FactoryGirl.create :has_created
+
+    Kor::Auth.grant default, [:view, :edit], to: admins
+
+    current_user admin
+
+    post :create, relationship: {
+      relation_id: has_created.id,
+      from_id: leonardo.id,
+      to_id: mona_lisa.id,
+      datings_attributes: [
+        {label: 'Zeitspanne', dating_string: '15. Jahrhundert'},
+        {label: 'zweite Phase', dating_string: '16. Jahrhundert'}
+      ]
+    }
+    expect(Relationship.count).to eq(1)
+    expect(Relationship.first.datings.count).to eq(2)
+
+    patch :update, id: Relationship.first.id, relationship: {
+      datings_attributes: [
+        {id: Relationship.first.datings.first.id, _destroy: true}
+      ]
+    }
+    expect(Relationship.count).to eq(1)
+    expect(Relationship.first.datings.count).to eq(1)
   end
   
 end

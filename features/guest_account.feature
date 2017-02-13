@@ -23,7 +23,7 @@ Feature: Guest account
   Scenario: View the profile page as guest
     Given user "guest" is allowed to "view" collection "Default" through credential "guests"
     When I go to the profile page for user "guest"
-    Then I should be on the denied page
+    Then I should see "Access denied"
 
 
   @javascript

@@ -1,5 +1,6 @@
 module DataHelper
 
+  # TODO: remove this and instead use current_user(...) from below
   def fake_authentication(options = {})
     options.reverse_merge!(:persist => false)
     
@@ -31,7 +32,7 @@ module DataHelper
   def test_data_for_auth
     @admins = FactoryGirl.create :admins
     @main = FactoryGirl.create :default
-    @main.policies.each do |policy|
+    Kor::Auth.policies.each do |policy|
       Grant.create!(:collection => @main, :credential => @admins, :policy => policy)
     end
     @admin = FactoryGirl.create :admin, :groups => Credential.all
@@ -100,9 +101,9 @@ module DataHelper
     @admin = FactoryGirl.create :admin, groups: [@admins]
     @jdoe = FactoryGirl.create :jdoe, :groups => [@students]
     
-    @default.grant :all, :to => @admins
-    @default.grant :view, :to => @students
-    @priv.grant :all, :to => @admins
+    Kor::Auth.grant @default, :all, :to => @admins
+    Kor::Auth.grant @default, :view, :to => @students
+    Kor::Auth.grant @priv, :all, :to => @admins
   end
 
   def current_user(user)

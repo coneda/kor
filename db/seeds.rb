@@ -2,12 +2,12 @@ Kor.config['maintainer.email'] = 'admin@localhost'
 
 administrators = Credential.create!(:name => "admins")
 
-Kor.ensure_admin_account!
-Kor.ensure_guest_account!
+Kor::Tasks.reset_admin_account
+Kor::Tasks.reset_guest_account
 
 default = Collection.create! :name => "Default"
 
-default.policies.each do |policy|
+Kor::Auth.policies.each do |policy|
   Grant.create! :collection => default, :policy => policy, :credential => administrators
 end
 

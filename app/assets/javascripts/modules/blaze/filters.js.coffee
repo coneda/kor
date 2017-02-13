@@ -105,3 +105,11 @@ kor.filter 'remove_ws', [->
     catch e
       input
 ]
+
+kor.filter 'withoutDestroyed', [->
+  (input) ->
+    try
+      input.filter(e, -> !e._destroy)
+    catch e
+      input
+]

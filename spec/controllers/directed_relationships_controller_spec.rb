@@ -34,8 +34,8 @@ describe DirectedRelationshipsController, type: :controller do
     admins = FactoryGirl.create :admins
     admin = FactoryGirl.create :admin, :groups => [admins]
     jdoe = FactoryGirl.create :jdoe, :groups => [students]
-    default.grant :view, :to => [admins, students]
-    side.grant :view, :to => [admins]
+    Kor::Auth.grant default, :view, :to => [admins, students]
+    Kor::Auth.grant side, :view, :to => [admins]
 
     get :index
     expect(response.status).to eq(401)
@@ -78,7 +78,7 @@ describe DirectedRelationshipsController, type: :controller do
     expect(JSON.parse(response.body)['records'].size).to eq(1)
   end
 
-  it "should response with a single directed relationship" do
+  it "should respond with a single directed relationship" do
     default_setup relationships: true
 
     directed_relationship = Relationship.first.normal

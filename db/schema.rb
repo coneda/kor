@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161006123739) do
+ActiveRecord::Schema.define(version: 20170210134514) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -135,11 +135,13 @@ ActiveRecord::Schema.define(version: 20161006123739) do
     t.string   "subtype",           limit: 255
     t.integer  "medium_id",         limit: 4
     t.text     "attachment",        limit: 65535
+    t.datetime "deleted_at"
   end
 
   add_index "entities", ["collection_id", "kind_id"], name: "collections_kinds", using: :btree
   add_index "entities", ["created_at"], name: "index_entities_on_created_at", using: :btree
   add_index "entities", ["creator_id"], name: "index_entities_on_user_id", using: :btree
+  add_index "entities", ["deleted_at"], name: "index_entities_on_deleted_at", using: :btree
   add_index "entities", ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
   add_index "entities", ["name"], name: "index_entities_on_name", using: :btree
   add_index "entities", ["uuid"], name: "index_entities_on_uuid", using: :btree
@@ -177,6 +179,7 @@ ActiveRecord::Schema.define(version: 20161006123739) do
   end
 
   add_index "entity_datings", ["entity_id"], name: "index_entity_datings_on_entity_id", using: :btree
+  add_index "entity_datings", ["from_day", "to_day"], name: "timely", using: :btree
 
   create_table "exception_logs", force: :cascade do |t|
     t.string   "kind",       limit: 255
@@ -238,7 +241,10 @@ ActiveRecord::Schema.define(version: 20161006123739) do
     t.string   "plural_name",  limit: 255
     t.boolean  "abstract"
     t.string   "url",          limit: 255
+    t.datetime "deleted_at"
   end
+
+  add_index "kinds", ["deleted_at"], name: "index_kinds_on_deleted_at", using: :btree
 
   create_table "media", force: :cascade do |t|
     t.integer "lock_version",          limit: 4
@@ -278,10 +284,24 @@ ActiveRecord::Schema.define(version: 20161006123739) do
     t.text     "from_kind_ids", limit: 65535
     t.text     "to_kind_ids",   limit: 65535
     t.text     "description",   limit: 65535
+    t.datetime "deleted_at"
   end
 
+  add_index "relations", ["deleted_at"], name: "index_relations_on_deleted_at", using: :btree
   add_index "relations", ["name"], name: "index_relations_on_name", using: :btree
   add_index "relations", ["reverse_name"], name: "index_relations_on_reverse_name", using: :btree
+
+  create_table "relationship_datings", force: :cascade do |t|
+    t.integer "relationship_id", limit: 4
+    t.string  "label",           limit: 255
+    t.string  "dating_string",   limit: 255
+    t.integer "from_day",        limit: 4
+    t.integer "to_day",          limit: 4
+    t.integer "lock_version",    limit: 4
+  end
+
+  add_index "relationship_datings", ["from_day", "to_day"], name: "timely", using: :btree
+  add_index "relationship_datings", ["relationship_id"], name: "rely", using: :btree
 
   create_table "relationships", force: :cascade do |t|
     t.string   "uuid",         limit: 255
@@ -295,8 +315,10 @@ ActiveRecord::Schema.define(version: 20161006123739) do
     t.integer  "lock_version", limit: 4,     default: 0
     t.integer  "normal_id",    limit: 4
     t.integer  "reversal_id",  limit: 4
+    t.datetime "deleted_at"
   end
 
+  add_index "relationships", ["deleted_at"], name: "index_relationships_on_deleted_at", using: :btree
   add_index "relationships", ["from_id"], name: "index_relationships_on_from_id", using: :btree
   add_index "relationships", ["relation_id", "from_id", "to_id"], name: "index_relationships_on_relation_id_and_from_id_and_to_id", using: :btree
   add_index "relationships", ["relation_id"], name: "index_relationships_on_relation_id", using: :btree

@@ -20,20 +20,20 @@ Given /^the setup "([^"]*)"$/ do |name|
       admin_berlin = Credential.find_by_name('Admin Berlin')
       
       frankfurt = Collection.find_by_name('Frankfurt')
-      frankfurt.grant :view, :to => [user_frankfurt, admin_frankfurt, user_berlin, admin_berlin]
-      frankfurt.grant :edit, :to => [admin_frankfurt]
-      frankfurt.grant :create, :to => [admin_frankfurt]
-      frankfurt.grant :delete, :to => [admin_frankfurt]
-      frankfurt.grant :approve, :to => [admin_frankfurt]
-      frankfurt.grant :download_originals, :to => [admin_frankfurt]
+      Kor::Auth.grant frankfurt, :view, :to => [user_frankfurt, admin_frankfurt, user_berlin, admin_berlin]
+      Kor::Auth.grant frankfurt, :edit, :to => [admin_frankfurt]
+      Kor::Auth.grant frankfurt, :create, :to => [admin_frankfurt]
+      Kor::Auth.grant frankfurt, :delete, :to => [admin_frankfurt]
+      Kor::Auth.grant frankfurt, :approve, :to => [admin_frankfurt]
+      Kor::Auth.grant frankfurt, :download_originals, :to => [admin_frankfurt]
       
       berlin = Collection.find_by_name('Berlin')
-      berlin.grant :view, :to => [user_frankfurt, admin_frankfurt, admin_berlin]
-      berlin.grant :edit, :to => [user_berlin, admin_berlin]
-      berlin.grant :create, :to => [user_berlin, admin_berlin]
-      berlin.grant :delete, :to => [admin_berlin]
-      berlin.grant :approve, :to => [admin_berlin]
-      berlin.grant :download_originals, :to => [admin_frankfurt]
+      Kor::Auth.grant berlin, :view, :to => [user_frankfurt, admin_frankfurt, admin_berlin]
+      Kor::Auth.grant berlin, :edit, :to => [user_berlin, admin_berlin]
+      Kor::Auth.grant berlin, :create, :to => [user_berlin, admin_berlin]
+      Kor::Auth.grant berlin, :delete, :to => [admin_berlin]
+      Kor::Auth.grant berlin, :approve, :to => [admin_berlin]
+      Kor::Auth.grant berlin, :download_originals, :to => [admin_frankfurt]
       
       step "the entity \"Frankfurter Dom\" of kind \"Werk/Werke\" inside collection \"Frankfurt\""
       step "the entity \"Kreuzberg\" of kind \"Ort/Orte\" inside collection \"Berlin\""

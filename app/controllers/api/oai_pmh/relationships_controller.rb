@@ -18,6 +18,7 @@ class Api::OaiPmh::RelationshipsController < Api::OaiPmh::BaseController
 
     def records
       Relationship.
+        with_deleted.
         includes(:from, :to, :relation)
     end
 

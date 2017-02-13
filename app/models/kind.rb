@@ -4,6 +4,8 @@ class Kind < ActiveRecord::Base
 
   serialize :settings
   
+  acts_as_paranoid
+  
   has_many :entities, :dependent => :destroy
   has_many :fields, :dependent => :destroy
   has_many :generators, :dependent => :destroy
@@ -69,7 +71,7 @@ class Kind < ActiveRecord::Base
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
   end
-  
+
   def field_instances(object)
     self.fields.each do |field|
       field.entity = object

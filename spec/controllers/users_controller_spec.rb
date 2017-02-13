@@ -18,13 +18,13 @@ RSpec.describe UsersController, :type => :controller do
   
     patch :update_self, :user => {:home_page => '/entities/gallery'}
     
-    expect(response).not_to redirect_to(denied_path)
+    expect(response.status).not_to eq(403)
   end
   
   it "should only grant access to the user admin to authorized users" do
     fake_authentication :user => FactoryGirl.create(:jdoe)
     get :index
-    expect(response).to redirect_to("/authentication/denied?return_to=#{url_encode 'http://test.host/users'}")
+    expect(response.status).to eq(403)
   end
 
   it "should render a json formatted list of users for autocomplete inputs" do

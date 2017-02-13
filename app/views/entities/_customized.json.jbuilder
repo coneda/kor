@@ -4,9 +4,10 @@ json.extract!(entity,
   :id, :collection_id, :kind_id, :creator_id, :updater_id,
   :kind_name,
   :name, :distinct_name, :display_name,
-  :comment, :subtype,
-  :tags
+  :comment, :subtype
 )
+
+json.tags entity.tag_list
 
 if entity.is_medium?
   json.medium_id entity.medium_id

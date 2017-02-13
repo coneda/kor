@@ -6,7 +6,7 @@ class MediaController < ApplicationController
     if authorized?(:view, @medium.entity.collection)
       render :layout => 'wide'
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
 
@@ -30,7 +30,7 @@ class MediaController < ApplicationController
         :disposition => 'inline',
         :filename => @medium.download_filename(style)
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
 
@@ -53,7 +53,7 @@ class MediaController < ApplicationController
         :disposition => 'attachment',
         :filename => @medium.download_filename(style)
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
 
@@ -68,7 +68,7 @@ class MediaController < ApplicationController
 
       redirect_to web_path(:anchor => entity_path(@medium.entity))
     else
-      redirect_to denied_path
+      render_denied_page
     end
   end
 

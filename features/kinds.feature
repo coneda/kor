@@ -55,11 +55,10 @@ Feature: Kinds
     
 
   @javascript
-  Scenario: do not allow to destroy the medium kind
+  Scenario: do not show the delete link for the medium kind
     Given I am logged in as "admin"
-    And I follow "Administration"
-    And I follow "Entity types"
-    Then I should not see icon "remove" within "[data-is=kor-kind-tree] td:last-child"
+    When I go to the kinds page
+    Then I should not see "img[data-name=x]" within "table.kor_table"
 
 
   @javascript

@@ -67,7 +67,7 @@ class Kor::Graph::Search::Query::Attribute < Kor::Graph::Search::Query::Base
           tmp_result = tmp_result.tagged_with(tag_list.split(/,\s*/))
         end
         
-        tmp_result = tmp_result.searcheable unless options[:media]
+        tmp_result = tmp_result.without_media unless options[:media]
         
         @total = tmp_result.count("entities.id")
         

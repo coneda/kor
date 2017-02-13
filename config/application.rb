@@ -108,4 +108,5 @@ end
 # TODO: use zlib from stdlib instead of the gem?
 # TODO: use "un" from stdlib to find graph communities?
 # TODO: use neo transactions to effectively clear the store after tests
-# 
+# TODO: change denied redirect to denied action rendering
+# TODO: use http://errbit.com/ instead of custom exception logger

@@ -24,6 +24,10 @@
         {{'activerecord.attributes.relationship.relation_id' | translate | capitalize}}
         {{'activerecord.errors.messages.can_not_be_empty'| translate}}
       </div>
+      <div ng-show="errors.datings">
+        {{'activerecord.attributes.relationship.dating' | translate | capitalize}}
+        {{'activerecord.errors.messages.invalid'| translate}}
+      </div>
     </div>
 
     <div class="kor-field">
@@ -45,24 +49,60 @@
       ></div>
     </div>
 
+    <div class="hr"></div>
+
     <div class="kor-field properties">
-      <label ng-bind="'activerecord.attributes.relationship.property.other' | translate | capitalize"></label>
+      <div class="header">
+        <button ng-click="add_property($event)">
+          {{'verbs.add' | translate | capitalize}}
+        </button>
+        <label
+          ng-bind="'activerecord.attributes.relationship.property.other' | translate | capitalize"
+        ></label>
+        <div class="clearfix"></div>
+      </div>
       <ul>
-        <li ng-repeat="property in properties" class="properties">
-          <div class="input-with-button">
-            <div>
-              <input type='text' ng-model="property.value"></input>
-            </div>
-            <button ng-click="remove_property(property, $event)">
-              {{'verbs.remove' | translate}}
-            </button>
+        <li ng-repeat="property in properties | withoutDestroyed" class="property">
+          <div>
+            <input type='text' ng-model="property.value"></input>
           </div>
+          <button ng-click="remove_property(property, $event)">
+            {{'verbs.remove' | translate}}
+          </button>
         </li>
       </ul>
-      <button ng-click="add_property($event)">
-        {{'verbs.add' | translate | capitalize}}
-      </button>
     </div>
+
+    <div class="hr"></div>
+
+    <div class="kor-field datings">
+      <div class="header">
+        <button ng-click="add_dating($event)">
+          {{'verbs.add' | translate | capitalize}}
+        </button>
+        <label
+          ng-bind="'activerecord.attributes.relationship.dating.other' | translate | capitalize"
+        ></label>
+        <div class="clearfix"></div>
+      </div>
+      <ul>
+        <li ng-repeat="dating in datings | withoutDestroyed" class="dating">
+          <label>
+            {{'activerecord.attributes.dating.label' | translate | capitalize}}
+            <input type='text' ng-model="dating.label"></input>
+          </label>
+          <label>
+            {{'activerecord.attributes.dating.dating_string' | translate | capitalize}}
+            <input type='text' ng-model="dating.dating_string"></input>
+          </label>
+          <button ng-click="remove_dating(dating, $event)">
+            {{'verbs.remove' | translate}}
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="hr"></div>
 
     <input type="submit" value="{{'verbs.save' | translate | capitalize}}">
     <input type="reset" value="{{'cancel' | translate | capitalize}}" ng-click="cancel()">

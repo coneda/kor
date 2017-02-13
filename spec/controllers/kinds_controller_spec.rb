@@ -102,6 +102,13 @@ RSpec.describe KindsController, type: :controller do
       expect(data['message']).to eq("kinds with children can't be deleted")
     end
 
+    it 'should deny deleting the medium kind' do
+      media = FactoryGirl.create :media
+
+      delete :destroy, id: media.id
+      expect(response.status).to eq(403)
+    end
+
   end
 
 end

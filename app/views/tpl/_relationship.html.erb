@@ -69,15 +69,17 @@
       <div class="hr"></div>
       <ul>
         <li ng-repeat="property in directed_relationship.relationship.properties">
-          <div class="pull-right" ng-show="editing">
-            <a
-              href="#"
-              ng-click="remove_property(property, $event)"
-            >
-              <%= kor_command_image 'minus' %>
-            </a>
-          </div>
           <span ng-bind="property"></span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="datings" ng-show="directed_relationship.relationship.datings.length > 0">
+      <div class="hr"></div>
+      <ul>
+        <li ng-repeat="dating in directed_relationship.relationship.datings">
+          <strong>{{dating.label}}:</strong>
+          <span ng-bind="dating.dating_string"></span>
         </li>
       </ul>
     </div>

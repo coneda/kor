@@ -13,9 +13,25 @@ commit history on GitHub.
 
 ### User
 
+* when access is denied there is no more redirect, which makes the page linkable
+* OAI-PMH responses now all fully support deleted records à la
+  `<deletedRecord>persistent</deletedRecord>`
+* relationships may now have one or more date ranges
 * compatibility with elasticsearch 5.1
 * increased full index speed by using elasticsearch bulk api
 * simple search now sorts on degree of connectivity when score is equal
+
+## Version 2.0.1
+
+### User
+
+* pagination back-button doesn't work (#2192 redmine)
+* weird focus and click behaviour on pagination number input (#2183 redmine)
+* initial page load somethimes leads to race condition (#2182 redmine)
+* 'recently visited' tab (relationship editor) doesn't show expected entities
+  (#2161 redmine). The resolution also has the side effect of the history of
+  visited entities is now remembered across sessions.
+>>>>>>> master
 
 ## Version 2.0.0
 

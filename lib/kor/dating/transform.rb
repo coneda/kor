@@ -88,7 +88,7 @@ class Kor::Dating::Transform < Parslet::Transform
 
     if a[:from] == '?'
       year = a[:to][:from].year
-      distance = (Date.today.year - year) / 10
+      distance = (Kor::Dating::Transform.today.year - year) / 10
       result[:from] = Date.new(year - distance, 1, 1)
       result[:to] = Date.new(a[:to][:to].year, 12, 31)
     else
@@ -96,7 +96,7 @@ class Kor::Dating::Transform < Parslet::Transform
       result[:from] = Date.new(from.year, 1, 1)
       if a[:to] == '?'
         year = result[:from].year
-        distance = (Date.today.year - year) / 10
+        distance = (Kor::Dating::Transform.today.year - year) / 10
         result[:to] = Date.new(year + distance, 12, 31)
       else
         result[:to] = Date.new(a[:to].year, 12, 31)
@@ -104,6 +104,10 @@ class Kor::Dating::Transform < Parslet::Transform
     end
 
     result
+  end
+
+  def self.today
+    Date.today
   end
   
 end

@@ -70,40 +70,6 @@ module Kor
     Time.now.utc
   end
   
-  def self.notify_expiring_users
-    users = User.where("expires_at < ? AND expires_at > ?", 2.weeks.from_now, Time.now)
-    users.each do |user|
-      UserMailer.upcoming_expiry(user).deliver_now
-    end
-    Rails.logger.info "Upcoming expiries: notified #{users.size} users"
-  end
-
-  def self.ensure_admin_account!
-    u = User.find_or_initialize_by name: 'admin'
-    u.update_attributes(
-      groups: Credential.all,
-      password: 'admin',
-      terms_accepted: true,
-
-      admin: true,
-      relation_admin: true,
-      authority_group_admin: true,
-      kind_admin: true,
-
-      full_name: u.full_name || I18n.t('users.administrator'),
-      email: u.email || Kor.config['maintainer.mail']
-    )
-  end
-
-  def self.ensure_guest_account!
-    u = User.find_or_initialize_by name: 'guest'
-    u.update_attributes(
-      terms_accepted: true,
-      full_name: u.full_name || I18n.t('users.guest'),
-      email: u.email || 'guest@example.com'
-    )
-  end
-
   def self.array_wrap(object)
     if object.is_a?(Array)
       object

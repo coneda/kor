@@ -56,7 +56,8 @@ class RelationshipsController < ApplicationController
 
     def relationship_params
       params.require(:relationship).permit(
-        :from_id, :to_id, :relation_id, :relation_name, properties: []
+        :from_id, :to_id, :relation_id, :relation_name, properties: [],
+        :datings_attributes => [:id, :_destroy, :label, :dating_string],
       ).tap do |w|
         w[:properties] = params[:relationship][:properties]
       end

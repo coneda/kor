@@ -64,7 +64,7 @@ software for their users.
 
 * ruby (>= 2.1.0)
 * mysql server (>= 5.5)
-* elasticsearch (>= 1.7.2)
+* elasticsearch (>= 1.7.2, < 5.0.0)
 * web server (optional but highly recommended)
 
 ### Deployment
@@ -127,7 +127,23 @@ command issued by the script.
 
 This will also start the background process that converts images and does other
 heavy lifting. However, this does not ensure monitoring nor restarting of that
-process which can be done for example with upstart scripts or systemd.
+process which can be done for example with upstart scripts or systemd. The
+process can be managed manually with the command (on the server):
+
+    RAILS_ENV=production bundle exec bin/delayed_job
+
+See `--help` for details. By default, log messages are sent to the main rails
+log file.
+
+After deployment has succeeded and you log in the first time, make sure to add
+the application scheme, host and port to "Administration -> General -> Server".
+This is necessary because the information can't always be inferred from all
+contexts.
+
+### Logging
+
+Log messages are sent to `log/production.log`. The log level can be
+configured in `config/environments/production.rb`.
 
 ### Database and elasticsearch
 
@@ -275,9 +291,8 @@ will require authentication.
 
 #### Permission inheritance
 
-You may enter a parent username for every user. This way, the user will not only
-be able to access the parts of the application he is allowed to himself but also
-that his parent has access to.
+You may enter a parent username for every user. This way, the user will also be
+able to all the parts of the application his parent has access to.
 
 #### External authentication
 

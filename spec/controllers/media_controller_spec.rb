@@ -23,20 +23,20 @@ RSpec.describe MediaController, :type => :controller do
 
   def set_side_collection_policies(policies = {})
     policies.each do |p, c|
-      side_collection.grant(p, :to => c)
+      Kor::Auth.grant side_collection, p, :to => c
     end
   end
 
   it "should not allow viewing to unauthorized users" do
     get :view, :id => side_entity.medium_id
-    expect(response).to redirect_to(denied_path)
+    expect(response.status).to eq(403)
   end
 
   it "should allow viewing to authorized users" do
     set_side_collection_policies :view => [@admins]
 
     get :view, :id => side_entity.medium_id
-    expect(response).not_to redirect_to(denied_path)
+    expect(response.status).not_to eq(403)
   end
 
   def params_for_medium(medium, style = :normal, attachment = :image, style_extension = :png)
@@ -53,19 +53,19 @@ RSpec.describe MediaController, :type => :controller do
 
   it "should not show imgages to unauthorized users" do
     get :show, params_for_medium(side_entity.medium)
-    expect(response).to redirect_to(denied_path)
+    expect(response.status).to eq(403)
   end
 
   it "should show images to authorized users" do
     set_side_collection_policies :view => [@admins]
 
     get :show, params_for_medium(side_entity.medium)
-    expect(response).not_to redirect_to(denied_path)
+    expect(response.status).not_to eq(403)
   end
 
   it "should not allow image download to unauthorized users" do
     get :download, :id => side_entity.medium_id, :style => :normal
-    expect(response).to redirect_to(denied_path)
+    expect(response.status).to eq(403)
   end
 
   it "should allow image download to authorized users" do
@@ -75,26 +75,34 @@ RSpec.describe MediaController, :type => :controller do
     )
 
     get :download, :id => side_entity.medium_id, :style => :normal
-    expect(response).not_to redirect_to(denied_path)
+    expect(response.status).not_to eq(403)
   end
 
   it "should allow original download only to authorized users" do
     set_side_collection_policies(:view => [@admins])
 
     get :download, :id => side_entity.medium_id, :style => :original
-    expect(response).to redirect_to(denied_path)
+    expect(response.status).to eq(403)
   end
 
   it "should not allow image transformations to unauthorized users" do
-    get :transform, :id => side_entity.medium_id, :transformation => 'image', :operation => 'flip'
-    expect(response).to redirect_to(denied_path)
+    get(:transform,
+      id: side_entity.medium_id,
+      transformation: 'image',
+      operation: 'flip'
+    )
+    expect(response.status).to eq(403)
   end
 
   it "should allow image transformations to authorized users" do
     set_side_collection_policies :edit => [@admins]
 
-    get :transform, :id => side_entity.medium_id, :transformation => 'image', :operation => 'flip'
-    expect(response).not_to redirect_to(denied_path)
+    get(:transform,
+      id: side_entity.medium_id,
+      transformation: 'image',
+      operation: 'flip'
+    )
+    expect(response.status).not_to eq(403)
   end
 
 end

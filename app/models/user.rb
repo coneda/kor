@@ -83,10 +83,10 @@ class User < ActiveRecord::Base
       
       if template
         template.grants.each do |grant|
-          self.personal_collection.grant grant.policy, :to => (grant.personal? ? self.personal_group : grant.credential)
+          Kor::Auth.grant personal_collection, grant.policy, :to => (grant.personal? ? self.personal_group : grant.credential)
         end
       else
-        self.personal_collection.grant :all, :to => self.personal_group
+        Kor::Auth.grant personal_collection, :all, :to => self.personal_group
       end
     end
     
@@ -272,6 +272,7 @@ class User < ActiveRecord::Base
     name == 'guest'
   end
   
+  # TODO: still needed?
   def full_auth
     collections = {}
     Grant.group(:policy).count.each do |policy, c|

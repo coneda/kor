@@ -2,6 +2,10 @@ require 'rails_helper'
 
 describe EntityDating do
   include DataHelper
+
+  it 'should inherit from Dating' do
+    expect(subject).to be_a(Dating)
+  end
   
   it "factory_girl should create it with the default label" do
     expect(FactoryGirl.build(:entity_dating, :dating_string => "1877").label).to eql("Dating")
@@ -48,7 +52,7 @@ describe EntityDating do
   
   it "should find datings after a given date" do
     test_datings
-    expect(EntityDating.after("1480").count).to eql(3)
+    expect(described_class.after("1480").count).to eql(3)
   end
   
   it "should find datings before a given date" do
@@ -62,6 +66,9 @@ describe EntityDating do
   end
 
   it "should parse '1957 bis ?'" do
+    today = Date.new 2016, 10, 15
+    expect(Kor::Dating::Transform).to receive(:today).twice.and_return(today)
+
     dating = EntityDating.create(label: "Date", dating_string: "1957 bis ?")
     expect(dating.from_day).to eq(2435840)
     expect(dating.to_day).to eq(2438395)

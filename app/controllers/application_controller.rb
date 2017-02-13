@@ -71,11 +71,9 @@ class ApplicationController < BaseController
           end
         end
       elsif session_expired?
+        session[:user_id] = nil
+        
         respond_to do |format|
-          # TODO: this is working but strictly speaking not correct behavior:
-          # no session data should persist through an expired session
-          session[:user_id] = nil
-
           format.html do
             history_store unless request.path.match(/^\/blaze/)
             flash[:notice] = I18n.t('notices.session_expired')
@@ -95,14 +93,22 @@ class ApplicationController < BaseController
       unless generally_authorized?
         respond_to do |format|
           format.html do
-            flash[:error] = I18n.t('notices.access_denied')
-            redirect_to denied_path(:return_to => request.url)
+            render_denied_page
           end
           format.json do
-            render json: {message: I18n.t('notices.access_denied')}, status: 403
+            render_denied_json
           end
         end
       end
+    end
+
+    def render_denied_page
+      flash[:error] = I18n.t('notices.access_denied')
+      render template: 'authentication/denied', status: 403
+    end
+
+    def render_denied_json
+      render json: {message: I18n.t('notices.access_denied')}, status: 403
     end
 
     def session_expired?
@@ -236,14 +242,11 @@ class ApplicationController < BaseController
         :tag_list,
         :synonyms => [],
         :datings_attributes => [:id, :_destroy, :label, :dating_string],
-        :new_datings_attributes => [:id, :_destroy, :label, :dating_string],
-        :existing_datings_attributes => [:id, :_destroy, :label, :dating_string],
         :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
         :medium_attributes => [:id, :image, :document]
       ).tap do |e|
         e[:properties] ||= []
-        e[:existing_datings_attributes] ||= {}
         e[:synonyms] ||= []
       end
     end

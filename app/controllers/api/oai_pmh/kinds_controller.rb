@@ -13,7 +13,7 @@ class Api::OaiPmh::KindsController < Api::OaiPmh::BaseController
   protected
 
     def records
-      Kind.all
+      Kind.with_deleted
     end
 
     def base_url

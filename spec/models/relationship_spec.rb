@@ -40,4 +40,44 @@ describe Relationship do
     expect(Relationship.count).to eq(2)
   end
 
+  it "should accept nested attributes for entity datings" do
+    leonardo = FactoryGirl.create :leonardo
+    mona_lisa = FactoryGirl.create :mona_lisa
+    has_created = FactoryGirl.create :has_created
+
+    relationship = Relationship.create(
+      relation: has_created,
+      from: leonardo,
+      to: mona_lisa,
+      datings_attributes: [
+        {label: 'erste Phase', dating_string: '11. Jahrhundert'},
+        {label: 'zweite Phase', dating_string: '13. Jahrhundert'}
+      ]
+    )
+
+    expect(relationship.datings.count).to eq(2)
+  end
+  
+  it "should search by dating" do
+    leonardo = FactoryGirl.create :leonardo
+    mona_lisa = FactoryGirl.create :mona_lisa
+    has_created = FactoryGirl.create :has_created
+
+    relationship = Relationship.create(
+      relation: has_created,
+      from: leonardo,
+      to: mona_lisa,
+      datings_attributes: [
+        {label: 'erste Phase', dating_string: '1888'},
+        {label: 'zweite Phase', dating_string: '1890'},
+        {label: 'dritte Phase', dating_string: '1912 bis 1915'},
+      ]
+    )
+
+    expect(Relationship.dated_in("1534").count).to be_zero
+    expect(Relationship.dated_in("1999").count).to be_zero
+    expect(Relationship.dated_in("1890").count).to eql(1)
+    expect(Relationship.dated_in("1850 bis 1950").count).to eq(1)
+  end
+
 end

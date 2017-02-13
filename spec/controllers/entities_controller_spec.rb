@@ -105,25 +105,25 @@ RSpec.describe EntitiesController, type: :controller do
 
     def set_side_collection_policies(policies = {})
       policies.each do |p, c|
-        @priv.grant p, :to => c
+        Kor::Auth.grant @priv, p, :to => c
       end
     end
     
     def set_main_collection_policies(policies = {})
       policies.each do |p, c|
-        @default.grant p, :to => c
+        Kor::Auth.grant @default, p, :to => c
       end
     end
 
     it "should not allow editing without appropriate authorization" do
       current_user @admin
-      @priv.revoke :edit, from: @admins
+      Kor::Auth.revoke @priv, :edit, from: @admins
       
       get :edit, :id => @last_supper.id
-      expect(response).to redirect_to(denied_path)
+      expect(response.status).to eq(403)
       
       patch :update, :id => @last_supper.id, :entity => {:collection_id => @priv.id}
-      expect(response).to redirect_to(denied_path)
+      expect(response.status).to eq(403)
     end
     
     it "should not allow creating entities without appropriate authorization" do
@@ -131,12 +131,12 @@ RSpec.describe EntitiesController, type: :controller do
       
       get :new, kind_id: @media.id
 
-      expect(response.body).to redirect_to(denied_path)      
+      expect(response.status).to eq(403)
     end
     
     it "should allow creating entities given appropriate authorization" do
       current_user @admin
-      @default.grant :create, to: @admins
+      Kor::Auth.grant @default, :create, to: @admins
 
       get :new, kind_id: @people.id
       expect(response.status).to eq(200)
@@ -146,39 +146,39 @@ RSpec.describe EntitiesController, type: :controller do
       current_user @jdoe
 
       delete :destroy, id: @mona_lisa.id
-      expect(response).to redirect_to(denied_path)
+      expect(response.status).to eq(403)
     end
     
-    it "should not allow moving entities between collections without appropriate authorization" do
+    it "should restrict moving entities between collections" do
       current_user @admin
-      @default.revoke [:edit, :create, :delete], from: @admins
-      @priv.revoke [:edit, :create, :delete], from: @admins
+      Kor::Auth.revoke @default, [:edit, :create, :delete], from: @admins
+      Kor::Auth.revoke @priv, [:edit, :create, :delete], from: @admins
       
       patch :update, :id => @last_supper.id, :entity => {
         :collection_id => @default.id
       }
-      expect(response).to redirect_to(denied_path)
-      
-      @default.grant :create, to: @admins
-      
-      patch :update, :id => @last_supper.id, :entity => {
-        :collection_id => @default.id
-      }
-      expect(response).to redirect_to(denied_path)
-      
-      @default.grant :delete, to: @admins
+      expect(response.status).to eq(403)
+
+      Kor::Auth.grant @default, :create, to: @admins
       
       patch :update, :id => @last_supper.id, :entity => {
         :collection_id => @default.id
       }
-      expect(response).to redirect_to(denied_path)
+      expect(response.status).to eq(403)
+      
+      Kor::Auth.grant @default, :delete, to: @admins
+      
+      patch :update, :id => @last_supper.id, :entity => {
+        :collection_id => @default.id
+      }
+      expect(response.status).to eq(403)
     end
     
     it "should allow moving entities between collections given appropriate authorization" do
       current_user @admin
-      @default.grant :create, to: @admins
-      @priv.grant :edit, to: @admins
-      @priv.grant :delete, to: @admins
+      Kor::Auth.grant @default, :create, to: @admins
+      Kor::Auth.grant @priv, :edit, to: @admins
+      Kor::Auth.grant @priv, :delete, to: @admins
             
       patch :update, :id => @last_supper.id, :entity => {
         :collection_id => @default.id
@@ -192,7 +192,7 @@ RSpec.describe EntitiesController, type: :controller do
       current_user @jdoe
       
       get :recent
-      expect(response).to redirect_to(denied_path)
+      expect(response.status).to eq(403)
     end
     
     it "should show the recent entities with edit rights" do
@@ -206,7 +206,7 @@ RSpec.describe EntitiesController, type: :controller do
       current_user @jdoe
       
       get :invalid
-      expect(response).to redirect_to(denied_path)
+      expect(response.status).to eq(403)
     end
     
     it "should show the invalid entities with delete rights" do
@@ -306,7 +306,7 @@ RSpec.describe EntitiesController, type: :controller do
       @default = FactoryGirl.create :default
       @admins = FactoryGirl.create :admins
       @admin = FactoryGirl.create :admin, groups: [@admins]
-      @default.grant :all, :to => @admins
+      Kor::Auth.grant @default, :all, :to => @admins
       @works = FactoryGirl.create(:works,
         generators: [FactoryGirl.create(:language_indicator)],
         fields: [Field.new(name: 'viaf_id', show_label: 'stack')]

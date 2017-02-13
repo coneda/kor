@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Kor do
   
-  it "should create authentication data" do
+  it "should notify expiring users" do
     expect(ActionMailer::Base.deliveries.size).to eq(0)
   
     FactoryGirl.create :jdoe, :expires_at => 1.week.from_now
@@ -10,7 +10,7 @@ describe Kor do
     FactoryGirl.create :admin
     expect(User.count).to eql(3)
   
-    Kor.notify_expiring_users
+    Kor::Tasks.notify_expiring_users
     
     expect(ActionMailer::Base.deliveries.size).to eql(1)
   end

@@ -1,5 +1,7 @@
 class Relationship < ActiveRecord::Base
   serialize :properties
+
+  acts_as_paranoid
   
   belongs_to :owner, :class_name => "User"
   belongs_to :relation
@@ -9,11 +11,16 @@ class Relationship < ActiveRecord::Base
   belongs_to :normal, class_name: "DirectedRelationship", dependent: :destroy, autosave: true
   belongs_to :reversal, class_name: "DirectedRelationship", dependent: :destroy, autosave: true
 
+  has_many :datings, :class_name => "RelationshipDating", :dependent => :destroy
+
   validates :from_id, :to_id, :relation_id, presence: true
+  validates_associated :datings
   
   before_validation :ensure_direction
   after_validation :ensure_uuid, :ensure_unique_properties, :ensure_directed
   after_commit :connect_directed
+
+  accepts_nested_attributes_for :datings, allow_destroy: true
 
   def ensure_unique_properties
     self.properties = self.properties.uniq
@@ -109,7 +116,21 @@ class Relationship < ActiveRecord::Base
     end
 
     result = result.where('NOT (' + conditions.join(' OR ') + ')', *values)
-  }  
+  }
+  scope :dated_in, lambda {|dating|
+    if dating.present?
+      if parsed = Dating.parse(dating)
+        joins(:datings).
+        distinct(:relationship_id).
+        where("relationship_datings.to_day > ?", Dating.julian_date_for(parsed[:from])).
+        where("relationship_datings.from_day < ?", Dating.julian_date_for(parsed[:to]))
+      else
+        none
+      end
+    else
+      all
+    end
+  }
 
   def self.relate_and_save(from_id, relation_name, to_id, properties = [])
     r = relate(from_id, relation_name, to_id, properties)

@@ -3,7 +3,7 @@
   - content_for :form_errors, error_box(:object => @collection)
 
   = form_for @collection, :html => {:class => 'kor_form'}, :builder => Kor::FormBuilder do |f|
-    - @collection.policies.each do |policy|
+    - Kor::Auth.policies.each do |policy|
       = f.kor_input policy, 
         :control => credentials_selector_tag("collection[grants_by_policy][#{policy}][]",
           :replace => true,

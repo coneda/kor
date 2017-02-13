@@ -3,7 +3,8 @@ class Kor::Statistics::Simple
   def initialize(options = {})
     @options = options
   end
-  
+
+  # TODO: use progress_bar  
   def run
     @counter = 0
 
@@ -12,12 +13,10 @@ class Kor::Statistics::Simple
       
       process item
     end
-    
-    report
   end
-  
+
   def report_progress
-    if @options[:progress] && @counter % 20 == 0
+    if @options[:verbose] && @counter % 20 == 0
       puts "processing #{@counter} out of #{total}"
     end
     

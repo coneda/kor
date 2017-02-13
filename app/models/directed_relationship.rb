@@ -26,6 +26,9 @@ class DirectedRelationship < ActiveRecord::Base
   scope :by_to_entity, lambda { |entity_id| 
     entity_id.present? ? where(to_id: entity_id) : all
   }
+  scope :by_to_name, lambda { |entity_name|
+    entity_name.present? ? with_to.where('tos.name = ?', "%#{entity_name}%") : all
+  }
   scope :by_relation_name, lambda { |relation_name|
     relation_name.present? ? where(relation_name: relation_name) : all
   }
