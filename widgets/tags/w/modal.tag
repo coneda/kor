@@ -1,30 +1,32 @@
-<w-modal style="display: none">
+<w-modal show={active}>
 
-  <div name="receiver"></div>
+  <div class="receiver" ref="receiver"></div>
 
   <script type="text/coffee">
-    self = this
-    self.active = false
+    tag = this
+    tag.active = false
+    tag.mountedTag = null
 
-    wApp.bus.on 'modal', (tag, opts = {}) ->
-      opts.modal = self
-      riot.mount self.receiver, tag, opts
-      Zepto(self.root).show()
-      self.active = true
+    wApp.bus.on 'modal', (tagName, opts = {}) ->
+      opts.modal = tagName
+      tag.mountedTag = riot.mount(tag.refs.receiver, tagName, opts)[0]
+      tag.active = true
+      tag.update()
 
     Zepto(document).on 'keydown', (event) ->
-      if event.key == 'Escape'
-        self.trigger 'close'
+      if tag.active && event.key == 'Escape'
+        tag.trigger 'close'
 
-    self.on 'mount', ->
-      Zepto(self.root).on 'click', (event) ->
-        if event.target == self.root
-          self.trigger 'close'
+    tag.on 'mount', ->
+      Zepto(tag.root).on 'click', (event) ->
+        if tag.active && event.target == tag.root
+          tag.trigger 'close'
 
-    self.on 'close', ->
-      if self.active
-        Zepto(self.root).hide()
-        self.active = false
+    tag.on 'close', ->
+      if tag.active
+        tag.active = false
+        tag.mountedTag.unmount(true)
+        tag.update()
 
   </script>
 

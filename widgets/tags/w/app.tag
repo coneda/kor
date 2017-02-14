@@ -9,15 +9,14 @@
     tag = this
 
     tag.on 'mount', ->
-      console.log(tag)
       wApp.routing.setup()
     
     wApp.bus.on 'routing:path', (parts) ->
-      tag = null
+      tagName = null
       opts = {}
 
-      if tag
-        riot.mount Zepto('.w-content')[0], tag, opts
+      if tagName
+        riot.mount Zepto('.w-content')[0], tagName, opts
         window.scrollTo(0, 0)
 
   </script>

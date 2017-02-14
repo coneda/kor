@@ -12,9 +12,9 @@ function all {
   vendor
   lib
   tags
+  css
   app
   html
-  css
 }
 
 function watch {
@@ -24,9 +24,9 @@ function watch {
     "widgets/build.sh watch_vendor" \
     "widgets/build.sh watch_lib" \
     "widgets/build.sh watch_tags" \
+    "widgets/build.sh watch_css" \
     "widgets/build.sh watch_app" \
-    "widgets/build.sh watch_html" \
-    "widgets/build.sh watch_css"
+    "widgets/build.sh watch_html"
 }
 
 function server {
@@ -48,7 +48,6 @@ function vendor {
 function lib {
   log "compiling lib"
   cat widgets/app.js.coffee widgets/lib/* | node_modules/.bin/coffee -s -b -p > public/lib.js
-  cat widgets/app.js.coffee | node_modules/.bin/coffee -s -b -p > public/boot.js
 }
 
 function tags {
@@ -58,8 +57,13 @@ function tags {
 
 function app {
   log "concatenating app"
-  uglifyjs public/vendor.js public/lib.js public/tags.js -o public/app.js
-  uglifyjs public/app.js public/boot.js -o public/app-boot.js
+  uglifyjs public/vendor.js public/lib.js public/tags.js -b -o public/app-noboot.js
+  uglifyjs public/app-noboot.js widgets/boot.js -b -o public/app.js
+}
+
+function css {
+  log "compiling style sheets"
+  node-sass widgets/app.scss > public/app.css
 }
 
 function html {
@@ -68,12 +72,6 @@ function html {
     local TARGET=$(echo $TPL | sed -E "s/\.ejs$//" | sed -E "s/^widgets\///")
     widgets/build.js $TPL > public/$TARGET
   done
-}
-
-function css {
-  log "compiling css"
-  node-sass widgets/app.scss > public/tags.css
-  cat public/vendor.css public/tags.css > public/all.css
 }
 
 function watch_vendor {
@@ -89,15 +87,19 @@ function watch_tags {
 }
 
 function watch_app {
-  onchange public/vendor.js public/lib.js public/tags.js -- widgets/build.sh app
-}
-
-function watch_html {
-  onchange public/app.js public/vendor.* widgets/*.html.ejs -- widgets/build.sh html
+  onchange \
+    public/vendor.js public/lib.js public/tags.js public/styles.css \
+    -- widgets/build.sh app
 }
 
 function watch_css {
-  onchange widgets/styles widgets/app.scss -- widgets/build.sh css
+  onchange widgets/styles -- widgets/build.sh css
+}
+
+function watch_html {
+  onchange \
+    public/app.js public/vendor.* widgets/*.html.ejs \
+    -- widgets/build.sh html
 }
 
 function log {
