@@ -29,6 +29,7 @@
     "karma-phantomjs-launcher": "^1.0.2",
     "node-glob": "^1.2.0",
     "node-sass": "^4.5.0",
+    "font-awesome": "^4.6.3",
     "node-static": "^0.7.8",
     "onchange": "^3.2.1",
     "parallelshell": "^2.0.0",
