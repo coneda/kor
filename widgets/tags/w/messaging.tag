@@ -1,5 +1,4 @@
 <w-messaging>
-
   <div
     each={message in messages}
     class="message {'error': error(message), 'notice': notice(message)}"
@@ -12,10 +11,9 @@
   <script type="text/coffee">
     self = this
 
-    $(document).on 'ajaxComplete', (event, request, options) ->
+    Zepto(document).on 'ajaxComplete', (event, request, options) ->
       try
         data = JSON.parse(request.response)
-        # console.log data
         if data.message
           type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
           wApp.bus.trigger 'message', type, data.message

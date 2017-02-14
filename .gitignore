@@ -38,12 +38,10 @@ db/*.sqlite3
 coverage
 
 node_modules
-npm-debug.log
 public/*.html
 public/*.css
 public/*.js
 public/fonts
-widgets/tmp
 
 # Testing
 screenshot.png
