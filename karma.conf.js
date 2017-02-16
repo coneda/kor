@@ -1,11 +1,11 @@
 module.exports = function(config) {
   config.set({
     basePath: '',
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine-ajax', 'jasmine'],
     files: [
-      'widgets/spec/helper.js',
       'public/app.css',
       'public/app-noboot.js',
+      'widgets/spec/helper.js',
       'widgets/spec/tags/**/*.spec.js'
     ],
     exclude: [],
@@ -14,12 +14,18 @@ module.exports = function(config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
+    browserConsoleLogOptions: {
+      level: "debug", format: "%b %T: %m", terminal: true
+    },
     autoWatch: true,
     browsers: [
       // 'Firefox', 'Chromium',
       'PhantomJS'
     ],
     singleRun: false,
-    concurrency: Infinity
+    concurrency: Infinity,
+    client: {
+      captureConsole: true
+    }
   })
 }

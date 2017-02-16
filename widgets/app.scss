@@ -1,25 +1,12 @@
 @import 'styles/palette';
 
-@import 'styles/w/app';
 @import 'styles/w/messaging';
 @import 'styles/w/modal';
-@import 'styles/w/bar_chart';
+// @import 'styles/w/bar_chart';
 
 @import '../public/vendor';
 
-@import 'styles/application';
-@import 'styles/entity';
-@import 'styles/notifications';
-@import 'styles/search';
-
-.kor {
-  font-family: verdana;
-  font-size: 11px;
-  background-color: $kor-bg;
-  color: $kor-text;
-
-  a {
-    text-decoration: underline;
-    color: $kor-text;
-  }
-}
+@import 'styles/app';
+// @import 'styles/entity';
+// @import 'styles/notifications';
+// @import 'styles/search';

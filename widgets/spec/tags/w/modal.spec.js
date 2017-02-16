@@ -1,13 +1,10 @@
 describe("w-modal", function() {
-  var $ = Zepto;
   var tag = null;
 
   beforeEach(spec.ensureTagElement);
   beforeEach(function() {
-    // spec.unmount(tag);
     riot.unregister('spec-sample')
   });
-  // afterEach(function(){spec.unmount(tag)});
 
   it('should show a tag with options', function() {
     riot.tag('spec-sample', '<p>hello {opts.person}</p>');
@@ -28,14 +25,17 @@ describe("w-modal", function() {
     riot.tag('spec-sample', '<div>wide</div>', '[data-is=spec-sample] div {width: 850px}');
     tag = spec.mount('w-modal');
     wApp.bus.trigger('modal', 'spec-sample');
-    expect($(tag.refs.receiver).width()).toEqual(850 + 16);
+    expect($(tag.refs.receiver).width()).toBeGreaterThan(850 + 10);
+    expect($(tag.refs.receiver).width()).toBeLessThan(850 + 20);
   });
 
   it('should use a scroll bar on vertical overflow', function() {
     riot.tag('spec-sample', '<div>tall</div>', '[data-is=spec-sample] div {height: 3200px}');
     tag = spec.mount('w-modal');
     wApp.bus.trigger('modal', 'spec-sample');
-    expect($(tag.refs.receiver).height()).toEqual($(window).height() * 0.8);
+    var targetHeight = Math.floor($(window).height() * 0.8);
+    expect($(tag.refs.receiver).height()).toBeLessThan(targetHeight + 5);
+    expect($(tag.refs.receiver).height()).toBeGreaterThan(targetHeight - 5);
   });
 
 });

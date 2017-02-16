@@ -2,6 +2,10 @@ Feature: Authentication and Authorization
   In order to have different responsabilities
   As a User
   I should have to authenticate and be authorized accordingly
+
+  Scenario: show the login page unless there is a guest account
+  Scenario: with a guest account, without authentication, show the expert search
+  Scenario: with no guest account, when authenticated, show the expert search  
   
   
   Scenario: Reset password with wrong email address

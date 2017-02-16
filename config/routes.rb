@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   match 'resolve(/:kind)/:id', :to => 'identifiers#resolve', via: :get
   
-  root :to => 'main#welcome'
+  root :to => 'main#welcome', as: 'root'
   match '/welcome', :to => 'main#welcome', :via => :get
   
   match '/authentication/form' => redirect('/login'), :via => :get
@@ -129,11 +129,11 @@ Rails.application.routes.draw do
   end
 
   controller 'authentication' do
-    match '/authenticate', :action => 'login', :via => :post
-    match '/env_auth', action: 'env_auth', via: :get
-    match '/login', :action => 'form', :as => :login, :via => :get
-    match '/login', :action => 'login', :via => :post
-    match '/logout', :action => 'logout', :as => :logout, :via => [:get, :delete]
+    # match '/authenticate', :action => 'login', :via => :post
+    # match '/env_auth', action: 'env_auth', via: :get
+    # match '/login', :action => 'form', :as => :login, :via => :get
+    # match '/login', :action => 'login', :via => :post
+    # match '/logout', :action => 'logout', :as => :logout, :via => [:get, :delete]
     match '/password_forgotten', :action => 'password_forgotten', :via => :get
     match '/password_reset', :action => 'personal_password_reset', :via => :post
   end
@@ -146,7 +146,6 @@ Rails.application.routes.draw do
   match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current, :via => [:get, :delete]
   
   scope '/tools', :controller => 'tools' do
-    match 'session_info', :action => 'session_info', :via => :get
     match 'clipboard', :action => 'clipboard', :via => :get
     match 'statistics', :action => 'statistics', :via => :get
     match 'credits', :action => 'credits', :via => :get
@@ -167,6 +166,27 @@ Rails.application.routes.draw do
     match 'contact', :action => 'contact', :via => :get
     match 'about', :action => 'about', :via => :get
     match 'help', :action => 'help', :via => :get
+  end
+
+  defaults format: :json do
+    controller 'session' do
+      match 'session', action: 'show', via: 'get'
+      match 'login', action: 'create', via: 'post'
+      match 'logout', action: 'destroy', via: 'delete'
+      match 'reset_password', action: 'reset_password', via: 'post'
+    end
+
+    controller 'main' do
+      match 'translations', action: 'translations', via: 'get'
+      match 'info', action: 'info', via: 'get'
+      match 'config', action: 'kor_config', via: 'get'
+    end
+  end
+
+  
+
+  controller 'session' do
+    match '/env_auth', action: 'create', via: :get
   end
   
   namespace 'api', :format => :json do

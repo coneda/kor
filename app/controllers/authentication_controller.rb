@@ -111,18 +111,6 @@ class AuthenticationController < ApplicationController
     end
   end
   
-  def logout
-    reset_session
-
-    respond_to do |format|
-      format.html do
-        flash[:notice] = I18n.t("notices.logged_out")
-        redirect_to root_path
-      end
-      format.json {render json: {'message' => I18n.t("notices.logged_out")}}
-    end
-  end
-  
 
   private
 

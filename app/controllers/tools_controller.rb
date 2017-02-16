@@ -99,11 +99,6 @@ class ToolsController < ApplicationController
     end
   end
 
-  def session_info
-    session[:show_session_info] = params[:show] == 'show'
-    render :nothing => true
-  end
-  
   def groups_menu
     session[:expand_group_menu] = params[:folding] == 'expand'
     render :nothing => true

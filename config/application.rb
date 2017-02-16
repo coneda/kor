@@ -100,3 +100,5 @@ end
 # TODO: replace extended json views with customized json views
 # TODO: change denied redirect to denied action rendering
 # TODO: use http://errbit.com/ instead of custom exception logger
+# TODO: make password retrieval not reset the password until the confirmation
+#       link within the email was clicked

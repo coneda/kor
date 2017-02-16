@@ -263,7 +263,7 @@ class User < ActiveRecord::Base
   end
   
   def self.guest
-    if user = find_by_name('guest')
+    if user = find_by(name: 'guest')
       user.active? ? user : nil
     end
   end
@@ -389,6 +389,10 @@ class User < ActiveRecord::Base
     else
       super
     end
+  end
+
+  def inactive?
+    !active?
   end
 
   def expires_at

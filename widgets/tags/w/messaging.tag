@@ -12,13 +12,13 @@
     self = this
 
     Zepto(document).on 'ajaxComplete', (event, request, options) ->
-      try
+      contentType = request.getResponseHeader('content-type')
+      
+      if contentType == 'application/json' && request.response
         data = JSON.parse(request.response)
         if data.message
           type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
           wApp.bus.trigger 'message', type, data.message
-      catch e
-        console.log e
 
     self.on 'mount', -> self.messages = []
     wApp.bus.on 'message', (type, message) -> 
