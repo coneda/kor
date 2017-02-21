@@ -102,3 +102,4 @@ end
 # TODO: use http://errbit.com/ instead of custom exception logger
 # TODO: make password retrieval not reset the password until the confirmation
 #       link within the email was clicked
+# TODO: make sure terms_accepted? is respected by all controllers and actions

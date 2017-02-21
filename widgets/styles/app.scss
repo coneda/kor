@@ -1,3 +1,7 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
 html {
   font-family: helvetica, arial;
   font-size: 11px;
@@ -14,6 +18,29 @@ body {
   background-color: $kor-bg;
 }
 
+h1 {
+  font-size: 1.4rem;
+  font-weight: bold;
+  line-height: 1.8rem;
+  color: $kor-shine;
+  margin-top: 4rem;
+  margin-bottom: 3rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  line-height: 1.6rem;
+}
+
+h3 {
+  font-size: 1rem;
+  line-leight: 1.4rem;
+}
+
+h1:first-child, h2:first-child, h3:first-child {
+  margin-top: 0rem;
+}
+
 
 w-app, [data-is=w-app] {
   padding: 2rem;
@@ -24,7 +51,8 @@ w-app, [data-is=w-app] {
 
   .w-content {
     margin-left: 18rem;
-    min-width: 60rem;
+    min-width: 65rem;
+    min-height: 40rem;
     box-shadow: 0px 0px 25px #000000;
   }
 }
@@ -56,6 +84,10 @@ kor-menu, [data-is=kor-menu] {
 
 .clearfix {
   clear: both;
+}
+
+.kor-shine {
+  color: $kor-shine;
 }
 
 // @keyframes kor-appear {

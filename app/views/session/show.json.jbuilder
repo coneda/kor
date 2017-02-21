@@ -21,6 +21,7 @@ json.session do
         json.email current_user.email
         json.history current_user.history
         json.clipboard current_user.clipboard
+        json.terms_accepted current_user.terms_accepted?
       end
     end
   end

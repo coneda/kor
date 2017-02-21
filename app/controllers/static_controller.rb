@@ -1,8 +1,6 @@
 class StaticController < ApplicationController
   skip_before_filter :authentication, :authorization, :maintenance, :except => :help
   
-  layout 'wide'
-  
   def under_maintenance
     # this is for getting back to the login when the user presses f5
     if Kor.under_maintenance?
@@ -14,16 +12,21 @@ class StaticController < ApplicationController
   end
 
   def legal
+    html = RedCloth.new(Kor.config['maintainer.legal_text']).to_html
+    render json: {html: html}
   end
 
   # TODO: rename the contact.txt to about.txt  
   def about
+
   end
   
   def error
+
   end
   
   def help
+
   end
   
   def blaze

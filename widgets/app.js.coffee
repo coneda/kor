@@ -3,7 +3,7 @@ Zepto.extend Zepto.ajaxSettings, {
   contentType: 'application/json'
   accept: 'application/json'
   beforeSend: (xhr, settings) ->
-    xhr.always ->
+    xhr.then ->
       console.log('ajax log', xhr.requestUrl, JSON.parse(xhr.response))
 
     xhr.requestUrl = settings.url

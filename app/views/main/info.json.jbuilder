@@ -5,4 +5,5 @@ json.info do
   json.email Kor.config['maintainer']['email']
   json.url root_url
   json.uuid Kor.repository_uuid
+  json.source_code_url Kor.source_code_url
 end

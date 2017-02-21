@@ -161,12 +161,6 @@ Rails.application.routes.draw do
     match 'add_media/:id', :action => 'add_media', :via => :get
   end
   
-  scope 'static', :controller => 'static' do
-    match 'legal', :action => 'legal', :via => :get
-    match 'contact', :action => 'contact', :via => :get
-    match 'about', :action => 'about', :via => :get
-    match 'help', :action => 'help', :via => :get
-  end
 
   defaults format: :json do
     controller 'session' do
@@ -181,6 +175,13 @@ Rails.application.routes.draw do
       match 'info', action: 'info', via: 'get'
       match 'config', action: 'kor_config', via: 'get'
     end
+
+    # controller 'static' do
+    #   match 'legal', :action => 'legal', :via => :get
+    #   match 'contact', :action => 'contact', :via => :get
+    #   match 'about', :action => 'about', :via => :get
+    #   match 'help', :action => 'help', :via => :get
+    # end
   end
 
   

@@ -4109,7 +4109,7 @@ Zepto.extend(Zepto.ajaxSettings, {
     contentType: "application/json",
     accept: "application/json",
     beforeSend: function(xhr, settings) {
-        xhr.always(function() {
+        xhr.then(function() {
             return console.log("ajax log", xhr.requestUrl, JSON.parse(xhr.response));
         });
         xhr.requestUrl = settings.url;
@@ -4403,6 +4403,7 @@ wApp.routing = {
     },
     setup: function() {
         wApp.routing.route = route.create();
+        route.base("#/");
         wApp.routing.route(function() {
             var old_parts;
             old_parts = wApp.routing.parts();
@@ -4588,11 +4589,12 @@ riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a
 
 riot.tag2("kor-loading", "<span>... loading ...</span>", "", "", function(opts) {});
 
-riot.tag2("kor-login", '<h1>Login</h1> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <hr> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
+riot.tag2("kor-login", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>Login</h1> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <kor-input type="submit" riot-value="{tcap(\'verbs.login\')}"></kor-input> <a href="#/password_recovery">{tcap(\'password_forgotten\')}</a> <div class="hr"></div> <strong> <span class="kor-shine">ConedaKOR</span> {t(\'nouns.version\')} <span class="kor-shine">{info().version}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'provided_by\')} <span class="kor-shine">{info().operator}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'nouns.license\')}<br> <a href="http://www.gnu.org/licenses/agpl-3.0.txt" target="_blank"> {t(\'nouns.agpl\')} </a> </strong> <div class="hr silent"></div> <strong> » <a href="{info().source_code_url}" target="_blank"> {t(\'objects.download\', {interpolations: {o: \'nouns.source_code\'}})} </a> </strong> </form> </div> </div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.info);
     tag.submit = function(event) {
         var password, username;
         event.preventDefault();
@@ -4656,7 +4658,7 @@ riot.tag2("kor-search", '<h1>Search</h1> <form class="form"> <div class="row"> <
 
 riot.tag2("kor-welcome", "<h2>Welcome</h2>", "", "", function(opts) {});
 
-riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'}" type="{opts.type || \'text\'}" name="{opts.name}" placeholder="{opts.placeholder || opts.label}" riot-value="{value_from_parent()}" checked="{checked()}"> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{value_from_parent()}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value}"> {item.name || item.label} </option> </select> </label> <div class="kor-errors"> <div each="{e in opts.errors}">{e}</div> </div>', "", "", function(opts) {
+riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'}" type="{opts.type || \'text\'}" name="{opts.name}" placeholder="{opts.placeholder || opts.label}" riot-value="{value_from_parent()}" checked="{checked()}"> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{value_from_parent()}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value}"> {item.name || item.label} </option> </select> </label> <div class="kor-errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.value = function() {
@@ -4670,11 +4672,11 @@ riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'
         if (tag.opts.type === "checkbox") {
             return 1;
         } else {
-            return tag.opts.value;
+            return tag.opts.riotValue;
         }
     };
     tag.checked = function() {
-        return tag.opts.type === "checkbox" && tag.opts.value;
+        return tag.opts.type === "checkbox" && tag.opts.riotValue;
     };
     tag.set = function(value) {
         if (tag.opts.type === "checkbox") {
@@ -4684,12 +4686,23 @@ riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'
         }
     };
     tag.reset = function() {
-        console.log(tag.value_from_parent());
         return tag.set(tag.value_from_parent());
     };
 });
 
-riot.tag2("kor-legal", "<h1>LEGAL</h1>", "", "", function(opts) {});
+riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> <div if="{!termsAccepted()}"> <div class="hr"></div> <button> {tcap(\'commands.accept_terms\')} </button> </div> </div> </div>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.config);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        return Zepto(tag.root).find(".target").html(tag.config().maintainer.legal_html);
+    });
+    tag.termsAccepted = function() {
+        return tag.currentUser() && tag.currentUser().terms_accepted;
+    };
+});
 
 riot.tag2("kor-entity", '<div class="auth" if="{!authorized}"> <strong>Info</strong> <p> It seems you are not allowed to see this content. Please <a href="{login_url()}">login</a> to the kor installation first. </p> </div> <a href="{url()}" if="{authorized}" target="_blank"> <img if="{data.medium}" riot-src="{image_url()}"> <div if="{!data.medium}"> <h3>{data.display_name}</h3> <em if="{include(\'kind\')}"> {data.kind_name} <span show="{data.subtype}">({data.subtype})</span> </em> </div> </a>', "", "class=\"{'kor-style': opts.korStyle, 'kor': opts.korStyle}\"", function(opts) {
     var self;
@@ -4804,39 +4817,50 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
         var opts, tagName;
         tagName = "kor-loading";
         opts = {};
-        tagName = function() {
-            switch (parts.hash_path) {
-              case "/login":
-                return "kor-login";
-
-              case "/stats":
-                return "kor-stats";
-
-              case "/legal":
-                return "kor-legal";
-
-              case "/about":
-                return "kor-about";
-
-              default:
-                if (tag.currentUser()) {
-                    switch (parts.hash_path) {
-                      case "search":
-                        return "kor-search";
-
-                      case "gallery":
-                        return "kor-gallery";
-
-                      default:
-                        return "kor-search";
-                    }
-                } else {
+        if (tag.currentUser() && !tag.isGuest() && parts.hash_path === "/login") {
+            return wApp.routing.path("/search");
+        } else {
+            tagName = function() {
+                switch (parts.hash_path) {
+                  case "/login":
                     return "kor-login";
+
+                  case "/stats":
+                    return "kor-stats";
+
+                  case "/legal":
+                    return "kor-legal";
+
+                  case "/about":
+                    return "kor-about";
+
+                  default:
+                    if (tag.currentUser()) {
+                        if (!tag.isGuest() && !tag.currentUser().terms_accepted && parts.hash_path !== "/legal") {
+                            wApp.routing.path("/legal");
+                            return null;
+                        } else {
+                            switch (parts.hash_path) {
+                              case "search":
+                                return "kor-search";
+
+                              case "gallery":
+                                return "kor-gallery";
+
+                              default:
+                                return "kor-search";
+                            }
+                        }
+                    } else {
+                        return "kor-login";
+                    }
                 }
+            }();
+            if (tagName) {
+                riot.mount(Zepto(".w-content")[0], tagName, opts);
+                return window.scrollTo(0, 0);
             }
-        }();
-        riot.mount(Zepto(".w-content")[0], tagName, opts);
-        return window.scrollTo(0, 0);
+        }
     };
 });
 
@@ -4942,13 +4966,17 @@ riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'er
         return self.update();
     });
     ajaxCompleteHandler = function(event, request, options) {
-        var contentType, data, type;
+        var contentType, data, e, type;
         contentType = request.getResponseHeader("content-type");
         if (contentType.match(/^application\/json/) && request.response) {
-            data = JSON.parse(request.response);
-            if (data.message) {
-                type = request.status >= 200 && request.status < 300 ? "notice" : "error";
-                return wApp.bus.trigger("message", type, data.message);
+            try {
+                data = JSON.parse(request.response);
+                if (data.message) {
+                    type = request.status >= 200 && request.status < 300 ? "notice" : "error";
+                    return wApp.bus.trigger("message", type, data.message);
+                }
+            } catch (error) {
+                e = error;
             }
         }
     };

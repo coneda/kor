@@ -18,9 +18,11 @@ class MainController < ApplicationController
   end
 
   def kor_config
-    sleep 1
     # TODO: make this more selective as it might contain confidential data
-    render json: {'config' => Kor.config.raw}
+    @raw = Kor.config.raw
+    @raw['maintainer']['legal_html'] = RedCloth.new(@raw['maintainer']['legal_text']).to_html
+
+    render json: {'config' => @raw}
   end
 
   def statistics

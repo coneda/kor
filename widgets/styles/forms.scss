@@ -1,0 +1,37 @@
+kor-input, [data-is=kor-input] {
+  display: block;
+  margin-bottom: 1rem;
+
+  label {
+    font-weight: bold;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    border: 0.1rem solid $kor-input-border;
+    background-color: $kor-input-bg;
+    font-family: helvetica, arial;
+    font-weight: bold;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: $kor-shine;
+    padding-left: 0.4rem;
+    outline: none;
+  }
+
+  input:focus, textarea:focus {
+    background-color: $kor-input-bg-focus;
+  }
+
+  input[type=submit] {
+    border: none;
+    cursor: pointer;
+    width: auto;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  input[type=submit]:hover {
+    background-color: $kor-button-highlight;
+  }
+}

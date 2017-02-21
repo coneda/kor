@@ -9,5 +9,11 @@ kor-header, [data-is=kor-header] {
 
   .session {
     float: right;
+
+    img {
+      margin-top: -0.5rem;
+      position: relative;
+      top: 0.5rem;
+    }
   }
 }

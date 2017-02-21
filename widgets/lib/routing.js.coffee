@@ -44,7 +44,7 @@ wApp.routing = {
     wApp.routing.parts_cache
   setup: ->
     wApp.routing.route = route.create()
-    # route.base "#/"
+    route.base "#/"
     
     wApp.routing.route ->
       # console.log 'routing', arguments

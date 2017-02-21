@@ -30,11 +30,14 @@
       contentType = request.getResponseHeader('content-type')
 
       if contentType.match(/^application\/json/) && request.response
-        data = JSON.parse(request.response)
-        # console.log data
-        if data.message
-          type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
-          wApp.bus.trigger 'message', type, data.message
+        try
+          data = JSON.parse(request.response)
+          
+          if data.message
+            type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
+            wApp.bus.trigger 'message', type, data.message
+        catch e
+          # console.log request
 
     self.drop = ->
       self.messages.shift()
