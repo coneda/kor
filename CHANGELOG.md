@@ -13,8 +13,8 @@ commit history on GitHub.
 * OAI-PMH responses now all fully support deleted records à la
   `<deletedRecord>persistent</deletedRecord>`
 * relationships may now have one or more date ranges
-* the legal page doesn't include a fixed headline anymore, it should be included
-  within the configured text
+* the legal and about pages don't include a fixed headline anymore, this should
+  be included within the configured text
 
 ## Version 2.0.1
 

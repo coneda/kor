@@ -1,3 +1,17 @@
 <kor-about>
-  <h1>ABOUT</h1>
+  <div class="kor-layout-left kor-layout-large">
+    <div class="kor-content-box">
+      <div class="target"></div>
+    </div>
+  </div>
+
+  <script type="text/coffee">
+    tag = this
+    tag.mixin(wApp.mixins.config)
+
+    tag.on 'mount', ->
+      Zepto(tag.root).find('.target').html tag.config().maintainer.about_html
+
+  </script>
+
 </kor-about>

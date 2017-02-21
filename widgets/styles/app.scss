@@ -52,7 +52,6 @@ w-app, [data-is=w-app] {
   .w-content {
     margin-left: 18rem;
     min-width: 65rem;
-    min-height: 40rem;
     box-shadow: 0px 0px 25px #000000;
   }
 }
@@ -89,41 +88,3 @@ kor-menu, [data-is=kor-menu] {
 .kor-shine {
   color: $kor-shine;
 }
-
-// @keyframes kor-appear {
-//   from {
-//     opacity: 0;
-//     /*transform: rotateY(180deg);*/
-//     transform: translateX(100%);
-//   };
-//   to {
-//     opacity: 100;
-//     transform: translateX(0%);
-//   };
-// }
-
-// @keyframes kor-fade {
-//   from {opacity: 100;}
-//   to {
-//     opacity: 0;
-//     transform: rotateY(90deg);
-//   }
-// }
-
-// #page-container {
-//   perspective: 1000px;
-// }
-
-// .kor-appear-animation {
-//   transform-style: preserve-3d;
-//   display: block;
-//   animation-name: kor-appear;
-//   animation-duration: 500ms;
-// }
-
-// .kor-fade-animation {
-//   transform-style: preserve-3d;
-//   display: block;
-//   animation-name: kor-fade;
-//   animation-duration: 500ms;
-// }

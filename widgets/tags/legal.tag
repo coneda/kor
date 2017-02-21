@@ -25,13 +25,6 @@
 
     tag.termsAccepted = ->
       tag.currentUser() && tag.currentUser().terms_accepted
-
-    # tag.on 'mount', ->
-    #   Zepto.ajax(
-    #     url: '/legal'
-    #     success: (data) -> 
-    #       tag.text = data.text
-    #       tag.update()
-    #   )
+      
   </script>
 </kor-legal>

@@ -51,8 +51,19 @@
               'kor-login'
 
         if tagName
-          riot.mount Zepto('.w-content')[0], tagName, opts
-          window.scrollTo(0, 0)
+          element = Zepto('.w-content')
+
+          mountIt = ->
+            tag.mountedTag = riot.mount(element[0], tagName, opts)[0]
+            element.animate {opacity: 1.0}, 200
+            window.scrollTo(0, 0)
+
+          if tag.mountedTag
+            element.animate {opacity: 0.0}, 200, ->
+              tag.mountedTag.unmount(true)
+              mountIt()
+          else
+            mountIt()
 
   </script>
 

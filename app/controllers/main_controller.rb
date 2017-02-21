@@ -21,6 +21,7 @@ class MainController < ApplicationController
     # TODO: make this more selective as it might contain confidential data
     @raw = Kor.config.raw
     @raw['maintainer']['legal_html'] = RedCloth.new(@raw['maintainer']['legal_text']).to_html
+    @raw['maintainer']['about_html'] = RedCloth.new(@raw['maintainer']['about_text']).to_html
 
     render json: {'config' => @raw}
   end
