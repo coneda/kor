@@ -1,0 +1,13 @@
+kor-header, [data-is=kor-header] {
+  display: block;
+  margin-bottom: 3rem;
+
+  .logo {
+    display: block;
+    float: left;
+  }
+
+  .session {
+    float: right;
+  }
+}

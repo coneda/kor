@@ -26,9 +26,9 @@
       </option>
     </select>
   </label>
-  <ul class="kor-errors">
-    <li each={e in opts.errors}>{e}</li>
-  </ul>
+  <div class="kor-errors">
+    <div each={e in opts.errors}>{e}</div>
+  </div>
 
   <script type="text/coffee">
     tag = this

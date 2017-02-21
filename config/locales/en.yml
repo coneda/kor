@@ -650,6 +650,7 @@ en:
     session_expired: "your session has expired"
     maintenance_done: "the maintenance work is completed"
     logged_out: "you have been logged out successfully"
+    logged_in: "you have been logged in"
 
   errors:
     too_many_entities_for_zip: "the group contains too many images"

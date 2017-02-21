@@ -32,21 +32,23 @@ class ApplicationController < BaseController
     rescue_from StandardError do |exception|
       if Rails.env == 'production'
         Kor::ExceptionLogger.log exception, params: params
+      else
+        raise exception
       end
 
-      respond_to do |format|
-        format.html {raise exception}
-        format.json {
-          if Rails.env.test?
-            raise exception
-          else
-            render status: 500, json: {
-              'message' => exception.message,
-              'backtrace' => exception.backtrace
-            }
-          end
-        }
-      end
+      # respond_to do |format|
+      #   format.html {raise exception}
+      #   format.json {
+      #     if Rails.env.test?
+      #       raise exception
+      #     else
+      #       render status: 500, json: {
+      #         'message' => exception.message,
+      #         'backtrace' => exception.backtrace
+      #       }
+      #     end
+      #   }
+      # end
     end 
     
     def authentication
@@ -115,8 +117,12 @@ class ApplicationController < BaseController
     end
 
     def api_auth?
-      key = params[:api_key] || request.headers['api_key']
-      key && User.exists?(api_key: key)
+      if @api_auth == nil
+        key = params[:api_key] || request.headers['api_key']
+        @api_auth = (key && User.exists?(api_key: key))
+      end
+
+      @api_auth
     end
     
     def generally_authorized?

@@ -49,6 +49,7 @@ module Kor::Auth
 
     env_sources.each do |key, source|
       source['user'].each do |ku|
+        # TODO: change this to allow user@domain instead of an email attribute
         source['mail'].each do |km|
           Rails.logger.info "trying attributes user:#{ku} and mail:#{km}"
 

@@ -1,9 +1,11 @@
 <w-app>
 
   <kor-header />
-  <kor-menu />
-
-  <div class="w-content" ref="content" />
+  
+  <div>
+    <kor-menu />
+    <div class="w-content" ref="content" />
+  </div>
 
   <w-modal />
   <w-messaging />

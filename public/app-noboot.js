@@ -4107,8 +4107,14 @@ var indexOf = [].indexOf || function(item) {
 Zepto.extend(Zepto.ajaxSettings, {
     dataType: "json",
     contentType: "application/json",
+    accept: "application/json",
     complete: function(xhr) {
         return console.log(xhr.responseURL, JSON.parse(xhr.response));
+    },
+    beforeSend: function(xhr, settings) {
+        if (wApp.session.current) {
+            return xhr.setRequestHeader("X-CSRF-Token", wApp.session.csrfToken());
+        }
     }
 });
 
@@ -4136,6 +4142,22 @@ wApp.auth = {
             }
         }
         return results;
+    },
+    login: function(username, password) {
+        return Zepto.ajax({
+            type: "post",
+            url: "/login",
+            data: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
+    },
+    logout: function() {
+        return Zepto.ajax({
+            type: "delete",
+            url: "/logout"
+        });
     }
 };
 
@@ -4283,9 +4305,18 @@ wApp.info = {
         return Zepto.ajax({
             url: "/info",
             success: function(data) {
-                return wApp.info.meta = data;
+                return wApp.info.data = data;
             }
         });
+    }
+};
+
+wApp.mixins.info = {
+    info: function() {
+        return wApp.info.data;
+    },
+    rootPath: function() {
+        return this.info().url;
     }
 };
 
@@ -4381,6 +4412,9 @@ wApp.session = {
                 return wApp.session.current = data;
             }
         });
+    },
+    csrfToken: function() {
+        return wApp.session.current.csrfToken;
     }
 };
 
@@ -4531,15 +4565,35 @@ riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a
 
 riot.tag2("kor-loading", "<span>... loading ...</span>", "", "", function(opts) {});
 
-riot.tag2("kor-login", '<div class="row"> <div class="col-md-3 col-md-offset-4"> <div class="panel panel-default"> <div class="panel-heading">Login</div> <div class="panel-body"> <form class="form" method="POST" onsubmit="{submit}"> <div class="control-group"> <label for="kor-login-form-username">Username</label> <input type="text" name="username" class="form-control" id="kor-login-form-username"> </div> <div class="control-group"> <label for="kor-login-form-password">Password</label> <input type="password" name="password" class="form-control" id="kor-login-form-password"> </div> <div class="form-group text-right"></div> <input type="submit" class="form-control btn btn-default"> </div> </form> </div> </div> </div> </div>', "", "", function(opts) {
-    var self;
-    self = this;
-    self.on("mount", function() {
-        return $(self.root).find("input")[0].focus();
-    });
-    self.submit = function(event) {
+riot.tag2("kor-login", '<h1>Login</h1> <form class="form" method="POST" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <hr> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.submit = function(event) {
+        var promise;
         event.preventDefault();
-        return kor.login($(self["kor-login-form-username"]).val(), $(self["kor-login-form-password"]).val());
+        promise = wApp.auth.login(tag.refs.username.value(), tag.refs.password.value());
+        return promise.done(function() {
+            return wApp.session.setup().done(function() {
+                return riot.update();
+            });
+        });
+    };
+});
+
+riot.tag2("kor-logout", '<a href="#" onclick="{logout}"> {t(\'verbs.logout\')} </a>', "", 'show="{isLoggedIn()}"', function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.logout = function(event) {
+        event.preventDefault();
+        return wApp.auth.logout().done(function() {
+            return wApp.session.setup().done(function() {
+                return riot.update();
+            });
+        });
     };
 });
 
@@ -4582,7 +4636,7 @@ riot.tag2("kor-search", '<h1>Search</h1> <form class="form"> <div class="row"> <
 
 riot.tag2("kor-welcome", "<h2>Welcome</h2>", "", "", function(opts) {});
 
-riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'}" type="{opts.type || \'text\'}" name="{opts.name}" placeholder="{opts.placeholder || opts.label}" riot-value="{value_from_parent()}" checked="{checked()}"> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{value_from_parent()}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value}"> {item.name || item.label} </option> </select> </label> <ul class="kor-errors"> <li each="{e in opts.errors}">{e}</li> </ul>', "", "", function(opts) {
+riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'}" type="{opts.type || \'text\'}" name="{opts.name}" placeholder="{opts.placeholder || opts.label}" riot-value="{value_from_parent()}" checked="{checked()}"> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{value_from_parent()}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value}"> {item.name || item.label} </option> </select> </label> <div class="kor-errors"> <div each="{e in opts.errors}">{e}</div> </div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.value = function() {
@@ -4698,7 +4752,7 @@ riot.tag2("w-app-loader", '<div class="app"></div>', "", "", function(opts) {
     });
 });
 
-riot.tag2("w-app", '<kor-header></kor-header> <kor-menu></kor-menu> <div class="w-content" ref="content"></div> <w-modal></w-modal> <w-messaging></w-messaging>', "", "", function(opts) {
+riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div class="w-content" ref="content"></div> </div> <w-modal></w-modal> <w-messaging></w-messaging>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -4758,14 +4812,15 @@ riot.tag2("w-bar-chart", '<svg riot-width="{width()}" riot-height="{height()}"> 
     };
 });
 
-riot.tag2("kor-header", "<span>{t('logged_in_as')}:</span> <strong>{currentUser().display_name}</strong>", "", "", function(opts) {
+riot.tag2("kor-header", '<a href="{rootPath()}" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <img src="images/vertical_dots.gif"> <span>{t(\'logged_in_as\')}:</span> <strong>{currentUser().display_name}</strong> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
+    tag.mixin(wApp.mixins.info);
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 });
 
-riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/profile">{tcap(\'edit_self\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#/new_media">{tcap(\'pages.new_media\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.simple_search\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.expert_search\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#" onclick="{toggleGroups}"> {tcap(\'nouns.group\', {count: \'other\'})} </a> <ul show="{showGroups}"> <li> <a href="#/groups/authority"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> </ul> </li> </ul> <ul show="{isLoggedIn() && allowedTo(\'create\')}"> <li> <kor-input type="select" onchange="{newEntity}" options="{kinds}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'nouns.entity\'}})}" ref="kind_id"></kor-input> </li> <li show="{isLoggedIn()}"> <a href="#/upload">{tcap(\'nouns.mass_upload\')}</a> </li> </ul> <ul show="{isLoggedIn()}"> <li show="{allowedTo(\'delete\')}"> <a href="#/upload">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/upload">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/upload">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> <ul show="{hasAnyRole()}"> <li> <a href="#" onclick="{toggleConfig}"> {tcap(\'nouns.config\', {count: \'other\'})} </a> <ul show="{showConfig}"> <li show="{hasRole(\'admin\')}"> <a href="#/config/general"> {tcap(\'general\')} </a> </li> <li show="{hasRole(\'relation_admin\')}"> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li show="{hasRole(\'kind_admin\')}"> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> </li> </ul> <ul> <li> <a href="#/stats">{tcap(\'nouns.statistics\')}</a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/dev">{tcap(\'activerecord.models.exception_log.other\')}</a> </li> </ul> <ul> <li> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li show="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer.mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
+riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/profile">{tcap(\'edit_self\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#/new_media">{tcap(\'pages.new_media\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.simple_search\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.expert_search\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#" onclick="{toggleGroups}"> {tcap(\'nouns.group\', {count: \'other\'})} </a> <ul show="{showGroups}" class="submenu"> <li> <a href="#/groups/authority"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> </ul> </li> </ul> <ul show="{isLoggedIn() && allowedTo(\'create\')}"> <li> <kor-input type="select" onchange="{newEntity}" options="{kinds}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'nouns.entity\'}})}" ref="kind_id"></kor-input> </li> <li show="{isLoggedIn()}"> <a href="#/upload">{tcap(\'nouns.mass_upload\')}</a> </li> </ul> <ul show="{isLoggedIn()}"> <li show="{allowedTo(\'delete\')}"> <a href="#/upload">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/upload">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/upload">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> <ul show="{hasAnyRole()}"> <li> <a href="#" onclick="{toggleConfig}"> {tcap(\'nouns.config\', {count: \'other\'})} </a> <ul show="{showConfig}" class="submenu"> <li show="{hasRole(\'admin\')}"> <a href="#/config/general"> {tcap(\'general\')} </a> </li> <li show="{hasRole(\'relation_admin\')}"> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li show="{hasRole(\'kind_admin\')}"> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> </li> </ul> <ul> <li> <a href="#/stats">{tcap(\'nouns.statistics\')}</a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/dev">{tcap(\'activerecord.models.exception_log.other\')}</a> </li> </ul> <ul> <li> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li show="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer.mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -4806,8 +4861,9 @@ riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'er
     Zepto(document).on("ajaxComplete", function(event, request, options) {
         var contentType, data, type;
         contentType = request.getResponseHeader("content-type");
-        if (contentType === "application/json" && request.response) {
+        if (contentType.match(/^application\/json/) && request.response) {
             data = JSON.parse(request.response);
+            console.log(data);
             if (data.message) {
                 type = request.status >= 200 && request.status < 300 ? "notice" : "error";
                 return wApp.bus.trigger("message", type, data.message);

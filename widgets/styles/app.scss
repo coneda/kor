@@ -1,17 +1,61 @@
+html {
+  font-family: helvetica, arial;
+  font-size: 11px;
+  line-height: 15px;
+  color: $kor-text;
+  
+  a {
+    color: $kor-shine;
+  }
+}
+
 body {
-  margin: 0px;
+  margin: 0rem;
   background-color: $kor-bg;
 }
 
-.kor {
-  font-family: verdana;
-  font-size: 11px;
-  color: $kor-text;
+
+w-app, [data-is=w-app] {
+  padding: 2rem;
+
+  kor-menu, [data-is=kor-menu] {
+    
+  }
+
+  .w-content {
+    margin-left: 18rem;
+    min-width: 60rem;
+    box-shadow: 0px 0px 25px #000000;
+  }
+}
+
+kor-menu, [data-is=kor-menu] {
+  width: 18rem;
+  float: left;
+
+  ul {
+    padding: 0px;
+    margin-bottom: 2rem;
+  }
+
+  ul.submenu {
+    padding-left: 1rem;
+  }
+
+  li {
+    list-style-type: none;
+  }
 
   a {
-    text-decoration: underline;
-    color: $kor-shine;
+    text-decoration: none;
+    font-weight: bold;
+    color: $kor-text;
   }
+
+}
+
+.clearfix {
+  clear: both;
 }
 
 // @keyframes kor-appear {

@@ -1,9 +1,9 @@
 class BaseController < ActionController::Base
 
   if Rails.env.production?
-    protect_from_forgery with: :null_session
+    protect_from_forgery with: :null_session, unless: :api_auth?
   else
-    protect_from_forgery with: :exception
+    protect_from_forgery with: :exception, unless: :api_auth?
   end
 
   helper_method :current_user

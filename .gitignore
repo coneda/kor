@@ -41,6 +41,7 @@ node_modules
 public/*.html
 public/*.css
 public/*.js
+public/images
 public/fonts
 
 # Testing

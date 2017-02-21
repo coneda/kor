@@ -32,7 +32,7 @@
         {tcap('nouns.group', {count: 'other'})}
       </a>
 
-      <ul show={showGroups}>
+      <ul show={showGroups} class="submenu">
         <li>
           <a href="#/groups/authority">
             {tcap('activerecord.models.authority_group.other')}
@@ -90,7 +90,7 @@
         {tcap('nouns.config', {count: 'other'})}
       </a>
 
-      <ul show={showConfig}>
+      <ul show={showConfig} class="submenu">
         <li show={hasRole('admin')}>
           <a href="#/config/general">
             {tcap('general')}

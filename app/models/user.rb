@@ -272,7 +272,6 @@ class User < ActiveRecord::Base
     name == 'guest'
   end
   
-  # TODO: still needed?
   def full_auth
     collections = {}
     Grant.group(:policy).count.each do |policy, c|
@@ -284,7 +283,7 @@ class User < ActiveRecord::Base
         :admin => admin?,
         :kind_admin => kind_admin?,
         :relation_admin => relation_admin?,
-        :authority_group_admin => authority_group_admin
+        :authority_group_admin => authority_group_admin?
       },
       :collections => collections
     }

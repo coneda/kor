@@ -15,6 +15,7 @@ function all {
   css
   app
   html
+  images
 }
 
 function watch {
@@ -26,7 +27,8 @@ function watch {
     "widgets/build.sh watch_tags" \
     "widgets/build.sh watch_css" \
     "widgets/build.sh watch_app" \
-    "widgets/build.sh watch_html"
+    "widgets/build.sh watch_html" \
+    "widgets/build.sh watch_images"
 }
 
 function server {
@@ -74,6 +76,12 @@ function html {
   done
 }
 
+function images {
+  log "copying images"
+  rm -rf public/images
+  cp -a widgets/images public/
+}
+
 function watch_vendor {
   onchange widgets/vendor -- widgets/build.sh vendor
 }
@@ -93,13 +101,17 @@ function watch_app {
 }
 
 function watch_css {
-  onchange widgets/styles -- widgets/build.sh css
+  onchange widgets/app.scss widgets/styles -- widgets/build.sh css
 }
 
 function watch_html {
   onchange \
     public/app.js public/vendor.* widgets/*.html.ejs \
     -- widgets/build.sh html
+}
+
+function watch_images {
+  onchange widgets/images -- widgets/build.sh images
 }
 
 function log {

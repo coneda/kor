@@ -1,4 +1,5 @@
 json.locale Kor.config['app.default_locale']
+json.csrfToken form_authenticity_token
 
 if current_user
   json.locale current_user.locale || Kor.config['app.default_locale']

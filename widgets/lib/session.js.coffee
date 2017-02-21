@@ -5,6 +5,7 @@ wApp.session = {
       url: '/session'
       success: (data) -> wApp.session.current = data
     )
+  csrfToken: -> wApp.session.current.csrfToken
 }
 
 wApp.mixins.sessionAware = {

@@ -4,7 +4,7 @@ class ApiController < ApplicationController
 
     def render_message(message, status)
       @message = message
-      render :status, status, action: 'layouts/message'
+      render status: status, action: 'message'
     end
 
     def render_403(message)
@@ -15,8 +15,8 @@ class ApiController < ApplicationController
       render_message message, 404
     end
 
-    def render_202(message)
-      render_message message, 202
+    def render_200(message)
+      render_message message, 200
     end
 
     def browser_path(path = '')

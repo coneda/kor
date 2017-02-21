@@ -362,6 +362,7 @@ look like this:
           remote_user:
             type: env
             user: ['REMOTE_USER']
+            mail: ['mail']
             domain: example.com
             map_to: my_user_template
 

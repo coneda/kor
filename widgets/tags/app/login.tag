@@ -1,48 +1,41 @@
 <kor-login>
-  <div class="row">
-    <div class="col-md-3 col-md-offset-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">Login</div>
-        <div class="panel-body">
-          <form class="form" method="POST" onsubmit={submit}>
-            <div class="control-group">
-              <label for="kor-login-form-username">Username</label>
-              <input
-                type="text"
-                name="username"
-                class="form-control"
-                id="kor-login-form-username"
-              />
-            </div>
-            <div class="control-group">
-              <label for="kor-login-form-password">Password</label>
-              <input
-                type="password"
-                name="password"
-                class="form-control"
-                id="kor-login-form-password"
-              />
-            </div>
-            <div class="form-group text-right"></div>
-              <input type="submit" class="form-control btn btn-default" />
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+
+  <h1>Login</h1>
+
+  <form class="form" method="POST" onsubmit={submit}>
+    <kor-input
+      label={tcap('activerecord.attributes.user.name')}
+      type="text"
+      ref="username"
+    />
+    <kor-input
+      label={tcap('activerecord.attributes.user.password')}
+      type="password"
+      ref="password"
+    />
+
+    <hr />
+
+    <kor-input
+      type="submit"
+    />
+  </form>
 
   <script type="text/coffee">
-    self = this
+    tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
 
-    self.on 'mount', -> $(self.root).find('input')[0].focus()
-
-    self.submit = (event) ->
+    tag.submit = (event) ->
       event.preventDefault()
-      kor.login(
-        $(self['kor-login-form-username']).val()
-        $(self['kor-login-form-password']).val()
+
+      promise = wApp.auth.login(
+        tag.refs.username.value(),
+        tag.refs.password.value()
       )
+
+      promise.done ->
+        wApp.session.setup().done -> riot.update()
 
   </script>
 </kor-login>

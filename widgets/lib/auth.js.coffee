@@ -2,6 +2,20 @@ wApp.auth = {
   intersect: (a, b) ->
     [a, b] = [b, a] if a.length > b.length
     value for value in a when value in b
+  login: (username, password) ->
+    Zepto.ajax(
+      type: 'post'
+      url: '/login'
+      data: JSON.stringify(
+        username: username,
+        password: password
+      )
+    )
+  logout: ->
+    Zepto.ajax(
+      type: 'delete'
+      url: '/logout'
+    )
 }
 
 wApp.mixins.auth = {
