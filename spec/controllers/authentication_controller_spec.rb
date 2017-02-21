@@ -122,8 +122,9 @@ RSpec.describe AuthenticationController, :type => :controller do
       request.env['mail'] = 'jdoe@example.com'
       request.env['full_name'] = 'John Carl Doe'
 
-      expect(Kor.config['auth.fail_on_update_errors']).to be_truthy
-      Kor.config['auth.fail_on_update_errors'] = false
+      allow(Kor::Auth).to receive(:config) do
+        Kor.config['auth'].merge 'fail_on_update_errors' => false
+      end
 
       # should provoke error on update: map_to user doesn't exist
       get :env_auth

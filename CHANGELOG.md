@@ -13,6 +13,8 @@ commit history on GitHub.
 * OAI-PMH responses now all fully support deleted records à la
   `<deletedRecord>persistent</deletedRecord>`
 * relationships may now have one or more date ranges
+* environment authentication now allows to specify a `mail` attribute and
+  a `domain` attribute, the latter overriding the former.
 
 ## Version 2.0.1
 

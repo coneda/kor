@@ -362,6 +362,7 @@ look like this:
           remote_user:
             type: env
             user: ['REMOTE_USER']
+            mail: ['mail']
             domain: example.com
             map_to: my_user_template
 
@@ -370,9 +371,11 @@ only triggered on GET `/env_auth` which redirects to the login form if the
 environment authentication was not successfull. The `domain` value is used to
 extend the username to an email address. So for example, with the above
 configuration, a user logging in as jdoe would be created with an email address
-`jdoe@example.com`. Additionally, the keys mail and full_name can be specified
-which would make the system update successfully authenticated users with those
-attributes.
+`jdoe@example.com` (unless `mail` is found in the request env). Additionally,
+the key `mail` can be supplied which will use that attribute to find the user's
+mail address (overrides the `domain`) setting. Also, a `full_name` can be
+specified which would make the system update successfully authenticated users
+with it.
 
 When the environment yields updated user information like a changed email
 address, the user is updated automatically. However, if that update fails, the
