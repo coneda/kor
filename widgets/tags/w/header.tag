@@ -11,14 +11,17 @@
       {info().version}
     </span>
 
-    <img src="images/vertical_dots.gif" />
+    <span if={currentUser()}>
+      <img src="images/vertical_dots.gif" />
+      {t('logged_in_as')}:
+      <strong>{currentUser().display_name}</strong>
 
-    <span>{t('logged_in_as')}:</span>  
-    <strong>{currentUser().display_name}</strong>
+      <span if={!isGuest()}>
+        <img src="images/vertical_dots.gif" />
+        <kor-logout />
+      </span>
+    </span>
 
-    <img src="images/vertical_dots.gif" />
-
-    <kor-logout />
   </div>
 
   <div class="clearfix"></div>

@@ -1,6 +1,8 @@
 class KindsController < ApplicationController
   layout 'normal_small'
 
+  skip_before_filter :authentication, :authorization, :legal, only: ['index']
+
   def index
     @kinds = Kind.all
 

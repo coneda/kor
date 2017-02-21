@@ -19,17 +19,29 @@
       if tag.opts.routing
         wApp.routing.setup()
 
+    tag.on 'unmount', ->
+      wApp.bus.off 'routing:path', tag.routeHandler
+      if tag.opts.routing
+        wApp.routing.tearDown()
+
     tag.routeHandler = (parts) ->
       tagName = 'kor-loading'
       opts = {}
 
-      tagName = if tag.currentUser()
-        if parts.hash_path == '/login'
-          'kor-login'
+      tagName = switch parts.hash_path
+        when '/login' then 'kor-login'
+        when '/stats' then 'kor-stats'
+        when '/legal' then 'kor-legal'
+        when '/about' then 'kor-about'
         else
-          'kor-search'
-      else
-        'kor-login'
+          if tag.currentUser()
+            switch parts.hash_path
+              when 'search' then 'kor-search'
+              when 'gallery' then 'kor-gallery'
+              else
+                'kor-search'
+          else
+            'kor-login'
           
       riot.mount Zepto('.w-content')[0], tagName, opts
       window.scrollTo(0, 0)

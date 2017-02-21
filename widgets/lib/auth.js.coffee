@@ -10,23 +10,35 @@ wApp.auth = {
         username: username,
         password: password
       )
+      success: (data) ->
+        wApp.session.current = data.session
+        riot.update()
     )
   logout: ->
     Zepto.ajax(
       type: 'delete'
       url: '/logout'
+      success: (data) ->
+        wApp.session.current = data.session
+        riot.update()
     )
 }
 
 wApp.mixins.auth = {
   hasRole: (roles) ->
+    return false unless this.currentUser()
+    
     roles = [roles] unless Zepto.isArray(roles)
     perms = this.currentUser().permissions.roles
     wApp.auth.intersect(roles, perms).length == roles.length
   hasAnyRole: ->
+    return false unless this.currentUser()
+
     perms = this.currentUser().permissions.roles
     perms.length > 0
   allowedTo: (policy, collections = [], requireAll = true) ->
+    return false unless this.currentUser()
+
     perms = this.currentUser().permissions.collections[policy]
 
     if Zepto.isArray(collections)

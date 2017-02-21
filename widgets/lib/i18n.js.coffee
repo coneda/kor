@@ -1,8 +1,8 @@
 wApp.i18n = {
   setup: ->
-    $.ajax(
+    Zepto.ajax(
       url: '/translations'
-      success: (data) -> wApp.i18n.translations = data
+      success: (data) -> wApp.i18n.translations = data.translations
     )
   translate: (locale, input, options = {}) ->
     return "" unless wApp.i18n.translations

@@ -2,7 +2,7 @@
 
   <h1>Login</h1>
 
-  <form class="form" method="POST" onsubmit={submit}>
+  <form class="form" method="POST" action='#/login' onsubmit={submit}>
     <kor-input
       label={tcap('activerecord.attributes.user.name')}
       type="text"
@@ -28,14 +28,10 @@
 
     tag.submit = (event) ->
       event.preventDefault()
-
-      promise = wApp.auth.login(
-        tag.refs.username.value(),
-        tag.refs.password.value()
-      )
-
-      promise.done ->
-        wApp.session.setup().done -> riot.update()
+      username = tag.refs.username.value()
+      password = tag.refs.password.value()
+      wApp.auth.login(username, password).then ->
+        wApp.bus.trigger 'routing:path', wApp.routing.parts()
 
   </script>
 </kor-login>

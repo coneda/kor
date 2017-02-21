@@ -3,6 +3,7 @@ require "resolv"
 class SessionController < ApiController
 
   skip_before_filter :authentication, :authorization, :legal
+  skip_before_filter :verify_authenticity_token, only: ['create', 'reset_password']
 
   def show
     
@@ -39,7 +40,8 @@ class SessionController < ApiController
           else
             user.fix_cryptography(params[:password])
             create_session(user)
-            render_200 I18n.t('notices.logged_in')
+            @message = I18n.t('notices.logged_in')
+            render action: 'show'
           end
         else
           unauthenticated_user.add_login_attempt
@@ -54,7 +56,9 @@ class SessionController < ApiController
 
   def destroy
     reset_session
-    render_200 I18n.t("notices.logged_out")
+    @current_user = nil
+    @message = I18n.t("notices.logged_out")
+    render action: 'show'
   end
 
   def reset_password
@@ -64,7 +68,8 @@ class SessionController < ApiController
       @user.reset_password
       @user.save
       UserMailer.reset_password(@user).deliver_now
-      render_200 I18n.t('notices.personal_password_reset_success')
+      @message = I18n.t('notices.personal_password_reset_success')
+      render action: 'show'
     else
       render_404 I18n.t('errors.personal_password_reset_mail_not_found')
     end

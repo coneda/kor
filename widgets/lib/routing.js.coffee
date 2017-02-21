@@ -60,4 +60,7 @@ wApp.routing = {
           wApp.bus.trigger 'routing:query', wApp.routing.parts()
     route.start(true)
     wApp.bus.trigger 'routing:path', wApp.routing.parts()
+  tearDown: ->
+    if wApp.routing.route
+      wApp.routing.route.stop()
 }

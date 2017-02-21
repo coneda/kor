@@ -1,9 +1,9 @@
 wApp.session = {
   setup: ->
-    $.ajax(
+    Zepto.ajax(
       method: 'get',
       url: '/session'
-      success: (data) -> wApp.session.current = data
+      success: (data) -> wApp.session.current = data.session
     )
   csrfToken: -> wApp.session.current.csrfToken
 }

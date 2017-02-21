@@ -10,7 +10,7 @@
 
     tag.logout = (event) ->
       event.preventDefault()
-      wApp.auth.logout().done ->
-        wApp.session.setup().done -> riot.update()
+      wApp.auth.logout().then ->
+        wApp.bus.trigger 'routing:path', wApp.routing.parts()
   </script>
 </kor-logout>

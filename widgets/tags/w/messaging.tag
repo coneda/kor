@@ -11,17 +11,13 @@
   <script type="text/coffee">
     self = this
 
-    Zepto(document).on 'ajaxComplete', (event, request, options) ->
-      contentType = request.getResponseHeader('content-type')
+    self.on 'mount', ->
+      self.messages = []
+      Zepto(document).on 'ajaxComplete', ajaxCompleteHandler
 
-      if contentType.match(/^application\/json/) && request.response
-        data = JSON.parse(request.response)
-        console.log data
-        if data.message
-          type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
-          wApp.bus.trigger 'message', type, data.message
+    self.on 'unmount', ->
+      Zepto(document).off 'ajaxComplete', ajaxCompleteHandler
 
-    self.on 'mount', -> self.messages = []
     wApp.bus.on 'message', (type, message) -> 
       self.messages.push {
         type: type,
@@ -29,6 +25,16 @@
       }
       window.setTimeout(self.drop, self.opts.duration || 5000)
       self.update()
+
+    ajaxCompleteHandler = (event, request, options) ->
+      contentType = request.getResponseHeader('content-type')
+
+      if contentType.match(/^application\/json/) && request.response
+        data = JSON.parse(request.response)
+        # console.log data
+        if data.message
+          type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
+          wApp.bus.trigger 'message', type, data.message
 
     self.drop = ->
       self.messages.shift()

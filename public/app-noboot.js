@@ -4108,10 +4108,11 @@ Zepto.extend(Zepto.ajaxSettings, {
     dataType: "json",
     contentType: "application/json",
     accept: "application/json",
-    complete: function(xhr) {
-        return console.log(xhr.responseURL, JSON.parse(xhr.response));
-    },
     beforeSend: function(xhr, settings) {
+        xhr.always(function() {
+            return console.log("ajax log", xhr.requestUrl, JSON.parse(xhr.response));
+        });
+        xhr.requestUrl = settings.url;
         if (wApp.session.current) {
             return xhr.setRequestHeader("X-CSRF-Token", wApp.session.csrfToken());
         }
@@ -4122,9 +4123,9 @@ window.wApp = {
     bus: riot.observable(),
     data: {},
     mixins: {},
+    state: {},
     setup: function() {
-        wApp.routing.setup();
-        return wApp.i18n.setup();
+        return [ wApp.config.setup(), wApp.session.setup(), wApp.i18n.setup(), wApp.info.setup() ];
     }
 };
 
@@ -4150,13 +4151,21 @@ wApp.auth = {
             data: JSON.stringify({
                 username: username,
                 password: password
-            })
+            }),
+            success: function(data) {
+                wApp.session.current = data.session;
+                return riot.update();
+            }
         });
     },
     logout: function() {
         return Zepto.ajax({
             type: "delete",
-            url: "/logout"
+            url: "/logout",
+            success: function(data) {
+                wApp.session.current = data.session;
+                return riot.update();
+            }
         });
     }
 };
@@ -4164,6 +4173,9 @@ wApp.auth = {
 wApp.mixins.auth = {
     hasRole: function(roles) {
         var perms;
+        if (!this.currentUser()) {
+            return false;
+        }
         if (!Zepto.isArray(roles)) {
             roles = [ roles ];
         }
@@ -4172,6 +4184,9 @@ wApp.mixins.auth = {
     },
     hasAnyRole: function() {
         var perms;
+        if (!this.currentUser()) {
+            return false;
+        }
         perms = this.currentUser().permissions.roles;
         return perms.length > 0;
     },
@@ -4182,6 +4197,9 @@ wApp.mixins.auth = {
         }
         if (requireAll == null) {
             requireAll = true;
+        }
+        if (!this.currentUser()) {
+            return false;
         }
         perms = this.currentUser().permissions.collections[policy];
         if (Zepto.isArray(collections)) {
@@ -4205,7 +4223,7 @@ wApp.config = {
         return Zepto.ajax({
             url: "/config",
             success: function(data) {
-                return wApp.config.data = data;
+                return wApp.config.data = data.config;
             }
         });
     }
@@ -4219,10 +4237,10 @@ wApp.mixins.config = {
 
 wApp.i18n = {
     setup: function() {
-        return $.ajax({
+        return Zepto.ajax({
             url: "/translations",
             success: function(data) {
-                return wApp.i18n.translations = data;
+                return wApp.i18n.translations = data.translations;
             }
         });
     },
@@ -4305,7 +4323,7 @@ wApp.info = {
         return Zepto.ajax({
             url: "/info",
             success: function(data) {
-                return wApp.info.data = data;
+                return wApp.info.data = data.info;
             }
         });
     }
@@ -4400,16 +4418,21 @@ wApp.routing = {
         });
         route.start(true);
         return wApp.bus.trigger("routing:path", wApp.routing.parts());
+    },
+    tearDown: function() {
+        if (wApp.routing.route) {
+            return wApp.routing.route.stop();
+        }
     }
 };
 
 wApp.session = {
     setup: function() {
-        return $.ajax({
+        return Zepto.ajax({
             method: "get",
             url: "/session",
             success: function(data) {
-                return wApp.session.current = data;
+                return wApp.session.current = data.session;
             }
         });
     },
@@ -4481,6 +4504,8 @@ wApp.utils = {
     }
 };
 
+riot.tag2("kor-about", "<h1>ABOUT</h1>", "", "", function(opts) {});
+
 riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a> <a href="#/welcome">welcome</a> <a href="#/search">search</a> <a href="#/logout">logout</a> </div> <kor-js-extensions></kor-js-extensions> <kor-router></kor-router> <kor-notifications></kor-notifications> <div id="page-container" class="container"> <kor-page class="kor-appear-animation"></kor-page> </div>', "", "", function(opts) {
     var mount_page, self;
     self = this;
@@ -4498,7 +4523,6 @@ riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a
             });
         },
         login: function(username, password) {
-            console.log(arguments);
             return $.ajax({
                 type: "post",
                 url: kor.url + "/login",
@@ -4528,7 +4552,6 @@ riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a
         contentType: "application/json",
         dataType: "json",
         error: function(request) {
-            console.log(request);
             return kor.bus.trigger("notify", JSON.parse(request.response));
         }
     });
@@ -4565,19 +4588,18 @@ riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a
 
 riot.tag2("kor-loading", "<span>... loading ...</span>", "", "", function(opts) {});
 
-riot.tag2("kor-login", '<h1>Login</h1> <form class="form" method="POST" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <hr> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
+riot.tag2("kor-login", '<h1>Login</h1> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <hr> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.submit = function(event) {
-        var promise;
+        var password, username;
         event.preventDefault();
-        promise = wApp.auth.login(tag.refs.username.value(), tag.refs.password.value());
-        return promise.done(function() {
-            return wApp.session.setup().done(function() {
-                return riot.update();
-            });
+        username = tag.refs.username.value();
+        password = tag.refs.password.value();
+        return wApp.auth.login(username, password).then(function() {
+            return wApp.bus.trigger("routing:path", wApp.routing.parts());
         });
     };
 });
@@ -4589,10 +4611,8 @@ riot.tag2("kor-logout", '<a href="#" onclick="{logout}"> {t(\'verbs.logout\')} <
     tag.mixin(wApp.mixins.i18n);
     tag.logout = function(event) {
         event.preventDefault();
-        return wApp.auth.logout().done(function() {
-            return wApp.session.setup().done(function() {
-                return riot.update();
-            });
+        return wApp.auth.logout().then(function() {
+            return wApp.bus.trigger("routing:path", wApp.routing.parts());
         });
     };
 });
@@ -4669,6 +4689,8 @@ riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'
     };
 });
 
+riot.tag2("kor-legal", "<h1>LEGAL</h1>", "", "", function(opts) {});
+
 riot.tag2("kor-entity", '<div class="auth" if="{!authorized}"> <strong>Info</strong> <p> It seems you are not allowed to see this content. Please <a href="{login_url()}">login</a> to the kor installation first. </p> </div> <a href="{url()}" if="{authorized}" target="_blank"> <img if="{data.medium}" riot-src="{image_url()}"> <div if="{!data.medium}"> <h3>{data.display_name}</h3> <em if="{include(\'kind\')}"> {data.kind_name} <span show="{data.subtype}">({data.subtype})</span> </em> </div> </a>', "", "class=\"{'kor-style': opts.korStyle, 'kor': opts.korStyle}\"", function(opts) {
     var self;
     self = this;
@@ -4735,20 +4757,30 @@ riot.tag2("kor-entity", '<div class="auth" if="{!authorized}"> <strong>Info</str
     };
 });
 
+riot.tag2("kor-stats", "<h1>STATS</h1>", "", "", function(opts) {});
+
 riot.tag2("w-app-loader", '<div class="app"></div>', "", "", function(opts) {
-    var tag;
+    var reloadApp, tag;
     tag = this;
-    tag.on("mount", function() {
+    reloadApp = function() {
         var preloaders;
-        preloaders = [ wApp.session.setup(), wApp.i18n.setup(), wApp.info.setup(), wApp.config.setup() ];
+        if (tag.mountedApp) {
+            tag.mountedApp.unmount(true);
+        }
+        preloaders = wApp.setup();
         return $.when.apply($, preloaders).then(function() {
-            var opts;
+            var element, opts;
+            element = Zepto(tag.root).find(".app")[0];
             opts = {
                 routing: true
             };
-            riot.mount(Zepto(tag.root).find(".app")[0], "w-app", opts);
-            return console.log("application loaded");
+            tag.mountedApp = riot.mount(element, "w-app", opts)[0];
+            return console.log("application (re)loaded");
         });
+    };
+    wApp.bus.on("reload-app", reloadApp);
+    tag.on("mount", function() {
+        return wApp.bus.trigger("reload-app");
     });
 });
 
@@ -4762,11 +4794,47 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
             return wApp.routing.setup();
         }
     });
+    tag.on("unmount", function() {
+        wApp.bus.off("routing:path", tag.routeHandler);
+        if (tag.opts.routing) {
+            return wApp.routing.tearDown();
+        }
+    });
     tag.routeHandler = function(parts) {
         var opts, tagName;
         tagName = "kor-loading";
         opts = {};
-        tagName = tag.currentUser() ? parts.hash_path === "/login" ? "kor-login" : "kor-search" : "kor-login";
+        tagName = function() {
+            switch (parts.hash_path) {
+              case "/login":
+                return "kor-login";
+
+              case "/stats":
+                return "kor-stats";
+
+              case "/legal":
+                return "kor-legal";
+
+              case "/about":
+                return "kor-about";
+
+              default:
+                if (tag.currentUser()) {
+                    switch (parts.hash_path) {
+                      case "search":
+                        return "kor-search";
+
+                      case "gallery":
+                        return "kor-gallery";
+
+                      default:
+                        return "kor-search";
+                    }
+                } else {
+                    return "kor-login";
+                }
+            }
+        }();
         riot.mount(Zepto(".w-content")[0], tagName, opts);
         return window.scrollTo(0, 0);
     };
@@ -4812,7 +4880,7 @@ riot.tag2("w-bar-chart", '<svg riot-width="{width()}" riot-height="{height()}"> 
     };
 });
 
-riot.tag2("kor-header", '<a href="{rootPath()}" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <img src="images/vertical_dots.gif"> <span>{t(\'logged_in_as\')}:</span> <strong>{currentUser().display_name}</strong> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-header", '<a href="{rootPath()}" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <span if="{currentUser()}"> <img src="images/vertical_dots.gif"> {t(\'logged_in_as\')}: <strong>{currentUser().display_name}</strong> <span if="{!isGuest()}"> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </span> </span> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.info);
@@ -4856,22 +4924,14 @@ riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(
 });
 
 riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'error\': error(message), \'notice\': notice(message)}"> <i show="{notice(message)}" class="fa fa-warning"></i> <i show="{error(message)}" class="fa fa-info-circle"></i> {message.content} </div>', "", "", function(opts) {
-    var self;
+    var ajaxCompleteHandler, self;
     self = this;
-    Zepto(document).on("ajaxComplete", function(event, request, options) {
-        var contentType, data, type;
-        contentType = request.getResponseHeader("content-type");
-        if (contentType.match(/^application\/json/) && request.response) {
-            data = JSON.parse(request.response);
-            console.log(data);
-            if (data.message) {
-                type = request.status >= 200 && request.status < 300 ? "notice" : "error";
-                return wApp.bus.trigger("message", type, data.message);
-            }
-        }
-    });
     self.on("mount", function() {
-        return self.messages = [];
+        self.messages = [];
+        return Zepto(document).on("ajaxComplete", ajaxCompleteHandler);
+    });
+    self.on("unmount", function() {
+        return Zepto(document).off("ajaxComplete", ajaxCompleteHandler);
     });
     wApp.bus.on("message", function(type, message) {
         self.messages.push({
@@ -4881,6 +4941,17 @@ riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'er
         window.setTimeout(self.drop, self.opts.duration || 5e3);
         return self.update();
     });
+    ajaxCompleteHandler = function(event, request, options) {
+        var contentType, data, type;
+        contentType = request.getResponseHeader("content-type");
+        if (contentType.match(/^application\/json/) && request.response) {
+            data = JSON.parse(request.response);
+            if (data.message) {
+                type = request.status >= 200 && request.status < 300 ? "notice" : "error";
+                return wApp.bus.trigger("message", type, data.message);
+            }
+        }
+    };
     self.drop = function() {
         self.messages.shift();
         return self.update();

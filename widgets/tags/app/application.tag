@@ -32,7 +32,7 @@
             kor.bus.trigger 'data.info'
         )
       login: (username, password) ->
-        console.log arguments
+        # console.log arguments
         $.ajax(
           type: 'post',
           url: "#{kor.url}/login"
@@ -55,7 +55,7 @@
       contentType: 'application/json'
       dataType: 'json'
       error: (request) ->
-        console.log request
+        # console.log request
         kor.bus.trigger 'notify', JSON.parse(request.response)
     }
 

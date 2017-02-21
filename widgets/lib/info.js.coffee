@@ -2,7 +2,7 @@ wApp.info = {
   setup: ->
     Zepto.ajax(
       url: '/info'
-      success: (data) -> wApp.info.data = data
+      success: (data) -> wApp.info.data = data.info
     )
 }
 

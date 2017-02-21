@@ -2,7 +2,7 @@ wApp.config = {
   setup: ->
     Zepto.ajax(
       url: '/config'
-      success: (data) -> wApp.config.data = data
+      success: (data) -> wApp.config.data = data.config
     )
 }
 
