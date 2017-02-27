@@ -2,7 +2,12 @@
 
   <div class="kor-layout-left kor-layout-large" show={loaded}>
     <div class="kor-content-box">
-      <h1>{tcap('objects.edit', {interpolations: {o: 'activerecord.models.user'}})}</h1>
+      <h1 show={opts.id}>
+        {tcap('objects.edit', {interpolations: {o: 'activerecord.models.user'}})}
+      </h1>
+      <h1 show={!opts.id}>
+        {tcap('objects.new', {interpolations: {o: 'activerecord.models.user'}})}
+      </h1>
 
       <form onsubmit={submit} if={data}>
         <kor-input
@@ -188,13 +193,17 @@
       )
 
     fetchUser = ->
-      Zepto.ajax(
-        url: "/users/#{tag.opts.id}"
-        data: {include: 'security'}
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+      if tag.opts.id
+        Zepto.ajax(
+          url: "/users/#{tag.opts.id}"
+          data: {include: 'security'}
+          success: (data) ->
+            tag.data = data
+            tag.update()
+        )
+      else
+        tag.data = {}
+        tag.update()
 
     create = ->
       Zepto.ajax(

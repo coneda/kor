@@ -1,6 +1,9 @@
 <kor-users>
 
   <div class="kor-content-box">
+    <div class="kor-layout-commands">
+      <a href="#/users/new"><i class="plus"></i></a>
+    </div>
     <h1>{tcap('activerecord.models.user', {count: 'other'})}</h1>
 
     <form onsubmit={search} class="inline">

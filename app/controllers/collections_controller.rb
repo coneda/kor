@@ -2,7 +2,14 @@ class CollectionsController < ApplicationController
   layout 'normal_small'
   
   def index
-    @collections = Collection.non_personal.all
+    if current_user.admin?
+      @records = Collection.non_personal
+    else
+      @records = Kor::Auth.authorized_collections(current_user)
+    end
+    
+    @total = @records.count
+    @per_page = @total
   end
 
   def show

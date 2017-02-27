@@ -25,10 +25,10 @@
       </option>
       <option
         each={item in opts.options}
-        value={item.id || item.value}
+        value={item.id || item.value || item}
         selected={selected(item)}
       >
-        {item.name || item.label}
+        {item.name || item.label || item}
       </option>
     </select>
   </label>
@@ -63,7 +63,7 @@
       # console.log tag.value_from_parent()
       tag.set tag.value_from_parent()
     tag.selected = (item) ->
-      v = item.id || item.value
+      v = item.id || item.value || item
       if tag.opts.multiple
         (tag.value_from_parent() || []).indexOf(v) > -1
       else

@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   layout 'normal_small'
   skip_before_filter :legal, :only => [:accept_terms]
-  skip_before_filter :authorization, :only => [:edit_self, :update_self, :accept_terms]
+  skip_before_filter :authorization, :only => [:update_self, :accept_terms]
 
   def accept_terms
     @user = current_user
@@ -60,35 +60,17 @@ class UsersController < ApplicationController
     @record = User.find(params[:id])
   end
 
-  def new
-    @user = User.new
-    @user.groups << Credential.where(:name => Kor.config['auth.default_groups']).to_a
-  end
-  
-  def edit_self
-    if current_user.guest?
-      render_denied_page
-    else
-      @user = User.find(current_user.id)
-    end
-  end
-
   def update_self
     @user = User.find(current_user.id)
 
     if @user.update_attributes(self_user_params)
-      flash[:notice] = I18n.t( 'objects.update_success', :o => I18n.t('nouns.user', :count => 1) )
-      redirect_to root_path
+      render_200 I18n.t( 'objects.update_success', o:
+        I18n.t('nouns.user', count: 1)
+      )
     else
-      render :action => "edit_self"
+      @errors = @user.errors
+      render_406
     end
-  rescue ActiveRecord::StaleObjectError
-    flash[:error] = I18n.t('activerecord.errors.messages.stale_user_update')
-    render :action => 'edit_self'
-  end
-
-  def edit
-    @user = User.find(params[:id])
   end
 
   def update
@@ -109,11 +91,13 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     
     if @user.save
-      flash[:notice] = I18n.t( 'objects.create_success', :o => I18n.t('nouns.user', :count => 1) )
       UserMailer.account_created(@user).deliver_now
-      redirect_to users_path
+      render_200 I18n.t('objects.create_success',
+        o: I18n.t('nouns.user', count: 1)
+      )
     else
-      render :action => "new"
+      @errors = @user.errors
+      render_406 I18n.t('activemodel.errors.template.header')
     end
   end
 
@@ -134,8 +118,8 @@ class UsersController < ApplicationController
 
     def self_user_params
       params.require(:user).permit(
-        :full_name, :name, :email, :password, :password_confirmation, :locale,
-        :home_page, :default_collection_id, :api_key
+        :full_name, :name, :email, :password, :plain_password_confirmation,
+        :locale, :home_page, :default_collection_id, :api_key
       )
     end
     

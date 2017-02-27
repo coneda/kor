@@ -4,10 +4,11 @@ class CredentialsController < ApplicationController
   def index
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
-    
+
     @records = Credential.
       non_personal.
       order(params[:sort_by] => params[:sort_order])
+    @per_page = @records.count    
     @total = @records.count
   end
 

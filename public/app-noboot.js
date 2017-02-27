@@ -4922,7 +4922,7 @@ riot.tag2("kor-search", '<h1>Search</h1> <form class="form"> <div class="row"> <
     tag.params = {};
 });
 
-riot.tag2("kor-users", '<div class="kor-content-box"> <h1>{tcap(\'activerecord.models.user\', {count: \'other\'})}</h1> <form onsubmit="{search}" class="inline"> <kor-input label="{t(\'nouns.search\')}" ref="search" riot-value="{opts.query.search}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <thead> <tr> <th class="tiny">{t(\'activerecord.attributes.user.personal\')}</th> <th class="small">{t(\'activerecord.attributes.user.name\')}</th> <th class="small">{t(\'activerecord.attributes.user.full_name\')}</th> <th>{t(\'activerecord.attributes.user.email\')}</th> <th class="tiny right"> {t(\'activerecord.attributes.user.created_at\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.last_login\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.expires_at\')} </th> <th class="tiny buttons"></th> </tr> </thead> <tbody> <tr each="{user in data.records}"> <td><i show="{user.personal}" class="fa fa-check"></i></td> <td>{user.name}</td> <td>{user.full_name}</td> <td class="force-wrap"> <a href="mailto:{user.email}">{user.email}</a> </td> <td class="right">{l(user.created_at)}</td> <td class="right">{l(user.last_login)}</td> <td class="right">{l(user.expires_at)}</td> <td class="right nobreak"> <a onclick="{resetLoginAttempts(user.id)}"> <i class="three_bars"></i> </a> <a onclick="{resetPassword(user.id)}"> <i class="reset_password"></i> </a> <a href="#/users/{user.id}/edit"><i class="pen"></i></a> <a onclick="{destroy(user.id)}"><i class="x"></i></a> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+riot.tag2("kor-users", '<div class="kor-content-box"> <div class="kor-layout-commands"> <a href="#/users/new"><i class="plus"></i></a> </div> <h1>{tcap(\'activerecord.models.user\', {count: \'other\'})}</h1> <form onsubmit="{search}" class="inline"> <kor-input label="{t(\'nouns.search\')}" ref="search" riot-value="{opts.query.search}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <thead> <tr> <th class="tiny">{t(\'activerecord.attributes.user.personal\')}</th> <th class="small">{t(\'activerecord.attributes.user.name\')}</th> <th class="small">{t(\'activerecord.attributes.user.full_name\')}</th> <th>{t(\'activerecord.attributes.user.email\')}</th> <th class="tiny right"> {t(\'activerecord.attributes.user.created_at\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.last_login\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.expires_at\')} </th> <th class="tiny buttons"></th> </tr> </thead> <tbody> <tr each="{user in data.records}"> <td><i show="{user.personal}" class="fa fa-check"></i></td> <td>{user.name}</td> <td>{user.full_name}</td> <td class="force-wrap"> <a href="mailto:{user.email}">{user.email}</a> </td> <td class="right">{l(user.created_at)}</td> <td class="right">{l(user.last_login)}</td> <td class="right">{l(user.expires_at)}</td> <td class="right nobreak"> <a onclick="{resetLoginAttempts(user.id)}"> <i class="three_bars"></i> </a> <a onclick="{resetPassword(user.id)}"> <i class="reset_password"></i> </a> <a href="#/users/{user.id}/edit"><i class="pen"></i></a> <a onclick="{destroy(user.id)}"><i class="x"></i></a> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
     var fetch, queryUpdate, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -5076,7 +5076,7 @@ riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, o
     };
 });
 
-riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{value_from_parent()}" checked="{checked()}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{value_from_parent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{value_from_parent()}" multiple="{opts.multiple}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value}" selected="{selected(item)}"> {item.name || item.label} </option> </select> </label> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
+riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{value_from_parent()}" checked="{checked()}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{value_from_parent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{value_from_parent()}" multiple="{opts.multiple}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}"> {item.name || item.label || item} </option> </select> </label> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
     var tag;
     tag = this;
     tag.name = function() {
@@ -5117,7 +5117,7 @@ riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'
     };
     tag.selected = function(item) {
         var v;
-        v = item.id || item.value;
+        v = item.id || item.value || item;
         if (tag.opts.multiple) {
             return (tag.value_from_parent() || []).indexOf(v) > -1;
         } else {
@@ -5231,7 +5231,115 @@ riot.tag2("kor-pagination", '<span>{t(\'nouns.page\')}</span> <a show="{!isFirst
     };
 });
 
-riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'nouns.new_entity\', {count: \'other\'})}</h1> <form> <kor-input label="{tcap(\'activerecord.attributes.entity.collection_id\')}" type="select" options="{collections}" placeholder="{t(\'prompts.please_select\')}" onchange="{collectionSelected}" ref="collectionId" riot-value="{opts.query.collection_id}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> <th>{tcap(\'activerecord.attributes.entity.collection_id\')}</th> <th>{tcap(\'activerecord.attributes.entity.updater\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> <td> {entity.collection.name} </td> <td> {(entity.updater || entity.creator || {}).full_name} </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'objects.edit\', {interpolations: {o: \'nouns.profile\'}})}</h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" name="password" type="password" ref="fields" riot-value="{data.password}" errors="{errors.password}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.plain_password_confirmation\')}" name="plain_password_confirmation" type="password" ref="fields" errors="{errors.plain_password_confirmation}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.locale\')}" name="locale" type="select" options="{[\'de\', \'en\']}" ref="fields" riot-value="{data.locale}"></kor-input> <div class="hr"></div> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.user.default_collection_id\')}" name="default_collection_id" type="select" options="{collections.records}" ref="fields" riot-value="{data.default_collection_id}"></kor-input> <div class="hr"></div> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var expiresAtTag, fetchCollections, fetchUser, tag, update, values;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        var h;
+        tag.errors = {};
+        if (tag.currentUser() && !tag.isGuest()) {
+            return Zepto.when(fetchCollections(), fetchUser()).then(function() {
+                tag.loaded = true;
+                return tag.update();
+            });
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = update();
+        p.done(function(data) {
+            return tag.errors = {};
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    tag.expiresIn = function(days) {
+        return function(event) {
+            var date;
+            if (days) {
+                date = new Date();
+                date.setTime(date.getTime() + days * 24 * 60 * 60 * 1e3);
+                return expiresAtTag().set(strftime("%Y-%m-%d", date));
+            } else {
+                return expiresAtTag().set(void 0);
+            }
+        };
+    };
+    tag.valueForDate = function(date) {
+        if (date) {
+            return strftime("%Y-%m-%d", new Date(date));
+        } else {
+            return "";
+        }
+    };
+    fetchUser = function() {
+        return Zepto.ajax({
+            url: "/users/" + tag.currentUser().id,
+            data: {
+                include: "security"
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    fetchCollections = function() {
+        return Zepto.ajax({
+            url: "/collections",
+            success: function(data) {
+                tag.collections = data;
+                return tag.update();
+            }
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/profile",
+            data: JSON.stringify({
+                id: tag.currentUser().id,
+                user: values()
+            })
+        });
+    };
+    expiresAtTag = function() {
+        var f, i, len, ref;
+        ref = tag.refs.fields;
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            if (f.name() === "expires_at") {
+                return f;
+            }
+        }
+        return void 0;
+    };
+    values = function() {
+        var f, i, len, ref, results;
+        results = {};
+        ref = tag.refs.fields;
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            results[f.name()] = f.value();
+        }
+        return results;
+    };
+});
+
+riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'nouns.new_entity\', {count: \'other\'})}</h1> <form> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" type="select" options="{collections.records}" placeholder="{t(\'prompts.please_select\')}" onchange="{collectionSelected}" ref="collectionId" riot-value="{opts.query.collection_id}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> <th>{tcap(\'activerecord.attributes.entity.collection_id\')}</th> <th>{tcap(\'activerecord.attributes.entity.updater\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> <td> {entity.collection.name} </td> <td> {(entity.updater || entity.creator || {}).full_name} </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, fetchCollections, queryUpdate, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -5361,7 +5469,7 @@ riot.tag2("kor-entity", '<div class="auth" if="{!authorized}"> <strong>Info</str
 
 riot.tag2("kor-stats", "<h1>STATS</h1>", "", "", function(opts) {});
 
-riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user\'}})}</h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.personal\')}" name="make_personal" type="checkbox" riot-value="{data.personal}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.active\')}" name="active" type="checkbox" ref="fields" riot-value="{data.active}"></kor-input> <div class="expires-at"> <kor-input label="{tcap(\'activerecord.attributes.user.expires_at\')}" name="expires_at" ref="fields" riot-value="{valueForDate(data.expires_at)}" errors="{errors.expires_at}" type="{\'date\'}"></kor-input> <button onclick="{expiresIn(0)}"> {tcap(\'activerecord.attributes.user.does_not_expire\')} </button> <button onclick="{expiresIn(7)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 7}})} </button> <button onclick="{expiresIn(30)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 30}})} </button> <button onclick="{expiresIn(180)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 180}})} </button> <div class="clearfix"></div> </div> <div class="hr"></div> <kor-input if="{credentials}" label="{tcap(\'activerecord.attributes.user.groups\')}" name="group_ids" type="select" options="{credentials.records}" multiple="{true}" ref="fields" riot-value="{data.group_ids}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.authority_group_admin\')}" name="authority_group_admin" type="checkbox" ref="fields" riot-value="{data.authority_group_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.relation_admin\')}" name="relation_admin" type="checkbox" ref="fields" riot-value="{data.relation_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.kind_admin\')}" name="kind_admin" type="checkbox" ref="fields" riot-value="{data.kind_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.admin\')}" name="admin" type="checkbox" ref="fields" riot-value="{data.admin}"></kor-input> <div class="hr"></div> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1 show="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <h1 show="{!opts.id}"> {tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.personal\')}" name="make_personal" type="checkbox" riot-value="{data.personal}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.active\')}" name="active" type="checkbox" ref="fields" riot-value="{data.active}"></kor-input> <div class="expires-at"> <kor-input label="{tcap(\'activerecord.attributes.user.expires_at\')}" name="expires_at" ref="fields" riot-value="{valueForDate(data.expires_at)}" errors="{errors.expires_at}" type="{\'date\'}"></kor-input> <button onclick="{expiresIn(0)}"> {tcap(\'activerecord.attributes.user.does_not_expire\')} </button> <button onclick="{expiresIn(7)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 7}})} </button> <button onclick="{expiresIn(30)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 30}})} </button> <button onclick="{expiresIn(180)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 180}})} </button> <div class="clearfix"></div> </div> <div class="hr"></div> <kor-input if="{credentials}" label="{tcap(\'activerecord.attributes.user.groups\')}" name="group_ids" type="select" options="{credentials.records}" multiple="{true}" ref="fields" riot-value="{data.group_ids}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.authority_group_admin\')}" name="authority_group_admin" type="checkbox" ref="fields" riot-value="{data.authority_group_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.relation_admin\')}" name="relation_admin" type="checkbox" ref="fields" riot-value="{data.relation_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.kind_admin\')}" name="kind_admin" type="checkbox" ref="fields" riot-value="{data.kind_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.admin\')}" name="admin" type="checkbox" ref="fields" riot-value="{data.admin}"></kor-input> <div class="hr"></div> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var create, expiresAtTag, fetchCredentials, fetchUser, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -5428,16 +5536,21 @@ riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show
         });
     };
     fetchUser = function() {
-        return Zepto.ajax({
-            url: "/users/" + tag.opts.id,
-            data: {
-                include: "security"
-            },
-            success: function(data) {
-                tag.data = data;
-                return tag.update();
-            }
-        });
+        if (tag.opts.id) {
+            return Zepto.ajax({
+                url: "/users/" + tag.opts.id,
+                data: {
+                    include: "security"
+                },
+                success: function(data) {
+                    tag.data = data;
+                    return tag.update();
+                }
+            });
+        } else {
+            tag.data = {};
+            return tag.update();
+        }
     };
     create = function() {
         return Zepto.ajax({
@@ -5576,11 +5689,17 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                             return "kor-user-editor";
                         } else {
                             switch (path) {
+                              case "/profile":
+                                return "kor-profile";
+
                               case "/search":
                                 return "kor-search";
 
                               case "/new-media":
                                 return "kor-new-media";
+
+                              case "/users/new":
+                                return "kor-user-editor";
 
                               case "/users":
                                 return "kor-users";

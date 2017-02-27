@@ -60,8 +60,10 @@
                 'kor-user-editor'
               else
                 switch path
+                  when '/profile' then 'kor-profile'
                   when '/search' then 'kor-search'
                   when '/new-media' then 'kor-new-media'
+                  when '/users/new' then 'kor-user-editor'
                   when '/users' then 'kor-users'
                   when '/entities/invalid' then 'kor-invalid-entities'
                   when '/entities/recent' then 'kor-recent-entities'

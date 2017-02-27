@@ -30,7 +30,7 @@ h1 {
   font-weight: bold;
   line-height: 1.8rem;
   color: $kor-shine;
-  margin-top: 4rem;
+  margin-top: 0rem;
   margin-bottom: 3rem;
 }
 
@@ -44,7 +44,7 @@ h3 {
   line-leight: 1.4rem;
 }
 
-h1:first-child, h2:first-child, h3:first-child {
+h2:first-child, h3:first-child {
   margin-top: 0rem;
 }
 

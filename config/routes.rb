@@ -65,16 +65,6 @@ Rails.application.routes.draw do
     resources :relationships, only: [:create, :update, :destroy]
   end
   
-  resources :collections do
-    collection do
-      get 'edit_personal'
-    end
-    member do
-      get 'edit_merge'
-      patch 'merge'
-    end
-  end
-  resources :credentials
   resources :authority_group_categories
   resources :system_groups
   resources :user_groups do
@@ -107,8 +97,7 @@ Rails.application.routes.draw do
     end
   end
   match '/pub/:user_id/:uuid', :to => 'publishments#show', :as => :show_publishment, :via => :get
-  match '/edit_self', :to => 'users#edit_self', :via => :get
-  match '/update_self', :to => 'users#update_self', :via => :patch
+  # match '/edit_self', :to => 'users#edit_self', :via => :get
 
   match '/downloads/:uuid', :to => 'downloads#show', :via => :get
   
@@ -155,6 +144,8 @@ Rails.application.routes.draw do
   
 
   defaults format: :json do
+    match '/profile', :to => 'users#update_self', :via => 'patch'
+
     controller 'session' do
       match 'session', action: 'show', via: 'get'
       match 'login', action: 'create', via: 'post'
@@ -183,6 +174,17 @@ Rails.application.routes.draw do
         # get 'new_from_template'
       end
     end
+
+    resources :collections, except: ['edit', 'new'] do
+      collection do
+        get 'edit_personal'
+      end
+      # member do
+      #   get 'edit_merge'
+      #   patch 'merge'
+      # end
+    end
+    resources :credentials, except: ['edit', 'new']
   end
 
   

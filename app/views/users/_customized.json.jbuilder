@@ -2,7 +2,7 @@ additions ||= []
 
 json.extract!(user,
   :id, :name, :full_name, :locale, :admin, :kind_admin, :authority_group_admin,
-  :relation_admin
+  :relation_admin, :default_collection_id
 )
 
 if additions.include?('security') && (current_user.admin? || current_user == user)

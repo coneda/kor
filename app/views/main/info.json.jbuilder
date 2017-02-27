@@ -6,4 +6,5 @@ json.info do
   json.url root_url
   json.uuid Kor.repository_uuid
   json.source_code_url Kor.source_code_url
+  json.locales I18n.available_locales
 end

@@ -6,9 +6,10 @@
 
       <form>
         <kor-input
+          if={collections}
           label={tcap('activerecord.attributes.entity.collection_id')}
           type="select"
-          options={collections}
+          options={collections.records}
           placeholder={t('prompts.please_select')}
           onchange={collectionSelected}
           ref="collectionId"

@@ -6,7 +6,8 @@ i {
   background-position: center center;
   background-repeat: no-repeat;
 
-  @each $name in pager_left, pager_right, three_bars, pen, x, reset_password {
+  @each $name in pager_left, pager_right, three_bars, pen, x, reset_password, 
+    plus {
     &.#{$name} {background-image: url('/images/#{$name}.gif')}
     &.#{$name}:hover {background-image: url('/images/#{$name}_over.gif')}
   }

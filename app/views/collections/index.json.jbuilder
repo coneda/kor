@@ -1,3 +1,9 @@
-json.array! @collections do |item|
-  json.partial! 'customized', kor_collection: item, additions: 'all'
+json.total @total
+json.per_page @per_page
+json.page @page
+json.records @records do |record|
+  json.partial! 'collections/customized', {
+    kor_collection: record,
+    additions: params[:include]
+  }
 end

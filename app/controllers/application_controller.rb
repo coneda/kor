@@ -255,7 +255,8 @@ class ApplicationController < BaseController
       render_messages [message], 404
     end
 
-    def render_406(message)
+    def render_406(message = nil)
+      message ||= I18n.t('activemodel.errors.template.header')
       render_messages [message], 406
     end
 
