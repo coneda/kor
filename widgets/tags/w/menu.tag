@@ -16,7 +16,7 @@
 
   <ul show={currentUser()}>
     <li>
-      <a href="#/new_media">{tcap('pages.new_media')}</a>
+      <a href="#/new-media">{tcap('pages.new_media')}</a>
     </li>
     <li>
       <a href="#/search">{tcap('nouns.simple_search')}</a>
@@ -60,9 +60,10 @@
   <ul show={isLoggedIn() && allowedTo('create')}>
     <li>
       <kor-input
+        if={kinds}
         type="select"
         onchange={newEntity}
-        options={kinds}
+        options={kinds.records}
         placeholder={tcap('objects.new', {interpolations: {o: 'nouns.entity'}})}
         ref="kind_id"
       />
@@ -74,13 +75,13 @@
 
   <ul show={isLoggedIn()}>
     <li show={allowedTo('delete')}>
-      <a href="#/upload">{tcap('nouns.invalid_entity', {count: 'other'})}</a>
+      <a href="#/entities/invalid">{tcap('nouns.invalid_entity', {count: 'other'})}</a>
     </li>
     <li show={allowedTo('edit')}>
-      <a href="#/upload">{tcap('nouns.new_entity', {count: 'other'})}</a>
+      <a href="#/entities/recent">{tcap('nouns.new_entity', {count: 'other'})}</a>
     </li>
     <li show={allowedTo('edit')}>
-      <a href="#/upload">{tcap('nouns.isolated_entity', {count: 'other'})}</a>
+      <a href="#/entities/isolated">{tcap('nouns.isolated_entity', {count: 'other'})}</a>
     </li>
   </ul>
 

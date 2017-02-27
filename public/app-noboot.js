@@ -2075,7 +2075,7 @@
         return list;
     }
     function contains(array, item) {
-        return !!~array.indexOf(item);
+        return array.indexOf(item) !== -1;
     }
     function toCamel(str) {
         return str.replace(/-(\w)/g, function(_, c) {
@@ -2454,7 +2454,7 @@
                 });
             }
             each(items, function(item, i) {
-                var doReorder = mustReorder && typeof item === T_OBJECT && !hasKeys, oldPos = oldItems.indexOf(item), isNew = !~oldPos, pos = !isNew && doReorder ? oldPos : i, tag = tags[pos], mustAppend = i >= oldItems.length, mustCreate = doReorder && isNew || !doReorder && !tag;
+                var doReorder = mustReorder && typeof item === T_OBJECT && !hasKeys, oldPos = oldItems.indexOf(item), isNew = oldPos === -1, pos = !isNew && doReorder ? oldPos : i, tag = tags[pos], mustAppend = i >= oldItems.length, mustCreate = doReorder && isNew || !doReorder && !tag;
                 item = !hasKeys && expr.key ? mkitem(expr, item, i) : item;
                 if (mustCreate) {
                     tag = new Tag$1(impl, {
@@ -2859,16 +2859,17 @@
         defineProperty(this, "refs", {});
         dom = isLoop && isAnonymous ? root : mkdom(impl.tmpl, innerHTML, isLoop);
         defineProperty(this, "update", function tagUpdate(data) {
-            if (isFunction(this.shouldUpdate) && !this.shouldUpdate(data)) {
+            var nextOpts = {}, canTrigger = this.isMounted && !skipAnonymous;
+            updateOpts.apply(this, [ isLoop, parent, isAnonymous, nextOpts, instAttrs ]);
+            if (this.isMounted && isFunction(this.shouldUpdate) && !this.shouldUpdate(data, nextOpts)) {
                 return this;
             }
-            var canTrigger = this.isMounted && !skipAnonymous;
             data = cleanUpData(data);
             if (isLoop && isAnonymous) {
                 inheritFrom.apply(this, [ this.parent, propsInSyncWithParent ]);
             }
             extend(this, data);
-            updateOpts.apply(this, [ isLoop, parent, isAnonymous, opts, instAttrs ]);
+            extend(opts, nextOpts);
             if (canTrigger) {
                 this.trigger("update", data);
             }
@@ -2986,7 +2987,7 @@
                 }
                 remAttr(root, name);
             });
-            if (~tagIndex) {
+            if (tagIndex !== -1) {
                 __TAGS_CACHE.splice(tagIndex, 1);
             }
             if (p || isVirtual) {
@@ -3128,7 +3129,7 @@
                 if (oldIndex === index) {
                     return;
                 }
-                if (~oldIndex) {
+                if (oldIndex !== -1) {
                     dest.splice(oldIndex, 1);
                 }
                 if (hasIndex) {
@@ -3144,7 +3145,7 @@
     function arrayishRemove(obj, key, value, ensureArray) {
         if (isArray(obj[key])) {
             var index = obj[key].indexOf(value);
-            if (~index) {
+            if (index !== -1) {
                 obj[key].splice(index, 1);
             }
             if (!obj[key].length) {
@@ -4264,23 +4265,34 @@ wApp.auth = {
 
 wApp.mixins.auth = {
     hasRole: function(roles) {
-        var perms;
+        var j, len, role;
         if (!this.currentUser()) {
             return false;
         }
         if (!Zepto.isArray(roles)) {
             roles = [ roles ];
         }
-        perms = this.currentUser().permissions.roles;
-        return wApp.auth.intersect(roles, perms).length === roles.length;
+        for (j = 0, len = roles.length; j < len; j++) {
+            role = roles[j];
+            if (!this.currentUser().permissions.roles[role]) {
+                return false;
+            }
+        }
+        return true;
     },
     hasAnyRole: function() {
-        var perms;
+        var k, perms, v;
         if (!this.currentUser()) {
             return false;
         }
         perms = this.currentUser().permissions.roles;
-        return perms.length > 0;
+        for (k in perms) {
+            v = perms[k];
+            if (v) {
+                return true;
+            }
+        }
+        return false;
     },
     allowedTo: function(policy, collections, requireAll) {
         var perms;
@@ -4337,7 +4349,7 @@ wApp.i18n = {
         });
     },
     translate: function(locale, input, options) {
-        var count, error, j, key, len, part, parts, ref, regex, result, tvalue, value;
+        var count, error, j, key, len, part, parts, ref, ref1, regex, result, tvalue, value;
         if (options == null) {
             options = {};
         }
@@ -4354,9 +4366,15 @@ wApp.i18n = {
             }
             count = options.count === 1 ? "one" : "other";
             result = result[count] || result;
-            ref = options.interpolations;
+            ref = options.values;
             for (key in ref) {
                 value = ref[key];
+                regex = new RegExp("%{" + key + "}", "g");
+                result = result.replace(regex, value);
+            }
+            ref1 = options.interpolations;
+            for (key in ref1) {
+                value = ref1[key];
                 regex = new RegExp("%{" + key + "}", "g");
                 tvalue = wApp.i18n.translate(locale, value);
                 if (tvalue && tvalue !== value) {
@@ -4372,20 +4390,25 @@ wApp.i18n = {
             error = error1;
             console.log(arguments);
             console.log(error);
-            return "d";
+            return input;
         }
     },
     localize: function(locale, input, format_name) {
-        var error, format, result;
+        var date, error, format;
         if (format_name == null) {
             format_name = "default";
         }
         try {
+            if (!input) {
+                return "";
+            }
             format = wApp.i18n.translate(locale, "date.formats." + format_name);
-            result = new Strftime(input);
-            return result.render(format);
+            date = new Date(input);
+            return strftime(format, date);
         } catch (error1) {
             error = error1;
+            console.log(arguments);
+            console.log(error);
             return "";
         }
     }
@@ -4455,10 +4478,16 @@ wApp.routing = {
             return wApp.routing.parts()["hash_path"];
         }
     },
+    fragment: function() {
+        return window.location.hash;
+    },
+    back: function() {
+        return window.history.back();
+    },
     parts: function() {
         var cs, h, hash_query_string, j, kv, l, len, len1, pair, ref, ref1, result;
         if (!wApp.routing.parts_cache) {
-            h = document.location.href;
+            h = window.location.href;
             cs = h.match(/^(https?):\/\/([^\/]+)([^?#]+)?(?:\?([^#]+))?(?:#(.*))?$/);
             result = {
                 href: h,
@@ -4499,7 +4528,7 @@ wApp.routing = {
         wApp.routing.route(function() {
             var old_parts;
             old_parts = wApp.routing.parts();
-            if (document.location.href !== old_parts["href"]) {
+            if (window.location.href !== old_parts["href"]) {
                 wApp.routing.parts_cache = null;
                 wApp.bus.trigger("routing:href", wApp.routing.parts());
                 if (old_parts["hash_path"] !== wApp.routing.path()) {
@@ -4563,7 +4592,7 @@ wApp.utils = {
             return str;
         }
     },
-    in_groups_of: function(per_row, array, dummy) {
+    inGroupsOf: function(per_row, array, dummy) {
         var current, i, j, len, result;
         if (dummy == null) {
             dummy = null;
@@ -4588,22 +4617,53 @@ wApp.utils = {
         }
         return result;
     },
-    to_integer: function(value) {
+    toInteger: function(value) {
         if (Zepto.isNumeric(value)) {
             return parseInt(value);
         } else {
             return value;
         }
+    },
+    uniq: function(a) {
+        var j, key, output, ref, results, value;
+        output = {};
+        for (key = j = 0, ref = a.length; 0 <= ref ? j < ref : j > ref; key = 0 <= ref ? ++j : --j) {
+            output[a[key]] = a[key];
+        }
+        results = [];
+        for (key in output) {
+            value = output[key];
+            results.push(value);
+        }
+        return results;
+    },
+    scrollToTop: function() {
+        if (document.body.scrollTop !== 0 || document.documentElement.scrollTop !== 0) {
+            window.scrollBy(0, -50);
+            return wApp.state.scrollToTopTimeOut = setTimeout("wApp.utils.scrollToTop()", 10);
+        } else {
+            return clearTimeout(wApp.state.scrollToTopTimeOut);
+        }
     }
 };
 
-riot.tag2("kor-about", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> </div> </div>', "", "", function(opts) {
+riot.tag2("kor-about", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.config);
     tag.on("mount", function() {
         return Zepto(tag.root).find(".target").html(tag.config().maintainer.about_html);
     });
+});
+
+riot.tag2("kor-access-denied", '<div class="kor-layout-left kor-layout-large kor-clear-after"> <div class="kor-content-box"> <h1>{tcap(\'notices.access_denied\')}</h1> {t(\'messages.access_denied\')} <div class="hr"></div> <a href="#/login?return_to={returnTo()}">{t(\'verbs.login\')}</a> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.returnTo = function() {
+        return encodeURIComponent(wApp.routing.fragment());
+    };
 });
 
 riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a> <a href="#/welcome">welcome</a> <a href="#/search">search</a> <a href="#/logout">logout</a> </div> <kor-js-extensions></kor-js-extensions> <kor-router></kor-router> <kor-notifications></kor-notifications> <div id="page-container" class="container"> <kor-page class="kor-appear-animation"></kor-page> </div>', "", "", function(opts) {
@@ -4686,22 +4746,129 @@ riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a
     });
 });
 
+riot.tag2("kor-invalid-entities", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var fetch, queryUpdate, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        var h;
+        if (tag.allowedTo("delete")) {
+            fetch();
+            return tag.on("routing:query", fetch);
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/invalid",
+            data: {
+                include: "kind",
+                page: tag.opts.query.page
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    tag.pageUpdate = function(newPage) {
+        return queryUpdate({
+            page: newPage
+        });
+    };
+    queryUpdate = function(newQuery) {
+        var h;
+        if (h = tag.opts.handlers.queryUpdate) {
+            return h(newQuery);
+        }
+    };
+});
+
+riot.tag2("kor-isolated-entities", '<div class="kor-content-box"> <h1>{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+    var fetch, queryUpdate, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        var h;
+        if (tag.allowedTo("edit")) {
+            fetch();
+            return tag.on("routing:query", fetch);
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/isolated",
+            data: {
+                include: "kind",
+                page: tag.opts.query.page
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    tag.pageUpdate = function(newPage) {
+        return queryUpdate({
+            page: newPage
+        });
+    };
+    queryUpdate = function(newQuery) {
+        var h;
+        if (h = tag.opts.handlers.queryUpdate) {
+            return h(newQuery);
+        }
+    };
+});
+
 riot.tag2("kor-loading", "<span>... loading ...</span>", "", "", function(opts) {});
 
-riot.tag2("kor-login", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>Login</h1> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <kor-input type="submit" riot-value="{tcap(\'verbs.login\')}"></kor-input> <a href="#/password_recovery">{tcap(\'password_forgotten\')}</a> <div class="hr"></div> <strong> <span class="kor-shine">ConedaKOR</span> {t(\'nouns.version\')} <span class="kor-shine">{info().version}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'provided_by\')} <span class="kor-shine">{info().operator}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'nouns.license\')}<br> <a href="http://www.gnu.org/licenses/agpl-3.0.txt" target="_blank"> {t(\'nouns.agpl\')} </a> </strong> <div class="hr silent"></div> <strong> » <a href="{info().source_code_url}" target="_blank"> {t(\'objects.download\', {interpolations: {o: \'nouns.source_code\'}})} </a> </strong> </form> </div> </div>', "", "", function(opts) {
+riot.tag2("kor-login", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>Login</h1> <div if="{anyFederatedAuth()}"> <div class="hr"></div> <p>{t(\'prompt.federation_login\')}</p> <a href="/env_auth" class="kor-button"> {config()[\'auth\'][\'env_auth_button_label\']} </a> <div class="hr"></div> </div> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <kor-input type="submit" riot-value="{tcap(\'verbs.login\')}"></kor-input> </form> <a href="#/password_recovery">{tcap(\'password_forgotten\')}</a> <div class="hr"></div> <strong> <span class="kor-shine">ConedaKOR</span> {t(\'nouns.version\')} <span class="kor-shine">{info().version}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'provided_by\')} <span class="kor-shine">{info().operator}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'nouns.license\')}<br> <a href="http://www.gnu.org/licenses/agpl-3.0.txt" target="_blank"> {t(\'nouns.agpl\')} </a> </strong> <div class="hr silent"></div> <strong> » <a href="{info().source_code_url}" target="_blank"> {t(\'objects.download\', {interpolations: {o: \'nouns.source_code\'}})} </a> </strong> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <div class="kor-blend"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.info);
+    tag.mixin(wApp.mixins.config);
+    tag.on("mount", function() {
+        return Zepto(tag.root).find("input").first().focus();
+    });
     tag.submit = function(event) {
         var password, username;
         event.preventDefault();
         username = tag.refs.username.value();
         password = tag.refs.password.value();
         return wApp.auth.login(username, password).then(function() {
-            return wApp.bus.trigger("routing:path", wApp.routing.parts());
+            var parts, r;
+            parts = wApp.routing.parts();
+            if (r = parts.hash_query.return_to) {
+                return window.location.hash = decodeURIComponent(r);
+            } else {
+                return wApp.bus.trigger("routing:path", wApp.routing.parts());
+            }
         });
+    };
+    tag.anyFederatedAuth = function() {
+        var k, ref, source;
+        ref = tag.config().auth.sources;
+        for (k in ref) {
+            source = ref[k];
+            if (source.type === "env") {
+                return true;
+            }
+        }
+        return false;
     };
 });
 
@@ -4755,16 +4922,177 @@ riot.tag2("kor-search", '<h1>Search</h1> <form class="form"> <div class="row"> <
     tag.params = {};
 });
 
-riot.tag2("kor-welcome", "<h2>Welcome</h2>", "", "", function(opts) {});
+riot.tag2("kor-users", '<div class="kor-content-box"> <h1>{tcap(\'activerecord.models.user\', {count: \'other\'})}</h1> <form onsubmit="{search}" class="inline"> <kor-input label="{t(\'nouns.search\')}" ref="search" riot-value="{opts.query.search}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <thead> <tr> <th class="tiny">{t(\'activerecord.attributes.user.personal\')}</th> <th class="small">{t(\'activerecord.attributes.user.name\')}</th> <th class="small">{t(\'activerecord.attributes.user.full_name\')}</th> <th>{t(\'activerecord.attributes.user.email\')}</th> <th class="tiny right"> {t(\'activerecord.attributes.user.created_at\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.last_login\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.expires_at\')} </th> <th class="tiny buttons"></th> </tr> </thead> <tbody> <tr each="{user in data.records}"> <td><i show="{user.personal}" class="fa fa-check"></i></td> <td>{user.name}</td> <td>{user.full_name}</td> <td class="force-wrap"> <a href="mailto:{user.email}">{user.email}</a> </td> <td class="right">{l(user.created_at)}</td> <td class="right">{l(user.last_login)}</td> <td class="right">{l(user.expires_at)}</td> <td class="right nobreak"> <a onclick="{resetLoginAttempts(user.id)}"> <i class="three_bars"></i> </a> <a onclick="{resetPassword(user.id)}"> <i class="reset_password"></i> </a> <a href="#/users/{user.id}/edit"><i class="pen"></i></a> <a onclick="{destroy(user.id)}"><i class="x"></i></a> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+    var fetch, queryUpdate, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        var h;
+        if (tag.hasRole("admin")) {
+            fetch();
+            return tag.on("routing:query", fetch);
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    fetch = function(newOpts) {
+        return Zepto.ajax({
+            url: "/users",
+            data: {
+                include: "security,technical",
+                search_string: tag.opts.query.search,
+                page: tag.opts.query.page
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    tag.resetLoginAttempts = function(id) {
+        return function(event) {
+            event.preventDefault();
+            return Zepto.ajax({
+                type: "PATCH",
+                url: "/users/" + id + "/reset_login_attempts"
+            });
+        };
+    };
+    tag.resetPassword = function(id) {
+        return function(event) {
+            event.preventDefault();
+            if (confirm(tag.t("confirm.sure"))) {
+                return Zepto.ajax({
+                    type: "PATCH",
+                    url: "/users/" + id + "/reset_password"
+                });
+            }
+        };
+    };
+    tag.destroy = function(id) {
+        return function(event) {
+            event.preventDefault();
+            if (confirm(tag.t("confirm.sure"))) {
+                return Zepto.ajax({
+                    type: "DELETE",
+                    url: "/users/" + id,
+                    success: function() {
+                        return fetch();
+                    }
+                });
+            }
+        };
+    };
+    tag.pageUpdate = function(newPage) {
+        return queryUpdate({
+            page: newPage
+        });
+    };
+    tag.search = function(event) {
+        event.preventDefault();
+        return queryUpdate({
+            page: 1,
+            search: tag.refs.search.value()
+        });
+    };
+    queryUpdate = function(newQuery) {
+        var h;
+        if (h = tag.opts.handlers.queryUpdate) {
+            return h(newQuery);
+        }
+    };
+});
 
-riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'}" type="{opts.type || \'text\'}" name="{opts.name}" placeholder="{opts.placeholder || opts.label}" riot-value="{value_from_parent()}" checked="{checked()}"> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{value_from_parent()}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value}"> {item.name || item.label} </option> </select> </label> <div class="kor-errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "", function(opts) {
+riot.tag2("kor-welcome", '<div class="kor-content-box"> <h1>{config().app.welcome_title}</h1> <div class="target"></div> <div class="teaser" if="{currentUser()}"> <span>{t(\'pages.random_entities\')}</span> <div class="hr"></div> <kor-gallery-grid entities="{entities()}"></kor-gallery-grid> </div> </div>', "", "", function(opts) {
     var tag;
     tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.config);
+    tag.on("mount", function() {
+        Zepto(tag.root).find(".target").html(tag.config().app.welcome_html);
+        return Zepto.ajax({
+            url: "/entities/random",
+            data: {
+                include: "gallery_data"
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    });
+    tag.entities = function() {
+        return (tag.data || {}).records || [];
+    };
+});
+
+riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, opts.entities)}"> <td each="{entity in row}"> <virtual if="{entity.medium}"> <div class="image"> <a href="#/entities/{entity.id}"> <img riot-src="{entity.medium.url.thumbnail}"> </a> <div> {t(\'nouns.content_type\')}: <span class="content-type">{entity.medium.content_type}</span> </div> </div> <div class="meta" if="{entity.primary_entities}"> <div class="hr"></div> <div class="name"> <a each="{e in secondaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> <div class="desc"> <a each="{e in primaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> </div> </virtual> <div class="meta" if="{!entity.medium}"> <div class="name"> <a href="#/entities/{entity.id}">{entity.display_name}</a> </div> <div class="desc">{entity.kind.name}</div> </meta> </td> </tr> </tbody> </table>', "", "", function(opts) {
+    var compare, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.inGroupsOf = wApp.utils.inGroupsOf;
+    compare = function(a, b) {
+        if (a.display_name < b.display_name) {
+            return -1;
+        }
+        if (a.display_name > b.display_name) {
+            return 1;
+        }
+        return 0;
+    };
+    tag.primaries = function(entity) {
+        var p, results;
+        results = function() {
+            var i, len, ref, results1;
+            ref = entity.primary_entities;
+            results1 = [];
+            for (i = 0, len = ref.length; i < len; i++) {
+                p = ref[i];
+                results1.push(p);
+            }
+            return results1;
+        }();
+        return wApp.utils.uniq(results).sort(compare);
+    };
+    tag.secondaries = function(entity) {
+        var i, j, len, len1, p, ref, ref1, results, s;
+        results = [];
+        ref = entity.primary_entities;
+        for (i = 0, len = ref.length; i < len; i++) {
+            p = ref[i];
+            ref1 = p.secondary_entities;
+            for (j = 0, len1 = ref1.length; j < len1; j++) {
+                s = ref1[j];
+                results.push(s);
+            }
+        }
+        return wApp.utils.uniq(results).sort(compare);
+    };
+});
+
+riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{value_from_parent()}" checked="{checked()}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{value_from_parent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{value_from_parent()}" multiple="{opts.multiple}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value}" selected="{selected(item)}"> {item.name || item.label} </option> </select> </label> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
+    var tag;
+    tag = this;
+    tag.name = function() {
+        return tag.opts.name;
+    };
     tag.value = function() {
+        var result;
         if (tag.opts.type === "checkbox") {
             return Zepto(tag.root).find("input").prop("checked");
         } else {
-            return Zepto(tag.root).find("input, select").val();
+            result = Zepto(tag.root).find("input, select, textarea").val();
+            if (result === "0" && tag.opts.type === "select") {
+                return void 0;
+            } else {
+                return result;
+            }
         }
     };
     tag.value_from_parent = function() {
@@ -4781,15 +5109,24 @@ riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'
         if (tag.opts.type === "checkbox") {
             return Zepto(tag.root).find("input").prop("checked", !!value);
         } else {
-            return Zepto(tag.root).find("input, select").val(value);
+            return Zepto(tag.root).find("input, select, textarea").val(value);
         }
     };
     tag.reset = function() {
         return tag.set(tag.value_from_parent());
     };
+    tag.selected = function(item) {
+        var v;
+        v = item.id || item.value;
+        if (tag.opts.multiple) {
+            return (tag.value_from_parent() || []).indexOf(v) > -1;
+        } else {
+            return "" + v === "" + tag.value_from_parent();
+        }
+    };
 });
 
-riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> <div if="{!termsAccepted()}"> <div class="hr"></div> <button> {tcap(\'commands.accept_terms\')} </button> </div> </div> </div>', "", "", function(opts) {
+riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> <div if="{!termsAccepted()}"> <div class="hr"></div> <button> {tcap(\'commands.accept_terms\')} </button> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -4800,6 +5137,159 @@ riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div clas
     });
     tag.termsAccepted = function() {
         return tag.currentUser() && tag.currentUser().terms_accepted;
+    };
+});
+
+riot.tag2("kor-new-media", '<div class="kor-content-box"> <h1>{tcap(\'pages.new_media\')}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+    var fetch, queryUpdate, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        fetch();
+        return tag.on("routing:query", fetch);
+    });
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/gallery",
+            data: {
+                include: "kind,gallery_data",
+                page: tag.opts.query.page
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    tag.pageUpdate = function(newPage) {
+        return queryUpdate({
+            page: newPage
+        });
+    };
+    queryUpdate = function(newQuery) {
+        var h;
+        if (h = tag.opts.handlers.queryUpdate) {
+            return h(newQuery);
+        }
+    };
+});
+
+riot.tag2("kor-pagination", '<span>{t(\'nouns.page\')}</span> <a show="{!isFirst()}" onclick="{toPrevious}"><i class="icon pager_left"></i></a> <kor-input riot-value="{currentPage()}" onchange="{inputChanged}" ref="manual" type="{\'number\'}"></kor-input> {t(\'of\', {values: {amount: totalPages()}})} <a show="{!isLast()}" onclick="{toNext}"><i class="icon pager_right"></i></a>', "", 'show="{isActive()}"', function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.currentPage = function() {
+        return parseInt(tag.opts.page || 1);
+    };
+    tag.toFirst = function(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        return tag.to(1);
+    };
+    tag.toNext = function(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        return tag.to(tag.currentPage() + 1);
+    };
+    tag.toPrevious = function(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        return tag.to(tag.currentPage() - 1);
+    };
+    tag.toLast = function(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        return tag.to(tag.totalPages());
+    };
+    tag.isFirst = function() {
+        return tag.currentPage() === 1;
+    };
+    tag.isLast = function() {
+        return tag.currentPage() === tag.totalPages();
+    };
+    tag.to = function(new_page) {
+        if (new_page !== tag.currentPage() && new_page >= 1 && new_page <= tag.totalPages()) {
+            if (Zepto.isFunction(tag.opts.pageUpdateHandler)) {
+                return tag.opts.pageUpdateHandler(new_page);
+            }
+        }
+    };
+    tag.totalPages = function() {
+        return Math.ceil(tag.opts.total / tag.opts.perPage);
+    };
+    tag.inputChanged = function(event) {
+        return tag.to(parseInt(tag.refs.manual.value()));
+    };
+    tag.isActive = function() {
+        return tag.opts.total && tag.opts.total > tag.opts.perPage;
+    };
+});
+
+riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'nouns.new_entity\', {count: \'other\'})}</h1> <form> <kor-input label="{tcap(\'activerecord.attributes.entity.collection_id\')}" type="select" options="{collections}" placeholder="{t(\'prompts.please_select\')}" onchange="{collectionSelected}" ref="collectionId" riot-value="{opts.query.collection_id}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> <th>{tcap(\'activerecord.attributes.entity.collection_id\')}</th> <th>{tcap(\'activerecord.attributes.entity.updater\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> <td> {entity.collection.name} </td> <td> {(entity.updater || entity.creator || {}).full_name} </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var fetch, fetchCollections, queryUpdate, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        var h;
+        if (tag.allowedTo("edit")) {
+            Zepto.when(fetchCollections(), fetch()).then(function() {
+                tag.loaded = true;
+                return tag.update();
+            });
+            return tag.on("routing:query", fetch);
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/recent",
+            data: {
+                include: "kind,users,collection",
+                page: tag.opts.query.page,
+                collection_id: tag.opts.query.collection_id
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    fetchCollections = function() {
+        return Zepto.ajax({
+            url: "/collections",
+            success: function(data) {
+                tag.collections = data;
+                return tag.update();
+            }
+        });
+    };
+    tag.pageUpdate = function(newPage) {
+        return queryUpdate({
+            page: newPage
+        });
+    };
+    tag.collectionSelected = function(event) {
+        return queryUpdate({
+            page: 1,
+            collection_id: tag.refs.collectionId.value()
+        });
+    };
+    queryUpdate = function(newQuery) {
+        var h;
+        if (h = tag.opts.handlers.queryUpdate) {
+            return h(newQuery);
+        }
     };
 });
 
@@ -4871,6 +5361,125 @@ riot.tag2("kor-entity", '<div class="auth" if="{!authorized}"> <strong>Info</str
 
 riot.tag2("kor-stats", "<h1>STATS</h1>", "", "", function(opts) {});
 
+riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user\'}})}</h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.personal\')}" name="make_personal" type="checkbox" riot-value="{data.personal}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.active\')}" name="active" type="checkbox" ref="fields" riot-value="{data.active}"></kor-input> <div class="expires-at"> <kor-input label="{tcap(\'activerecord.attributes.user.expires_at\')}" name="expires_at" ref="fields" riot-value="{valueForDate(data.expires_at)}" errors="{errors.expires_at}" type="{\'date\'}"></kor-input> <button onclick="{expiresIn(0)}"> {tcap(\'activerecord.attributes.user.does_not_expire\')} </button> <button onclick="{expiresIn(7)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 7}})} </button> <button onclick="{expiresIn(30)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 30}})} </button> <button onclick="{expiresIn(180)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 180}})} </button> <div class="clearfix"></div> </div> <div class="hr"></div> <kor-input if="{credentials}" label="{tcap(\'activerecord.attributes.user.groups\')}" name="group_ids" type="select" options="{credentials.records}" multiple="{true}" ref="fields" riot-value="{data.group_ids}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.authority_group_admin\')}" name="authority_group_admin" type="checkbox" ref="fields" riot-value="{data.authority_group_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.relation_admin\')}" name="relation_admin" type="checkbox" ref="fields" riot-value="{data.relation_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.kind_admin\')}" name="kind_admin" type="checkbox" ref="fields" riot-value="{data.kind_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.admin\')}" name="admin" type="checkbox" ref="fields" riot-value="{data.admin}"></kor-input> <div class="hr"></div> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var create, expiresAtTag, fetchCredentials, fetchUser, tag, update, values;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        var h;
+        tag.errors = {};
+        if (tag.hasRole("admin")) {
+            return Zepto.when(fetchCredentials(), fetchUser()).then(function() {
+                tag.loaded = true;
+                return tag.update();
+            });
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            var h;
+            if (h = tag.opts.handlers.doneHandler) {
+                return h();
+            }
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    tag.expiresIn = function(days) {
+        return function(event) {
+            var date;
+            if (days) {
+                date = new Date();
+                date.setTime(date.getTime() + days * 24 * 60 * 60 * 1e3);
+                return expiresAtTag().set(strftime("%Y-%m-%d", date));
+            } else {
+                return expiresAtTag().set(void 0);
+            }
+        };
+    };
+    tag.valueForDate = function(date) {
+        if (date) {
+            return strftime("%Y-%m-%d", new Date(date));
+        } else {
+            return "";
+        }
+    };
+    fetchCredentials = function() {
+        return Zepto.ajax({
+            url: "/credentials",
+            success: function(data) {
+                tag.credentials = data;
+                return tag.update();
+            }
+        });
+    };
+    fetchUser = function() {
+        return Zepto.ajax({
+            url: "/users/" + tag.opts.id,
+            data: {
+                include: "security"
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    create = function() {
+        return Zepto.ajax({
+            type: "POST",
+            url: "/users",
+            data: JSON.stringify({
+                user: values()
+            })
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/users/" + tag.opts.id,
+            data: JSON.stringify({
+                user: values()
+            })
+        });
+    };
+    expiresAtTag = function() {
+        var f, i, len, ref;
+        ref = tag.refs.fields;
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            if (f.name() === "expires_at") {
+                return f;
+            }
+        }
+        return void 0;
+    };
+    values = function() {
+        var f, i, len, ref, results;
+        results = {};
+        ref = tag.refs.fields;
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            results[f.name()] = f.value();
+        }
+        return results;
+    };
+});
+
 riot.tag2("w-app-loader", '<div class="app"></div>', "", "", function(opts) {
     var reloadApp, tag;
     tag = this;
@@ -4897,85 +5506,155 @@ riot.tag2("w-app-loader", '<div class="app"></div>', "", "", function(opts) {
 });
 
 riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div class="w-content" ref="content"></div> </div> <w-modal></w-modal> <w-messaging></w-messaging>', "", "", function(opts) {
-    var tag;
+    var redirectTo, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.auth);
     tag.on("mount", function() {
         wApp.bus.on("routing:path", tag.routeHandler);
+        wApp.bus.on("routing:query", tag.queryHandler);
         if (tag.opts.routing) {
             return wApp.routing.setup();
         }
     });
     tag.on("unmount", function() {
+        wApp.bus.off("routing:query", tag.queryHandler);
         wApp.bus.off("routing:path", tag.routeHandler);
         if (tag.opts.routing) {
             return wApp.routing.tearDown();
         }
     });
     tag.routeHandler = function(parts) {
-        var element, mountIt, opts, tagName;
+        var m, opts, path, tagName;
         tagName = "kor-loading";
-        opts = {};
-        if (tag.currentUser() && !tag.isGuest() && parts.hash_path === "/login") {
-            return wApp.routing.path("/search");
-        } else {
-            tagName = function() {
-                switch (parts.hash_path) {
-                  case "/login":
+        opts = {
+            query: parts["hash_query"],
+            handlers: {
+                accessDenied: function() {
+                    return tag.mountTag("kor-access-denied");
+                },
+                queryUpdate: function(newQuery) {
+                    return wApp.routing.query(newQuery);
+                },
+                doneHandler: function() {
+                    return wApp.routing.back();
+                }
+            }
+        };
+        path = parts["hash_path"];
+        tagName = function() {
+            switch (path) {
+              case void 0:
+              case "":
+              case "/":
+                return "kor-welcome";
+
+              case "/login":
+                if (tag.currentUser() && !tag.isGuest()) {
+                    return redirectTo("/search");
+                } else {
                     return "kor-login";
+                }
+                break;
 
-                  case "/stats":
-                    return "kor-stats";
+              case "/stats":
+                return "kor-stats";
 
-                  case "/legal":
-                    return "kor-legal";
+              case "/legal":
+                return "kor-legal";
 
-                  case "/about":
-                    return "kor-about";
+              case "/about":
+                return "kor-about";
 
-                  default:
-                    if (tag.currentUser()) {
-                        if (!tag.isGuest() && !tag.currentUser().terms_accepted && parts.hash_path !== "/legal") {
-                            wApp.routing.path("/legal");
-                            return null;
+              default:
+                if (tag.currentUser()) {
+                    if (!tag.isGuest() && !tag.currentUser().terms_accepted && path !== "/legal") {
+                        return redirectTo("/legal");
+                    } else {
+                        if (m = path.match(/\/users\/([0-9]+)\/edit/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-user-editor";
                         } else {
-                            switch (parts.hash_path) {
-                              case "search":
+                            switch (path) {
+                              case "/search":
                                 return "kor-search";
 
-                              case "gallery":
-                                return "kor-gallery";
+                              case "/new-media":
+                                return "kor-new-media";
+
+                              case "/users":
+                                return "kor-users";
+
+                              case "/entities/invalid":
+                                return "kor-invalid-entities";
+
+                              case "/entities/recent":
+                                return "kor-recent-entities";
+
+                              case "/entities/isolated":
+                                return "kor-isolated-entities";
 
                               default:
                                 return "kor-search";
                             }
                         }
-                    } else {
-                        return "kor-login";
                     }
-                }
-            }();
-            if (tagName) {
-                element = Zepto(".w-content");
-                mountIt = function() {
-                    tag.mountedTag = riot.mount(element[0], tagName, opts)[0];
-                    element.animate({
-                        opacity: 1
-                    }, 200);
-                    return window.scrollTo(0, 0);
-                };
-                if (tag.mountedTag) {
-                    return element.animate({
-                        opacity: 0
-                    }, 200, function() {
-                        tag.mountedTag.unmount(true);
-                        return mountIt();
-                    });
                 } else {
-                    return mountIt();
+                    return "kor-login";
                 }
             }
+        }();
+        return tag.mountTagAndAnimate(tagName, opts);
+    };
+    tag.queryHandler = function(parts) {
+        if (tag.mountedTag) {
+            tag.mountedTag.opts.query = parts["hash_query"];
+            return tag.mountedTag.trigger("routing:query");
         }
+    };
+    tag.mountTagAndAnimate = function(tagName, opts) {
+        var element, mountIt;
+        if (opts == null) {
+            opts = {};
+        }
+        if (tagName) {
+            element = Zepto(".w-content");
+            mountIt = function() {
+                tag.mountedTag = riot.mount(element[0], tagName, opts)[0];
+                element.animate({
+                    opacity: 1
+                }, 200);
+                return wApp.utils.scrollToTop();
+            };
+            if (tag.mountedTag) {
+                return element.animate({
+                    opacity: 0
+                }, 200, function() {
+                    tag.mountedTag.unmount(true);
+                    return mountIt();
+                });
+            } else {
+                return mountIt();
+            }
+        }
+    };
+    tag.mountTag = function(tagName, opts) {
+        var element;
+        if (opts == null) {
+            opts = {};
+        }
+        if (tagName) {
+            element = Zepto(".w-content");
+            if (tag.mountedTag) {
+                tag.mountedTag.unmount(true);
+            }
+            tag.mountedTag = riot.mount(element[0], tagName, opts)[0];
+            return wApp.utils.scrollToTop();
+        }
+    };
+    redirectTo = function(new_path) {
+        wApp.routing.path(new_path);
+        return null;
     };
 });
 
@@ -5019,7 +5698,7 @@ riot.tag2("w-bar-chart", '<svg riot-width="{width()}" riot-height="{height()}"> 
     };
 });
 
-riot.tag2("kor-header", '<a href="{rootPath()}" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <span if="{currentUser()}"> <img src="images/vertical_dots.gif"> {t(\'logged_in_as\')}: <strong>{currentUser().display_name}</strong> <span if="{!isGuest()}"> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </span> </span> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-header", '<a href="#/" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <span if="{currentUser()}"> <img src="images/vertical_dots.gif"> {t(\'logged_in_as\')}: <strong>{currentUser().display_name}</strong> <span if="{!isGuest()}"> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </span> </span> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.info);
@@ -5027,7 +5706,7 @@ riot.tag2("kor-header", '<a href="{rootPath()}" class="logo"> <img src="images/l
     tag.mixin(wApp.mixins.i18n);
 });
 
-riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/profile">{tcap(\'edit_self\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#/new_media">{tcap(\'pages.new_media\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.simple_search\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.expert_search\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#" onclick="{toggleGroups}"> {tcap(\'nouns.group\', {count: \'other\'})} </a> <ul show="{showGroups}" class="submenu"> <li> <a href="#/groups/authority"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> </ul> </li> </ul> <ul show="{isLoggedIn() && allowedTo(\'create\')}"> <li> <kor-input type="select" onchange="{newEntity}" options="{kinds}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'nouns.entity\'}})}" ref="kind_id"></kor-input> </li> <li show="{isLoggedIn()}"> <a href="#/upload">{tcap(\'nouns.mass_upload\')}</a> </li> </ul> <ul show="{isLoggedIn()}"> <li show="{allowedTo(\'delete\')}"> <a href="#/upload">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/upload">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/upload">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> <ul show="{hasAnyRole()}"> <li> <a href="#" onclick="{toggleConfig}"> {tcap(\'nouns.config\', {count: \'other\'})} </a> <ul show="{showConfig}" class="submenu"> <li show="{hasRole(\'admin\')}"> <a href="#/config/general"> {tcap(\'general\')} </a> </li> <li show="{hasRole(\'relation_admin\')}"> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li show="{hasRole(\'kind_admin\')}"> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> </li> </ul> <ul> <li> <a href="#/stats">{tcap(\'nouns.statistics\')}</a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/dev">{tcap(\'activerecord.models.exception_log.other\')}</a> </li> </ul> <ul> <li> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li show="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer.mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
+riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/profile">{tcap(\'edit_self\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#/new-media">{tcap(\'pages.new_media\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.simple_search\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.expert_search\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#" onclick="{toggleGroups}"> {tcap(\'nouns.group\', {count: \'other\'})} </a> <ul show="{showGroups}" class="submenu"> <li> <a href="#/groups/authority"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> </ul> </li> </ul> <ul show="{isLoggedIn() && allowedTo(\'create\')}"> <li> <kor-input if="{kinds}" type="select" onchange="{newEntity}" options="{kinds.records}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'nouns.entity\'}})}" ref="kind_id"></kor-input> </li> <li show="{isLoggedIn()}"> <a href="#/upload">{tcap(\'nouns.mass_upload\')}</a> </li> </ul> <ul show="{isLoggedIn()}"> <li show="{allowedTo(\'delete\')}"> <a href="#/entities/invalid">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/entities/recent">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/entities/isolated">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> <ul show="{hasAnyRole()}"> <li> <a href="#" onclick="{toggleConfig}"> {tcap(\'nouns.config\', {count: \'other\'})} </a> <ul show="{showConfig}" class="submenu"> <li show="{hasRole(\'admin\')}"> <a href="#/config/general"> {tcap(\'general\')} </a> </li> <li show="{hasRole(\'relation_admin\')}"> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li show="{hasRole(\'kind_admin\')}"> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> </li> </ul> <ul> <li> <a href="#/stats">{tcap(\'nouns.statistics\')}</a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/dev">{tcap(\'activerecord.models.exception_log.other\')}</a> </li> </ul> <ul> <li> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li show="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer.mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -5081,14 +5760,20 @@ riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'er
         return self.update();
     });
     ajaxCompleteHandler = function(event, request, options) {
-        var contentType, data, e, type;
+        var contentType, data, e, i, len, message, ref, results, type;
         contentType = request.getResponseHeader("content-type");
         if (contentType.match(/^application\/json/) && request.response) {
             try {
                 data = JSON.parse(request.response);
-                if (data.message) {
+                if (data.messages) {
                     type = request.status >= 200 && request.status < 300 ? "notice" : "error";
-                    return wApp.bus.trigger("message", type, data.message);
+                    ref = data.messages;
+                    results = [];
+                    for (i = 0, len = ref.length; i < len; i++) {
+                        message = ref[i];
+                        results.push(wApp.bus.trigger("message", type, message));
+                    }
+                    return results;
                 }
             } catch (error) {
                 e = error;

@@ -9,8 +9,10 @@ class UsersController < ApplicationController
 
     if @user.save
       current_user.reload
-      flash[:notice] = I18n.t('notices.terms_accepted')
-      redirect_to root_url
+      render_200 I18n.t('notices.terms_accepted')
+    else
+      @errors = @user.errors
+      render_406
     end
   end
 
@@ -19,13 +21,12 @@ class UsersController < ApplicationController
     @user.reset_password
 
     if @user.save
-      flash[:notice] = I18n.t("messages.password_reset", :username => @user.display_name)
       UserMailer.reset_password(@user).deliver_now
+      render_200 I18n.t("messages.password_reset", username: @user.display_name)
     else
-      flash[:error] = I18n.t('errors.password_reset_failure')
+      @errors = @user.errors
+      render_406 I18n.t('errors.password_reset_failure')
     end
-    
-    redirect_to back_save
   end
   
   def reset_login_attempts
@@ -33,33 +34,30 @@ class UsersController < ApplicationController
     @user.login_attempts = []
 
     if @user.save
-      flash[:notice] = I18n.t("messages.login_attempts_reset", :username => @user.display_name)
+      render_200 I18n.t("messages.login_attempts_reset", 
+        username: @user.display_name
+      )
     else
-      flash[:error] = I18n.t('errors.login_attempts_reset_failure')
+      @errors = @user.errors
+      render_406 I18n.t('errors.login_attempts_reset_failure')
     end
-    
-    redirect_to back_save
   end
 
   def index
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
-  
-    @users = User.
-      search(params[:search_string]).
-      order(params[:sort_by] => params[:sort_order]).
-      paginate(:page => params[:page], :per_page => 10)
 
-    respond_to do |format|
-      format.html {render :layout => 'wide'}
-      format.json do
-        render :json => @users.to_json(:except => [:activation_hash, :password, :api_key])
-      end
-    end
+    @per_page = params[:per_page] || 10
+    @page = params[:page] || 1
+    @records = User.
+      search(params[:search_string]).
+      order(params[:sort_by] => params[:sort_order])
+    @total = @records.count
+    @records = @records.pageit(@page, @per_page)
   end
 
   def show
-    redirect_to edit_user_path(params[:id])
+    @record = User.find(params[:id])
   end
 
   def new
@@ -98,14 +96,13 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
 
     if @user.update_attributes(user_params)
-      flash[:notice] = I18n.t( 'objects.update_success', :o => I18n.t('nouns.user', :count => 1) )
-      redirect_to users_path
+      render_200 I18n.t(
+        'objects.update_success', o: I18n.t('nouns.user', count: 1)
+      )
     else
-      render :action => "edit"
+      @errors = @user.errors
+      render_406 I18n.t('activemodel.errors.template.header')
     end
-  rescue ActiveRecord::StaleObjectError
-    flash[:error] = I18n.t('activerecord.errors.messages.stale_user_update')
-    render :action => 'edit'
   end
 
   def create
@@ -123,8 +120,9 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find(params[:id])
     @user.destroy
-
-    redirect_to users_path
+    render_200 I18n.t('objects.destroy_success',
+      o: I18n.t('nouns.user', count: 1)
+    )
   end
   
 

@@ -45,6 +45,7 @@ Rails.application.routes.draw do
       get 'recent'
       get 'invalid'
       get 'isolated'
+      get 'random'
       get 'recently_created'
       get 'recently_visited'
     end
@@ -108,15 +109,6 @@ Rails.application.routes.draw do
   match '/pub/:user_id/:uuid', :to => 'publishments#show', :as => :show_publishment, :via => :get
   match '/edit_self', :to => 'users#edit_self', :via => :get
   match '/update_self', :to => 'users#update_self', :via => :patch
-  resources :users do
-    member do
-      get 'reset_password'
-      get 'accept_terms'
-      get 'edit_self'
-      get 'reset_login_attempts'
-      get 'new_from_template'
-    end
-  end
 
   match '/downloads/:uuid', :to => 'downloads#show', :via => :get
   
@@ -182,6 +174,15 @@ Rails.application.routes.draw do
     #   match 'about', :action => 'about', :via => :get
     #   match 'help', :action => 'help', :via => :get
     # end
+    resources :users, except: ['new', 'edit'] do
+      member do
+        patch 'reset_password'
+        patch 'reset_login_attempts'
+        patch 'accept_terms'
+        # get 'edit_self'
+        # get 'new_from_template'
+      end
+    end
   end
 
   

@@ -549,6 +549,7 @@ de:
     create: "erstellen"
 
   confirm:
+    sure: Sind Sie sicher?
     delete_collection: "Die Sammlung wirklich löschen?"
     delete_relationship: "Die Verknüpfung wirklich löschen?"
     delete_relation: "Die Relation wirklich löschen?"
@@ -810,27 +811,21 @@ de:
         plain_password_confirmation: Passwortwiederholung
         email: Email
         activation: Aktivierung
+        active: active
         groups: Gruppenzugehörigkeit
         created_at: erstellt
         expires_at: läuft aus
+        does_not_expire: läuft nicht aus
+        expires_in_days: läuft in %{amount} Tagen aus
         last_login: zuletzt angemeldet
         authority_group_admin: Verwaltung von globalen Gruppen
         kind_admin: Verwaltung von Entitätstypen
-        credential_admin: anlegen und ändern von Benutzergruppen
-        user_admin: Benutzerverwaltung
-        collection_admin: anlegen und ändern von Sammlungen
+        admin: Verwaltung von Zugriffsrechten
         relation_admin: anlegen und ändern von Relationen
         developer: Entwickler
-        expires_at: läuft aus
-        created_at: erstellt
-        expires_at: läuft aus
         authority_group_admin: Verwaltung von globalen Gruppen
         kind_admin: Verwaltung von Entitätstypen
-        credential_admin: anlegen und ändern von Benutzergruppen
-        user_admin: Benutzerverwaltung
-        collection_admin: anlegen und ändern von Sammlungen
         relation_admin: anlegen und ändern von Relationen
-        developer: Entwickler
         last_login: letzte Anmeldung
         home_page: Startseite
         default_collection_id: Voreingestellte Sammlung

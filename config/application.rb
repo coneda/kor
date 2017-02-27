@@ -13,6 +13,8 @@ require 'securerandom'
 
 module Kor
   class Application < Rails::Application
+    # SQLOrigin.append_to_log
+    
     config.autoload_paths << "#{Rails.root}/lib"
 
     config.assets.js_compressor = :uglifier
@@ -103,3 +105,5 @@ end
 # TODO: make password retrieval not reset the password until the confirmation
 #       link within the email was clicked
 # TODO: make sure terms_accepted? is respected by all controllers and actions
+# TODO: make default per_page = 10 everywhere
+# TODO: handle stale object exceptions somewhere in application controller

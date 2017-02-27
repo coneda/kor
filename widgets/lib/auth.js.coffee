@@ -29,13 +29,17 @@ wApp.mixins.auth = {
     return false unless this.currentUser()
     
     roles = [roles] unless Zepto.isArray(roles)
-    perms = this.currentUser().permissions.roles
-    wApp.auth.intersect(roles, perms).length == roles.length
+    for role in roles
+      return false unless this.currentUser().permissions.roles[role]
+    
+    true
   hasAnyRole: ->
     return false unless this.currentUser()
 
     perms = this.currentUser().permissions.roles
-    perms.length > 0
+    for k, v of perms
+      return true if v
+    false
   allowedTo: (policy, collections = [], requireAll = true) ->
     return false unless this.currentUser()
 

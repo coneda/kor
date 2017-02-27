@@ -19,42 +19,60 @@ class EntitiesController < ApplicationController
   end
 
   def gallery
-    respond_to do |format|
-      format.json do
-        entities = viewable_entities.media.newest_first
-        @result = Kor::SearchResult.new(
-          total: entities.count,
-          page: params[:page],
-          per_page: 16,
-          records: entities.pageit(params[:page], 16)
-        )
-      end
-    end
+    params[:include] = param_to_array(params[:include], ids: false)
+
+    entities = viewable_entities.
+      includes(:kind, :collection, :medium, :tags).
+      media.
+      newest_first
+
+    @result = Kor::SearchResult.new(
+      total: entities.count,
+      page: params[:page],
+      per_page: 16,
+      records: entities.pageit(params[:page], 16)
+    )
   end
   
   def invalid
     if authorized? :delete
-      @group = SystemGroup.find_or_create_by(:name => 'invalid')
-      @entities = @group.entities.allowed(current_user, :delete).paginate :page => params[:page], :per_page => 30
+      @results = kor_graph.search(:invalid,
+        page: params[:page],
+        per_page: 30
+      )
+
+      render action: 'index'
     else
-      render_denied_page
+      render_403
     end
   end
   
   def recent
+    params[:include] = param_to_array(params[:include], ids: false)
+
     if authorized? :edit
-      @entities = editable_entities.latest(1.week).without_media.newest_first.within_collections(params[:collection_id]).paginate(
+      @results = kor_graph.search(:recent,
+        criteria: {collection_id: params[:collection_id]},
         page: params[:page],
         per_page: 30
       )
+
+      render action: 'index'
     else
-      render_denied_page
+      render_403
     end
   end
 
   def isolated
+    params[:include] = param_to_array(params[:include], ids: false)
+
     if authorized? :edit
-      entities = Entity.allowed(current_user, :view).isolated.newest_first.includes(:kind)
+      entities = Entity.
+        allowed(current_user, :view).
+        isolated.
+        newest_first.
+        includes(:kind, :collection, :tags, :medium)
+
       @results = Kor::SearchResult.new(
         total: entities.count,
         page: params[:page],
@@ -64,7 +82,7 @@ class EntitiesController < ApplicationController
 
       render 'index'
     else
-      render :nothing => true, :status => 403
+      render_403
     end
   end
 
@@ -108,6 +126,12 @@ class EntitiesController < ApplicationController
     )
 
     render 'index'
+  end
+
+  def random
+    params[:include] = param_to_array(params[:include], ids: false)
+    @results = kor_graph.search(:random)
+    render action: 'index'
   end
 
   def index

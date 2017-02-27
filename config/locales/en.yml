@@ -548,6 +548,7 @@ en:
     create: "create"
 
   confirm:
+    sure: Are you sure?
     delete_collection: "Do you really want to delete this collection?"
     delete_relationship: "Do you really want to delete this link?"
     delete_relation: "Do you really want to delete this relation?"
@@ -809,27 +810,20 @@ en:
         plain_password_confirmation: repeat password
         email: e-mail
         activation: activation
+        active: aktiv
         groups: group membership
         created_at: created at
         expires_at: expires at
+        does_not_expire: doesn't expire
+        expires_in_days: expires in %{amount} days
         last_login: last login
         authority_group_admin: administration of global groups
         kind_admin: administration of entity types
-        credential_admin: create and edit user groups
-        user_admin: user administration
-        collection_admin: create and edit collections
+        admin: configure permissions
         relation_admin: create and edit relations
-        developer: developer
-        expires_at: expires at
-        created_at: created at
-        expires_at: expires at
         authority_group_admin: administration of global groups
         kind_admin: administration of entity types
-        credential_admin: create and edit user groups
-        user_admin: user administration
-        collection_admin: create and edit collections
         relation_admin: create and edit relations
-        developer: developer
         last_login: last login
         home_page: home page
         default_collection_id: default collection

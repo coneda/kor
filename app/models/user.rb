@@ -245,16 +245,25 @@ class User < ActiveRecord::Base
   ["", "kind_", "relation_", "authority_group_admin_"].each do |ag|
     define_method "#{ag}admin".to_sym do
       key = "#{ag}admin".to_sym
-      self[key] || (self.parent.present? && self.parent[key])
+      self[key] || (
+        self.parent_username.present? &&
+        self.parent &&
+        self.parent[key]
+      )
     end
 
     define_method "#{ag}admin?".to_sym do
       key = "#{ag}admin".to_sym
-      self[key] || (self.parent.present? && self.parent[key])
+      self[key] || (
+        self.parent_username.present? &&
+        self.parent &&
+        self.parent[key]
+      )
     end
 
     define_method "#{ag}admin=".to_sym do |value|
-      if parent.present? && parent.send("#{ag}admin".to_sym) == !!value
+      parent_present = self.parent_username.present? && self.parent
+      if parent_present && parent.send("#{ag}admin".to_sym) == !!value
         self["#{ag}admin".to_sym] = nil
       else
         super value
@@ -274,18 +283,21 @@ class User < ActiveRecord::Base
   
   def full_auth
     collections = {}
-    Grant.group(:policy).count.each do |policy, c|
-      collections[policy] = Kor::Auth.authorized_collections(self, policy).map{|c| c.id}
+    scope = Grant.where(credential_id: groups.pluck(:id))
+    scope.group(:collection_id, :policy).count.each do |g, count|
+      collections[g.last] ||= []
+      collections[g.last] << g.first
     end
+    Kor::Auth.policies.each{|p| collections[p] ||= []}
   
     return {
-      :roles => {
-        :admin => admin?,
-        :kind_admin => kind_admin?,
-        :relation_admin => relation_admin?,
-        :authority_group_admin => authority_group_admin?
+      roles: {
+        admin: admin?,
+        kind_admin: kind_admin?,
+        relation_admin: relation_admin?,
+        authority_group_admin: authority_group_admin?
       },
-      :collections => collections
+      collections: collections
     }
   end
 
@@ -310,6 +322,12 @@ class User < ActiveRecord::Base
     where("created_at > ?", 30.days.ago)
   }
   scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
+  scope :pageit, lambda { |page, per_page|
+    page = [(page || 1).to_i, 1].max
+    per_page = [(per_page || 10).to_i, Kor.config['app']['max_results_per_request']].min
+
+    offset((page - 1) * per_page).limit(per_page)
+  }
   
   def self.admin
     unless user = find_by_name('admin')

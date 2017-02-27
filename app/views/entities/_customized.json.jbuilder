@@ -7,7 +7,7 @@ json.extract!(entity,
   :comment, :subtype
 )
 
-json.tags entity.tag_list
+json.tags entity.tags.map{|t| t.to_s}.join(', ')
 
 if entity.is_medium?
   json.medium_id entity.medium_id
@@ -67,6 +67,7 @@ if additions.include?('related') || additions.include?('all')
   directed_relationships = entity.outgoing_relationships.
     by_relation_name(related_relation_name).
     by_to_kind(related_kind_id).
+    includes(to: [:tags, :collection, :kind, :medium]).
     pageit(1, related_per_page)
 
   json.related directed_relationships do |dr|
@@ -74,6 +75,28 @@ if additions.include?('related') || additions.include?('all')
       directed_relationship: dr,
       additions: ['to', 'properties']
     }
+  end
+end
+
+if additions.include?('gallery_data')
+  ors = entity.
+    outgoing_relationships.
+    allowed(current_user).
+    by_relation_name(Relation.primary_relation_names).
+    includes(to: [:tags, :collection, :kind, :medium])
+
+  json.primary_entities ors do |pr|
+    json.partial! 'customized', entity: pr.to
+
+    ors = pr.to.
+      outgoing_relationships.
+      allowed(current_user).
+      by_relation_name(Relation.secondary_relation_names).
+      includes(to: [:tags, :collection, :kind, :medium])
+
+    json.secondary_entities ors do |sr|
+      json.partial! 'customized', entity: sr.to
+    end
   end
 end
 

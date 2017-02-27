@@ -33,14 +33,14 @@ class SessionController < ApiController
           user.update_attributes(:login_attempts => [])
 
           if user.expires_at && (user.expires_at <= Time.now)
-            rendeR_403 I18n.t("errors.account_expired")
+            render_403 I18n.t("errors.account_expired")
           elsif user.inactive?
             reset_session
             render_403 I18n.t("errors.account_inactive")
           else
             user.fix_cryptography(params[:password])
             create_session(user)
-            @message = I18n.t('notices.logged_in')
+            @messages << I18n.t('notices.logged_in')
             render action: 'show'
           end
         else
@@ -57,7 +57,7 @@ class SessionController < ApiController
   def destroy
     reset_session
     @current_user = nil
-    @message = I18n.t("notices.logged_out")
+    @messages << I18n.t("notices.logged_out")
     render action: 'show'
   end
 
@@ -68,7 +68,7 @@ class SessionController < ApiController
       @user.reset_password
       @user.save
       UserMailer.reset_password(@user).deliver_now
-      @message = I18n.t('notices.personal_password_reset_success')
+      @messages << I18n.t('notices.personal_password_reset_success')
       render action: 'show'
     else
       render_404 I18n.t('errors.personal_password_reset_mail_not_found')

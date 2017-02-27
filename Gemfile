@@ -56,6 +56,7 @@ group :test do
 end
 
 group :development do
+  gem 'sql_origin'
   gem 'method_profiler'
   gem 'debase-ruby_core_source'
   # gem 'perftools.rb'

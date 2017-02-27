@@ -13,6 +13,8 @@
       </div>
     </div>
   </div>
+  
+  <div class="clearfix"></div>
 
   <script type="text/coffee">
     tag = this

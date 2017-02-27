@@ -72,10 +72,6 @@ class Medium < ActiveRecord::Base
     self.content_type.match /^(image|video|application\/x-shockwave-flash|application\/mp4)/
   end
   
-  def kind
-    Kind.medium_kind
-  end
-  
   before_validation do |m|
     if m.document.file? && m.document.content_type.match(/^image\//)
       unless m.image.file?

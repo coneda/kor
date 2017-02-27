@@ -1,1 +1,5 @@
-json.message @message
+json.messages @messages
+
+if @errors
+  json.errors @errors
+end

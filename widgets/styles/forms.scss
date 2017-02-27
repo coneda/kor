@@ -1,13 +1,9 @@
 kor-input, [data-is=kor-input] {
-  display: block;
-  margin-bottom: 1rem;
-
   label {
     font-weight: bold;
   }
 
   input, select, textarea {
-    width: 100%;
     border: 0.1rem solid $kor-input-border;
     background-color: $kor-input-bg;
     font-family: helvetica, arial;
@@ -17,6 +13,11 @@ kor-input, [data-is=kor-input] {
     color: $kor-shine;
     padding-left: 0.4rem;
     outline: none;
+    min-height: 2rem;
+  }
+
+  textarea {
+    min-height: 5rem;
   }
 
   input:focus, textarea:focus {
@@ -33,5 +34,51 @@ kor-input, [data-is=kor-input] {
 
   input[type=submit]:hover {
     background-color: $kor-button-highlight;
+  }
+
+  .errors {
+    color: $kor-error;
+  }
+
+  &.has-errors {
+    input, select, textarea {
+      border-color: $kor-error;
+    }
+  }
+}
+
+form {
+  display: block;
+  margin-bottom: 1rem;
+  
+  kor-input, [data-is=kor-input] {
+    display: block;
+    margin-bottom: 1rem;
+
+    input, select, textarea {
+      width: 100%;
+    }
+
+    input[type=checkbox] {
+      display: block;
+      width: auto;
+    }
+
+    select[multiple] {
+      height: 15rem;
+    }
+  }
+}
+
+form.inline {
+  display: inline;
+  margin-bottom: 0rem;
+
+  kor-input, [data-is=kor-input] {
+    display: inline;
+
+    input, select, textarea {
+      width: auto;
+    }
   }
 }

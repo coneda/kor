@@ -275,7 +275,7 @@ class Entity < ActiveRecord::Base
   
   def relation_counts(user, options = {})
     options.reverse_merge! media: false
-    media_id = Kind.medium_kind.id
+    media_id = Kind.medium_kind_id
 
     scope = outgoing_relationships.
       allowed(user, :view).
@@ -300,7 +300,7 @@ class Entity < ActiveRecord::Base
 
   def media(user)
     @media ||= outgoing_relationships.
-      by_to_kind(Kind.medium_kind.id).
+      by_to_kind(Kind.medium_kind_id).
       allowed(user).
       map{|dr| dr.to}
   end
@@ -358,12 +358,7 @@ class Entity < ActiveRecord::Base
   end
   
   def is_medium?
-    !!self[:medium_id] ||
-    !!self.medium ||
-    !!Kind.medium_kind && (
-      (self.kind_id == Kind.medium_kind_id) ||
-      (self.kind == Kind.medium_kind)
-    )
+    !!medium_id || !!medium
   end
 
   def self.filtered_tag_counts(term, options = {})
@@ -395,19 +390,14 @@ class Entity < ActiveRecord::Base
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
+  scope :without_kinds, lambda {|ids| ids.present? ? where("entities.kind_id NOT IN (?)", ids) : all}
   scope :alphabetically, lambda { order("name asc, distinct_name asc") }
   scope :newest_first, lambda { order("created_at DESC") }
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
-  scope :media, lambda { only_kinds(Kind.medium_kind.id) }
-  scope :without_media, lambda { 
-    if media = Kind.medium_kind
-      where("entities.kind_id != ?", media.id)
-    else
-      all
-    end
-  }
+  scope :media, lambda { only_kinds(Kind.medium_kind_id) }
+  scope :without_media, lambda { without_kinds(Kind.medium_kind_id) }
   # TODO the scopes are not combinable e.g. id-conditions overwrite each other
   # TODO: rewrite this not to collect singular entity ids
   scope :named_like, lambda { |user, pattern|
@@ -485,9 +475,8 @@ class Entity < ActiveRecord::Base
   }
   scope :load_fully, lambda { joins(:kind, :collection).includes(:medium) }
   scope :isolated, lambda {
-    joins("LEFT JOIN relationships fromrels ON entities.id = fromrels.from_id").
-    joins("LEFT JOIN relationships torels ON entities.id = torels.to_id").
-    where("fromrels.id is NULL AND torels.id IS NULL")
+    joins("LEFT JOIN directed_relationships rels ON entities.id = rels.from_id").
+    where("rels.id IS NULL")
   }
   scope :pageit, lambda { |page, per_page|
     page = [(page || 1).to_i, 1].max

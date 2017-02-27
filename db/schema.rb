@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170210134514) do
+ActiveRecord::Schema.define(version: 20170224111537) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -141,8 +141,8 @@ ActiveRecord::Schema.define(version: 20170210134514) do
   add_index "entities", ["collection_id", "kind_id"], name: "collections_kinds", using: :btree
   add_index "entities", ["created_at"], name: "index_entities_on_created_at", using: :btree
   add_index "entities", ["creator_id"], name: "index_entities_on_user_id", using: :btree
-  add_index "entities", ["deleted_at"], name: "index_entities_on_deleted_at", using: :btree
   add_index "entities", ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
+  add_index "entities", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
   add_index "entities", ["name"], name: "index_entities_on_name", using: :btree
   add_index "entities", ["uuid"], name: "index_entities_on_uuid", using: :btree
 
@@ -235,7 +235,7 @@ ActiveRecord::Schema.define(version: 20170210134514) do
     t.datetime "deleted_at"
   end
 
-  add_index "kinds", ["deleted_at"], name: "index_kinds_on_deleted_at", using: :btree
+  add_index "kinds", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
 
   create_table "media", force: :cascade do |t|
     t.integer "lock_version",          limit: 4
@@ -278,7 +278,7 @@ ActiveRecord::Schema.define(version: 20170210134514) do
     t.datetime "deleted_at"
   end
 
-  add_index "relations", ["deleted_at"], name: "index_relations_on_deleted_at", using: :btree
+  add_index "relations", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
   add_index "relations", ["name"], name: "index_relations_on_name", using: :btree
   add_index "relations", ["reverse_name"], name: "index_relations_on_reverse_name", using: :btree
 
@@ -309,8 +309,8 @@ ActiveRecord::Schema.define(version: 20170210134514) do
     t.datetime "deleted_at"
   end
 
-  add_index "relationships", ["deleted_at"], name: "index_relationships_on_deleted_at", using: :btree
   add_index "relationships", ["from_id"], name: "index_relationships_on_from_id", using: :btree
+  add_index "relationships", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
   add_index "relationships", ["relation_id", "from_id", "to_id"], name: "index_relationships_on_relation_id_and_from_id_and_to_id", using: :btree
   add_index "relationships", ["relation_id"], name: "index_relationships_on_relation_id", using: :btree
   add_index "relationships", ["to_id"], name: "index_relationships_on_to_id", using: :btree

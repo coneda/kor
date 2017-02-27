@@ -11,16 +11,20 @@ class ApplicationController < BaseController
     :logged_in?,
     :blaze
   
-  before_filter :locale, :authentication, :authorization, :legal
-
-  before_filter do
-    @blaze = nil
-  end
+  before_filter(
+    :vars, :locale, :session_expiry, :authentication, :authorization, :legal
+  )
 
   around_filter :profile
 
 
   private
+
+    def vars
+      @messages = []
+      @page = 1
+      @per_page = 10
+    end
 
     # redirects to the legal page if terms have not been accepted
     def legal
@@ -49,7 +53,16 @@ class ApplicationController < BaseController
       #     end
       #   }
       # end
-    end 
+    end
+
+    def session_expiry
+      if session_expired?
+        @messages << I18n.t('notices.session_expired')
+        session[:user_id] = nil
+      else
+        session[:expires_at] = Kor.session_expiry_time
+      end
+    end
     
     def authentication
       session[:user_id] ||= if User.guest
@@ -58,56 +71,16 @@ class ApplicationController < BaseController
       end
 
       if !current_user
-        respond_to do |format|
-          format.html do
-            unless controller_name.match(/tpl/)
-              history_store
-            end
-            redirect_to login_path
-          end
-          format.json do
-            render :json => {:notice => I18n.t('notices.access_denied')}, :status => 403
-          end
-        end
-      elsif session_expired?
-        session[:user_id] = nil
-        
-        respond_to do |format|
-          format.html do
-            history_store unless request.path.match(/^\/blaze/)
-            flash[:notice] = I18n.t('notices.session_expired')
-            redirect_to login_path
-          end
-          format.json do
-            render :json => {:notice => I18n.t('notices.session_expired')}, :status => 403
-          end
-        end
+        render_403
       else
         Rails.logger.info("Auth: user '#{current_user.name}' has been seen")
-        session[:expires_at] = Kor.session_expiry_time
       end
     end
     
     def authorization
       unless generally_authorized?
-        respond_to do |format|
-          format.html do
-            render_denied_page
-          end
-          format.json do
-            render_denied_json
-          end
-        end
+        render_403
       end
-    end
-
-    def render_denied_page
-      flash[:error] = I18n.t('notices.access_denied')
-      render template: 'authentication/denied', status: 403
-    end
-
-    def render_denied_json
-      render json: {message: I18n.t('notices.access_denied')}, status: 403
     end
 
     def session_expired?
@@ -141,7 +114,8 @@ class ApplicationController < BaseController
     end
 
     def authorized?(policy = :view, collections = nil, options = {})
-      options.reverse_merge!(:required => :any)
+      @auth_cache ||= {}
+      options.reverse_merge!(required: :any, cache: @auth_cache)
       Kor::Auth.allowed_to? current_user, policy, collections, options
     end
 
@@ -266,5 +240,31 @@ class ApplicationController < BaseController
         yield
       end
     end
+
+    def render_messages(messages, status)
+      @messages += messages
+      render status: status, action: '../api/message'
+    end
+
+    def render_403(message = nil)
+      message ||= I18n.t('notices.access_denied')
+      render_messages [message], 403
+    end
+
+    def render_404(message)
+      render_messages [message], 404
+    end
+
+    def render_406(message)
+      render_messages [message], 406
+    end
+
+    def render_200(message)
+      render_messages [message], 200
+    end
+
+    # def browser_path(path = '')
+    #   "#{root_path}##{path}"
+    # end
 
 end

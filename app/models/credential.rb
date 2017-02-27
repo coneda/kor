@@ -27,7 +27,7 @@ class Credential < ActiveRecord::Base
   # Attributes
   
   def filtered_name
-    personal? ? I18n.t('nouns.owner', :count => 1) :  name
+    personal? ? I18n.t('nouns.owner', count: 1) :  name
   end
   
   def personal?

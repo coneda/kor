@@ -21,6 +21,7 @@ class Kor::Graph::Search::Query::Random < Kor::Graph::Search::Query::Base
     end
 
     def execute
+      Random.srand
       c = viewable_media_entities.count
       
       if c < limit

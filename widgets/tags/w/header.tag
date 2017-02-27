@@ -1,6 +1,6 @@
 <kor-header>
 
-  <a href={rootPath()} class="logo">
+  <a href="#/" class="logo">
     <img src="images/logo.gif" />
   </a>
 

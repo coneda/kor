@@ -143,46 +143,57 @@ module Kor::Auth
     end
   end
 
-  def self.authorized_collections(user, policies = :view)
+  def self.authorized_collections(user, policies = :view, options = {})
     user ||= User.guest
+    policies = [policies] unless policies.is_a?(Array)
 
-    result = Grant.where(
-      :credential_id => groups(user).map{|c| c.id}, 
-      :policy => policies
-    ).group(:collection_id).count
+    options[:cache] ||= {}
+    options[:cache][:data] ||= user.full_auth
 
-    Collection.where(:id => result.keys).to_a
+    result_ids = nil
+    policies.each do |p|
+      cids = options[:cache][:data][:collections][p.to_s]
+      result_ids ||= cids
+      result_ids &= cids
+    end
+    Collection.where(id: result_ids).to_a
   end
 
-  def self.authorized_credentials(collection, policy = :view)
-    collection.grants.where(policy: policy).map do |grant|
-      grant.credential
+  # def self.authorized_credentials(collection, policy = :view)
+  #   collection.grants.where(policy: policy).map do |grant|
+  #     grant.credential
+  #   end
+  # end
+
+  def self.to_ids(objects)
+    case objects
+      when ActiveRecord::Base then [objects.id]
+      when Fixnum then [objects]
+      when Array, ActiveRecord::Relation
+        objects.map do |o|
+          o.respond_to?(:id) ? o.id : o
+        end
+      else
+        raise "can't handle #{objects.inspect}"
     end
   end
   
   def self.allowed_to?(user, policy = :view, collections = nil, options = {})
+    options.reverse_merge!(:required => :all)
     collections ||= Collection.all.to_a
     user ||= User.guest
     policy = self.policies if policy == :all
-    
-    options.reverse_merge!(:required => :all)
-    collections = if collections.is_a?(Collection)
-      [collections]
-    else
-      collections.to_a
-    end
-    collections = collections.reject{|c| c.nil?}
-    
-    result = Grant.where(
-      :credential_id => groups(user).map{|c| c.id},
-      :policy => policy,
-      :collection_id => collections.map{|c| c.id}
-    ).group(:collection_id).count
-    
-    if options[:required] == :all
-      result.keys.size == collections.size
-    else
-      result.keys.size > 0
+    policy = [policy] unless policy.is_a?(Array)
+    collection_ids = to_ids(collections)
+
+    options[:cache] ||= {}
+    options[:cache][:data] ||= user.full_auth
+
+    m = (options[:required] == :all ? :all? : :any?)
+    collection_ids.send(m) do |cid|
+      policy.all? do |p|
+        options[:cache][:data][:collections][p.to_s].include?(cid)
+      end
     end
   end
 

@@ -1,0 +1,13 @@
+i {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  @each $name in pager_left, pager_right, three_bars, pen, x, reset_password {
+    &.#{$name} {background-image: url('/images/#{$name}.gif')}
+    &.#{$name}:hover {background-image: url('/images/#{$name}_over.gif')}
+  }
+}

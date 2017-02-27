@@ -1,6 +1,4 @@
-if @message
-  json.message @message
-end
+json.messages @messages
 
 json.session do
   json.locale Kor.config['app.default_locale']

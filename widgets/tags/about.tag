@@ -5,6 +5,8 @@
     </div>
   </div>
 
+  <div class="clearfix"></div>
+
   <script type="text/coffee">
     tag = this
     tag.mixin(wApp.mixins.config)

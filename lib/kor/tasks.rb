@@ -10,6 +10,7 @@ class Kor::Tasks
       started_at ||= Time.now
       
       m.image.reprocess! if m.image.file?
+      m.document.reprocess! if m.document.file?
       
       left -= 1
       seconds_left = (Time.now - started_at).to_f / (num - left) * left

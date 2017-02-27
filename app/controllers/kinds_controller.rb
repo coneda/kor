@@ -4,12 +4,8 @@ class KindsController < ApplicationController
   skip_before_filter :authentication, :authorization, :legal, only: ['index']
 
   def index
-    @kinds = Kind.all
-
-    respond_to do |format|
-      format.html {render :layout => 'wide'}
-      format.json {render :json => @kinds}
-    end
+    @records = Kind.all
+    @total = @records.count
   end
 
   def show
@@ -81,24 +77,10 @@ class KindsController < ApplicationController
   def destroy
     @kind = Kind.find(params[:id])
     
-    respond_to do |format|
-      format.html do
-        unless @kind == Kind.medium_kind
-          @kind.destroy
-          redirect_to(kinds_url)
-        else
-          render_denied_page
-        end
-      end
-      format.json do
-        unless @kind == Kind.medium_kind
-          render action: 'show'
-        else
-          render status: 403, json: {
-            message: "the medium kind can't be deleted"
-          }
-        end
-      end
+    unless @kind.medium_kind?
+      render action: 'show'
+    else
+      render_403 "the medium kind can't be deleted"
     end
   end
   

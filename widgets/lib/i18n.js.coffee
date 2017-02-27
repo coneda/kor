@@ -17,6 +17,10 @@ wApp.i18n = {
       
       count = if options.count == 1 then 'one' else 'other'
       result = result[count] || result
+
+      for key, value of options.values
+        regex = new RegExp("%\{#{key}\}", "g")
+        result = result.replace regex, value
       
       for key, value of options.interpolations
         regex = new RegExp("%\{#{key}\}", "g")
@@ -31,13 +35,16 @@ wApp.i18n = {
     catch error
       console.log arguments
       console.log error
-      "d"
+      input
   localize: (locale, input, format_name = 'default') ->
     try
+      return "" unless input
       format = wApp.i18n.translate locale, "date.formats.#{format_name}"
-      result = new Strftime(input)
-      result.render format
+      date = new Date(input)
+      strftime(format, date)
     catch error
+      console.log arguments
+      console.log error
       ""
 }
 

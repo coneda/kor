@@ -33,9 +33,10 @@
         try
           data = JSON.parse(request.response)
           
-          if data.message
+          if data.messages
             type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
-            wApp.bus.trigger 'message', type, data.message
+            for message in data.messages
+              wApp.bus.trigger 'message', type, message
         catch e
           # console.log request
 

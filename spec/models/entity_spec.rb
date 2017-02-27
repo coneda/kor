@@ -234,4 +234,35 @@ describe Entity do
     }.not_to raise_error
   end
 
+  context 'determine if it is a medium' do
+    before :each do
+      @media = FactoryGirl.create :media
+      @people = FactoryGirl.create :people
+    end
+
+    it 'should not be a medium by default' do
+      expect(subject.is_medium?).to be_falsey
+    end
+
+    it "should not be a medium when the kind id is set to people's id" do
+      subject.kind_id = @people.id
+      expect(subject.is_medium?).to be_falsey
+    end
+
+    it "should not be a medium when the kind is set to people" do
+      subject.kind = @people
+      expect(subject.is_medium?).to be_falsey
+    end
+
+    it 'should be a medium when the medium_id attribute is set' do
+      subject.medium_id = 12
+      expect(subject.is_medium?).to be_truthy
+    end
+
+    it 'should be a medium when the medium attribute is set' do
+      subject.medium = Medium.new
+      expect(subject.is_medium?).to be_truthy
+    end
+  end
+
 end

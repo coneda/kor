@@ -3,11 +3,22 @@
 }
 
 .kor-layout-left {
-  border-right: 2px solid $kor-bg-3;
+  float: left;
+  border-right: 0.2rem solid $kor-bg-3;
+}
+
+.kor-layout-right {
+  float: left;
+  border-left: 0.2rem solid $kor-bg-3;
+  margin-left: -0.2rem;
 }
 
 .kor-layout-large {
-  width: 45rem;
+  width: 48rem;
+}
+
+.kor-layout-right.kor-layout-large {
+  width: 48rem + 0.2rem;
 }
 
 .kor-layout-small {

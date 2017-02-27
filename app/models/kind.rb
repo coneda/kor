@@ -20,7 +20,7 @@ class Kind < ActiveRecord::Base
     :white_space => true
   
   default_scope lambda { order(:name) }
-  scope :without_media, lambda { where('id != ?', Kind.medium_kind.id) }
+  scope :without_media, lambda { where('id != ?', Kind.medium_kind_id) }
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :allowed, lambda {|user, policies| all}
@@ -49,6 +49,10 @@ class Kind < ActiveRecord::Base
   def defines_schema?
     !self.fields.empty?
   end
+
+  def medium_kind?
+    uuid == MEDIA_UUID
+  end
   
   # Other
   
@@ -57,7 +61,9 @@ class Kind < ActiveRecord::Base
   end
 
   def self.medium_kind_id
-    @medium_kind_id ||= medium_kind.id
+    @medium_kind_id ||= if m = select(:id).medium_kind
+      m.id
+    end
   end
   
   def self.find_ids(ids)
@@ -112,9 +118,9 @@ class Kind < ActiveRecord::Base
   end
   
   def requires_naming?
-    self.class.medium_kind.id != id
+    !medium_kind?
   end
-  
+
   def can_have_synonyms?
     settings[:synonyms] || requires_naming?
   end

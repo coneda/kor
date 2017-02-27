@@ -45,11 +45,11 @@ module ApplicationHelper
     render :partial => 'layouts/version_info', :locals => {:newline => options[:newline]}
   end
 
-  def authorized?(policy = :view, collections = Collection.all, options = {})
-    options.reverse_merge!(:required => :any)
+  # def authorized?(policy = :view, collections = Collection.all, options = {})
+  #   options.reverse_merge!(:required => :any)
   
-    Kor::Auth.allowed_to? current_user, policy, collections, options
-  end
+  #   Kor::Auth.allowed_to? current_user, policy, collections, options
+  # end
   
   def authorized_collections(policy = :view)
     Kor::Auth.authorized_collections current_user, policy

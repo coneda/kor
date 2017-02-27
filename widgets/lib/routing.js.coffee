@@ -15,9 +15,12 @@ wApp.routing = {
       route new_path
     else
       wApp.routing.parts()['hash_path']
+  fragment: ->
+    window.location.hash
+  back: -> window.history.back()
   parts: ->
     unless wApp.routing.parts_cache
-      h = document.location.href
+      h = window.location.href
       cs = h.match(/^(https?):\/\/([^\/]+)([^?#]+)?(?:\?([^#]+))?(?:#(.*))?$/)
       result = {
         href: h
@@ -49,7 +52,7 @@ wApp.routing = {
     wApp.routing.route ->
       # console.log 'routing', arguments
       old_parts = wApp.routing.parts()
-      if document.location.href != old_parts['href']
+      if window.location.href != old_parts['href']
         wApp.routing.parts_cache = null
         # console.log wApp.routing.parts()
         wApp.bus.trigger 'routing:href', wApp.routing.parts()
