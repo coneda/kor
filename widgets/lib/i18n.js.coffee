@@ -46,6 +46,15 @@ wApp.i18n = {
       console.log arguments
       console.log error
       ""
+  humanSize: (input) ->
+    if input < 1024
+      return "#{input} B"
+    if input < 1024 * 1024
+      return "#{Math.round(input / 1024 * 100) / 100} KB"
+    if input < 1024 * 1024 * 1024
+      return "#{Math.round(input / (1024 * 1024) * 100) / 100} MB"
+    if input < 1024 * 1024 * 1024 * 1024
+      return "#{Math.round(input / (1024 * 1024 * 1024) * 100) / 100} GB"
 }
 
 wApp.mixins.i18n = {
@@ -56,5 +65,6 @@ wApp.mixins.i18n = {
     wApp.i18n.translate this.locale(), input, options
   l: (input, format_name) ->
     wApp.i18n.localize this.locale(), input, format_name
+  hs: (input) -> wApp.i18n.humanSize(input)
 
 }

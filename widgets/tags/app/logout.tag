@@ -11,6 +11,7 @@
     tag.logout = (event) ->
       event.preventDefault()
       wApp.auth.logout().then ->
+        wApp.bus.trigger 'logout'
         wApp.bus.trigger 'routing:path', wApp.routing.parts()
   </script>
 </kor-logout>

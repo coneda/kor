@@ -22,8 +22,8 @@ class ApplicationController < BaseController
 
     def vars
       @messages = []
-      @page = 1
-      @per_page = 10
+      @page = params[:page] || 1
+      @per_page = params[:page_page] || 10
     end
 
     # redirects to the legal page if terms have not been accepted

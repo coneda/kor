@@ -38,27 +38,6 @@ Rails.application.routes.draw do
       get 'names'
     end
   end
-  resources :entities do
-    collection do
-      get 'multi_upload'
-      get 'gallery'
-      get 'recent'
-      get 'invalid'
-      get 'isolated'
-      get 'random'
-      get 'recently_created'
-      get 'recently_visited'
-    end
-    
-    member do
-      get 'metadata'
-    end
-
-    scope format: :json do
-      resources :relations, only: [:index]
-      resources :relationships, only: [:index, :show], controller: 'directed_relationships'
-    end
-  end
 
   scope format: :json do
     resources :relationships, only: [:index, :show], controller: 'directed_relationships'
@@ -144,7 +123,8 @@ Rails.application.routes.draw do
   
 
   defaults format: :json do
-    match '/profile', :to => 'users#update_self', :via => 'patch'
+    match 'profile', :to => 'users#update_self', :via => 'patch'
+    match 'clipboard', :to => 'tools#clipboard', :via => :get
 
     controller 'session' do
       match 'session', action: 'show', via: 'get'
@@ -185,6 +165,27 @@ Rails.application.routes.draw do
       # end
     end
     resources :credentials, except: ['edit', 'new']
+
+    resources :entities do
+      collection do
+        get 'multi_upload'
+        get 'gallery'
+        get 'recent'
+        get 'invalid'
+        get 'isolated'
+        get 'random'
+        get 'recently_created'
+        get 'recently_visited'
+      end
+      
+      member do
+        get 'metadata'
+        patch 'update_tags'
+      end
+
+      resources :relations, only: [:index]
+      resources :relationships, only: [:index, :show], controller: 'directed_relationships'
+    end
   end
 
   

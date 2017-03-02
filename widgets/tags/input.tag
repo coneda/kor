@@ -6,18 +6,18 @@
       if={opts.type != 'select' && opts.type != 'textarea'}
       type={opts.type || 'text'}
       name={opts.name}
-      riot-value={value_from_parent()}
-      checked={checked()}
+      riot-value={valueFromParent()}
+      checked={checkedFromParent()}
     />
     <textarea
       if={opts.type == 'textarea'}
       name={opts.name}
-      riot-value={value_from_parent()}
+      riot-value={valueFromParent()}
     ></textarea>
     <select
       if={opts.type == 'select'}
       name={opts.name}
-      value={value_from_parent()}
+      value={valueFromParent()}
       multiple={opts.multiple}
     >
       <option if={opts.placeholder} value={0}>
@@ -49,11 +49,14 @@
           undefined
         else
           result
-    tag.value_from_parent = ->
+    tag.valueFromParent = ->
       # console.log tag.opts
       if tag.opts.type == 'checkbox' then 1 else tag.opts.riotValue
-    tag.checked = ->
+    tag.checkedFromParent = ->
       tag.opts.type == 'checkbox' && tag.opts.riotValue
+    tag.checked = ->
+      tag.opts.type == 'checkbox' &&
+      Zepto(tag.root).find('input').prop('checked')
     tag.set = (value) ->
       if tag.opts.type == 'checkbox'
         Zepto(tag.root).find('input').prop('checked', !!value)
@@ -61,13 +64,13 @@
         Zepto(tag.root).find('input, select, textarea').val(value)
     tag.reset = ->
       # console.log tag.value_from_parent()
-      tag.set tag.value_from_parent()
+      tag.set tag.valueFromParent()
     tag.selected = (item) ->
       v = item.id || item.value || item
       if tag.opts.multiple
-        (tag.value_from_parent() || []).indexOf(v) > -1
+        (tag.valueFromParent() || []).indexOf(v) > -1
       else
-        "#{v}" == "#{tag.value_from_parent()}"
+        "#{v}" == "#{tag.valueFromParent()}"
 
   </script>
 

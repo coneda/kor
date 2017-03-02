@@ -520,9 +520,9 @@ de:
     for: "für %{o}"
     no_exist: "%{o} existiert nicht"
     none_available: "es sind keine %{o} vorhanden"
-    marked_entity_success: "Entität %{o} wurde in die Zwischenablage aufgenommen"
-    marked_entities_success: "Die Entitäten wurden in die Zwischenablage aufgenommen"
-    unmarked_entity_success: "Entität %{o} wurde aus der Zwischenablage entfernt"
+    marked_entity_success: "die Entität wurde in die Zwischenablage aufgenommen"
+    marked_entities_success: "die Entitäten wurden in die Zwischenablage aufgenommen"
+    unmarked_entity_success: "die Entität wurde aus der Zwischenablage entfernt"
     extend_success: "%{o} wurde verlängert bis %{until}"
     confirm_destroy: "%{o} wirklich löschen?"
     marked_as_current_success: "Entität %{o} wurde als aktuelle Entität markiert"
@@ -674,6 +674,7 @@ de:
     exception_ocurred: "ein unerwarteter Fehler ist eingetreten"
     publishment_expired: "Dieser Link ist abgelaufen"
     file_too_big: "Die Datei '%{file}' ist zu groß (%{size}MB) und kann nicht hochgeladen werden. Die maximale Größe beträgt %{max}MB"
+    clipboard_too_many_elements: "Die Zwischenablage kann nur 500 Elemente beinhalten"
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

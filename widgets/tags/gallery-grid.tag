@@ -6,6 +6,8 @@
         <td each={entity in row}>
           <virtual if={entity.medium}>
             <div class="image">
+              <kor-clipboard-control entity={entity} />
+              
               <a href="#/entities/{entity.id}">
                 <img src={entity.medium.url.thumbnail} />
               </a>

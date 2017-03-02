@@ -26,20 +26,18 @@ class EntitiesController < ApplicationController
       media.
       newest_first
 
-    @result = Kor::SearchResult.new(
-      total: entities.count,
-      page: params[:page],
-      per_page: 16,
-      records: entities.pageit(params[:page], 16)
-    )
+    @total = entities.count
+    @per_page = 16
+    @records = entities.pageit(params[:page], 16)
   end
   
   def invalid
     if authorized? :delete
-      @results = kor_graph.search(:invalid,
-        page: params[:page],
-        per_page: 30
-      )
+      @per_page = 30
+      group = SystemGroup.find_or_create_by(name: 'invalid')
+      scope = group.entities.allowed(current_user, :delete)
+      @total = scope.count
+      @records = scope.pageit(@page, @per_page)
 
       render action: 'index'
     else
@@ -51,11 +49,15 @@ class EntitiesController < ApplicationController
     params[:include] = param_to_array(params[:include], ids: false)
 
     if authorized? :edit
-      @results = kor_graph.search(:recent,
-        criteria: {collection_id: params[:collection_id]},
-        page: params[:page],
-        per_page: 30
-      )
+      @per_page = 30
+      scope = Entity.
+        includes(:creator, :updater, :collection, :kind, :tags).
+        allowed(current_user, :edit).
+        without_media.
+        newest_first.
+        within_collections(params[:collection_id])
+      @total = scope.count
+      @records = scope.pageit(@page, @per_page)
 
       render action: 'index'
     else
@@ -67,20 +69,17 @@ class EntitiesController < ApplicationController
     params[:include] = param_to_array(params[:include], ids: false)
 
     if authorized? :edit
-      entities = Entity.
+      @per_page = 16
+      scope = Entity.
         allowed(current_user, :view).
         isolated.
         newest_first.
         includes(:kind, :collection, :tags, :medium)
 
-      @results = Kor::SearchResult.new(
-        total: entities.count,
-        page: params[:page],
-        per_page: 16,
-        records: entities.pageit(params[:page], 16)
-      )
+      @total = scope.count
+      @records = scope.pageit(@page, @per_page)
 
-      render 'index'
+      render action: 'index'
     else
       render_403
     end
@@ -130,7 +129,21 @@ class EntitiesController < ApplicationController
 
   def random
     params[:include] = param_to_array(params[:include], ids: false)
-    @results = kor_graph.search(:random)
+
+    scope = Entity.allowed(current_user, :view).media
+    @total = scope.count
+
+    amount = 4
+    @records = if @total < amount
+      scope.to_a
+    else
+      o = 0
+      Array.new(amount).map do |i|
+        o += [(rand(@total) / amount).round, 1].max
+        scope.limit(1).offset(o).to_a.first
+      end
+    end
+
     render action: 'index'
   end
 
@@ -308,6 +321,27 @@ class EntitiesController < ApplicationController
   rescue ActiveRecord::StaleObjectError
     flash[:error] = I18n.t('activerecord.errors.messages.stale_entity_update')
     render action: 'edit'
+  end
+
+  def update_tags
+    new_tags = params[:entity].permit(:tags)['tags'].presence || ""
+    new_tags = new_tags.split(/,\s*/)
+    @entity = Entity.find(params[:id])
+    
+    if authorized? :tagging, @entity.collection
+      @entity.tag_list += new_tags
+      
+      if @entity.save
+        render_200 I18n.t('objects.update_success',
+          o: I18n.t('activerecord.models.tag', count: 'other')
+        )
+      else
+        @errors = @entity.errors
+        render_406
+      end
+    else
+      render_403
+    end
   end
 
   def destroy

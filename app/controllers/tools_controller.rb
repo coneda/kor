@@ -23,9 +23,13 @@ class ToolsController < ApplicationController
   # TODO: handle the whole clipboard functionality with localstorage, e.g.
   # https://github.com/tsironis/lockr
   def clipboard
-    if current_user && !current_user.guest?
-      @entities = viewable_entities.where(:id => current_user.clipboard)
-    end
+    params[:include] = param_to_array(params[:include], ids: false)
+    
+    @per_page = 500
+    @records = viewable_entities.where(id: params[:ids])
+    @total = @records.count
+
+    render action: '../entities/index'
   end
 
   def mark_as_current

@@ -1,0 +1,11 @@
+wApp.clipboard = {
+  add: (id) -> Lockr.sadd('clipboard', id)
+  remove: (id) ->
+    console.log "removing: #{id}"
+    Lockr.srem('clipboard', id)
+  includes: (id) -> Lockr.sismember('clipboard', id)
+  reset: -> Lockr.rm('clipboard')
+  ids: -> Lockr.smembers('clipboard')
+  setup: ->
+    wApp.bus.on 'logout', -> wApp.clipboard.reset()
+}

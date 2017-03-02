@@ -7,8 +7,12 @@ i {
   background-repeat: no-repeat;
 
   @each $name in pager_left, pager_right, three_bars, pen, x, reset_password, 
-    plus {
+    plus, target, target_hit, minus {
     &.#{$name} {background-image: url('/images/#{$name}.gif')}
     &.#{$name}:hover {background-image: url('/images/#{$name}_over.gif')}
+  }
+
+  @each $name in triangle_up, triangle_down {
+    &.#{$name} {background-image: url('/images/#{$name}.gif')}
   }
 }

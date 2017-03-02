@@ -55,11 +55,25 @@
             if !tag.isGuest() && !tag.currentUser().terms_accepted && path != '/legal'
               redirectTo '/legal'
             else
-              if m = path.match(/\/users\/([0-9]+)\/edit/)
+              if m = path.match(/^\/users\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-user-editor'
+              else if m = path.match(/^\/entities\/([0-9]+)$/)
+                opts['id'] = parseInt(m[1])
+                'kor-entity-page'
               else
                 switch path
+                  when '/clipboard'
+                    opts.handlers.reset = ->
+                      wApp.clipboard.reset()
+                      tag.mountedTag.opts.entityIds = wApp.clipboard.ids()
+                      Zepto.Deferred().resolve()
+                    opts.handlers.remove = (id) ->
+                      wApp.clipboard.remove(id)
+                      tag.mountedTag.opts.entityIds = wApp.clipboard.ids()
+                      Zepto.Deferred().resolve()
+                    opts.entityIds = wApp.clipboard.ids()
+                    'kor-clipboard'
                   when '/profile' then 'kor-profile'
                   when '/search' then 'kor-search'
                   when '/new-media' then 'kor-new-media'

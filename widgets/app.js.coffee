@@ -17,6 +17,8 @@ window.wApp = {
   mixins: {}
   state: {}
   setup: ->
+    wApp.clipboard.setup()
+
     return [
       wApp.config.setup()
       wApp.session.setup(),

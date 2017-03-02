@@ -1,9 +1,9 @@
-json.ids @results.ids
-json.total @results.total
-json.per_page @results.per_page
-json.records @results.records do |item|
+json.total @total
+json.per_page @per_page
+json.page @page
+json.records @records do |record|
   json.partial! 'entities/customized', {
-    entity: item,
+    entity: record,
     additions: params[:include],
     related_kind_id: params[:related_kind_id],
     related_relation_name: params[:related_relation_name],

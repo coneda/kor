@@ -16,9 +16,9 @@ class DirectedRelationship < ActiveRecord::Base
     with_to.where('tos.collection_id IN (?)', collection_ids)
   end
   scope :pageit, lambda { |page, per_page|
-    page = (page || 1).to_i - 1
+    page = [(page || 1).to_i, 1].max
     per_page = [(per_page || 10).to_i, Kor.config['app']['max_results_per_request']].min
-    limit(per_page).offset(per_page * page)
+    offset((page - 1) * per_page).limit(per_page)
   }
   scope :by_from_entity, lambda { |entity_id| 
     entity_id.present? ? where(from_id: entity_id) : all

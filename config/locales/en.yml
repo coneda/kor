@@ -519,9 +519,9 @@ en:
     for: "for %{o}"
     no_exist: "%{o} does not exist"
     none_available: "%{o} is not available"
-    marked_entity_success: "entity %{o} has been copied to the clipboard"
+    marked_entity_success: "the entity has been added to the clipboard"
     marked_entities_success: "the entities have been copied to the clipboard"
-    unmarked_entity_success: "entity %{o} has been removed from the clipboard"
+    unmarked_entity_success: "the entity has been removed from the clipboard"
     extend_success: "%{o} has been extended until %{until}"
     confirm_destroy: "Do you really want to delete %{o}?"
     marked_as_current_success: "entity %{o} has been marked as current entity"
@@ -672,6 +672,7 @@ en:
     exception_ocurred: "an unexpected error has occurred"
     publishment_expired: "this link has expired"
     file_too_big: "the file '%{file}' is too big (%{size}MB) and can't be uploaded. The maximum allowed size is %{max}MB"
+    clipboard_too_many_elements: "the clipboard can only contain 500 elements"
 
   labels:
     relate_to_via: 'relate all files with "%{to}" via'
