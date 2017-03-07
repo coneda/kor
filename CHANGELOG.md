@@ -15,6 +15,7 @@ commit history on GitHub.
 * relationships may now have one or more date ranges
 * environment authentication now allows to specify a `mail` attribute and
   a `domain` attribute, the latter overriding the former.
+* resumptionToken within OAI-PMH responses now behaves according to the specs
 
 ## Version 2.0.1
 

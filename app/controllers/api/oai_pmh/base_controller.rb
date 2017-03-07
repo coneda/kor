@@ -70,7 +70,7 @@ class Api::OaiPmh::BaseController < BaseController
     def handle_resumption_token
       if params['resumptionToken']
         if token_data = load_query(params['resumptionToken'])
-          params.merge! token_data
+          params.merge! token_data.merge(params)
           params['page'] += 1
         else
           render_error 'badResumptionToken'
@@ -96,16 +96,20 @@ class Api::OaiPmh::BaseController < BaseController
     def query(params = {})
       params['per_page'] ||= 50
       params['page'] ||= 0
+      param_from = Time.parse(params['from']) if params['from']
+      param_until = Time.parse(params['until']) if params['until']
 
       scope = records.
         allowed(current_user, :view).
-        updated_after(params['from']).
-        updated_before(params['until'])
+        updated_after(param_from).
+        updated_before(param_until)
 
       offset_scope = scope.offset(params['page'] * params['per_page'])
 
       token = if offset_scope.count > params['per_page'] * (params['page'] + 1)
         dump_query(params)
+      elsif params['resumptionToken']
+        token = ''
       end
 
       {
@@ -124,17 +128,17 @@ class Api::OaiPmh::BaseController < BaseController
       token = Digest::SHA2.hexdigest("resumptionToken #{Time.now} #{rand}")
 
       Dir["#{base_dir}/*.json"].each do |f|
-        if File.stat(f).mtime < 1.day.ago
+        if File.stat(f).mtime < 3.minutes.ago
           File.delete(f)
         end
       end
 
-      File.open "#{base_dir}/#{token}.json", "w+" do |f|
-        f.write JSON.dump(
-          'page' => params['page'],
-          'per_page' => params['per_page'],
-          'metadataPrefix' => params['metadataPrefix']
-        )
+      File.open "#{base_dir}/#{token}.json", "w" do |f|
+        data = {}
+        ['page', 'per_page', 'from', 'until', 'set'].each do |k|
+          data[k] = params[k] if params[k]
+        end
+        f.write JSON.dump(data)
       end
 
       token
@@ -144,9 +148,7 @@ class Api::OaiPmh::BaseController < BaseController
       file = "#{base_dir}/#{token}.json"
 
       if File.exists?(file)
-        data = JSON.parse(File.read file)
-        system "rm #{file}"
-        data
+        JSON.parse(File.read file)
       end
     end
 
