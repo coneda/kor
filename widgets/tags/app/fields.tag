@@ -12,7 +12,7 @@
       with={ {count: 'other', capitalize: true} }>
     />
   </strong>
-  <ul>
+  <ul if={kind}>
     <li each={field in kind.fields}>
       <div class="pull-right">
         <a href="#" onclick={edit(field)}><i class="fa fa-edit"></i></a>
@@ -22,7 +22,7 @@
     </li>
   </ul>
 
-  <div each={k in ancestry} show={k.fields.length > 0}>
+  <div if={ancestry} each={k in ancestry} show={k.fields.length} >
     <strong>
       <kor-t key="inherited_from" />
       {k.name}
@@ -38,13 +38,18 @@
     tag.on 'mount', -> refresh()
     tag.opts.notify.on 'refresh', -> refresh()
 
-    tag.add = -> tag.opts.notify.trigger 'add-field'
+    tag.add = (event) ->
+      event.preventDefault()
+      tag.opts.notify.trigger 'add-field'
 
     tag.edit = (field) ->
-      (event) -> tag.opts.notify.trigger 'edit-field', field
+      (event) ->
+        event.preventDefault()
+        tag.opts.notify.trigger 'edit-field', field
 
     tag.remove = (field) ->
       (event) ->
+        event.preventDefault()
         if wApp.utils.confirm wApp.i18n.translate('confirm.general')
           Zepto.ajax(
             type: 'delete'
@@ -71,7 +76,7 @@
         url: "/kinds/#{tag.opts.kind.id}"
         data: {include: 'fields,ancestry'}
         success: (data) ->
-          console.log data
+          # console.log data
           tag.kind = data
           tag.build_ancestry()
           tag.update()

@@ -1,6 +1,23 @@
 var Application = new Object();
 var Kor = new Object();
 
+Application.register_input_focus_events = function() {
+  $("body").on("focus", 'input[type=text], input[type=password], textarea', function(event) {
+    $(event.currentTarget).addClass('focused');
+  });
+  $("body").on("blur", 'input[type=text], input[type=password], textarea', function(event) {
+    $(event.currentTarget).removeClass('focused');
+  });
+  
+  $('div.kor_submit').mouseover(function(event){
+    $(this).find('input').addClass('highlighted_button');
+  });
+  
+  $('div.kor_submit').mouseout(function(event){
+    $(this).find('input').removeClass('highlighted_button');
+  });
+}
+
 Application.focus_first_input = function() {
   $('input[type=text], input[type=password], textarea').first().focus();
 }
@@ -54,15 +71,32 @@ Application.register_popups = function() {
   });
 }
 
+Application.setup_ajax = function() {
+  $.ajaxSetup({
+    dataType: "json",
+    beforeSend: function(xhr) {
+      // xhr.setRequestHeader('Accept', 'application/json');
+      Kor.ajax_loading();
+    },
+    complete: function(xhr) {
+      Kor.ajax_not_loading();
+    }
+  });
+}
+
 Application.setup = function() {
   Kor.setup_blaze();
 
+  Application.setup_ajax();
+  
   this.setup_kor_command_image_events();
   Kor.register_session_events();
   Kor.setup_help();
+  Menu.setup();
   Panel.setup();
   Forms.setup();
   this.setup_search_result_events();
+  this.register_input_focus_events();
   this.focus_first_input();
   this.register_popups();
 
@@ -210,6 +244,40 @@ ImageQuickButtons.register_events = function() {
 }
 
 ImageQuickButtons.register_events();
+
+var Menu = new Object();
+
+Menu.setup = function() {
+  $('.menu_toggle').click(function(event) {
+    var link = $(event.currentTarget);
+    var menu = link.parent().next().children().first();
+    var folding = $(menu).is(':visible') ? 'collapse' : 'expand';
+    var url = null;
+    switch(menu.attr('id')) {
+      case 'config_menu':
+        url = '/config/menu';
+        break;
+      case 'groups_menu':
+        url = '/tools/groups_menu';
+        break;
+      case 'input_menu':
+        url = '/tools/input_menu';
+        break;
+    }
+    $.get(url, {'folding': folding});
+    $(menu).toggle();
+    return false;
+  });
+  
+  $('#new_entity_kind_id').change(function(event){
+    var input = $('#new_entity_kind_id');
+  
+    if (input.val() != -1) {
+      location.href = '/entities/new?kind_id=' + input.val();
+    }
+  });
+}
+
 
 var Panel = new Object();
 

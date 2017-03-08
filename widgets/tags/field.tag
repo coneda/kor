@@ -73,10 +73,11 @@
 
     tag.checked = -> if tag.inputType() == 'checkbox' then tag.value() else false
     tag.selected = (key) ->
-      if tag.opts.multiple
-        tag.value().indexOf(key) > -1
-      else
-        tag.value() == key
+      if tag.value()
+        if tag.opts.multiple
+          tag.value().indexOf(key) > -1
+        else
+          tag.value() == key
     tag.value = -> 
       tag.opts.value || if tag.opts.model
         tag.opts.model[tag.opts.fieldId]
@@ -85,8 +86,10 @@
 
     tag.errors = ->
       tag.opts.errors ||
-      (if tag.opts.model.errors then tag.opts.model.errors[tag.opts.fieldId]) ||
-      []
+      if m = tag.opts.model
+        (m.errors || {})[tag.opts.fieldId] || []
+      else
+        []
     tag.has_errors = -> tag.errors().length > 0
 
     tag.val = ->

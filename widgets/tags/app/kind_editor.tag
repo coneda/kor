@@ -61,6 +61,7 @@
 
     tag.switchTo = (name) ->
       (event) ->
+        event.preventDefault()
         tag.tab = name
         tag.update()
 

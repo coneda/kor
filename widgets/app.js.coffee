@@ -3,7 +3,16 @@ Zepto.extend Zepto.ajaxSettings, {
   dataType: 'json'
   contentType: 'application/json'
   accept: 'application/json'
-  beforeSend: (xhr) -> Kor.ajax_loading()
+  beforeSend: (xhr, settings) ->
+    Kor.ajax_loading()
+
+    xhr.then ->
+      console.log('ajax log', xhr.requestUrl, JSON.parse(xhr.response))
+
+    xhr.requestUrl = settings.url
+    token = Zepto('meta[name=csrf-token]').attr('content')
+    xhr.setRequestHeader 'X-CSRF-Token', token
+
   complete: (xhr) -> Kor.ajax_not_loading()
 }
 

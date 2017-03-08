@@ -1,40 +1,33 @@
-<w-modal style="display: none" onclick={backPanelClick}>
+<w-modal show={isActive}>
 
-  <div name="receiver">
-    <div class="target"></div>
-  </div>
+  <div class="receiver" ref="receiver"></div>
 
   <script type="text/coffee">
     tag = this
-    tag.active = false
-    window.t = tag
 
     wApp.bus.on 'modal', (tagName, opts = {}) ->
       opts.modal = tag
-      tag.active = true
-      tag.innerTag = riot.mount(Zepto(tag.root).find('.target')[0], tagName, opts)[0]
-      Zepto(tag.root).show()
-      fixHeight()
+      tag.mountedTag = riot.mount(tag.refs.receiver, tagName, opts)[0]
+      tag.isActive = true
+      tag.update()
 
-    tag.backPanelClick = (event) ->
-      if event.target == tag.root
+    Zepto(document).on 'keydown', (event) ->
+      if tag.isActive && event.key == 'Escape'
         tag.trigger 'close'
-      true
+
+    tag.on 'mount', ->
+      tag.isActive = false
+      tag.mountedTag = null
+
+      Zepto(tag.root).on 'click', (event) ->
+        if tag.isActive && event.target == tag.root
+          tag.trigger 'close'
 
     tag.on 'close', ->
-      if tag.active
-        Zepto(tag.root).hide()
-        tag.innerTag.unmount(true)
-        tag.active = false
-
-    fixHeight = ->
-      new_height = Math.max(Zepto(window).height() - 100, 300)
-      Zepto(tag.root).find('[name=receiver]').css 'height', new_height
-
-    Zepto(window).on 'resize', fixHeight
-    Zepto(document).on 'keydown', (event) ->
-      if event.key == 'Escape'
-        tag.trigger 'close'
+      if tag.isActive
+        tag.isActive = false
+        tag.mountedTag.unmount(true)
+        tag.update()
 
   </script>
 

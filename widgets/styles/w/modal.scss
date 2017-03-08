@@ -7,30 +7,14 @@ w-modal, [data-is=w-modal] {
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 10000;
 
-  [name=receiver] {
+  & > .receiver {
     position: fixed;
     z-index: 10001;
-    background-color: inherit;
+    background-color: white;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     overflow-y: scroll;
-
-    .target {
-      height: 100%;
-    }
-
-    .target:before, .target:after {
-      content: " ";
-      display: table;
-    }
-
-    .target:after {
-      clear: both
-    }
-
-    .target {
-      *zoom: 1;
-    }
+    max-height: 80%;
   }
 }

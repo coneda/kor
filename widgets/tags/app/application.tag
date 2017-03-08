@@ -15,13 +15,13 @@
   </div>
 
   <script type="text/coffee">
-    self = this
+    tag = this
 
     window.kor = {
       # init: ->
       #   this.on 'mount', ->
           # console.log this
-      url: self.opts.baseUrl || ''
+      url: tag.opts.baseUrl || ''
       bus: riot.observable()
       load_session: ->
         Zepto.ajax(
@@ -60,15 +60,15 @@
     }
 
     mount_page = (tag) ->
-      if self.mounted_page != tag
-        self.page_tag.unmount(true) if self.page_tag
-        element = Zepto(self.root).find('kor-page')
-        self.page_tag = (riot.mount element[0], tag)[0]
+      if tag.mounted_page != tag
+        tag.page_tag.unmount(true) if tag.page_tag
+        element = Zepto(tag.root).find('kor-page')
+        tag.page_tag = (riot.mount element[0], tag)[0]
         element.detach()
-        Zepto(self['page-container']).append(element)
-        self.mounted_page = tag
+        Zepto(tag['page-container']).append(element)
+        tag.mounted_page = tag
 
-    self.on 'mount', ->
+    tag.on 'mount', ->
       mount_page 'kor-loading'
       kor.load_session()
     

@@ -16,4 +16,10 @@ kor-kind-tree, [data-is=kor-kind-tree] {
   td.self {
     background-color: lighten(#1e1e1e, 20%) !important;
   }
+
+  td.active {
+    .name {
+      color: $kor-shine;
+    }
+  }
 }

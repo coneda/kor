@@ -1,0 +1,95 @@
+#menu.subtitle
+  %ul
+    - if !current_user
+      = navigation_item I18n.t('nouns.login'), :controller => 'authentication', :action => 'form'
+    - else
+      - if current_user.guest?
+        = navigation_item I18n.t('nouns.login'), :controller => 'authentication', :action => 'form'
+      - else
+        = navigation_item I18n.t('edit_self'), {:controller => 'users', :action => 'edit_self'}, {:only => :edit_self}
+  
+      - if current_user && (current_user != User.guest)
+        = navigation_item I18n.t('nouns.clipboard'), {:controller => 'tools', :action => 'clipboard'}, {:except => [ :transit, :statistics, :invalid_entities, :new_entities ]}  
+      
+      %li.spacer
+
+      = navigation_item I18n.t('pages.new_media'), web_path(:anchor => "/entities/gallery")
+
+      = navigation_item I18n.t('nouns.simple_search'), {:controller => "component_search", :action => 'component_search'}
+      = navigation_item I18n.t('nouns.expert_search'), {:controller => "entities"}
+      
+      %li.spacer
+
+      - if logged_in?
+        %li.inactive_item
+          = link_to I18n.t('nouns.group', :count => :other).capitalize_first_letter, nil, :class => "menu_toggle"
+        %li
+          %ul.toggling_menu#groups_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_group_menu]}"}
+            = navigation_item model_specifier(AuthorityGroup, :other), authority_group_categories_path 
+            - if current_user && current_user != User.guest
+              = navigation_item model_specifier(UserGroup, :other), user_groups_path, {:except => [ :shared, :show_shared ]}
+            = navigation_item UserGroup.human_attribute_name(:shared, :count => :other), shared_user_groups_path, {:only => [ :shared, :show_shared ]}
+            - if current_user && current_user != User.guest
+              = navigation_item model_specifier(Publishment, :other), publishments_path
+      
+        %li.spacer
+
+      - if authorized? :create
+        %li
+          = form_for :new_entity, :url => {:controller => 'entities', :action => 'new'}, :method => :get, :builder => Kor::FormBuilder do |f|
+            = f.kind_selector :kind_id, {:no_selection_name => I18n.t('objects.new', :o => I18n.t('nouns.entity', :count => 1)).capitalize_first_letter, :media => true}
+        
+        = navigation_item I18n.t('nouns.mass_upload'), web_path(:anchor => "/entities/multi_upload")
+      
+        %li.spacer
+        
+      - if authorized? :delete
+        = navigation_item I18n.t('nouns.invalid_entity', :count => :other), invalid_entities_path, :highlight => :action
+      - if authorized? :edit
+        = navigation_item I18n.t('nouns.new_entity', :count => :other), recent_entities_path, :highlight => :action
+        = navigation_item I18n.t('nouns.isolated_entity', :count => :other), "/blaze#/entities/isolated", :highlight => :action
+      
+      %li.spacer
+
+      - if current_user.any_admin?
+        %li.inactive_item
+          = link_to I18n.t('nouns.config', :count => :other).capitalize_first_letter, nil, :class => "menu_toggle"
+        %li
+          %ul.toggling_menu#config_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_config_menu]}"}
+            = navigation_item I18n.t('general'), config_path(:action => 'general') if current_user.admin?
+            = submenu_section do
+              = navigation_item Relation.model_name.human(:count => :other), :controller => 'relations' if current_user.relation_admin?
+              = navigation_item Kind.model_name.human(:count => :other), '/blaze#/kinds' if current_user.kind_admin?
+            = submenu_section do
+              = navigation_item Collection.model_name.human(:count => :other), collections_path if current_user.admin?
+              - if current_user.admin?
+                = navigation_item Credential.model_name.human(:count => :other), credentials_path            
+              - if current_user.admin?
+                = navigation_item I18n.t('nouns.user_admin'), users_path, :except => :edit_self, :highlight => :controller
+
+        %li.spacer
+      
+      = navigation_item I18n.t('nouns.statistics'), {:controller => 'tools', :action => 'statistics'}
+      
+      = navigation_item ExceptionLog.model_name.human, :controller => 'exception_logs' if current_user.admin?
+
+      - unless current_user == User.guest
+        %li.spacer
+        
+      - unless Kor.config['maintainer.help_text'].blank?
+        %li.inactive_item
+          = link_to I18n.t('nouns.help'), :controller => 'static', :action => 'help'
+    
+    %li.spacer
+    
+    = navigation_item I18n.t('legal'), {:controller => 'static', :action => 'legal'}
+    = navigation_item I18n.t('about'), {:controller => 'static', :action => 'about'}
+    %li.inactive_item= link_to 'coneda.net', 'http://www.coneda.net', :target => '_blank'
+
+    %li.spacer
+
+    %li.inactive_item
+      - if current_user && current_user.any_admin?
+        = link_to I18n.t("report_a_problem").capitalize_first_letter, 'https://github.com/coneda/kor/issues', :target => '_blank'
+      - else
+        = mail_to Kor.config['maintainer.mail'], I18n.t("report_a_problem").capitalize_first_letter

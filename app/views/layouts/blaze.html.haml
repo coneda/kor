@@ -8,6 +8,7 @@
 
     = stylesheet_link_tag 'master'
     = stylesheet_link_tag 'blaze'
+    = stylesheet_link_tag '/app'
     = custom_styles
     
     = render :partial => 'layouts/javascript_settings'
@@ -24,7 +25,7 @@
 
   %body.blaze_style
     = render :partial => "layouts/blaze_header"
-    = render :partial => "layouts/menu"
+    = render :partial => "layouts/menu.html.haml"
     
     #application{'ng-cloak' => 'true'}
       %table.canvas
@@ -49,5 +50,12 @@
     #help{:style => 'display: none', :title => I18n.t('nouns.help')}
       = help_for(controller_name, action_name)
     %button#help_button{:style => 'display: none'}
+
+    .kor
+      %w-modal
+      %w-messaging
     
-    = javascript_include_tag '/app.js'
+    = javascript_include_tag '/app-noboot.js'
+    = javascript_tag do
+      riot.mount('w-modal');
+      riot.mount('w-messaging');

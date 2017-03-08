@@ -64,6 +64,9 @@ h1, h2, h3, h4, h5, h6, h7
 
 /* remove images before lists but enable them in the redcloth syntax */
 
+.text-left
+  text-align: left
+
 .text-right
   text-align: right
 
@@ -270,6 +273,16 @@ div
         padding-right: 20px
       &.username
         text-decoration: underline
+  &#menu
+    margin-top: 40px
+    float: left
+    width: 180px
+    margin-bottom: 85px
+    li.inactive_item a
+      color: $text
+    select
+      width: 60%
+
   &#footer
     position: relative
     top: -65px

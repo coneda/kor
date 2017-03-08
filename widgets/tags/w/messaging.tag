@@ -1,5 +1,4 @@
 <w-messaging>
-
   <div
     each={message in messages}
     class="message {'error': error(message), 'notice': notice(message)}"
@@ -10,33 +9,42 @@
   </div>
 
   <script type="text/coffee">
-    tag = this
+    self = this
 
-    Zepto(document).on 'ajaxComplete', (event, request, options) ->
-      try
-        data = request.responseJSON || JSON.parse(request.response)
-        # console.log data
-        if data.message
-          type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
-          wApp.bus.trigger 'message', type, data.message
-      catch e
-        console.log e
+    self.on 'mount', ->
+      self.messages = []
+      Zepto(document).on 'ajaxComplete', ajaxCompleteHandler
 
-    tag.on 'mount', ->
-      tag.messages = []
+    self.on 'unmount', ->
+      Zepto(document).off 'ajaxComplete', ajaxCompleteHandler
+
     wApp.bus.on 'message', (type, message) -> 
-      tag.messages.push {
+      self.messages.push {
         type: type,
         content: message
       }
-      window.setTimeout(tag.drop, tag.opts.duration || 5000)
-      tag.update()
+      window.setTimeout(self.drop, self.opts.duration || 5000)
+      self.update()
 
-    tag.drop = ->
-      tag.messages.shift()
-      tag.update()
-    tag.error = (message) -> message.type == 'error'
-    tag.notice = (message) -> message.type == 'notice'
+    ajaxCompleteHandler = (event, request, options) ->
+      contentType = request.getResponseHeader('content-type')
+
+      if contentType.match(/^application\/json/) && request.response
+        try
+          data = JSON.parse(request.response)
+          
+          if data.messages
+            type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
+            for message in data.messages
+              wApp.bus.trigger 'message', type, message
+        catch e
+          # console.log request
+
+    self.drop = ->
+      self.messages.shift()
+      self.update()
+    self.error = (message) -> message.type == 'error'
+    self.notice = (message) -> message.type == 'notice'
   </script>
 
 </w-messaging>

@@ -12,24 +12,24 @@
   </ul>
 
   <script type="text/coffee">
-    self = this
-    self.messages = []
-    self.history = []
+    tag = this
+    tag.messages = []
+    tag.history = []
 
-    self.animend = (event) ->
-      i = self.messages.indexOf(event.item.data)
-      self.history.push(self.messages[i])
-      self.messages.splice(i, 1)
-      self.update()
+    tag.animend = (event) ->
+      i = tag.messages.indexOf(event.item.data)
+      tag.history.push(tag.messages[i])
+      tag.messages.splice(i, 1)
+      tag.update()
 
     fading = (data) ->
-      self.messages.push(data)
-      self.update()
+      tag.messages.push(data)
+      tag.update()
 
       setTimeout(
         (->
           data.remove = true
-          self.update()
+          tag.update()
         ),
         5000
       )
@@ -37,7 +37,7 @@
     kor.bus.on 'notify', (data) ->
       type = data.type || 'default'
       if type == 'default' then fading(data)
-      self.update()
+      tag.update()
 
   </script>
 

@@ -201,8 +201,6 @@ class Kor::Tasks
   end
 
   def self.import_erlangen_crm(config = {})
-    Kind.without_media.delete_all
-
     url = 'http://erlangen-crm.org/ontology/ecrm/ecrm_current.owl'
     response = HTTPClient.new.get(url)
     if response.status == 200

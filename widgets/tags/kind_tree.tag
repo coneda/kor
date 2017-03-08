@@ -1,5 +1,4 @@
 <kor-kind-tree>
-
   <h1>{t('activerecord.models.kind', {capitalize: true, count: 'other'})}</h1>
 
   <div class="hr"></div>
@@ -28,28 +27,31 @@
     </a>
   </div>
 
-  <table class="kor_table">
-    <tr each={row in grouped_records}>
-      <td
-        each={kind in row}
-        class={
-          parent: highlight.parents[kind.id],
-          self: (highlight.self == kind.id)
-        }
-        onmouseover={setHighlight(kind)}
-      >
-        <a
-          if={kind.child_ids.length == 0 && !isMedia(kind)}
-          href="#/kinds/{kind.id}"
-          onclick={delete(kind)}
-          class="icon"
-        ><i class="fa fa-remove"></i></a>
-        <a
-          href="#/kinds/{kind.id}"
-          onclick={edit(kind)}
-        >{kind.name}</a>
-      </td>
-    </tr>
+  <table class="kor_table text-left" if={filtered_records}>
+    <thead>
+      <tr>
+        <th>{wApp.i18n.t('activerecord.attributes.kind.name')}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr each={kind in filtered_records}>
+        <td class={active: !kind.abstract}>
+          <div class="name">{kind.name}</div>
+        </td>
+        <td class="text-right">
+          <a
+            href="#/kinds/{kind.id}"
+            onclick={edit(kind)}
+          ><i class="fa fa-edit"></i></a>
+          <a
+            if={kind.child_ids.length == 0 && !isMedia(kind)}
+            href="#/kinds/{kind.id}"
+            onclick={delete(kind)}
+          ><i class="fa fa-remove"></i></a>
+        </td>
+      </tr>
+    </tbody>
   </table>
 
   <script type="text/coffee">
@@ -62,15 +64,18 @@
 
     tag.t = wApp.i18n.translate
 
-    tag.add = ->
-      wApp.bus.trigger 'modal', 'kor-kind-editor', notify: tag.bus
+    tag.add = (event) ->
+      event.preventDefault()
+      wApp.bus.trigger 'modal', 'kor-kind-editor', notify: tag.bus, kind: {}
 
     tag.edit = (kind) ->
       (event) ->
+        event.preventDefault()
         wApp.bus.trigger 'modal', 'kor-kind-editor', kind: kind, notify: tag.bus
 
     tag.delete = (kind) ->
       (event) ->
+        event.preventDefault()
         if wApp.utils.confirm wApp.i18n.translate('confirm.general')
           Zepto.ajax(
             type: 'delete'
@@ -80,16 +85,6 @@
           )
 
     tag.isMedia = (kind) -> kind.uuid == wApp.data.medium_kind_uuid
-
-    tag.setHighlight = (kind) ->
-      (event) ->
-        tag.highlight = {
-          parents: {}
-          self: kind.id
-        }
-        for id in kind.parent_ids
-          tag.highlight.parents[id] = true
-        tag.update()
 
     tag.submit = ->
       tag.filters.terms = tag.formFields['terms'].val()
@@ -129,19 +124,15 @@
       if tag.filters.hideAbstract
         tag.filtered_records = tag.filtered_records.filter (kind) -> !kind.abstract
 
-
-    group_records = ->
-      tag.grouped_records = wApp.utils.in_groups_of(5, tag.filtered_records)
-
     fetch = ->
       Zepto.ajax(
         type: 'get'
         url: '/kinds'
+        data: {include: 'generators,fields'}
         success: (data) ->
           tag.data = data
           index_records()
           filter_records()
-          group_records()
           tag.update()
       )
 

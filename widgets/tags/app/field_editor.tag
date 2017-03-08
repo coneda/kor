@@ -8,7 +8,7 @@
     />
   </h2>
 
-  <form if={showForm} onsubmit={submit}>
+  <form if={showForm && types} onsubmit={submit}>
 
     <kor-field
       field-id="type"

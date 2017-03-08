@@ -1,7 +1,8 @@
 .kor {
   w-modal, [data-is=w-modal] {
-    [name=receiver] {
+    .receiver {
       background-color: #1e1e1e;
+      height: 80%;
     }
   }
 }

@@ -13,7 +13,7 @@
     />
   </h2>
 
-  <form onsubmit={submit}>
+  <form onsubmit={submit} if={possible_parents}>
     
     <kor-field
       field-id="name"
@@ -97,6 +97,7 @@
 
     tag.on 'mount', ->
       # tag.opts.kind ||= {}
+      tag.errors = {}
 
       Zepto.ajax(
         type: 'get'
@@ -127,11 +128,11 @@
     success = (data) ->
       wApp.bus.trigger 'kinds-changed'
       tag.parent.trigger 'kind-changed', data.record
+      tag.errors = {}
       tag.update()
 
     error = (response) ->
-      data = response.responseJSON
-      # console.log data
+      data = JSON.parse(response.response)
       tag.errors = data.errors
       tag.opts.kind = data.record
       tag.update()

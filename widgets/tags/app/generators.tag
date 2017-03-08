@@ -12,7 +12,7 @@
       with={ {count: 'other', capitalize: true} }>
     />
   </strong>
-  <ul>
+  <ul if={kind}>
     <li each={generator in kind.generators}>
       <div class="pull-right">
         <a href="#" onclick={edit(generator)}><i class="fa fa-edit"></i></a>
@@ -22,15 +22,17 @@
     </li>
   </ul>
 
-  <div each={k in ancestry} show={k.generators.length > 0}>
-    <strong>
-      <kor-t key="inherited_from" />
-      {k.name}
-    </strong>
-    <ul>
-      <li each={generator in k.generators}>{generator.name}</li>
-    </ul>
-  </div>
+  <virtual if={kind}>
+    <div each={k in ancestry} show={k.generators.length > 0}>
+      <strong>
+        <kor-t key="inherited_from" />
+        {k.name}
+      </strong>
+      <ul>
+        <li each={generator in k.generators}>{generator.name}</li>
+      </ul>
+    </div>
+  </virtual>
 
   <script type="text/coffee">
     tag = this
