@@ -45,16 +45,6 @@ module ApplicationHelper
     render :partial => 'layouts/version_info', :locals => {:newline => options[:newline]}
   end
 
-  def authorized?(policy = :view, collections = Collection.all, options = {})
-    options.reverse_merge!(:required => :any)
-  
-    Kor::Auth.allowed_to? current_user, policy, collections, options
-  end
-  
-  def authorized_collections(policy = :view)
-    Kor::Auth.authorized_collections current_user, policy
-  end
-  
   def kor_translate(item)
     case item
       when TrueClass then I18n.t('yes')
@@ -74,10 +64,6 @@ module ApplicationHelper
     else
       link_to label, :sort_by => criterium, :sort_order => 'ASC'
     end
-  end
-
-  def authorized_collections(policy = :view)
-    Kor::Auth.authorized_collections current_user, policy
   end
 
   def kor_sort(array, criterium = :name)
