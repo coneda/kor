@@ -45,6 +45,7 @@ class Kind < ActiveRecord::Base
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :allowed, lambda {|user, policies| all}
+  scope :active, lambda {where(abstract: [false, nil])}
 
   before_validation :generate_uuid
 
@@ -62,6 +63,10 @@ class Kind < ActiveRecord::Base
 
   def child_ids=(values)
     self.children = Kind.where(id: values).to_a
+  end
+
+  def removable
+    child_ids.empty? && !medium_kind? && entities.count == 0
   end
 
   def url
@@ -93,6 +98,10 @@ class Kind < ActiveRecord::Base
   end
   
   # Other
+
+  def medium_kind?
+    uuid == MEDIA_UUID
+  end
   
   def self.medium_kind
     find_by(uuid: MEDIA_UUID)

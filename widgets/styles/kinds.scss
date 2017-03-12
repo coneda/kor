@@ -1,6 +1,11 @@
-kor-kind-tree, [data-is=kor-kind-tree] {
+kor-kinds, [data-is=kor-kinds] {
   display: block;
-  padding: 1rem;
+  padding: 30px;
+
+  h1 {
+    font-size: 14px;
+    color: $kor-shine;
+  }
 
   td {
     .icon {
@@ -18,8 +23,19 @@ kor-kind-tree, [data-is=kor-kind-tree] {
   }
 
   td.active {
-    .name {
-      color: $kor-shine;
-    }
+
+  }
+
+  .name {
+    font-weight: bold;
+    color: $kor-shine;
+  }
+
+  .label {
+    color: $kor-shine;
+  }
+
+  td.buttons {
+    width: 3rem;
   }
 }

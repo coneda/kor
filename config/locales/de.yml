@@ -29,6 +29,7 @@ de:
   to: "zu"
   select_only: "wähle nur"
   back: "zurück"
+  back_to_list: zurück zur Liste
   try_again: "erneut versuchen"
   download_higher_resolution: "in hoher Auflösung %{show} oder %{download}"
   download_metadata: "Metadaten herunterladen"
@@ -667,6 +668,9 @@ de:
     exception_ocurred: "ein unerwarteter Fehler ist eingetreten"
     publishment_expired: "Dieser Link ist abgelaufen"
     file_too_big: "Die Datei '%{file}' ist zu groß (%{size}MB) und kann nicht hochgeladen werden. Die maximale Größe beträgt %{max}MB"
+    kind_has_children: Entitätstypen mit abhängigen Entitätstypen können nicht gelöscht werden
+    kind_has_entities: Entitätstypen mit abhängigen Entitäten können nicht gelöscht werden
+    medium_kind_not_deletable: Der Entitätstype 'Medium' kann nicht gelöscht werden
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

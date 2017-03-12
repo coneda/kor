@@ -19,12 +19,12 @@ kor-layout-panel, [data-is=kor-layout-panel] {
   }
 
   &.small {
-    width: 33.33%;
+    width: 240px;
     width: calc(100% / 3);
   }
 
   &.large {
-    width: 66.66%;
+    width: 484px;
     width: calc(100% / 3 * 2);
   }
 }
@@ -33,5 +33,5 @@ kor-panel, [data-is=kor-panel] {
   box-sizing: border-box;
   display: block;
   width: 100%;
-  padding: 1rem;
+  padding: 30px;
 }

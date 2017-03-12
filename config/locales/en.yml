@@ -29,6 +29,7 @@ en:
   to: "to"
   select_only: "select only"
   back: "back"
+  back_to_list: "back to list"
   try_again: "retry"
   download_higher_resolution: "in high resolution %{show} or %{download}"
   download_metadata: "download metadata"
@@ -664,6 +665,9 @@ en:
     exception_ocurred: "an unexpected error has occurred"
     publishment_expired: "this link has expired"
     file_too_big: "the file '%{file}' is too big (%{size}MB) and can't be uploaded. The maximum allowed size is %{max}MB"
+    kind_has_children: kinds with children can't be deleted
+    kind_has_entities: the kind can't be removed because it still has entities
+    medium_kind_not_deletable: the medium kind cannot be removed
 
   labels:
     relate_to_via: 'relate all files with "%{to}" via'

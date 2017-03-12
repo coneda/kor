@@ -42,7 +42,9 @@ kor.config([
     sce.enabled(false)
     tpl = (id) -> $("script[type='text/x-kor-tpl'][data-id='#{id}']").html()
 
-    rp.when "/kinds", resolve: {tag: -> 'kor-kind-tree'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/kinds/new", resolve: {tag: -> 'kor-kind-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/kinds/:id", resolve: {tag: -> 'kor-kind-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/kinds", resolve: {tag: -> 'kor-kinds'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
     rp.when "/entities/:id/edit", resolve: {tag: -> 'kor-entity-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
     rp.when "/entities/gallery", template: tpl('gallery'), reloadOnSearch: false, controller: "record_history_controller"
     rp.when "/entities/multi_upload", templateUrl: ((params) -> "/tpl/entities/multi_upload?#{Math.random()}"), reloadOnSearch: false, controller: "record_history_controller"

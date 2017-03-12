@@ -18,7 +18,8 @@ module SelectHelper
     if options[:no_selection_entry]
       entries << [ options[:no_selection_name], options[:no_selection_value] ]
     end
-    entries += (options[:media] ? Kind.all : Kind.without_media).collect{|k| [k.name, k.id] }
+    scope = Kind.active
+    entries += (options[:media] ? scope : scope.without_media).collect{|k| [k.name, k.id] }
     
     entries
   end

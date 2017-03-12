@@ -190,8 +190,8 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@united_states])
   end
 
-  it "should serch in the display name with low relevance" do
-    @united_kingdom.update_attributes :distinct_name => "states"
+  it "should search in the display name with low relevance" do
+    @united_kingdom.update_attributes :distinct_name => "some states bla"
     @united_states.update_attributes :distinct_name => "kingdom"
     described_class.index_all
 

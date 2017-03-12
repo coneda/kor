@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170210134514) do
+ActiveRecord::Schema.define(version: 20170311175021) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -143,6 +143,7 @@ ActiveRecord::Schema.define(version: 20170210134514) do
   add_index "entities", ["creator_id"], name: "index_entities_on_user_id", using: :btree
   add_index "entities", ["deleted_at"], name: "index_entities_on_deleted_at", using: :btree
   add_index "entities", ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
+  add_index "entities", ["kind_id", "deleted_at"], name: "typey", using: :btree
   add_index "entities", ["name"], name: "index_entities_on_name", using: :btree
   add_index "entities", ["uuid"], name: "index_entities_on_uuid", using: :btree
 

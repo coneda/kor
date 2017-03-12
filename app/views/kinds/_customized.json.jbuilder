@@ -6,7 +6,8 @@ json.extract!(kind,
   :name, :plural_name,
   :description,
   :parent_ids,
-  :child_ids
+  :child_ids,
+  :removable
 )
 
 if additions.include?('settings') || additions.include?('all')

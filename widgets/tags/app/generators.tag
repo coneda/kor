@@ -40,13 +40,18 @@
     tag.on 'mount', -> refresh()
     tag.opts.notify.on 'refresh', -> refresh()
 
-    tag.add = -> tag.opts.notify.trigger 'add-generator'
+    tag.add = (event) ->
+      event.preventDefault()
+      tag.opts.notify.trigger 'add-generator'
 
     tag.edit = (generator) ->
-      (event) -> tag.opts.notify.trigger 'edit-generator', generator
+      (event) ->
+        event.preventDefault()
+        tag.opts.notify.trigger 'edit-generator', generator
 
     tag.remove = (generator) ->
       (event) ->
+        event.preventDefault()
         if wApp.utils.confirm wApp.i18n.translate('confirm.general')
           Zepto.ajax(
             type: 'delete'
@@ -73,7 +78,7 @@
         url: "/kinds/#{tag.opts.kind.id}"
         data: {include: 'generators,ancestry'}
         success: (data) ->
-          console.log data
+          # console.log data
           tag.kind = data
           tag.build_ancestry()
           tag.update()

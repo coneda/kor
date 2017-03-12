@@ -1,8 +1,15 @@
 <kor-kind-editor>
 
-  <kor-layout-panel class="left small">
+  <kor-layout-panel class="left small" if={opts.kind}>
     <kor-panel>
-      <h1>{opts.kind.name}</h1>
+      <h1>
+        <span show={opts.kind.id}>{opts.kind.name}</span>
+        <kor-t
+          show={!opts.kind.id}
+          key="objects.create"
+          with={ {'interpolations': {'o': wApp.i18n.translate('activerecord.models.kind')}} }
+        />
+      </h1>
 
       <a href="#" onclick={switchTo('general')}>
         » {wApp.i18n.translate('general', {capitalize: true})}
@@ -16,7 +23,7 @@
 
       <div class="hr"></div>
       <div class="text-right">
-        <button onclick={closeModal}>close</button>
+        <a href="#/kinds" class="kor-button">{wApp.i18n.t('back_to_list')}</a>
       </div>
 
       <div class="hr" if={tab == 'fields' || tab == 'generators'}></div>
@@ -24,29 +31,33 @@
       <kor-fields
         kind={opts.kind}
         if={tab == 'fields'}
-        notify={opts.notify}
+        notify={notify}
       />
 
       <kor-generators
         kind={opts.kind}
         if={tab == 'generators'}
-        notify={opts.notify}
+        notify={notify}
       />
     </kor-panel>
   </kor-layout-panel>
 
-  <kor-layout-panel class="right large ">
+  <kor-layout-panel class="right large">
     <kor-panel>
-      <kor-kind-general-editor kind={opts.kind} if={tab == 'general'} />
+      <kor-kind-general-editor
+        if={tab == 'general'}
+        kind={opts.kind}
+        notify={notify}
+      />
       <kor-field-editor
         kind={opts.kind}
         if={tab == 'fields' && opts.kind.id}
-        notify={opts.notify}
+        notify={notify}
       />
       <kor-generator-editor
         kind={opts.kind}
         if={tab == 'generators' && opts.kind.id}
-        notify={opts.notify}
+        notify={notify}
       />
     </kor-panel>
   </kor-layout-panel>
@@ -54,6 +65,19 @@
   <script type="text/coffee">
     tag = this
     tag.tab = 'general'
+    tag.notify = riot.observable()
+
+    tag.on 'mount', ->
+      if tag.opts.id
+        Zepto.ajax(
+          url: "/kinds/#{tag.opts.id}"
+          data: {include: 'fields,generators'}
+          success: (data) ->
+            tag.opts.kind = data
+            tag.update()
+        )
+      else
+        tag.opts.kind = {}
 
     tag.on 'kind-changed', (new_kind) ->
       tag.opts.kind = new_kind
@@ -68,6 +92,7 @@
     tag.closeModal = ->
       if tag.opts.modal
         tag.opts.modal.trigger 'close'
+        window.location.reload()
 
   </script>
 

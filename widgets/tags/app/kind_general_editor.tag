@@ -126,7 +126,6 @@
       result
 
     success = (data) ->
-      wApp.bus.trigger 'kinds-changed'
       tag.parent.trigger 'kind-changed', data.record
       tag.errors = {}
       tag.update()

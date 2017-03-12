@@ -22,8 +22,8 @@ Feature: Kinds
     And I fill in "Plural name" with "people"
     And I press "Save"
     Then I should see "has been created"
-    When I press "close"
-    Then I should see "person" within "[data-is=kor-kind-tree]"
+    When I follow "back to list"
+    Then I should see "person" within "[data-is=kor-kinds]"
 
 
   @javascript
@@ -37,9 +37,9 @@ Feature: Kinds
     And I fill in "Plural name" with "artists"
     And I press "Save"
     Then I should see "has been changed"
-    When I press "close"
-    Then I should see "artist" within "[data-is=kor-kind-tree]"
-    Then I should not see "person" within "[data-is=kor-kind-tree]"
+    When I follow "back to list"
+    Then I should see "artist" within "[data-is=kor-kinds]"
+    Then I should not see "person" within "[data-is=kor-kinds]"
 
 
   @javascript
@@ -49,16 +49,17 @@ Feature: Kinds
     And I follow "Administration"
     And I follow "Entity types"
     And I ignore the next confirmation box
-    And I click icon "remove" within "[data-is=kor-kind-tree] td:last-child"
+    And I click icon "remove" within "[data-is=kor-kinds] tbody tr:last-child"
     Then I should see "has been deleted"
-    Then I should not see "person" within "[data-is=kor-kind-tree]"
+    Then I should not see "person" within "[data-is=kor-kinds]"
     
 
   @javascript
   Scenario: do not show the delete link for the medium kind
     Given I am logged in as "admin"
-    When I go to the kinds page
-    Then I should not see "img[data-name=x]" within "table.kor_table"
+    And I follow "Administration"
+    And I follow "Entity types"
+    Then I should not see "img[data-name=x]" within "[data-is=kor-kinds]"
 
 
   @javascript
@@ -71,8 +72,9 @@ Feature: Kinds
     And I fill in "Plural name" with "people"
     And I press "Save"
     And I should see "has been created"
-    And I press "close"
-    When I select "person" from "new_entity[kind_id]"
+    And I follow "back to list"
+    When I reload the page
+    And I select "person" from "new_entity[kind_id]"
     And I should see "Create person" within "table.canvas"
     
     
@@ -368,5 +370,9 @@ Feature: Kinds
     And I am logged in as "admin"
     When I follow "Administration"
     And I follow "Entity types"
-    Then I should see icon "remove" within "[data-is=kor-kind-tree] td:nth-child(3)"
-    Then I should not see icon "remove" within "[data-is=kor-kind-tree] td:nth-child(1)"
+    Then I should see icon "remove" within "[data-is=kor-kinds] tbody tr:nth-child(3)"
+    Then I should not see icon "remove" within "[data-is=kor-kinds] tbody tr:nth-child(1)"
+
+
+  @javascript
+  Scenario: prevent removal of kinds when they have entities

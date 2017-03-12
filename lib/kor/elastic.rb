@@ -43,41 +43,51 @@ class Kor::Elastic
     unless index_exists?
       request 'put', '/', nil, {
         "settings" => {
-          "analysis" => {
-            "analyzer" => {
-              "default" => {
-                'type' => 'custom',
-                "tokenizer" => 'gram',
-                "filter" => ['asciifolding', 'lowercase']
+          'index' => {
+            "analysis" => {
+              "analyzer" => {
+                "default" => {
+                  'type' => 'custom',
+                  "tokenizer" => 'gram',
+                  "filter" => ['asciifolding', 'lowercase']
+                },
+                'default_search' => {
+                  'type' => 'custom',
+                  'tokenizer' => 'gram',
+                  'filter' => ['asciifolding', 'lowercase']
+                }
               },
-              'default_search' => {
-                'type' => 'custom',
-                'tokenizer' => 'gram',
-                'filter' => ['asciifolding', 'lowercase']
+              'tokenizer' => {
+                'gram' => {
+                  'type' => 'ngram',
+                  'min_gram' => 2,
+                  'max_gram' => 30
+                }
               }
-            },
-            'tokenizer' => {
-              'gram' => {
-                'type' => 'ngram',
-                'min_gram' => 2,
-                'max_gram' => 30
-              }
+              # 'tokenizer' => {
+              #   'gram' => {
+              #     'type' => 'ngram',
+              #     'min_gram' => 3,
+              #     'max_gram' => 30
+              #     # 'token_chars' => ['letter']
+              #   }
+              # }
             }
-            # 'tokenizer' => {
-            #   'gram' => {
-            #     'type' => 'ngram',
-            #     'min_gram' => 3,
-            #     'max_gram' => 30
-            #     # 'token_chars' => ['letter']
-            #   }
-            # }
           }
         },
         'mappings' => {
           "entities" => {
             "properties" => {
-              "name" => {"type" => "string"},
-              "distinct_name" => {"type" => "string"},
+              "name" => {
+                "type" => "string"
+                # 'index_options' => 'docs',
+                # 'norms' => {'enabled' => false}
+              },
+              "distinct_name" => {
+                "type" => "string"
+                # 'index_options' => 'docs',
+                # 'norms' => {'enabled' => false}
+              },
               "subtype" => {"type" => "string"},
               "synonyms" => {"type" => "string"},
               "comment" => {"type" => "string"},
@@ -139,7 +149,9 @@ class Kor::Elastic
 
     @cache = {}
 
-    progress = Kor.progress_bar('indexing entities', Entity.without_media.count)
+    progress = if options[:progress]
+      Kor.progress_bar('indexing entities', Entity.without_media.count)
+    end
     scope = Entity.includes(:tags).without_media
     scope.find_in_batches do |batch|
       data = []
@@ -155,8 +167,7 @@ class Kor::Elastic
   end
 
   def self.get(entity)
-    request = request 'get', "/entities/#{entity.uuid}"
-    require_ok(request)
+    request 'get', "/entities/#{entity.uuid}"
   end
 
   def self.data_for(entity, options = {})
@@ -283,10 +294,10 @@ class Kor::Elastic
             'uuid^20',
             'name^10',
             'subtype^8',
-            'distinct_name^6',
+            'distinct_name^2',
             'synonyms^6',
             'dataset.*^5',
-            'related^4',
+            'related^1',
             'properties.value^3',
             'properties.label^2',
             'comment^1',
@@ -361,7 +372,7 @@ class Kor::Elastic
   end
 
   def build_request(options = {})
-    if false #self.class.server_version < '5.0.0'
+    if self.class.server_version < '5.0.0'
       data = {
         'size' => options[:per_page],
         'from' => (options[:page] - 1) * options[:per_page],

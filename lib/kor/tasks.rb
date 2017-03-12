@@ -18,6 +18,7 @@ class Kor::Tasks
   end
 
   def self.index_all(config = {})
+    Kor::Elastic.enable
     Kor::Elastic.drop_index
     Kor::Elastic.create_index
     ActiveRecord::Base.logger.level = Logger::ERROR

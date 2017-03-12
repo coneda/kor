@@ -26,7 +26,7 @@
         field-id={f.name}
         label={f.label}
         model={field}
-        errors={field.errors[f.name]}
+        errors={errors[f.name]}
       />
     </virtual>
 
@@ -34,28 +34,28 @@
       field-id="name"
       label-key="field.name"
       model={field}
-      errors={field.errors.name}
+      errors={errors.name}
     />
 
     <kor-field
       field-id="show_label"
       label-key="field.show_label"
       model={field}
-      errors={field.errors.show_label}
+      errors={errors.show_label}
     />
 
     <kor-field
       field-id="form_label"
       label-key="field.form_label"
       model={field}
-      errors={field.errors.form_label}
+      errors={errors.form_label}
     />
 
     <kor-field
       field-id="search_label"
       label-key="field.search_label"
       model={field}
-      errors={field.errors.search_label}
+      errors={errors.search_label}
     />
 
     <kor-field
@@ -79,6 +79,7 @@
 
   <script type="text/coffee">
     tag = this
+    tag.errors = {}
 
     tag.opts.notify.on 'add-field', ->
       tag.field = {type: 'Fields::String'}
@@ -134,15 +135,17 @@
         data: JSON.stringify(params())
         success: ->
           tag.opts.notify.trigger 'refresh'
+          tag.errors = {}
           tag.showForm = false
         error: (request) ->
           data = JSON.parse(request.response)
-          tag.field = data.record
+          tag.errors = data.record.errors
         complete: ->
           tag.update()
       )
 
     update = ->
+      console.log 'updating'
       Zepto.ajax(
         type: 'PATCH'
         url: "/kinds/#{tag.opts.kind.id}/fields/#{tag.field.id}"

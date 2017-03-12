@@ -103,10 +103,16 @@ RSpec.describe KindsController, type: :controller do
     end
 
     it 'should deny deleting the medium kind' do
-      media = FactoryGirl.create :media
+      delete :destroy, id: @media.id
+      expect(response.status).to eq(406)
+    end
 
-      delete :destroy, id: media.id
-      expect(response.status).to eq(403)
+    it 'should deny deleting a kind that has entities' do
+      @people = FactoryGirl.create :people
+      @leonardo = FactoryGirl.create :leonardo
+      
+      delete :destroy, id: @people.id
+      expect(response.status).to eq(406)
     end
 
   end

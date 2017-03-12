@@ -14,7 +14,7 @@
       field-id="name"
       label-key="generator.name"
       model={generator}
-      errors={generator.errors.name}
+      errors={errors.name}
     />
 
     <kor-field
@@ -22,7 +22,7 @@
       label-key="generator.directive"
       type="textarea"
       model={generator}
-      errors={generator.errors.show_label}
+      errors={errors.directive}
     />
 
     <div class="hr"></div>
@@ -33,9 +33,9 @@
 
   <script type="text/coffee">
     tag = this
+    tag.errors = {}
 
     tag.opts.notify.on 'add-generator', ->
-      console.log 'here'
       tag.generator = {}
       tag.showForm = true
       tag.update()
@@ -49,15 +49,6 @@
       event.preventDefault()
       if tag.generator.id then update() else create()
 
-    params = ->
-      results = {}
-      for k, t of tag.formFields
-        results[t.fieldId()] = t.val()
-      return {
-        generator: results
-      }
-
-
     create = ->
       Zepto.ajax(
         type: 'POST'
@@ -65,9 +56,11 @@
         data: JSON.stringify(params())
         success: ->
           tag.opts.notify.trigger 'refresh'
+          tag.errors = {}
           tag.showForm = false
         error: (request) ->
-          tag.generator = request.responseJSON.record
+          data = JSON.parse(request.response)
+          tag.errors = data.record.errors
         complete: ->
           tag.update()
       )
@@ -85,6 +78,12 @@
         complete: ->
           tag.update()
       )
+
+    params = ->
+      results = {}
+      for k, t of tag.formFields
+        results[t.fieldId()] = t.val()
+      return {generator: results}
 
   </script>
 

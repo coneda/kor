@@ -18,13 +18,13 @@ $kor-button-highlight: #666666;
 @import 'styles/w/messaging';
 @import 'styles/w/modal';
 
-// @import 'styles/application';
+@import 'styles/application';
 @import 'styles/entity';
 @import 'styles/form';
-@import 'styles/kind_tree';
+@import 'styles/kinds';
 @import 'styles/kind_editor';
 @import 'styles/layout';
 // @import 'styles/menu';
 @import 'styles/modal';
-// @import 'styles/notifications';
+@import 'styles/notifications';
 @import 'styles/search';

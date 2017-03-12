@@ -44,15 +44,18 @@ class KindsController < ApplicationController
   def destroy
     @kind = Kind.find(params[:id])
     
-    if @kind == Kind.medium_kind
-      @message = "the medium kind can't be deleted"
+    if @kind.medium_kind?
+      @message = I18n.t('errors.medium_kind_not_deletable')
       render action: 'save', status: 406
     elsif @kind.children.present?
-      @message = "kinds with children can't be deleted"
+      @message = I18n.t('errors.kind_has_children')
+      render action: 'save', status: 406
+    elsif @kind.entities.count > 0
+      @message = I18n.t('errors.kind_has_entities')
       render action: 'save', status: 406
     else
       @kind.destroy
-      @message = I18n.t( 'objects.destroy_success', :o => Kind.model_name.human)
+      @message = I18n.t('objects.destroy_success', :o => Kind.model_name.human)
       render action: 'save'
     end
   end
