@@ -1,15 +1,7 @@
 class ApplicationController < BaseController
 
   helper :all
-  helper_method :back, :back_save, :home_page, 
-    :authorized?,
-    :allowed_to?,
-    :authorized_collections,
-    :authorized_for_relationship?,
-    :kor_graph,
-    :current_user,
-    :logged_in?,
-    :blaze
+  helper_method :back, :back_save, :home_page, :kor_graph
   
   before_filter :locale, :authentication, :authorization, :legal
 
@@ -127,23 +119,6 @@ class ApplicationController < BaseController
       end
     end
 
-    def authorized?(policy = :view, collections = nil, options = {})
-      options.reverse_merge!(:required => :any)
-      Kor::Auth.allowed_to? current_user, policy, collections, options
-    end
-
-    def authorized_collections(policy)
-      Kor::Auth.authorized_collections current_user, policy
-    end
-    
-    def viewable_entities
-      Entity.allowed current_user, :view
-    end
-    
-    def editable_entities
-      Entity.allowed current_user, :edit
-    end
-
     def param_to_array(value, options = {})
       options.reverse_merge! ids: true
 
@@ -158,34 +133,7 @@ class ApplicationController < BaseController
           raise "unknown param format to convert to array: #{value}"
       end
     end
-    
-    def authorized_for_relationship?(relationship, policy = :view)
-      if relationship.to && relationship.from
-        case policy
-          when :view
-            view_from = authorized?(:view, relationship.from.collection)
-            view_to = authorized?(:view, relationship.to.collection)
-            
-            view_from and view_to
-          when :create, :delete, :edit
-            view_from = authorized?(:view, relationship.from.collection)
-            view_to = authorized?(:view, relationship.to.collection)
-            edit_from = authorized?(:edit, relationship.from.collection)
-            edit_to = authorized?(:edit, relationship.to.collection)
-            
-            (view_from and edit_to) or (edit_from and view_to)
-          else
-            false
-        end
-      else
-        true
-      end
-    end
 
-    def allowed_to?(policy = :view, collections = Collection.all, options = {})
-      authorized?(policy, collections, options)
-    end
-    
     def user_groups
       UserGroup.owned_by(current_user)
     end
@@ -209,10 +157,6 @@ class ApplicationController < BaseController
     
     def home_page
       (current_user ? current_user.home_page : nil ) || root_url
-    end
-    
-    def logged_in?
-      current_user && current_user.name != 'guest'
     end
     
     def kor_graph

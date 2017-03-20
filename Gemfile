@@ -36,6 +36,7 @@ gem 'rack-cors', :require => 'rack/cors'
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load 
   # (and configure) it in app/controllers/application_controller.rb
+  gem "paranoia", "~> 2.2"
   gem 'delayed_job_active_record'
   gem 'awesome_nested_set', '~> 3.1.1'
   gem 'factory_girl_rails'

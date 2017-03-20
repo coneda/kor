@@ -284,14 +284,18 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
       'oai' => 'http://www.openarchives.org/OAI/2.0/',
       'kor' => 'https://coneda.net/XMLSchema/1.0/'
     }
-    51.times do |i|
-      FactoryGirl.create :mona_lisa, name: "Mona Lisa #{i}"
-    end 
+
+    zero = Time.now
+    Entity.update_all updated_at: (zero - 2.hours)
+    55.times do |i|
+      FactoryGirl.create :mona_lisa, name: "Mona Lisa #{i}", updated_at: (zero - i.minutes)
+    end
 
     get(:list_records,
       format: :xml,
       api_key: admin.api_key,
-      metadataPrefix: 'kor'
+      metadataPrefix: 'kor',
+      from: (zero - 53.minutes).strftime('%Y-%m-%d %H:%M:%S')
     )
 
     doc = parse_xml(response.body)
@@ -306,9 +310,11 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
     )
 
     doc = parse_xml(response.body)
-    expect(doc.xpath('//kor:entity', ns).count).to eq(3)
+    expect(doc.xpath('//kor:entity', ns).count).to eq(4)
 
-    expect(doc.xpath('//oai:resumptionToken', ns).first). to be_nil
+    expect(doc.xpath('//oai:resumptionToken', ns).size).to eq(1)
+    expect(doc.xpath('//oai:resumptionToken', ns).text).to eq('')
+    expect(File.exists? "#{subject.send :base_dir}/#{token}.json").to be_truthy
   end
 
   it 'should include deleted records' do

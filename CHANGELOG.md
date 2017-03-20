@@ -22,6 +22,9 @@ commit history on GitHub.
 * simple search now sorts on degree of connectivity when score is equal
 * kinds and relations can now have parents allowing a semantic hierarchies (e.g.
   for mapping to CIDOC CRM implementations)
+* environment authentication now allows to specify a `mail` attribute and
+  a `domain` attribute, the latter overriding the former.
+* resumptionToken within OAI-PMH responses now behaves according to specs
 
 ## Version 2.0.1
 

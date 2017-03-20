@@ -51,6 +51,54 @@ describe Kor::Auth do
     ])
   end
 
+  context 'prefers the mail attribute to the domain attribute' do
+
+    it 'has mail attribute in config and finds a value for it' do
+      env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
+      expect(described_class).to receive(:authorize).with(
+        'jdoe', hash_including(email: 'jdoe@personal.com')
+      )
+      expect(described_class.env_login env)
+    end
+
+    it 'has mail attribute in config and finds no value for it' do
+      env = {'REMOTE_USER' => 'jdoe'}
+      expect(described_class).to receive(:authorize).with(
+        'jdoe', hash_including(:email => 'jdoe@example.com')
+      )
+      expect(described_class.env_login env)
+    end
+
+    it 'has no mail attribute in config and finds a value for it' do
+      allow(described_class).to receive(:config) do
+        result = Kor.config['auth']
+        result['sources']['remote_user'].delete 'mail'
+        result
+      end
+
+      env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
+      expect(described_class).to receive(:authorize).with(
+        'jdoe', hash_including(:email => 'jdoe@example.com')
+      )
+      expect(described_class.env_login env)
+    end
+
+    it 'has no mail attribute in config and finds no value for it' do
+      allow(described_class).to receive(:config) do
+        result = Kor.config['auth']
+        result['sources']['remote_user'].delete 'mail'
+        result
+      end
+
+      env = {'REMOTE_USER' => 'jdoe'}
+      expect(described_class).to receive(:authorize).with(
+        'jdoe', hash_including(:email => 'jdoe@example.com')
+      )
+      expect(described_class.env_login env)
+    end
+
+  end
+
   context "authorization" do
 
     include DataHelper
