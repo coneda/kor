@@ -5,6 +5,11 @@ class Relation < ActiveRecord::Base
   acts_as_paranoid
 
   has_many :relationships, :dependent => :destroy
+
+  has_many :relation_parent_inheritances, class_name: 'RelationInheritance', foreign_key: :child_id, dependent: :destroy
+  has_many :relation_child_inheritances, class_name: 'RelationInheritance', foreign_key: :parent_id, dependent: :destroy
+  has_many :parents, through: :relation_parent_inheritances
+  has_many :children, through: :relation_child_inheritances
   
   validates :reverse_name,
     :presence => true,
@@ -13,8 +18,62 @@ class Relation < ActiveRecord::Base
     :presence => true,
     :white_space => true
 
+  validate do |relation|
+    to_check = relation.parents.to_a
+    cycle = false
+    while (r = to_check.pop) && !cycle
+      if r.id == relation.id
+        cycle = true
+      else
+        to_check += r.parents.to_a
+      end
+    end
+
+    if cycle
+      relation.errors.add :parent_ids, :would_result_in_cycle
+    end
+  end
+
+  validate do |relation|
+    relation.parents.each do |parent|
+      size = (parent.from_kind_ids & relation.from_kind_ids).size
+      if size < relation.from_kind_ids.size
+        relation.errors.add :from_kind_ids, :cannot_restrict_less_than_parent
+      end
+
+      size = (parent.to_kind_ids & relation.to_kind_ids).size
+      if size < relation.to_kind_ids.size
+        relation.errors.add :to_kind_ids, :cannot_restrict_less_than_parent
+      end
+    end
+  end
+
   after_validation :generate_uuid, :on => :create
   after_save :correct_directed
+
+  def parent_ids
+    relation_parent_inheritances.pluck(:parent_id)
+  end
+
+  def parent_ids=(values)
+    self.parents = Relation.where(id: values).to_a
+  end
+
+  def child_ids
+    relation_child_inheritances.pluck(:child_id)
+  end
+
+  def child_ids=(values)
+    self.children = Relation.where(id: values).to_a
+  end
+
+  def removable(cache = {})
+    child_ids.empty? && relationship_count(cache) == 0
+  end
+
+  def relationship_count(cache = {})
+    relationships.count
+  end
 
   def correct_directed
     if name_changed?
@@ -46,9 +105,6 @@ class Relation < ActiveRecord::Base
   }
   default_scope lambda { order(:name) }
   
-
-  ######################### kinds ##############################################
-
   def from_kind_ids
     unless self[:from_kind_ids]
       self[:from_kind_ids] = []
@@ -66,11 +122,13 @@ class Relation < ActiveRecord::Base
   end
 
   def from_kind_ids=(values)
-    write_attribute :from_kind_ids, values.collect{|v|v.to_i}
+    values |= []
+    write_attribute :from_kind_ids, values.map{|v|v.to_i}
   end
 
   def to_kind_ids=(values)
-    write_attribute :to_kind_ids, values.collect{|v|v.to_i}
+    values |= []
+    write_attribute :to_kind_ids, values.map{|v|v.to_i}
   end
 
   def self.available_relation_names(options = {})

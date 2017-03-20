@@ -29,16 +29,16 @@
     ajaxCompleteHandler = (event, request, options) ->
       contentType = request.getResponseHeader('content-type')
 
-      if contentType.match(/^application\/json/) && request.response
+      if contentType && contentType.match(/^application\/json/) && request.response
         try
           data = JSON.parse(request.response)
           
-          if data.messages
+          if data.messages.length
             type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
             for message in data.messages
               wApp.bus.trigger 'message', type, message
         catch e
-          # console.log request
+          # console.log e, request
 
     self.drop = ->
       self.messages.shift()

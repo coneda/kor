@@ -139,7 +139,7 @@
           tag.showForm = false
         error: (request) ->
           data = JSON.parse(request.response)
-          tag.errors = data.record.errors
+          tag.errors = data.errors
         complete: ->
           tag.update()
       )

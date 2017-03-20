@@ -51,10 +51,8 @@ Feature: Welcome
     And the entity "Mona Lisa" of kind "Werk/Werke"
     And user "guest" is allowed to "view" collection "default" via credential "guests"
     When I go to the welcome page
-    Then I should not see "Clipboard" within "kor-menu"
+    Then I should not see "Clipboard" within "#menu"
     And I should not see "Session"
     When I go to the entity page for "Mona Lisa"
     Then I should not see "Clipboard"
-    And I should not see "Session" within "#session_info"
     And I should not see link "Target"
-

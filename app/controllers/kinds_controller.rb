@@ -7,6 +7,7 @@ class KindsController < ApplicationController
     params[:include] = param_to_array(params[:include], ids: false)
 
     @kinds = Kind.all
+    @kinds = @kinds.active if params.has_key?(:only_active)
   end
 
   def show
@@ -19,9 +20,10 @@ class KindsController < ApplicationController
     @kind = Kind.new(kind_params)
 
     if @kind.save
-      @message = I18n.t( 'objects.create_success', :o => Kind.model_name.human )
+      @messages << I18n.t( 'objects.create_success', :o => Kind.model_name.human )
       render action: 'save'
     else
+      @messages << I18n.t('activerecord.errors.template.header')
       render action: 'save', status: 406
     end
   end
@@ -34,28 +36,32 @@ class KindsController < ApplicationController
     params[:kind][:settings][:tagging] ||= false
 
     if @kind.update_attributes(kind_params)
-      @message = I18n.t('objects.update_success', o: Kind.model_name.human)
+      @messages << I18n.t('objects.update_success', o: Kind.model_name.human)
       render action: 'save'
     else
+      @messages << I18n.t('activerecord.errors.template.header')
       render action: 'save', status: 406
     end
+  rescue ActiveRecord::StaleObjectError => e
+    @messages << I18n.t('activerecord.errors.messages.stale_kind_update')
+    render action: 'save', status: 406
   end
 
   def destroy
     @kind = Kind.find(params[:id])
     
     if @kind.medium_kind?
-      @message = I18n.t('errors.medium_kind_not_deletable')
+      @messages << I18n.t('errors.medium_kind_not_deletable')
       render action: 'save', status: 406
     elsif @kind.children.present?
-      @message = I18n.t('errors.kind_has_children')
+      @messages << I18n.t('errors.kind_has_children')
       render action: 'save', status: 406
     elsif @kind.entities.count > 0
-      @message = I18n.t('errors.kind_has_entities')
+      @messages << I18n.t('errors.kind_has_entities')
       render action: 'save', status: 406
     else
       @kind.destroy
-      @message = I18n.t('objects.destroy_success', :o => Kind.model_name.human)
+      @messages << I18n.t('objects.destroy_success', :o => Kind.model_name.human)
       render action: 'save'
     end
   end

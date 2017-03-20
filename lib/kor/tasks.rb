@@ -202,51 +202,7 @@ class Kor::Tasks
   end
 
   def self.import_erlangen_crm(config = {})
-    url = 'http://erlangen-crm.org/ontology/ecrm/ecrm_current.owl'
-    response = HTTPClient.new.get(url)
-    if response.status == 200
-      doc = Nokogiri::XML(response.body)
-      parent_map = {}
-      doc.xpath('/rdf:RDF/owl:Class').each do |klass|
-        kind = Kind.create(
-          url: klass['rdf:about'],
-          name: klass.xpath('rdfs:label').text,
-          plural_name: klass.xpath('rdfs:label').text.gsub(/E\d+\s/, '').pluralize,
-          description: (
-            klass.xpath('rdfs:label').text + "\n\n" + 
-            klass.xpath('rdfs:comment').text 
-          ),
-          abstract: true
-        )
-
-        unless kind.valid?
-          p kind.errors.full_messages
-          binding.pry
-        end
-
-        if parent = klass.xpath('rdfs:subClassOf/owl:Class').first
-          parent_map[kind.url] ||= []
-          parent_map[kind.url] << parent['rdf:about']
-        end
-
-        klass.xpath('rdfs:subClassOf[@rdf:resource]/@rdf:resource').each do |parent|
-          parent_map[kind.url] ||= []
-          parent_map[kind.url] << parent.text
-        end
-      end
-
-      parent_map.each do |child_url, parent_urls|
-        parent_urls.each do |parent_url|
-          if parent = Kind.where(url: parent_url).first
-            if child = Kind.where(url: child_url).first
-              parent.children << child
-            end
-          end
-        end
-      end
-    else
-      raise "request failed: GET #{url} (#{response.status} #{response.body})"
-    end
+    Kor::Import::ErlangenCrm.new.run
   end
 
 

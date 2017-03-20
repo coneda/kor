@@ -126,6 +126,7 @@ module ApplicationHelper
     active &= (current_action == link_action) if options[:highlight] == :action
     active &= !(Array(options[:except]).include? current_action.to_sym)
     active &= (Array(options[:only]).include? current_action.to_sym) if options[:only]
+    active = false if link_action == 'blaze'
 
     content_tag 'li', :class => (active ? 'active_item' : 'inactive_item') do
       link_to label.capitalize_first_letter, target

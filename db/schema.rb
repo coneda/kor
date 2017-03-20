@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170311175021) do
+ActiveRecord::Schema.define(version: 20170315213600) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -275,6 +275,13 @@ ActiveRecord::Schema.define(version: 20170311175021) do
 
   add_index "publishments", ["user_id"], name: "index_publishments_on_user_id", using: :btree
 
+  create_table "relation_inheritances", primary_key: "false", force: :cascade do |t|
+    t.integer  "parent_id",  limit: 4
+    t.integer  "child_id",   limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "relations", force: :cascade do |t|
     t.string   "uuid",          limit: 255
     t.string   "name",          limit: 255
@@ -286,6 +293,8 @@ ActiveRecord::Schema.define(version: 20170311175021) do
     t.text     "to_kind_ids",   limit: 65535
     t.text     "description",   limit: 65535
     t.datetime "deleted_at"
+    t.string   "url",           limit: 255
+    t.boolean  "abstract"
   end
 
   add_index "relations", ["deleted_at"], name: "index_relations_on_deleted_at", using: :btree
@@ -321,6 +330,7 @@ ActiveRecord::Schema.define(version: 20170311175021) do
 
   add_index "relationships", ["deleted_at"], name: "index_relationships_on_deleted_at", using: :btree
   add_index "relationships", ["from_id"], name: "index_relationships_on_from_id", using: :btree
+  add_index "relationships", ["relation_id", "deleted_at"], name: "typey", using: :btree
   add_index "relationships", ["relation_id", "from_id", "to_id"], name: "index_relationships_on_relation_id_and_from_id_and_to_id", using: :btree
   add_index "relationships", ["relation_id"], name: "index_relationships_on_relation_id", using: :btree
   add_index "relationships", ["to_id"], name: "index_relationships_on_to_id", using: :btree

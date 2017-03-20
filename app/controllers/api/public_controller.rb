@@ -1,4 +1,6 @@
 class Api::PublicController < BaseController
+
+  before_action :session_expiry
   
   def info
     @current_entities = Entity.

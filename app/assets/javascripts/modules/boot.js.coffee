@@ -42,6 +42,9 @@ kor.config([
     sce.enabled(false)
     tpl = (id) -> $("script[type='text/x-kor-tpl'][data-id='#{id}']").html()
 
+    rp.when "/relations/new", resolve: {tag: -> 'kor-relation-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/relations/:id", resolve: {tag: -> 'kor-relation-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/relations", resolve: {tag: -> 'kor-relations'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
     rp.when "/kinds/new", resolve: {tag: -> 'kor-kind-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
     rp.when "/kinds/:id", resolve: {tag: -> 'kor-kind-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
     rp.when "/kinds", resolve: {tag: -> 'kor-kinds'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')

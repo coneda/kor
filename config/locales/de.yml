@@ -897,9 +897,11 @@ de:
         name: Name
         reverse_name: Umkehrung
         description: Beschreibung
-        from_kind_ids: erlaubte Typen auf dieser Seite
-        to_kind_ids: erlaubte Typen auf dieser Seite
+        from_kind_ids: erlaubte Entitätstypen (von)
+        to_kind_ids: erlaubte Entitätstypen (zu)
         wikidata_id: Wikidata ID
+        parent: Stammtyp
+        abstract: abstrakt
       relationship:
         from_id: Quelle
         to_id: Ziel
@@ -957,10 +959,10 @@ de:
         no_two_images: "Zwei Bilddateien können nicht angehängt werden"
         defines_non_existent_kind: "definiert ein Feld für einen nicht existierenden Entitätstyp"
         defines_non_existent_relation: "definiert Verknüpfungen für eine nicht existierende Relation"
-        stale_entity_update: "Die Entität wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
-        stale_user_update: "Der Benutzer wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
-        stale_relation_update: "Die Relation wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
-        stale_relationship_update: "Die Verknüpfung wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
+        stale_entity_update: "Die Entität wurde in der Zwischenzeit verändern, bitte laden Sie die Seite neu"
+        stale_user_update: "Der Benutzer wurde in der Zwischenzeit verändern, bitte laden Sie die Seite neu"
+        stale_relation_update: "Die Relation wurde in der Zwischenzeit verändern, bitte laden Sie die Seite neu"
+        stale_relationship_update: "Die Verknüpfung wurde in der Zwischenzeit verändern, bitte laden Sie die Seite neu"
         needs_medium: "Die Entität kann nicht als Medium erstellt werden ohne entsprechende Datei"
         needs_file: "Die Entität kann nicht als Medium erstellt werden ohne entsprechende Datei"
         invalid_words: "kann keine Wörter mit mehr als 30 Buchstaben enthalten"
@@ -974,7 +976,8 @@ de:
         cannot_result_in_cycle: würde eine zyklisches Schema definieren
         cannot_be_changed: kann für Typ 'Medium' nicht geändert werden
         would_result_in_cycle: would result in a circular schema
-        field_type_invalid: field Typ ist ungültig
+        field_type_invalid: Feldtyp ist ungültig
+        cannot_restrict_less_than_parent: kann nicht mehr Entitätstypen erlauben als der Stammtyp
 
   # Mime types
 

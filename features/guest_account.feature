@@ -15,7 +15,7 @@ Feature: Guest account
   Scenario: See a login button when not logged in
     Given user "guest" is allowed to "view" collection "Default" through credential "guests"
     When I go to the expert search page
-    Then I should see element "a[href='/login']" within "kor-menu"
+    Then I should see element "a[href='/login']" within "#menu"
     And I should not see "Profil bearbeiten"
     
     

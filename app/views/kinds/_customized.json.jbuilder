@@ -4,10 +4,7 @@ json.extract!(kind,
   :id, :uuid, :url,
   :abstract,
   :name, :plural_name,
-  :description,
-  :parent_ids,
-  :child_ids,
-  :removable
+  :description
 )
 
 if additions.include?('settings') || additions.include?('all')
@@ -38,6 +35,10 @@ if additions.include?('generators') || additions.include?('all')
   json.generators kind.generators do |generator|
     json.partial! 'generators/customized', additions: additions, generator: generator
   end
+end
+
+if additions.include?('inheritance') || additions.include?('all')
+  json.extract! kind, :parent_ids, :child_ids, :removable
 end
 
 if additions.include?('ancestry') || additions.include?('all')

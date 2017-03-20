@@ -73,7 +73,6 @@ Feature: Kinds
     And I press "Save"
     And I should see "has been created"
     And I follow "back to list"
-    When I reload the page
     And I select "person" from "new_entity[kind_id]"
     And I should see "Create person" within "table.canvas"
     
@@ -376,3 +375,18 @@ Feature: Kinds
 
   @javascript
   Scenario: prevent removal of kinds when they have entities
+    Given the kind "person/people"
+    And the entity "Leonardo" of kind "person/people"
+    And I am logged in as "admin"
+    When I follow "Administration"
+    And I follow "Entity types"
+    Then I should not see icon "remove" within "[data-is=kor-kinds] tbody tr:nth-child(2)"
+
+  @javascript
+  Scenario: redirect to denied page when the session is expired
+    Given I am logged in as "admin"
+    When I follow "Administration"
+    And I follow "Entity types"
+    When the session has expired
+    And I reload the page
+    Then I should see "Access denied"

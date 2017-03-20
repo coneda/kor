@@ -1,5 +1,6 @@
 class StaticController < ApplicationController
   skip_before_filter :authentication, :authorization, :maintenance, :except => :help
+  before_filter :session_expiry
   
   layout 'wide'
   

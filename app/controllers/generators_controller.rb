@@ -15,7 +15,7 @@ class GeneratorsController < ApplicationController
     @generator = @generators.find(params[:id])
 
     if @generator.update_attributes(generator_params)
-      @message = I18n.t('objects.update_success', :o => @generator.name)
+      @messages << I18n.t('objects.update_success', :o => @generator.name)
       render :action => 'save'
     else
       render :action => 'save', status: 406
@@ -26,7 +26,7 @@ class GeneratorsController < ApplicationController
     @generator = @generators.new(generator_params)
     
     if @generator.save
-      @message =  I18n.t('objects.create_success', :o => @generator.name)
+      @messages << I18n.t('objects.create_success', :o => @generator.name)
       render :action => 'save'
     else
       render :action => 'save', status: 406
@@ -36,7 +36,7 @@ class GeneratorsController < ApplicationController
   def destroy
     @generator = @generators.find(params[:id])
     @generator.destroy
-    @message = I18n.t('objects.destroy_success', :o => @generator.name)
+    @messages << I18n.t('objects.destroy_success', :o => @generator.name)
     render :action => 'save'
   end
   

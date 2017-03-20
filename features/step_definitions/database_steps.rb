@@ -35,10 +35,16 @@ Given(/^the generator "(.*?)" for kind "(.*?)"$/) do |name, kind_name|
   kind.save
 end
 
-Given /^the relation "([^\"]*)"$/ do |names|
+Given /^the relation "([^\"]*)"(?: inheriting from "([^\"]*)")?$/ do |names, parents|
   name, reverse = names.split('/')
   reverse = name if reverse.blank?
-  Relation.create! :name => name, :reverse_name => reverse
+  relation = Relation.create! :name => name, :reverse_name => reverse
+  if parents.present?
+    parents.split(',').each do |parent|
+      relation.parents << Relation.find_by(name: parent)
+    end
+  end
+  relation.save
 end
 
 Given /^the medium "([^"]*)"$/ do |path|

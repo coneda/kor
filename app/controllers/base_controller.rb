@@ -18,4 +18,22 @@ class BaseController < ActionController::Base
     end
   end
 
+  def session_expiry
+    if session_expired?
+      session[:user_id] = nil
+      @current_user = nil
+    end
+  end
+
+  def session_expired?
+    if current_user && !current_user.guest? && !api_auth?
+      !!(session[:expires_at] && (session[:expires_at] < Time.now))
+    end
+  end
+
+  def api_auth?
+    key = params[:api_key] || request.headers['api_key']
+    key && User.exists?(api_key: key)
+  end
+
 end

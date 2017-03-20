@@ -21,7 +21,7 @@ class FieldsController < ApplicationController
     @field = Field.find(params[:id])
 
     if @field.update_attributes(field_params)
-      @message = I18n.t('objects.update_success', o: @field.show_label)
+      @messages << I18n.t('objects.update_success', o: @field.show_label)
       render action: 'save'
     else
       render action: 'save', status: 406
@@ -37,7 +37,7 @@ class FieldsController < ApplicationController
     @field.kind_id = params[:kind_id]
 
     if @field.save
-      @message = I18n.t('objects.create_success', o: @field.show_label)
+      @messages << I18n.t('objects.create_success', o: @field.show_label)
       render action: 'save'
     else
       render action: 'save', status: 406
@@ -47,7 +47,7 @@ class FieldsController < ApplicationController
   def destroy
     @field = @fields.find(params[:id])
     @field.destroy
-    @message = flash[:notice] = I18n.t('objects.destroy_success', o: @field.show_label)
+    @messages << flash[:notice] = I18n.t('objects.destroy_success', o: @field.show_label)
     render action: 'save'
   end
   

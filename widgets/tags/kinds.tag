@@ -1,5 +1,7 @@
 <kor-kinds>
-  <h1>{t('activerecord.models.kind', {capitalize: true, count: 'other'})}</h1>
+  <h1>
+    {wApp.i18n.t('activerecord.models.kind', {capitalize: true, count: 'other'})}
+  </h1>
 
   <form class="kor-horizontal" >
 
@@ -40,13 +42,13 @@
           </div>
           <div show={kind.fields.length}>
             <span class="label">
-              {t('activerecord.models.field', {count: 'other'})}:
+              {wApp.i18n.t('activerecord.models.field', {count: 'other'})}:
             </span>
             {fieldNamesFor(kind)}
           </div>
           <div show={kind.generators.length}>
             <span class="label">
-              {t('activerecord.models.generator', {count: 'other'})}:
+              {wApp.i18n.t('activerecord.models.generator', {count: 'other'})}:
             </span>
             {generatorNamesFor(kind)}
           </div>
@@ -65,22 +67,12 @@
 
   <script type="text/coffee">
     tag = this
-    tag.filters = {}
-    tag.bus = riot.observable()
+    tag.requireRoles = ['kind_admin']
+    tag.mixin(wApp.mixins.session)
 
     tag.on 'mount', -> fetch()
-    wApp.bus.on 'kinds-changed', -> fetch()
 
-    tag.t = wApp.i18n.translate
-
-    # tag.add = (event) ->
-    #   event.preventDefault()
-    #   wApp.bus.trigger 'modal', 'kor-kind-editor', notify: tag.bus, kind: {}
-
-    # tag.edit = (kind) ->
-    #   (event) ->
-    #     event.preventDefault()
-    #     wApp.bus.trigger 'modal', 'kor-kind-editor', kind: kind, notify: tag.bus
+    tag.filters = {}
 
     tag.delete = (kind) ->
       (event) ->
@@ -89,8 +81,7 @@
           Zepto.ajax(
             type: 'delete'
             url: "/kinds/#{kind.id}"
-            success: ->
-              wApp.bus.trigger 'kinds-changed'
+            success: -> fetch()
           )
 
     tag.isMedia = (kind) -> kind.uuid == wApp.data.medium_kind_uuid
@@ -113,14 +104,6 @@
       tag.delayedTimeout = window.setTimeout(tag.submit, 300)
       true
 
-    index_records = ->
-      tag.lookup = {}
-      tag.roots = []
-      for kind in tag.data.records
-        tag.lookup[kind.id] = kind
-        if kind.parent_ids.length == 0
-          tag.roots.push(kind)
-
     filter_records = ->
       tag.filtered_records = if tag.filters.terms
         re = new RegExp("#{tag.filters.terms}", 'i')
@@ -140,10 +123,9 @@
       Zepto.ajax(
         type: 'get'
         url: '/kinds'
-        data: {include: 'generators,fields'}
+        data: {include: 'generators,fields,inheritance'}
         success: (data) ->
           tag.data = data
-          index_records()
           filter_records()
           tag.update()
       )

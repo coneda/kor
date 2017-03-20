@@ -29,7 +29,17 @@ end
 Then(/^kind "([^"]*)" should( not)? have parent "([^"]*)"$/) do |child, negation, parent|
   child = Kind.find_by(name: child)
   parent = Kind.find_by(name: parent)
-  debugger if !child || !parent
+
+  if negation
+    expect(child.parents.to_a).not_to include(parent)
+  else
+    expect(child.parents.to_a).to include(parent)
+  end
+end
+
+Then(/^relation "([^"]*)" should( not)? have parent "([^"]*)"$/) do |child, negation, parent|
+  child = Relation.find_by(name: child)
+  parent = Relation.find_by(name: parent)
 
   if negation
     expect(child.parents.to_a).not_to include(parent)

@@ -1,6 +1,6 @@
 additions ||= []
 
-json.extract! generator, :id, :kind_id, :name, :directive, :errors
+json.extract! generator, :id, :kind_id, :name, :directive
 
 if additions.include?('technical') || additions.include?('all')
   json.created_at generator.created_at

@@ -37,7 +37,7 @@ describe GeneratorsController, type: :controller do
         name: 'gnd_id', directive: '<span>something</span>'
       }
       expect(response.status).to eq(200)
-      expect(data['message']).to match(/^[^\s]+ has been created$/)
+      expect(data['messages'].first).to match(/^[^\s]+ has been created$/)
       id = data['record']['id']
       expect(id).to be_a(Integer)
 
@@ -45,7 +45,7 @@ describe GeneratorsController, type: :controller do
         directive: '<span>something</span>'
       }
       expect(response.status).to eq(200)
-      expect(data['message']).to match(/^[^\s]+ has been changed$/)
+      expect(data['messages'].first).to match(/^[^\s]+ has been changed$/)
       expect(data['record']['id']).to be_a(Integer)
 
       get :index, kind_id: @people.id
@@ -57,7 +57,7 @@ describe GeneratorsController, type: :controller do
 
       delete :destroy, kind_id: @people.id, id: id
       expect(response.status).to eq(200)
-      expect(data['message']).to match(/^[^\s]+ has been deleted$/)
+      expect(data['messages'].first).to match(/^[^\s]+ has been deleted$/)
       expect(data['record']['id']).to be_a(Integer)      
     end
 

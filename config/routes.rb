@@ -37,11 +37,6 @@ Rails.application.routes.draw do
     end
     resources :generators, except: ['show', 'edit', 'new']
   end
-  resources :relations do
-    collection do
-      get 'names'
-    end
-  end
   resources :entities do
     collection do
       get 'multi_upload'
@@ -57,9 +52,18 @@ Rails.application.routes.draw do
       get 'metadata'
     end
 
+
     scope format: :json do
-      resources :relations, only: [:index]
+      # match 'relations', to: 'entities#relation_counts'
       resources :relationships, only: [:index, :show], controller: 'directed_relationships'
+    end
+  end
+
+  defaults format: :json do
+    resources :relations, except: [:new, :edit] do
+      collection do
+        get 'names'
+      end
     end
   end
 

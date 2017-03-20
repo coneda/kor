@@ -1,4 +1,5 @@
 <kor-kind-editor>
+  <kor-menu-fix />
 
   <kor-layout-panel class="left small" if={opts.kind}>
     <kor-panel>
@@ -66,12 +67,14 @@
     tag = this
     tag.tab = 'general'
     tag.notify = riot.observable()
+    tag.requireRoles = ['kind_admin']
+    tag.mixin(wApp.mixins.session)
 
     tag.on 'mount', ->
       if tag.opts.id
         Zepto.ajax(
           url: "/kinds/#{tag.opts.id}"
-          data: {include: 'fields,generators'}
+          data: {include: 'fields,generators,inheritance'}
           success: (data) ->
             tag.opts.kind = data
             tag.update()
@@ -80,6 +83,7 @@
         tag.opts.kind = {}
 
     tag.on 'kind-changed', (new_kind) ->
+      wApp.bus.trigger 'kinds-changed'
       tag.opts.kind = new_kind
       tag.update()
 

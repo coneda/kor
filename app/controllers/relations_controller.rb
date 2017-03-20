@@ -1,21 +1,9 @@
 class RelationsController < ApplicationController
-  skip_before_action :authentication, :only => [:names, :index, :show]
-
-  layout 'normal_small'
+  skip_before_action :authentication, :only => [:names, :index]
 
   def index
-    @relations = if params[:entity_id]
-      Entity.find(params[:entity_id]).relation_counts(current_user)
-    else
-      Relation.paginate(:page => params[:page], :per_page => 30)
-    end
-
-    respond_to do |format|
-      format.json {render json: @relations}
-      format.html do
-        render layout: 'wide'
-      end
-    end
+    params[:include] = param_to_array(params[:include], ids: false)
+    @records = Relation.all
   end
 
   def names
@@ -30,20 +18,7 @@ class RelationsController < ApplicationController
   end
 
   def show
-    @relation = Relation.find(params[:id])
-    
-    respond_to do |format|
-      format.json do
-        render :json => @relation
-      end
-    end
-  end
-
-  def new
-    @relation = Relation.new
-  end
-
-  def edit
+    params[:include] = param_to_array(params[:include], ids: false)
     @relation = Relation.find(params[:id])
   end
 
@@ -51,10 +26,11 @@ class RelationsController < ApplicationController
     @relation = Relation.new(relation_params)
 
     if @relation.save
-      flash[:notice] = I18n.t( 'objects.create_success', :o => I18n.t('nouns.relation', :count => 1) )
-      redirect_to relations_path
+      @messages << I18n.t('objects.create_success', :o => Relation.model_name.human )
+      render action: 'save'
     else
-      render :action => "new"
+      @messages << I18n.t('activerecord.errors.template.header')
+      render action: 'save', status: 406
     end
   end
 
@@ -63,26 +39,28 @@ class RelationsController < ApplicationController
     params[:relation][:to_kind_ids] ||= []
     
     @relation = Relation.find(params[:id])
-    
+
     if @relation.update_attributes(relation_params)
-      flash[:notice] = I18n.t( 'objects.update_success', :o => I18n.t('nouns.relation', :count => 1) )
-      redirect_to relations_path
+      @messages << I18n.t('objects.update_success', o: Relation.model_name.human)
+      render action: 'save'
     else
-      render :action => "edit"
+      @messages << I18n.t('activerecord.errors.template.header')
+      render action: 'save', status: 406
     end
-  rescue ActiveRecord::StaleObjectError
-    flash[:error] = I18n.t('activerecord.errors.messages.stale_relation_update')
-    render :action => 'edit'
+  rescue ActiveRecord::StaleObjectError => e
+    @messages << I18n.t('activerecord.errors.messages.stale_relation_update')
+    render action: 'save', status: 406
   end
 
   def destroy
     @relation = Relation.find(params[:id])
-    @relation.destroy
 
-    flash[:notice] = I18n.t( 'objects.destroy_success', :o => I18n.t('nouns.relation', :count => 1) )
-    redirect_to(relations_url)
+    @relation.destroy
+    @messages << I18n.t('objects.destroy_success', :o => Relation.model_name.human)
+    render action: 'save'
   end
-  
+
+
   protected
 
     def relation_params

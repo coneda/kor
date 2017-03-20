@@ -10,6 +10,7 @@ RSpec.describe KindsController, type: :controller do
 
   before :each do
     request.headers['accept'] = 'application/json'
+
     @media = FactoryGirl.create :media
     @admin = FactoryGirl.create :admin
   end
@@ -41,7 +42,7 @@ RSpec.describe KindsController, type: :controller do
       }
       expect(response.status).to eq(200)
       expect(data['record']['id']).not_to be_nil
-      expect(data['message']).to eq('entity type has been created')
+      expect(data['messages'].first).to eq('entity type has been created')
     end
 
     it 'should create a sub kind' do
@@ -99,7 +100,7 @@ RSpec.describe KindsController, type: :controller do
 
       delete :destroy, id: @people.id
       expect(response.status).to eq(406)
-      expect(data['message']).to eq("kinds with children can't be deleted")
+      expect(data['messages'].first).to eq("kinds with children can't be deleted")
     end
 
     it 'should deny deleting the medium kind' do

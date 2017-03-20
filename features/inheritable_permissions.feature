@@ -48,7 +48,7 @@ Feature: Inheritable permissions
     And I fill in "user[email]" with "hmustermann@coneda.net"
     And I fill in "user[parent_username]" with "jdoe"
     And I press "Create"
-    Then I should see "has been changed"
+    Then I should see "has been created"
 
     Then user "hmustermann@coneda.net" should be active
     And user "hmustermann@coneda.net" should have the role "relation_admin"

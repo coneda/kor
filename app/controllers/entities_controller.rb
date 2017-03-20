@@ -178,6 +178,11 @@ class EntitiesController < ApplicationController
     end
   end
 
+  def relation_counts
+    @relations = Entity.find(params[:id]).relation_counts(current_user)
+    format.json {render json: @relations}
+  end
+
   def new
     if authorized? :create, Collection.all, :required => :any
       @entity = Entity.new(:collection_id => current_user.default_collection_id)

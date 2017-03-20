@@ -67,7 +67,11 @@ end
 
 Then /^(?:|I )should see "([^"]*)"(?: exactly "(\d+)" times?)?$/ do |text, amount|
   amount = amount.to_i if amount
-  expect(page).to have_content(text, count: amount)
+  if amount
+    expect(page).to have_content(text, count: amount)
+  else
+    expect(page).to have_content(text)
+  end
 end
 
 Then /^(?:|I )should see \/([^\/]*)\/$/ do |regexp|

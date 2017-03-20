@@ -20,6 +20,8 @@ commit history on GitHub.
 * compatibility with elasticsearch 5.1
 * increased full index speed by using elasticsearch bulk api
 * simple search now sorts on degree of connectivity when score is equal
+* kinds and relations can now have parents allowing a semantic hierarchies (e.g.
+  for mapping to CIDOC CRM implementations)
 
 ## Version 2.0.1
 
@@ -31,7 +33,6 @@ commit history on GitHub.
 * 'recently visited' tab (relationship editor) doesn't show expected entities
   (#2161 redmine). The resolution also has the side effect of the history of
   visited entities is now remembered across sessions.
->>>>>>> master
 
 ## Version 2.0.0
 

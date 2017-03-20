@@ -683,7 +683,7 @@ en:
   activemodel:
     errors:
       template:
-        header: "errors occurred in the input"
+        header: "the input contains errors and the record could not be saved"
 
       messages:
         empty: "has to be filled in"
@@ -895,9 +895,11 @@ en:
         name: name
         reverse_name: inversion
         description: description
-        from_kind_ids: permitted types on this page
-        to_kind_ids: permitted types on this page
+        from_kind_ids: permitted types (from)
+        to_kind_ids: permitted types (to)
         wikidata_id: Wikidata ID
+        parent: parent relation
+        abstract: abstract
       relationship:
         from_id: source
         to_id: target
@@ -920,7 +922,7 @@ en:
           
     errors:
       template:
-        header: "errors occurred in the input"
+        header: "the input contains errors and the record could not be saved"
 
       messages:
         personal_collection_not_empty: "The personal collection could not be deleted because it still contains entities"
@@ -955,10 +957,10 @@ en:
         no_two_images: "you cannot attach two images"
         defines_non_existent_kind: "defines a non existent entity type"
         defines_non_existent_relation: "defines a link for a non existent relation"
-        stale_entity_update: "The entity has been edited meanwhile. Please find the new values below"
-        stale_user_update: "The user has been edited meanwhile. Please find the new values below"
-        stale_relation_update: "The relation has been edited meanwhile. Please find the new values below"
-        stale_relationship_update: "The link has been edited meanwhile. Please find the new values below"
+        stale_entity_update: "The entity has been edited meanwhile. Please reload the page"
+        stale_user_update: "The user has been edited meanwhile. Please reload the page"
+        stale_relation_update: "The relation has been edited meanwhile. Please reload the page"
+        stale_relationship_update: "The link has been edited meanwhile. Please reload the page"
         needs_medium: "Without a relevant file the entity cannot be created as a medium"
         needs_file: "Without a relevant file the entity cannot be created as a medium"
         invalid_words: "cannot contain words longer than 30 characters"
@@ -973,6 +975,7 @@ en:
         cannot_be_changed: can't be changed
         field_type_invalid: field type invalid
         cannot_be_changed: can't be changed for medium type
+        cannot_restrict_less_than_parent: cannot allow more endpoints than its ancestors
 
 
   # Mime types

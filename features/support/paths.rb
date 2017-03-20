@@ -16,11 +16,11 @@ module NavigationHelpers
     when /^page "(\d+)" of the gallery$/
       page = $1
       web_path(:anchor => "/entities/gallery?page=#{page}")
-    when /the new relationship page for "(.*)"/
-      new_relationship_path(:relationship => {:from_id => Entity.find_by_name($1).id })
+    # when /the new relationship page for "(.*)"/
+    #   new_relationship_path(:relationship => {:from_id => Entity.find_by_name($1).id })
     when /the new publishment page/ then new_publishment_path
     when /the publishments page/ then publishments_path
-    when /the new relation page/ then new_relation_path
+    # when /the new relation page/ then new_relation_path
     when /the new entity page/ then new_entity_path
     when /the authority groups page/ then authority_group_categories_path
     when /the authority group categories page/ then authority_group_categories_path
@@ -66,8 +66,12 @@ module NavigationHelpers
       klass = $1
       name = $2.split('/').first
       object = klass.classify.constantize.find_by_name(name)
-      send("edit_#{klass}_path", object)
-    when /the relations page/ then relations_path
+      if object.is_a?(Relation)
+        "/blaze#/relations/#{object.id}"
+      else
+        send("edit_#{klass}_path", object)
+      end
+    when /the relations page/ then '/blaze#/relations'
     when /the simple search page/ then '/component_search'
     when /the edit relationship page for the first relationship/ then edit_relationship_path(Relationship.first)
     when /the new relationship page with target "([^\"]+)"/

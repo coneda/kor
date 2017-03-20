@@ -43,6 +43,8 @@ module Kor
       end
     end
 
+    config.action_dispatch.perform_deep_munge = false
+
     initializer 'action_mailer.set_configs' do
       if mc = Kor::Config.instance['mail']
         dm = mc['delivery_method'].to_sym
@@ -110,3 +112,7 @@ end
 # TODO: use neo transactions to effectively clear the store after tests
 # TODO: change denied redirect to denied action rendering
 # TODO: use http://errbit.com/ instead of custom exception logger
+# TODO: test changing of kind inheritance to update their entities dataset and
+#       that relation inheritance uses the ancestry to show abailable relations
+#       when creating relationships
+# TODO: add consistent optimistic locking
