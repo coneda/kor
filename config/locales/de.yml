@@ -220,6 +220,9 @@ de:
     expert_search: Expertensuche
     random_entities: Zufällig ausgewählte Einträge
     welcome: Standardstartseite
+    invalid_entities: ungültige Entitäten
+    recent_entities: neue Entitäten
+    isolated_entities: isolierte Entitäten
 
   nouns:
     agpl: "GNU Affero General Public License Version 3"

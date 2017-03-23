@@ -43,11 +43,12 @@ class RelationshipsController < ApplicationController
 
     if authorized_for_relationship? @relationship, :delete
       @relationship.destroy
-      render :json => {
-        "message" => I18n.t('objects.destroy_success', :o => I18n.t('nouns.relationship', :count => 1) )
-      }
+      @messages << I18n.t('objects.destroy_success',
+        :o => I18n.t('nouns.relationship', :count => 1)
+      )
+      render action: 'save'
     else
-      render :nothing => true, :status => 403
+      render_403 I18n.t('errors.not_allowed_action')
     end
   end
 

@@ -81,6 +81,7 @@
           tag.loaded = true
           tag.update()
         tag.on 'routing:query', fetch
+        h(tag.t('pages.recent_entities')) if h = tag.opts.handlers.pageTitleUpdate
       else
         h() if h = tag.opts.handlers.accessDenied
 

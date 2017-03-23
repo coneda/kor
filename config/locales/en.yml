@@ -219,6 +219,9 @@ en:
     expert_search: expert search
     random_entities: randomly selected entries
     welcome: standard page
+    invalid_entities: invalid entities
+    recent_entities: recent entities
+    isolated_entities: isolated entities
 
   nouns:
     agpl: "GNU Affero General Public License Version 3"

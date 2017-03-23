@@ -1547,16 +1547,12 @@
     var RE_SPECIAL_TAGS = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/;
     var RE_SPECIAL_TAGS_NO_OPTION = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?)$/;
     var RE_RESERVED_NAMES = /^(?:_(?:item|id|parent)|update|root|(?:un)?mount|mixin|is(?:Mounted|Loop)|tags|refs|parent|opts|trigger|o(?:n|ff|ne))$/;
-    var RE_SVG_TAGS = /^(altGlyph|animate(?:Color)?|circle|clipPath|defs|ellipse|fe(?:Blend|ColorMatrix|ComponentTransfer|Composite|ConvolveMatrix|DiffuseLighting|DisplacementMap|Flood|GaussianBlur|Image|Merge|Morphology|Offset|SpecularLighting|Tile|Turbulence)|filter|font|foreignObject|g(?:lyph)?(?:Ref)?|image|line(?:arGradient)?|ma(?:rker|sk)|missing-glyph|path|pattern|poly(?:gon|line)|radialGradient|rect|stop|svg|switch|symbol|text(?:Path)?|tref|tspan|use)$/;
     var RE_HTML_ATTRS = /([-\w]+) ?= ?(?:"([^"]*)|'([^']*)|({[^}]*}))/g;
     var CASE_SENSITIVE_ATTRIBUTES = {
         viewbox: "viewBox"
     };
     var RE_BOOL_ATTRS = /^(?:disabled|checked|readonly|required|allowfullscreen|auto(?:focus|play)|compact|controls|default|formnovalidate|hidden|ismap|itemscope|loop|multiple|muted|no(?:resize|shade|validate|wrap)?|open|reversed|seamless|selected|sortable|truespeed|typemustmatch)$/;
     var IE_VERSION = (WIN && WIN.document || {}).documentMode | 0;
-    function isSVGTag(name) {
-        return RE_SVG_TAGS.test(name);
-    }
     function isBoolAttr(value) {
         return RE_BOOL_ATTRS.test(value);
     }
@@ -1586,7 +1582,6 @@
         return RE_RESERVED_NAMES.test(value);
     }
     var check = Object.freeze({
-        isSVGTag: isSVGTag,
         isBoolAttr: isBoolAttr,
         isFunction: isFunction,
         isObject: isObject,
@@ -1609,17 +1604,8 @@
     function createDOMPlaceholder() {
         return document.createTextNode("");
     }
-    function mkEl(name, isSvg) {
-        return isSvg ? document.createElementNS("http://www.w3.org/2000/svg", "svg") : document.createElement(name);
-    }
-    function getOuterHTML(el) {
-        if (el.outerHTML) {
-            return el.outerHTML;
-        } else {
-            var container = mkEl("div");
-            container.appendChild(el.cloneNode(true));
-            return container.innerHTML;
-        }
+    function mkEl(name) {
+        return document.createElement(name);
     }
     function setInnerHTML(container, html) {
         if (!isUndefined(container.innerHTML)) {
@@ -1677,7 +1663,6 @@
         createFrag: createFrag,
         createDOMPlaceholder: createDOMPlaceholder,
         mkEl: mkEl,
-        getOuterHTML: getOuterHTML,
         setInnerHTML: setInnerHTML,
         remAttr: remAttr,
         getAttr: getAttr,
@@ -1734,7 +1719,7 @@
         }
     };
     var brackets = function(UNDEF) {
-        var REGLOB = "g", R_MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g, R_STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'/g, S_QBLOCKS = R_STRINGS.source + "|" + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + "|" + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source, UNSUPPORTED = RegExp("[\\" + "x00-\\x1F<>a-zA-Z0-9'\",;\\\\]"), NEED_ESCAPE = /(?=[[\]()*+?.^$|])/g, FINDBRACES = {
+        var REGLOB = "g", R_MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g, R_STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'|`[^`\\]*(?:\\[\S\s][^`\\]*)*`/g, S_QBLOCKS = R_STRINGS.source + "|" + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + "|" + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source, UNSUPPORTED = RegExp("[\\" + "x00-\\x1F<>a-zA-Z0-9'\",;\\\\]"), NEED_ESCAPE = /(?=[[\]()*+?.^$|])/g, FINDBRACES = {
             "(": RegExp("([()])|" + S_QBLOCKS, REGLOB),
             "[": RegExp("([[\\]])|" + S_QBLOCKS, REGLOB),
             "{": RegExp("([{}])|" + S_QBLOCKS, REGLOB)
@@ -1989,7 +1974,7 @@
             }
             return expr;
         }
-        _tmpl.version = brackets.version = "v3.0.2";
+        _tmpl.version = brackets.version = "v3.0.3";
         return _tmpl;
     }();
     var observable$1 = function(el) {
@@ -2066,11 +2051,9 @@
     };
     function each(list, fn) {
         var len = list ? list.length : 0;
-        for (var i = 0, el; i < len; ++i) {
-            el = list[i];
-            if (fn(el, i) === false) {
-                i--;
-            }
+        var i = 0;
+        for (;i < len; ++i) {
+            fn(list[i], i);
         }
         return list;
     }
@@ -2147,10 +2130,6 @@
     }
     function setEventHandler(name, handler, dom, tag) {
         var eventName, cb = handleEvent.bind(tag, dom, handler);
-        if (!dom.addEventListener) {
-            dom[name] = cb;
-            return;
-        }
         dom[name] = null;
         eventName = name.replace(EVENTS_PREFIX_REGEX, "");
         if (!dom._riotEvents) {
@@ -2394,14 +2373,7 @@
     function moveNestedTags(i) {
         var this$1 = this;
         each(Object.keys(this.tags), function(tagName) {
-            var tag = this$1.tags[tagName];
-            if (isArray(tag)) {
-                each(tag, function(t) {
-                    moveChildTag.apply(t, [ tagName, i ]);
-                });
-            } else {
-                moveChildTag.apply(tag, [ tagName, i ]);
-            }
+            moveChildTag.apply(this$1.tags[tagName], [ tagName, i ]);
         });
     }
     function move(root, nextTag, isVirtual) {
@@ -2484,9 +2456,6 @@
                         move.apply(tag, [ root, tags[i], isVirtual ]);
                         tags.splice(i, 0, tags.splice(pos, 1)[0]);
                         oldItems.splice(i, 0, oldItems.splice(pos, 1)[0]);
-                    } else {
-                        remove.apply(tags[i], [ tags, i ]);
-                        oldItems.splice(i, 1);
                     }
                     if (expr.pos) {
                         tag[expr.pos] = i;
@@ -2663,8 +2632,8 @@
             return html || def || "";
         });
     }
-    function mkdom(tmpl, html, checkSvg) {
-        var match = tmpl && tmpl.match(/^\s*<([-\w]+)/), tagName = match && match[1].toLowerCase(), el = mkEl(GENERIC, checkSvg && isSVGTag(tagName));
+    function mkdom(tmpl, html) {
+        var match = tmpl && tmpl.match(/^\s*<([-\w]+)/), tagName = match && match[1].toLowerCase(), el = mkEl(GENERIC);
         tmpl = replaceYield(tmpl, html);
         if (tblTags.test(tagName)) {
             el = specialTags(el, tmpl, tagName);
@@ -2720,16 +2689,12 @@
         if (css) {
             styleManager.add(css, name);
         }
-        var exists = !!__TAG_IMPL[name];
         __TAG_IMPL[name] = {
             name: name,
             tmpl: tmpl,
             attrs: attrs,
             fn: fn
         };
-        if (exists && util.hotReloader) {
-            util.hotReloader(name);
-        }
         return name;
     }
     function mount$1(selector, tagName, opts) {
@@ -2741,9 +2706,9 @@
                     riotTag = tagName;
                     setAttr(root, IS_DIRECTIVE, tagName);
                 }
-                var tag$$1 = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
-                if (tag$$1) {
-                    tags.push(tag$$1);
+                var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
+                if (tag) {
+                    tags.push(tag);
                 }
             } else if (root.length) {
                 each(root, pushTagsTo);
@@ -2780,10 +2745,10 @@
     }
     var mixins = {};
     var globals = mixins[GLOBAL_MIXIN] = {};
-    var _id = 0;
+    var mixins_id = 0;
     function mixin$1(name, mix, g) {
         if (isObject(name)) {
-            mixin$1("__unnamed_" + _id++, name, true);
+            mixin$1("__unnamed_" + mixins_id++, name, true);
             return;
         }
         var store = g ? globals : mixins;
@@ -2796,13 +2761,14 @@
         store[name] = isFunction(mix) ? extend(mix.prototype, store[name] || {}) && mix : extend(store[name] || {}, mix);
     }
     function update$1() {
-        return each(__TAGS_CACHE, function(tag$$1) {
-            return tag$$1.update();
+        return each(__TAGS_CACHE, function(tag) {
+            return tag.update();
         });
     }
     function unregister$1(name) {
         delete __TAG_IMPL[name];
     }
+    var version = "v3.3.2";
     var core = Object.freeze({
         Tag: Tag$2,
         tag: tag$1,
@@ -2810,7 +2776,8 @@
         mount: mount$1,
         mixin: mixin$1,
         update: update$1,
-        unregister: unregister$1
+        unregister: unregister$1,
+        version: version
     });
     var __uid = 0;
     function updateOpts(isLoop, parent, isAnonymous, opts, instAttrs) {
@@ -2860,15 +2827,15 @@
         dom = isLoop && isAnonymous ? root : mkdom(impl.tmpl, innerHTML, isLoop);
         defineProperty(this, "update", function tagUpdate(data) {
             var nextOpts = {}, canTrigger = this.isMounted && !skipAnonymous;
+            data = cleanUpData(data);
+            extend(this, data);
             updateOpts.apply(this, [ isLoop, parent, isAnonymous, nextOpts, instAttrs ]);
             if (this.isMounted && isFunction(this.shouldUpdate) && !this.shouldUpdate(data, nextOpts)) {
                 return this;
             }
-            data = cleanUpData(data);
             if (isLoop && isAnonymous) {
                 inheritFrom.apply(this, [ this.parent, propsInSyncWithParent ]);
             }
-            extend(this, data);
             extend(opts, nextOpts);
             if (canTrigger) {
                 this.trigger("update", data);
@@ -2882,7 +2849,9 @@
         defineProperty(this, "mixin", function tagMixin() {
             var this$1 = this;
             each(arguments, function(mix) {
-                var instance, props = [], obj;
+                var instance, obj;
+                var props = [];
+                var propsBlacklist = [ "init", "__proto__" ];
                 mix = isString(mix) ? mixin$1(mix) : mix;
                 if (isFunction(mix)) {
                     instance = new mix();
@@ -2894,7 +2863,7 @@
                     props = props.concat(Object.getOwnPropertyNames(obj || instance));
                 } while (obj = Object.getPrototypeOf(obj || instance));
                 each(props, function(key) {
-                    if (key !== "init") {
+                    if (!contains(propsBlacklist, key)) {
                         var descriptor = Object.getOwnPropertyDescriptor(instance, key) || Object.getOwnPropertyDescriptor(proto, key);
                         var hasGetterSetter = descriptor && (descriptor.get || descriptor.set);
                         if (!this$1.hasOwnProperty(key) && hasGetterSetter) {
@@ -2912,7 +2881,6 @@
         }.bind(this));
         defineProperty(this, "mount", function tagMount() {
             var this$1 = this;
-            var _parent = this.__.parent;
             root._tag = this;
             parseAttributes.apply(parent, [ root, root.attributes, function(attr, expr) {
                 if (!isAnonymous && RefExpr.isPrototypeOf(expr)) {
@@ -2935,9 +2903,6 @@
                     setAttr(root, attr.name, attr.value);
                 }
             } ]);
-            if (_parent && isAnonymous) {
-                inheritFrom.apply(this, [ _parent, propsInSyncWithParent ]);
-            }
             updateOpts.apply(this, [ isLoop, parent, isAnonymous, opts, instAttrs ]);
             var globalMixin = mixin$1(GLOBAL_MIXIN);
             if (globalMixin && !skipAnonymous) {
@@ -3157,25 +3122,15 @@
             delete obj[key];
         }
     }
-    function isInStub(dom) {
-        while (dom) {
-            if (dom.inStub) {
-                return true;
-            }
-            dom = dom.parentNode;
-        }
-        return false;
-    }
     function mountTo(root, tagName, opts, ctx) {
         var impl = __TAG_IMPL[tagName], implClass = __TAG_IMPL[tagName].class, tag = ctx || (implClass ? Object.create(implClass.prototype) : {}), innerHTML = root._innerHTML = root._innerHTML || root.innerHTML;
         root.innerHTML = "";
-        var conf = {
+        var conf = extend({
             root: root,
             opts: opts
-        };
-        if (opts && opts.parent) {
-            conf.parent = opts.parent;
-        }
+        }, {
+            parent: opts ? opts.parent : null
+        });
         if (impl && root) {
             Tag$1.apply(tag, [ impl, conf, innerHTML ]);
         }
@@ -3195,9 +3150,10 @@
     function makeVirtual(src, target) {
         var this$1 = this;
         var head = createDOMPlaceholder(), tail = createDOMPlaceholder(), frag = createFrag(), sib, el;
-        this.__.head = this.root.insertBefore(head, this.root.firstChild);
-        this.__.tail = this.root.appendChild(tail);
-        el = this.__.head;
+        this.root.insertBefore(head, this.root.firstChild);
+        this.root.appendChild(tail);
+        this.__.head = el = head;
+        this.__.tail = tail;
         while (el) {
             sib = el.nextSibling;
             frag.appendChild(el);
@@ -3247,7 +3203,6 @@
         cleanUpData: cleanUpData,
         arrayishAdd: arrayishAdd,
         arrayishRemove: arrayishRemove,
-        isInStub: isInStub,
         mountTo: mountTo,
         makeReplaceVirtual: makeReplaceVirtual,
         makeVirtual: makeVirtual,
@@ -4190,6 +4145,133 @@ var route = function() {
     }
 })();
 
+(function(root, factory) {
+    if (typeof exports !== "undefined") {
+        if (typeof module !== "undefined" && module.exports) {
+            exports = module.exports = factory(root, exports);
+        }
+    } else if (typeof define === "function" && define.amd) {
+        define([ "exports" ], function(exports) {
+            root.Lockr = factory(root, exports);
+        });
+    } else {
+        root.Lockr = factory(root, {});
+    }
+})(this, function(root, Lockr) {
+    "use strict";
+    if (!Array.prototype.indexOf) {
+        Array.prototype.indexOf = function(elt) {
+            var len = this.length >>> 0;
+            var from = Number(arguments[1]) || 0;
+            from = from < 0 ? Math.ceil(from) : Math.floor(from);
+            if (from < 0) from += len;
+            for (;from < len; from++) {
+                if (from in this && this[from] === elt) return from;
+            }
+            return -1;
+        };
+    }
+    Lockr.prefix = "";
+    Lockr._getPrefixedKey = function(key, options) {
+        options = options || {};
+        if (options.noPrefix) {
+            return key;
+        } else {
+            return this.prefix + key;
+        }
+    };
+    Lockr.set = function(key, value, options) {
+        var query_key = this._getPrefixedKey(key, options);
+        try {
+            localStorage.setItem(query_key, JSON.stringify({
+                data: value
+            }));
+        } catch (e) {
+            if (console) console.warn("Lockr didn't successfully save the '{" + key + ": " + value + "}' pair, because the localStorage is full.");
+        }
+    };
+    Lockr.get = function(key, missing, options) {
+        var query_key = this._getPrefixedKey(key, options), value;
+        try {
+            value = JSON.parse(localStorage.getItem(query_key));
+        } catch (e) {
+            try {
+                if (localStorage[query_key]) {
+                    value = JSON.parse('{"data":"' + localStorage.getItem(query_key) + '"}');
+                } else {
+                    value = null;
+                }
+            } catch (e) {
+                if (console) console.warn("Lockr could not load the item with key " + key);
+            }
+        }
+        if (value === null) {
+            return missing;
+        } else if (typeof value.data !== "undefined") {
+            return value.data;
+        } else {
+            return missing;
+        }
+    };
+    Lockr.sadd = function(key, value, options) {
+        var query_key = this._getPrefixedKey(key, options), json;
+        var values = Lockr.smembers(key);
+        if (values.indexOf(value) > -1) {
+            return null;
+        }
+        try {
+            values.push(value);
+            json = JSON.stringify({
+                data: values
+            });
+            localStorage.setItem(query_key, json);
+        } catch (e) {
+            console.log(e);
+            if (console) console.warn("Lockr didn't successfully add the " + value + " to " + key + " set, because the localStorage is full.");
+        }
+    };
+    Lockr.smembers = function(key, options) {
+        var query_key = this._getPrefixedKey(key, options), value;
+        try {
+            value = JSON.parse(localStorage.getItem(query_key));
+        } catch (e) {
+            value = null;
+        }
+        if (value === null) return []; else return value.data || [];
+    };
+    Lockr.sismember = function(key, value, options) {
+        var query_key = this._getPrefixedKey(key, options);
+        return Lockr.smembers(key).indexOf(value) > -1;
+    };
+    Lockr.getAll = function() {
+        var keys = Object.keys(localStorage);
+        return keys.map(function(key) {
+            return Lockr.get(key);
+        });
+    };
+    Lockr.srem = function(key, value, options) {
+        var query_key = this._getPrefixedKey(key, options), json, index;
+        var values = Lockr.smembers(key, value);
+        index = values.indexOf(value);
+        if (index > -1) values.splice(index, 1);
+        json = JSON.stringify({
+            data: values
+        });
+        try {
+            localStorage.setItem(query_key, json);
+        } catch (e) {
+            if (console) console.warn("Lockr couldn't remove the " + value + " from the set " + key);
+        }
+    };
+    Lockr.rm = function(key) {
+        localStorage.removeItem(key);
+    };
+    Lockr.flush = function() {
+        localStorage.clear();
+    };
+    return Lockr;
+});
+
 var indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
         if (i in this && this[i] === item) return i;
@@ -4202,8 +4284,11 @@ Zepto.extend(Zepto.ajaxSettings, {
     contentType: "application/json",
     accept: "application/json",
     beforeSend: function(xhr, settings) {
+        if (!settings.url.match(/^http/)) {
+            settings.url = "" + wApp.baseUrl + settings.url;
+        }
         xhr.then(function() {
-            return console.log("ajax log", xhr.requestUrl, JSON.parse(xhr.response));
+            return console.log("ajax " + settings.type, xhr.requestUrl, JSON.parse(xhr.response));
         });
         xhr.requestUrl = settings.url;
         if (wApp.session.current) {
@@ -4217,7 +4302,9 @@ window.wApp = {
     data: {},
     mixins: {},
     state: {},
+    baseUrl: $("script[kor-url]").attr("kor-url") || "",
     setup: function() {
+        wApp.clipboard.setup();
         return [ wApp.config.setup(), wApp.session.setup(), wApp.i18n.setup(), wApp.info.setup() ];
     }
 };
@@ -4322,6 +4409,30 @@ wApp.mixins.auth = {
     }
 };
 
+wApp.clipboard = {
+    add: function(id) {
+        return Lockr.sadd("clipboard", id);
+    },
+    remove: function(id) {
+        console.log("removing: " + id);
+        return Lockr.srem("clipboard", id);
+    },
+    includes: function(id) {
+        return Lockr.sismember("clipboard", id);
+    },
+    reset: function() {
+        return Lockr.rm("clipboard");
+    },
+    ids: function() {
+        return Lockr.smembers("clipboard");
+    },
+    setup: function() {
+        return wApp.bus.on("logout", function() {
+            return wApp.clipboard.reset();
+        });
+    }
+};
+
 wApp.config = {
     setup: function() {
         return Zepto.ajax({
@@ -4411,6 +4522,20 @@ wApp.i18n = {
             console.log(error);
             return "";
         }
+    },
+    humanSize: function(input) {
+        if (input < 1024) {
+            return input + " B";
+        }
+        if (input < 1024 * 1024) {
+            return Math.round(input / 1024 * 100) / 100 + " KB";
+        }
+        if (input < 1024 * 1024 * 1024) {
+            return Math.round(input / (1024 * 1024) * 100) / 100 + " MB";
+        }
+        if (input < 1024 * 1024 * 1024 * 1024) {
+            return Math.round(input / (1024 * 1024 * 1024) * 100) / 100 + " GB";
+        }
     }
 };
 
@@ -4430,6 +4555,9 @@ wApp.mixins.i18n = {
     },
     l: function(input, format_name) {
         return wApp.i18n.localize(this.locale(), input, format_name);
+    },
+    hs: function(input) {
+        return wApp.i18n.humanSize(input);
     }
 };
 
@@ -4624,6 +4752,17 @@ wApp.utils = {
             return value;
         }
     },
+    toArray: function(value) {
+        if (value === null || value === void 0) {
+            return [];
+        } else {
+            if (Zepto.isArray(value)) {
+                return value;
+            } else {
+                return [ value ];
+            }
+        }
+    },
     uniq: function(a) {
         var j, key, output, ref, results, value;
         output = {};
@@ -4756,7 +4895,10 @@ riot.tag2("kor-invalid-entities", '<div class="kor-layout-left kor-layout-large"
         var h;
         if (tag.allowedTo("delete")) {
             fetch();
-            return tag.on("routing:query", fetch);
+            tag.on("routing:query", fetch);
+            if (h = tag.opts.handlers.pageTitleUpdate) {
+                return h(tag.t("pages.invalid_entities"));
+            }
         } else {
             if (h = tag.opts.handlers.accessDenied) {
                 return h();
@@ -4799,7 +4941,10 @@ riot.tag2("kor-isolated-entities", '<div class="kor-content-box"> <h1>{tcap(\'no
         var h;
         if (tag.allowedTo("edit")) {
             fetch();
-            return tag.on("routing:query", fetch);
+            tag.on("routing:query", fetch);
+            if (h = tag.opts.handlers.pageTitleUpdate) {
+                return h(tag.t("pages.isolated_entities"));
+            }
         } else {
             if (h = tag.opts.handlers.accessDenied) {
                 return h();
@@ -4880,6 +5025,7 @@ riot.tag2("kor-logout", '<a href="#" onclick="{logout}"> {t(\'verbs.logout\')} <
     tag.logout = function(event) {
         event.preventDefault();
         return wApp.auth.logout().then(function() {
+            wApp.bus.trigger("logout");
             return wApp.bus.trigger("routing:path", wApp.routing.parts());
         });
     };
@@ -5031,7 +5177,296 @@ riot.tag2("kor-welcome", '<div class="kor-content-box"> <h1>{config().app.welcom
     };
 });
 
-riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, opts.entities)}"> <td each="{entity in row}"> <virtual if="{entity.medium}"> <div class="image"> <a href="#/entities/{entity.id}"> <img riot-src="{entity.medium.url.thumbnail}"> </a> <div> {t(\'nouns.content_type\')}: <span class="content-type">{entity.medium.content_type}</span> </div> </div> <div class="meta" if="{entity.primary_entities}"> <div class="hr"></div> <div class="name"> <a each="{e in secondaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> <div class="desc"> <a each="{e in primaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> </div> </virtual> <div class="meta" if="{!entity.medium}"> <div class="name"> <a href="#/entities/{entity.id}">{entity.display_name}</a> </div> <div class="desc">{entity.kind.name}</div> </meta> </td> </tr> </tbody> </table>', "", "", function(opts) {
+riot.tag2("kor-clipboard-control", '<a onclick="{toggle}"> <i class="target_hit" show="{isIncluded()}"></i> <i class="target" show="{!isIncluded()}"></i> </a>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.isIncluded = function() {
+        return wApp.clipboard.includes(tag.opts.entity.id);
+    };
+    tag.toggle = function(event) {
+        event.preventDefault();
+        if (tag.isIncluded()) {
+            wApp.clipboard.remove(tag.opts.entity.id);
+            wApp.bus.trigger("message", "notice", tag.t("objects.unmarked_entity_success"));
+        } else {
+            if (wApp.clipboard.ids().length <= 500) {
+                wApp.clipboard.add(tag.opts.entity.id);
+                wApp.bus.trigger("message", "notice", tag.t("objects.marked_entity_success"));
+            } else {
+                wApp.bus.trigger("message", "error", tag.t("errors.clipboard_too_many_elements"));
+            }
+        }
+        return tag.update();
+    };
+});
+
+riot.tag2("kor-clipboard", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="kor-layout-commands"> <a onclick="{reset}"><i class="minus"></i></a> </div> <h1>{tcap(\'nouns.clipboard\')}</h1> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <tbody> <tr each="{entity in data.records}"> <td> <kor-input type="checkbox" ref="entityIds" riot-value="{true}" data-id="{entity.id}"></kor-input> </td> <td> <span show="{!entity.medium}">{entity.display_name}</span> <img show="{entity.medium}" riot-src="{entity.medium.url.icon}" class="image"> </td> <td class="right nobreak"> <a onclick="{remove(entity.id)}"><i class="minus"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var fetch, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    window.t = tag;
+    tag.on("mount", function() {
+        var h;
+        if (tag.currentUser() && !tag.isGuest()) {
+            return fetch();
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    tag.selectedIds = function() {
+        var e, i, len, ref, results;
+        ref = tag.refs.entityIds;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            e = ref[i];
+            if (e.checked()) {
+                results.push(e.opts.dataId);
+            }
+        }
+        return results;
+    };
+    tag.reset = function(event) {
+        var h;
+        event.preventDefault();
+        if (h = tag.opts.handlers.reset) {
+            return h().done(fetch);
+        }
+    };
+    tag.remove = function(id) {
+        return function(event) {
+            var h;
+            event.preventDefault();
+            if (h = tag.opts.handlers.remove) {
+                return h(id).done(fetch);
+            }
+        };
+    };
+    fetch = function() {
+        console.log("fetching:", tag.opts.entityIds);
+        return Zepto.ajax({
+            url: "/clipboard",
+            data: {
+                ids: tag.opts.entityIds
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-datings-editor", '<div class="header"> <button onclick="{add}"> {t(\'verbs.add\', {capitalize: true})} </button> <label> {t(         \'activerecord.attributes.relationship.dating.other\',         {capitalize: true}       )} </label> <div class="clearfix"></div> </div> <ul> <li each="{dating, i in opts.datings}" show="{!dating._destroy}"> <kor-input label="{t(\'activerecord.attributes.dating.label\', {capitalize: true})}" riot-value="{dating.label}" ref="datingLabels"></kor-input> <kor-input label="{t(\'activerecord.attributes.dating.dating_string\', {capitalize: true})}" riot-value="{dating.value}" ref="datingDatingStrings"></kor-input> <button onclick="{remove(i)}"> {t(\'verbs.remove\')} </button> </li> </ul>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.add = function(event) {
+        event.preventDefault();
+        tag.opts.datings.push({});
+        return tag.update();
+    };
+    tag.remove = function(index) {
+        return function(event) {
+            var dating;
+            event.preventDefault();
+            dating = tag.opts.datings;
+            if (dating.id) {
+                tag.opts.datings[index]._destroy = true;
+            } else {
+                tag.opts.datings.splice(index, 1);
+            }
+            return tag.update();
+        };
+    };
+    tag.value = function() {
+        var d, datingDatingStrings, datingLabels, i, j, len, ref;
+        datingLabels = wApp.utils.toArray(tag.refs["datingLabels"]);
+        datingDatingStrings = wApp.utils.toArray(tag.refs["datingDatingStrings"]);
+        ref = tag.opts.datings;
+        for (i = j = 0, len = ref.length; j < len; i = ++j) {
+            d = ref[i];
+            d["label"] = datingLabels[i].value();
+            d["value"] = datingDatingStrings[i].value();
+        }
+        return tag.opts.datings;
+    };
+});
+
+riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands"> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <a href="#/entities/{data.id}/edit"><i class="pen"></i></a> </virtual> <a if="{allowedTo(\'edit\', data.collection_id)}" onclick="{delete}"><i class="x"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{field.value}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a><i class="plus"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.creator}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span show="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updater}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span show="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <span class="value">{authorityGroups()}</span> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/data.medium_id"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="/media/{data.medium_id}/{op}" onclick="{transform(op)}"><i class="{op}"></i></a> </div> <div class="formats"> <a href="/media/{data.medium.id}">{t(\'verbs.enlarge\')}</a> | <a href="/media/maximize/{data.medium.id}">{t(\'verbs.maximize\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="/media/download/original/{data.medium.id}}">{t(\'nouns.original\')}</a> | <a href="/media/download/normal/{data.medium.id}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="/tools/add_media/{data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var fetch, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        return fetch();
+    });
+    tag["delete"] = function(event) {
+        var message;
+        event.preventDefault();
+        message = tag.t("objects.confirm_destroy", {
+            interpolations: {
+                o: "activerecord.models.entity"
+            }
+        });
+        if (confirm(message)) {
+            return console.log("deleting");
+        }
+    };
+    tag.visibleFields = function() {
+        var f, i, len, ref, results;
+        ref = tag.data.fields;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            if (f.value && f.show_on_entity) {
+                results.push(f);
+            }
+        }
+        return results;
+    };
+    tag.authorityGroups = function() {
+        var g;
+        return function() {
+            var i, len, ref, results;
+            ref = tag.data.groups;
+            results = [];
+            for (i = 0, len = ref.length; i < len; i++) {
+                g = ref[i];
+                results.push(g.name);
+            }
+            return results;
+        }().join(", ");
+    };
+    tag.showTagging = function() {
+        return tag.data.kind.settings.tagging === "1" && (tag.data.tags.length > 0 || tag.allowedTo("tagging", tag.data.collection_id));
+    };
+    tag.transform = function(op) {
+        return function(event) {
+            return event.preventDefault();
+        };
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/" + tag.opts.id,
+            data: {
+                include: "all"
+            },
+            success: function(data) {
+                var h;
+                tag.data = data;
+                if (h = tag.opts.handlers.pageTitleUpdate) {
+                    return h(tag.data.name);
+                }
+            },
+            error: function() {
+                var h;
+                if (h = tag.opts.handlers.accessDenied) {
+                    return h();
+                }
+            },
+            complete: function() {
+                return tag.update();
+            }
+        });
+    };
+    tag.inplaceTagHandlers = {
+        doneHandler: fetch
+    };
+});
+
+riot.tag2("kor-entity-selector", '<a onclick="{gotoTab(\'search\')}" class="{\'selected\': currentTab == \'search\'}">{t(\'nouns.search\')}</a> | <a onclick="{gotoTab(\'visited\')}" class="{\'selected\': currentTab == \'visited\'}">{t(\'recently_visited\')}</a> | <a onclick="{gotoTab(\'created\')}" class="{\'selected\': currentTab == \'created\'}">{t(\'recently_created\')}</a> <virtual if="{opts.riotValue}"> | <a onclick="{gotoTab(\'current\')}" class="{\'selected\': currentTab == \'current\'}">{t(\'currently_linked\')}</a> </virtual> <kor-pagination if="{data}" page="{page}" per-page="{9}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <table if="{!!groupedEntities}"> <tbody> <tr each="{row in groupedEntities}"> <td each="{record in row}" onclick="{select(record)}" class="{selected: isSelected(record)}"> <kor-entity entity="{record}"></kor-entity> </td> </tr> </tbody> </table>', "", "", function(opts) {
+    var fetch, group, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.currentTab = "current";
+    tag.page = 1;
+    tag.on("criteria-changed", function() {
+        return fetch();
+    });
+    tag.gotoTab = function(newTab) {
+        return function(event) {
+            event.preventDefault();
+            if (tag.currentTab !== newTab) {
+                tag.currentTab = newTab;
+                fetch();
+                return tag.update();
+            }
+        };
+    };
+    tag.isSelected = function(record) {
+        return tag.opts.riotValue && tag.opts.riotValue.id === record.id;
+    };
+    tag.select = function(record) {
+        return tag.opts.entity = record;
+    };
+    tag.pageUpdate = function(newPage) {
+        tag.page = newPage;
+        return fetch();
+    };
+    fetch = function() {
+        switch (tag.currentTab) {
+          case "current":
+            tag.data = {
+                records: [ tag.opts.riotValue ]
+            };
+            return group();
+
+          case "visited":
+            return Zepto.ajax({
+                url: "/entities/recently_visited",
+                data: {
+                    relation_name: tag.opts.relationName,
+                    page: tag.page,
+                    per_page: 9
+                },
+                success: function(data) {
+                    tag.data = data;
+                    return group();
+                }
+            });
+
+          case "created":
+            return Zepto.ajax({
+                url: "/entities/recently_created",
+                data: {
+                    relation_name: tag.opts.relationName,
+                    page: tag.page,
+                    per_page: 9
+                },
+                success: function(data) {
+                    tag.data = data;
+                    return group();
+                }
+            });
+        }
+    };
+    group = function() {
+        tag.groupedEntities = wApp.utils.inGroupsOf(3, tag.data.records);
+        return tag.update();
+    };
+});
+
+riot.tag2("kor-entity", '<virtual if="{isMedium()}"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{opts.entity}"></kor-clipboard-control> <a href="#/entities/{opts.entity.id}"> <img riot-src="{opts.entity.medium.url.thumbnail}"> </a> <div> {t(\'nouns.content_type\')}: <span class="content-type">{opts.entity.medium.content_type}</span> </div> </virtual> <virtual if="{!isMedium()}"> <a class="name" href="#/entities/{opts.entity.id}">{opts.entity.display_name}</a> <span class="kind">{opts.entity.kind_name}</span> </virtual>', "", 'class="{medium: isMedium()}"', function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.isMedium = function() {
+        return tag.opts.entity && !!tag.opts.entity.medium_id;
+    };
+});
+
+riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, opts.entities)}"> <td each="{entity in row}"> <virtual if="{entity.medium}"> <kor-entity entity="{entity}"></kor-entity> <div class="meta" if="{entity.primary_entities}"> <div class="hr"></div> <div class="name"> <a each="{e in secondaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> <div class="desc"> <a each="{e in primaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> </div> </virtual> <div class="meta" if="{!entity.medium}"> <div class="name"> <a href="#/entities/{entity.id}">{entity.display_name}</a> </div> <div class="desc">{entity.kind.name}</div> </meta> </td> </tr> </tbody> </table>', "", "", function(opts) {
     var compare, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -5076,7 +5511,60 @@ riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, o
     };
 });
 
-riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{value_from_parent()}" checked="{checked()}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{value_from_parent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{value_from_parent()}" multiple="{opts.multiple}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}"> {item.name || item.label || item} </option> </select> </label> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
+riot.tag2("kor-generator", "", "", "", function(opts) {
+    var render, tag, update;
+    tag = this;
+    update = function() {
+        var data, e, tpl;
+        try {
+            tpl = tag.opts.generator.directive;
+            data = {
+                entity: tag.opts.entity
+            };
+            return Zepto(tag.root).html(render(tpl, data));
+        } catch (error) {
+            e = error;
+        }
+    };
+    tag.on("mount", update);
+    tag.on("updated", update);
+    render = riot.util.tmpl;
+});
+
+riot.tag2("kor-inplace-tags", '<virtual if="{opts.entity.tags.length > 0}"> <span class="field"> {tcap(\'activerecord.models.tag\', {count: \'other\'})}: </span> <span class="value">{opts.entity.tags}</span> </virtual> <virtual if="{opts.enableEditor}"> <a show="{!editorActive}" onclick="{toggleEditor}"><i class="plus"></i></a> <virtual if="{editorActive}"> <kor-input name="tags" ref="field"></kor-input> <button onclick="{save}">{tcap(\'verbs.save\')}</button> </virtual> </virtual>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.toggleEditor = function(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        return tag.editorActive = !tag.editorActive;
+    };
+    tag.save = function(event) {
+        event.preventDefault();
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/entities/" + tag.opts.entity.id + "/update_tags",
+            data: JSON.stringify({
+                entity: {
+                    tags: tag.refs.field.value()
+                }
+            }),
+            success: function(data) {
+                var h;
+                tag.toggleEditor();
+                tag.update();
+                if (h = tag.opts.handlers.doneHandler) {
+                    return h();
+                }
+            }
+        });
+    };
+});
+
+riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{valueFromParent()}" checked="{checkedFromParent()}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{valueFromParent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{valueFromParent()}" multiple="{opts.multiple}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}"> {item.name || item.label || item} </option> </select> </label> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
     var tag;
     tag = this;
     tag.name = function() {
@@ -5095,15 +5583,18 @@ riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'
             }
         }
     };
-    tag.value_from_parent = function() {
+    tag.valueFromParent = function() {
         if (tag.opts.type === "checkbox") {
             return 1;
         } else {
             return tag.opts.riotValue;
         }
     };
-    tag.checked = function() {
+    tag.checkedFromParent = function() {
         return tag.opts.type === "checkbox" && tag.opts.riotValue;
+    };
+    tag.checked = function() {
+        return tag.opts.type === "checkbox" && Zepto(tag.root).find("input").prop("checked");
     };
     tag.set = function(value) {
         if (tag.opts.type === "checkbox") {
@@ -5113,15 +5604,15 @@ riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'
         }
     };
     tag.reset = function() {
-        return tag.set(tag.value_from_parent());
+        return tag.set(tag.valueFromParent());
     };
     tag.selected = function(item) {
         var v;
         v = item.id || item.value || item;
         if (tag.opts.multiple) {
-            return (tag.value_from_parent() || []).indexOf(v) > -1;
+            return (tag.valueFromParent() || []).indexOf(v) > -1;
         } else {
-            return "" + v === "" + tag.value_from_parent();
+            return "" + v === "" + tag.valueFromParent();
         }
     };
 });
@@ -5140,14 +5631,53 @@ riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div clas
     };
 });
 
+riot.tag2("kor-media-relation", '<div class="name"> {opts.name} <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}" refresh-handler="{parent.refresh}"></kor-relationship> </virtual>', "", "", function(opts) {
+    var fetch, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.info);
+    tag.on("mount", function() {
+        var base;
+        (base = tag.opts).query || (base.query = {});
+        return fetch();
+    });
+    tag.pageUpdate = function(newPage) {
+        opts.query.page = newPage;
+        return fetch();
+    };
+    tag.refresh = function() {
+        return fetch();
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/" + tag.opts.entity.id + "/relationships",
+            data: {
+                page: tag.opts.query.page,
+                relation_name: tag.opts.name,
+                to_kind_id: tag.info().medium_kind_id
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+});
+
 riot.tag2("kor-new-media", '<div class="kor-content-box"> <h1>{tcap(\'pages.new_media\')}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
     var fetch, queryUpdate, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.on("mount", function() {
+        var h;
         fetch();
-        return tag.on("routing:query", fetch);
+        tag.on("routing:query", fetch);
+        if (h = tag.opts.handlers.pageTitleUpdate) {
+            return h(tag.t("pages.new_media"));
+        }
     });
     fetch = function() {
         return Zepto.ajax({
@@ -5339,6 +5869,50 @@ riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{l
     };
 });
 
+riot.tag2("kor-properties-editor", '<div class="header"> <button onclick="{add}"> {t(\'verbs.add\', {capitalize: true})} </button> <label> {t(         \'activerecord.attributes.relationship.property.other\',         {capitalize: true}       )} </label> <div class="clearfix"></div> </div> <ul> <li each="{property, i in properties}"> <kor-input riot-value="{property.value}" ref="inputs"></kor-input> <button onclick="{remove(i)}"> {t(\'verbs.remove\')} </button> </li> </ul>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        var i, len, p, ref, results;
+        tag.properties = [];
+        ref = tag.opts.properties;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            p = ref[i];
+            results.push(tag.properties.push({
+                value: p
+            }));
+        }
+        return results;
+    });
+    tag.add = function(event) {
+        event.preventDefault();
+        tag.properties.push({
+            value: ""
+        });
+        return tag.update();
+    };
+    tag.remove = function(index) {
+        return function(event) {
+            event.preventDefault();
+            tag.properties.splice(index, 1);
+            return tag.update();
+        };
+    };
+    tag.value = function() {
+        var e, i, len, ref, results;
+        ref = wApp.utils.toArray(tag.refs.inputs);
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            e = ref[i];
+            results.push(e.value());
+        }
+        return results;
+    };
+});
+
 riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'nouns.new_entity\', {count: \'other\'})}</h1> <form> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" type="select" options="{collections.records}" placeholder="{t(\'prompts.please_select\')}" onchange="{collectionSelected}" ref="collectionId" riot-value="{opts.query.collection_id}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> <th>{tcap(\'activerecord.attributes.entity.collection_id\')}</th> <th>{tcap(\'activerecord.attributes.entity.updater\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> <td> {entity.collection.name} </td> <td> {(entity.updater || entity.creator || {}).full_name} </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, fetchCollections, queryUpdate, tag;
     tag = this;
@@ -5352,7 +5926,10 @@ riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" 
                 tag.loaded = true;
                 return tag.update();
             });
-            return tag.on("routing:query", fetch);
+            tag.on("routing:query", fetch);
+            if (h = tag.opts.handlers.pageTitleUpdate) {
+                return h(tag.t("pages.recent_entities"));
+            }
         } else {
             if (h = tag.opts.handlers.accessDenied) {
                 return h();
@@ -5401,7 +5978,207 @@ riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" 
     };
 });
 
-riot.tag2("kor-entity", '<div class="auth" if="{!authorized}"> <strong>Info</strong> <p> It seems you are not allowed to see this content. Please <a href="{login_url()}">login</a> to the kor installation first. </p> </div> <a href="{url()}" if="{authorized}" target="_blank"> <img if="{data.medium}" riot-src="{image_url()}"> <div if="{!data.medium}"> <h3>{data.display_name}</h3> <em if="{include(\'kind\')}"> {data.kind_name} <span show="{data.subtype}">({data.subtype})</span> </em> </div> </a>', "", "class=\"{'kor-style': opts.korStyle, 'kor': opts.korStyle}\"", function(opts) {
+riot.tag2("kor-relation-selector", '<kor-input type="select" options="{relationNames}" riot-value="{opts.riotValue}" ref="input">', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("criteria-changed", function() {
+        return Zepto.ajax({
+            url: "/relations/names",
+            data: {
+                from_kind_ids: tag.opts.sourceKindId,
+                to_kind_ids: tag.opts.targetKindId
+            },
+            success: function(data) {
+                tag.relationNames = data;
+                return tag.update();
+            }
+        });
+    });
+    tag.value = function() {
+        return tag.refs.input.value();
+    };
+});
+
+riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> {opts.name} <a onclick="{toggle}" class="toggle"> <i show="{!expanded}" class="triangle_up"></i> <i show="{expanded}" class="triangle_down"></i> </a> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}" refresh-handler="{parent.refresh}"></kor-relationship> </virtual>', "", "", function(opts) {
+    var fetch, tag, updateExpansion;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.info);
+    tag.on("mount", function() {
+        var base;
+        (base = tag.opts).query || (base.query = {});
+        return fetch();
+    });
+    tag.toggle = function(event) {
+        event.preventDefault();
+        tag.expanded = !tag.expanded;
+        return updateExpansion();
+    };
+    tag.pageUpdate = function(newPage) {
+        opts.query.page = newPage;
+        return fetch();
+    };
+    tag.refresh = function() {
+        return fetch();
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/" + tag.opts.entity.id + "/relationships",
+            data: {
+                page: tag.opts.query.page,
+                relation_name: tag.opts.name,
+                except_to_kind_id: tag.info().medium_kind_id
+            },
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+                return updateExpansion();
+            }
+        });
+    };
+    updateExpansion = function() {
+        var i, len, r, ref, results;
+        if (tag.expanded !== void 0) {
+            ref = tag.tags["kor-relationship"];
+            results = [];
+            for (i = 0, len = ref.length; i < len; i++) {
+                r = ref[i];
+                results.push(r.trigger("toggle", tag.expanded));
+            }
+            return results;
+        }
+    };
+});
+
+riot.tag2("kor-relationship-editor", '<h1>{header()}</h1> <form onsubmit="{save}"> <kor-relation-selector source-kind-id="{sourceKindId}" target-kind-id="{targetKindId}" riot-value="{opts.relationship.relation_name}" errors="{errors.relation_id}" ref="relation_name"></kor-relation-selector> <kor-entity-selector relation-name="{relationName}" errors="{errors.to_id}" riot-value="{opts.relationship.to}" ref="target_id"></kor-entity-selector> <div class="hr"></div> <kor-properties-editor properties="{opts.relationship.properties}" ref="properties"></kor-properties-editor> <div class="hr"></div> <kor-datings-editor datings="{opts.relationship.datings}" ref="datings"></kor-datings-editor> <div class="hr"></div> <kor-input type="submit" riot-value="{t(\'verbs.save\')}"></kor-input> <kor-input type="reset" riot-value="{t(\'cancel\')}"></kor-input> </form>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.errors = {};
+    tag.on("update", function() {
+        tag.sourceKindId = tag.opts.source.kind_id;
+        tag.targetKindId = tag.opts.target.kind_id;
+        return tag.relationName = tag.opts.relationship.relation_name;
+    });
+    tag.on("updated", function() {
+        tag.refs["relation_name"].trigger("criteria-changed");
+        return tag.refs["target_id"].trigger("criteria-changed");
+    });
+    tag.submit = function(event) {
+        event.preventDefault();
+        if (tag.opts.relationship) {
+            return Zepto.ajax({
+                type: "PATCH",
+                url: "/relationships/" + tag.opts.relationship.id,
+                data: {
+                    relationship: values()
+                },
+                success: function(data) {
+                    var h;
+                    if (h = tag.opts.doneHandler) {
+                        return h();
+                    }
+                },
+                error: function(xhr) {
+                    tag.errors = JSON.parse(xhr.responseText).errors;
+                    return wApp.utils.scrollToTop();
+                }
+            });
+        }
+    };
+    tag.values = function() {
+        return {
+            properties: tag.refs.properties.value(),
+            datings: tag.refs.datings.value(),
+            relation_name: tag.refs.relation_name.value()
+        };
+    };
+    tag.header = function() {
+        var key;
+        key = !!tag.opts.relationship ? "edit" : "create";
+        return tag.t("objects." + key, {
+            interpolations: {
+                o: "activerecord.models.relationship"
+            },
+            capitalize: true
+        });
+    };
+});
+
+riot.tag2("kor-relationship", '<div class="part"> <virtual if="{!editorActive}"> <div class="kor-layout-commands"> <virtual if="{allowedToEdit()}"> <kor-clipboard-control entity="{to()}" if="{to().medium_id}"></kor-clipboard-control> <a onclick="{activateEditor}"><i class="pen"></i></a> <a onclick="{delete}"><i class="x"></i></a> </virtual> </div> <kor-entity no-clipboard="{true}" entity="{opts.relationship.to}"></kor-entity> <a if="{opts.relationship.media_relations > 0}" onclick="{toggle}" class="toggle"> <i show="{!expanded}" class="triangle_up"></i> <i show="{expanded}" class="triangle_down"></i> </a> <virtual if="{opts.relationship.properties.length > 0}"> <div class="hr"></div> <div each="{property in opts.relationship.properties}">{property}</div> </virtual> <div class="clearfix"></div> <virtual if="{expanded && data}"> <kor-pagination page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="clearfix"></div> </virtual> </virtual> <kor-relationship-editor if="{editorActive}" relationship="{opts.relationship}" source="{opts.entity}" target="{opts.relationship.to}"></kor-relationship-editor> </div> <table class="media-relations" if="{expanded && data && !editorActive}"> <tbody> <tr each="{row in wApp.utils.inGroupsOf(3, data.records)}"> <td each="{relationship in row}"> <a href="#/entities/{relationship.to.id}"> <img riot-src="{relationship.to.medium.url.thumbnail}"> </a> </td> </tr> </tbody> </table>', "", "", function(opts) {
+    var fetch, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.info);
+    tag.on("mount", function() {
+        var base;
+        return (base = tag.opts).query || (base.query = {});
+    });
+    tag.to = function() {
+        return tag.opts.relationship.to;
+    };
+    tag.toggle = function(event) {
+        event.preventDefault();
+        return tag.trigger("toggle");
+    };
+    tag.on("toggle", function(value) {
+        tag.expanded = value === void 0 ? !tag.expanded : value;
+        if (tag.expanded && !tag.data) {
+            fetch();
+        }
+        return tag.update();
+    });
+    tag.allowedToEdit = function() {
+        return tag.allowedTo("edit", tag.opts.entity.collection_id) || tag.allowedTo("edit", tag.to().collection_id);
+    };
+    tag.activateEditor = function() {
+        window.t = tag;
+        tag.editorActive = !tag.editorActive;
+        return tag.update();
+    };
+    tag["delete"] = function() {
+        if (confirm(tag.t("confirm.sure"))) {
+            return Zepto.ajax({
+                type: "DELETE",
+                url: "/relationships/" + tag.opts.relationship.relationship_id,
+                success: function(data) {
+                    var h;
+                    if (h = tag.opts.refreshHandler) {
+                        return h();
+                    }
+                }
+            });
+        }
+    };
+    tag.pageUpdate = function(newPage) {
+        tag.opts.query.page = newPage;
+        return fetch();
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/" + tag.to().id + "/relationships",
+            data: {
+                page: tag.opts.query.page,
+                per_page: 9,
+                relation_name: tag.opts.name,
+                to_kind_id: tag.info().medium_kind_id
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-sa-entity", '<div class="auth" if="{!authorized}"> <strong>Info</strong> <p> It seems you are not allowed to see this content. Please <a href="{login_url()}">login</a> to the kor installation first. </p> </div> <a href="{url()}" if="{authorized}" target="_blank"> <img if="{data.medium}" riot-src="{image_url()}"> <div if="{!data.medium}"> <h3>{data.display_name}</h3> <em if="{include(\'kind\')}"> {data.kind_name} <span show="{data.subtype}">({data.subtype})</span> </em> </div> </a>', "", "class=\"{'kor-style': opts.korStyle, 'kor': opts.korStyle}\"", function(opts) {
     var self;
     self = this;
     self.authorized = true;
@@ -5651,6 +6428,11 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                 },
                 doneHandler: function() {
                     return wApp.routing.back();
+                },
+                pageTitleUpdate: function(newTitle) {
+                    var nv;
+                    nv = newTitle ? "KOR: " + newTitle : "ConedaKOR";
+                    return Zepto("title").html(nv);
                 }
             }
         };
@@ -5684,11 +6466,28 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                     if (!tag.isGuest() && !tag.currentUser().terms_accepted && path !== "/legal") {
                         return redirectTo("/legal");
                     } else {
-                        if (m = path.match(/\/users\/([0-9]+)\/edit/)) {
+                        if (m = path.match(/^\/users\/([0-9]+)\/edit$/)) {
                             opts["id"] = parseInt(m[1]);
                             return "kor-user-editor";
+                        } else if (m = path.match(/^\/entities\/([0-9]+)$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-entity-page";
                         } else {
                             switch (path) {
+                              case "/clipboard":
+                                opts.handlers.reset = function() {
+                                    wApp.clipboard.reset();
+                                    tag.mountedTag.opts.entityIds = wApp.clipboard.ids();
+                                    return Zepto.Deferred().resolve();
+                                };
+                                opts.handlers.remove = function(id) {
+                                    wApp.clipboard.remove(id);
+                                    tag.mountedTag.opts.entityIds = wApp.clipboard.ids();
+                                    return Zepto.Deferred().resolve();
+                                };
+                                opts.entityIds = wApp.clipboard.ids();
+                                return "kor-clipboard";
+
                               case "/profile":
                                 return "kor-profile";
 

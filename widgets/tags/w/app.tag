@@ -35,6 +35,9 @@
           accessDenied: -> tag.mountTag 'kor-access-denied'
           queryUpdate: (newQuery) -> wApp.routing.query(newQuery)
           doneHandler: -> wApp.routing.back()
+          pageTitleUpdate: (newTitle) ->
+            nv = if newTitle then "KOR: #{newTitle}" else 'ConedaKOR'
+            Zepto('title').html nv
         }
       }
 

@@ -7,7 +7,8 @@ i {
   background-repeat: no-repeat;
 
   @each $name in pager_left, pager_right, three_bars, pen, x, reset_password, 
-    plus, target, target_hit, minus {
+    plus, target, target_hit, minus, flip, flop, rotate_cw, rotate_ccw,
+    rotate_180 {
     &.#{$name} {background-image: url('/images/#{$name}.gif')}
     &.#{$name}:hover {background-image: url('/images/#{$name}_over.gif')}
   }

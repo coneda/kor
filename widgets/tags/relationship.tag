@@ -1,47 +1,56 @@
 <kor-relationship>
 
   <div class="part">
-    <div class="kor-layout-commands">
-      <virtual if={allowedToEdit()}>
-        <a onclick={activateEditor}><i class="pen"></i></a>
-        <a onclick={delete}><i class="x"></i></a>
+    <virtual if={!editorActive}>
+      <div class="kor-layout-commands">
+        <virtual if={allowedToEdit()}>
+          <kor-clipboard-control entity={to()} if={to().medium_id} />
+          <a onclick={activateEditor}><i class="pen"></i></a>
+          <a onclick={delete}><i class="x"></i></a>
+        </virtual>
+      </div>
+
+      <kor-entity
+        no-clipboard={true}
+        entity={opts.relationship.to}
+      />
+      
+      <a
+        if={opts.relationship.media_relations > 0}
+        onclick={toggle}
+        class="toggle"
+      >
+        <i show={!expanded} class="triangle_up"></i>
+        <i show={expanded} class="triangle_down"></i>
+      </a>
+
+      <virtual if={opts.relationship.properties.length > 0}>
+        <div class="hr"></div>
+        <div each={property in opts.relationship.properties}>{property}</div>
       </virtual>
-    </div>
 
-    <a
-      class="name"
-      href="#/entities/{opts.relationship.to.id}"
-    >{to().display_name}</a>
-    <span class="kind">{to().kind_name}</span>
+      <div class="clearfix"></div>
 
-    <a
-      if={opts.relationship.media_relations > 0}
-      onclick={toggle}
-      class="toggle"
-    >
-      <i show={!expanded} class="triangle_up"></i>
-      <i show={expanded} class="triangle_down"></i>
-    </a>
-
-    <virtual if={opts.relationship.properties.length > 0}>
-      <div class="hr"></div>
-      <div each={property in opts.relationship.properties}>{property}</div>
+      <virtual if={expanded && data}>
+        <kor-pagination
+          page={opts.query.page}
+          per-page={data.per_page}
+          total={data.total}
+          page-update-handler={pageUpdate}
+        />
+        <div class="clearfix"></div>
+      </virtual>
     </virtual>
 
-    <div class="clearfix"></div>
-
-    <kor-pagination
-      if={expanded && data}
-      page={opts.query.page}
-      per-page={data.per_page}
-      total={data.total}
-      page-update-handler={pageUpdate}
+    <kor-relationship-editor
+      if={editorActive}
+      relationship={opts.relationship}
+      source={opts.entity}
+      target={opts.relationship.to}
     />
-
-    <div class="clearfix"></div>
   </div>
 
-  <table class="media-relations" if={expanded && data}>
+  <table class="media-relations" if={expanded && data && !editorActive}>
     <tbody>
       <tr each={row in wApp.utils.inGroupsOf(3, data.records)}>
         <td each={relationship in row}>
@@ -60,6 +69,7 @@
     tag.mixin(wApp.mixins.auth)
     tag.mixin(wApp.mixins.info)
 
+
     tag.on 'mount', ->
       tag.opts.query ||= {}
 
@@ -67,9 +77,11 @@
 
     tag.toggle = (event) ->
       event.preventDefault()
-      tag.expanded = !tag.expanded
-      if tag.expanded && !tag.data
-        fetch()
+      tag.trigger 'toggle'
+
+    tag.on 'toggle', (value) ->
+      tag.expanded = (if value == undefined then !tag.expanded else value)
+      fetch() if tag.expanded && !tag.data
       tag.update()
 
     tag.allowedToEdit = ->
@@ -77,7 +89,18 @@
       tag.allowedTo('edit', tag.to().collection_id)
 
     tag.activateEditor = ->
+      window.t = tag
+      tag.editorActive = !tag.editorActive
+      tag.update()
+
     tag.delete = ->
+      if confirm(tag.t('confirm.sure'))
+        Zepto.ajax(
+          type: 'DELETE'
+          url: "/relationships/#{tag.opts.relationship.relationship_id}"
+          success: (data) ->
+            h() if h = tag.opts.refreshHandler
+      )
 
     tag.pageUpdate = (newPage) ->
       tag.opts.query.page = newPage

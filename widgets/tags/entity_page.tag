@@ -97,6 +97,124 @@
       </div>
     </div>
 
+    <div
+      class="kor-layout-bottom"
+      if={allowedTo('view_meta', data.collection_id)}
+    >
+      <div class="kor-content-box">
+        <h1>
+          {t('activerecord.attributes.entity.master_data', {capitalize: true})}
+        </h1>
+
+        <div>
+          <span class="field">{t('activerecord.attributes.entity.uuid')}:</span>
+          <span class="value">{data.uuid}</span>
+        </div>
+
+        <div if={data.creator}>
+          <span class="field">{t('activerecord.attributes.entity.created_at')}:</span>
+          <span class="value">
+            {l(data.created_at)}
+            <span show={data.creator}>
+              {t('by')}
+              {data.creator.full_name || data.creator.name}
+            </span>
+          </span>
+        </div>
+
+        <div if={data.updater}>
+          <span class="field">{t('activerecord.attributes.entity.updated_at')}:</span>
+          <span class="value">
+            {l(data.updated_at)}
+            <span show={data.updater}>
+              {t('by')}
+              {data.updater.full_name || data.updater.name}
+            </span>
+          </span>
+        </div>
+
+        <div if={data.groups.length}>
+          <span class="field">{t('activerecord.models.authority_group.other')}:</span>
+          <span class="value">{authorityGroups()}</span>
+        </div>
+
+        <div>
+          <span class="field">{t('activerecord.models.collection')}:</span>
+          <span class="value">{data.collection.name}</span>
+        </div>
+
+        <div>
+          <span class="field">{t('activerecord.attributes.entity.degree')}:</span>
+          <span class="value">{data.degree}</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="kor-layout-right kor-layout-small">
+
+    <div class="kor-content-box" if={data && data.medium_id}>
+      <div class="viewer">
+        <h1>{t('activerecord.models.medium', {capitalize: true})}</h1>
+
+        <a href="#/media/data.medium_id">
+          <img src="{data.medium.url.preview}">
+        </a>
+
+        <div class="commands">
+          <a
+            each={op in ['flip', 'flop', 'rotate_cw', 'rotate_ccw', 'rotate_180']}
+            href="/media/{data.medium_id}/{op}"
+            onclick={transform(op)}
+          ><i class="{op}"></i></a>
+        </div>
+
+        
+        <div class="formats">
+          <a href="/media/{data.medium.id}">{t('verbs.enlarge')}</a> |
+          <a href="/media/maximize/{data.medium.id}">{t('verbs.maximize')}</a>
+          <br />
+          {t('verbs.download')}:<br />
+          <a 
+            if={allowedTo('download_originals', data.collection_id)}
+            href="/media/download/original/{data.medium.id}}" 
+          >{t('nouns.original')}</a> |
+          <a href="/media/download/normal/{data.medium.id}">
+            {t('nouns.enlargement')}
+          </a> |
+          <a href="/entities/{data.id}/metadata">{t('nouns.metadata')}</a>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kor-content-box" if={data}>
+      <div class="related_images">
+        <h1>
+          {t('nouns.related_medium', {count: 'other', capitalize: true})}
+          
+          <div class="subtitle">
+            <a
+              if={allowedTo('create')}
+              href="/tools/add_media/{data.id}"
+            >
+              » {t('objects.add', {interpolations: {o: 'activerecord.models.medium.other'} } )}
+            </a>
+          </div>
+        </h1>
+
+        <div each={count, name in data.media_relations}>
+          <kor-media-relation
+            entity={data}
+            name={name}
+            total={count}
+          />
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <div class="clearfix"></div>
@@ -121,6 +239,9 @@
     tag.visibleFields = ->
       f for f in tag.data.fields when f.value && f.show_on_entity
 
+    tag.authorityGroups = ->
+      (g.name for g in tag.data.groups).join(', ')
+
     tag.showTagging = ->
       tag.data.kind.settings.tagging == '1' && 
       (
@@ -128,12 +249,18 @@
         tag.allowedTo('tagging', tag.data.collection_id)
       )
 
+    tag.transform = (op) ->
+      (event) ->
+        event.preventDefault()
+
+
     fetch = ->
       Zepto.ajax(
         url: "/entities/#{tag.opts.id}"
         data: {include: 'all'}
         success: (data) ->
           tag.data = data
+          h(tag.data.name) if h = tag.opts.handlers.pageTitleUpdate
         error: ->
           h() if h = tag.opts.handlers.accessDenied
         complete: ->

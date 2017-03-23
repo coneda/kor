@@ -38,6 +38,7 @@
     tag.on 'mount', ->
       fetch()
       tag.on 'routing:query', fetch
+      h(tag.t('pages.new_media')) if h = tag.opts.handlers.pageTitleUpdate
 
     fetch = ->
       Zepto.ajax(

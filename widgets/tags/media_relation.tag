@@ -1,6 +1,8 @@
-<kor-relation>
+<kor-media-relation>
 
   <div class="name">
+    {opts.name}
+
     <kor-pagination
       if={data}
       page={opts.query.page}
@@ -8,13 +10,6 @@
       total={data.total}
       page-update-handler={pageUpdate}
     />
-
-    {opts.name}
-
-    <a onclick={toggle} class="toggle">
-      <i show={!expanded} class="triangle_up"></i>
-      <i show={expanded} class="triangle_down"></i>
-    </a>
 
     <div class="clearfix"></div>
   </div>
@@ -39,11 +34,6 @@
       tag.opts.query ||= {}
       fetch()
 
-    tag.toggle = (event) ->
-      event.preventDefault()
-      tag.expanded = !tag.expanded
-      updateExpansion()
-
     tag.pageUpdate = (newPage) ->
       opts.query.page = newPage
       fetch()
@@ -56,19 +46,13 @@
         data: {
           page: tag.opts.query.page
           relation_name: tag.opts.name
-          except_to_kind_id: tag.info().medium_kind_id
+          to_kind_id: tag.info().medium_kind_id
         }
         success: (data) ->
           tag.data = data
           tag.update()
-          updateExpansion()
       )
-
-    updateExpansion = ->
-      unless tag.expanded == undefined
-        for r in tag.tags['kor-relationship']
-          r.trigger 'toggle', tag.expanded
 
   </script>
 
-</kor-relation>
+</kor-media-relation>

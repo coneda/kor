@@ -5,17 +5,8 @@
       <tr each={row in inGroupsOf(4, opts.entities)}>
         <td each={entity in row}>
           <virtual if={entity.medium}>
-            <div class="image">
-              <kor-clipboard-control entity={entity} />
-              
-              <a href="#/entities/{entity.id}">
-                <img src={entity.medium.url.thumbnail} />
-              </a>
-              <div>
-                {t('nouns.content_type')}:
-                <span class="content-type">{entity.medium.content_type}</span>
-              </div>
-            </div>
+            <kor-entity entity={entity} />
+            
             <div class="meta" if={entity.primary_entities}>
               <div class="hr"></div>
               <div class="name">

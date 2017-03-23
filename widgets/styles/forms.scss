@@ -24,16 +24,16 @@ kor-input, [data-is=kor-input] {
     background-color: $kor-input-bg-focus;
   }
 
-  input[type=submit] {
+  input[type=submit], input[type=reset] {
     border: none;
     cursor: pointer;
     width: auto;
     margin-top: 1.5rem;
     margin-bottom: 1rem;
-  }
 
-  input[type=submit]:hover {
-    background-color: $kor-button-highlight;
+    &:hover {
+      background-color: $kor-button-highlight;
+    }
   }
 
   .errors {

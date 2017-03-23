@@ -107,3 +107,4 @@ end
 # TODO: make sure terms_accepted? is respected by all controllers and actions
 # TODO: make default per_page = 10 everywhere
 # TODO: handle stale object exceptions somewhere in application controller
+# TODO: JSON api: only send message keys as response messages, not translated versions

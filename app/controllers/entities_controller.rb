@@ -86,19 +86,15 @@ class EntitiesController < ApplicationController
   end
 
   def recently_created
-    entities = Entity.
+    scope = Entity.
       allowed(current_user, :view).
       by_relation_name(params[:relation_name]).
       newest_first.includes(:kind)
 
-    @results = Kor::SearchResult.new(
-      total: entities.count,
-      page: params[:page],
-      per_page: 9,
-      records: entities.pageit(params[:page], 9)
-    )
+    @total = scope.count
+    @records = scope.pageit(@page, @per_page)
 
-    render 'index'
+    render action: 'index'
   end
 
   def recently_visited
@@ -110,21 +106,17 @@ class EntitiesController < ApplicationController
       end
     end
 
-    entities = Entity.
+    scope = Entity.
       allowed(current_user, :view).
       by_ordered_id_array(history_entity_ids.reverse).
       by_relation_name(params[:relation_name]).
       includes(:kind).
       newest_first
 
-    @results = Kor::SearchResult.new(
-      total: entities.count,
-      page: params[:page],
-      per_page: 9,
-      records: entities.pageit(params[:page], 9)
-    )
+    @total = scope.count
+    @results = scope.pageit(@page, @per_page)
 
-    render 'index'
+    render action: 'index'
   end
 
   def random

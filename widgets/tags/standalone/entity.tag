@@ -1,4 +1,4 @@
-<kor-entity class="{'kor-style': opts.korStyle, 'kor': opts.korStyle}">
+<kor-sa-entity class="{'kor-style': opts.korStyle, 'kor': opts.korStyle}">
   
   <div class="auth" if={!authorized}>
     <strong>Info</strong>
@@ -74,4 +74,4 @@
 
   </script>
 
-</kor-entity>
+</kor-sa-entity>

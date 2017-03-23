@@ -23,6 +23,11 @@ wApp.utils = {
       parseInt(value)
     else
       value
+  toArray: (value) -> 
+    if value == null || value == undefined
+      []
+    else
+      if Zepto.isArray(value) then value else [value]
   uniq: (a) ->
     output = {}
     output[a[key]] = a[key] for key in [0...a.length]

@@ -58,6 +58,7 @@
       if tag.allowedTo('delete')
         fetch()
         tag.on 'routing:query', fetch
+        h(tag.t('pages.invalid_entities')) if h = tag.opts.handlers.pageTitleUpdate
       else
         h() if h = tag.opts.handlers.accessDenied
 
