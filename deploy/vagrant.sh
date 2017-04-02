@@ -27,26 +27,25 @@ function install_dev_requirements {
   install_requirements
   install_test_requirements
   apt-get install -y \
-    libmysqlclient-dev imagemagick libav-tools zip openjdk-7-jre
+    libmysqlclient-dev imagemagick libav-tools zip openjdk-8-jre
 }
 
 function install_prod_requirements {
   install_requirements
   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7
   sudo apt-get install -y apt-transport-https ca-certificates
-  sudo sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main > /etc/apt/sources.list.d/passenger.list'
   sudo apt-get update
   apt-get install -y apache2 libapache2-mod-passenger
   sudo a2enmod passenger
 }
 
 function install_elasticsearch {
-  wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
-  echo 'deb http://packages.elasticsearch.org/elasticsearch/1.5/debian stable main' | tee /etc/apt/sources.list.d/elastic.list
-  apt-get update
-  apt-get install -y openjdk-7-jre elasticsearch
-  update-rc.d elasticsearch defaults
-  service elasticsearch start
+  wget -O /root/elasticsearch.deb "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.4/elasticsearch-2.4.4.deb"
+  apt-get install -y openjdk-8-jre
+  dpkg -i /root/elasticsearch.deb
+  rm /root/elasticsearch.deb
+  systemctl enable elasticsearch.service
+  systemctl start elasticsearch.service
 }
 
 function install_mysql {
@@ -137,11 +136,12 @@ function configure_prod {
   export RAILS_ENV=production
   cd /opt/kor
 
-  sudo cp /vagrant/deploy/templates/delayed_job.upstart /etc/init/kor-bg.conf
+  sudo cp /vagrant/deploy/templates/delayed_job.systemd /etc/systemd/system/kor-bg.service
+  sudo systemctl daemon-reload
   sudo cp /vagrant/deploy/templates/apache.conf /etc/apache2/sites-available/001-kor.conf
   sudo a2dissite 000-default
   sudo a2ensite 001-kor
-  sudo service apache2 restart
+  sudo systemctl restart apache2
 
   sudo cp /vagrant/deploy/templates/gemrc /etc/gemrc
   sudo cp /vagrant/deploy/templates/logrotate.conf /etc/logrotate.d/kor.conf
@@ -156,7 +156,8 @@ function configure_prod {
   bundle exec bin/kor index-all
   bundle exec bin/kor secrets
 
-  sudo service kor-bg start
+  sudo systemctl enable kor-bg
+  sudo systemctl start kor-bg
 }
 
 $1

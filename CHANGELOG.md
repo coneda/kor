@@ -28,6 +28,13 @@ commit history on GitHub.
   (#2161 redmine). The resolution also has the side effect of the history of
   visited entities is now remembered across sessions.
 
+### Internal
+
+* all vms defined by vagrant now use the `bento/ubuntu-16.04` base box
+* a new vagrant vm `bare` is defined that just installs requirements. This
+  serves to test the deploy scripts.
+* using systemd for deploying services via vagrant
+
 ## Version 2.0.0
 
 ### User

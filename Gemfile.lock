@@ -1,5 +1,5 @@
 PATH
-  remote: ./plugins/kor_index
+  remote: plugins/kor_index
   specs:
     kor_index (0.0.1)
 
@@ -388,4 +388,4 @@ DEPENDENCIES
   will_paginate (~> 3.0.3)
 
 BUNDLED WITH
-   1.13.7
+   1.14.6

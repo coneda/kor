@@ -78,6 +78,9 @@ remotely, deploys the code to the specified directory and runs the necessary
 tasks (compiling assets, starting background jobs, …). The functionality does
 not include the installation of requirements, provisioning of a database server
 nor the setup of a web server, since those differ greatly from server to server.
+Also, it might be that your specific setup requires modification to the script,
+for example to manage the background job, you might prefer to use a systemd,
+changing the way it is restarted.
 
 The script expects a directory `$DEPLOY_TO` on the server where it has write
 permissions. Within, it will create two subdirectories `$DEPLOY_TO/releases` and
@@ -122,6 +125,10 @@ itself, so a call
 would deploy to instance02 according to the configuration above. On terminals 
 that support it, the output is colorized according to the exit code of every
 command issued by the script.
+
+The first time the script is run, some default configuration files are copied to
+the host. It will then stop execution and let you modify the files according to
+your setup. Re-run it when done.
 
 This will also start the background process that converts images and does other
 heavy lifting. However, this does not ensure monitoring nor restarting of that
