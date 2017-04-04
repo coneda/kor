@@ -153,6 +153,24 @@ class Entity < ActiveRecord::Base
     end
   end
 
+  # TODO: can this method be removed?
+  def new_datings_attributes=(values)
+    values.each do |v|
+      datings.build v
+    end
+  end
+
+  # TODO: can this method be removed?
+  def existing_datings_attributes=(values)
+    datings.reject(&:new_record?).each do |d|
+      if a = values.find{|e| e['id'].to_i == d.id}
+        d.assign_attributes a
+      else
+        d.mark_for_destruction
+      end
+    end
+  end
+
 
   # Callbacks
   

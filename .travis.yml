@@ -6,9 +6,9 @@ services:
 before_install:
   - deploy/dockerize.sh $TRAVIS_COMMIT test
   - docker pull mysql
-  - docker pull elasticsearch:2.2.0
+  - docker pull elasticsearch:2.4.4
   - docker run -d -e MYSQL_ROOT_PASSWORD=root --name mysql mysql
-  - docker run -d --name elastic elasticsearch:2.2.0
+  - docker run -d --name elastic elasticsearch:2.4.4
 
 # install: true
 

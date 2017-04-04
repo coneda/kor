@@ -177,7 +177,12 @@ class ApplicationController < BaseController
         :name, :distinct_name, :subtype, :comment, :no_name_statement,
         :tag_list,
         :synonyms => [],
-        :datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :new_datings_attributes => [
+          :id, :_destroy, :label, :dating_string, :lock_version
+        ],
+        :existing_datings_attributes => [
+          :id, :_destroy, :label, :dating_string, :lock_version
+        ],
         :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
         :medium_attributes => [:id, :image, :document]
