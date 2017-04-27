@@ -370,7 +370,7 @@ look like this:
             type: env
             user: ['REMOTE_USER']
             mail: ['mail']
-            domain: example.com
+            domain: ['example.com']
             map_to: my_user_template
 
 This may be combined with script based authentication sources. Authentication is
@@ -416,7 +416,7 @@ Two formats are available: `oai_dc` and `kor`. While the former is only
 maintained to fulfill the OAI-PMH specification, the latter gives full access to
 all content within the ConedaKOR installation. According to specification, you
 must choose the format like so `metadataPrefix=kor` as a request parameter. The
-kor format adheres to a schema we provide at
+kor format adheres to a schema that is included in ConedaKOR. It can be found at
 
 https://kor.example.com/schema/1.0/kor.xsd
 
