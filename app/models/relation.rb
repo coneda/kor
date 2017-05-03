@@ -19,14 +19,14 @@ class Relation < ActiveRecord::Base
   def correct_directed
     if name_changed?
       DirectedRelationship.
-        where(relation_name: name_was).
+        where(is_reverse: false).
         where(relation_id: id).
         update_all(relation_name: name)
     end
 
     if reverse_name_changed?
       DirectedRelationship.
-        where(relation_name: reverse_name_was).
+        where(is_reverse: true).
         where(relation_id: id).
         update_all(relation_name: reverse_name)
     end
