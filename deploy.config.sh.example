@@ -2,6 +2,7 @@
 
 export KEEP=5
 export PORT="22"
+export SSH_KEY="$HOME/.ssh/id_rsa"
 
 function instance01 {
   export HOST="app@node01.example.com"
