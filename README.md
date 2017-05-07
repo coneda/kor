@@ -1,13 +1,9 @@
 # ConedaKOR #
 
-ConedaKOR allows you to store arbitrary documents and interconnect them with
-relationships. You can build huge semantic networks for an unlimited amount of
-domains. This integrates a sophisticated ontology management tool with an easy
-to use media database.
-
-To learn more and for installation instructions, please have a look at the
-feature list below or visit
-[our website (German)](http://coneda.net/pages/download)
+ConedaKOR is a web based application which allows you to store arbitrary
+documents and interconnect them with relationships. You can build huge semantic
+networks for an unlimited amount of domains. This integrates a sophisticated
+ontology management tool with an easy to use media database.
 
 ## Changelog
 
@@ -50,10 +46,12 @@ see file COPYING
 * Access data via an OAI-PMH interface
 * Vagrant dev environment
 * good unit and integration test coverage
+* checked for security problems with
+  [brakeman](https://github.com/presidentbeef/brakeman)
 * a growing javascript widget library allowing easy integration into other apps
 
 
-## Documentation
+## System admistrator's documentation
 
 These instructions are intended for system operators who wish to deploy the 
 software for their users.
@@ -64,8 +62,9 @@ software for their users.
 * mysql server (>= 5.5)
 * elasticsearch (>= 1.7.2, < 5.0.0)
 * web server (optional but highly recommended)
+* neo4j (optional)
 
-### Deployment
+### Scripted installation
 
 Before we go into the details of the deployment process, **please be sure to
 backup the database and the `$DEPLOY_TO/shared` directory**. In practice, this
