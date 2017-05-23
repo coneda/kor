@@ -14,4 +14,7 @@
   ></kor:relation>
   <kor:from><%= record.from.uuid %></kor:from>
   <kor:to><%= record.to.uuid %></kor:to>
+  <kor:properties><% record.properties.each do |property| %>
+    <kor:property><%= property %></kor:property>
+  <% end %></kor:properties>
 </kor:relationship>

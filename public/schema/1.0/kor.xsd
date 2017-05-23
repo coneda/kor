@@ -159,6 +159,13 @@
                 </xs:element>
                 <xs:element name="from" type="xs:string"/>
                 <xs:element name="to" type="xs:string"/>
+                <xs:element name="properties">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="property" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
