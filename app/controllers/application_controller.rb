@@ -102,7 +102,7 @@ class ApplicationController < BaseController
     end
 
     def api_auth?
-      key = params[:api_key] || request.headers['api_key']
+      key = params[:api_key] || request.headers["HTTP_API_KEY"]
       key && User.exists?(api_key: key)
     end
     
