@@ -281,8 +281,9 @@ all data.
 
 Authentication is performed via a web form at http://kor.example.com/login or by
 providing a valid `api_key` as `GET` or `POST` parameter. You may also specify a
-header `api_key` containing the key. Every user has a key which can be looked up
-by an administrator on the user's administration page.
+header `api-key` containing the key (make sure not to use an underscore). Every
+user has a key which can be looked up by an administrator on the user's
+administration page.
 
 In order to be able to create user accounts, a user needs the `User admin` role.
 

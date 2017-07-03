@@ -128,7 +128,7 @@ class ApplicationController < BaseController
         when String
           results = value.split(',')
           options[:ids] ? results.map{|v| v.to_i} : results
-        when Fixnum then [value]
+        when Integer then [value]
         when Array then value.map{|v| param_to_array(v, options)}.flatten
         when nil then []
         else

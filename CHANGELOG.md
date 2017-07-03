@@ -5,6 +5,13 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+## Version ???
+
+### User
+
+* for authentication with an api key via request headers, header name has to be
+  dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`.
+
 ## Version 2.1.0
 
 ### User
