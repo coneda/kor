@@ -106,7 +106,7 @@ class Api::OaiPmh::BaseController < BaseController
 
       offset_scope = scope.offset(params['page'] * params['per_page'])
 
-      token = if offset_scope.count > params['per_page'] * (params['page'] + 1)
+      token = if offset_scope.count > params['per_page']
         dump_query(params)
       elsif params['resumptionToken']
         token = ''
@@ -125,7 +125,7 @@ class Api::OaiPmh::BaseController < BaseController
 
     def dump_query(params)
       system "mkdir -p #{base_dir}"
-      token = Digest::SHA2.hexdigest("resumptionToken #{Time.now} #{rand}")
+      token = SecureRandom.hex(20)
 
       Dir["#{base_dir}/*.json"].each do |f|
         if File.stat(f).mtime < 3.minutes.ago
