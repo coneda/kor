@@ -11,6 +11,8 @@ commit history on GitHub.
 
 * for authentication with an api key via request headers, header name has to be
   dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`.
+* most parts of OAI-PMH responses are now cached which should enhance
+  performance greatly
 
 ## Version 2.1.0
 

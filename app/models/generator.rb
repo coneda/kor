@@ -1,6 +1,6 @@
 class Generator < ActiveRecord::Base
   
-  belongs_to :kind
+  belongs_to :kind, touch: true
   
   validates :name,
     :presence => true,

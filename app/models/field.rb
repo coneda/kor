@@ -4,7 +4,7 @@ class Field < ActiveRecord::Base
   
   serialize :settings, Hash
   
-  belongs_to :kind
+  belongs_to :kind, touch: true
   
   validates :name,
     :presence => true,
@@ -83,7 +83,6 @@ class Field < ActiveRecord::Base
   end
 
   scope :identifiers, lambda { where(:is_identifier => true) }
-
 
   # Attributes
   

@@ -186,4 +186,15 @@ class Relationship < ActiveRecord::Base
     "'#{from_name}' [#{r}] #{relation_name} '#{to_name}'"
   end
 
+  def cache_key(*timestamp_names)
+    timestamp = [
+      created_at,
+      updated_at,
+      relation.created_at,
+      relation.updated_at,
+    ].max
+
+    "#{model_name.cache_key}/#{id}-#{timestamp}"
+  end
+
 end

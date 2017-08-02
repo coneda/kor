@@ -218,6 +218,19 @@ class Entity < ActiveRecord::Base
     update_identifiers
   end
 
+  def cache_key(*timestamp_names)
+    timestamp = [
+      created_at,
+      updated_at,
+      kind.created_at,
+      kind.updated_at,
+      collection.created_at,
+      collection.updated_at
+    ].max
+
+    "#{model_name.cache_key}/#{id}-#{timestamp}"
+  end
+
   # Attributes
   
   def recent?

@@ -51,6 +51,7 @@ function deploy {
     within_do $DEPLOY_TO/current "RAILS_ENV=production bundle exec rake db:setup"
   fi
 
+  within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake tmp:clear"
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake assets:precompile"
   if git cat-file -e $REVISION:bin/delayed_job ; then
     within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec bin/delayed_job start"
