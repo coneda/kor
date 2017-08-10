@@ -94,8 +94,8 @@ class Relationship < ActiveRecord::Base
       :ids => collection_ids
     )
   }
-  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
-  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :updated_after, lambda {|time| time.present? ? where("relationships.updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("relationships.updated_at <= ?", time) : all}
   scope :inconsistent, lambda {
     result = joins('LEFT JOIN directed_relationships dr ON relationships.normal_id = dr.id')
             .joins('LEFT JOIN entities froms ON froms.id = dr.from_id')

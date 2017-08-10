@@ -13,6 +13,7 @@ commit history on GitHub.
   dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`.
 * most parts of OAI-PMH responses are now cached which should enhance
   performance greatly
+* added reference implementation for OAI-PMH client
 
 ## Version 2.1.0
 
