@@ -48,7 +48,6 @@ group :test do
   gem 'selenium-webdriver'
   gem 'rspec-rails', '~> 3.5.2'
   gem 'capybara'
-  gem 'capybara-webkit'
   gem 'database_cleaner'
   gem 'vcr'
   gem 'webmock'
