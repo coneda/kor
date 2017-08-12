@@ -362,3 +362,13 @@ Then(/^I should see the prefilled dating "([^"]*)"$/) do |dating|
     find(:xpath, "//input[@value='1503']")
   end
 end
+
+Then(/^select "([^"]*)" should have( no)? option "([^"]*)"$/) do |name, negation, option|
+  options = page.find("select[name=#{name}]").all('option')
+
+  if negation == ' no'
+    options.all?{|o| o.text != option}
+  else
+    options.any?{|o| o.text == option}
+  end
+end

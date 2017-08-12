@@ -117,7 +117,7 @@ Feature: Inplace relationship editor
     Then I should see "Leonardo"
     And I wait for "2" seconds
     When I click element "img[data-name=plus]" within ".relationships"
-    Then I should see "is equivalent to" within "[kor-relation-selector]"
+    Then select "relation_name" should have option "is equivalent to"
 
   @javascript
   Scenario: Select a relation which should limit the choices for the other entity
@@ -159,12 +159,12 @@ Feature: Inplace relationship editor
     And I click element "[data-name=plus]" within ".relationships"
     And I fill in "terms" with "leonardo"
     And I click element "[kor-id='3']"
-    Then I should not see "is similar to" within "[kor-relation-selector]"
-    And I should see "is equivalent" within "[kor-relation-selector]"
+    Then select "relation_name" should have no option "is similar to"
+    Then select "relation_name" should have option "is equivalent to"
     When I wait for "2" second
     And I click element "[kor-id='3']" again
-    Then I should see "is similar to" within "[kor-relation-selector]"
-    And I should see "is equivalent" within "[kor-relation-selector]"
+    Then select "relation_name" should have option "is similar to"
+    Then select "relation_name" should have option "is equivalent to"
 
   # @javascript
   # Scenario: make use of the relation's default dating label

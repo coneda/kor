@@ -35,28 +35,19 @@ end
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app,
     # debug: true,
-    js_errors: false,
+    js_errors: true,
     inspector: false
   )
 end
 
-Capybara.register_driver :chromium do |app|
-  Capybara::Selenium::Driver.new(app, :browser => :chrome)
-end
-
-Capybara.register_driver :marionette do |app|
-  Selenium::WebDriver.for :firefox, marionette: true
-end
-
 Capybara.default_max_wait_time = 5
-Capybara.javascript_driver = :chromium
-# once marionette works
-# Capybara.javascript_driver = :marionette
+
+Capybara.javascript_driver = :selenium_chrome
+Capybara.javascript_driver = :selenium
 
 if ENV['HEADLESS']
   Capybara.javascript_driver = :poltergeist
 end
-
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassettes'
