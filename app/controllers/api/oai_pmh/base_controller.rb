@@ -128,9 +128,11 @@ class Api::OaiPmh::BaseController < BaseController
       system "mkdir -p #{base_dir}"
       token = SecureRandom.hex(20)
 
-      Dir["#{base_dir}/*.json"].each do |f|
-        if File.stat(f).mtime < 3.minutes.ago
-          File.delete(f)
+      Kor.with_exclusive_lock 'oai_pmh_tokens' do
+        Dir["#{base_dir}/*.json"].each do |f|
+          if File.stat(f).mtime < 3.minutes.ago
+            File.delete(f)
+          end
         end
       end
 
