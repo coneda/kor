@@ -16,8 +16,8 @@ module Kor
     def initialize(options = {})
       @options = {
         delay: 0.2,
-        log_file: 'oai_pmh.log'
       }.merge options
+      @options[:log_file] ||= "#{@options[:target_dir]}/oai_pmh.log"
       @request_duration = 0
       @request_count = 0
       @log_file = File.open(@options[:log_file], 'w+')
