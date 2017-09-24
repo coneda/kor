@@ -46,6 +46,15 @@ ENV RAILS_ENV production
 EXPOSE 8000
 <% end %>
 
+<% if rails_env == 'test' %>
+RUN cd /opt && \
+    apt-get install -y zip libgconf-2-4 chromium-browser && \
+    wget https://chromedriver.storage.googleapis.com/2.32/chromedriver_linux64.zip && \
+    unzip chromedriver_linux64.zip && \
+    ln -sfn /opt/chromedriver /usr/bin/chromedriver && \
+    rm chromedriver_linux64.zip
+<% end %>
+
 RUN gem update bundler
 
 <% if rails_env == 'test' %>
