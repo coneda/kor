@@ -1,7 +1,6 @@
 require 'simplecov'
 
 require "cucumber/rspec/doubles"
-require 'capybara/poltergeist'
 require 'factory_girl_rails'
 
 DatabaseCleaner.clean_with :truncation
@@ -32,21 +31,23 @@ Before do |scenario|
   end
 end
 
-Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app,
-    # debug: true,
-    js_errors: false,
-    inspector: false
+Capybara.register_driver :headless_chrome do |app|
+  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+    chromeOptions: {args: ['headless', 'disable-gpu']}
   )
+
+  Capybara::Selenium::Driver.new app,
+    browser: :chrome,
+    desired_capabilities: capabilities
 end
 
 Capybara.default_max_wait_time = 5
 
-Capybara.javascript_driver = :selenium_chrome
 Capybara.javascript_driver = :selenium
+Capybara.javascript_driver = :selenium_chrome
 
 if ENV['HEADLESS']
-  Capybara.javascript_driver = :poltergeist
+  Capybara.javascript_driver = :headless_chrome
 end
 
 VCR.configure do |c|

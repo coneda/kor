@@ -1,5 +1,8 @@
 sudo: required
 
+addons:
+  chrome: stable
+
 services:
   - docker
 
