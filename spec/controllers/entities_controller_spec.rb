@@ -328,7 +328,7 @@ RSpec.describe EntitiesController, type: :controller do
       @user_group.add_entities @mona_lisa
       @authority_group.add_entities @mona_lisa
 
-      request.headers['api_key'] = @admin.api_key
+      request.headers['api-key'] = @admin.api_key
     end
 
     it 'should retrieve entities by id or uuid' do

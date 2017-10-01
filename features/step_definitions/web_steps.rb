@@ -384,3 +384,21 @@ end
 Then(/^field "([^"]*)" should have value "([^"]*)"$/) do |field, value|
   expect(find_field(field).value).to eq(value)
 end
+
+Then(/^I should see the prefilled dating "([^"]*)"$/) do |dating|
+  label, value = dating.split(/: ?/)
+  within '#datings' do
+    find(:xpath, "//input[@value='created in']")
+    find(:xpath, "//input[@value='1503']")
+  end
+end
+
+Then(/^select "([^"]*)" should have( no)? option "([^"]*)"$/) do |name, negation, option|
+  options = page.find("select[name=#{name}]").all('option')
+
+  if negation == ' no'
+    options.all?{|o| o.text != option}
+  else
+    options.any?{|o| o.text == option}
+  end
+end

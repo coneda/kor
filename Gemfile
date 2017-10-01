@@ -46,9 +46,8 @@ gem 'kor_index', path: './plugins/kor_index'
 
 group :test do
   gem 'cucumber-rails', require: false
-  gem 'poltergeist'
   gem 'selenium-webdriver'
-  gem 'rspec-rails', '~> 3.1'
+  gem 'rspec-rails', '~> 3.5.2'
   gem 'capybara'
   gem 'database_cleaner'
   gem 'vcr'

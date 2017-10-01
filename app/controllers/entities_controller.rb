@@ -201,6 +201,7 @@ class EntitiesController < ApplicationController
 
   def edit
     @entity = Entity.find(params[:id])
+    # @entity.datings.build label: @entity.kind.dating_label
 
     if authorized? :edit, @entity.collection
       render :action => 'edit'  
@@ -262,8 +263,10 @@ class EntitiesController < ApplicationController
   end
 
   def update
+    params[:entity][:existing_datings_attributes] ||= []
+
     @entity = Entity.find(params[:id])
-    
+
     authorized_to_edit = authorized?(:edit, @entity.collection)
     
     authorized_to_move = if @entity.collection_id == params[:entity][:collection_id].to_i

@@ -94,8 +94,8 @@ class Relationship < ActiveRecord::Base
       :ids => collection_ids
     )
   }
-  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
-  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :updated_after, lambda {|time| time.present? ? where("relationships.updated_at >= ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("relationships.updated_at <= ?", time) : all}
   scope :inconsistent, lambda {
     result = joins('LEFT JOIN directed_relationships dr ON relationships.normal_id = dr.id')
             .joins('LEFT JOIN entities froms ON froms.id = dr.from_id')
@@ -185,6 +185,17 @@ class Relationship < ActiveRecord::Base
     relation_name = (reverse ? relation.reverse_name : relation.name)
     r = (reverse ? 'reverse' : 'normal')
     "'#{from_name}' [#{r}] #{relation_name} '#{to_name}'"
+  end
+
+  def cache_key(*timestamp_names)
+    timestamp = [
+      created_at,
+      updated_at,
+      relation.created_at,
+      relation.updated_at,
+    ].max
+
+    "#{model_name.cache_key}/#{id}-#{timestamp}"
   end
 
 end

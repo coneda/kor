@@ -23,8 +23,8 @@
         }, readyRE = /complete|loaded|interactive/, simpleSelectorRE = /^[\w-]*$/, class2type = {}, toString = class2type.toString, zepto = {}, camelize, uniq, tempParent = document.createElement("div"), propMap = {
             tabindex: "tabIndex",
             readonly: "readOnly",
-            "for": "htmlFor",
-            "class": "className",
+            for: "htmlFor",
+            class: "className",
             maxlength: "maxLength",
             cellspacing: "cellSpacing",
             cellpadding: "cellPadding",
@@ -1431,11 +1431,12 @@
 })(Zepto);
 
 (function(global, factory) {
-    typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define([ "exports" ], factory) : factory(global.riot = global.riot || {});
+    typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define([ "exports" ], factory) : factory(global.riot = {});
 })(this, function(exports) {
     "use strict";
     var __TAGS_CACHE = [];
     var __TAG_IMPL = {};
+    var YIELD_TAG = "yield";
     var GLOBAL_MIXIN = "__global_mixin";
     var ATTRS_PREFIX = "riot-";
     var REF_DIRECTIVES = [ "ref", "data-ref" ];
@@ -1445,22 +1446,89 @@
     var LOOP_NO_REORDER_DIRECTIVE = "no-reorder";
     var SHOW_DIRECTIVE = "show";
     var HIDE_DIRECTIVE = "hide";
+    var KEY_DIRECTIVE = "key";
+    var RIOT_EVENTS_KEY = "__riot-events__";
     var T_STRING = "string";
     var T_OBJECT = "object";
     var T_UNDEF = "undefined";
     var T_FUNCTION = "function";
     var XLINK_NS = "http://www.w3.org/1999/xlink";
+    var SVG_NS = "http://www.w3.org/2000/svg";
     var XLINK_REGEX = /^xlink:(\w+)/;
     var WIN = typeof window === T_UNDEF ? undefined : window;
     var RE_SPECIAL_TAGS = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/;
     var RE_SPECIAL_TAGS_NO_OPTION = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?)$/;
-    var RE_RESERVED_NAMES = /^(?:_(?:item|id|parent)|update|root|(?:un)?mount|mixin|is(?:Mounted|Loop)|tags|refs|parent|opts|trigger|o(?:n|ff|ne))$/;
+    var RE_EVENTS_PREFIX = /^on/;
     var RE_HTML_ATTRS = /([-\w]+) ?= ?(?:"([^"]*)|'([^']*)|({[^}]*}))/g;
     var CASE_SENSITIVE_ATTRIBUTES = {
-        viewbox: "viewBox"
+        viewbox: "viewBox",
+        preserveaspectratio: "preserveAspectRatio"
     };
     var RE_BOOL_ATTRS = /^(?:disabled|checked|readonly|required|allowfullscreen|auto(?:focus|play)|compact|controls|default|formnovalidate|hidden|ismap|itemscope|loop|multiple|muted|no(?:resize|shade|validate|wrap)?|open|reversed|seamless|selected|sortable|truespeed|typemustmatch)$/;
     var IE_VERSION = (WIN && WIN.document || {}).documentMode | 0;
+    function each(list, fn) {
+        var len = list ? list.length : 0;
+        var i = 0;
+        for (;i < len; i++) {
+            fn(list[i], i);
+        }
+        return list;
+    }
+    function contains(array, item) {
+        return array.indexOf(item) !== -1;
+    }
+    function toCamel(str) {
+        return str.replace(/-(\w)/g, function(_, c) {
+            return c.toUpperCase();
+        });
+    }
+    function startsWith(str, value) {
+        return str.slice(0, value.length) === value;
+    }
+    function defineProperty(el, key, value, options) {
+        Object.defineProperty(el, key, extend({
+            value: value,
+            enumerable: false,
+            writable: false,
+            configurable: true
+        }, options));
+        return el;
+    }
+    var uid = function() {
+        var i = 0;
+        return function() {
+            return ++i;
+        };
+    }();
+    var getPropDescriptor = function(o, k) {
+        return Object.getOwnPropertyDescriptor(o, k);
+    };
+    function extend(src) {
+        var obj;
+        var i = 1;
+        var args = arguments;
+        var l = args.length;
+        for (;i < l; i++) {
+            if (obj = args[i]) {
+                for (var key in obj) {
+                    if (isWritable(src, key)) {
+                        src[key] = obj[key];
+                    }
+                }
+            }
+        }
+        return src;
+    }
+    var misc = Object.freeze({
+        each: each,
+        contains: contains,
+        toCamel: toCamel,
+        startsWith: startsWith,
+        defineProperty: defineProperty,
+        uid: uid,
+        getPropDescriptor: getPropDescriptor,
+        extend: extend
+    });
     function isBoolAttr(value) {
         return RE_BOOL_ATTRS.test(value);
     }
@@ -1477,17 +1545,17 @@
         return typeof value === T_STRING;
     }
     function isBlank(value) {
-        return isUndefined(value) || value === null || value === "";
+        return isNil(value) || value === "";
+    }
+    function isNil(value) {
+        return isUndefined(value) || value === null;
     }
     function isArray(value) {
         return Array.isArray(value) || value instanceof Array;
     }
     function isWritable(obj, key) {
-        var descriptor = Object.getOwnPropertyDescriptor(obj, key);
+        var descriptor = getPropDescriptor(obj, key);
         return isUndefined(obj[key]) || descriptor && descriptor.writable;
-    }
-    function isReservedName(value) {
-        return RE_RESERVED_NAMES.test(value);
     }
     var check = Object.freeze({
         isBoolAttr: isBoolAttr,
@@ -1496,12 +1564,12 @@
         isUndefined: isUndefined,
         isString: isString,
         isBlank: isBlank,
+        isNil: isNil,
         isArray: isArray,
-        isWritable: isWritable,
-        isReservedName: isReservedName
+        isWritable: isWritable
     });
     function $$(selector, ctx) {
-        return (ctx || document).querySelectorAll(selector);
+        return Array.prototype.slice.call((ctx || document).querySelectorAll(selector));
     }
     function $(selector, ctx) {
         return (ctx || document).querySelector(selector);
@@ -1512,8 +1580,11 @@
     function createDOMPlaceholder() {
         return document.createTextNode("");
     }
+    function isSvg(el) {
+        return !!el.ownerSVGElement;
+    }
     function mkEl(name) {
-        return document.createElement(name);
+        return name === "svg" ? document.createElementNS(SVG_NS, name) : document.createElement(name);
     }
     function setInnerHTML(container, html) {
         if (!isUndefined(container.innerHTML)) {
@@ -1524,8 +1595,17 @@
             container.appendChild(node);
         }
     }
+    function toggleVisibility(dom, show) {
+        dom.style.display = show ? "" : "none";
+        dom.hidden = show ? false : true;
+    }
     function remAttr(dom, name) {
         dom.removeAttribute(name);
+    }
+    function styleObjectToString(style) {
+        return Object.keys(style).reduce(function(acc, prop) {
+            return acc + " " + prop + ": " + style[prop] + ";";
+        }, "");
     }
     function getAttr(dom, name) {
         return dom.getAttribute(name);
@@ -1570,9 +1650,12 @@
         $: $,
         createFrag: createFrag,
         createDOMPlaceholder: createDOMPlaceholder,
+        isSvg: isSvg,
         mkEl: mkEl,
         setInnerHTML: setInnerHTML,
+        toggleVisibility: toggleVisibility,
         remAttr: remAttr,
+        styleObjectToString: styleObjectToString,
         getAttr: getAttr,
         setAttr: setAttr,
         safeInsert: safeInsert,
@@ -1587,8 +1670,8 @@
     if (WIN) {
         styleNode = function() {
             var newNode = mkEl("style");
-            setAttr(newNode, "type", "text/css");
             var userNode = $("style[type=riot]");
+            setAttr(newNode, "type", "text/css");
             if (userNode) {
                 if (userNode.id) {
                     newNode.id = userNode.id;
@@ -1626,13 +1709,56 @@
             }
         }
     };
+    var skipRegex = function() {
+        var beforeReChars = "[{(,;:?=|&!^~>%*/";
+        var beforeReWords = [ "case", "default", "do", "else", "in", "instanceof", "prefix", "return", "typeof", "void", "yield" ];
+        var wordsLastChar = beforeReWords.reduce(function(s, w) {
+            return s + w.slice(-1);
+        }, "");
+        var RE_REGEX = /^\/(?=[^*>\/])[^[\/\\]*(?:(?:\\.|\[(?:\\.|[^\]\\]*)*\])[^[\\/]*)*?\/[gimuy]*/;
+        var RE_VN_CHAR = /[$\w]/;
+        function prev(code, pos) {
+            while (--pos >= 0 && /\s/.test(code[pos])) {}
+            return pos;
+        }
+        function _skipRegex(code, start) {
+            var re = /.*/g;
+            var pos = re.lastIndex = start++;
+            var match = re.exec(code)[0].match(RE_REGEX);
+            if (match) {
+                var next = pos + match[0].length;
+                pos = prev(code, pos);
+                var c = code[pos];
+                if (pos < 0 || ~beforeReChars.indexOf(c)) {
+                    return next;
+                }
+                if (c === ".") {
+                    if (code[pos - 1] === ".") {
+                        start = next;
+                    }
+                } else if (c === "+" || c === "-") {
+                    if (code[--pos] !== c || (pos = prev(code, pos)) < 0 || !RE_VN_CHAR.test(code[pos])) {
+                        start = next;
+                    }
+                } else if (~wordsLastChar.indexOf(c)) {
+                    var end = pos + 1;
+                    while (--pos >= 0 && RE_VN_CHAR.test(code[pos])) {}
+                    if (~beforeReWords.indexOf(code.slice(pos + 1, end))) {
+                        start = next;
+                    }
+                }
+            }
+            return start;
+        }
+        return _skipRegex;
+    }();
     var brackets = function(UNDEF) {
-        var REGLOB = "g", R_MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g, R_STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'|`[^`\\]*(?:\\[\S\s][^`\\]*)*`/g, S_QBLOCKS = R_STRINGS.source + "|" + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + "|" + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source, UNSUPPORTED = RegExp("[\\" + "x00-\\x1F<>a-zA-Z0-9'\",;\\\\]"), NEED_ESCAPE = /(?=[[\]()*+?.^$|])/g, FINDBRACES = {
-            "(": RegExp("([()])|" + S_QBLOCKS, REGLOB),
-            "[": RegExp("([[\\]])|" + S_QBLOCKS, REGLOB),
-            "{": RegExp("([{}])|" + S_QBLOCKS, REGLOB)
+        var REGLOB = "g", R_MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g, R_STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'|`[^`\\]*(?:\\[\S\s][^`\\]*)*`/g, S_QBLOCKS = R_STRINGS.source + "|" + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + "|" + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?([^<]\/)[gim]*/.source, UNSUPPORTED = RegExp("[\\" + "x00-\\x1F<>a-zA-Z0-9'\",;\\\\]"), NEED_ESCAPE = /(?=[[\]()*+?.^$|])/g, S_QBLOCK2 = R_STRINGS.source + "|" + /(\/)(?![*\/])/.source, FINDBRACES = {
+            "(": RegExp("([()])|" + S_QBLOCK2, REGLOB),
+            "[": RegExp("([[\\]])|" + S_QBLOCK2, REGLOB),
+            "{": RegExp("([{}])|" + S_QBLOCK2, REGLOB)
         }, DEFAULT = "{ }";
-        var _pairs = [ "{", "}", "{", "}", /{[^}]*}/, /\\([{}])/g, /\\({)|{/g, RegExp("\\\\(})|([[({])|(})|" + S_QBLOCKS, REGLOB), DEFAULT, /^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/, /(^|[^\\]){=[\S\s]*?}/ ];
+        var _pairs = [ "{", "}", "{", "}", /{[^}]*}/, /\\([{}])/g, /\\({)|{/g, RegExp("\\\\(})|([[({])|(})|" + S_QBLOCK2, REGLOB), DEFAULT, /^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/, /(^|[^\\]){=[\S\s]*?}/ ];
         var cachedBrackets = UNDEF, _regex, _cache = [], _settings;
         function _loopback(re) {
             return re;
@@ -1655,7 +1781,7 @@
             arr[4] = _rewrite(arr[1].length > 1 ? /{[\S\s]*?}/ : _pairs[4], arr);
             arr[5] = _rewrite(pair.length > 3 ? /\\({|})/g : _pairs[5], arr);
             arr[6] = _rewrite(_pairs[6], arr);
-            arr[7] = RegExp("\\\\(" + arr[3] + ")|([[({])|(" + arr[3] + ")|" + S_QBLOCKS, REGLOB);
+            arr[7] = RegExp("\\\\(" + arr[3] + ")|([[({])|(" + arr[3] + ")|" + S_QBLOCK2, REGLOB);
             arr[8] = pair;
             return arr;
         }
@@ -1667,15 +1793,35 @@
                 _bp = _cache;
             }
             var parts = [], match, isexpr, start, pos, re = _bp[6];
+            var qblocks = [];
+            var prevStr = "";
+            var mark, lastIndex;
             isexpr = start = re.lastIndex = 0;
             while (match = re.exec(str)) {
+                lastIndex = re.lastIndex;
                 pos = match.index;
                 if (isexpr) {
                     if (match[2]) {
-                        re.lastIndex = skipBraces(str, match[2], re.lastIndex);
+                        var ch = match[2];
+                        var rech = FINDBRACES[ch];
+                        var ix = 1;
+                        rech.lastIndex = lastIndex;
+                        while (match = rech.exec(str)) {
+                            if (match[1]) {
+                                if (match[1] === ch) {
+                                    ++ix;
+                                } else if (!--ix) {
+                                    break;
+                                }
+                            } else {
+                                rech.lastIndex = pushQBlock(match.index, rech.lastIndex, match[2]);
+                            }
+                        }
+                        re.lastIndex = ix ? str.length : rech.lastIndex;
                         continue;
                     }
                     if (!match[3]) {
+                        re.lastIndex = pushQBlock(pos, lastIndex, match[4]);
                         continue;
                     }
                 }
@@ -1689,24 +1835,30 @@
             if (str && start < str.length) {
                 unescapeStr(str.slice(start));
             }
+            parts.qblocks = qblocks;
             return parts;
             function unescapeStr(s) {
+                if (prevStr) {
+                    s = prevStr + s;
+                    prevStr = "";
+                }
                 if (tmpl || isexpr) {
                     parts.push(s && s.replace(_bp[5], "$1"));
                 } else {
                     parts.push(s);
                 }
             }
-            function skipBraces(s, ch, ix) {
-                var match, recch = FINDBRACES[ch];
-                recch.lastIndex = ix;
-                ix = 1;
-                while (match = recch.exec(s)) {
-                    if (match[1] && !(match[1] === ch ? ++ix : --ix)) {
-                        break;
-                    }
+            function pushQBlock(_pos, _lastIndex, slash) {
+                if (slash) {
+                    _lastIndex = skipRegex(str, _pos);
                 }
-                return ix ? s.length : recch.lastIndex;
+                if (tmpl && _lastIndex > _pos + 2) {
+                    mark = "⁗" + qblocks.length + "~";
+                    qblocks.push(str.slice(_pos, _lastIndex));
+                    prevStr += str.slice(start, _pos) + mark;
+                    start = _lastIndex;
+                }
+                return _lastIndex;
             }
         };
         _brackets.hasExpr = function hasExpr(str) {
@@ -1755,9 +1907,11 @@
         });
         _brackets.settings = typeof riot !== "undefined" && riot.settings || {};
         _brackets.set = _reset;
+        _brackets.skipRegex = skipRegex;
         _brackets.R_STRINGS = R_STRINGS;
         _brackets.R_MLCOMMS = R_MLCOMMS;
         _brackets.S_QBLOCKS = S_QBLOCKS;
+        _brackets.S_QBLOCK2 = S_QBLOCK2;
         return _brackets;
     }();
     var tmpl = function() {
@@ -1766,7 +1920,10 @@
             if (!str) {
                 return str;
             }
-            return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr);
+            return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr.bind({
+                data: data,
+                tmpl: str
+            }));
         }
         _tmpl.hasExpr = brackets.hasExpr;
         _tmpl.loopKeys = brackets.loopKeys;
@@ -1782,10 +1939,9 @@
             if (_tmpl.errorHandler) {
                 _tmpl.errorHandler(err);
             } else if (typeof console !== "undefined" && typeof console.error === "function") {
-                if (err.riotData.tagName) {
-                    console.error("Riot template error thrown in the <%s> tag", err.riotData.tagName);
-                }
-                console.error(err);
+                console.error(err.message);
+                console.log("<%s> %s", err.riotData.tagName || "Unknown tag", this.tmpl);
+                console.log(this.data);
             }
         }
         function _create(str) {
@@ -1795,9 +1951,12 @@
             }
             return new Function("E", expr + ";");
         }
-        var CH_IDEXPR = String.fromCharCode(8279), RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/, RE_QBLOCK = RegExp(brackets.S_QBLOCKS, "g"), RE_DQUOTE = /\u2057/g, RE_QBMARK = /\u2057(\d+)~/g;
+        var RE_DQUOTE = /\u2057/g;
+        var RE_QBMARK = /\u2057(\d+)~/g;
         function _getTmpl(str) {
-            var qstr = [], expr, parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1);
+            var parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1);
+            var qstr = parts.qblocks;
+            var expr;
             if (parts.length > 2 || parts[0]) {
                 var i, j, list = [];
                 for (i = j = 0; i < parts.length; ++i) {
@@ -1810,22 +1969,21 @@
             } else {
                 expr = _parseExpr(parts[1], 0, qstr);
             }
-            if (qstr[0]) {
+            if (qstr.length) {
                 expr = expr.replace(RE_QBMARK, function(_, pos) {
                     return qstr[pos].replace(/\r/g, "\\r").replace(/\n/g, "\\n");
                 });
             }
             return expr;
         }
+        var RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/;
         var RE_BREND = {
             "(": /[()]/g,
             "[": /[[\]]/g,
             "{": /[{}]/g
         };
         function _parseExpr(expr, asText, qstr) {
-            expr = expr.replace(RE_QBLOCK, function(s, div) {
-                return s.length > 2 && !div ? CH_IDEXPR + (qstr.push(s) - 1) + "~" : s;
-            }).replace(/\s+/g, " ").trim().replace(/\ ?([[\({},?\.:])\ ?/g, "$1");
+            expr = expr.replace(/\s+/g, " ").trim().replace(/\ ?([[\({},?\.:])\ ?/g, "$1");
             if (expr) {
                 var list = [], cnt = 0, match;
                 while (expr && (match = expr.match(RE_CSNAME)) && !match.index) {
@@ -1882,7 +2040,7 @@
             }
             return expr;
         }
-        _tmpl.version = brackets.version = "v3.0.3";
+        _tmpl.version = brackets.version = "v3.0.8";
         return _tmpl;
     }();
     var observable$1 = function(el) {
@@ -1957,61 +2115,13 @@
         });
         return el;
     };
-    function each(list, fn) {
-        var len = list ? list.length : 0;
-        var i = 0;
-        for (;i < len; ++i) {
-            fn(list[i], i);
-        }
-        return list;
-    }
-    function contains(array, item) {
-        return array.indexOf(item) !== -1;
-    }
-    function toCamel(str) {
-        return str.replace(/-(\w)/g, function(_, c) {
-            return c.toUpperCase();
-        });
-    }
-    function startsWith(str, value) {
-        return str.slice(0, value.length) === value;
-    }
-    function defineProperty(el, key, value, options) {
-        Object.defineProperty(el, key, extend({
-            value: value,
-            enumerable: false,
-            writable: false,
-            configurable: true
-        }, options));
-        return el;
-    }
-    function extend(src) {
-        var obj, args = arguments;
-        for (var i = 1; i < args.length; ++i) {
-            if (obj = args[i]) {
-                for (var key in obj) {
-                    if (isWritable(src, key)) {
-                        src[key] = obj[key];
-                    }
-                }
-            }
-        }
-        return src;
-    }
-    var misc = Object.freeze({
-        each: each,
-        contains: contains,
-        toCamel: toCamel,
-        startsWith: startsWith,
-        defineProperty: defineProperty,
-        extend: extend
-    });
     var settings$1 = extend(Object.create(brackets.settings), {
-        skipAnonymousTags: true
+        skipAnonymousTags: true,
+        autoUpdate: true
     });
-    var EVENTS_PREFIX_REGEX = /^on/;
     function handleEvent(dom, handler, e) {
-        var ptag = this.__.parent, item = this.__.item;
+        var ptag = this.__.parent;
+        var item = this.__.item;
         if (!item) {
             while (ptag && !item) {
                 item = ptag.__.item;
@@ -2029,6 +2139,9 @@
         }
         e.item = item;
         handler.call(this, e);
+        if (!settings$1.autoUpdate) {
+            return;
+        }
         if (!e.preventUpdate) {
             var p = getImmediateCustomParentTag(this);
             if (p.isMounted) {
@@ -2037,68 +2150,92 @@
         }
     }
     function setEventHandler(name, handler, dom, tag) {
-        var eventName, cb = handleEvent.bind(tag, dom, handler);
+        var eventName;
+        var cb = handleEvent.bind(tag, dom, handler);
         dom[name] = null;
-        eventName = name.replace(EVENTS_PREFIX_REGEX, "");
-        if (!dom._riotEvents) {
-            dom._riotEvents = {};
+        eventName = name.replace(RE_EVENTS_PREFIX, "");
+        if (!contains(tag.__.listeners, dom)) {
+            tag.__.listeners.push(dom);
         }
-        if (dom._riotEvents[name]) {
-            dom.removeEventListener(eventName, dom._riotEvents[name]);
+        if (!dom[RIOT_EVENTS_KEY]) {
+            dom[RIOT_EVENTS_KEY] = {};
         }
-        dom._riotEvents[name] = cb;
+        if (dom[RIOT_EVENTS_KEY][name]) {
+            dom.removeEventListener(eventName, dom[RIOT_EVENTS_KEY][name]);
+        }
+        dom[RIOT_EVENTS_KEY][name] = cb;
         dom.addEventListener(eventName, cb, false);
     }
-    function updateDataIs(expr, parent) {
-        var tagName = tmpl(expr.value, parent), conf, isVirtual, head, ref;
-        if (expr.tag && expr.tagName === tagName) {
-            expr.tag.update();
+    function updateDataIs(expr, parent, tagName) {
+        var tag = expr.tag || expr.dom._tag;
+        var ref;
+        var ref$1 = tag ? tag.__ : {};
+        var head = ref$1.head;
+        var isVirtual = expr.dom.tagName === "VIRTUAL";
+        if (tag && expr.tagName === tagName) {
+            tag.update();
             return;
         }
-        isVirtual = expr.dom.tagName === "VIRTUAL";
-        if (expr.tag) {
+        if (tag) {
             if (isVirtual) {
-                head = expr.tag.__.head;
                 ref = createDOMPlaceholder();
                 head.parentNode.insertBefore(ref, head);
             }
-            expr.tag.unmount(true);
+            tag.unmount(true);
+        }
+        if (!isString(tagName)) {
+            return;
         }
         expr.impl = __TAG_IMPL[tagName];
-        conf = {
+        if (!expr.impl) {
+            return;
+        }
+        expr.tag = tag = initChildTag(expr.impl, {
             root: expr.dom,
             parent: parent,
-            hasImpl: true,
             tagName: tagName
-        };
-        expr.tag = initChildTag(expr.impl, conf, expr.dom.innerHTML, parent);
+        }, expr.dom.innerHTML, parent);
         each(expr.attrs, function(a) {
-            return setAttr(expr.tag.root, a.name, a.value);
+            return setAttr(tag.root, a.name, a.value);
         });
         expr.tagName = tagName;
-        expr.tag.mount();
+        tag.mount();
         if (isVirtual) {
-            makeReplaceVirtual(expr.tag, ref || expr.tag.root);
+            makeReplaceVirtual(tag, ref || tag.root);
         }
         parent.__.onUnmount = function() {
-            var delName = expr.tag.opts.dataIs, tags = expr.tag.parent.tags, _tags = expr.tag.__.parent.tags;
-            arrayishRemove(tags, delName, expr.tag);
-            arrayishRemove(_tags, delName, expr.tag);
-            expr.tag.unmount();
+            var delName = tag.opts.dataIs;
+            arrayishRemove(tag.parent.tags, delName, tag);
+            arrayishRemove(tag.__.parent.tags, delName, tag);
+            tag.unmount();
         };
+    }
+    function normalizeAttrName(attrName) {
+        if (!attrName) {
+            return null;
+        }
+        attrName = attrName.replace(ATTRS_PREFIX, "");
+        if (CASE_SENSITIVE_ATTRIBUTES[attrName]) {
+            attrName = CASE_SENSITIVE_ATTRIBUTES[attrName];
+        }
+        return attrName;
     }
     function updateExpression(expr) {
         if (this.root && getAttr(this.root, "virtualized")) {
             return;
         }
-        var dom = expr.dom, attrName = expr.attr, isToggle = contains([ SHOW_DIRECTIVE, HIDE_DIRECTIVE ], attrName), value = tmpl(expr.expr, this), isValueAttr = attrName === "riot-value", isVirtual = expr.root && expr.root.tagName === "VIRTUAL", parent = dom && (expr.parent || dom.parentNode), old;
-        if (expr.bool) {
-            value = value ? attrName : false;
-        } else if (isUndefined(value) || value === null) {
-            value = "";
-        }
+        var dom = expr.dom;
+        var attrName = normalizeAttrName(expr.attr);
+        var isToggle = contains([ SHOW_DIRECTIVE, HIDE_DIRECTIVE ], attrName);
+        var isVirtual = expr.root && expr.root.tagName === "VIRTUAL";
+        var ref = this.__;
+        var isAnonymous = ref.isAnonymous;
+        var parent = dom && (expr.parent || dom.parentNode);
+        var isStyleAttr = attrName === "style";
+        var isClassAttr = attrName === "class";
+        var value;
         if (expr._riot_id) {
-            if (expr.isMounted) {
+            if (expr.__.wasCreated) {
                 expr.update();
             } else {
                 expr.mount();
@@ -2108,20 +2245,39 @@
             }
             return;
         }
-        old = expr.value;
-        expr.value = value;
         if (expr.update) {
-            expr.update();
+            return expr.update();
+        }
+        var context = isToggle && !isAnonymous ? extend(Object.create(this), this.parent) : this;
+        value = tmpl(expr.expr, context);
+        var hasValue = !isBlank(value);
+        var isObj = isObject(value);
+        if (isObj) {
+            if (isClassAttr) {
+                value = tmpl(JSON.stringify(value), this);
+            } else if (isStyleAttr) {
+                value = styleObjectToString(value);
+            }
+        }
+        if (expr.attr && (!expr.wasParsedOnce || !hasValue || value === false)) {
+            remAttr(dom, getAttr(dom, expr.attr) ? expr.attr : attrName);
+        }
+        if (expr.bool) {
+            value = value ? attrName : false;
+        }
+        if (expr.isRtag) {
+            return updateDataIs(expr, this, value);
+        }
+        if (expr.wasParsedOnce && expr.value === value) {
             return;
         }
-        if (expr.isRtag && value) {
-            return updateDataIs(expr, this);
-        }
-        if (old === value) {
+        expr.value = value;
+        expr.wasParsedOnce = true;
+        if (isObj && !isClassAttr && !isStyleAttr && !isToggle) {
             return;
         }
-        if (isValueAttr && dom.value === value) {
-            return;
+        if (!hasValue) {
+            value = "";
         }
         if (!attrName) {
             value += "";
@@ -2138,36 +2294,21 @@
             }
             return;
         }
-        if (!expr.isAttrRemoved || !value) {
-            remAttr(dom, attrName);
-            expr.isAttrRemoved = true;
-        }
         if (isFunction(value)) {
             setEventHandler(attrName, value, dom, this);
         } else if (isToggle) {
-            if (attrName === HIDE_DIRECTIVE) {
-                value = !value;
-            }
-            dom.style.display = value ? "" : "none";
-        } else if (isValueAttr) {
-            dom.value = value;
-        } else if (startsWith(attrName, ATTRS_PREFIX) && attrName !== IS_DIRECTIVE) {
-            attrName = attrName.slice(ATTRS_PREFIX.length);
-            if (CASE_SENSITIVE_ATTRIBUTES[attrName]) {
-                attrName = CASE_SENSITIVE_ATTRIBUTES[attrName];
-            }
-            if (value != null) {
-                setAttr(dom, attrName, value);
-            }
+            toggleVisibility(dom, attrName === HIDE_DIRECTIVE ? !value : value);
         } else {
             if (expr.bool) {
                 dom[attrName] = value;
-                if (!value) {
-                    return;
-                }
             }
-            if (value === 0 || value && typeof value !== T_OBJECT) {
+            if (attrName === "value" && dom.value !== value) {
+                dom.value = value;
+            } else if (hasValue && value !== false) {
                 setAttr(dom, attrName, value);
+            }
+            if (isStyleAttr && dom.hidden) {
+                toggleVisibility(dom, false);
             }
         }
     }
@@ -2179,7 +2320,7 @@
             remAttr(dom, CONDITIONAL_DIRECTIVE);
             this.tag = tag;
             this.expr = expr;
-            this.stub = document.createTextNode("");
+            this.stub = createDOMPlaceholder();
             this.pristine = dom;
             var p = dom.parentNode;
             p.insertBefore(this.stub, dom);
@@ -2187,13 +2328,13 @@
             return this;
         },
         update: function update() {
-            var newValue = tmpl(this.expr, this.tag);
-            if (newValue && !this.current) {
+            this.value = tmpl(this.expr, this.tag);
+            if (this.value && !this.current) {
                 this.current = this.pristine.cloneNode(true);
                 this.stub.parentNode.insertBefore(this.current, this.stub);
                 this.expressions = [];
                 parseExpressions.apply(this.tag, [ this.current, this.expressions, true ]);
-            } else if (!newValue && this.current) {
+            } else if (!this.value && this.current) {
                 unmountAll(this.expressions);
                 if (this.current._tag) {
                     this.current._tag.unmount();
@@ -2203,15 +2344,12 @@
                 this.current = null;
                 this.expressions = [];
             }
-            if (newValue) {
+            if (this.value) {
                 updateAllExpressions.call(this.tag, this.expressions);
             }
         },
         unmount: function unmount() {
             unmountAll(this.expressions || []);
-            delete this.pristine;
-            delete this.parentNode;
-            delete this.stub;
         }
     };
     var RefExpr = {
@@ -2221,32 +2359,29 @@
             this.rawValue = attrValue;
             this.parent = parent;
             this.hasExp = tmpl.hasExpr(attrValue);
-            this.firstRun = true;
             return this;
         },
         update: function update() {
-            var value = this.rawValue;
-            if (this.hasExp) {
-                value = tmpl(this.rawValue, this.parent);
-            }
-            if (!this.firstRun && value === this.value) {
-                return;
-            }
+            var old = this.value;
             var customParent = this.parent && getImmediateCustomParentTag(this.parent);
-            var tagOrDom = this.tag || this.dom;
-            if (!isBlank(this.value) && customParent) {
-                arrayishRemove(customParent.refs, this.value, tagOrDom);
+            var tagOrDom = this.dom.__ref || this.tag || this.dom;
+            this.value = this.hasExp ? tmpl(this.rawValue, this.parent) : this.rawValue;
+            if (!isBlank(old) && customParent) {
+                arrayishRemove(customParent.refs, old, tagOrDom);
             }
-            if (isBlank(value)) {
-                remAttr(this.dom, this.attr);
-            } else {
+            if (!isBlank(this.value) && isString(this.value)) {
                 if (customParent) {
-                    arrayishAdd(customParent.refs, value, tagOrDom, null, this.parent.__.index);
+                    arrayishAdd(customParent.refs, this.value, tagOrDom, null, this.parent.__.index);
                 }
-                setAttr(this.dom, this.attr, value);
+                if (this.value !== old) {
+                    setAttr(this.dom, this.attr, this.value);
+                }
+            } else {
+                remAttr(this.dom, this.attr);
             }
-            this.value = value;
-            this.firstRun = false;
+            if (!this.dom.__ref) {
+                this.dom.__ref = tagOrDom;
+            }
         },
         unmount: function unmount() {
             var tagOrDom = this.tag || this.dom;
@@ -2254,8 +2389,6 @@
             if (!isBlank(this.value) && customParent) {
                 arrayishRemove(customParent.refs, this.value, tagOrDom);
             }
-            delete this.dom;
-            delete this.parent;
         }
     };
     function mkitem(expr, key, val, base) {
@@ -2267,7 +2400,8 @@
         return item;
     }
     function unmountRedundant(items, tags) {
-        var i = tags.length, j = items.length;
+        var i = tags.length;
+        var j = items.length;
         while (i > j) {
             i--;
             remove.apply(tags[i], [ tags, i ]);
@@ -2305,9 +2439,31 @@
             root.appendChild(this.root);
         }
     }
+    function getItemId(keyAttr, originalItem, keyedItem, hasKeyAttrExpr) {
+        if (keyAttr) {
+            return hasKeyAttrExpr ? tmpl(keyAttr, keyedItem) : originalItem[keyAttr];
+        }
+        return originalItem;
+    }
     function _each(dom, parent, expr) {
+        var mustReorder = typeof getAttr(dom, LOOP_NO_REORDER_DIRECTIVE) !== T_STRING || remAttr(dom, LOOP_NO_REORDER_DIRECTIVE);
+        var keyAttr = getAttr(dom, KEY_DIRECTIVE);
+        var hasKeyAttrExpr = keyAttr ? tmpl.hasExpr(keyAttr) : false;
+        var tagName = getTagName(dom);
+        var impl = __TAG_IMPL[tagName];
+        var parentNode = dom.parentNode;
+        var placeholder = createDOMPlaceholder();
+        var child = getTag(dom);
+        var ifExpr = getAttr(dom, CONDITIONAL_DIRECTIVE);
+        var tags = [];
+        var isLoop = true;
+        var innerHTML = dom.innerHTML;
+        var isAnonymous = !__TAG_IMPL[tagName];
+        var isVirtual = dom.tagName === "VIRTUAL";
+        var oldItems = [];
+        var hasKeys;
         remAttr(dom, LOOP_DIRECTIVE);
-        var mustReorder = typeof getAttr(dom, LOOP_NO_REORDER_DIRECTIVE) !== T_STRING || remAttr(dom, LOOP_NO_REORDER_DIRECTIVE), tagName = getTagName(dom), impl = __TAG_IMPL[tagName], parentNode = dom.parentNode, placeholder = createDOMPlaceholder(), child = getTag(dom), ifExpr = getAttr(dom, CONDITIONAL_DIRECTIVE), tags = [], oldItems = [], hasKeys, isLoop = true, isAnonymous = !__TAG_IMPL[tagName], isVirtual = dom.tagName === "VIRTUAL";
+        remAttr(dom, KEY_DIRECTIVE);
         expr = tmpl.loopKeys(expr);
         expr.isLoop = true;
         if (ifExpr) {
@@ -2316,7 +2472,15 @@
         parentNode.insertBefore(placeholder, dom);
         parentNode.removeChild(dom);
         expr.update = function updateEach() {
-            var items = tmpl(expr.val, parent), frag = createFrag(), isObject$$1 = !isArray(items) && !isString(items), root = placeholder.parentNode;
+            expr.value = tmpl(expr.val, parent);
+            var items = expr.value;
+            var frag = createFrag();
+            var isObject$$1 = !isArray(items) && !isString(items);
+            var root = placeholder.parentNode;
+            var tmpItems = [];
+            if (!root) {
+                return;
+            }
             if (isObject$$1) {
                 hasKeys = items || false;
                 items = hasKeys ? Object.keys(items).map(function(key) {
@@ -2333,11 +2497,18 @@
                     return !!tmpl(ifExpr, extend(Object.create(parent), item));
                 });
             }
-            each(items, function(item, i) {
-                var doReorder = mustReorder && typeof item === T_OBJECT && !hasKeys, oldPos = oldItems.indexOf(item), isNew = oldPos === -1, pos = !isNew && doReorder ? oldPos : i, tag = tags[pos], mustAppend = i >= oldItems.length, mustCreate = doReorder && isNew || !doReorder && !tag;
-                item = !hasKeys && expr.key ? mkitem(expr, item, i) : item;
+            each(items, function(_item, i) {
+                var item = !hasKeys && expr.key ? mkitem(expr, _item, i) : _item;
+                var itemId = getItemId(keyAttr, _item, item, hasKeyAttrExpr);
+                var doReorder = mustReorder && typeof _item === T_OBJECT && !hasKeys;
+                var oldPos = oldItems.indexOf(itemId);
+                var isNew = oldPos === -1;
+                var pos = !isNew && doReorder ? oldPos : i;
+                var tag = tags[pos];
+                var mustAppend = i >= oldItems.length;
+                var mustCreate = doReorder && isNew || !doReorder && !tag;
                 if (mustCreate) {
-                    tag = new Tag$1(impl, {
+                    tag = createTag(impl, {
                         parent: parent,
                         isLoop: isLoop,
                         isAnonymous: isAnonymous,
@@ -2345,7 +2516,7 @@
                         root: dom.cloneNode(isAnonymous),
                         item: item,
                         index: i
-                    }, dom.innerHTML);
+                    }, innerHTML);
                     tag.mount();
                     if (mustAppend) {
                         append.apply(tag, [ frag || root, isVirtual ]);
@@ -2360,7 +2531,7 @@
                         arrayishAdd(parent.tags, tagName, tag, true);
                     }
                 } else if (pos !== i && doReorder) {
-                    if (contains(items, oldItems[pos])) {
+                    if (keyAttr || contains(items, oldItems[pos])) {
                         move.apply(tag, [ root, tags[i], isVirtual ]);
                         tags.splice(i, 0, tags.splice(pos, 1)[0]);
                         oldItems.splice(i, 0, oldItems.splice(pos, 1)[0]);
@@ -2375,12 +2546,13 @@
                 tag.__.item = item;
                 tag.__.index = i;
                 tag.__.parent = parent;
+                tmpItems[i] = itemId;
                 if (!mustCreate) {
                     tag.update(item);
                 }
             });
             unmountRedundant(items, tags);
-            oldItems = items.slice();
+            oldItems = tmpItems.slice();
             root.insertBefore(frag, placeholder);
         };
         expr.unmount = function() {
@@ -2398,7 +2570,11 @@
             }
         };
         walkNodes(root, function(dom, ctx) {
-            var type = dom.nodeType, parent = ctx.parent, attr, expr, tagImpl;
+            var type = dom.nodeType;
+            var parent = ctx.parent;
+            var attr;
+            var expr;
+            var tagImpl;
             if (!mustIncludeRoot && dom === root) {
                 return {
                     parent: parent
@@ -2450,7 +2626,7 @@
             if (tagImpl && (dom !== root || mustIncludeRoot)) {
                 if (isVirtual && !getAttr(dom, IS_DIRECTIVE)) {
                     setAttr(dom, "virtualized", true);
-                    var tag = new Tag$1({
+                    var tag = createTag({
                         tmpl: dom.outerHTML
                     }, {
                         root: dom,
@@ -2458,12 +2634,10 @@
                     }, dom.innerHTML);
                     parent.children.push(tag);
                 } else {
-                    var conf = {
+                    parent.children.push(initChildTag(tagImpl, {
                         root: dom,
-                        parent: this$1,
-                        hasImpl: true
-                    };
-                    parent.children.push(initChildTag(tagImpl, conf, dom.innerHTML, this$1));
+                        parent: this$1
+                    }, dom.innerHTML, this$1));
                     return false;
                 }
             }
@@ -2477,22 +2651,23 @@
                 parent: parent
             };
         }, tree);
-        return {
-            tree: tree,
-            root: root
-        };
     }
     function parseAttributes(dom, attrs, fn) {
         var this$1 = this;
         each(attrs, function(attr) {
-            var name = attr.name, bool = isBoolAttr(name), expr;
-            if (contains(REF_DIRECTIVES, name)) {
+            if (!attr) {
+                return false;
+            }
+            var name = attr.name;
+            var bool = isBoolAttr(name);
+            var expr;
+            if (contains(REF_DIRECTIVES, name) && dom.tagName.toLowerCase() !== YIELD_TAG) {
                 expr = Object.create(RefExpr).init(dom, this$1, name, attr.value);
             } else if (tmpl.hasExpr(attr.value)) {
                 expr = {
                     dom: dom,
                     expr: attr.value,
-                    attr: attr.name,
+                    attr: name,
                     bool: bool
                 };
             }
@@ -2511,6 +2686,7 @@
     };
     var tblTags = IE_VERSION && IE_VERSION < 10 ? RE_SPECIAL_TAGS : RE_SPECIAL_TAGS_NO_OPTION;
     var GENERIC = "div";
+    var SVG = "svg";
     function specialTags(el, tmpl, tagName) {
         var select = tagName[0] === "o", parent = select ? "select>" : "table>";
         el.innerHTML = "<" + parent + tmpl.trim() + "</" + parent;
@@ -2540,8 +2716,10 @@
             return html || def || "";
         });
     }
-    function mkdom(tmpl, html) {
-        var match = tmpl && tmpl.match(/^\s*<([-\w]+)/), tagName = match && match[1].toLowerCase(), el = mkEl(GENERIC);
+    function mkdom(tmpl, html, isSvg$$1) {
+        var match = tmpl && tmpl.match(/^\s*<([-\w]+)/);
+        var tagName = match && match[1].toLowerCase();
+        var el = mkEl(isSvg$$1 ? SVG : GENERIC);
         tmpl = replaceYield(tmpl, html);
         if (tblTags.test(tagName)) {
             el = specialTags(el, tmpl, tagName);
@@ -2550,7 +2728,7 @@
         }
         return el;
     }
-    function Tag$2(el, opts) {
+    function Tag$1(el, opts) {
         var ref = this;
         var name = ref.name;
         var tmpl = ref.tmpl;
@@ -2570,7 +2748,7 @@
     function tag$1(name, tmpl, css, attrs, fn) {
         if (isFunction(attrs)) {
             fn = attrs;
-            if (/^[\w\-]+\s?=/.test(css)) {
+            if (/^[\w-]+\s?=/.test(css)) {
                 attrs = css;
                 css = "";
             } else {
@@ -2607,14 +2785,15 @@
     }
     function mount$1(selector, tagName, opts) {
         var tags = [];
+        var elem, allTags;
         function pushTagsTo(root) {
             if (root.tagName) {
-                var riotTag = getAttr(root, IS_DIRECTIVE);
+                var riotTag = getAttr(root, IS_DIRECTIVE), tag;
                 if (tagName && riotTag !== tagName) {
                     riotTag = tagName;
                     setAttr(root, IS_DIRECTIVE, tagName);
                 }
-                var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
+                tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
                 if (tag) {
                     tags.push(tag);
                 }
@@ -2627,8 +2806,6 @@
             opts = tagName;
             tagName = 0;
         }
-        var elem;
-        var allTags;
         if (isString(selector)) {
             selector = selector === "*" ? allTags = selectTags() : selector + selectTags(selector.split(/, */));
             elem = selector ? $$(selector) : [];
@@ -2656,7 +2833,7 @@
     var mixins_id = 0;
     function mixin$1(name, mix, g) {
         if (isObject(name)) {
-            mixin$1("__unnamed_" + mixins_id++, name, true);
+            mixin$1("__" + mixins_id++ + "__", name, true);
             return;
         }
         var store = g ? globals : mixins;
@@ -2674,20 +2851,19 @@
         });
     }
     function unregister$1(name) {
-        delete __TAG_IMPL[name];
+        __TAG_IMPL[name] = null;
     }
-    var version = "v3.3.2";
+    var version$1 = "v3.7.3";
     var core = Object.freeze({
-        Tag: Tag$2,
+        Tag: Tag$1,
         tag: tag$1,
         tag2: tag2$1,
         mount: mount$1,
         mixin: mixin$1,
         update: update$1,
         unregister: unregister$1,
-        version: version
+        version: version$1
     });
-    var __uid = 0;
     function updateOpts(isLoop, parent, isAnonymous, opts, instAttrs) {
         if (isLoop && isAnonymous) {
             return;
@@ -2697,67 +2873,106 @@
             if (attr.expr) {
                 updateAllExpressions.call(ctx, [ attr.expr ]);
             }
-            opts[toCamel(attr.name)] = attr.expr ? attr.expr.value : attr.value;
+            opts[toCamel(attr.name).replace(ATTRS_PREFIX, "")] = attr.expr ? attr.expr.value : attr.value;
         });
     }
-    function Tag$1(impl, conf, innerHTML) {
+    function setMountState(value) {
+        var ref = this.__;
+        var isAnonymous = ref.isAnonymous;
+        defineProperty(this, "isMounted", value);
+        if (!isAnonymous) {
+            if (value) {
+                this.trigger("mount");
+            } else {
+                this.trigger("unmount");
+                this.off("*");
+                this.__.wasCreated = false;
+            }
+        }
+    }
+    function createTag(impl, conf, innerHTML) {
         if (impl === void 0) impl = {};
         if (conf === void 0) conf = {};
-        var opts = extend({}, conf.opts), parent = conf.parent, isLoop = conf.isLoop, isAnonymous = !!conf.isAnonymous, skipAnonymous = settings$1.skipAnonymousTags && isAnonymous, item = cleanUpData(conf.item), index = conf.index, instAttrs = [], implAttrs = [], expressions = [], root = conf.root, tagName = conf.tagName || getTagName(root), isVirtual = tagName === "virtual", propsInSyncWithParent = [], dom;
+        var tag = conf.context || {};
+        var opts = extend({}, conf.opts);
+        var parent = conf.parent;
+        var isLoop = conf.isLoop;
+        var isAnonymous = !!conf.isAnonymous;
+        var skipAnonymous = settings$1.skipAnonymousTags && isAnonymous;
+        var item = conf.item;
+        var index = conf.index;
+        var instAttrs = [];
+        var implAttrs = [];
+        var expressions = [];
+        var root = conf.root;
+        var tagName = conf.tagName || getTagName(root);
+        var isVirtual = tagName === "virtual";
+        var isInline = !isVirtual && !impl.tmpl;
+        var dom;
         if (!skipAnonymous) {
-            observable$1(this);
+            observable$1(tag);
         }
         if (impl.name && root._tag) {
             root._tag.unmount(true);
         }
-        this.isMounted = false;
-        defineProperty(this, "__", {
+        defineProperty(tag, "isMounted", false);
+        defineProperty(tag, "__", {
             isAnonymous: isAnonymous,
             instAttrs: instAttrs,
             innerHTML: innerHTML,
             tagName: tagName,
             index: index,
             isLoop: isLoop,
+            isInline: isInline,
+            listeners: [],
             virts: [],
+            wasCreated: false,
             tail: null,
             head: null,
             parent: null,
             item: null
         });
-        defineProperty(this, "_riot_id", ++__uid);
-        defineProperty(this, "root", root);
-        extend(this, {
+        defineProperty(tag, "_riot_id", uid());
+        defineProperty(tag, "root", root);
+        extend(tag, {
             opts: opts
         }, item);
-        defineProperty(this, "parent", parent || null);
-        defineProperty(this, "tags", {});
-        defineProperty(this, "refs", {});
-        dom = isLoop && isAnonymous ? root : mkdom(impl.tmpl, innerHTML, isLoop);
-        defineProperty(this, "update", function tagUpdate(data) {
-            var nextOpts = {}, canTrigger = this.isMounted && !skipAnonymous;
-            data = cleanUpData(data);
-            extend(this, data);
-            updateOpts.apply(this, [ isLoop, parent, isAnonymous, nextOpts, instAttrs ]);
-            if (this.isMounted && isFunction(this.shouldUpdate) && !this.shouldUpdate(data, nextOpts)) {
-                return this;
+        defineProperty(tag, "parent", parent || null);
+        defineProperty(tag, "tags", {});
+        defineProperty(tag, "refs", {});
+        if (isInline || isLoop && isAnonymous) {
+            dom = root;
+        } else {
+            if (!isVirtual) {
+                root.innerHTML = "";
             }
-            if (isLoop && isAnonymous) {
-                inheritFrom.apply(this, [ this.parent, propsInSyncWithParent ]);
+            dom = mkdom(impl.tmpl, innerHTML, isSvg(root));
+        }
+        defineProperty(tag, "update", function tagUpdate(data) {
+            var nextOpts = {};
+            var canTrigger = tag.isMounted && !skipAnonymous;
+            if (isAnonymous && parent) {
+                extend(tag, parent);
+            }
+            extend(tag, data);
+            updateOpts.apply(tag, [ isLoop, parent, isAnonymous, nextOpts, instAttrs ]);
+            if (canTrigger && tag.isMounted && isFunction(tag.shouldUpdate) && !tag.shouldUpdate(data, nextOpts)) {
+                return tag;
             }
             extend(opts, nextOpts);
             if (canTrigger) {
-                this.trigger("update", data);
+                tag.trigger("update", data);
             }
-            updateAllExpressions.call(this, expressions);
+            updateAllExpressions.call(tag, expressions);
             if (canTrigger) {
-                this.trigger("updated");
+                tag.trigger("updated");
             }
-            return this;
-        }.bind(this));
-        defineProperty(this, "mixin", function tagMixin() {
-            var this$1 = this;
+            return tag;
+        });
+        defineProperty(tag, "mixin", function tagMixin() {
             each(arguments, function(mix) {
-                var instance, obj;
+                var instance;
+                var obj;
                 var props = [];
                 var propsBlacklist = [ "init", "__proto__" ];
                 mix = isString(mix) ? mixin$1(mix) : mix;
@@ -2772,93 +2987,95 @@
                 } while (obj = Object.getPrototypeOf(obj || instance));
                 each(props, function(key) {
                     if (!contains(propsBlacklist, key)) {
-                        var descriptor = Object.getOwnPropertyDescriptor(instance, key) || Object.getOwnPropertyDescriptor(proto, key);
+                        var descriptor = getPropDescriptor(instance, key) || getPropDescriptor(proto, key);
                         var hasGetterSetter = descriptor && (descriptor.get || descriptor.set);
-                        if (!this$1.hasOwnProperty(key) && hasGetterSetter) {
-                            Object.defineProperty(this$1, key, descriptor);
+                        if (!tag.hasOwnProperty(key) && hasGetterSetter) {
+                            Object.defineProperty(tag, key, descriptor);
                         } else {
-                            this$1[key] = isFunction(instance[key]) ? instance[key].bind(this$1) : instance[key];
+                            tag[key] = isFunction(instance[key]) ? instance[key].bind(tag) : instance[key];
                         }
                     }
                 });
                 if (instance.init) {
-                    instance.init.bind(this$1)();
+                    instance.init.bind(tag)(opts);
                 }
             });
-            return this;
-        }.bind(this));
-        defineProperty(this, "mount", function tagMount() {
-            var this$1 = this;
-            root._tag = this;
+            return tag;
+        });
+        defineProperty(tag, "mount", function tagMount() {
+            root._tag = tag;
             parseAttributes.apply(parent, [ root, root.attributes, function(attr, expr) {
                 if (!isAnonymous && RefExpr.isPrototypeOf(expr)) {
-                    expr.tag = this$1;
+                    expr.tag = tag;
                 }
                 attr.expr = expr;
                 instAttrs.push(attr);
             } ]);
-            implAttrs = [];
             walkAttrs(impl.attrs, function(k, v) {
                 implAttrs.push({
                     name: k,
                     value: v
                 });
             });
-            parseAttributes.apply(this, [ root, implAttrs, function(attr, expr) {
+            parseAttributes.apply(tag, [ root, implAttrs, function(attr, expr) {
                 if (expr) {
                     expressions.push(expr);
                 } else {
                     setAttr(root, attr.name, attr.value);
                 }
             } ]);
-            updateOpts.apply(this, [ isLoop, parent, isAnonymous, opts, instAttrs ]);
+            updateOpts.apply(tag, [ isLoop, parent, isAnonymous, opts, instAttrs ]);
             var globalMixin = mixin$1(GLOBAL_MIXIN);
             if (globalMixin && !skipAnonymous) {
                 for (var i in globalMixin) {
                     if (globalMixin.hasOwnProperty(i)) {
-                        this$1.mixin(globalMixin[i]);
+                        tag.mixin(globalMixin[i]);
                     }
                 }
             }
             if (impl.fn) {
-                impl.fn.call(this, opts);
+                impl.fn.call(tag, opts);
             }
             if (!skipAnonymous) {
-                this.trigger("before-mount");
+                tag.trigger("before-mount");
             }
-            parseExpressions.apply(this, [ dom, expressions, isAnonymous ]);
-            this.update(item);
-            if (!isAnonymous) {
+            parseExpressions.apply(tag, [ dom, expressions, isAnonymous ]);
+            tag.update(item);
+            if (!isAnonymous && !isInline) {
                 while (dom.firstChild) {
                     root.appendChild(dom.firstChild);
                 }
             }
-            defineProperty(this, "root", root);
-            defineProperty(this, "isMounted", true);
-            if (skipAnonymous) {
-                return;
-            }
-            if (!this.parent) {
-                this.trigger("mount");
-            } else {
-                var p = getImmediateCustomParentTag(this.parent);
+            defineProperty(tag, "root", root);
+            if (!skipAnonymous && tag.parent) {
+                var p = getImmediateCustomParentTag(tag.parent);
                 p.one(!p.isMounted ? "mount" : "updated", function() {
-                    this$1.trigger("mount");
+                    setMountState.call(tag, true);
                 });
+            } else {
+                setMountState.call(tag, true);
             }
-            return this;
-        }.bind(this));
-        defineProperty(this, "unmount", function tagUnmount(mustKeepRoot) {
-            var this$1 = this;
-            var el = this.root, p = el.parentNode, ptag, tagIndex = __TAGS_CACHE.indexOf(this);
+            tag.__.wasCreated = true;
+            return tag;
+        });
+        defineProperty(tag, "unmount", function tagUnmount(mustKeepRoot) {
+            var el = tag.root;
+            var p = el.parentNode;
+            var tagIndex = __TAGS_CACHE.indexOf(tag);
+            var ptag;
             if (!skipAnonymous) {
-                this.trigger("before-unmount");
+                tag.trigger("before-unmount");
             }
             walkAttrs(impl.attrs, function(name) {
                 if (startsWith(name, ATTRS_PREFIX)) {
                     name = name.slice(ATTRS_PREFIX.length);
                 }
                 remAttr(root, name);
+            });
+            tag.__.listeners.forEach(function(dom) {
+                Object.keys(dom[RIOT_EVENTS_KEY]).forEach(function(eventName) {
+                    dom.removeEventListener(eventName, dom[RIOT_EVENTS_KEY][eventName]);
+                });
             });
             if (tagIndex !== -1) {
                 __TAGS_CACHE.splice(tagIndex, 1);
@@ -2867,30 +3084,24 @@
                 if (parent) {
                     ptag = getImmediateCustomParentTag(parent);
                     if (isVirtual) {
-                        Object.keys(this.tags).forEach(function(tagName) {
-                            arrayishRemove(ptag.tags, tagName, this$1.tags[tagName]);
+                        Object.keys(tag.tags).forEach(function(tagName) {
+                            arrayishRemove(ptag.tags, tagName, tag.tags[tagName]);
                         });
                     } else {
-                        arrayishRemove(ptag.tags, tagName, this);
+                        arrayishRemove(ptag.tags, tagName, tag);
                         if (parent !== ptag) {
-                            arrayishRemove(parent.tags, tagName, this);
+                            arrayishRemove(parent.tags, tagName, tag);
                         }
                     }
                 } else {
-                    while (el.firstChild) {
-                        el.removeChild(el.firstChild);
-                    }
+                    setInnerHTML(el, "");
                 }
-                if (p) {
-                    if (!mustKeepRoot) {
-                        p.removeChild(el);
-                    } else {
-                        remAttr(p, IS_DIRECTIVE);
-                    }
+                if (p && !mustKeepRoot) {
+                    p.removeChild(el);
                 }
             }
-            if (this.__.virts) {
-                each(this.__.virts, function(v) {
+            if (tag.__.virts) {
+                each(tag.__.virts, function(v) {
                     if (v.parentNode) {
                         v.parentNode.removeChild(v);
                     }
@@ -2900,35 +3111,24 @@
             each(instAttrs, function(a) {
                 return a.expr && a.expr.unmount && a.expr.unmount();
             });
-            if (this.__.onUnmount) {
-                this.__.onUnmount();
+            if (tag.__.onUnmount) {
+                tag.__.onUnmount();
             }
-            if (!skipAnonymous) {
-                this.trigger("unmount");
-                this.off("*");
+            if (!tag.isMounted) {
+                setMountState.call(tag, true);
             }
-            defineProperty(this, "isMounted", false);
-            delete this.root._tag;
-            return this;
-        }.bind(this));
+            setMountState.call(tag, false);
+            delete tag.root._tag;
+            return tag;
+        });
+        return tag;
     }
     function getTag(dom) {
         return dom.tagName && __TAG_IMPL[getAttr(dom, IS_DIRECTIVE) || getAttr(dom, IS_DIRECTIVE) || dom.tagName.toLowerCase()];
     }
-    function inheritFrom(target, propsInSyncWithParent) {
-        var this$1 = this;
-        each(Object.keys(target), function(k) {
-            var mustSync = !isReservedName(k) && contains(propsInSyncWithParent, k);
-            if (isUndefined(this$1[k]) || mustSync) {
-                if (!mustSync) {
-                    propsInSyncWithParent.push(k);
-                }
-                this$1[k] = target[k];
-            }
-        });
-    }
     function moveChildTag(tagName, newPos) {
-        var parent = this.parent, tags;
+        var parent = this.parent;
+        var tags;
         if (!parent) {
             return;
         }
@@ -2940,14 +3140,15 @@
         }
     }
     function initChildTag(child, opts, innerHTML, parent) {
-        var tag = new Tag$1(child, opts, innerHTML), tagName = opts.tagName || getTagName(opts.root, true), ptag = getImmediateCustomParentTag(parent);
+        var tag = createTag(child, opts, innerHTML);
+        var tagName = opts.tagName || getTagName(opts.root, true);
+        var ptag = getImmediateCustomParentTag(parent);
         defineProperty(tag, "parent", ptag);
         tag.__.parent = parent;
         arrayishAdd(ptag.tags, tagName, tag);
         if (ptag !== parent) {
             arrayishAdd(parent.tags, tagName, tag);
         }
-        opts.root.innerHTML = "";
         return tag;
     }
     function getImmediateCustomParentTag(tag) {
@@ -2962,28 +3163,19 @@
     }
     function unmountAll(expressions) {
         each(expressions, function(expr) {
-            if (expr instanceof Tag$1) {
+            if (expr.unmount) {
                 expr.unmount(true);
+            } else if (expr.tagName) {
+                expr.tag.unmount(true);
             } else if (expr.unmount) {
                 expr.unmount();
             }
         });
     }
     function getTagName(dom, skipDataIs) {
-        var child = getTag(dom), namedTag = !skipDataIs && getAttr(dom, IS_DIRECTIVE);
+        var child = getTag(dom);
+        var namedTag = !skipDataIs && getAttr(dom, IS_DIRECTIVE);
         return namedTag && !tmpl.hasExpr(namedTag) ? namedTag : child ? child.name : dom.tagName.toLowerCase();
-    }
-    function cleanUpData(data) {
-        if (!(data instanceof Tag$1) && !(data && isFunction(data.trigger))) {
-            return data;
-        }
-        var o = {};
-        for (var key in data) {
-            if (!RE_RESERVED_NAMES.test(key)) {
-                o[key] = data[key];
-            }
-        }
-        return o;
     }
     function arrayishAdd(obj, key, value, ensureArray, index) {
         var dest = obj[key];
@@ -3031,16 +3223,20 @@
         }
     }
     function mountTo(root, tagName, opts, ctx) {
-        var impl = __TAG_IMPL[tagName], implClass = __TAG_IMPL[tagName].class, tag = ctx || (implClass ? Object.create(implClass.prototype) : {}), innerHTML = root._innerHTML = root._innerHTML || root.innerHTML;
-        root.innerHTML = "";
+        var impl = __TAG_IMPL[tagName];
+        var implClass = __TAG_IMPL[tagName].class;
+        var context = ctx || (implClass ? Object.create(implClass.prototype) : {});
+        var innerHTML = root._innerHTML = root._innerHTML || root.innerHTML;
         var conf = extend({
             root: root,
-            opts: opts
+            opts: opts,
+            context: context
         }, {
             parent: opts ? opts.parent : null
         });
+        var tag;
         if (impl && root) {
-            Tag$1.apply(tag, [ impl, conf, innerHTML ]);
+            tag = createTag(impl, conf, innerHTML);
         }
         if (tag && tag.mount) {
             tag.mount(true);
@@ -3057,7 +3253,11 @@
     }
     function makeVirtual(src, target) {
         var this$1 = this;
-        var head = createDOMPlaceholder(), tail = createDOMPlaceholder(), frag = createFrag(), sib, el;
+        var head = createDOMPlaceholder();
+        var tail = createDOMPlaceholder();
+        var frag = createFrag();
+        var sib;
+        var el;
         this.root.insertBefore(head, this.root.firstChild);
         this.root.appendChild(tail);
         this.__.head = el = head;
@@ -3076,7 +3276,9 @@
     }
     function moveVirtual(src, target) {
         var this$1 = this;
-        var el = this.__.head, frag = createFrag(), sib;
+        var el = this.__.head;
+        var sib;
+        var frag = createFrag();
         while (el) {
             sib = el.nextSibling;
             frag.appendChild(el);
@@ -3102,13 +3304,11 @@
     }
     var tags = Object.freeze({
         getTag: getTag,
-        inheritFrom: inheritFrom,
         moveChildTag: moveChildTag,
         initChildTag: initChildTag,
         getImmediateCustomParentTag: getImmediateCustomParentTag,
         unmountAll: unmountAll,
         getTagName: getTagName,
-        cleanUpData: cleanUpData,
         arrayishAdd: arrayishAdd,
         arrayishRemove: arrayishRemove,
         mountTo: mountTo,
@@ -3129,13 +3329,14 @@
         misc: misc,
         tags: tags
     };
-    var Tag$$1 = Tag$2;
-    var tag$$1 = tag$1;
-    var tag2$$1 = tag2$1;
-    var mount$$1 = mount$1;
-    var mixin$$1 = mixin$1;
-    var update$$1 = update$1;
-    var unregister$$1 = unregister$1;
+    var Tag = Tag$1;
+    var tag = tag$1;
+    var tag2 = tag2$1;
+    var mount = mount$1;
+    var mixin = mixin$1;
+    var update = update$1;
+    var unregister = unregister$1;
+    var version = version$1;
     var observable = observable$1;
     var riot$1 = extend({}, core, {
         observable: observable$1,
@@ -3144,13 +3345,14 @@
     });
     exports.settings = settings;
     exports.util = util;
-    exports.Tag = Tag$$1;
-    exports.tag = tag$$1;
-    exports.tag2 = tag2$$1;
-    exports.mount = mount$$1;
-    exports.mixin = mixin$$1;
-    exports.update = update$$1;
-    exports.unregister = unregister$$1;
+    exports.Tag = Tag;
+    exports.tag = tag;
+    exports.tag2 = tag2;
+    exports.mount = mount;
+    exports.mixin = mixin;
+    exports.update = update;
+    exports.unregister = unregister;
+    exports.version = version;
     exports.observable = observable;
     exports["default"] = riot$1;
     Object.defineProperty(exports, "__esModule", {

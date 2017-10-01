@@ -13,6 +13,16 @@ commit history on GitHub.
 
 ### User
 
+* for authentication with an api key via request headers, header name has to be
+  dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`.
+* most parts of OAI-PMH responses are now cached which should enhance
+  performance greatly
+* added reference implementation for OAI-PMH client
+
+## Version 2.1.0
+
+### User
+
 * when access is denied there is no more redirect, which makes the page linkable
 * OAI-PMH responses now all fully support deleted records à la
   `<deletedRecord>persistent</deletedRecord>`
@@ -36,6 +46,13 @@ commit history on GitHub.
 * 'recently visited' tab (relationship editor) doesn't show expected entities
   (#2161 redmine). The resolution also has the side effect of the history of
   visited entities is now remembered across sessions.
+
+### Internal
+
+* all vms defined by vagrant now use the `bento/ubuntu-16.04` base box
+* a new vagrant vm `bare` is defined that just installs requirements. This
+  serves to test the deploy scripts.
+* using systemd for deploying services via vagrant
 
 ## Version 2.0.0
 

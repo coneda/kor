@@ -1,7 +1,6 @@
 require 'simplecov'
 
 require "cucumber/rspec/doubles"
-require 'capybara/poltergeist'
 require 'factory_girl_rails'
 
 DatabaseCleaner.clean_with :truncation
@@ -45,32 +44,22 @@ Before('@javascript') do
   }
 end
 
-Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app,
-    # debug: true,
-    js_errors: true,
-    inspector: false
-  )
-end
-
-Capybara.register_driver :chromium do |app|
-  Capybara::Selenium::Driver.new(app, browser: :chrome)
-end
-
-Capybara.register_driver :marionette do |app|
-  Selenium::WebDriver.for :firefox, marionette: true
-end
-
 Capybara.default_max_wait_time = 5
-Capybara.wait_on_first_by_default = true
-Capybara.javascript_driver = :chromium
-# once marionette works
-# Capybara.javascript_driver = :marionette
+
+Capybara.javascript_driver = :selenium
+Capybara.javascript_driver = :selenium_chrome
 
 if ENV['HEADLESS']
-  Capybara.javascript_driver = :poltergeist
+  Capybara.register_driver :headless_chrome do |app|
+    capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+      chromeOptions: {args: ['headless', 'disable-gpu']}
+    )
+    Capybara::Selenium::Driver.new app,
+      browser: :chrome,
+      desired_capabilities: capabilities
+  end
+  Capybara.javascript_driver = :headless_chrome
 end
-
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassettes'

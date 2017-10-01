@@ -104,6 +104,17 @@ class ApplicationController < BaseController
       render json: {message: I18n.t('notices.access_denied')}, status: 403
     end
 
+    def session_expired?
+      if !current_user.guest? && !api_auth?
+        !!(session[:expires_at] && (session[:expires_at] < Time.now))
+      end
+    end
+
+    def api_auth?
+      key = params[:api_key] || request.headers["HTTP_API_KEY"]
+      key && User.exists?(api_key: key)
+    end
+    
     def generally_authorized?
       true
     end
@@ -126,7 +137,7 @@ class ApplicationController < BaseController
         when String
           results = value.split(',')
           options[:ids] ? results.map{|v| v.to_i} : results
-        when Fixnum then [value]
+        when Integer then [value]
         when Array then value.map{|v| param_to_array(v, options)}.flatten
         when nil then []
         else
@@ -175,7 +186,12 @@ class ApplicationController < BaseController
         :name, :distinct_name, :subtype, :comment, :no_name_statement,
         :tag_list,
         :synonyms => [],
-        :datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :new_datings_attributes => [
+          :id, :_destroy, :label, :dating_string, :lock_version
+        ],
+        :existing_datings_attributes => [
+          :id, :_destroy, :label, :dating_string, :lock_version
+        ],
         :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
         :medium_attributes => [:id, :image, :document]

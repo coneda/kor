@@ -4,8 +4,8 @@ class Field < ActiveRecord::Base
   
   serialize :settings, Hash
   
-  belongs_to :kind
-
+  belongs_to :kind, touch: true
+  
   validates :name,
     :presence => true,
     :format => {:with => /\A[a-z0-9_]+\z/, allow_blank: true},
@@ -90,7 +90,6 @@ class Field < ActiveRecord::Base
   end
 
   scope :identifiers, lambda { where(:is_identifier => true) }
-
 
   # Attributes
   

@@ -188,12 +188,13 @@ module FormsHelper
     prefix = "new"
     label = (entity_dating ? entity_dating.label : @entity.kind.dating_label)
     entity_dating ||= EntityDating.new
+    new_prefix = (entity_dating.new_record? ? 'new' : 'existing')
 
-    fields_for "entity[datings_attributes][]", entity_dating, :builder => Kor::FormBuilder do |ed|
-      ed.hidden_field(:lock_version).html_safe +
-      ed.kor_input(:label, :control => ed.text_field(:label, :value => label)).html_safe +
-      ed.kor_input(:dating_string).html_safe
-    end
+    render partial: 'entity_dating/form', locals: {
+      prefix: "entity[#{new_prefix}_datings_attributes][]",
+      entity_dating: entity_dating,
+      label: label
+    }
   end
 
   def form_fields_for_relationship_property(property = nil)

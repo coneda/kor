@@ -74,6 +74,23 @@ describe Relation do
     expect(DirectedRelationship.where(relation_name: 'has been worked on by').count).to eq(2)
   end
 
+  it 'should update directed relationships when its symmetry changes' do
+    default_setup
+
+    is_equivalent_to = FactoryGirl.create(:is_equivalent_to,
+      from_kind_ids: [@works.id, @people.id, @media.id],
+      to_kind_ids: [@works.id, @people.id, @media.id]
+    )
+    Relationship.relate_and_save(@leonardo, 'is equivalent to', @mona_lisa)
+
+    expect(DirectedRelationship.where(relation_name: 'is equivalent to').count).to eq(2)
+
+    is_equivalent_to.update_attributes name: 'is the same as'
+
+    expect(DirectedRelationship.where(relation_name: 'is the same as').count).to eq(1)
+    expect(DirectedRelationship.where(relation_name: 'is equivalent to').count).to eq(1)
+  end
+
   it "should get a list of filtered relation names" do
     default_setup
 

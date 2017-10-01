@@ -55,9 +55,6 @@ module Kor
       (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
   end
 
-
-  ####################### expiries #############################################
-
   def self.session_expiry_time
     Time.now + Kor.config['auth']['session_lifetime'].seconds
   end
@@ -106,6 +103,15 @@ module Kor
   def self.is_uuid?(value)
     value.is_a?(String) &&
     !!value.match(/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/i)
+  end
+
+  def self.with_exclusive_lock(name, &block)
+    mode = File::RDWR | File::CREAT
+    File.open "#{Rails.root}/tmp/#{name}.lock", mode do |f|
+      f.flock(File::LOCK_EX)
+      yield
+      f.flock(File::LOCK_UN)
+    end
   end
 
 end

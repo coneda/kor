@@ -385,7 +385,7 @@ en:
       other: "special properties"
     relation:
       one: "relation"
-      other: "realtions"
+      other: "relations"
     reverse_relation:
       one: "reverse relation"
       other: "reverse relations"
@@ -393,7 +393,7 @@ en:
       one: "relationship"
       other: "relationships"
     reverse_relationship:
-      one: "reverse realtion"
+      one: "reverse relation"
       other: "reverse relations"
     related_medium:
       one: "related medium"

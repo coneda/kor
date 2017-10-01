@@ -427,3 +427,21 @@ Given(/^the relationship has a dating "([^"]*)"$/) do |dating|
     datings_attributes: [{label: l, dating_string: ds}]
   )
 end
+
+Given(/^entity "([^"]*)" has dating "([^"]*)"$/) do |name, dating|
+  label, value = dating.split(/: ?/)
+  Entity.find_by(name: name).datings.create label: label, dating_string: value
+end
+
+Then(/^entity "([^"]*)" should (not )?have dating "([^"]*)"$/) do |name, negation, dating|
+  label, value = dating.split(/: ?/)
+  result = Entity.find_by(name: name).datings.any? do |d|
+    d.label == label && d.dating_string == value
+  end
+
+  if negation
+    expect(result).to be_falsey
+  else
+    expect(result).to be_truthy
+  end
+end

@@ -243,4 +243,24 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     expect(doc.xpath("//xmlns:metadata").count).to eq(0)
   end
 
+  it 'should include properties' do
+    admin = User.admin
+    rel = Relationship.last
+
+    rel.update properties: ['by wikidata', 'A559']
+
+    get(:get_record,
+      format: :xml,
+      identifier: rel.uuid,
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
+
+    doc = parse_xml(response.body)
+    properties = doc.xpath("//kor:relationship/kor:properties/kor:property")
+    expect(properties.count).to eq(2)
+    expect(properties.first.text).to eq('by wikidata')
+    expect(properties.last.text).to eq('A559')
+  end
+
 end

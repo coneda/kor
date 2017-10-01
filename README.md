@@ -1,13 +1,9 @@
 # ConedaKOR #
 
-ConedaKOR allows you to store arbitrary documents and interconnect them with
-relationships. You can build huge semantic networks for an unlimited amount of
-domains. This integrates a sophisticated ontology management tool with an easy
-to use media database.
-
-To learn more and for installation instructions, please have a look at the
-feature list below or visit
-[our website (German)](http://coneda.net/pages/download)
+ConedaKOR is a web based application which allows you to store arbitrary
+documents and interconnect them with relationships. You can build huge semantic
+networks for an unlimited amount of domains. This integrates a sophisticated
+ontology management tool with an easy to use media database.
 
 ## Changelog
 
@@ -50,12 +46,14 @@ see file COPYING
 * Access data via an OAI-PMH interface
 * Vagrant dev environment
 * good unit and integration test coverage
+* checked for security problems with
+  [brakeman](https://github.com/presidentbeef/brakeman)
 * a growing javascript widget library allowing easy integration into other apps
 * support for using Erlangen CRM and similar standards as basis for your
   ontology (including a convenient OWL import tool)
 
 
-## Documentation
+## System admistrator's documentation
 
 These instructions are intended for system operators who wish to deploy the 
 software for their users.
@@ -66,8 +64,9 @@ software for their users.
 * mysql server (>= 5.5)
 * elasticsearch (>= 1.7.2, < 5.0.0)
 * web server (optional but highly recommended)
+* neo4j (optional)
 
-### Deployment
+### Scripted installation
 
 Before we go into the details of the deployment process, **please be sure to
 backup the database and the `$DEPLOY_TO/shared` directory**. In practice, this
@@ -80,6 +79,9 @@ remotely, deploys the code to the specified directory and runs the necessary
 tasks (compiling assets, starting background jobs, …). The functionality does
 not include the installation of requirements, provisioning of a database server
 nor the setup of a web server, since those differ greatly from server to server.
+Also, it might be that your specific setup requires modification to the script,
+for example to manage the background job, you might prefer to use a systemd,
+changing the way it is restarted.
 
 The script expects a directory `$DEPLOY_TO` on the server where it has write
 permissions. Within, it will create two subdirectories `$DEPLOY_TO/releases` and
@@ -124,6 +126,10 @@ itself, so a call
 would deploy to instance02 according to the configuration above. On terminals 
 that support it, the output is colorized according to the exit code of every
 command issued by the script.
+
+The first time the script is run, some default configuration files are copied to
+the host. It will then stop execution and let you modify the files according to
+your setup. Re-run it when done.
 
 This will also start the background process that converts images and does other
 heavy lifting. However, this does not ensure monitoring nor restarting of that
@@ -277,8 +283,9 @@ all data.
 
 Authentication is performed via a web form at http://kor.example.com/login or by
 providing a valid `api_key` as `GET` or `POST` parameter. You may also specify a
-header `api_key` containing the key. Every user has a key which can be looked up
-by an administrator on the user's administration page.
+header `api-key` containing the key (make sure not to use an underscore). Every
+user has a key which can be looked up by an administrator on the user's
+administration page.
 
 In order to be able to create user accounts, a user needs the `User admin` role.
 
@@ -365,7 +372,7 @@ look like this:
             type: env
             user: ['REMOTE_USER']
             mail: ['mail']
-            domain: example.com
+            domain: ['example.com']
             map_to: my_user_template
 
 This may be combined with script based authentication sources. Authentication is
@@ -411,7 +418,7 @@ Two formats are available: `oai_dc` and `kor`. While the former is only
 maintained to fulfill the OAI-PMH specification, the latter gives full access to
 all content within the ConedaKOR installation. According to specification, you
 must choose the format like so `metadataPrefix=kor` as a request parameter. The
-kor format adheres to a schema we provide at
+kor format adheres to a schema that is included in ConedaKOR. It can be found at
 
 https://kor.example.com/schema/1.0/kor.xsd
 
