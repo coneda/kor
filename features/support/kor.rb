@@ -37,7 +37,7 @@ Before('@javascript') do
   allow(Capybara.current_session).to receive(:visit){ |*args|
     result = orig.call(*args)
     unless @local_storage_flushed
-      page.execute_script('Lockr.flush()')
+      page.execute_script('try {Lockr.flush()} catch (e) {}')
       @local_storage_flushed = true
     end
     result
@@ -47,7 +47,7 @@ end
 Capybara.default_max_wait_time = 5
 
 Capybara.javascript_driver = :selenium
-Capybara.javascript_driver = :selenium_chrome
+# Capybara.javascript_driver = :selenium_chrome
 
 if ENV['HEADLESS']
   Capybara.register_driver :headless_chrome do |app|

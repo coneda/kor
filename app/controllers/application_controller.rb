@@ -104,17 +104,6 @@ class ApplicationController < BaseController
       render json: {message: I18n.t('notices.access_denied')}, status: 403
     end
 
-    def session_expired?
-      if !current_user.guest? && !api_auth?
-        !!(session[:expires_at] && (session[:expires_at] < Time.now))
-      end
-    end
-
-    def api_auth?
-      key = params[:api_key] || request.headers["HTTP_API_KEY"]
-      key && User.exists?(api_key: key)
-    end
-    
     def generally_authorized?
       true
     end

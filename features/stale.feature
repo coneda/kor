@@ -11,7 +11,7 @@ Feature: Stale update protection
     When I go to the edit page for "entity" "Mona Lisa"
     And the "entity" "Mona Lisa" is updated behind the scenes
     And I press "Save"
-    Then I should see "The entity has been edited meanwhile. Please find the new values below"
+    Then I should see "The entity has been edited meanwhile. Please reload the page"
   
   
   @javascript
@@ -21,7 +21,7 @@ Feature: Stale update protection
     When I go to the edit page for "user" "joe"
     And the "user" "joe" is updated behind the scenes
     And I press "Save"
-    Then I should see "The user has been edited meanwhile. Please find the new values below"
+    Then I should see "The user has been edited meanwhile. Please reload the page"
     
   
   @javascript

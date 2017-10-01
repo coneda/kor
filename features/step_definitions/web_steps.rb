@@ -33,7 +33,14 @@ end
 
 When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |locator, quoted, value|
   value = "\"#{value}\"" if quoted == ' quoted'
-  field = page.first(:field, locator) || all(:css, locator).first
+
+  timeout = 5.0
+  field = nil
+  while timeout > 0 && !field
+    field = page.first(:field, locator) || all(:css, locator).first
+    timeout -= 0.2
+    sleep 0.2
+  end
   # field = all(:css, locator).first || find(:fillable_field, locator)
   # binding.pry if locator.match /Label/
   field.set value
