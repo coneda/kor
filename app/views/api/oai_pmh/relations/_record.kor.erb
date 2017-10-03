@@ -11,10 +11,20 @@
   <kor:reverse-name><%= record.reverse_name %></kor:reverse-name>
   <kor:description><%= record.description %></kor:description>
   <kor:from-type>
-    <kor:type id="<%= record.from_kind.uuid %>"><%= record.from_kind.name %></kor:type>
+    <kor:ref type="kind" id="<%= record.from_kind.uuid %>"><%= record.from_kind.name %></kor:ref>
   </kor:from-type>
   <kor:to-type>
-    <kor:type id="<%= record.to_kind.uuid %>"><%= record.to_kind.name %></kor:type>
+    <kor:ref type="kind" id="<%= record.to_kind.uuid %>"><%= record.to_kind.name %></kor:ref>
   </kor:to-type>
+  <kor:parents>
+    <% record.parents.each do |parent| %>
+      <kor:ref type="relation" id="<%= parent.uuid %>"></kor:ref>
+    <% end %>
+  </kor:parents>
+  <kor:children>
+    <% record.children.each do |child| %>
+      <kor:ref type="relation" id="<%= child.uuid %>"></kor:ref>
+    <% end %>
+  </kor:children>
 </kor:relation>
 <% end %>

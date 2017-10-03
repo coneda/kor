@@ -25,6 +25,20 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="parents">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ref" type="kor:reftype" minOccurs="0" maxOccurs="unbounded" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="children">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ref" type="kor:reftype" minOccurs="0" maxOccurs="unbounded" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -39,18 +53,32 @@
             <xs:element name="reverse-name" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
             <xs:element name="from-type">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="type" type="kor:typetype" minOccurs="1" maxOccurs="1"/>
-                </xs:sequence>
-              </xs:complexType>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ref" type="kor:reftype" minOccurs="1" maxOccurs="1" />
+                    </xs:sequence>
+                </xs:complexType>
             </xs:element>
             <xs:element name="to-type">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="type" type="kor:typetype" minOccurs="1" maxOccurs="1"/>
-                </xs:sequence>
-              </xs:complexType>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ref" type="kor:reftype" minOccurs="1" maxOccurs="1" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="parents">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ref" type="kor:reftype" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="children">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ref" type="kor:reftype" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
             </xs:element>
           </xs:sequence>
         </xs:complexType>
@@ -195,9 +223,10 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="typetype">
+    <xs:complexType name="reftype">
         <xs:simpleContent>
           <xs:extension base="xs:string">
+            <xs:attribute name="type" type="kor:simpletype" use="required"/>
             <xs:attribute name="id" type="xs:string" use="required"/>
           </xs:extension>
         </xs:simpleContent>
@@ -226,5 +255,14 @@
             <xs:element name="no-name-specifier" type="xs:string"/>
         </xs:sequence>
     </xs:group>
+
+    <xs:simpleType name="simpletype">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="kind" />
+            <xs:enumeration value="relation" />
+            <xs:enumeration value="entity" />
+            <xs:enumeration value="relationship" />
+        </xs:restriction>
+    </xs:simpleType>
 
 </xs:schema>
