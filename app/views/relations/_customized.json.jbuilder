@@ -1,7 +1,7 @@
 additions ||= []
 
 json.extract!(relation,
-  :id, :uuid, :name, :description, :reverse_name, :from_kind_ids, :to_kind_ids
+  :id, :uuid, :name, :description, :reverse_name, :from_kind_id, :to_kind_id
 )
 
 if additions.include?('technical') || additions.include?('all')

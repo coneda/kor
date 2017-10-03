@@ -1,0 +1,71 @@
+class SingularRelationEndpoints < ActiveRecord::Migration
+  def change
+    change_table :relations do |t|
+      t.integer :from_kind_id
+      t.integer :to_kind_id
+    end
+
+    Relation.reset_column_information
+
+    to_be_turned = []
+
+    Relation.all.each do |r|
+      fkids = YAML.load(r.from_kind_ids)
+      tkids = YAML.load(r.to_kind_ids)
+
+      fkids.product(tkids).each do |c|
+        from_kind_id = c[0]
+        to_kind_id = c[1]
+
+        new_r = r.dup
+        new_r.generate_uuid
+        new_r.update_attributes(
+          from_kind_id: from_kind_id,
+          to_kind_id: to_kind_id
+        )
+
+        progress = Kor.progress_bar("adapting relationships [#{r.name}, #{c.inspect}]", r.relationships.count)
+        r.relationships.includes(:from, :to).find_each do |rel|
+          if rel.from && rel.to
+            updates = {}
+
+            if rel.from.kind_id == from_kind_id && rel.to.kind_id == to_kind_id
+              updates[:relation_id] = new_r.id
+            end
+
+            if r.name == r.reverse_name
+              if rel.from.kind_id == to_kind_id && rel.to.kind_id == from_kind_id
+                updates[:relation_id] = new_r.id
+                updates[:from_id] = rel.to_id
+                updates[:to_id] = rel.from_id
+                to_be_turned << rel.id
+              end
+            end
+            rel.update_columns updates if updates != {}
+          end
+
+          progress.increment
+        end
+      end
+
+      r.destroy unless r.relationships.count > 0
+    end
+
+    DirectedRelationship
+      .joins('LEFT JOIN relationships rels ON rels.id = directed_relationships.relationship_id')
+      .update_all('directed_relationships.relation_id = rels.relation_id')
+
+    DirectedRelationship.where(relationship_id: to_be_turned).find_each do |dr|
+      dr.update_columns(
+        is_reverse: !dr.is_reverse,
+        from_id: dr.to_id,
+        to_id: dr.from_id
+      )
+    end
+
+    change_table :relations do |t|
+      t.remove :from_kind_ids
+      t.remove :to_kind_ids
+    end
+  end
+end

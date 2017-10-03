@@ -89,17 +89,22 @@ class Kor::Import::ErlangenCrm
         done[r[:reverse_url]] = true
 
         if r[:reverse_url] && r[:name].present?
-          relation = Relation.create(
-            url: url,
-            name: r[:name],
-            reverse_name: lookup[r[:reverse_url]][:name],
-            from_kind_ids: Kind.where(url: r[:from_urls]).pluck(:id),
-            to_kind_ids: Kind.where(url: r[:to_urls]).pluck(:id),
-            description: r[:description],
-            abstract: true
-          )
-          relation.save!
-          relations << relation
+          froms = Kind.where(url: r[:from_urls]).pluck(:id)
+          tos = Kind.where(url: r[:to_urls]).pluck(:id)
+
+          froms.product(tos).each do |c|
+            relation = Relation.create(
+              url: url,
+              name: r[:name],
+              reverse_name: lookup[r[:reverse_url]][:name],
+              from_kind_id: c[0],
+              to_kind_id: c[1],
+              description: r[:description],
+              abstract: true
+            )
+            relation.save!
+            relations << relation
+          end
         end
       end
     end

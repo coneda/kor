@@ -1,7 +1,4 @@
 class Relation < ActiveRecord::Base
-  serialize :from_kind_ids
-  serialize :to_kind_ids
-
   acts_as_paranoid
 
   has_many :relationships, :dependent => :destroy
@@ -10,6 +7,8 @@ class Relation < ActiveRecord::Base
   has_many :relation_child_inheritances, class_name: 'RelationInheritance', foreign_key: :parent_id, dependent: :destroy
   has_many :parents, through: :relation_parent_inheritances
   has_many :children, through: :relation_child_inheritances
+  belongs_to :from_kind, class_name: "Kind"
+  belongs_to :to_kind, class_name: "Kind"
   
   validates :reverse_name,
     :presence => true,
@@ -17,6 +16,8 @@ class Relation < ActiveRecord::Base
   validates :name,
     :presence => true,
     :white_space => true
+  validates :from_kind_id, :to_kind_id,
+    :presence => true
 
   validate do |relation|
     to_check = relation.parents.to_a
@@ -35,15 +36,37 @@ class Relation < ActiveRecord::Base
   end
 
   validate do |relation|
+    # collection possible endpoints from all parents
+    required_from_ids = nil
+    required_to_ids = nil
     relation.parents.each do |parent|
-      size = (parent.from_kind_ids & relation.from_kind_ids).size
-      if size < relation.from_kind_ids.size
-        relation.errors.add :from_kind_ids, :cannot_restrict_less_than_parent
-      end
+      from_ids = [parent.from_kind_id] + parent.from_kind.deep_child_ids
+      required_from_ids ||= from_ids
+      required_from_ids &= from_ids
+      to_ids = [parent.to_kind_id] + parent.to_kind.deep_child_ids
+      required_to_ids ||= to_ids
+      required_to_ids &= to_ids
+    end
 
-      size = (parent.to_kind_ids & relation.to_kind_ids).size
-      if size < relation.to_kind_ids.size
-        relation.errors.add :to_kind_ids, :cannot_restrict_less_than_parent
+    if required_from_ids.is_a?(Array)
+      enabled_from_ids = [relation.from_kind_id] + relation.from_kind.deep_child_ids
+      # puts 'fROM'
+      # p required_from_ids
+      # p enabled_from_ids
+      subset = ((required_from_ids & enabled_from_ids).size == enabled_from_ids.size)
+      unless subset
+        relation.errors.add :from_kind_id, :cannot_restrict_less_than_parent
+      end
+    end
+
+    if required_to_ids.is_a?(Array)
+      enabled_to_ids = [relation.to_kind_id] + relation.to_kind.deep_child_ids
+      # puts 'TO'
+      # p required_to_ids
+      # p enabled_to_ids
+      subset = ((required_to_ids & enabled_to_ids).size == enabled_to_ids.size)
+      unless subset
+        relation.errors.add :to_kind_id, :cannot_restrict_less_than_parent
       end
     end
   end
@@ -98,6 +121,22 @@ class Relation < ActiveRecord::Base
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :allowed, lambda {|user, policies| all}
+  scope :by_from, lambda {|ids|
+    if ids.blank?
+      all
+    else
+      ids = [ids] unless ids.is_a?(Array)
+      where(from_kind_id: ids.map{|i| i.to_i})
+    end
+  }
+  scope :by_to, lambda {|ids|
+    if ids.blank?
+      all
+    else
+      ids = [ids] unless ids.is_a?(Array)
+      where(to_kind_id: ids.map{|i| i.to_i})
+    end
+  }
   scope :pageit, lambda { |page, per_page|
     page = (page || 1) - 1
     per_page = [(per_page || 30).to_i, Kor.config['app']['max_results_per_request']].min
@@ -105,49 +144,11 @@ class Relation < ActiveRecord::Base
   }
   default_scope lambda { order(:name) }
   
-  def from_kind_ids
-    unless self[:from_kind_ids]
-      self[:from_kind_ids] = []
-    end
-
-    self[:from_kind_ids]
-  end
-
-  def to_kind_ids
-    unless self[:to_kind_ids]
-      self[:to_kind_ids] = []
-    end
-
-    self[:to_kind_ids]
-  end
-
-  def from_kind_ids=(values)
-    values |= []
-    write_attribute :from_kind_ids, values.map{|v|v.to_i}
-  end
-
-  def to_kind_ids=(values)
-    values |= []
-    write_attribute :to_kind_ids, values.map{|v|v.to_i}
-  end
-
   def self.available_relation_names(options = {})
-    from_ids = Kor.array_wrap(options[:from_ids] || []).map{|i| i.to_i}
-    to_ids = Kor.array_wrap(options[:to_ids] || []).map{|i| i.to_i}
+    names = by_from(options[:from_ids]).by_to(options[:to_ids]).map{|r| r.name}
+    reverse_names = by_from(options[:to_ids]).by_to(options[:from_ids]).map{|r| r.reverse_name}
 
-    results = []
-    self.all.each do |relation|
-      condition = 
-        (!from_ids.present? || (from_ids & relation.from_kind_ids).present?) &&
-        (!to_ids.present? || (to_ids & relation.to_kind_ids).present?)
-      results << relation.name if condition
-      condition = 
-        (!from_ids.present? || (from_ids & relation.to_kind_ids).present?) &&
-        (!to_ids.present? || (to_ids & relation.from_kind_ids).present?)
-      results << relation.reverse_name if condition
-    end
-
-    results.sort.uniq
+    (names + reverse_names).sort.uniq
   end
 
   def self.primary_relation_names

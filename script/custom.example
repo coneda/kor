@@ -67,10 +67,30 @@ begin
   ])
 
   # create a few relations
-  has_created = Relation.create!(:name => "has created", :reverse_name => "was created by")
-  shows = Relation.create!(:name => "shows", :reverse_name => "is shown by")
-  equivalent = Relation.create!(:name => "is equivalent to", :reverse_name => "is equivalent to")
-  is_located_at = Relation.create!(:name => "is located at", :reverse_name => "is location of")
+  has_created = Relation.create!(
+    name: "has created", 
+    reverse_name: "was created by",
+    from_kind: people,
+    to_kind: works
+  )
+  shows = Relation.create!(
+    name: "shows",
+    reverse_name: "is shown by",
+    from_kind: Kind.medium_kind,
+    to_kind: works
+  )
+  equivalent = Relation.create!(
+    name: "is equivalent to",
+    reverse_name: "is equivalent to",
+    from_kind: works,
+    to_kind: works
+  )
+  is_located_at = Relation.create!(
+    name: "is located at",
+    reverse_name: "is location of",
+    :from_kind: work,
+    :to_kind: institutions
+  )
 
   # create some entities
   mona_lisa = Entity.create!(

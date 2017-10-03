@@ -188,15 +188,15 @@ class Kor::Tasks
   end
 
   def self.consistency_check(config = {})
-    Relationship.includes(:relation, :from, :to).inconsistent.each do |r|
+    Relationship.includes(:relation, :from, :to).inconsistent.find_each do |r|
       puts [
-        "#{r.from.display_name} [#{r.from_id}, #{r.from.kind.name}]".colorize(:blue),
+        "#{r.id} #{r.from.display_name} [#{r.from_id}, #{r.from.kind.name}]".colorize(:blue),
         r.relation.name.colorize(:light_blue),
         "#{r.to.display_name} [#{r.to_id}, #{r.to.kind.name}]".colorize(:blue),
         'is unexpected, the relation expects:',
-        Kind.find(r.relation.from_kind_ids).map{|k| k.name}.join(','),
+        Kind.find(r.relation.from_kind_id).name,
         '->',
-        Kind.find(r.relation.to_kind_ids).map{|k| k.name}.join(',')
+        Kind.find(r.relation.to_kind_id).name
       ].join(' ')
     end
   end

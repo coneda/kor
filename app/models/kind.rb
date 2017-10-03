@@ -61,6 +61,13 @@ class Kind < ActiveRecord::Base
     kind_child_inheritances.pluck(:child_id)
   end
 
+  def deep_child_ids
+    results = kind_child_inheritances.map do |kci|
+      [kci.child_id] + kci.child.deep_child_ids
+    end
+    results.flatten.uniq
+  end
+
   def child_ids=(values)
     self.children = Kind.where(id: values).to_a
   end

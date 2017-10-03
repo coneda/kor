@@ -897,8 +897,8 @@ de:
         name: Name
         reverse_name: Umkehrung
         description: Beschreibung
-        from_kind_ids: erlaubte Entitätstypen (von)
-        to_kind_ids: erlaubte Entitätstypen (zu)
+        from_kind_id: erlaubter Entitätstyp (von)
+        to_kind_id: erlaubter Entitätstyp (zu)
         wikidata_id: Wikidata ID
         parent: Stammtyp
         abstract: abstrakt

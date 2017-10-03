@@ -895,8 +895,8 @@ en:
         name: name
         reverse_name: inversion
         description: description
-        from_kind_ids: permitted types (from)
-        to_kind_ids: permitted types (to)
+        from_kind_id: permitted type (from)
+        to_kind_id: permitted type (to)
         wikidata_id: Wikidata ID
         parent: parent relation
         abstract: abstract

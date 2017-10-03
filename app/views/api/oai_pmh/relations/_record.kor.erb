@@ -10,15 +10,11 @@
   <kor:name><%= record.name %></kor:name>
   <kor:reverse-name><%= record.reverse_name %></kor:reverse-name>
   <kor:description><%= record.description %></kor:description>
-  <kor:from-types>
-    <% Kind.where(:id => record.from_kind_ids).each do |kind| %>
-      <kor:type id="<%= kind.uuid %>"><%= kind.name %></kor:type>
-    <% end %>
-  </kor:from-types>
-  <kor:to-types>
-    <% Kind.where(:id => record.to_kind_ids).each do |kind| %>
-      <kor:type id="<%= kind.uuid %>"><%= kind.name %></kor:type>
-    <% end %>
-  </kor:to-types>
+  <kor:from-type>
+    <kor:type id="<%= record.from_kind.uuid %>"><%= record.from_kind.name %></kor:type>
+  </kor:from-type>
+  <kor:to-type>
+    <kor:type id="<%= record.to_kind.uuid %>"><%= record.to_kind.name %></kor:type>
+  </kor:to-type>
 </kor:relation>
 <% end %>

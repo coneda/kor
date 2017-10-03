@@ -17,7 +17,7 @@ Feature: relations
   @javascript
   Scenario: edit relation
     Given I am logged in as "admin"
-    And the relation "loves/is being loved by"
+    And the relation "loves/is being loved by" between "person/people" and "person/people"
     When I go to the relations page
     And I click icon "edit" within "[data-is=kor-relations]"
     And I fill in "Name" with "hates"
@@ -35,7 +35,7 @@ Feature: relations
   @javascript
   Scenario: delete relation
     Given I am logged in as "admin"
-    And the relation "loves/is being loved by"
+    And the relation "loves/is being loved by" between "person/people" and "person/people"
     When I go to the relations page
     And I ignore the next confirmation box
     And I click icon "remove" within "[data-is=kor-relations]"
@@ -51,12 +51,14 @@ Feature: relations
   @javascript
   Scenario: make relation inherit from another
     Given I am logged in as "admin"
-    And the relation "is ancestor of/is descendent of"
+    And the relation "is ancestor of/is descendent of" between "person/people" and "person/people"
     When I go to the relations page
     And I click icon "plus-square"
     And I fill in "Name" with "is father of"
     And I fill in "Inversion" with "is son of"
     And I select "is ancestor of" from "Parent relation"
+    And I select "person" from "Permitted type (from)"
+    And I select "person" from "Permitted type (to)"
     And I press "Save"
     Then I should see "has been created"
     And relation "is father of" should have parent "is ancestor of"
@@ -64,11 +66,13 @@ Feature: relations
   @javascript
   Scenario: resolve relation inheritance
     Given I am logged in as "admin"
-    And the relation "is ancestor of/is descendent of"
+    And the relation "is ancestor of/is descendent of" between "person/people" and "person/people"
     And the relation "is father of/is son of" inheriting from "is ancestor of"
     When I go to the relations page
     And I click icon "edit" within "[data-is=kor-relations] tbody tr:last-child"
     And I unselect "is ancestor of" from "Parent relation"
+    And I select "person" from "Permitted type (from)"
+    And I select "person" from "Permitted type (to)"
     And I press "Save"
     Then I should see "has been changed"
     And relation "is father of" should not have parent "is ancestor of"
@@ -76,14 +80,16 @@ Feature: relations
   @javascript
   Scenario: make relation inherit from multiple anothers
     Given I am logged in as "admin"
-    And the relation "is ancestor of/is descendent of"
-    And the relation "is related to/is related to"
+    And the relation "is ancestor of/is descendent of" between "person/people" and "person/people"
+    And the relation "is related to/is related to" between "person/people" and "person/people"
     When I go to the relations page
     And I click icon "plus-square"
     And I fill in "Name" with "is father of"
     And I fill in "Inversion" with "is son of"
     And I select "is ancestor of" from "Parent relation"
     And I select "is related to" from "Parent relation"
+    And I select "person" from "Permitted type (from)"
+    And I select "person" from "Permitted type (to)"
     And I press "Save"
     Then I should see "has been created"
     And relation "is father of" should have parent "is ancestor of"
@@ -92,8 +98,8 @@ Feature: relations
   @javascript
   Scenario: resolve one of multiple relation inheritances
     Given I am logged in as "admin"
-    And the relation "is ancestor of/is descendent of"
-    And the relation "is related to/is related to"
+    And the relation "is ancestor of/is descendent of" between "person/people" and "person/people"
+    And the relation "is related to/is related to" between "person/people" and "person/people"
     And the relation "is father of/is son of" inheriting from "is ancestor of,is related to"
     When I go to the relations page
     And I click icon "edit" within "[data-is=kor-relations] tbody tr:nth-child(2)"
@@ -107,13 +113,13 @@ Feature: relations
   Scenario: try to create a relation inheritances with a conflict
     Given I am logged in as "admin"
     And the kind "person/people"
-    And the relation "is ancestor of/is descendent of"
+    And the relation "is ancestor of/is descendent of" between "person/people" and "person/people"
     When I go to the relations page
     And I click icon "plus-square"
     And I fill in "Name" with "is father of"
     And I fill in "Inversion" with "is son of"
     And I select "is ancestor of" from "Parent relation"
-    And I select "person" from "Permitted types (from)"
+    And I select "person" from "Permitted type (from)"
     And I press "Save"
     Then I should see "the input contains errors"
     And I should see "cannot allow more endpoints than its ancestors"

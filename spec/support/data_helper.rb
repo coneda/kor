@@ -40,13 +40,13 @@ module DataHelper
   
   def test_relations
     FactoryGirl.create :has_created,
-      :from_kind_ids => [@person_kind.id], :to_kind_ids => [@artwork_kind.id]
+      :from_kind_id => @person_kind.id, :to_kind_id => @artwork_kind.id
     FactoryGirl.create :is_equivalent_to,
-      :from_kind_ids => [@artwork_kind.id], :to_kind_ids => [@artwork_kind.id]
+      :from_kind_id => @artwork_kind.id, :to_kind_id => @artwork_kind.id
     FactoryGirl.create :is_located_at,
-      :from_kind_ids => [@artwork_kind.id], :to_kind_ids => [@location_kind.id]
+      :from_kind_id => @artwork_kind.id, :to_kind_id => @location_kind.id
     FactoryGirl.create :shows,
-      :from_kind_ids => [@medium_kind.id], :to_kind_ids => [@artwork_kind.id]
+      :from_kind_id => @medium_kind.id, :to_kind_id => @artwork_kind.id
   end
   
   def test_kinds
@@ -75,8 +75,8 @@ module DataHelper
     @people = FactoryGirl.create :people
     @works = FactoryGirl.create :works
 
-    FactoryGirl.create :has_created, from_kind_ids: [@people.id], to_kind_ids: [@works.id]
-    FactoryGirl.create :shows, from_kind_ids: [@media.id], to_kind_ids: [@works.id]
+    FactoryGirl.create :has_created, from_kind_id: @people.id, to_kind_id: @works.id
+    FactoryGirl.create :shows, from_kind_id: @media.id, to_kind_id: @works.id
 
     @leonardo = FactoryGirl.create :leonardo
     @mona_lisa = FactoryGirl.create :mona_lisa

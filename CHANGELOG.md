@@ -18,6 +18,9 @@ commit history on GitHub.
 * most parts of OAI-PMH responses are now cached which should enhance
   performance greatly
 * added reference implementation for OAI-PMH client
+* relations can now only define one source and one target entity type
+  (IMPORTANT: check https://github.com/coneda/kor/issues/94 for migration
+  implications)
 
 ## Version 2.1.0
 

@@ -38,17 +38,17 @@
             <xs:element name="name" type="xs:string"/>
             <xs:element name="reverse-name" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
-            <xs:element name="from-types">
+            <xs:element name="from-type">
               <xs:complexType>
                 <xs:sequence>
-                  <xs:element name="type" type="kor:typetype" minOccurs="0" maxOccurs="unbounded"/>
+                  <xs:element name="type" type="kor:typetype" minOccurs="1" maxOccurs="1"/>
                 </xs:sequence>
               </xs:complexType>
             </xs:element>
-            <xs:element name="to-types">
+            <xs:element name="to-type">
               <xs:complexType>
                 <xs:sequence>
-                  <xs:element name="type" type="kor:typetype" minOccurs="0" maxOccurs="unbounded"/>
+                  <xs:element name="type" type="kor:typetype" minOccurs="1" maxOccurs="1"/>
                 </xs:sequence>
               </xs:complexType>
             </xs:element>

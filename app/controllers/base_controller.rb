@@ -22,8 +22,9 @@ class BaseController < ActionController::Base
     def user_by_api_key
       api_key = 
         params[:api_key] ||
-        request.headers["HTTP_API_KEY"] ||
-        request.headers["API_KEY"]
+        request.headers['HTTP_API_KEY'] ||
+        request.headers['API_KEY'] ||
+        request.headers['api_key']
 
       if api_key
         User.where(:api_key => api_key).first

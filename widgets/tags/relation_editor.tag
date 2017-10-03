@@ -40,24 +40,22 @@
 
         <kor-field
           if={possible_kinds}
-          field-id="from_kind_ids"
+          field-id="from_kind_id"
           type="select"
           options={possible_kinds}
-          multiple={true}
-          label-key="relation.from_kind_ids"
+          label-key="relation.from_kind_id"
           model={relation}
-          errors={errors.from_kind_ids}
+          errors={errors.from_kind_id}
         />
 
         <kor-field
           if={possible_kinds}
-          field-id="to_kind_ids"
+          field-id="to_kind_id"
           type="select"
           options={possible_kinds}
-          multiple={true}
-          label-key="relation.to_kind_ids"
+          label-key="relation.to_kind_id"
           model={relation}
-          errors={errors.to_kind_ids}
+          errors={errors.to_kind_id}
         />
 
         <kor-field

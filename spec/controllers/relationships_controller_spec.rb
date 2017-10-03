@@ -65,8 +65,8 @@ RSpec.describe RelationshipsController, :type => :controller do
     session[:current_entity] = side_entity.id
         
     post :create, :relationship => {
-      :from_id => main_entity.id,
-      :to_id => side_entity.id,
+      :from_id => side_entity.id,
+      :to_id => main_entity.id,
       :relation_name => 'has created'
     }
     expect(response.status).to eq(200)
@@ -80,6 +80,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
     set_side_collection_policies :view => [@admins]
     set_main_collection_policies :edit => []
+
+    FactoryGirl.create :has_created, from_kind: main_entity.kind, to_kind: side_entity.kind
   
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
@@ -102,7 +104,9 @@ RSpec.describe RelationshipsController, :type => :controller do
     fake_authentication :user => @admin
 
     set_side_collection_policies :view => [@admins]
-  
+
+    FactoryGirl.create :has_created, from_kind: main_entity.kind, to_kind: side_entity.kind
+
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
 
@@ -120,6 +124,8 @@ RSpec.describe RelationshipsController, :type => :controller do
 
     set_side_collection_policies :view => [@admins]
     set_main_collection_policies :edit => []
+
+    FactoryGirl.create :has_created, from_kind: main_entity.kind, to_kind: side_entity.kind
   
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
@@ -131,6 +137,7 @@ RSpec.describe RelationshipsController, :type => :controller do
     expect(response.status).to eq(403)
   end
 
+  # TODO: write this in a smarter way
   it "should allow to edit relationships when one entity is editable and the other is viewable" do
     test_data_for_auth
     test_kinds
@@ -138,6 +145,10 @@ RSpec.describe RelationshipsController, :type => :controller do
 
     set_side_collection_policies :view => [@admins]
     set_main_collection_policies :edit => [@admins]
+
+    FactoryGirl.create :has_created, from_kind: main_entity.kind, to_kind: side_entity.kind
+    FactoryGirl.create :shows, from_kind: main_entity.kind, to_kind: side_entity.kind
+    FactoryGirl.create :shows, from_kind: side_entity.kind, to_kind: main_entity.kind
   
     relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
     relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
@@ -247,7 +258,7 @@ RSpec.describe RelationshipsController, :type => :controller do
     default = FactoryGirl.create :default
     leonardo = FactoryGirl.create :leonardo
     mona_lisa = FactoryGirl.create :mona_lisa
-    has_created = FactoryGirl.create :has_created
+    has_created = FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
 
     Kor::Auth.grant default, [:view, :edit], to: admins
 

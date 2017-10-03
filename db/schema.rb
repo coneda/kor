@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170315213600) do
+ActiveRecord::Schema.define(version: 20171001152043) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -240,9 +240,9 @@ ActiveRecord::Schema.define(version: 20170315213600) do
     t.datetime "updated_at"
     t.integer  "lock_version", limit: 4,     default: 0
     t.string   "plural_name",  limit: 255
+    t.datetime "deleted_at"
     t.boolean  "abstract"
     t.string   "url",          limit: 255
-    t.datetime "deleted_at"
   end
 
   add_index "kinds", ["deleted_at"], name: "index_kinds_on_deleted_at", using: :btree
@@ -283,18 +283,18 @@ ActiveRecord::Schema.define(version: 20170315213600) do
   end
 
   create_table "relations", force: :cascade do |t|
-    t.string   "uuid",          limit: 255
-    t.string   "name",          limit: 255
-    t.string   "reverse_name",  limit: 255
+    t.string   "uuid",         limit: 255
+    t.string   "name",         limit: 255
+    t.string   "reverse_name", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",  limit: 4,     default: 0
-    t.text     "from_kind_ids", limit: 65535
-    t.text     "to_kind_ids",   limit: 65535
-    t.text     "description",   limit: 65535
+    t.integer  "lock_version", limit: 4,     default: 0
+    t.text     "description",  limit: 65535
     t.datetime "deleted_at"
-    t.string   "url",           limit: 255
+    t.string   "url",          limit: 255
     t.boolean  "abstract"
+    t.integer  "from_kind_id", limit: 4
+    t.integer  "to_kind_id",   limit: 4
   end
 
   add_index "relations", ["deleted_at"], name: "index_relations_on_deleted_at", using: :btree

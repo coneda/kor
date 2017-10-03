@@ -35,9 +35,6 @@ class RelationsController < ApplicationController
   end
 
   def update
-    params[:relation][:from_kind_ids] ||= []
-    params[:relation][:to_kind_ids] ||= []
-    
     @relation = Relation.find(params[:id])
 
     if @relation.update_attributes(relation_params)

@@ -4508,7 +4508,7 @@ riot.tag2("kor-menu-fix", "", "", "", function(opts) {
     };
 });
 
-riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-panel> <h1> <span show="{opts.id}" if="{relation}">{relation.name}</span> <span show="{!opts.id}"> {wApp.i18n.t(\'objects.create\', {               \'interpolations\': {                 \'o\': wApp.i18n.t(\'activerecord.models.relation\')               }             })} </span> </h1> <form onsubmit="{submit}" if="{relation && possible_parents}"> <kor-field field-id="name" label-key="relation.name" model="{relation}" errors="{errors.name}"></kor-field> <kor-field field-id="reverse_name" label-key="relation.reverse_name" model="{relation}" errors="{errors.reverse_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="relation.description" model="{relation}"></kor-field> <kor-field if="{possible_kinds}" field-id="from_kind_ids" type="select" options="{possible_kinds}" multiple="{true}" label-key="relation.from_kind_ids" model="{relation}" errors="{errors.from_kind_ids}"></kor-field> <kor-field if="{possible_kinds}" field-id="to_kind_ids" type="select" options="{possible_kinds}" multiple="{true}" label-key="relation.to_kind_ids" model="{relation}" errors="{errors.to_kind_ids}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="relation.parent" model="{relation}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="relation.abstract" model="{relation}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form> </kor-panel> </kor-layout-panel>', "", "", function(opts) {
+riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-panel> <h1> <span show="{opts.id}" if="{relation}">{relation.name}</span> <span show="{!opts.id}"> {wApp.i18n.t(\'objects.create\', {               \'interpolations\': {                 \'o\': wApp.i18n.t(\'activerecord.models.relation\')               }             })} </span> </h1> <form onsubmit="{submit}" if="{relation && possible_parents}"> <kor-field field-id="name" label-key="relation.name" model="{relation}" errors="{errors.name}"></kor-field> <kor-field field-id="reverse_name" label-key="relation.reverse_name" model="{relation}" errors="{errors.reverse_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="relation.description" model="{relation}"></kor-field> <kor-field if="{possible_kinds}" field-id="from_kind_id" type="select" options="{possible_kinds}" label-key="relation.from_kind_id" model="{relation}" errors="{errors.from_kind_id}"></kor-field> <kor-field if="{possible_kinds}" field-id="to_kind_id" type="select" options="{possible_kinds}" label-key="relation.to_kind_id" model="{relation}" errors="{errors.to_kind_id}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="relation.parent" model="{relation}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="relation.abstract" model="{relation}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form> </kor-panel> </kor-layout-panel>', "", "", function(opts) {
     var error, fetch, fetchPossibleKinds, fetchPossibleParents, success, tag;
     tag = this;
     window.t = tag;
@@ -4627,7 +4627,7 @@ riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-pan
     };
 });
 
-riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/relations/new"> <i class="fa fa-plus-square"></i> </a> </div> <div if="{filtered_records && !filtered_records.length}"> {wApp.i18n.t(\'objects.none_found\', {       interpolations: {o: \'activerecord.models.relation.other\'},       capitalize: true     })} </div> <table class="kor_table text-left" if="{filtered_records && filtered_records.length}"> <thead> <tr> <th>{wApp.i18n.t(\'activerecord.attributes.relation.name\')}</th> <th> {wApp.i18n.t(\'activerecord.attributes.relation.from_kind_ids\')} {wApp.i18n.t(\'activerecord.attributes.relation.to_kind_ids\')} </th> </tr> </thead> <tbody> <tr each="{relation in filtered_records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.from_id\')}: </span> {fromList(relation)} </div> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.to_id\')}: </span> {toList(relation)} </div> </td> <td class="text-right buttons"> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table>', "", "", function(opts) {
+riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/relations/new"> <i class="fa fa-plus-square"></i> </a> </div> <div if="{filtered_records && !filtered_records.length}"> {wApp.i18n.t(\'objects.none_found\', {       interpolations: {o: \'activerecord.models.relation.other\'},       capitalize: true     })} </div> <table class="kor_table text-left" if="{filtered_records && filtered_records.length}"> <thead> <tr> <th>{wApp.i18n.t(\'activerecord.attributes.relation.name\')}</th> <th> {wApp.i18n.t(\'activerecord.attributes.relation.from_kind_id\')} {wApp.i18n.t(\'activerecord.attributes.relation.to_kind_id\')} </th> </tr> </thead> <tbody> <tr each="{relation in filtered_records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="text-right buttons"> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table>', "", "", function(opts) {
     var fetch, fetchKinds, filter_records, tag;
     tag = this;
     tag.requireRoles = [ "relation_admin" ];
@@ -4688,31 +4688,8 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
             }
         }();
     };
-    tag.fromList = function(relation) {
-        var id;
-        return function() {
-            var i, len, ref, results1;
-            ref = relation.from_kind_ids;
-            results1 = [];
-            for (i = 0, len = ref.length; i < len; i++) {
-                id = ref[i];
-                results1.push(tag.kindLookup[id].name);
-            }
-            return results1;
-        }().join(", ");
-    };
-    tag.toList = function(relation) {
-        var id;
-        return function() {
-            var i, len, ref, results1;
-            ref = relation.to_kind_ids;
-            results1 = [];
-            for (i = 0, len = ref.length; i < len; i++) {
-                id = ref[i];
-                results1.push(tag.kindLookup[id].name);
-            }
-            return results1;
-        }().join(", ");
+    tag.kind = function(id) {
+        return tag.kindLookup[id].name;
     };
     fetch = function() {
         return Zepto.ajax({

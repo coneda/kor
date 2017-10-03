@@ -21,8 +21,8 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     mona_lisa = FactoryGirl.create :mona_lisa
     leonardo = FactoryGirl.create :leonardo, :collection_id => priv.id
 
-    FactoryGirl.create :has_created
-    Relationship.relate_and_save mona_lisa, "has created", leonardo
+    FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
+    Relationship.relate_and_save leonardo, "has created", mona_lisa
   end
 
   it "should respond to 'Identify'" do

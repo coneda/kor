@@ -36,8 +36,8 @@
       <tr>
         <th>{wApp.i18n.t('activerecord.attributes.relation.name')}</th>
         <th>
-          {wApp.i18n.t('activerecord.attributes.relation.from_kind_ids')}
-          {wApp.i18n.t('activerecord.attributes.relation.to_kind_ids')}
+          {wApp.i18n.t('activerecord.attributes.relation.from_kind_id')}
+          {wApp.i18n.t('activerecord.attributes.relation.to_kind_id')}
         </th>
       </tr>
     </thead>
@@ -53,13 +53,13 @@
             <span class="label">
               {wApp.i18n.t('activerecord.attributes.relationship.from_id')}:
             </span>
-            {fromList(relation)}
+            {kind(relation.from_kind_id)}
           </div>
           <div if={kindLookup}>
             <span class="label">
               {wApp.i18n.t('activerecord.attributes.relationship.to_id')}:
             </span>
-            {toList(relation)}
+            {kind(relation.to_kind_id)}
           </div>
         </td>
         <td class="text-right buttons">
@@ -122,11 +122,7 @@
       else
         tag.data.records
 
-    tag.fromList = (relation) ->
-      (tag.kindLookup[id].name for id in relation.from_kind_ids).join(', ')
-
-    tag.toList = (relation) ->
-      (tag.kindLookup[id].name for id in relation.to_kind_ids).join(', ')
+    tag.kind = (id) -> tag.kindLookup[id].name
 
     fetch = ->
       Zepto.ajax(

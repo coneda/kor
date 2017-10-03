@@ -44,8 +44,8 @@ Given /^the setup "([^"]*)"$/ do |name|
       step "the entity \"Mona Lisa\" of kind \"Werk/Werke\""
       step "the kind \"Ort/Orte\""
       step "the medium \"spec/fixtures/image_a.jpg\""
-      step "the relation \"stellt dar/wird dargestellt von\""
-      step "the relation \"ist äquivalent zu/ist äquivalent zu\""
+      step "the relation \"stellt dar/wird dargestellt von\" between \"medium/media\" and \"Ort/Orte\""
+      step "the relation \"ist äquivalent zu/ist äquivalent zu\" between \"Werk/Werke\" and \"Ort/Orte\""
       
       mona_lisa = Entity.find_by_name('Mona Lisa')
       test_entity = FactoryGirl.create :location
