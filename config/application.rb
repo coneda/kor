@@ -116,14 +116,3 @@ end
 #       when creating relationships
 # TODO: add consistent optimistic locking
 # TODO: clean up widget directory
-
-# * main ticket: https://github.com/coneda/kor/issues/53
-# * Import Erlangen CRM, how to expose functionality? 
-# * TODO (15h = 8h):
-#   * only a single type for relationship ends (3h)
-#     https://github.com/coneda/kor/issues/94
-#   * expose hierarchy in API (1h): https://github.com/coneda/kor/issues/113
-#   * more tests for inheritable relations? (3h)
-#   * make existing tests pass (3h)
-#   * wrap up (5h)
-#   * feedback loops (8h)
