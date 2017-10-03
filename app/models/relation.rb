@@ -171,10 +171,10 @@ class Relation < ActiveRecord::Base
     result ||= {}
     return result[name] if result[name]
   
-    relation = find_by_name( name )
+    relation = find_by_name(name)
     return (result[name] = relation.reverse_name) if relation
 
-    relation = find_by_reverse_name( name )
+    relation = find_by_reverse_name(name)
     return (result[name] = relation.name) if relation
   end
 

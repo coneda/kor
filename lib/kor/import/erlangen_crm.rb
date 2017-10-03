@@ -149,9 +149,4 @@ class Kor::Import::ErlangenCrm
       end
     end
 
-    # TODO: remove this!
-    def crm
-      @crm ||= Nokogiri::XML(File.read '/home/schepp/Desktop/ecrm_current.owl')
-    end
-
 end

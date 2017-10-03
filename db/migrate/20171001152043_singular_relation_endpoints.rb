@@ -55,13 +55,25 @@ class SingularRelationEndpoints < ActiveRecord::Migration
       .joins('LEFT JOIN relationships rels ON rels.id = directed_relationships.relationship_id')
       .update_all('directed_relationships.relation_id = rels.relation_id')
 
-    DirectedRelationship.where(relationship_id: to_be_turned).find_each do |dr|
-      dr.update_columns(
-        is_reverse: !dr.is_reverse,
-        from_id: dr.to_id,
-        to_id: dr.from_id
-      )
-    end
+    DirectedRelationship
+      .from('directed_relationships dr')
+      .joins('LEFT JOIN relationships rels ON rels.id = dr.relationship_id')
+      .joins('LEFT JOIN relations r ON r.id = dr.relation_id')
+      .update_all("
+        dr.relation_name = if (dr.is_reverse, r.reverse_name, r.name),
+        dr.from_id = if (dr.is_reverse, rels.to_id, rels.from_id),
+        dr.to_id = if (dr.is_reverse, rels.from_id, rels.to_id)
+      ")
+
+    # progress = Kor.progress_bar('adapting directed relationships', DirectedRelationship.count)
+    # DirectedRelationship.includes(:relationship, :relation).find_each do |dr|
+    #   dr.update_columns(
+    #     relation_name: (dr.is_reverse ? dr.relation.reverse_name : dr.relation.name),
+    #     from_id: (dr.is_reverse ? dr.relationship.to_id : dr.relationship.from_id),
+    #     to_id: (dr.is_reverse ? dr.relationship.from_id : dr.relationship.to_id)
+    #   )
+    #   progress.increment
+    # end
 
     change_table :relations do |t|
       t.remove :from_kind_ids
