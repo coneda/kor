@@ -67,3 +67,7 @@ RUN gem update bundler
   ENV RAILS_SERVE_STATIC_FILES true
   RUN bash -c "RAILS_GROUPS=assets bundle exec rake assets:precompile" kor
 <% end %>
+
+ADD public/*.css /opt/kor/current/public/
+ADD public/*.js /opt/kor/current/public/
+ADD public/fonts /opt/kor/current/public/fonts

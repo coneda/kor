@@ -79,7 +79,7 @@
     tag.requireRoles = ['relation_admin']
     tag.mixin(wApp.mixins.session)
 
-    window.t = tag
+    # window.t = tag
 
     tag.on 'mount', -> 
       fetch()
