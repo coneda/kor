@@ -582,6 +582,10 @@ Those sheets may be modified and imported later on.
 
 * identification columns (id and uuid) are not imported: they are only used to
   identify existing records on imports. Leave empty when adding new data.
+* when creating new records, you will have to fill in at least the columns for
+  kind_id, collection_id and name (or no_name_statement). For the serialized
+  columns, please use their "natural" empty value if you don't use them. So
+  for dataset `{}`, for properties `{}` for synonyms: `[]` for datings: `[]`.
 * the deleted column is not imported: enter any non-empty value in order to
   delete the entity on import.
 * timestamps are not imported: they will be changed if the entity will be
