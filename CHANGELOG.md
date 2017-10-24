@@ -13,6 +13,10 @@ commit history on GitHub.
 
 ### User
 
+* kinds and relations can now have semantical parents/children. This is to
+  prepare cross-installation data migrations and reference model compliance
+* kinds and relations can be set to be `abstract` which removes them from the
+  interface but allows them to be used for semantical inheritance.
 * for authentication with an api key via request headers, header name has to be
   dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`.
 * most parts of OAI-PMH responses are now cached which should enhance
@@ -21,6 +25,7 @@ commit history on GitHub.
 * relations can now only define one source and one target entity type
   (IMPORTANT: check https://github.com/coneda/kor/issues/94 for migration
   implications)
+* added reproducible uuids when importing the Erlangen CRM
 
 ## Version 2.1.0
 

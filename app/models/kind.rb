@@ -76,10 +76,6 @@ class Kind < ActiveRecord::Base
     child_ids.empty? && !medium_kind? && entities.count == 0
   end
 
-  def url
-    self[:url] || "#{Kor.base_url}/kinds/#{id}"
-  end
-
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
   end

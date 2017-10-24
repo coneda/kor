@@ -10,7 +10,9 @@
 
       <ul class="subitems">
         <% Kind.all.each do |k| %>
-          <li><%= h k.plural_name %>: <%= k.entities.count %></li>
+          <% if k.entities.count > 0 %>
+            <li><%= h k.plural_name %>: <%= k.entities.count %></li>
+          <% end %>
         <% end %>    
       </ul>
     <% end %>

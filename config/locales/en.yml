@@ -336,7 +336,7 @@ en:
       one: "activation"
     user:
       one: "user"
-      other: "user"
+      other: "users"
     set:
       one: "set"
       other: "sets"
@@ -756,7 +756,7 @@ en:
           other: personal
       user:
         one: user
-        other: user
+        other: users
 
     attributes:
       field:

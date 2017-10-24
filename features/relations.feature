@@ -78,7 +78,7 @@ Feature: relations
     And relation "is father of" should not have parent "is ancestor of"
 
   @javascript
-  Scenario: make relation inherit from multiple anothers
+  Scenario: make relation inherit from multiple others
     Given I am logged in as "admin"
     And the relation "is ancestor of/is descendent of" between "person/people" and "person/people"
     And the relation "is related to/is related to" between "person/people" and "person/people"
@@ -103,7 +103,8 @@ Feature: relations
     And the relation "is father of/is son of" inheriting from "is ancestor of,is related to"
     When I go to the relations page
     And I click icon "edit" within "[data-is=kor-relations] tbody tr:nth-child(2)"
-    And I unselect "is ancestor of" from "Parent relation"
+    Then options "is ancestor of,is related to" from "Parent relation" should be selected
+    When I unselect "is ancestor of" from "Parent relation"
     And I press "Save"
     Then I should see "has been changed"
     And relation "is father of" should not have parent "is ancestor of"

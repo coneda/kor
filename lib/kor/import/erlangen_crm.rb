@@ -21,7 +21,8 @@ class Kor::Import::ErlangenCrm
           klass.xpath('rdfs:label').text + "\n\n" + 
           klass.xpath('rdfs:comment').text 
         ),
-        abstract: true
+        abstract: true,
+        uuid: uuid_mapping[klass['rdf:about']]
       )
 
       unless kind.valid?
@@ -100,7 +101,8 @@ class Kor::Import::ErlangenCrm
               from_kind_id: c[0],
               to_kind_id: c[1],
               description: r[:description],
-              abstract: true
+              abstract: true,
+              uuid: uuid_mapping[url]
             )
             relation.save!
             relations << relation
@@ -147,6 +149,10 @@ class Kor::Import::ErlangenCrm
           raise "request failed: GET #{url} (#{response.status} #{response.body})"
         end
       end
+    end
+
+    def uuid_mapping
+      @uuid_mapping ||= JSON.load(File.read "#{Rails.root}/public/schema/crm_to_uuid_map.json")
     end
 
 end

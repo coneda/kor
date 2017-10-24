@@ -5,3 +5,4 @@ log/*
 data/*
 deploy/build
 .vagrant
+node_modules

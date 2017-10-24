@@ -156,38 +156,6 @@ Feature: Kinds
 
 
   @javascript
-  Scenario: display inherited fields from several parents and generations
-    Given the kind "Actor/Actors"
-    And the kind "Person/People" inheriting from "Actor"
-    And the kind "Artist/Artists" inheriting from "Person"
-    And kind "Actor/Actors" has field "activity_id" of type "Fields::String"
-    And kind "Person/People" has field "gnd_id" of type "Fields::String"
-    And I am logged in as "admin"
-    When I follow "Administration"
-    And I follow "Entity types"
-    And I follow "Artist"
-    And I follow "Fields"
-    Then I should see "activity_id" within "kor-fields"
-
-
-  @javascript
-  Scenario: display inherited generators from several parents and generations
-    Given the kind "Actor/Actors"
-    And the kind "Person/People" inheriting from "Actor"
-    And the kind "Artist/Artists" inheriting from "Person"
-    And kind "Actor/Actors" has field "activity_id" of type "Fields::String"
-    And kind "Person/People" has field "gnd_id" of type "Fields::String"
-    And the generator "activity_id" for kind "Actor/Actors"
-    And the generator "gnd_id" for kind "Person/People"
-    And I am logged in as "admin"
-    When I follow "Administration"
-    And I follow "Entity types"
-    And I follow "Artist"
-    And I follow "Generators"
-    Then I should see "activity_id" within "kor-generators"
-
-
-  @javascript
   Scenario: prevent building circular dependencies
     Given the kind "Actor/Actors"
     And the kind "Person/People" inheriting from "Actor"
@@ -200,37 +168,6 @@ Feature: Kinds
     And I press "Save"
     Then I should see "would result in a circular schema"
     And kind "Actor" should not have parent "Artist"
-
-
-  @javascript
-  Scenario: display inherited fields from the same parent just once (diamond case)
-    Given the kind "Actor/Actors"
-    And the kind "Person/People" inheriting from "Actor"
-    And the kind "Artist/Artists" inheriting from "Actor"
-    And the kind "Hero/Heroes" inheriting from "Person,Artist"
-    And kind "Actor/Actors" has field "activity_id" of type "Fields::String"
-    And I am logged in as "admin"
-    When I follow "Administration"
-    And I follow "Entity types"
-    And I follow "Hero"
-    And I follow "Fields"
-    Then I should see "activity_id" exactly "1" time within "kor-fields"
-
-
-  @javascript
-  Scenario: display inherited generators from the same parent just once (diamond case)
-    Given the kind "Actor/Actors"
-    And the kind "Person/People" inheriting from "Actor"
-    And the kind "Artist/Artists" inheriting from "Actor"
-    And the kind "Hero/Heroes" inheriting from "Person,Artist"
-    And kind "Actor/Actors" has field "activity_id" of type "Fields::String"
-    And the generator "activity_id" for kind "Actor/Actors"
-    And I am logged in as "admin"
-    When I follow "Administration"
-    And I follow "Entity types"
-    And I follow "Hero"
-    And I follow "Generators"
-    Then I should see "activity_id" exactly "1" time within "kor-generators"
 
 
   @javascript

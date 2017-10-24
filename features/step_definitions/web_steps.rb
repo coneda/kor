@@ -357,6 +357,11 @@ Then(/^the select "([^"]*)" should have value "([^"]*)"$/) do |name, value|
   end
 end
 
+Then(/^options? "([^"]*)" from "([^"]*)" should be selected$/) do |value, field|
+  step "the select \"#{field}\" should have value \"#{value}\""
+end
+
+
 Then(/^"([^"]*)" should not have option "([^"]*)"$/) do |name, value|
   field = page.find_field(name)
   options = field.all('option').map{|o| o.text}

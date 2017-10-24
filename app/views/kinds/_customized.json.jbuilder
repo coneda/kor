@@ -40,9 +40,3 @@ end
 if additions.include?('inheritance') || additions.include?('all')
   json.extract! kind, :parent_ids, :child_ids, :removable
 end
-
-if additions.include?('ancestry') || additions.include?('all')
-  json.parents kind.parents do |parent|
-    json.partial! 'kinds/customized', additions: additions, kind: parent
-  end
-end

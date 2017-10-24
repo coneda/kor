@@ -3884,7 +3884,7 @@ riot.tag2("kor-field-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpol
     };
 });
 
-riot.tag2("kor-fields", '<div class="pull-right"> <a href="#/kinds/{opts.kind.id}/fields/new" onclick="{add}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> <kor-t key="activerecord.models.field" with="{{count: \'other\', capitalize: true}}"> /> </strong> <ul if="{kind}"> <li each="{field in kind.fields}"> <div class="pull-right"> <a href="#" onclick="{edit(field)}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(field)}"><i class="fa fa-remove"></i></a> </div> <a href="#" onclick="{edit(field)}">{field.name}</a> </li> </ul> <div if="{ancestry}" each="{k in ancestry}" show="{k.fields.length}"> <strong> <kor-t key="inherited_from"></kor-t> {k.name} </strong> <ul> <li each="{field in k.fields}">{field.name}</li> </ul> </div>', "", "", function(opts) {
+riot.tag2("kor-fields", '<div class="pull-right"> <a href="#/kinds/{opts.kind.id}/fields/new" onclick="{add}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> <kor-t key="activerecord.models.field" with="{{count: \'other\', capitalize: true}}"> /> </strong> <ul if="{kind}"> <li each="{field in kind.fields}"> <div class="pull-right"> <a href="#" onclick="{edit(field)}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(field)}"><i class="fa fa-remove"></i></a> </div> <a href="#" onclick="{edit(field)}">{field.name}</a> </li> </ul>', "", "", function(opts) {
     var refresh, tag;
     tag = this;
     tag.on("mount", function() {
@@ -3917,34 +3917,14 @@ riot.tag2("kor-fields", '<div class="pull-right"> <a href="#/kinds/{opts.kind.id
             }
         };
     };
-    tag.build_ancestry = function() {
-        var i, k, len, new_todo, result_ids, results, todo;
-        results = [];
-        result_ids = [];
-        todo = tag.kind.parents;
-        while (todo.length > 0) {
-            new_todo = [];
-            for (i = 0, len = todo.length; i < len; i++) {
-                k = todo[i];
-                if (result_ids.indexOf(k.id) === -1) {
-                    results.push(k);
-                    result_ids.push(k.id);
-                    new_todo = new_todo.concat(k.parents);
-                }
-            }
-            todo = new_todo;
-        }
-        return tag.ancestry = results;
-    };
     refresh = function() {
         return Zepto.ajax({
             url: "/kinds/" + tag.opts.kind.id,
             data: {
-                include: "fields,ancestry"
+                include: "fields,inheritance"
             },
             success: function(data) {
                 tag.kind = data;
-                tag.build_ancestry();
                 return tag.update();
             }
         });
@@ -4024,7 +4004,7 @@ riot.tag2("kor-generator-editor", '<h2> <kor-t key="objects.edit" with="{{\'inte
     };
 });
 
-riot.tag2("kor-generators", '<div class="pull-right"> <a href="#/kinds/{opts.kind.id}/generators/new" onclick="{add}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> <kor-t key="activerecord.models.generator" with="{{count: \'other\', capitalize: true}}"> /> </strong> <ul if="{kind}"> <li each="{generator in kind.generators}"> <div class="pull-right"> <a href="#" onclick="{edit(generator)}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(generator)}"><i class="fa fa-remove"></i></a> </div> <a href="#" onclick="{edit(generator)}">{generator.name}</a> </li> </ul> <virtual if="{kind}"> <div each="{k in ancestry}" show="{k.generators.length > 0}"> <strong> <kor-t key="inherited_from"></kor-t> {k.name} </strong> <ul> <li each="{generator in k.generators}">{generator.name}</li> </ul> </div> </virtual>', "", "", function(opts) {
+riot.tag2("kor-generators", '<div class="pull-right"> <a href="#/kinds/{opts.kind.id}/generators/new" onclick="{add}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> <kor-t key="activerecord.models.generator" with="{{count: \'other\', capitalize: true}}"> /> </strong> <ul if="{kind}"> <li each="{generator in kind.generators}"> <div class="pull-right"> <a href="#" onclick="{edit(generator)}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(generator)}"><i class="fa fa-remove"></i></a> </div> <a href="#" onclick="{edit(generator)}">{generator.name}</a> </li> </ul>', "", "", function(opts) {
     var refresh, tag;
     tag = this;
     tag.on("mount", function() {
@@ -4057,34 +4037,14 @@ riot.tag2("kor-generators", '<div class="pull-right"> <a href="#/kinds/{opts.kin
             }
         };
     };
-    tag.build_ancestry = function() {
-        var i, k, len, new_todo, result_ids, results, todo;
-        results = [];
-        result_ids = [];
-        todo = tag.kind.parents;
-        while (todo.length > 0) {
-            new_todo = [];
-            for (i = 0, len = todo.length; i < len; i++) {
-                k = todo[i];
-                if (result_ids.indexOf(k.id) === -1) {
-                    results.push(k);
-                    result_ids.push(k.id);
-                    new_todo = new_todo.concat(k.parents);
-                }
-            }
-            todo = new_todo;
-        }
-        return tag.ancestry = results;
-    };
     refresh = function() {
         return Zepto.ajax({
             url: "/kinds/" + tag.opts.kind.id,
             data: {
-                include: "generators,ancestry"
+                include: "generators,inheritance"
             },
             success: function(data) {
                 tag.kind = data;
-                tag.build_ancestry();
                 return tag.update();
             }
         });
@@ -4632,7 +4592,6 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
     tag = this;
     tag.requireRoles = [ "relation_admin" ];
     tag.mixin(wApp.mixins.session);
-    window.t = tag;
     tag.on("mount", function() {
         fetch();
         return fetchKinds();

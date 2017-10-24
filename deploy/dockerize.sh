@@ -13,6 +13,8 @@ for f in log/*.log; do
   >| $f
 done
 
+npm run build
+
 sudo docker run --rm \
   -v $(pwd)/deploy/docker/Dockerfile.erb:/template.erb \
   ruby:$RUBY_VERSION \

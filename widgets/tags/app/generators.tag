@@ -22,18 +22,6 @@
     </li>
   </ul>
 
-  <virtual if={kind}>
-    <div each={k in ancestry} show={k.generators.length > 0}>
-      <strong>
-        <kor-t key="inherited_from" />
-        {k.name}
-      </strong>
-      <ul>
-        <li each={generator in k.generators}>{generator.name}</li>
-      </ul>
-    </div>
-  </virtual>
-
   <script type="text/coffee">
     tag = this
 
@@ -59,28 +47,13 @@
             success: -> refresh()
           )
 
-    tag.build_ancestry = ->
-      results = []
-      result_ids = []
-      todo = tag.kind.parents
-      while todo.length > 0
-        new_todo = []
-        for k in todo
-          if result_ids.indexOf(k.id) == -1
-            results.push(k)
-            result_ids.push(k.id)
-            new_todo = new_todo.concat(k.parents)
-        todo = new_todo
-      tag.ancestry = results
-
     refresh = ->
       Zepto.ajax(
         url: "/kinds/#{tag.opts.kind.id}"
-        data: {include: 'generators,ancestry'}
+        data: {include: 'generators,inheritance'}
         success: (data) ->
           # console.log data
           tag.kind = data
-          tag.build_ancestry()
           tag.update()
       )
 
