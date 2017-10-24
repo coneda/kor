@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
-COMMIT=${1:-master}
 RAILS_ENV=${2:-production}
 
-RUBY_VERSION=$(git show $COMMIT:.ruby-version)
+COMMIT=$(git rev-parse --abbrev-ref HEAD)
+RUBY_VERSION=$(cat .ruby-version)
 
 mkdir -p tmp
 git archive $COMMIT > tmp/kor.tar
