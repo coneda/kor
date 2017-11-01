@@ -25,6 +25,10 @@ class Kor::Import::Excel < Kor::Export::Excel
       log "SIMULATION"
     end
 
+    if @options[:ignore_stale]
+      ActiveRecord::Base.lock_optimistically = false
+    end
+
     Dir["#{@source_dir}/*.xls"].each do |file|
       book = Spreadsheet.open file, "rb"
       self.file = file.split('/').last
@@ -74,12 +78,9 @@ class Kor::Import::Excel < Kor::Export::Excel
               dataset: dataset,
               properties: properties,
               updater: @user,
-              kind_id: row[8]
+              kind_id: row[8],
+              lock_version: row[18]
             )
-
-            unless @options[:ignore_stale]
-              entity.lock_version = row[18]
-            end
 
             # binding.pry
 
