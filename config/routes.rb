@@ -168,6 +168,14 @@ Rails.application.routes.draw do
     match 'about', :action => 'about', :via => :get
     match 'help', :action => 'help', :via => :get
   end
+
+  scope 'mirador', controller: 'api/iiif/media', format: :json do
+    root action: 'index', as: 'mirador'
+    match ':id', action: 'show', via: :get, as: :iiif_manifest
+    match ':id/sequence', action: 'sequence', via: :get, as: :iiif_sequence
+    match ':id/canvas', action: 'sequence', via: :get, as: :iiif_canvas
+    match ':id/image', action: 'sequence', via: :get, as: :iiif_image
+  end
   
   namespace 'api', format: :json do
     scope ':version', version: /[0-9\.]+/, defaults: {version: '1.0'} do

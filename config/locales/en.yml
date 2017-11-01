@@ -499,6 +499,7 @@ en:
     error:
       one: "error"
       other: "errors"
+    mirador: 'Mirador'
 
 
   objects:
