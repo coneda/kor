@@ -51,11 +51,12 @@ class Kor::Import::ErlangenCrm
       end
     end
 
-    lookup = {}
+    @lookup = {}
     properties.each do |property|
+
       begin
         url = property['rdf:about']
-        lookup[url] = {
+        @lookup[url] = {
           type: property.name,
           url: url,
           name: property.xpath('rdfs:label').text,
@@ -72,9 +73,9 @@ class Kor::Import::ErlangenCrm
       end
     end
 
-    lookup.each do |url, r|
-      if r[:reverse_url] && !lookup[r[:reverse_url]][:reverse_url]
-        lookup[r[:reverse_url]][:reverse_url] = url
+    @lookup.each do |url, r|
+      if r[:reverse_url] && !@lookup[r[:reverse_url]][:reverse_url]
+        @lookup[r[:reverse_url]][:reverse_url] = url
       end
 
       if r[:type] == 'SymmetricProperty'
@@ -84,20 +85,20 @@ class Kor::Import::ErlangenCrm
 
     done = {}
     relations = []
-    lookup.each do |url, r|
+    @lookup.each do |url, r|
       if !done[url] && !done[r[:reverse_url]]
         done[url] = true
         done[r[:reverse_url]] = true
 
         if r[:reverse_url] && r[:name].present?
-          froms = Kind.where(url: r[:from_urls]).pluck(:id)
-          tos = Kind.where(url: r[:to_urls]).pluck(:id)
+          froms = Kind.where(url: from_urls_for(r)).pluck(:id)
+          tos = Kind.where(url: to_urls_for(r)).pluck(:id)
 
           froms.product(tos).each do |c|
             relation = Relation.create(
               url: url,
               name: r[:name],
-              reverse_name: lookup[r[:reverse_url]][:name],
+              reverse_name: @lookup[r[:reverse_url]][:name],
               from_kind_id: c[0],
               to_kind_id: c[1],
               description: r[:description],
@@ -113,7 +114,7 @@ class Kor::Import::ErlangenCrm
 
     Relation.all.each do |relation|
       if relation.url
-        if r = lookup[relation.url]
+        if r = @lookup[relation.url]
           if r[:parent_urls].present?
             relation.update_attributes(
               parent_ids: Relation.where(url: r[:parent_urls]).pluck(:id)
@@ -153,6 +154,16 @@ class Kor::Import::ErlangenCrm
 
     def uuid_mapping
       @uuid_mapping ||= JSON.load(File.read "#{Rails.root}/public/schema/crm_to_uuid_map.json")
+    end
+
+    def from_urls_for(r)
+      return [] unless r
+      [r[:from_urls]] + r[:parent_urls].map{|pu| from_urls_for(@lookup[pu])}.flatten
+    end
+
+    def to_urls_for(r)
+      return [] unless r
+      [r[:to_urls]] + r[:parent_urls].map{|pu| to_urls_for(@lookup[pu])}.flatten
     end
 
 end

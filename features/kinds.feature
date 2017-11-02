@@ -233,7 +233,7 @@ Feature: Kinds
 
 
   @javascript
-  Scenario: add a generator
+  Scenario: add and render a generator
     Given the kind "Actor/Actors"
     And kind "Actor/Actors" has field "activity_id" of type "Fields::String"
     And I am logged in as "admin"
@@ -243,10 +243,15 @@ Feature: Kinds
     And I follow "Generator"
     And I click icon "plus-square" within "kor-generators"
     And I fill in "Name" with "activity_id"
-    And I fill in "Generator directive" with "12345"
+    And I fill in "Generator directive" with "<span>12345</span>"
     And I press "Save"
     Then I should see "has been created"
     And kind "Actor" should have generator "activity_id"
+
+    When I go to the new "Actor-Entity" page
+    And I fill in "entity[name]" with "Wikimedia Foundation"
+    And I press "Create"
+    Then I should see "12345"
 
 
   @javascript
