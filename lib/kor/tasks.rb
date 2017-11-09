@@ -193,7 +193,7 @@ class Kor::Tasks
 
   protected
 
-    def print_table(data)
+    def self.print_table(data)
       maxes = {}
       data.each do |record|
         row = []

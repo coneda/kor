@@ -340,6 +340,7 @@ DEPENDENCIES
   exifr (= 1.1.1)
   factory_girl_rails
   haml
+  hirb
   httpclient
   jbuilder
   jquery-rails
@@ -376,4 +377,4 @@ DEPENDENCIES
   will_paginate (~> 3.0.3)
 
 BUNDLED WITH
-   1.15.4
+   1.16.0
