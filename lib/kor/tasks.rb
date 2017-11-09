@@ -102,6 +102,8 @@ class Kor::Tasks
       groups: Credential.all,
       password: 'admin',
       terms_accepted: true,
+      login_attempts: [],
+      active: true,
 
       admin: true,
       relation_admin: true,
