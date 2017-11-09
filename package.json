@@ -12,7 +12,7 @@
     "onchange": "^3.0.0",
     "parallelshell": "^2.0.0",
     "riot": "^2.6.4",
-    "uglifyjs": "^2.4.10",
+    "uglify-js": "^3.1.8",
     "zepto": "^1.0.1"
   },
   "scripts": {
