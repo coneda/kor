@@ -87,6 +87,8 @@ class ToolsController < ApplicationController
       format.html do 
         if request.referer && request.referer.match(/\/blaze/)
           redirect_to back_save
+        elsif request.referer && request.referer.match(/\/authority_group/)
+          redirect_to :back
         else
           redirect_to :controller => 'tools', :action => 'clipboard'
         end

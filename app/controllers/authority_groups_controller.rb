@@ -1,7 +1,7 @@
 class AuthorityGroupsController < GroupsController
   layout 'normal_small'
   
-  skip_before_filter :authorization, :only => [ :download_images, :index, :show ]
+  skip_before_filter :authorization, :only => [:download_images, :index, :show]
   
   def mark
     @authority_group = AuthorityGroup.find(params[:id])
@@ -103,7 +103,11 @@ class AuthorityGroupsController < GroupsController
     end
 
     def generally_authorized?
-      current_user.authority_group_admin?
+      if action_name == 'mark'
+        !current_user.guest?
+      else
+        current_user.authority_group_admin?
+      end
     end
     
 end
