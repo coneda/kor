@@ -21,7 +21,7 @@
     </a>
   </div>
 
-  <div if={filtered_records && !filtered_records.length}>
+  <div if={filteredRecords && !filteredRecords.length}>
     {wApp.i18n.t('objects.none_found', {
       interpolations: {o: 'activerecord.models.relation.other'},
       capitalize: true
@@ -30,11 +30,11 @@
 
   <table
     class="kor_table text-left"
-    if={filtered_records && filtered_records.length}
+    each={records, schema in groupedResults}
   >
     <thead>
       <tr>
-        <th>{wApp.i18n.t('activerecord.attributes.relation.name')}</th>
+        <th>{schema == 'null' ? t('no_schema') : schema}</th>
         <th>
           {wApp.i18n.t('activerecord.attributes.relation.from_kind_id')}
           {wApp.i18n.t('activerecord.attributes.relation.to_kind_id')}
@@ -42,7 +42,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr each={relation in filtered_records}>
+      <tr each={relation in records}>
         <td>
           <a href="#/relations/{relation.id}">
             {relation.name} / {relation.reverse_name}
@@ -79,8 +79,6 @@
     tag.requireRoles = ['relation_admin']
     tag.mixin(wApp.mixins.session)
 
-    # window.t = tag
-
     tag.on 'mount', -> 
       fetch()
       fetchKinds()
@@ -101,6 +99,7 @@
       tag.filters.terms = tag.formFields['terms'].val()
       tag.filters.hideAbstract = tag.formFields['hideAbstract'].val()
       filter_records()
+      groupAndSortRecords()
       tag.update()
 
     tag.delayedSubmit = (event) ->
@@ -111,7 +110,7 @@
       true
 
     filter_records = ->
-      tag.filtered_records = if tag.filters.terms
+      tag.filteredRecords = if tag.filters.terms
         re = new RegExp("#{tag.filters.terms}", 'i')
         results = []
         for relation in tag.data.records
@@ -122,6 +121,27 @@
       else
         tag.data.records
 
+    typeCompare = (x, y) ->
+      if x.match(/^P\d+/) && y.match(/^P\d+/)
+        x = parseInt(x.replace(/^P/, '').split(' ')[0])
+        y = parseInt(y.replace(/^P/, '').split(' ')[0])
+      if x > y
+        1
+      else
+        if x == y
+          0
+        else
+          -1
+
+    groupAndSortRecords = ->
+      results = {}
+      for r in tag.filteredRecords
+        results[r['schema']] ||= []
+        results[r['schema']].push r
+      for k, v of results
+        results[k] = v.sort((x, y) -> typeCompare(x.name, y.name))
+      tag.groupedResults = results
+
     tag.kind = (id) -> tag.kindLookup[id].name
 
     fetch = ->
@@ -131,6 +151,7 @@
         success: (data) ->
           tag.data = data
           filter_records()
+          groupAndSortRecords()
           tag.update()
       )
 

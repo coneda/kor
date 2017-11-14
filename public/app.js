@@ -1466,110 +1466,8 @@
     };
     var RE_BOOL_ATTRS = /^(?:disabled|checked|readonly|required|allowfullscreen|auto(?:focus|play)|compact|controls|default|formnovalidate|hidden|ismap|itemscope|loop|multiple|muted|no(?:resize|shade|validate|wrap)?|open|reversed|seamless|selected|sortable|truespeed|typemustmatch)$/;
     var IE_VERSION = (WIN && WIN.document || {}).documentMode | 0;
-    function each(list, fn) {
-        var len = list ? list.length : 0;
-        var i = 0;
-        for (;i < len; i++) {
-            fn(list[i], i);
-        }
-        return list;
-    }
-    function contains(array, item) {
-        return array.indexOf(item) !== -1;
-    }
-    function toCamel(str) {
-        return str.replace(/-(\w)/g, function(_, c) {
-            return c.toUpperCase();
-        });
-    }
-    function startsWith(str, value) {
-        return str.slice(0, value.length) === value;
-    }
-    function defineProperty(el, key, value, options) {
-        Object.defineProperty(el, key, extend({
-            value: value,
-            enumerable: false,
-            writable: false,
-            configurable: true
-        }, options));
-        return el;
-    }
-    var uid = function() {
-        var i = 0;
-        return function() {
-            return ++i;
-        };
-    }();
-    var getPropDescriptor = function(o, k) {
-        return Object.getOwnPropertyDescriptor(o, k);
-    };
-    function extend(src) {
-        var obj;
-        var i = 1;
-        var args = arguments;
-        var l = args.length;
-        for (;i < l; i++) {
-            if (obj = args[i]) {
-                for (var key in obj) {
-                    if (isWritable(src, key)) {
-                        src[key] = obj[key];
-                    }
-                }
-            }
-        }
-        return src;
-    }
-    var misc = Object.freeze({
-        each: each,
-        contains: contains,
-        toCamel: toCamel,
-        startsWith: startsWith,
-        defineProperty: defineProperty,
-        uid: uid,
-        getPropDescriptor: getPropDescriptor,
-        extend: extend
-    });
-    function isBoolAttr(value) {
-        return RE_BOOL_ATTRS.test(value);
-    }
-    function isFunction(value) {
-        return typeof value === T_FUNCTION;
-    }
-    function isObject(value) {
-        return value && typeof value === T_OBJECT;
-    }
-    function isUndefined(value) {
-        return typeof value === T_UNDEF;
-    }
-    function isString(value) {
-        return typeof value === T_STRING;
-    }
-    function isBlank(value) {
-        return isNil(value) || value === "";
-    }
-    function isNil(value) {
-        return isUndefined(value) || value === null;
-    }
-    function isArray(value) {
-        return Array.isArray(value) || value instanceof Array;
-    }
-    function isWritable(obj, key) {
-        var descriptor = getPropDescriptor(obj, key);
-        return isUndefined(obj[key]) || descriptor && descriptor.writable;
-    }
-    var check = Object.freeze({
-        isBoolAttr: isBoolAttr,
-        isFunction: isFunction,
-        isObject: isObject,
-        isUndefined: isUndefined,
-        isString: isString,
-        isBlank: isBlank,
-        isNil: isNil,
-        isArray: isArray,
-        isWritable: isWritable
-    });
     function $$(selector, ctx) {
-        return Array.prototype.slice.call((ctx || document).querySelectorAll(selector));
+        return [].slice.call((ctx || document).querySelectorAll(selector));
     }
     function $(selector, ctx) {
         return (ctx || document).querySelector(selector);
@@ -1581,18 +1479,18 @@
         return document.createTextNode("");
     }
     function isSvg(el) {
-        return !!el.ownerSVGElement;
+        var owner = el.ownerSVGElement;
+        return !!owner || owner === null;
     }
     function mkEl(name) {
         return name === "svg" ? document.createElementNS(SVG_NS, name) : document.createElement(name);
     }
-    function setInnerHTML(container, html) {
-        if (!isUndefined(container.innerHTML)) {
-            container.innerHTML = html;
-        } else {
-            var doc = new DOMParser().parseFromString(html, "application/xml");
-            var node = container.ownerDocument.importNode(doc.documentElement, true);
+    function setInnerHTML(container, html, isSvg) {
+        if (isSvg) {
+            var node = container.ownerDocument.importNode(new DOMParser().parseFromString('<svg xmlns="' + SVG_NS + '">' + html + "</svg>", "application/xml").documentElement, true);
             container.appendChild(node);
+        } else {
+            container.innerHTML = html;
         }
     }
     function toggleVisibility(dom, show) {
@@ -1678,7 +1576,7 @@
                 }
                 userNode.parentNode.replaceChild(newNode, userNode);
             } else {
-                document.getElementsByTagName("head")[0].appendChild(newNode);
+                document.head.appendChild(newNode);
             }
             return newNode;
         }();
@@ -1715,7 +1613,7 @@
         var wordsLastChar = beforeReWords.reduce(function(s, w) {
             return s + w.slice(-1);
         }, "");
-        var RE_REGEX = /^\/(?=[^*>\/])[^[\/\\]*(?:(?:\\.|\[(?:\\.|[^\]\\]*)*\])[^[\\/]*)*?\/[gimuy]*/;
+        var RE_REGEX = /^\/(?=[^*>/])[^[/\\]*(?:(?:\\.|\[(?:\\.|[^\]\\]*)*\])[^[\\/]*)*?\/[gimuy]*/;
         var RE_VN_CHAR = /[$\w]/;
         function prev(code, pos) {
             while (--pos >= 0 && /\s/.test(code[pos])) {}
@@ -2115,6 +2013,108 @@
         });
         return el;
     };
+    function isBoolAttr(value) {
+        return RE_BOOL_ATTRS.test(value);
+    }
+    function isFunction(value) {
+        return typeof value === T_FUNCTION;
+    }
+    function isObject(value) {
+        return value && typeof value === T_OBJECT;
+    }
+    function isUndefined(value) {
+        return typeof value === T_UNDEF;
+    }
+    function isString(value) {
+        return typeof value === T_STRING;
+    }
+    function isBlank(value) {
+        return isNil(value) || value === "";
+    }
+    function isNil(value) {
+        return isUndefined(value) || value === null;
+    }
+    function isArray(value) {
+        return Array.isArray(value) || value instanceof Array;
+    }
+    function isWritable(obj, key) {
+        var descriptor = getPropDescriptor(obj, key);
+        return isUndefined(obj[key]) || descriptor && descriptor.writable;
+    }
+    var check = Object.freeze({
+        isBoolAttr: isBoolAttr,
+        isFunction: isFunction,
+        isObject: isObject,
+        isUndefined: isUndefined,
+        isString: isString,
+        isBlank: isBlank,
+        isNil: isNil,
+        isArray: isArray,
+        isWritable: isWritable
+    });
+    function each(list, fn) {
+        var len = list ? list.length : 0;
+        var i = 0;
+        for (;i < len; i++) {
+            fn(list[i], i);
+        }
+        return list;
+    }
+    function contains(array, item) {
+        return array.indexOf(item) !== -1;
+    }
+    function toCamel(str) {
+        return str.replace(/-(\w)/g, function(_, c) {
+            return c.toUpperCase();
+        });
+    }
+    function startsWith(str, value) {
+        return str.slice(0, value.length) === value;
+    }
+    function defineProperty(el, key, value, options) {
+        Object.defineProperty(el, key, extend({
+            value: value,
+            enumerable: false,
+            writable: false,
+            configurable: true
+        }, options));
+        return el;
+    }
+    var uid = function() {
+        var i = -1;
+        return function() {
+            return ++i;
+        };
+    }();
+    var getPropDescriptor = function(o, k) {
+        return Object.getOwnPropertyDescriptor(o, k);
+    };
+    function extend(src) {
+        var obj;
+        var i = 1;
+        var args = arguments;
+        var l = args.length;
+        for (;i < l; i++) {
+            if (obj = args[i]) {
+                for (var key in obj) {
+                    if (isWritable(src, key)) {
+                        src[key] = obj[key];
+                    }
+                }
+            }
+        }
+        return src;
+    }
+    var misc = Object.freeze({
+        each: each,
+        contains: contains,
+        toCamel: toCamel,
+        startsWith: startsWith,
+        defineProperty: defineProperty,
+        uid: uid,
+        getPropDescriptor: getPropDescriptor,
+        extend: extend
+    });
     var settings$1 = extend(Object.create(brackets.settings), {
         skipAnonymousTags: true,
         autoUpdate: true
@@ -2248,7 +2248,7 @@
         if (expr.update) {
             return expr.update();
         }
-        var context = isToggle && !isAnonymous ? extend(Object.create(this), this.parent) : this;
+        var context = isToggle && !isAnonymous ? inheritParentProps.call(this) : this;
         value = tmpl(expr.expr, context);
         var hasValue = !isBlank(value);
         var isObj = isObject(value);
@@ -2332,8 +2332,7 @@
             if (this.value && !this.current) {
                 this.current = this.pristine.cloneNode(true);
                 this.stub.parentNode.insertBefore(this.current, this.stub);
-                this.expressions = [];
-                parseExpressions.apply(this.tag, [ this.current, this.expressions, true ]);
+                this.expressions = parseExpressions.apply(this.tag, [ this.current, true ]);
             } else if (!this.value && this.current) {
                 unmountAll(this.expressions);
                 if (this.current._tag) {
@@ -2562,50 +2561,42 @@
         };
         return expr;
     }
-    function parseExpressions(root, expressions, mustIncludeRoot) {
+    function parseExpressions(root, mustIncludeRoot) {
         var this$1 = this;
-        var tree = {
-            parent: {
-                children: expressions
-            }
-        };
-        walkNodes(root, function(dom, ctx) {
+        var expressions = [];
+        walkNodes(root, function(dom) {
             var type = dom.nodeType;
-            var parent = ctx.parent;
             var attr;
-            var expr;
             var tagImpl;
             if (!mustIncludeRoot && dom === root) {
-                return {
-                    parent: parent
-                };
+                return;
             }
             if (type === 3 && dom.parentNode.tagName !== "STYLE" && tmpl.hasExpr(dom.nodeValue)) {
-                parent.children.push({
+                expressions.push({
                     dom: dom,
                     expr: dom.nodeValue
                 });
             }
             if (type !== 1) {
-                return ctx;
+                return;
             }
             var isVirtual = dom.tagName === "VIRTUAL";
             if (attr = getAttr(dom, LOOP_DIRECTIVE)) {
                 if (isVirtual) {
                     setAttr(dom, "loopVirtual", true);
                 }
-                parent.children.push(_each(dom, this$1, attr));
+                expressions.push(_each(dom, this$1, attr));
                 return false;
             }
             if (attr = getAttr(dom, CONDITIONAL_DIRECTIVE)) {
-                parent.children.push(Object.create(IfExpr).init(dom, this$1, attr));
+                expressions.push(Object.create(IfExpr).init(dom, this$1, attr));
                 return false;
             }
-            if (expr = getAttr(dom, IS_DIRECTIVE)) {
-                if (tmpl.hasExpr(expr)) {
-                    parent.children.push({
+            if (attr = getAttr(dom, IS_DIRECTIVE)) {
+                if (tmpl.hasExpr(attr)) {
+                    expressions.push({
                         isRtag: true,
-                        expr: expr,
+                        expr: attr,
                         dom: dom,
                         attrs: [].slice.call(dom.attributes)
                     });
@@ -2632,9 +2623,9 @@
                         root: dom,
                         parent: this$1
                     }, dom.innerHTML);
-                    parent.children.push(tag);
+                    expressions.push(tag);
                 } else {
-                    parent.children.push(initChildTag(tagImpl, {
+                    expressions.push(initChildTag(tagImpl, {
                         root: dom,
                         parent: this$1
                     }, dom.innerHTML, this$1));
@@ -2645,12 +2636,10 @@
                 if (!expr) {
                     return;
                 }
-                parent.children.push(expr);
+                expressions.push(expr);
             } ]);
-            return {
-                parent: parent
-            };
-        }, tree);
+        });
+        return expressions;
     }
     function parseAttributes(dom, attrs, fn) {
         var this$1 = this;
@@ -2724,7 +2713,7 @@
         if (tblTags.test(tagName)) {
             el = specialTags(el, tmpl, tagName);
         } else {
-            setInnerHTML(el, tmpl);
+            setInnerHTML(el, tmpl, isSvg$$1);
         }
         return el;
     }
@@ -2853,7 +2842,7 @@
     function unregister$1(name) {
         __TAG_IMPL[name] = null;
     }
-    var version$1 = "v3.7.3";
+    var version$1 = "v3.7.4";
     var core = Object.freeze({
         Tag: Tag$1,
         tag: tag$1,
@@ -2868,10 +2857,10 @@
         if (isLoop && isAnonymous) {
             return;
         }
-        var ctx = !isAnonymous && isLoop ? this : parent || this;
+        var ctx = isLoop ? inheritParentProps.call(this) : parent || this;
         each(instAttrs, function(attr) {
             if (attr.expr) {
-                updateAllExpressions.call(ctx, [ attr.expr ]);
+                updateExpression.call(ctx, attr.expr);
             }
             opts[toCamel(attr.name).replace(ATTRS_PREFIX, "")] = attr.expr ? attr.expr.value : attr.value;
         });
@@ -3039,7 +3028,9 @@
             if (!skipAnonymous) {
                 tag.trigger("before-mount");
             }
-            parseExpressions.apply(tag, [ dom, expressions, isAnonymous ]);
+            each(parseExpressions.apply(tag, [ dom, isAnonymous ]), function(e) {
+                return expressions.push(e);
+            });
             tag.update(item);
             if (!isAnonymous && !isInline) {
                 while (dom.firstChild) {
@@ -3062,7 +3053,6 @@
             var el = tag.root;
             var p = el.parentNode;
             var tagIndex = __TAGS_CACHE.indexOf(tag);
-            var ptag;
             if (!skipAnonymous) {
                 tag.trigger("before-unmount");
             }
@@ -3080,24 +3070,14 @@
             if (tagIndex !== -1) {
                 __TAGS_CACHE.splice(tagIndex, 1);
             }
-            if (p || isVirtual) {
-                if (parent) {
-                    ptag = getImmediateCustomParentTag(parent);
-                    if (isVirtual) {
-                        Object.keys(tag.tags).forEach(function(tagName) {
-                            arrayishRemove(ptag.tags, tagName, tag.tags[tagName]);
-                        });
-                    } else {
-                        arrayishRemove(ptag.tags, tagName, tag);
-                        if (parent !== ptag) {
-                            arrayishRemove(parent.tags, tagName, tag);
-                        }
-                    }
+            if (parent && !isAnonymous) {
+                var ptag = getImmediateCustomParentTag(parent);
+                if (isVirtual) {
+                    Object.keys(tag.tags).forEach(function(tagName) {
+                        return arrayishRemove(ptag.tags, tagName, tag.tags[tagName]);
+                    });
                 } else {
-                    setInnerHTML(el, "");
-                }
-                if (p && !mustKeepRoot) {
-                    p.removeChild(el);
+                    arrayishRemove(ptag.tags, tagName, tag);
                 }
             }
             if (tag.__.virts) {
@@ -3111,6 +3091,11 @@
             each(instAttrs, function(a) {
                 return a.expr && a.expr.unmount && a.expr.unmount();
             });
+            if (mustKeepRoot) {
+                setInnerHTML(el, "");
+            } else if (p) {
+                p.removeChild(el);
+            }
             if (tag.__.onUnmount) {
                 tag.__.onUnmount();
             }
@@ -3218,7 +3203,7 @@
             } else if (obj[key].length === 1 && !ensureArray) {
                 obj[key] = obj[key][0];
             }
-        } else {
+        } else if (obj[key] === value) {
             delete obj[key];
         }
     }
@@ -3274,6 +3259,12 @@
             src.appendChild(frag);
         }
     }
+    function inheritParentProps() {
+        if (this.parent) {
+            return extend(Object.create(this), this.parent);
+        }
+        return this;
+    }
     function moveVirtual(src, target) {
         var this$1 = this;
         var el = this.__.head;
@@ -3314,6 +3305,7 @@
         mountTo: mountTo,
         makeReplaceVirtual: makeReplaceVirtual,
         makeVirtual: makeVirtual,
+        inheritParentProps: inheritParentProps,
         moveVirtual: moveVirtual,
         selectTags: selectTags
     });
@@ -4094,7 +4086,7 @@ riot.tag2("kor-kind-editor", '<kor-menu-fix></kor-menu-fix> <kor-layout-panel cl
     };
 });
 
-riot.tag2("kor-kind-general-editor", '<h2> <kor-t key="general" with="{{capitalize: true}}" show="{opts.kind.id}"></kor-t> <kor-t show="{!opts.kind.id}" key="objects.create" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.kind\')}}}"></kor-t> </h2> <form onsubmit="{submit}" if="{possible_parents}"> <kor-field field-id="name" label-key="kind.name" model="{opts.kind}" errors="{errors.name}"></kor-field> <kor-field field-id="plural_name" label-key="kind.plural_name" model="{opts.kind}" errors="{errors.plural_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="kind.description" model="{opts.kind}"></kor-field> <kor-field field-id="url" label-key="kind.url" model="{opts.kind}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="kind.parent" model="{opts.kind}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="kind.abstract" model="{opts.kind}"></kor-field> <kor-field field-id="tagging" type="checkbox" label-key="kind.tagging" model="{opts.kind}"></kor-field> <div if="{!is_media()}"> <kor-field field-id="dating_label" label-key="kind.dating_label" model="{opts.kind}"></kor-field> <kor-field field-id="name_label" label-key="kind.name_label" model="{opts.kind}"></kor-field> <kor-field field-id="distinct_name_label" label-key="kind.distinct_name_label" model="{opts.kind}"></kor-field> </div> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
+riot.tag2("kor-kind-general-editor", '<h2> <kor-t key="general" with="{{capitalize: true}}" show="{opts.kind.id}"></kor-t> <kor-t show="{!opts.kind.id}" key="objects.create" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.kind\')}}}"></kor-t> </h2> <form onsubmit="{submit}" if="{possible_parents}"> <kor-field field-id="schema" label-key="kind.schema" model="{opts.kind}"></kor-field> <kor-field field-id="name" label-key="kind.name" model="{opts.kind}" errors="{errors.name}"></kor-field> <kor-field field-id="plural_name" label-key="kind.plural_name" model="{opts.kind}" errors="{errors.plural_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="kind.description" model="{opts.kind}"></kor-field> <kor-field field-id="url" label-key="kind.url" model="{opts.kind}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="kind.parent" model="{opts.kind}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="kind.abstract" model="{opts.kind}"></kor-field> <kor-field field-id="tagging" type="checkbox" label-key="kind.tagging" model="{opts.kind}"></kor-field> <div if="{!is_media()}"> <kor-field field-id="dating_label" label-key="kind.dating_label" model="{opts.kind}"></kor-field> <kor-field field-id="name_label" label-key="kind.name_label" model="{opts.kind}"></kor-field> <kor-field field-id="distinct_name_label" label-key="kind.distinct_name_label" model="{opts.kind}"></kor-field> </div> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
     var error, success, tag;
     tag = this;
     tag.on("mount", function() {
@@ -4326,11 +4318,12 @@ riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{input
     };
 });
 
-riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <kor-field label-key="hide_abstract" type="checkbox" field-id="hideAbstract" onchange="{submit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/kinds/new"> <i class="fa fa-plus-square"></i> </a> </div> <table class="kor_table text-left" if="{filtered_records}"> <thead> <tr> <th>{wApp.i18n.t(\'activerecord.attributes.kind.name\')}</th> <th></th> </tr> </thead> <tbody> <tr each="{kind in filtered_records}"> <td class="{active: !kind.abstract}"> <div class="name"> <a href="#/kinds/{kind.id}">{kind.name}</a> </div> <div show="{kind.fields.length}"> <span class="label"> {wApp.i18n.t(\'activerecord.models.field\', {count: \'other\'})}: </span> {fieldNamesFor(kind)} </div> <div show="{kind.generators.length}"> <span class="label"> {wApp.i18n.t(\'activerecord.models.generator\', {count: \'other\'})}: </span> {generatorNamesFor(kind)} </div> </td> <td class="text-right buttons"> <a href="#/kinds/{kind.id}"><i class="fa fa-edit"></i></a> <a if="{kind.removable}" href="#/kinds/{kind.id}" onclick="{delete(kind)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table>', "", "", function(opts) {
-    var fetch, filter_records, tag;
+riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <kor-field label-key="hide_abstract" type="checkbox" field-id="hideAbstract" onchange="{submit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/kinds/new"> <i class="fa fa-plus-square"></i> </a> </div> <virtual if="{filteredRecords && filteredRecords.length}"> <table each="{records, schema in groupedResults}" class="kor_table text-left"> <thead> <tr> <th>{schema == \'null\' ? t(\'no_schema\') : schema}</th> <th></th> </tr> </thead> <tbody> <tr each="{kind in records}"> <td class="{active: !kind.abstract}"> <div class="name"> <a href="#/kinds/{kind.id}">{kind.name}</a> </div> <div show="{kind.fields.length}"> <span class="label"> {wApp.i18n.t(\'activerecord.models.field\', {count: \'other\'})}: </span> {fieldNamesFor(kind)} </div> <div show="{kind.generators.length}"> <span class="label"> {wApp.i18n.t(\'activerecord.models.generator\', {count: \'other\'})}: </span> {generatorNamesFor(kind)} </div> </td> <td class="text-right buttons"> <a href="#/kinds/{kind.id}"><i class="fa fa-edit"></i></a> <a if="{kind.removable}" href="#/kinds/{kind.id}" onclick="{delete(kind)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </virtual>', "", "", function(opts) {
+    var fetch, filter_records, groupAndSortRecords, tag, typeCompare;
     tag = this;
     tag.requireRoles = [ "kind_admin" ];
     tag.mixin(wApp.mixins.session);
+    tag.t = wApp.i18n.t;
     tag.on("mount", function() {
         return fetch();
     });
@@ -4382,6 +4375,7 @@ riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capital
         tag.filters.terms = tag.formFields["terms"].val();
         tag.filters.hideAbstract = tag.formFields["hideAbstract"].val();
         filter_records();
+        groupAndSortRecords();
         return tag.update();
     };
     tag.delayedSubmit = function(event) {
@@ -4394,7 +4388,7 @@ riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capital
     };
     filter_records = function() {
         var kind, re, results;
-        tag.filtered_records = function() {
+        tag.filteredRecords = function() {
             var i, len, ref;
             if (tag.filters.terms) {
                 re = new RegExp("" + tag.filters.terms, "i");
@@ -4414,10 +4408,42 @@ riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capital
             }
         }();
         if (tag.filters.hideAbstract) {
-            return tag.filtered_records = tag.filtered_records.filter(function(kind) {
+            return tag.filteredRecords = tag.filteredRecords.filter(function(kind) {
                 return !kind.abstract;
             });
         }
+    };
+    typeCompare = function(x, y) {
+        if (x.match(/^E\d+/) && y.match(/^E\d+/)) {
+            x = parseInt(x.replace(/^E/, "").split(" ")[0]);
+            y = parseInt(y.replace(/^E/, "").split(" ")[0]);
+        }
+        if (x > y) {
+            return 1;
+        } else {
+            if (x === y) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    };
+    groupAndSortRecords = function() {
+        var i, k, len, name, r, ref, results, v;
+        results = {};
+        ref = tag.filteredRecords;
+        for (i = 0, len = ref.length; i < len; i++) {
+            r = ref[i];
+            results[name = r["schema"]] || (results[name] = []);
+            results[r["schema"]].push(r);
+        }
+        for (k in results) {
+            v = results[k];
+            results[k] = v.sort(function(x, y) {
+                return typeCompare(x.name, y.name);
+            });
+        }
+        return tag.groupedResults = results;
     };
     fetch = function() {
         return Zepto.ajax({
@@ -4429,6 +4455,7 @@ riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capital
             success: function(data) {
                 tag.data = data;
                 filter_records();
+                groupAndSortRecords();
                 return tag.update();
             }
         });
@@ -4468,7 +4495,7 @@ riot.tag2("kor-menu-fix", "", "", "", function(opts) {
     };
 });
 
-riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-panel> <h1> <span show="{opts.id}" if="{relation}">{relation.name}</span> <span show="{!opts.id}"> {wApp.i18n.t(\'objects.create\', {               \'interpolations\': {                 \'o\': wApp.i18n.t(\'activerecord.models.relation\')               }             })} </span> </h1> <form onsubmit="{submit}" if="{relation && possible_parents}"> <kor-field field-id="name" label-key="relation.name" model="{relation}" errors="{errors.name}"></kor-field> <kor-field field-id="reverse_name" label-key="relation.reverse_name" model="{relation}" errors="{errors.reverse_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="relation.description" model="{relation}"></kor-field> <kor-field if="{possible_kinds}" field-id="from_kind_id" type="select" options="{possible_kinds}" label-key="relation.from_kind_id" model="{relation}" errors="{errors.from_kind_id}"></kor-field> <kor-field if="{possible_kinds}" field-id="to_kind_id" type="select" options="{possible_kinds}" label-key="relation.to_kind_id" model="{relation}" errors="{errors.to_kind_id}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="relation.parent" model="{relation}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="relation.abstract" model="{relation}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form> </kor-panel> </kor-layout-panel>', "", "", function(opts) {
+riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-panel> <h1> <span show="{opts.id}" if="{relation}">{relation.name}</span> <span show="{!opts.id}"> {wApp.i18n.t(\'objects.create\', {               \'interpolations\': {                 \'o\': wApp.i18n.t(\'activerecord.models.relation\')               }             })} </span> </h1> <form onsubmit="{submit}" if="{relation && possible_parents}"> <kor-field field-id="schema" label-key="relation.schema" model="{relation}"></kor-field> <kor-field field-id="name" label-key="relation.name" model="{relation}" errors="{errors.name}"></kor-field> <kor-field field-id="reverse_name" label-key="relation.reverse_name" model="{relation}" errors="{errors.reverse_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="relation.description" model="{relation}"></kor-field> <kor-field if="{possible_kinds}" field-id="from_kind_id" type="select" options="{possible_kinds}" label-key="relation.from_kind_id" model="{relation}" errors="{errors.from_kind_id}"></kor-field> <kor-field if="{possible_kinds}" field-id="to_kind_id" type="select" options="{possible_kinds}" label-key="relation.to_kind_id" model="{relation}" errors="{errors.to_kind_id}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="relation.parent" model="{relation}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="relation.abstract" model="{relation}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form> </kor-panel> </kor-layout-panel>', "", "", function(opts) {
     var error, fetch, fetchPossibleKinds, fetchPossibleParents, success, tag;
     tag = this;
     window.t = tag;
@@ -4587,8 +4614,8 @@ riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-pan
     };
 });
 
-riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/relations/new"> <i class="fa fa-plus-square"></i> </a> </div> <div if="{filtered_records && !filtered_records.length}"> {wApp.i18n.t(\'objects.none_found\', {       interpolations: {o: \'activerecord.models.relation.other\'},       capitalize: true     })} </div> <table class="kor_table text-left" if="{filtered_records && filtered_records.length}"> <thead> <tr> <th>{wApp.i18n.t(\'activerecord.attributes.relation.name\')}</th> <th> {wApp.i18n.t(\'activerecord.attributes.relation.from_kind_id\')} {wApp.i18n.t(\'activerecord.attributes.relation.to_kind_id\')} </th> </tr> </thead> <tbody> <tr each="{relation in filtered_records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="text-right buttons"> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table>', "", "", function(opts) {
-    var fetch, fetchKinds, filter_records, tag;
+riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/relations/new"> <i class="fa fa-plus-square"></i> </a> </div> <div if="{filteredRecords && !filteredRecords.length}"> {wApp.i18n.t(\'objects.none_found\', {       interpolations: {o: \'activerecord.models.relation.other\'},       capitalize: true     })} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th>{schema == \'null\' ? t(\'no_schema\') : schema}</th> <th> {wApp.i18n.t(\'activerecord.attributes.relation.from_kind_id\')} {wApp.i18n.t(\'activerecord.attributes.relation.to_kind_id\')} </th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="text-right buttons"> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table>', "", "", function(opts) {
+    var fetch, fetchKinds, filter_records, groupAndSortRecords, tag, typeCompare;
     tag = this;
     tag.requireRoles = [ "relation_admin" ];
     tag.mixin(wApp.mixins.session);
@@ -4615,6 +4642,7 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
         tag.filters.terms = tag.formFields["terms"].val();
         tag.filters.hideAbstract = tag.formFields["hideAbstract"].val();
         filter_records();
+        groupAndSortRecords();
         return tag.update();
     };
     tag.delayedSubmit = function(event) {
@@ -4627,7 +4655,7 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
     };
     filter_records = function() {
         var re, relation, results;
-        return tag.filtered_records = function() {
+        return tag.filteredRecords = function() {
             var i, len, ref;
             if (tag.filters.terms) {
                 re = new RegExp("" + tag.filters.terms, "i");
@@ -4647,6 +4675,38 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
             }
         }();
     };
+    typeCompare = function(x, y) {
+        if (x.match(/^P\d+/) && y.match(/^P\d+/)) {
+            x = parseInt(x.replace(/^P/, "").split(" ")[0]);
+            y = parseInt(y.replace(/^P/, "").split(" ")[0]);
+        }
+        if (x > y) {
+            return 1;
+        } else {
+            if (x === y) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    };
+    groupAndSortRecords = function() {
+        var i, k, len, name, r, ref, results, v;
+        results = {};
+        ref = tag.filteredRecords;
+        for (i = 0, len = ref.length; i < len; i++) {
+            r = ref[i];
+            results[name = r["schema"]] || (results[name] = []);
+            results[r["schema"]].push(r);
+        }
+        for (k in results) {
+            v = results[k];
+            results[k] = v.sort(function(x, y) {
+                return typeCompare(x.name, y.name);
+            });
+        }
+        return tag.groupedResults = results;
+    };
     tag.kind = function(id) {
         return tag.kindLookup[id].name;
     };
@@ -4659,6 +4719,7 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
             success: function(data) {
                 tag.data = data;
                 filter_records();
+                groupAndSortRecords();
                 return tag.update();
             }
         });

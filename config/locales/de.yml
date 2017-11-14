@@ -64,6 +64,7 @@ de:
   nothing_selected: nichts ausgewählt
   hide_abstract: abstrakte verbergen
   inherited_from: vererbt von
+  no_schema: ohne Schema
 
   search_term: 
     one: Suchbegriff
@@ -882,6 +883,7 @@ de:
         from_day: von
         to_day: bis
       kind:
+        schema: Schema
         name: Name
         plural_name: Name im Plural
         description: Beschreibung
@@ -894,6 +896,7 @@ de:
         tagging: Tagging für diesen Entitätstyp aktivieren
         url: Schema Url
       relation:
+        schema: Schema
         name: Name
         reverse_name: Umkehrung
         description: Beschreibung

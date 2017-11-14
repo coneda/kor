@@ -16,6 +16,11 @@
       </h1>
 
       <form onsubmit={submit} if={relation && possible_parents}>
+        <kor-field
+          field-id="schema"
+          label-key="relation.schema"
+          model={relation}
+        />
         
         <kor-field
           field-id="name"

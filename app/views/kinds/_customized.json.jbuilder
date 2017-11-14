@@ -1,6 +1,7 @@
 additions ||= []
 
 json.extract!(kind,
+  :schema,
   :id, :uuid, :url,
   :abstract,
   :name, :plural_name,

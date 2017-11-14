@@ -14,6 +14,7 @@ class Kor::Import::ErlangenCrm
     parent_map = {}
     doc.xpath('/rdf:RDF/owl:Class').each do |klass|
       kind = Kind.create(
+        schema: 'Erlangen CRM',
         url: klass['rdf:about'],
         name: klass.xpath('rdfs:label').text,
         plural_name: klass.xpath('rdfs:label').text.gsub(/E\d+\s/, '').pluralize,
@@ -96,6 +97,7 @@ class Kor::Import::ErlangenCrm
 
           froms.product(tos).each do |c|
             relation = Relation.create(
+              schema: 'Erlangen CRM',
               url: url,
               name: r[:name],
               reverse_name: @lookup[r[:reverse_url]][:name],

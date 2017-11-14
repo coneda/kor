@@ -14,6 +14,12 @@
   </h2>
 
   <form onsubmit={submit} if={possible_parents}>
+
+    <kor-field
+      field-id="schema"
+      label-key="kind.schema"
+      model={opts.kind}
+    />
     
     <kor-field
       field-id="name"

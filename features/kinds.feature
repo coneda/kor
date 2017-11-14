@@ -311,7 +311,7 @@ Feature: Kinds
     And I am logged in as "admin"
     When I follow "Administration"
     And I follow "Entity types"
-    Then I should see icon "remove" within "[data-is=kor-kinds] tbody tr:nth-child(3)"
+    Then I should see icon "remove" within "[data-is=kor-kinds] tbody tr:nth-child(2)"
     Then I should not see icon "remove" within "[data-is=kor-kinds] tbody tr:nth-child(1)"
 
 

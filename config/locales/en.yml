@@ -63,6 +63,7 @@ en:
   nothing_selected: nothing selected
   hide_abstract: hide abstract
   inherited_from: inherited from
+  no_schema: no schema
 
   search_term:
     one: search term
@@ -880,6 +881,7 @@ en:
         from_day: from
         to_day: to
       kind:
+        schema: schema
         name: name
         plural_name: plural name
         description: description
@@ -892,6 +894,7 @@ en:
         tagging: activate tagging for this entity type
         url: schema url
       relation:
+        schema: schema
         name: name
         reverse_name: inversion
         description: description

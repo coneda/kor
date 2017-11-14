@@ -71,7 +71,7 @@ class KindsController < ApplicationController
     
     def kind_params
       params.require(:kind).permit(
-        :name, :plural_name, :description,
+        :schema, :name, :plural_name, :description,
         :tagging, :name_label, :dating_label, :distinct_name_label, :url,
         :abstract, parent_ids: [], child_ids: [],
       )

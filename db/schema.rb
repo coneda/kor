@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171001152043) do
+ActiveRecord::Schema.define(version: 20171114104306) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -243,6 +243,7 @@ ActiveRecord::Schema.define(version: 20171001152043) do
     t.datetime "deleted_at"
     t.boolean  "abstract"
     t.string   "url",          limit: 255
+    t.string   "schema",       limit: 255
   end
 
   add_index "kinds", ["deleted_at"], name: "index_kinds_on_deleted_at", using: :btree
@@ -295,6 +296,7 @@ ActiveRecord::Schema.define(version: 20171001152043) do
     t.boolean  "abstract"
     t.integer  "from_kind_id", limit: 4
     t.integer  "to_kind_id",   limit: 4
+    t.string   "schema",       limit: 255
   end
 
   add_index "relations", ["deleted_at"], name: "index_relations_on_deleted_at", using: :btree
