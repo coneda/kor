@@ -9,7 +9,7 @@ class UnifyDataset < ActiveRecord::Migration
           new_value['fields'] ||= {}
           new_value['fields'].merge! new_value['dataset'] || {}
           new_value.delete 'dataset'
-          entity.update_column :attachment, JSON.dump(new_value)
+          entity.update_column :attachment, new_value
         else
           raise "Entity #{entity.id} has conflicting dataset and fields, please fix the issue and re-run the migration"
         end
