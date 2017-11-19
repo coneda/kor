@@ -2,20 +2,21 @@ class RemoveMongodb < ActiveRecord::Migration
   def up
     add_column :entities, :attachment, :text
 
-    # # config = Rails.configuration.database_configuration[Rails.env]["mongo"].reverse_merge(
-    #   'host' => '127.0.0.1',
-    #   'port' => 27017
-    # )
+    config = Rails.configuration.database_configuration[Rails.env]["mongo"].reverse_merge(
+      'host' => '127.0.0.1',
+      'port' => 27017
+    )
 
-    # command = [
-    #   "mongoexport",
-    #   "-h #{config['host']}:#{config['port']}",
-    #   "--db #{config['database']}",
-    #   "--jsonArray",
-    #   "--collection attachments"
-    # ].join(' ')
+    command = [
+      "mongoexport",
+      "-h #{config['host']}:#{config['port']}",
+      "--db #{config['database']}",
+      "--jsonArray",
+      "--collection attachments"
+    ].join(' ')
     
-    data = JSON.parse(File.read "./attachments.json")
+    data = JSON.parse(`#{command}`)
+    # data = JSON.parse(File.read "./attachments.json")
 
     puts "Iterating mongodb documents"
     counter = 0
