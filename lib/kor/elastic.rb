@@ -225,7 +225,7 @@ class Kor::Elastic
 
     if query[:synonyms].present?
       v = wildcardize(escape tokenize(query[:synonyms])).join(' ')
-      q << "synonyms:(#{v})"
+      q << "synonyms:(#{v})" unless v.blank?
     end
 
     if q.present?
@@ -321,6 +321,7 @@ class Kor::Elastic
       data["highlight"] = highlight_component
     end
 
+    # binding.pry
     # puts JSON.pretty_generate(data)
 
     response = self.class.request "post", "/entities/_search", nil, data

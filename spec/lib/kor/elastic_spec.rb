@@ -309,4 +309,10 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records.size).to eq(3)
   end
 
+  it 'should not crash with just an asterisk for synonyms' do
+    expect {
+      @elastic.search(synonyms: '*')
+    }.not_to raise_error
+  end
+
 end
