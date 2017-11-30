@@ -14,6 +14,14 @@ class Kor::Import::Excel < Kor::Export::Excel
     )
     @options[:verbose] = true if @options[:simulate]
     @user = User.find_by_name!(@options[:username])
+
+    validate
+  end
+
+  def validate
+    unless @source_dir
+      raise Kor::Exception, 'no source directory was specified'
+    end
   end
 
   attr_accessor :file

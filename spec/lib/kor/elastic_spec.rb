@@ -162,7 +162,7 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@jack])
   end
 
-  it "should serch in the comment with low relevance" do
+  it "should search in the comment with low relevance" do
     @united_kingdom.update_attributes :comment => "United States"
     @united_states.update_attributes :comment => "United Kingdom"
     described_class.index_all
@@ -174,7 +174,7 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@united_kingdom, @united_states])
   end
 
-  it "should serch in the properties with low relevance" do
+  it "should search in the properties with low relevance" do
     @united_kingdom.update_attributes :properties => [{"label" => "label", "value" => "value"}]
     @united_states.update_attributes :properties => [{"label" => "value", "value" => "label"}]
     described_class.index_all
@@ -186,7 +186,7 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@united_kingdom, @united_states])
   end
 
-  it "should serch in the display name with low relevance" do
+  it "should search in the display name with low relevance" do
     @united_kingdom.update_attributes :distinct_name => "states"
     @united_states.update_attributes :distinct_name => "kingdom"
     described_class.index_all
@@ -198,7 +198,7 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@united_kingdom, @united_states])
   end
 
-  it "should serch by uuid and id" do
+  it "should search by uuid and id" do
     results = @elastic.search(:query => @united_states.uuid)
     expect(results.records).to eq([@united_states])
   end
