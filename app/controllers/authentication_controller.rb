@@ -3,6 +3,7 @@ require "resolv"
 class AuthenticationController < ApplicationController
   layout 'small_normal'
   skip_before_filter :authentication, :authorization, :legal
+  protect_from_forgery except: [:login]
 
   def env_auth
     if user = Kor::Auth.env_login(request.env)

@@ -169,9 +169,10 @@ Rails.application.routes.draw do
     match 'help', :action => 'help', :via => :get
   end
   
-  namespace 'api', :format => :json do
-    scope ':version', :version => /[0-9\.]+/, :defaults => {:version => '1.0'} do
-      match 'info', :to => 'public#info', :via => :get
+  namespace 'api', format: :json do
+    scope ':version', version: /[0-9\.]+/, defaults: {version: '1.0'} do
+      match 'info', to: 'public#info', via: :get
+      match 'profile', to: '/users#edit_self', via: :get
     end
 
     scope 'oai-pmh', :format => :xml, :as => 'oai_pmh', :via => [:get, :post] do
