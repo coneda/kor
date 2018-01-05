@@ -522,6 +522,12 @@ authentication credentials.
     * `to_kind_id`: limits by the target's kind, comma-separated
     * `page`: requests a specific page from the resultset (default: 1)
     * `per_page`: sets the page size (default: 10, max: 500)
+* `POST /wikidata/import`: imports a wikidata item. This also creates potential relationships towards previously imported items
+    * `id`: the wikidata id of the item to import e.g. `Q762`
+    * `kind`: the kind of the new entity, e.g. `person`
+    * `collection`: the collection where to create the new entity (the 'create' right is required within that collection)
+    * `locale`: the locale to import from wikidata, defaults to `en`
+* `POST /wikidata/preflight`: simulates the previous method without actually changing any data
 
 Resultsets are JSON objects having this structure:
 

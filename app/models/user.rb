@@ -271,6 +271,10 @@ class User < ActiveRecord::Base
   def guest?
     name == 'guest'
   end
+
+  def authorized_collections(policy = :view)
+    Kor::Auth.authorized_collections(self, policy)
+  end
   
   # TODO: still needed?
   def full_auth

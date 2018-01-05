@@ -14,6 +14,7 @@ commit history on GitHub.
 * most parts of OAI-PMH responses are now cached which should enhance
   performance greatly
 * added reference implementation for OAI-PMH client
+* added JSON API endpoints to import wikidata items including properties
 
 ## Version 2.1.0
 

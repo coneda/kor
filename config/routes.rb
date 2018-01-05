@@ -188,6 +188,11 @@ Rails.application.routes.draw do
         end
       end
     end
+
+    scope 'wikidata', format: 'json', controller: 'wikidata' do
+      match 'preflight', action: 'preflight', via: 'POST'
+      match 'import', action: 'import', via: 'POST'
+    end
   end
 
   scope "tpl", :module => "tpl", :via => :get do
