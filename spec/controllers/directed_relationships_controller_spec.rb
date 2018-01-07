@@ -38,7 +38,7 @@ describe DirectedRelationshipsController, type: :controller do
     Kor::Auth.grant side, :view, :to => [admins]
 
     get :index
-    expect(response.status).to eq(401)
+    expect(response.status).to eq(403)
 
     guest = FactoryGirl.create :guest
 
