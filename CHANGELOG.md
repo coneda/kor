@@ -15,6 +15,7 @@ commit history on GitHub.
   performance greatly
 * added reference implementation for OAI-PMH client
 * added JSON API endpoints to import wikidata items including properties
+* mirador from http://projectmirador.org/ is now integrated, also via drag&drop
 
 ## Version 2.1.0
 

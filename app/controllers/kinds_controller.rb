@@ -6,7 +6,7 @@ class KindsController < ApplicationController
 
     respond_to do |format|
       format.html {render :layout => 'wide'}
-      format.json {render :json => @kinds}
+      format.json
     end
   end
 
