@@ -1174,4 +1174,344 @@ http_interactions:
         name='label'>\n\t\t\t\t<literal xml:lang='en'>topic's main category</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
     http_version: 
   recorded_at: Fri, 05 Jan 2018 14:54:55 GMT
+- request:
+    method: get
+    uri: https://www.wikidata.org/wiki/Special:EntityData/Q128910.json
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.4.1 (2017-03-22))
+      Accept:
+      - "*/*"
+      Date:
+      - Sun, 28 Jan 2018 09:36:49 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 28 Jan 2018 09:38:20 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Server:
+      - mw1331.eqiad.wmnet
+      X-Content-Type-Options:
+      - nosniff
+      P3p:
+      - CP="This is not a P3P policy! See https://www.wikidata.org/wiki/Special:CentralAutoLogin/P3P
+        for more info."
+      X-Powered-By:
+      - HHVM/3.18.6-dev
+      Access-Control-Allow-Origin:
+      - "*"
+      X-Frame-Options:
+      - DENY
+      Vary:
+      - Accept-Encoding
+      Last-Modified:
+      - Sat, 16 Dec 2017 22:36:58 GMT
+      Backend-Timing:
+      - D=76313 t=1517132300482365
+      X-Varnish:
+      - 492063151, 77566188, 743573415, 481450215
+      Via:
+      - 1.1 varnish-v4, 1.1 varnish-v4, 1.1 varnish-v4, 1.1 varnish-v4
+      Accept-Ranges:
+      - bytes
+      Age:
+      - '0'
+      X-Cache:
+      - cp1053 pass, cp2016 pass, cp4030 miss, cp4029 miss
+      X-Cache-Status:
+      - miss
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      Set-Cookie:
+      - GeoIP=AU:NSW:Matraville:-33.95:151.23:v4; Path=/; secure; Domain=.wikidata.org
+      - WMF-Last-Access-Global=28-Jan-2018;Path=/;Domain=.wikidata.org;HttpOnly;secure;Expires=Thu,
+        01 Mar 2018 00:00:00 GMT
+      - WMF-Last-Access=28-Jan-2018;Path=/;HttpOnly;secure;Expires=Thu, 01 Mar 2018
+        00:00:00 GMT
+      X-Analytics:
+      - https=1;nocookies=1
+      X-Client-Ip:
+      - 124.190.23.64
+      Cache-Control:
+      - private, s-maxage=0, max-age=0, must-revalidate
+    body:
+      encoding: UTF-8
+      string: '{"entities":{"Q128910":{"pageid":130901,"ns":0,"title":"Q128910","lastrevid":610031652,"modified":"2017-12-16T22:36:58Z","type":"item","id":"Q128910","labels":{"zh-hans":{"language":"zh-hans","value":"\u6700\u540e\u7684\u665a\u9910"},"zh-hant":{"language":"zh-hant","value":"\u6700\u5f8c\u7684\u665a\u9910"},"zh-hk":{"language":"zh-hk","value":"\u6700\u5f8c\u7684\u665a\u9910"},"zh-cn":{"language":"zh-cn","value":"\u6700\u540e\u7684\u665a\u9910"},"zh-sg":{"language":"zh-sg","value":"\u6700\u540e\u7684\u665a\u9910"},"zh-tw":{"language":"zh-tw","value":"\u6700\u5f8c\u7684\u665a\u9910"},"pl":{"language":"pl","value":"Ostatnia
+        Wieczerza"},"eu":{"language":"eu","value":"Azken Afaria"},"bs":{"language":"bs","value":"Posljednja
+        ve\u010dera"},"es":{"language":"es","value":"La \u00daltima Cena"},"ta":{"language":"ta","value":"\u0b87\u0bb1\u0bc1\u0ba4\u0bbf
+        \u0b87\u0bb0\u0bbe\u0bb5\u0bc1\u0ba3\u0bb5\u0bc1"},"af":{"language":"af","value":"Die
+        Laaste Avondmaal"},"et":{"language":"et","value":"P\u00fcha \u00f5htus\u00f6\u00f6maaeg"},"bn":{"language":"bn","value":"\u09a6\u09cd\u09af\u09be
+        \u09b2\u09be\u09b8\u09cd\u099f \u09b8\u09be\u09aa\u09be\u09b0"},"br":{"language":"br","value":"L''Ultima
+        Cena"},"sq":{"language":"sq","value":"Darka e Fundit"},"el":{"language":"el","value":"\u039f
+        \u039c\u03c5\u03c3\u03c4\u03b9\u03ba\u03cc\u03c2 \u0394\u03b5\u03af\u03c0\u03bd\u03bf\u03c2"},"mt":{"language":"mt","value":"L-A\u0127\u0127ar
+        \u010aena"},"ar":{"language":"ar","value":"\u0627\u0644\u0639\u0634\u0627\u0621
+        \u0627\u0644\u0623\u062e\u064a\u0631"},"nl":{"language":"nl","value":"Het
+        Laatste Avondmaal"},"sv":{"language":"sv","value":"Nattvarden"},"pt":{"language":"pt","value":"A
+        \u00daltima Ceia"},"eo":{"language":"eo","value":"La Lasta Vesperman\u011do"},"ru":{"language":"ru","value":"\u0422\u0430\u0439\u043d\u0430\u044f
+        \u0432\u0435\u0447\u0435\u0440\u044f"},"sr-el":{"language":"sr-el","value":"Tajna
+        ve\u010dera"},"sr-ec":{"language":"sr-ec","value":"\u0422\u0430\u0458\u043d\u0430
+        \u0432\u0435\u0447\u0435\u0440\u0430"},"tr":{"language":"tr","value":"Son
+        Ak\u015fam Yeme\u011fi"},"mk":{"language":"mk","value":"\u0422\u0430\u0458\u043d\u0430\u0442\u0430
+        \u0432\u0435\u0447\u0435\u0440\u0430"},"fi":{"language":"fi","value":"Pyh\u00e4
+        ehtoollinen"},"uk":{"language":"uk","value":"\u0422\u0430\u0439\u043d\u0430
+        \u0432\u0435\u0447\u0435\u0440\u044f"},"az":{"language":"az","value":"Sonuncu
+        \u015fam yem\u0259yi"},"hr":{"language":"hr","value":"Posljednja ve\u010dera"},"da":{"language":"da","value":"Den
+        sidste nadver"},"fr":{"language":"fr","value":"La C\u00e8ne"},"he":{"language":"he","value":"\u05d4\u05e1\u05e2\u05d5\u05d3\u05d4
+        \u05d4\u05d0\u05d7\u05e8\u05d5\u05e0\u05d4"},"it":{"language":"it","value":"Ultima
+        Cena"},"li":{"language":"li","value":"L\u00e8tste aovendmaol"},"gl":{"language":"gl","value":"A
+        \u00daltima Cea"},"de":{"language":"de","value":"Das Abendmahl"},"ml":{"language":"ml","value":"\u0d05\u0d28\u0d4d\u0d24\u0d4d\u0d2f\u0d24\u0d3f\u0d30\u0d41\u0d35\u0d24\u0d4d\u0d24\u0d3e\u0d34\u0d02"},"ja":{"language":"ja","value":"\u6700\u5f8c\u306e\u6669\u9910"},"vi":{"language":"vi","value":"B\u1eefa
+        \u0103n t\u1ed1i cu\u1ed1i c\u00f9ng"},"yue":{"language":"yue","value":"\u6700\u5f8c\u665a\u9910"},"en":{"language":"en","value":"The
+        Last Supper"},"sh":{"language":"sh","value":"Posljednja ve\u010dera"},"scn":{"language":"scn","value":"\u00d9rtima
+        cena"},"sk":{"language":"sk","value":"Posledn\u00e1 ve\u010dera"},"ro":{"language":"ro","value":"Cina
+        cea de Tain\u0103"},"th":{"language":"th","value":"\u0e1e\u0e23\u0e30\u0e01\u0e23\u0e30\u0e22\u0e32\u0e2b\u0e32\u0e23\u0e21\u0e37\u0e49\u0e2d\u0e2a\u0e38\u0e14\u0e17\u0e49\u0e32\u0e22"},"ca":{"language":"ca","value":"El
+        Sant Sopar"},"la":{"language":"la","value":"Ultima Cena"},"ilo":{"language":"ilo","value":"Ti
+        Maudi a Pangrabii"},"cy":{"language":"cy","value":"Y Swper Olaf"},"sl":{"language":"sl","value":"Zadnja
+        ve\u010derja"},"war":{"language":"war","value":"An Urhi nga Pangiklop"},"cs":{"language":"cs","value":"Posledn\u00ed
+        ve\u010de\u0159e"},"fa":{"language":"fa","value":"\u0634\u0627\u0645 \u0622\u062e\u0631"},"bg":{"language":"bg","value":"\u0422\u0430\u0439\u043d\u0430\u0442\u0430
+        \u0432\u0435\u0447\u0435\u0440\u044f"},"ka":{"language":"ka","value":"\u10e1\u10d0\u10d8\u10d3\u10e3\u10db\u10da\u10dd
+        \u10e1\u10d4\u10e0\u10dd\u10d1\u10d0"},"zu":{"language":"zu","value":"The
+        Last Supper"},"lt":{"language":"lt","value":"Paskutin\u0117 vakarien\u0117"},"lv":{"language":"lv","value":"Sv\u0113tais
+        vakar\u0113diens"},"hy":{"language":"hy","value":"\u053d\u0578\u0580\u0570\u0580\u0564\u0561\u057e\u0578\u0580
+        \u0568\u0576\u0569\u0580\u056b\u0584"},"zh":{"language":"zh","value":"\u6700\u540e\u7684\u665a\u9910"},"sr":{"language":"sr","value":"\u0422\u0430\u0458\u043d\u0430
+        \u0432\u0435\u0447\u0435\u0440\u0430"},"ko":{"language":"ko","value":"\ucd5c\ud6c4\uc758
+        \ub9cc\ucc2c"},"nb":{"language":"nb","value":"Nattverden"},"kn":{"language":"kn","value":"\u0cb2\u0cbe\u0cb8\u0ccd\u0c9f\u0ccd
+        \u0cb8\u0caa\u0ccd\u0caa\u0cb0\u0ccd"},"si":{"language":"si","value":"\u0d85\u0dc0\u0dc3\u0db1\u0dca
+        \u0db7\u0ddd\u0da2\u0db1 \u0dc3\u0d82\u0d9c\u0dca\u200d\u0dbb\u0dc4\u0dba"},"ga":{"language":"ga","value":"An
+        Suip\u00e9ar D\u00e9anach"},"be":{"language":"be","value":"\u0422\u0430\u0439\u043d\u0430\u044f
+        \u0432\u044f\u0447\u044d\u0440\u0430"},"mr":{"language":"mr","value":"\u0926
+        \u0932\u093e\u0938\u094d\u091f \u0938\u092a\u0930"},"kk":{"language":"kk","value":"\u0416\u0430\u0441\u044b\u0440\u044b\u043d
+        \u043a\u0435\u0448\u043a\u0456\u043b\u0456\u043a"},"hu":{"language":"hu","value":"Az
+        utols\u00f3 vacsora"},"id":{"language":"id","value":"The Last Supper"},"wuu":{"language":"wuu","value":"\u6700\u540e\u7684\u665a\u9910"}},"descriptions":{"nl":{"language":"nl","value":"Leonardo
+        da Vinci"},"en":{"language":"en","value":"mural painting by Leonardo da Vinci"},"de":{"language":"de","value":"Gem\u00e4lde
+        von Leonardo da Vinci"},"fi":{"language":"fi","value":"Leonardo da Vincin
+        sein\u00e4maalaus"},"fr":{"language":"fr","value":"fresque de de L\u00e9onard
+        de Vinci"},"gl":{"language":"gl","value":"Pintura mural feita por Leonardo
+        da Vinci"},"it":{"language":"it","value":"affresco di Leonardo da Vinci conservato
+        nel convento adiacente al santuario di Santa Maria delle Grazie a Milano"},"ja":{"language":"ja","value":"\u30ec\u30aa\u30ca\u30eb\u30c9\u30fb\u30c0\u30fb\u30f4\u30a3\u30f3\u30c1\u306b\u3088\u308b\u7d75\u753b"},"hu":{"language":"hu","value":"Leonardo
+        da Vinci fresk\u00f3ja"},"sv":{"language":"sv","value":"muralm\u00e5lning
+        av Leonardo da Vinci"},"es":{"language":"es","value":"Pintura Mural de Leonardo
+        da Vinci"},"id":{"language":"id","value":"mural painting by Leonardo da Vinci"},"ru":{"language":"ru","value":"\u0444\u0440\u0435\u0441\u043a\u0430
+        \u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e \u0434\u0430 \u0412\u0438\u043d\u0447\u0438"}},"aliases":{"zh":[{"language":"zh","value":"\u6700\u5f8c\u7684\u665a\u9910"}],"es":[{"language":"es","value":"El
+        Cenacolo"},{"language":"es","value":"Cenacolo"},{"language":"es","value":"Il
+        cenacolo"},{"language":"es","value":"La \u00faltima Cena"},{"language":"es","value":"La
+        Ultima Cena"}],"ta":[{"language":"ta","value":"\u0b95\u0b9f\u0bc8\u0b9a\u0bbf
+        \u0bb5\u0bbf\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1"}],"bn":[{"language":"bn","value":"\u09a6\u09cd\u09af
+        \u09b2\u09be\u09b8\u09cd\u099f \u09b8\u09be\u09aa\u09be\u09b0"}],"br":[{"language":"br","value":"Il
+        Cenacolo"}],"el":[{"language":"el","value":"\u039c\u03c5\u03c3\u03c4\u03b9\u03ba\u03cc\u03c2
+        \u0394\u03b5\u03af\u03c0\u03bd\u03bf\u03c2"}],"nl":[{"language":"nl","value":"Fresco
+        ''Het laatste avondmaal'' van Leonardo Da Vinci"},{"language":"nl","value":"Laatste
+        Avondmaal"}],"sv":[{"language":"sv","value":"Den sista m\u00e5ltiden"}],"eo":[{"language":"eo","value":"La
+        Sankta Man\u011do"}],"fi":[{"language":"fi","value":"Viimeinen ehtoollinen"}],"uk":[{"language":"uk","value":"\u0422\u0430\u0454\u043c\u043d\u0430
+        \u0432\u0435\u0447\u0435\u0440\u044f"}],"fr":[{"language":"fr","value":"La
+        Cene"}],"it":[{"language":"it","value":"Cenacolo vinciano"},{"language":"it","value":"L''ultima
+        cena"},{"language":"it","value":"''''Il Cenacolo or L''Ultima Cena''''"},{"language":"it","value":"Il
+        Cenacolo or L''Ultima Cena"}],"li":[{"language":"li","value":"L\u00e8tste
+        aovendete"},{"language":"li","value":"L\u00e8ste aovendmaol"}],"de":[{"language":"de","value":"Das
+        Letzte Abendmahl"}],"ml":[{"language":"ml","value":"The Last Supper"}],"yue":[{"language":"yue","value":"The
+        Last Supper"},{"language":"yue","value":"\u6700\u5f8c\u7684\u665a\u9910"},{"language":"yue","value":"Il
+        Cenacolo or L''Ultima Cena"},{"language":"yue","value":"\u6700\u5f8c\u5605\u665a\u9910"}],"sh":[{"language":"sh","value":"Tajna
+        ve\u010dera"}],"scn":[{"language":"scn","value":"L''ultima cena"},{"language":"scn","value":"L''\u00f9rtima
+        cena"}],"ro":[{"language":"ro","value":"Cina cea de taina"}],"th":[{"language":"th","value":"The
+        Last Supper"}],"ca":[{"language":"ca","value":"L''\u00daltim Sopar"},{"language":"ca","value":"Sant
+        Sopar"}],"la":[{"language":"la","value":"Postrema coena"},{"language":"la","value":"Postrema
+        cena"}],"fa":[{"language":"fa","value":"\u0634\u0627\u0645 \u0627\u062e\u0631"}],"en":[{"language":"en","value":"Il
+        Cenacolo or L''Ultima Cena"},{"language":"en","value":"Ultima Cena"},{"language":"en","value":"''''Il
+        Cenacolo or L''Ultima Cena''''"},{"language":"en","value":"Cenacolo vinciano"},{"language":"en","value":"L''ultima
+        cena"}],"gl":[{"language":"gl","value":"Il cenacolo"}],"id":[{"language":"id","value":"Il
+        Cenacolo or L''Ultima Cena"}]},"claims":{"P144":[{"mainsnak":{"snaktype":"value","property":"P144","datavalue":{"value":{"entity-type":"item","numeric-id":6718887,"id":"Q6718887"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$4f72d8c2-4c17-ce32-7c85-031ac227a653","rank":"normal"}],"P135":[{"mainsnak":{"snaktype":"value","property":"P135","datavalue":{"value":{"entity-type":"item","numeric-id":4692,"id":"Q4692"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$3eb11a03-4500-f82f-3dc9-6bd2ab369477","rank":"normal"}],"P1257":[{"mainsnak":{"snaktype":"value","property":"P1257","datavalue":{"value":"73D2","type":"string"},"datatype":"string"},"type":"statement","id":"Q128910$1e23277c-4626-c785-97d3-4394d1698aa0","rank":"normal"}],"P276":[{"mainsnak":{"snaktype":"value","property":"P276","datavalue":{"value":{"entity-type":"item","numeric-id":244952,"id":"Q244952"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$342ec3d3-4eda-a4c3-7693-d480926c83cd","rank":"normal"}],"P88":[{"mainsnak":{"snaktype":"value","property":"P88","datavalue":{"value":{"entity-type":"item","numeric-id":236853,"id":"Q236853"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$7e67a724-479d-14f8-1676-ce6746219559","rank":"normal"}],"P373":[{"mainsnak":{"snaktype":"value","property":"P373","datavalue":{"value":"Last
+        Supper by Leonardo da Vinci","type":"string"},"datatype":"string"},"type":"statement","id":"q128910$336D0E38-7400-419C-A039-7FED055290E5","rank":"normal"}],"P227":[{"mainsnak":{"snaktype":"value","property":"P227","datavalue":{"value":"4195043-4","type":"string"},"datatype":"external-id"},"type":"statement","id":"q128910$9FB7E519-8978-456A-84F6-FEB707D4EDFA","rank":"normal","references":[{"hash":"9a24f7c0208b05d6be97077d855671d1dfdbc0dd","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":48183,"id":"Q48183"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P625":[{"mainsnak":{"snaktype":"value","property":"P625","datavalue":{"value":{"latitude":45.466666666667,"longitude":9.1708333333333,"altitude":null,"precision":null,"globe":"http://www.wikidata.org/entity/Q2"},"type":"globecoordinate"},"datatype":"globe-coordinate"},"type":"statement","id":"q128910$E8251DFC-3AD4-4E7B-9797-F6AA56C2E075","rank":"normal","references":[{"hash":"fa278ebfc458360e5aed63d5058cca83c46134f1","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":328,"id":"Q328"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P136":[{"mainsnak":{"snaktype":"value","property":"P136","datavalue":{"value":{"entity-type":"item","numeric-id":2414609,"id":"Q2414609"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"q128910$EBA07535-D7D6-45E8-8E4D-699D434155C8","rank":"normal"}],"P18":[{"mainsnak":{"snaktype":"value","property":"P18","datavalue":{"value":"\u00daltima
+        Cena - Da Vinci 5.jpg","type":"string"},"datatype":"commonsMedia"},"type":"statement","id":"Q128910$CEC3A3B8-BC7C-4BE1-8334-10949597533B","rank":"normal"}],"P31":[{"mainsnak":{"snaktype":"value","property":"P31","datavalue":{"value":{"entity-type":"item","numeric-id":219423,"id":"Q219423"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$c90a2094-4e9a-0235-8570-9ccaf4ad17e2","rank":"normal","references":[{"hash":"9a24f7c0208b05d6be97077d855671d1dfdbc0dd","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":48183,"id":"Q48183"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P214":[{"mainsnak":{"snaktype":"value","property":"P214","datavalue":{"value":"175915680","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$CBE0E5F1-197A-446D-AB40-256DA3EF0B69","rank":"normal","references":[{"hash":"759b2a264fff886006b6f49c3ef2f1acbfd1cef0","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":54919,"id":"Q54919"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P646":[{"mainsnak":{"snaktype":"value","property":"P646","datavalue":{"value":"/m/0jnz3","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$5A881C96-3432-4C13-8F54-59C64F3E3603","rank":"normal","references":[{"hash":"2b00cb481cddcac7623114367489b5c194901c4a","snaks":{"P248":[{"snaktype":"value","property":"P248","datavalue":{"value":{"entity-type":"item","numeric-id":15241312,"id":"Q15241312"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P577":[{"snaktype":"value","property":"P577","datavalue":{"value":{"time":"+2013-10-28T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P248","P577"]}]}],"P170":[{"mainsnak":{"snaktype":"value","property":"P170","datavalue":{"value":{"entity-type":"item","numeric-id":762,"id":"Q762"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$BB577BEE-CF1E-4FA8-B435-88B1AEC0DA03","rank":"normal","references":[{"hash":"8f08ac3e0839bdbc4c6eb8d671e772deb12ba423","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":465,"id":"Q465"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P186":[{"mainsnak":{"snaktype":"value","property":"P186","datavalue":{"value":{"entity-type":"item","numeric-id":2263612,"id":"Q2263612"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$61f7a87a-4e54-37bf-b798-b2c7871c5f73","rank":"normal","references":[{"hash":"9a24f7c0208b05d6be97077d855671d1dfdbc0dd","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":48183,"id":"Q48183"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]},{"hash":"740ea39b047e6a232551e14584830ff8b86eebc7","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.milan-museum.com/leonardo-last-supper-cenacolo.php","type":"string"},"datatype":"url"}],"P1476":[{"snaktype":"value","property":"P1476","datavalue":{"value":{"text":"Leonardo''s
+        Last Supper","language":"en"},"type":"monolingualtext"},"datatype":"monolingualtext"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-12-08T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P1476","P813"]}]}],"P268":[{"mainsnak":{"snaktype":"value","property":"P268","datavalue":{"value":"12032553h","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$1249B679-79C6-4772-B2BC-59C3F9E7E783","rank":"normal","references":[{"hash":"759b2a264fff886006b6f49c3ef2f1acbfd1cef0","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":54919,"id":"Q54919"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P269":[{"mainsnak":{"snaktype":"value","property":"P269","datavalue":{"value":"02850223X","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$86312C91-BFE8-4565-9727-027F4AE82F2B","rank":"normal","references":[{"hash":"759b2a264fff886006b6f49c3ef2f1acbfd1cef0","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":54919,"id":"Q54919"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P571":[{"mainsnak":{"snaktype":"value","property":"P571","datavalue":{"value":{"time":"+1490-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":8,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"},"type":"statement","qualifiers":{"P580":[{"snaktype":"value","property":"P580","hash":"3b207044832b7874248207300532260121c2b667","datavalue":{"value":{"time":"+1494-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"}],"P582":[{"snaktype":"value","property":"P582","hash":"c15eed7ebe45338192deb07f1c70efab374be0b1","datavalue":{"value":{"time":"+1498-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"}]},"qualifiers-order":["P580","P582"],"id":"Q128910$5592579e-4ea1-a520-002a-085e4ebdc7ff","rank":"normal","references":[{"hash":"8ea571fd37a7897f09769b2995adee54ff3545bb","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"http://legraziemilano.it/il-cenacolo/","type":"string"},"datatype":"url"}]},"snaks-order":["P854"]},{"hash":"740ea39b047e6a232551e14584830ff8b86eebc7","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.milan-museum.com/leonardo-last-supper-cenacolo.php","type":"string"},"datatype":"url"}],"P1476":[{"snaktype":"value","property":"P1476","datavalue":{"value":{"text":"Leonardo''s
+        Last Supper","language":"en"},"type":"monolingualtext"},"datatype":"monolingualtext"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-12-08T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P1476","P813"]}]}],"P180":[{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":302,"id":"Q302"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$8D003101-6265-4194-A5C0-79F41D36B33E","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":8441,"id":"Q8441"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$69A1F1F1-8139-4928-B3D6-E6B78A58CAF3","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":51633,"id":"Q51633"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$c423e420-4f43-596e-3f3e-f73677ca6ee5","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43982,"id":"Q43982"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$1c7a8fcc-445e-2776-db4e-4556d2c2deec","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":44047,"id":"Q44047"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$a3f41e9f-4679-18b0-c2b3-ae022e5d0a5b","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43399,"id":"Q43399"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$4fc6b893-4a2c-2c83-047d-fe85e8db1e9a","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":81018,"id":"Q81018"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$fc0975b7-460f-1744-0ff8-39a2eea17e6a","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":33923,"id":"Q33923"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$ed8138c8-4879-b25f-f9e6-7628c4029a2f","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":44015,"id":"Q44015"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$226694e7-41db-acdc-7084-aaf43d557b7a","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43669,"id":"Q43669"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$b4e4486a-4d6d-70b6-b390-2990a443dd50","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43999,"id":"Q43999"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d8b25f97-41c4-da11-2b3f-ca5aad67f88b","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43675,"id":"Q43675"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$3af4b3ed-4728-6eb0-8c41-dda62595f42d","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43600,"id":"Q43600"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$49ec978d-44a9-e2f4-b038-b9305bd865e5","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43945,"id":"Q43945"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d704451e-467a-3556-ed74-32b33175e20d","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":12871,"id":"Q12871"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d7a38112-49c9-0101-15a1-e3730cdc9d93","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":14748,"id":"Q14748"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d145cad0-4d31-6ea7-c12c-0aad0e14e25c","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":536168,"id":"Q536168"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$0b95921c-4bc6-d452-cde4-ce5c8507c64a","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":57216,"id":"Q57216"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$8a7351d4-44e1-dfb8-a668-3d134478f4d9","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":7802,"id":"Q7802"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$4644f340-40a1-4cdd-a085-b9e4334dab11","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":81727,"id":"Q81727"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$e46aa686-472d-bf2f-a326-bd8f515666c2","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":32489,"id":"Q32489"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$834bebc3-4ecf-9c3e-61af-44dbe577dc5c","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":35473,"id":"Q35473"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$1c925d09-4f17-391d-4319-4dd884c24c18","rank":"normal"}],"P195":[{"mainsnak":{"snaktype":"value","property":"P195","datavalue":{"value":{"entity-type":"item","numeric-id":244952,"id":"Q244952"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$656EE408-6DC5-4969-8ED8-D2D4B3F87A0A","rank":"normal","references":[{"hash":"b3fd5e254143d8b52cd96cff43af9af5e3a82358","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":199693,"id":"Q199693"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P2048":[{"mainsnak":{"snaktype":"value","property":"P2048","datavalue":{"value":{"amount":"+460","unit":"http://www.wikidata.org/entity/Q174728","upperBound":"+461","lowerBound":"+459"},"type":"quantity"},"datatype":"quantity"},"type":"statement","id":"Q128910$8e34231d-4ecc-5e42-ff31-2e3a35b515fe","rank":"normal","references":[{"hash":"740ea39b047e6a232551e14584830ff8b86eebc7","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.milan-museum.com/leonardo-last-supper-cenacolo.php","type":"string"},"datatype":"url"}],"P1476":[{"snaktype":"value","property":"P1476","datavalue":{"value":{"text":"Leonardo''s
+        Last Supper","language":"en"},"type":"monolingualtext"},"datatype":"monolingualtext"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-12-08T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P1476","P813"]}]}],"P2049":[{"mainsnak":{"snaktype":"value","property":"P2049","datavalue":{"value":{"amount":"+880","unit":"http://www.wikidata.org/entity/Q174728","upperBound":"+883","lowerBound":"+877"},"type":"quantity"},"datatype":"quantity"},"type":"statement","id":"Q128910$04262991-4794-dbc1-a25b-529688c97b1d","rank":"normal","references":[{"hash":"740ea39b047e6a232551e14584830ff8b86eebc7","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.milan-museum.com/leonardo-last-supper-cenacolo.php","type":"string"},"datatype":"url"}],"P1476":[{"snaktype":"value","property":"P1476","datavalue":{"value":{"text":"Leonardo''s
+        Last Supper","language":"en"},"type":"monolingualtext"},"datatype":"monolingualtext"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-12-08T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P1476","P813"]}]}],"P856":[{"mainsnak":{"snaktype":"value","property":"P856","datavalue":{"value":"http://legraziemilano.it/il-cenacolo/","type":"string"},"datatype":"url"},"type":"statement","id":"Q128910$BA1756AA-58E2-45C6-958A-4382C50BB888","rank":"normal","references":[{"hash":"fa278ebfc458360e5aed63d5058cca83c46134f1","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":328,"id":"Q328"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P921":[{"mainsnak":{"snaktype":"value","property":"P921","datavalue":{"value":{"entity-type":"item","numeric-id":51633,"id":"Q51633"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$1752ff68-44a7-a301-5aeb-4735ccf1e1a6","rank":"normal"}],"P2079":[{"mainsnak":{"snaktype":"value","property":"P2079","datavalue":{"value":{"entity-type":"item","numeric-id":2263612,"id":"Q2263612"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d3cae30a-44d8-34e2-70e0-5838aed40739","rank":"normal"}],"P131":[{"mainsnak":{"snaktype":"value","property":"P131","datavalue":{"value":{"entity-type":"item","numeric-id":490,"id":"Q490"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$473e2091-4d63-ed9d-8753-394dcf828bb4","rank":"normal"}],"P3855":[{"mainsnak":{"snaktype":"value","property":"P3855","datavalue":{"value":"3o210-01279","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$adf3a42d-42c8-3bfe-a3d0-c83df05b19fe","rank":"normal"}],"P528":[{"mainsnak":{"snaktype":"value","property":"P528","datavalue":{"value":"6","type":"string"},"datatype":"string"},"type":"statement","qualifiers":{"P972":[{"snaktype":"value","property":"P972","hash":"ec6f1390c34596bfb32131217cb6e06e144d7ac5","datavalue":{"value":{"entity-type":"item","numeric-id":41634361,"id":"Q41634361"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P972"],"id":"Q128910$1ebf06fc-4cfc-c082-6f95-83516f1ffed3","rank":"normal"}],"P2581":[{"mainsnak":{"snaktype":"value","property":"P2581","datavalue":{"value":"03599114n","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$B6A4508D-6EBF-4FD4-B9B7-C492821DDFCF","rank":"normal","references":[{"hash":"bd0ee81488cd8c23d4b655e417aac78dca370283","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":4837690,"id":"Q4837690"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}]},"sitelinks":{"afwiki":{"site":"afwiki","title":"Die
+        Laaste Avondmaal (Leonardo)","badges":[],"url":"https://af.wikipedia.org/wiki/Die_Laaste_Avondmaal_(Leonardo)"},"arwiki":{"site":"arwiki","title":"\u0627\u0644\u0639\u0634\u0627\u0621
+        \u0627\u0644\u0623\u062e\u064a\u0631 (\u0644\u0648\u062d\u0629)","badges":[],"url":"https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D8%B9%D8%B4%D8%A7%D8%A1_%D8%A7%D9%84%D8%A3%D8%AE%D9%8A%D8%B1_(%D9%84%D9%88%D8%AD%D8%A9)"},"azwiki":{"site":"azwiki","title":"Sonuncu
+        \u015fam yem\u0259yi (Leonardo da Vin\u00e7i)","badges":["Q17437796"],"url":"https://az.wikipedia.org/wiki/Sonuncu_%C5%9Fam_yem%C9%99yi_(Leonardo_da_Vin%C3%A7i)"},"bewiki":{"site":"bewiki","title":"\u0422\u0430\u0439\u043d\u0430\u044f
+        \u0432\u044f\u0447\u044d\u0440\u0430 (\u041b\u0435\u0430\u043d\u0430\u0440\u0434\u0430
+        \u0434\u0430 \u0412\u0456\u043d\u0447\u044b)","badges":[],"url":"https://be.wikipedia.org/wiki/%D0%A2%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D0%B2%D1%8F%D1%87%D1%8D%D1%80%D0%B0_(%D0%9B%D0%B5%D0%B0%D0%BD%D0%B0%D1%80%D0%B4%D0%B0_%D0%B4%D0%B0_%D0%92%D1%96%D0%BD%D1%87%D1%8B)"},"bgwiki":{"site":"bgwiki","title":"\u0422\u0430\u0439\u043d\u0430\u0442\u0430
+        \u0432\u0435\u0447\u0435\u0440\u044f (\u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e
+        \u0434\u0430 \u0412\u0438\u043d\u0447\u0438)","badges":[],"url":"https://bg.wikipedia.org/wiki/%D0%A2%D0%B0%D0%B9%D0%BD%D0%B0%D1%82%D0%B0_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D1%8F_(%D0%9B%D0%B5%D0%BE%D0%BD%D0%B0%D1%80%D0%B4%D0%BE_%D0%B4%D0%B0_%D0%92%D0%B8%D0%BD%D1%87%D0%B8)"},"bnwiki":{"site":"bnwiki","title":"\u09a6\u09cd\u09af
+        \u09b2\u09be\u09b8\u09cd\u099f \u09b8\u09be\u09aa\u09be\u09b0 (\u09b2\u09bf\u0993\u09a8\u09be\u09b0\u09cd\u09a6\u09cb
+        \u09a6\u09be \u09ad\u09bf\u099e\u09cd\u099a\u09bf)","badges":[],"url":"https://bn.wikipedia.org/wiki/%E0%A6%A6%E0%A7%8D%E0%A6%AF_%E0%A6%B2%E0%A6%BE%E0%A6%B8%E0%A7%8D%E0%A6%9F_%E0%A6%B8%E0%A6%BE%E0%A6%AA%E0%A6%BE%E0%A6%B0_(%E0%A6%B2%E0%A6%BF%E0%A6%93%E0%A6%A8%E0%A6%BE%E0%A6%B0%E0%A7%8D%E0%A6%A6%E0%A7%8B_%E0%A6%A6%E0%A6%BE_%E0%A6%AD%E0%A6%BF%E0%A6%9E%E0%A7%8D%E0%A6%9A%E0%A6%BF)"},"brwiki":{"site":"brwiki","title":"L''Ultima
+        Cena (Leonardo)","badges":[],"url":"https://br.wikipedia.org/wiki/L%27Ultima_Cena_(Leonardo)"},"bswiki":{"site":"bswiki","title":"Posljednja
+        ve\u010dera","badges":[],"url":"https://bs.wikipedia.org/wiki/Posljednja_ve%C4%8Dera"},"cawiki":{"site":"cawiki","title":"El
+        Sant Sopar (Leonardo da Vinci)","badges":[],"url":"https://ca.wikipedia.org/wiki/El_Sant_Sopar_(Leonardo_da_Vinci)"},"commonswiki":{"site":"commonswiki","title":"Category:Last
+        Supper by Leonardo da Vinci","badges":[],"url":"https://commons.wikimedia.org/wiki/Category:Last_Supper_by_Leonardo_da_Vinci"},"cswiki":{"site":"cswiki","title":"Posledn\u00ed
+        ve\u010de\u0159e (da Vinci)","badges":[],"url":"https://cs.wikipedia.org/wiki/Posledn%C3%AD_ve%C4%8De%C5%99e_(da_Vinci)"},"cswikiquote":{"site":"cswikiquote","title":"Posledn\u00ed
+        ve\u010de\u0159e","badges":[],"url":"https://cs.wikiquote.org/wiki/Posledn%C3%AD_ve%C4%8De%C5%99e"},"cywiki":{"site":"cywiki","title":"Y
+        Swper Olaf (Leonardo)","badges":[],"url":"https://cy.wikipedia.org/wiki/Y_Swper_Olaf_(Leonardo)"},"dawiki":{"site":"dawiki","title":"Den
+        sidste nadver (Leonardo)","badges":[],"url":"https://da.wikipedia.org/wiki/Den_sidste_nadver_(Leonardo)"},"dewiki":{"site":"dewiki","title":"Das
+        Abendmahl (Leonardo da Vinci)","badges":[],"url":"https://de.wikipedia.org/wiki/Das_Abendmahl_(Leonardo_da_Vinci)"},"elwiki":{"site":"elwiki","title":"\u039f
+        \u039c\u03c5\u03c3\u03c4\u03b9\u03ba\u03cc\u03c2 \u0394\u03b5\u03af\u03c0\u03bd\u03bf\u03c2
+        (\u039d\u03c4\u03b1 \u0392\u03af\u03bd\u03c4\u03c3\u03b9)","badges":[],"url":"https://el.wikipedia.org/wiki/%CE%9F_%CE%9C%CF%85%CF%83%CF%84%CE%B9%CE%BA%CF%8C%CF%82_%CE%94%CE%B5%CE%AF%CF%80%CE%BD%CE%BF%CF%82_(%CE%9D%CF%84%CE%B1_%CE%92%CE%AF%CE%BD%CF%84%CF%83%CE%B9)"},"enwiki":{"site":"enwiki","title":"The
+        Last Supper (Leonardo da Vinci)","badges":[],"url":"https://en.wikipedia.org/wiki/The_Last_Supper_(Leonardo_da_Vinci)"},"eowiki":{"site":"eowiki","title":"La
+        Lasta Vesperman\u011do (Leonardo)","badges":[],"url":"https://eo.wikipedia.org/wiki/La_Lasta_Vesperman%C4%9Do_(Leonardo)"},"eswiki":{"site":"eswiki","title":"La
+        \u00faltima cena (Leonardo da Vinci)","badges":[],"url":"https://es.wikipedia.org/wiki/La_%C3%BAltima_cena_(Leonardo_da_Vinci)"},"etwiki":{"site":"etwiki","title":"P\u00fcha
+        \u00f5htus\u00f6\u00f6maaeg (Leonardo da Vinci)","badges":[],"url":"https://et.wikipedia.org/wiki/P%C3%BCha_%C3%B5htus%C3%B6%C3%B6maaeg_(Leonardo_da_Vinci)"},"euwiki":{"site":"euwiki","title":"Azken
+        Afaria (Leonardo da Vinci)","badges":[],"url":"https://eu.wikipedia.org/wiki/Azken_Afaria_(Leonardo_da_Vinci)"},"fawiki":{"site":"fawiki","title":"\u0634\u0627\u0645
+        \u0622\u062e\u0631 (\u062f\u0627 \u0648\u06cc\u0646\u0686\u06cc)","badges":[],"url":"https://fa.wikipedia.org/wiki/%D8%B4%D8%A7%D9%85_%D8%A2%D8%AE%D8%B1_(%D8%AF%D8%A7_%D9%88%DB%8C%D9%86%DA%86%DB%8C)"},"fiwiki":{"site":"fiwiki","title":"Pyh\u00e4
+        ehtoollinen","badges":[],"url":"https://fi.wikipedia.org/wiki/Pyh%C3%A4_ehtoollinen"},"frwiki":{"site":"frwiki","title":"La
+        C\u00e8ne (L\u00e9onard de Vinci)","badges":[],"url":"https://fr.wikipedia.org/wiki/La_C%C3%A8ne_(L%C3%A9onard_de_Vinci)"},"gawiki":{"site":"gawiki","title":"An
+        Suip\u00e9ar D\u00e9anach (Leonardo da Vinci)","badges":[],"url":"https://ga.wikipedia.org/wiki/An_Suip%C3%A9ar_D%C3%A9anach_(Leonardo_da_Vinci)"},"glwiki":{"site":"glwiki","title":"A
+        \u00daltima Cea (Leonardo)","badges":[],"url":"https://gl.wikipedia.org/wiki/A_%C3%9Altima_Cea_(Leonardo)"},"hewiki":{"site":"hewiki","title":"\u05d4\u05e1\u05e2\u05d5\u05d3\u05d4
+        \u05d4\u05d0\u05d7\u05e8\u05d5\u05e0\u05d4 (\u05e6\u05d9\u05d5\u05e8)","badges":[],"url":"https://he.wikipedia.org/wiki/%D7%94%D7%A1%D7%A2%D7%95%D7%93%D7%94_%D7%94%D7%90%D7%97%D7%A8%D7%95%D7%A0%D7%94_(%D7%A6%D7%99%D7%95%D7%A8)"},"hrwiki":{"site":"hrwiki","title":"Posljednja
+        ve\u010dera (Leonardo)","badges":[],"url":"https://hr.wikipedia.org/wiki/Posljednja_ve%C4%8Dera_(Leonardo)"},"huwiki":{"site":"huwiki","title":"Az
+        utols\u00f3 vacsora (da Vinci-festm\u00e9ny)","badges":[],"url":"https://hu.wikipedia.org/wiki/Az_utols%C3%B3_vacsora_(da_Vinci-festm%C3%A9ny)"},"hywiki":{"site":"hywiki","title":"\u053d\u0578\u0580\u0570\u0580\u0564\u0561\u057e\u0578\u0580
+        \u0568\u0576\u0569\u0580\u056b\u0584 (\u053c\u0565\u0578\u0576\u0561\u0580\u0564\u0578
+        \u0564\u0561 \u054e\u056b\u0576\u0579\u056b)","badges":[],"url":"https://hy.wikipedia.org/wiki/%D4%BD%D5%B8%D6%80%D5%B0%D6%80%D5%A4%D5%A1%D5%BE%D5%B8%D6%80_%D5%A8%D5%B6%D5%A9%D6%80%D5%AB%D6%84_(%D4%BC%D5%A5%D5%B8%D5%B6%D5%A1%D6%80%D5%A4%D5%B8_%D5%A4%D5%A1_%D5%8E%D5%AB%D5%B6%D5%B9%D5%AB)"},"ilowiki":{"site":"ilowiki","title":"Ti
+        Maudi a Pangrabii (Leonardo da Vinci)","badges":[],"url":"https://ilo.wikipedia.org/wiki/Ti_Maudi_a_Pangrabii_(Leonardo_da_Vinci)"},"itwiki":{"site":"itwiki","title":"Ultima
+        Cena (Leonardo)","badges":[],"url":"https://it.wikipedia.org/wiki/Ultima_Cena_(Leonardo)"},"jawiki":{"site":"jawiki","title":"\u6700\u5f8c\u306e\u6669\u9910
+        (\u30ec\u30aa\u30ca\u30eb\u30c9)","badges":[],"url":"https://ja.wikipedia.org/wiki/%E6%9C%80%E5%BE%8C%E3%81%AE%E6%99%A9%E9%A4%90_(%E3%83%AC%E3%82%AA%E3%83%8A%E3%83%AB%E3%83%89)"},"kawiki":{"site":"kawiki","title":"\u10e1\u10d0\u10d8\u10d3\u10e3\u10db\u10da\u10dd
+        \u10e1\u10d4\u10e0\u10dd\u10d1\u10d0 (\u10da\u10d4\u10dd\u10dc\u10d0\u10e0\u10d3\u10dd
+        \u10d3\u10d0 \u10d5\u10d8\u10dc\u10e9\u10d8)","badges":[],"url":"https://ka.wikipedia.org/wiki/%E1%83%A1%E1%83%90%E1%83%98%E1%83%93%E1%83%A3%E1%83%9B%E1%83%9A%E1%83%9D_%E1%83%A1%E1%83%94%E1%83%A0%E1%83%9D%E1%83%91%E1%83%90_(%E1%83%9A%E1%83%94%E1%83%9D%E1%83%9C%E1%83%90%E1%83%A0%E1%83%93%E1%83%9D_%E1%83%93%E1%83%90_%E1%83%95%E1%83%98%E1%83%9C%E1%83%A9%E1%83%98)"},"kkwiki":{"site":"kkwiki","title":"\u0416\u0430\u0441\u044b\u0440\u044b\u043d
+        \u043a\u0435\u0448\u043a\u0456\u043b\u0456\u043a (\u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e
+        \u0434\u0430 \u0412\u0438\u043d\u0447\u0438)","badges":[],"url":"https://kk.wikipedia.org/wiki/%D0%96%D0%B0%D1%81%D1%8B%D1%80%D1%8B%D0%BD_%D0%BA%D0%B5%D1%88%D0%BA%D1%96%D0%BB%D1%96%D0%BA_(%D0%9B%D0%B5%D0%BE%D0%BD%D0%B0%D1%80%D0%B4%D0%BE_%D0%B4%D0%B0_%D0%92%D0%B8%D0%BD%D1%87%D0%B8)"},"knwiki":{"site":"knwiki","title":"\u0cb2\u0cbe\u0cb8\u0ccd\u0c9f\u0ccd
+        \u0cb8\u0caa\u0ccd\u0caa\u0cb0\u0ccd","badges":[],"url":"https://kn.wikipedia.org/wiki/%E0%B2%B2%E0%B2%BE%E0%B2%B8%E0%B3%8D%E0%B2%9F%E0%B3%8D_%E0%B2%B8%E0%B2%AA%E0%B3%8D%E0%B2%AA%E0%B2%B0%E0%B3%8D"},"kowiki":{"site":"kowiki","title":"\ucd5c\ud6c4\uc758
+        \ub9cc\ucc2c (\ub808\uc624\ub098\ub974\ub3c4 \ub2e4 \ube48\uce58)","badges":[],"url":"https://ko.wikipedia.org/wiki/%EC%B5%9C%ED%9B%84%EC%9D%98_%EB%A7%8C%EC%B0%AC_(%EB%A0%88%EC%98%A4%EB%82%98%EB%A5%B4%EB%8F%84_%EB%8B%A4_%EB%B9%88%EC%B9%98)"},"lawiki":{"site":"lawiki","title":"Ultima
+        Cena (Leonardus)","badges":[],"url":"https://la.wikipedia.org/wiki/Ultima_Cena_(Leonardus)"},"liwiki":{"site":"liwiki","title":"L\u00e8tste
+        aovendmaol","badges":[],"url":"https://li.wikipedia.org/wiki/L%C3%A8tste_aovendmaol"},"ltwiki":{"site":"ltwiki","title":"Paskutin\u0117
+        vakarien\u0117 (Leonardas da Vin\u010dis)","badges":[],"url":"https://lt.wikipedia.org/wiki/Paskutin%C4%97_vakarien%C4%97_(Leonardas_da_Vin%C4%8Dis)"},"lvwiki":{"site":"lvwiki","title":"Sv\u0113tais
+        vakar\u0113diens (glezna)","badges":[],"url":"https://lv.wikipedia.org/wiki/Sv%C4%93tais_vakar%C4%93diens_(glezna)"},"mkwiki":{"site":"mkwiki","title":"\u0422\u0430\u0458\u043d\u0430\u0442\u0430
+        \u0432\u0435\u0447\u0435\u0440\u0430 (\u0441\u043b\u0438\u043a\u0430)","badges":[],"url":"https://mk.wikipedia.org/wiki/%D0%A2%D0%B0%D1%98%D0%BD%D0%B0%D1%82%D0%B0_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D0%B0_(%D1%81%D0%BB%D0%B8%D0%BA%D0%B0)"},"mlwiki":{"site":"mlwiki","title":"\u0d05\u0d28\u0d4d\u0d24\u0d4d\u0d2f\u0d24\u0d3f\u0d30\u0d41\u0d35\u0d24\u0d4d\u0d24\u0d3e\u0d34\u0d02
+        (\u0d32\u0d3f\u0d2f\u0d28\u0d3e\u0d7c\u0d21\u0d4b \u0d21\u0d3e \u0d35\u0d3f\u0d1e\u0d4d\u0d1a\u0d3f)","badges":[],"url":"https://ml.wikipedia.org/wiki/%E0%B4%85%E0%B4%A8%E0%B5%8D%E0%B4%A4%E0%B5%8D%E0%B4%AF%E0%B4%A4%E0%B4%BF%E0%B4%B0%E0%B5%81%E0%B4%B5%E0%B4%A4%E0%B5%8D%E0%B4%A4%E0%B4%BE%E0%B4%B4%E0%B4%82_(%E0%B4%B2%E0%B4%BF%E0%B4%AF%E0%B4%A8%E0%B4%BE%E0%B5%BC%E0%B4%A1%E0%B5%8B_%E0%B4%A1%E0%B4%BE_%E0%B4%B5%E0%B4%BF%E0%B4%9E%E0%B5%8D%E0%B4%9A%E0%B4%BF)"},"mrwiki":{"site":"mrwiki","title":"\u0926
+        \u0932\u093e\u0938\u094d\u091f \u0938\u092a\u0930","badges":[],"url":"https://mr.wikipedia.org/wiki/%E0%A4%A6_%E0%A4%B2%E0%A4%BE%E0%A4%B8%E0%A5%8D%E0%A4%9F_%E0%A4%B8%E0%A4%AA%E0%A4%B0"},"mtwiki":{"site":"mtwiki","title":"L-A\u0127\u0127ar
+        \u010aena (Leonardo)","badges":[],"url":"https://mt.wikipedia.org/wiki/L-A%C4%A7%C4%A7ar_%C4%8Aena_(Leonardo)"},"nlwiki":{"site":"nlwiki","title":"Het
+        Laatste Avondmaal (Leonardo da Vinci)","badges":[],"url":"https://nl.wikipedia.org/wiki/Het_Laatste_Avondmaal_(Leonardo_da_Vinci)"},"nowiki":{"site":"nowiki","title":"Nattverden
+        (Leonardo)","badges":[],"url":"https://no.wikipedia.org/wiki/Nattverden_(Leonardo)"},"plwiki":{"site":"plwiki","title":"Ostatnia
+        Wieczerza (obraz Leonarda da Vinci)","badges":[],"url":"https://pl.wikipedia.org/wiki/Ostatnia_Wieczerza_(obraz_Leonarda_da_Vinci)"},"plwikiquote":{"site":"plwikiquote","title":"Ostatnia
+        Wieczerza","badges":[],"url":"https://pl.wikiquote.org/wiki/Ostatnia_Wieczerza"},"ptwiki":{"site":"ptwiki","title":"A
+        \u00daltima Ceia (Leonardo da Vinci)","badges":[],"url":"https://pt.wikipedia.org/wiki/A_%C3%9Altima_Ceia_(Leonardo_da_Vinci)"},"rowiki":{"site":"rowiki","title":"Cina
+        cea de Tain\u0103 (Leonardo da Vinci)","badges":[],"url":"https://ro.wikipedia.org/wiki/Cina_cea_de_Tain%C4%83_(Leonardo_da_Vinci)"},"ruwiki":{"site":"ruwiki","title":"\u0422\u0430\u0439\u043d\u0430\u044f
+        \u0432\u0435\u0447\u0435\u0440\u044f (\u0444\u0440\u0435\u0441\u043a\u0430
+        \u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e \u0434\u0430 \u0412\u0438\u043d\u0447\u0438)","badges":[],"url":"https://ru.wikipedia.org/wiki/%D0%A2%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D1%8F_(%D1%84%D1%80%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D0%B5%D0%BE%D0%BD%D0%B0%D1%80%D0%B4%D0%BE_%D0%B4%D0%B0_%D0%92%D0%B8%D0%BD%D1%87%D0%B8)"},"scnwiki":{"site":"scnwiki","title":"\u00d9rtima
+        cena (Liunardu)","badges":[],"url":"https://scn.wikipedia.org/wiki/%C3%99rtima_cena_(Liunardu)"},"shwiki":{"site":"shwiki","title":"Posljednja
+        ve\u010dera (Leonardo)","badges":[],"url":"https://sh.wikipedia.org/wiki/Posljednja_ve%C4%8Dera_(Leonardo)"},"simplewiki":{"site":"simplewiki","title":"The
+        Last Supper","badges":[],"url":"https://simple.wikipedia.org/wiki/The_Last_Supper"},"siwiki":{"site":"siwiki","title":"\u0d85\u0dc0\u0dc3\u0db1\u0dca
+        \u0db7\u0ddd\u0da2\u0db1 \u0dc3\u0d82\u0d9c\u0dca\u200d\u0dbb\u0dc4\u0dba
+        (\u0da0\u0dd2\u0dad\u0dca\u200d\u0dbb\u0dba)","badges":[],"url":"https://si.wikipedia.org/wiki/%E0%B6%85%E0%B7%80%E0%B7%83%E0%B6%B1%E0%B7%8A_%E0%B6%B7%E0%B7%9D%E0%B6%A2%E0%B6%B1_%E0%B7%83%E0%B6%82%E0%B6%9C%E0%B7%8A%E2%80%8D%E0%B6%BB%E0%B7%84%E0%B6%BA_(%E0%B6%A0%E0%B7%92%E0%B6%AD%E0%B7%8A%E2%80%8D%E0%B6%BB%E0%B6%BA)"},"skwiki":{"site":"skwiki","title":"Posledn\u00e1
+        ve\u010dera (Leonardo da Vinci)","badges":[],"url":"https://sk.wikipedia.org/wiki/Posledn%C3%A1_ve%C4%8Dera_(Leonardo_da_Vinci)"},"slwiki":{"site":"slwiki","title":"Zadnja
+        ve\u010derja (Leonardo da Vinci)","badges":[],"url":"https://sl.wikipedia.org/wiki/Zadnja_ve%C4%8Derja_(Leonardo_da_Vinci)"},"sqwiki":{"site":"sqwiki","title":"Darka
+        e Fundit","badges":[],"url":"https://sq.wikipedia.org/wiki/Darka_e_Fundit"},"srwiki":{"site":"srwiki","title":"\u0422\u0430\u0458\u043d\u0430
+        \u0432\u0435\u0447\u0435\u0440\u0430 (\u0444\u0440\u0435\u0441\u043a\u0430)","badges":[],"url":"https://sr.wikipedia.org/wiki/%D0%A2%D0%B0%D1%98%D0%BD%D0%B0_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D0%B0_(%D1%84%D1%80%D0%B5%D1%81%D0%BA%D0%B0)"},"svwiki":{"site":"svwiki","title":"Nattvarden","badges":[],"url":"https://sv.wikipedia.org/wiki/Nattvarden"},"tawiki":{"site":"tawiki","title":"\u0b87\u0bb1\u0bc1\u0ba4\u0bbf
+        \u0b87\u0bb0\u0bbe\u0bb5\u0bc1\u0ba3\u0bb5\u0bc1 (\u0bb2\u0bbf\u0baf\u0bca\u0ba9\u0bbe\u0bb0\u0bcd\u0b9f\u0bcb
+        \u0b9f\u0bbe \u0bb5\u0bbf\u0ba9\u0bcd\u0b9a\u0bbf)","badges":[],"url":"https://ta.wikipedia.org/wiki/%E0%AE%87%E0%AE%B1%E0%AF%81%E0%AE%A4%E0%AE%BF_%E0%AE%87%E0%AE%B0%E0%AE%BE%E0%AE%B5%E0%AF%81%E0%AE%A3%E0%AE%B5%E0%AF%81_(%E0%AE%B2%E0%AE%BF%E0%AE%AF%E0%AF%8A%E0%AE%A9%E0%AE%BE%E0%AE%B0%E0%AF%8D%E0%AE%9F%E0%AF%8B_%E0%AE%9F%E0%AE%BE_%E0%AE%B5%E0%AE%BF%E0%AE%A9%E0%AF%8D%E0%AE%9A%E0%AE%BF)"},"thwiki":{"site":"thwiki","title":"\u0e2d\u0e32\u0e2b\u0e32\u0e23\u0e04\u0e48\u0e33\u0e21\u0e37\u0e49\u0e2d\u0e2a\u0e38\u0e14\u0e17\u0e49\u0e32\u0e22
+        (\u0e40\u0e25\u0e42\u0e2d\u0e19\u0e32\u0e23\u0e4c\u0e42\u0e14)","badges":[],"url":"https://th.wikipedia.org/wiki/%E0%B8%AD%E0%B8%B2%E0%B8%AB%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B9%88%E0%B8%B3%E0%B8%A1%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A2_(%E0%B9%80%E0%B8%A5%E0%B9%82%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%94)"},"trwiki":{"site":"trwiki","title":"Son
+        Ak\u015fam Yeme\u011fi (tablo)","badges":[],"url":"https://tr.wikipedia.org/wiki/Son_Ak%C5%9Fam_Yeme%C4%9Fi_(tablo)"},"ukwiki":{"site":"ukwiki","title":"\u0422\u0430\u0439\u043d\u0430
+        \u0432\u0435\u0447\u0435\u0440\u044f (\u043a\u0430\u0440\u0442\u0438\u043d\u0430
+        \u0434\u0430 \u0412\u0456\u043d\u0447\u0456)","badges":[],"url":"https://uk.wikipedia.org/wiki/%D0%A2%D0%B0%D0%B9%D0%BD%D0%B0_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D1%8F_(%D0%BA%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D0%B0_%D0%B4%D0%B0_%D0%92%D1%96%D0%BD%D1%87%D1%96)"},"viwiki":{"site":"viwiki","title":"B\u1eefa
+        \u0103n t\u1ed1i cu\u1ed1i c\u00f9ng (Leonardo da Vinci)","badges":[],"url":"https://vi.wikipedia.org/wiki/B%E1%BB%AFa_%C4%83n_t%E1%BB%91i_cu%E1%BB%91i_c%C3%B9ng_(Leonardo_da_Vinci)"},"warwiki":{"site":"warwiki","title":"An
+        Urhi nga Pangiklop (Leonardo da Vinci)","badges":[],"url":"https://war.wikipedia.org/wiki/An_Urhi_nga_Pangiklop_(Leonardo_da_Vinci)"},"zh_min_nanwiki":{"site":"zh_min_nanwiki","title":"Ch\u00f2e-\u0101u
+        \u00ea \u00c0n-pn\u0304g (Leonardo da Vinci)","badges":[],"url":"https://zh-min-nan.wikipedia.org/wiki/Ch%C3%B2e-%C4%81u_%C3%AA_%C3%80n-pn%CC%84g_(Leonardo_da_Vinci)"},"zh_yuewiki":{"site":"zh_yuewiki","title":"\u6700\u5f8c\u665a\u9910","badges":[],"url":"https://zh-yue.wikipedia.org/wiki/%E6%9C%80%E5%BE%8C%E6%99%9A%E9%A4%90"},"zhwiki":{"site":"zhwiki","title":"\u6700\u540e\u7684\u665a\u9910
+        (\u8fbe\u82ac\u5947)","badges":[],"url":"https://zh.wikipedia.org/wiki/%E6%9C%80%E5%90%8E%E7%9A%84%E6%99%9A%E9%A4%90_(%E8%BE%BE%E8%8A%AC%E5%A5%87)"},"zuwiki":{"site":"zuwiki","title":"The
+        Last Supper","badges":[],"url":"https://zu.wikipedia.org/wiki/The_Last_Supper"}}}}}'
+    http_version: 
+  recorded_at: Sun, 28 Jan 2018 09:36:51 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20PREFIX%20wd:%20%3Chttp://www.wikidata.org/entity/%3E%20%0A%20%20%20%20%20%20PREFIX%20wdt:%20%3Chttp://www.wikidata.org/prop/direct/%3E%0A%20%20%20%20%20%20PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%0A%0A%20%20%20%20%20%20SELECT%20?id%20$label%0A%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20.%0A%20%20%20%20%20%20%20%20%20FILTER(lang(?label)%20=%20%27en%27)%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20VALUES%20(?id)%20%7B(wd:P144)%20(wd:P135)%20(wd:P276)%20(wd:P88)%20(wd:P136)%20(wd:P31)%20(wd:P170)%20(wd:P186)%20(wd:P180)%20(wd:P195)%20(wd:P921)%20(wd:P2079)%20(wd:P131)%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.4.1 (2017-03-22))
+      Accept:
+      - "*/*"
+      Date:
+      - Sun, 28 Jan 2018 09:36:51 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access-Global=28-Jan-2018; GeoIP=AU:NSW:Matraville:-33.95:151.23:v4
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 28 Jan 2018 09:38:23 GMT
+      Content-Type:
+      - application/sparql-results+xml
+      Content-Length:
+      - '2822'
+      Connection:
+      - keep-alive
+      Server:
+      - nginx/1.11.6
+      X-Served-By:
+      - wdqs2003
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      Vary:
+      - Accept, Accept-Encoding
+      X-Varnish:
+      - 110686941, 125431843
+      Via:
+      - 1.1 varnish (Varnish/5.1), 1.1 varnish (Varnish/5.1)
+      Age:
+      - '0'
+      X-Cache:
+      - cp2012 miss, cp2006 miss
+      X-Cache-Status:
+      - miss
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      Set-Cookie:
+      - WMF-Last-Access=28-Jan-2018;Path=/;HttpOnly;secure;Expires=Thu, 01 Mar 2018
+        00:00:00 GMT
+      X-Analytics:
+      - WMF-Last-Access-Global=28-Jan-2018;https=1
+      X-Client-Ip:
+      - 124.190.23.64
+      Accept-Ranges:
+      - bytes
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='id'/>\n\t\t<variable name='label'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P31</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>instance of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P88</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>commissioned by</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P131</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>located in the administrative
+        territorial entity</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P144</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>based on</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P135</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>movement</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P136</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>genre</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P170</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>creator</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P180</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>depicts</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P186</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>material used</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P195</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>collection</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P2079</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>fabrication method</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P276</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P921</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>main subject</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Sun, 28 Jan 2018 09:36:53 GMT
 recorded_with: VCR 3.0.3

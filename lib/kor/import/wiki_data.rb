@@ -149,12 +149,13 @@ class Kor::Import::WikiData
         targets = {}
         r['values'].each{|v| targets[v] = Identifier.resolve(v, 'wikidata_id')}
 
-        relation = Relation.find_or_create_by(
+        relation = Relation.find_or_initialize_by(
           name: r['label'],
-          reverse_name: "inverse of '#{r['label']}'",
-          from_kind_ids: [entity.kind_id],
-          to_kind_ids: targets.values.map{|t| t.kind_id}.uniq
+          reverse_name: "inverse of '#{r['label']}'"
         )
+        relation.from_kind_ids &= [entity.kind_id]
+        relation.to_kind_ids &= targets.values.map{|t| t.kind_id}.uniq
+        relation.save!
 
         targets.each do |id, target|
           rels << Relationship.find_or_create_by(from_id: entity.id, to_id: target.id) do |r|

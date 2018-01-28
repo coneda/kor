@@ -126,13 +126,20 @@ describe Kor::Import::WikiData, :vcr => true do
       results = subject.import(User.admin, 'default', 'Q12418', 'Werk')
       expect(results['message']).to eq('item has been imported')
 
+      results = subject.import(User.admin, 'default', 'Q128910', 'Werk')
+      expect(results['message']).to eq('item has been imported')
+
       leonardo = Entity.find_by!(name: 'Leonardo da Vinci')
       mona_lisa = Entity.find_by!(name: 'Mona Lisa')
+      last_supper = Entity.find_by!(name: 'The Last Supper')
       rel = Relation.find_by!(name: 'creator')
 
-      expect(Relationship.count).to eq(1)
+      expect(Relation.count).to eq(1)
+      expect(Relationship.count).to eq(2)
       expect(rel.relationships.first.from_id).to eq(mona_lisa.id)
       expect(rel.relationships.first.to_id).to eq(leonardo.id)
+      expect(rel.relationships.last.from_id).to eq(last_supper.id)
+      expect(rel.relationships.last.to_id).to eq(leonardo.id)
     end
 
     it 'should not touch existing entities'
