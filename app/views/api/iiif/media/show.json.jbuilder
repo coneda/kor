@@ -2,8 +2,8 @@ json.set! '@context', 'http://iiif.io/api/presentation/2/context.json'
 json.set! '@id', iiif_manifest_url(@entity, format: :json)
 json.set! '@type', 'sc:Manifest'
 
-json.label 'blub'
-json.description 'bla'
+json.label "#{I18n.t 'activerecord.models.entity', count: 1} #{@entity.1}"
+json.description '-'
 json.metadata [0] do
   json.label 'filename'
   json.value @entity.medium.original.original_filename
