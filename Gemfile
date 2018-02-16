@@ -17,6 +17,7 @@ gem 'sass'
 gem 'httpclient'
 gem 'acts-as-taggable-on', '~> 3.5'
 gem 'semantic', git: 'https://github.com/jlindsey/semantic'
+gem 'hirb'
 
 gem 'sprockets-rails'
 gem 'jquery-rails'

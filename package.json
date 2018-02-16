@@ -24,7 +24,7 @@
     "riot": "^3.2.1",
     "riot-route": "^3.1.0",
     "strftime": "^0.10.0",
-    "uglifyjs": "^2.4.10",
+    "uglify-js": "^3.1.8",
     "zepto": "^1.0.1"
   },
   "scripts": {

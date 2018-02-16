@@ -15,7 +15,7 @@ all:
     max_included_results_per_result: 4
 
     sources:
-      release: "https://github.com/coneda/kor/releases/tag/{{version}}"
+      release: "https://github.com/coneda/kor/releases/tag/v{{version}}"
       pre_release: "https://github.com/coneda/kor/commit/{{commit}}"
       default: "https://github.com/coneda/kor"
 

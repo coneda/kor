@@ -7,6 +7,13 @@ class Kor::Export::Excel
     @options = options.reverse_merge(
       :batch_size => 10000
     )
+    validate
+  end
+
+  def validate
+    unless @target_dir
+      raise Kor::Exception, 'no target directory was specified'
+    end
   end
 
   def run

@@ -162,7 +162,7 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@jack])
   end
 
-  it "should serch in the comment with low relevance" do
+  it "should search in the comment with low relevance" do
     @united_kingdom.update_attributes :comment => "United States"
     @united_states.update_attributes :comment => "United Kingdom"
     described_class.index_all
@@ -202,7 +202,7 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@united_kingdom, @united_states])
   end
 
-  it "should serch by uuid and id" do
+  it "should search by uuid and id" do
     results = @elastic.search(:query => @united_states.uuid)
     expect(results.records).to eq([@united_states])
   end
@@ -316,6 +316,12 @@ describe Kor::Elastic, :elastic => true do
   it 'should get the server version' do
     version = described_class.server_version
     expect(version.to_s).to match(/^\d+\.\d+\.\d+$/)
+  end
+
+  it 'should not crash with just an asterisk for synonyms' do
+    expect {
+      @elastic.search(synonyms: '*')
+    }.not_to raise_error
   end
 
 end

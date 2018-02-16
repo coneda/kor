@@ -22,29 +22,27 @@ class ApplicationController < BaseController
       end
     end
 
-    rescue_from StandardError do |exception|
-      if Rails.env == 'production'
-        Kor::ExceptionLogger.log exception, params: params
-      end
+    #   if Rails.env == 'production'
+    #     Kor::ExceptionLogger.log exception, params: params
+    #   end
 
-      raise exception
+    #   respond_to do |format|
+    #     format.html {raise exception}
+    #     format.json {
+    #       if Rails.env.test?
+    #         raise exception
+    #       else
+    #         render status: 500, json: {
+    #           'message' => exception.message,
+    #           'backtrace' => exception.backtrace
+    #         }
+    #       end
+    #     }
+    #   end
+    # end
 
-      # TODO: remove?
-      # respond_to do |format|
-      #   format.html {raise exception}
-      #   format.json {
-      #     if Rails.env.test?
-      #       raise exception
-      #     else
-      #       render status: 500, json: {
-      #         'message' => exception.message,
-      #         'backtrace' => exception.backtrace
-      #       }
-      #     end
-      #   }
-      # end
-    end 
-    
+    rescue_from ActiveRecord::RecordNotFound, with: :render_404
+
     def authentication
       session[:user_id] ||= if User.guest
         session[:expires_at] = Kor.session_expiry_time
@@ -83,25 +81,23 @@ class ApplicationController < BaseController
     end
     
     def authorization
-      unless generally_authorized?
-        respond_to do |format|
-          format.html do
-            render_denied_page
-          end
-          format.json do
-            render_denied_json
-          end
+      render_403 unless generally_authorized?
+    end
+
+    def render_403
+      respond_to do |format|
+        format.html do
+          flash[:error] = I18n.t('notices.access_denied')
+          render template: 'authentication/denied', status: 403
+        end
+        format.json do
+          render json: {message: I18n.t('notices.access_denied')}, status: 403
         end
       end
     end
 
-    def render_denied_page
-      flash[:error] = I18n.t('notices.access_denied')
-      render template: 'authentication/denied', status: 403
-    end
-
-    def render_denied_json
-      render json: {message: I18n.t('notices.access_denied')}, status: 403
+    def render_404
+      render 'layouts/404', status: 404
     end
 
     def generally_authorized?

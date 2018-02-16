@@ -19,6 +19,18 @@ if additions.include?('settings') || additions.include?('all')
   end
 end
 
+if additions.include?('fields') || additions.include?('all')
+  json.fields kind.fields do |field|
+    json.partial! 'fields/customized', field: field
+  end
+end
+
+if additions.include?('generators') || additions.include?('all')
+  json.fields kind.generators do |generator|
+    json.partial! 'generators/customized', generator: generator
+  end
+end
+
 if additions.include?('technical') || additions.include?('all')
   json.uuid kind.uuid
   json.created_at kind.created_at

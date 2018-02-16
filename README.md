@@ -573,6 +573,12 @@ requests, e.g.
     * `to_kind_id`: limits by the target's kind, comma-separated
     * `page`: requests a specific page from the resultset (default: 1)
     * `per_page`: sets the page size (default: 10, max: 500)
+* `POST /wikidata/import`: imports a wikidata item. This also creates potential relationships towards previously imported items
+    * `id`: the wikidata id of the item to import e.g. `Q762`
+    * `kind`: the kind of the new entity, e.g. `person`
+    * `collection`: the collection where to create the new entity (the 'create' right is required within that collection)
+    * `locale`: the locale to import from wikidata, defaults to `en`
+* `POST /wikidata/preflight`: simulates the previous method without actually changing any data
 
 Be aware that, if you are requesting related entities to be embedded within
 other entities, those are embedded as a list of directed relationships which
@@ -621,6 +627,10 @@ Those sheets may be modified and imported later on.
 
 * identification columns (id and uuid) are not imported: they are only used to
   identify existing records on imports. Leave empty when adding new data.
+* when creating new records, you will have to fill in at least the columns for
+  kind_id, collection_id and name (or no_name_statement). For the serialized
+  columns, please use their "natural" empty value if you don't use them. So
+  for dataset `{}`, for properties `{}` for synonyms: `[]` for datings: `[]`.
 * the deleted column is not imported: enter any non-empty value in order to
   delete the entity on import.
 * timestamps are not imported: they will be changed if the entity will be

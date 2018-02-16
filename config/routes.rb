@@ -176,10 +176,19 @@ Rails.application.routes.draw do
     match 'about', :action => 'about', :via => :get
     match 'help', :action => 'help', :via => :get
   end
+
+  scope 'mirador', controller: 'api/iiif/media', format: :json do
+    root action: 'index', as: 'mirador'
+    match ':id', action: 'show', via: :get, as: :iiif_manifest
+    match ':id/sequence', action: 'sequence', via: :get, as: :iiif_sequence
+    match ':id/canvas', action: 'sequence', via: :get, as: :iiif_canvas
+    match ':id/image', action: 'sequence', via: :get, as: :iiif_image
+  end
   
-  namespace 'api', :format => :json do
-    scope ':version', :version => /[0-9\.]+/, :defaults => {:version => '1.0'} do
-      match 'info', :to => 'public#info', :via => :get
+  namespace 'api', format: :json do
+    scope ':version', version: /[0-9\.]+/, defaults: {version: '1.0'} do
+      match 'info', to: 'public#info', via: :get
+      match 'profile', to: '/users#edit_self', via: :get
     end
 
     scope 'oai-pmh', :format => :xml, :as => 'oai_pmh', :via => [:get, :post] do
@@ -194,6 +203,11 @@ Rails.application.routes.draw do
           match res, :to => "oai_pmh/#{res}#verb_error"
         end
       end
+    end
+
+    scope 'wikidata', format: 'json', controller: 'wikidata' do
+      match 'preflight', action: 'preflight', via: 'POST'
+      match 'import', action: 'import', via: 'POST'
     end
   end
 

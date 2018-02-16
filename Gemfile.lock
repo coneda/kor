@@ -143,7 +143,7 @@ GEM
     hashdiff (0.3.4)
     highline (1.7.8)
     hirb (0.7.3)
-    httpclient (2.7.1)
+    httpclient (2.8.3)
     i18n (0.8.4)
     jbuilder (2.4.1)
       activesupport (>= 3.0.0, < 5.1)
@@ -346,6 +346,7 @@ DEPENDENCIES
   exifr (= 1.1.1)
   factory_girl_rails
   haml
+  hirb
   httpclient
   jbuilder
   jquery-rails
@@ -383,4 +384,4 @@ DEPENDENCIES
   will_paginate (~> 3.0.3)
 
 BUNDLED WITH
-   1.15.4
+   1.16.0

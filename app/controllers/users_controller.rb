@@ -69,7 +69,7 @@ class UsersController < ApplicationController
   
   def edit_self
     if current_user.guest?
-      render_denied_page
+      render_403
     else
       @user = User.find(current_user.id)
     end

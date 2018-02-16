@@ -8,6 +8,11 @@ class KindsController < ApplicationController
 
     @kinds = Kind.all
     @kinds = @kinds.active if params.has_key?(:only_active)
+
+    respond_to do |format|
+      format.html {render :layout => 'wide'}
+      format.json
+    end
   end
 
   def show

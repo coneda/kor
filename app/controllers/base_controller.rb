@@ -1,9 +1,9 @@
 class BaseController < ActionController::Base
 
   if Rails.env.production?
-    protect_from_forgery with: :null_session
+    protect_from_forgery with: :null_session, unless: :user_by_api_key
   else
-    protect_from_forgery with: :exception
+    protect_from_forgery with: :exception, unless: :user_by_api_key
   end
 
   helper_method(

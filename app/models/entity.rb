@@ -336,6 +336,18 @@ class Entity < ActiveRecord::Base
       map{|dr| dr.to}
   end
 
+  def context_name(user)
+    pn = []
+    sn = []
+    primary_entities(user).select(:id, :name).each do |pe|
+      pe << pe.name
+      pe.secondary_entities(user).select(:id, :name).each do |se|
+        sn << se.name
+      end
+    end
+    sn.join(', ') + ': ' + pn.join(', ')
+  end
+
   
   ############################ naming ##########################################
   

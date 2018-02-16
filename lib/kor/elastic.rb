@@ -274,7 +274,7 @@ class Kor::Elastic
 
     if query[:synonyms].present?
       v = escape(tokenize(query[:synonyms])).join(' ')
-      q << "synonyms:(#{v})"
+      q << "synonyms:(#{v})" unless v.blank?
     end
 
     if q.present?
@@ -355,10 +355,12 @@ class Kor::Elastic
       filters: filters,
       sorting: sorting
     )
+
     # puts JSON.pretty_generate(data)
 
     data['explain'] = true unless Rails.env.production?
     response = self.class.request "post", "/entities/_search", nil, data
+
     # puts JSON.pretty_generate(response)
     # binding.pry
 

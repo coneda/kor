@@ -220,6 +220,13 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
   end
 end
 
+Given(/^the entity "([^"]*)" is in authority group "([^"]*)"$/) do |entity, group|
+  entity = Entity.find_by(name: entity)
+  ag = AuthorityGroup.find_by(name: group)
+  ag.entities << entity
+  ag.save
+end
+
 Then /^there should be "([^"]*)" "([^"]*)" entity in the database$/ do |num, kind|
   expect(Kind.find_by_name(kind).entities.count).to eql(num.to_i)
 end

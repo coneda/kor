@@ -70,6 +70,14 @@ module EntitiesHelper
             remove_from_authority_group_path(options[:container], :entity_ids => [entity.id])
           )
         end
+
+        unless current_user.guest?
+          result << if marked?(entity)
+            link_to(kor_command_image('target_hit'), put_in_clipboard_path(:mark => 'unmark', :id => entity.id))
+          else
+            link_to(kor_command_image('target'), put_in_clipboard_path(:mark => 'mark', :id => entity.id))
+          end
+        end
       when UserGroup
         result += link_to(
           kor_command_image('minus'), 

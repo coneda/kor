@@ -11,7 +11,7 @@ class Kor::CommandLine
       ignore_validations: false,
       collection_id: [],
       kind_id: [],
-      verbose: true
+      verbose: false
     }
     @required = []
     @command = nil

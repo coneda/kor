@@ -103,6 +103,8 @@ class Kor::Tasks
       groups: Credential.all,
       password: 'admin',
       terms_accepted: true,
+      login_attempts: [],
+      active: true,
 
       admin: true,
       relation_admin: true,
@@ -208,7 +210,7 @@ class Kor::Tasks
 
   protected
 
-    def print_table(data)
+    def self.print_table(data)
       maxes = {}
       data.each do |record|
         row = []

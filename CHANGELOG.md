@@ -26,6 +26,8 @@ commit history on GitHub.
   (IMPORTANT: check https://github.com/coneda/kor/issues/94 for migration
   implications)
 * added reproducible uuids when importing the Erlangen CRM
+* added JSON API endpoints to import wikidata items including properties
+* mirador from http://projectmirador.org/ is now integrated, also via drag&drop
 
 ## Version 2.1.0
 

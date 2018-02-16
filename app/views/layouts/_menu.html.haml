@@ -78,7 +78,7 @@
         
       - unless Kor.config['maintainer.help_text'].blank?
         %li.inactive_item
-          = link_to I18n.t('nouns.help'), :controller => 'static', :action => 'help'
+          = link_to I18n.t('nouns.help').capitalize_first_letter, :controller => 'static', :action => 'help'
     
     %li.spacer
     

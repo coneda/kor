@@ -16,6 +16,7 @@ class RemoveMongodb < ActiveRecord::Migration
     ].join(' ')
     
     data = JSON.parse(`#{command}`)
+    # data = JSON.parse(File.read "./attachments.json")
 
     puts "Iterating mongodb documents"
     counter = 0
@@ -31,7 +32,7 @@ class RemoveMongodb < ActiveRecord::Migration
         doc.delete "entity_id"
         new_value = entity.attachment
         new_value.merge! doc
-        entity.update_column :attachment, JSON.dump(new_value)
+        entity.update_column :attachment, new_value
       end
     end
 
@@ -59,7 +60,7 @@ class RemoveMongodb < ActiveRecord::Migration
         end
       end
 
-      entity.update_column :attachment, JSON.dump(new_value)
+      entity.update_column :attachment, new_value
     end
 
     remove_column :entities, :attachment_id

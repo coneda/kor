@@ -70,4 +70,15 @@ kor.controller('entity_controller', [
     scope.close_relationship_editor = ->
       scope.relationship_editor_visible = false
 
+    scope.openMirador = (entity_id, $event) ->
+      $event.preventDefault()
+      $event.stopPropagation()
+      
+      root_url = document.location.href.match(/^(https?\:\/\/[^\/]+\/)/)[0]
+      url = "#{root_url}/mirador?manifest=#{root_url}mirador/#{entity_id}"
+      scope.ow(url)
+      true
+
+    scope.ow = (url) -> window.open(url, '', 'height=800,width=1024')
+
 ])

@@ -50,7 +50,7 @@ class Kor::Statistics::Editors < Kor::Statistics::Simple
   
   def report
     result = "counted entities for #{total} users\n"
-    result << Hirb::Helpers::AutoTable.render(ordered_statistics,
+    result << ::Hirb::Helpers::AutoTable.render(ordered_statistics,
       :fields => [:name, :days, :created, :updated, :created_per_day, :updated_per_day]
     )
     result
