@@ -51,3 +51,41 @@ div.hr.silent {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+
+// kor-layout-panel, [data-is=kor-layout-panel] {
+//   box-sizing: border-box;
+
+//   &.left {
+//     float: left;
+//     border-right: 2px solid #181818;
+//     min-height: 100%;
+//   }
+
+//   &.right {
+//     float: left;
+//     border-left: 2px solid #181818;
+//     margin-left: -2px;
+//     min-height: 100%;
+//   }
+
+//   &.top {
+//     border-bottom: 2px solid #181818;
+//   }
+
+//   &.small {
+//     width: 240px;
+//     width: calc(100% / 3);
+//   }
+
+//   &.large {
+//     width: 484px;
+//     width: calc(100% / 3 * 2);
+//   }
+// }
+
+// kor-panel, [data-is=kor-panel] {
+//   box-sizing: border-box;
+//   display: block;
+//   width: 100%;
+//   padding: 30px;
+// }

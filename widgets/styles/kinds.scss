@@ -1,0 +1,45 @@
+kor-kinds, [data-is=kor-kinds] {
+  display: block;
+  padding: 30px;
+
+  h1 {
+    font-size: 14px;
+    color: $kor-shine;
+  }
+
+  .kor_table {
+    margin-bottom: 1rem;
+  }
+
+  td {
+    .icon {
+      float: right;
+      margin-left: 0.5rem;
+    }
+  }
+
+  td.parent {
+    background-color: lighten(#1e1e1e, 10%) !important;
+  }
+
+  td.self {
+    background-color: lighten(#1e1e1e, 20%) !important;
+  }
+
+  td.active {
+
+  }
+
+  .name {
+    font-weight: bold;
+    color: $kor-shine;
+  }
+
+  .label {
+    color: $kor-shine;
+  }
+
+  td.buttons {
+    width: 3rem;
+  }
+}

@@ -153,6 +153,24 @@ class Entity < ActiveRecord::Base
     end
   end
 
+  # TODO: can this method be removed?
+  def new_datings_attributes=(values)
+    values.each do |v|
+      datings.build v
+    end
+  end
+
+  # TODO: can this method be removed?
+  def existing_datings_attributes=(values)
+    datings.reject(&:new_record?).each do |d|
+      if a = values.find{|e| e['id'].to_i == d.id}
+        d.assign_attributes a
+      else
+        d.mark_for_destruction
+      end
+    end
+  end
+
 
   # Callbacks
   
@@ -198,6 +216,19 @@ class Entity < ActiveRecord::Base
   def after_merge
     update_elastic
     update_identifiers
+  end
+
+  def cache_key(*timestamp_names)
+    timestamp = [
+      created_at,
+      updated_at,
+      kind.created_at,
+      kind.updated_at,
+      collection.created_at,
+      collection.updated_at
+    ].max
+
+    "#{model_name.cache_key}/#{id}-#{timestamp}"
   end
 
   # Attributes
@@ -305,6 +336,18 @@ class Entity < ActiveRecord::Base
       map{|dr| dr.to}
   end
 
+  def context_name(user)
+    pn = []
+    sn = []
+    primary_entities(user).select(:id, :name).each do |pe|
+      pe << pe.name
+      pe.secondary_entities(user).select(:id, :name).each do |se|
+        sn << se.name
+      end
+    end
+    sn.join(', ') + ': ' + pn.join(', ')
+  end
+
   
   ############################ naming ##########################################
   
@@ -379,9 +422,9 @@ class Entity < ActiveRecord::Base
   }
   scope :by_relation_name, lambda {|relation_name|
     if relation_name
-      kind_ids = Relation.where(name: relation_name).map{|r| r.to_kind_ids}
-      kind_ids << Relation.where(reverse_name: relation_name).map{|r| r.from_kind_ids}
-      where(kind_id: kind_ids.flatten)
+      kind_ids = Relation.where(name: relation_name).map{|r| r.to_kind_id}
+      kind_ids << Relation.where(reverse_name: relation_name).map{|r| r.from_kind_id}
+      where(kind_id: kind_ids.flatten.uniq)
     else
       all
     end

@@ -321,14 +321,14 @@ RSpec.describe EntitiesController, type: :controller do
         tag_list: ['nice', 'expensive']
       )
       @leonardo = FactoryGirl.create(:leonardo)
-      FactoryGirl.create :has_created
+      FactoryGirl.create :has_created, from_kind: @leonardo.kind, to_kind: @mona_lisa.kind
       Relationship.relate_and_save @leonardo, 'has created', @mona_lisa
       @user_group = FactoryGirl.create :user_group, name: 'my stuff', owner: @admin
       @authority_group = FactoryGirl.create :authority_group, name: 'important stuff'
       @user_group.add_entities @mona_lisa
       @authority_group.add_entities @mona_lisa
 
-      request.headers['api_key'] = @admin.api_key
+      request.headers['api-key'] = @admin.api_key
     end
 
     it 'should retrieve entities by id or uuid' do
@@ -390,8 +390,8 @@ RSpec.describe EntitiesController, type: :controller do
       der_schrei = FactoryGirl.create :der_schrei
       picture_a = FactoryGirl.create :picture_a
       picture_b = FactoryGirl.create :picture_b
-      FactoryGirl.create :shows
-      FactoryGirl.create :depicts
+      FactoryGirl.create :shows, from_kind: picture_a.kind, to_kind: @mona_lisa.kind
+      FactoryGirl.create :depicts, from_kind: picture_b.kind, to_kind: @mona_lisa.kind
       Relationship.relate_and_save picture_a, 'shows', @mona_lisa
       Relationship.relate_and_save picture_b, 'depicts', @mona_lisa
       # Relationship.relate_and_save picture_a, 'shows', mona

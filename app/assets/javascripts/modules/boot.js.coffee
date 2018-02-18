@@ -21,6 +21,19 @@ kor.controller "record_history_controller", [
     )
 ]
 
+kor.factory 'timeoutHttpIntercept', [
+  '$rootScope', '$q',
+  (rs, q) ->
+    factory = {
+      'request': (config) ->
+        config.timeout = 10000
+        config
+    }
+]
+
+load_template = (id) ->
+  $("script[type='text/x-kor-tpl'][data-id='#{id}']").html()
+
 kor.config([ 
   "$httpProvider", "$sceProvider", "$routeProvider",
   (hp, sce, rp) ->
@@ -29,6 +42,13 @@ kor.config([
     sce.enabled(false)
     tpl = (id) -> $("script[type='text/x-kor-tpl'][data-id='#{id}']").html()
 
+    rp.when "/relations/new", resolve: {tag: -> 'kor-relation-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/relations/:id", resolve: {tag: -> 'kor-relation-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/relations", resolve: {tag: -> 'kor-relations'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/kinds/new", resolve: {tag: -> 'kor-kind-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/kinds/:id", resolve: {tag: -> 'kor-kind-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/kinds", resolve: {tag: -> 'kor-kinds'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
+    rp.when "/entities/:id/edit", resolve: {tag: -> 'kor-entity-editor'}, controller: 'riot_controller', reloadOnSearch: false, template: load_template('riot-loader')
     rp.when "/entities/gallery", template: tpl('gallery'), reloadOnSearch: false, controller: "record_history_controller"
     rp.when "/entities/multi_upload", templateUrl: ((params) -> "/tpl/entities/multi_upload?#{Math.random()}"), reloadOnSearch: false, controller: "record_history_controller"
     rp.when "/entities/isolated", template: tpl('isolated'), reloadOnSearch: false, controller: "record_history_controller"
@@ -37,9 +57,5 @@ kor.config([
 
   ]
 )
-
-kor.run([ ->
-  
-])
 
 this.kor = kor

@@ -6,9 +6,10 @@ Feature: Clipboard
   
   @javascript
   Scenario: Mass relate
+    And I am on the home page
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "Werk/Werke"
-    And "Mona Lisa" is selected as current entity
+    And I mark "Mona Lisa" as current entity
     And the medium "spec/fixtures/image_a.jpg"
     Then I should see "has been created"
     And all entities of kind "Medium/Media" are in the clipboard
@@ -25,9 +26,11 @@ Feature: Clipboard
   @javascript
   Scenario: Create user groups on the fly
     Given I am logged in as "admin"
-    And the medium "spec/fixtures/image_a.jpg"
-    And all entities of kind "Medium/Media" are in the clipboard
+    And the entity "Mona Lisa" of kind "work/works"
     And the user group "Alte Gruppe"
+    When I go to the entity page for "Mona Lisa"
+    And I click element "[data-name=target]"
+    Then I should see "has been copied to the clipboard"
     When I go to the clipboard
     And I select "add to one of your own groups" from "clipboard_action"
     And I follow the link with text "create"
@@ -49,7 +52,7 @@ Feature: Clipboard
     And I put "Mona Lisa" into the clipboard
     And I go to the clipboard
     When I select "relate" from "clipboard_action"
-    Then I should see "all selected entities"
+    Then select "relation_name" should have selected "was created by"
     When I press "Send"
     Then "Leonardo" should have "created" "Mona Lisa"
 
@@ -66,7 +69,7 @@ Feature: Clipboard
     And I put "Mona Lisa" into the clipboard
     And I go to the clipboard
     When I select "relate" from "clipboard_action"
-    Then I should see "all selected entities"
+    Then select "relation_name" should have selected "was created by"
     And I press "Send"
     Then I should see "Leonardo"
     Then "Leonardo" should have "created" "Mona Lisa"

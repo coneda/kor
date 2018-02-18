@@ -166,7 +166,7 @@ Feature: Entities
   @javascript
   Scenario: Don't show relationships to unauthorized entities
     Given the collection "side"
-    And the relation "has created/has been created by"
+    And the relation "has created/has been created by" between "person/people" and "work/works"
     And the entity "Leonardo da Vinci" of kind "Person/People" inside collection "default"
     And the entity "Mona Lisa" of kind "Work/Works" inside collection "side"
     And the relationship "Leonardo da Vinci" "has created" "Mona Lisa"
@@ -182,9 +182,9 @@ Feature: Entities
   @javascript
   Scenario: Don't show edit or delete buttons for unauthorized relationships
     Given the collection "side"
-    And the relation "has created/has been created by"
+    And the relation "has created/has been created by" between "person/people" and "work/works"
     And the entity "Leonardo da Vinci" of kind "Person/People" inside collection "default"
-    And the entity "Mona Lisa" of kind "Work/Works" inside collection "side"
+    And the entity "Mona Lisa" of kind "work/works" inside collection "side"
     And the relationship "Leonardo da Vinci" "has created" "Mona Lisa"
     Given user "admin" is allowed to "view" collection "side" through credential "side_admins"
 
@@ -211,8 +211,8 @@ Feature: Entities
     And the entity "Das letzte Abendmahl" of kind "Work/Works"
     And the entity "Leonardo" of kind "Person/People"
     And the medium "spec/fixtures/image_a.jpg"
-    And the relation "has created/was created by"
-    And the relation "shows/is depicted by"
+    And the relation "has created/has been created by" between "person/people" and "work/works"
+    And the relation "shows/is depicted by" between "medium/media" and "work/works"
     And the relationship "Leonardo" "has created" "Mona Lisa"
     And the relationship "Leonardo" "has created" "Das letzte Abendmahl"
     And the relationship "Mona Lisa" "is depicted by" the last medium

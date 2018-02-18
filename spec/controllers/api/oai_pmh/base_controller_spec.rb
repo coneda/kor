@@ -9,8 +9,8 @@ describe Api::OaiPmh::BaseController, type: :controller do
 
     old_sample = "#{subject.send(:base_dir)}/old_sample.json"
     recent_sample = "#{subject.send(:base_dir)}/recent_sample.json"
-    FileUtils.touch old_sample, mtime: 2.days.ago.to_time
-    FileUtils.touch recent_sample, mtime: 5.hours.ago.to_time
+    FileUtils.touch old_sample, mtime: 10.minutes.ago.to_time
+    FileUtils.touch recent_sample, mtime: 2.minutes.ago.to_time
 
     subject.send(:dump_query, 'some' => 'value')
 

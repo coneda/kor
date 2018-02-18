@@ -24,7 +24,7 @@ class DirectedRelationshipsController < ApplicationController
         except_to_kind(params[:except_to_kind_id]).
         allowed(user, :view)
     else
-      render :nothing => true, :status => 401
+      render_403
     end
   end
 
@@ -32,7 +32,7 @@ class DirectedRelationshipsController < ApplicationController
     @directed_relationship = DirectedRelationship.find(params[:id])
 
     unless authorized_for_relationship? @directed_relationship
-      render :nothing => true, :status => 403
+      render_403
     end
   end
 

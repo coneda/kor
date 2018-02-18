@@ -48,11 +48,11 @@ EXPOSE 8000
 
 <% if rails_env == 'test' %>
 RUN cd /opt && \
-    apt-get install -y wget && \
-    wget https://s3.eu-central-1.amazonaws.com/schepp-is/ci/phantomjs-2.1.1-linux-x86_64.tar.bz2 && \
-    tar xjf phantomjs-2.1.1-linux-x86_64.tar.bz2 && \
-    ln -sfn /opt/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/bin/phantomjs && \
-    rm phantomjs-2.1.1-linux-x86_64.tar.bz2
+    apt-get install -y zip libgconf-2-4 chromium && \
+    wget https://chromedriver.storage.googleapis.com/2.32/chromedriver_linux64.zip && \
+    unzip chromedriver_linux64.zip && \
+    ln -sfn /opt/chromedriver /usr/bin/chromedriver && \
+    rm chromedriver_linux64.zip
 <% end %>
 
 RUN gem update bundler
@@ -67,3 +67,7 @@ RUN gem update bundler
   ENV RAILS_SERVE_STATIC_FILES true
   RUN bash -c "RAILS_GROUPS=assets bundle exec rake assets:precompile" kor
 <% end %>
+
+ADD public/*.css /opt/kor/current/public/
+ADD public/*.js /opt/kor/current/public/
+ADD public/fonts /opt/kor/current/public/fonts

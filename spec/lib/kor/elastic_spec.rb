@@ -37,8 +37,8 @@ describe Kor::Elastic, :elastic => true do
     allow(described_class).to receive(:enabled?).and_call_original    
 
     expect {
-      expect(described_class.index(@landscape).first).to eq(201)
-      expect(described_class.refresh.first).to eq(200)
+      described_class.index(@landscape)
+      described_class.refresh
     }.to change{@elastic.count}.by(1)
   end
 
@@ -108,7 +108,7 @@ describe Kor::Elastic, :elastic => true do
     results = @elastic.search(:query => "\"tree on plane\"", :kind_id => @works.id)
     expect(results.records).to eq([@landscape])
 
-    @is_related_to = FactoryGirl.create :relation
+    @is_related_to = FactoryGirl.create :relation, from_kind: @landscape.kind, to_kind: @jack.kind
     Relationship.relate_and_save(@landscape, "is related to", @jack)
     described_class.index_all :full => true
 
@@ -162,7 +162,7 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@jack])
   end
 
-  it "should serch in the comment with low relevance" do
+  it "should search in the comment with low relevance" do
     @united_kingdom.update_attributes :comment => "United States"
     @united_states.update_attributes :comment => "United Kingdom"
     described_class.index_all
@@ -175,19 +175,23 @@ describe Kor::Elastic, :elastic => true do
   end
 
   it "should serch in the properties with low relevance" do
-    @united_kingdom.update_attributes :properties => [{"label" => "label", "value" => "value"}]
-    @united_states.update_attributes :properties => [{"label" => "value", "value" => "label"}]
+    @united_kingdom.update_attributes :properties => [
+      {"label" => "color", "value" => "red"}
+    ]
+    @united_states.update_attributes :properties => [
+      {"label" => "color", "value" => "blue"}
+    ]
     described_class.index_all
 
-    results = @elastic.search(:query => "label")
-    expect(results.records).to eq([@united_states, @united_kingdom])
+    results = @elastic.search(:query => "color")
+    expect(results.records).to include(@united_states, @united_kingdom)
 
-    results = @elastic.search(:query => "value")
-    expect(results.records).to eq([@united_kingdom, @united_states])
+    results = @elastic.search(:query => "blue")
+    expect(results.records).to eq([@united_states])
   end
 
-  it "should serch in the display name with low relevance" do
-    @united_kingdom.update_attributes :distinct_name => "states"
+  it "should search in the display name with low relevance" do
+    @united_kingdom.update_attributes :distinct_name => "some states bla"
     @united_states.update_attributes :distinct_name => "kingdom"
     described_class.index_all
 
@@ -198,7 +202,7 @@ describe Kor::Elastic, :elastic => true do
     expect(results.records).to eq([@united_kingdom, @united_states])
   end
 
-  it "should serch by uuid and id" do
+  it "should search by uuid and id" do
     results = @elastic.search(:query => @united_states.uuid)
     expect(results.records).to eq([@united_states])
   end
@@ -220,10 +224,10 @@ describe Kor::Elastic, :elastic => true do
     results = @elastic.search(:query => "Üller")
     expect(results.records).to eq([@klaus_mueller])
 
-    results = @elastic.search(:query => "Uller")
+    results = @elastic.search(:query => "Mûller")
     expect(results.records).to eq([@klaus_mueller])
 
-    results = @elastic.search(:query => "Mûller")
+    results = @elastic.search(:query => "Uller")
     expect(results.records).to eq([@klaus_mueller])
   end
 
@@ -239,7 +243,7 @@ describe Kor::Elastic, :elastic => true do
     @works = FactoryGirl.create :works
     @landscape = FactoryGirl.create :landscape
     @jack = FactoryGirl.create :jack, :name => "Jäck"
-    @is_related_to = FactoryGirl.create :relation
+    @is_related_to = FactoryGirl.create :relation, from_kind: @landscape.kind, to_kind: @jack.kind
     Relationship.relate_and_save(@landscape, "is related to", @jack)
     described_class.index_all :full => true
 
@@ -307,6 +311,17 @@ describe Kor::Elastic, :elastic => true do
 
     results = @elastic.search(kind_id: [@works.id, @locations.id])
     expect(results.records.size).to eq(3)
+  end
+
+  it 'should get the server version' do
+    version = described_class.server_version
+    expect(version.to_s).to match(/^\d+\.\d+\.\d+$/)
+  end
+
+  it 'should not crash with just an asterisk for synonyms' do
+    expect {
+      @elastic.search(synonyms: '*')
+    }.not_to raise_error
   end
 
 end

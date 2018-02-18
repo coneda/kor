@@ -24,7 +24,7 @@
       = f.kor_input @entity.kind.distinct_name_label, :attribute => :distinct_name, :translate => false
     
     = f.kor_input :subtype
-    
+
   - if @entity.is_medium?
     = f.fields_for :medium, :builder => Kor::FormBuilder do |m|
       = f.kor_input :document, :control => m.file_field(:document)
@@ -33,7 +33,7 @@
   = (form_fields_for_entity_dataset(@entity) || "").html_safe
   
   - if @entity.kind.tagging && authorized?(:tagging, @entity.collection)
-    = f.kor_input :tag_list, :control => f.text_field(:tag_list, 'kor-tagger' => true)
+    = f.kor_input :tag_list, :control => f.text_field(:tag_list, 'kor-tagger' => true, value: @entity.tag_list.to_s)
     
   = f.kor_input :comment, :control => f.text_area(:comment)
   

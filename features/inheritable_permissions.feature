@@ -48,6 +48,7 @@ Feature: Inheritable permissions
     And I fill in "user[email]" with "hmustermann@coneda.net"
     And I fill in "user[parent_username]" with "jdoe"
     And I press "Create"
+    Then I should see "has been created"
 
     Then user "hmustermann@coneda.net" should be active
     And user "hmustermann@coneda.net" should have the role "relation_admin"
@@ -62,7 +63,8 @@ Feature: Inheritable permissions
     And I uncheck "user[active]"
     And I choose "user_extension_never"
     And I press "Save"
-
+    Then I should see "has been changed"
+    
     Then user "hmustermann@coneda.net" should not be active
     And user "hmustermann@coneda.net" should not have the role "relation_admin"
     And user "hmustermann@coneda.net" should not expire

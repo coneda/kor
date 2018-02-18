@@ -45,6 +45,8 @@ module Kor
       end
     end
 
+    config.action_dispatch.perform_deep_munge = false
+
     initializer 'action_mailer.set_configs' do
       if mc = Kor::Config.instance['mail']
         dm = mc['delivery_method'].to_sym
@@ -77,7 +79,6 @@ end
 # TODO: make sure in js kind_id == 1 isn't assumed to ensure medium kind
 # TODO: remove new_datings_attributes and existing_datings_attributes
 # TODO: upgrade elasticsearch
-# TODO: move logic from command_line.rb to the service layer
 # TODO: add tests for the command line tool
 # TODO: make sure that time zones are handled correctly from http content type to db
 # TODO: angular: remove flashing of unloaded page areas and remove flashing of strange "select <some HEX>" within media relations
@@ -100,6 +101,16 @@ end
 # TODO: when replacing sprockets, simulate checksum behaviour to provoke correct cache expiries
 # TODO: use json.extract! whenever possible
 # TODO: replace extended json views with customized json views
+# TODO: in json responses, include errors for models
+# TODO: unify save.json.jbuilder files
+# TODO: handle base errors on riot pages
+# TODO: make the busy wheel only show when necessary (e.g. doesn't switch off after error)
+# TODO: make all json endpoints comply with response policy
+# TODO: rename Field.show_label to Field.label
+# TODO: fix spinning wheel for riot, angular and all other ajax
+# TODO: use zlib from stdlib instead of the gem?
+# TODO: use "un" from stdlib to find graph communities?
+# TODO: use neo transactions to effectively clear the store after tests
 # TODO: change denied redirect to denied action rendering
 # TODO: use http://errbit.com/ instead of custom exception logger
 # TODO: make password retrieval not reset the password until the confirmation
@@ -108,3 +119,8 @@ end
 # TODO: make default per_page = 10 everywhere
 # TODO: handle stale object exceptions somewhere in application controller
 # TODO: JSON api: only send message keys as response messages, not translated versions
+# TODO: test changing of kind inheritance to update their entities dataset and
+#       that relation inheritance uses the ancestry to show abailable relations
+#       when creating relationships
+# TODO: add consistent optimistic locking
+# TODO: clean up widget directory

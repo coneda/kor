@@ -1,15 +1,7 @@
 class ApplicationController < BaseController
 
   helper :all
-  helper_method :back, :back_save, :home_page, 
-    :authorized?,
-    :allowed_to?,
-    :authorized_collections,
-    :authorized_for_relationship?,
-    :kor_graph,
-    :current_user,
-    :logged_in?,
-    :blaze
+  helper_method :back, :back_save, :home_page, :kor_graph
   
   before_filter(
     :vars, :locale, :session_expiry, :authentication, :authorization, :legal
@@ -33,37 +25,8 @@ class ApplicationController < BaseController
       end
     end
 
-    rescue_from StandardError do |exception|
-      if Rails.env == 'production'
-        Kor::ExceptionLogger.log exception, params: params
-      else
-        raise exception
-      end
+    rescue_from ActiveRecord::RecordNotFound, with: :render_404
 
-      # respond_to do |format|
-      #   format.html {raise exception}
-      #   format.json {
-      #     if Rails.env.test?
-      #       raise exception
-      #     else
-      #       render status: 500, json: {
-      #         'message' => exception.message,
-      #         'backtrace' => exception.backtrace
-      #       }
-      #     end
-      #   }
-      # end
-    end
-
-    def session_expiry
-      if session_expired?
-        @messages << I18n.t('notices.session_expired')
-        session[:user_id] = nil
-      else
-        session[:expires_at] = Kor.session_expiry_time
-      end
-    end
-    
     def authentication
       session[:user_id] ||= if User.guest
         session[:expires_at] = Kor.session_expiry_time
@@ -78,26 +41,25 @@ class ApplicationController < BaseController
     end
     
     def authorization
-      unless generally_authorized?
-        render_403
+      render_403 unless generally_authorized?
+    end
+
+    def render_403
+      respond_to do |format|
+        format.html do
+          flash[:error] = I18n.t('notices.access_denied')
+          render template: 'authentication/denied', status: 403
+        end
+        format.json do
+          render json: {message: I18n.t('notices.access_denied')}, status: 403
+        end
       end
     end
 
-    def session_expired?
-      if !current_user.guest? && !api_auth?
-        !!(session[:expires_at] && (session[:expires_at] < Time.now))
-      end
+    def render_404
+      render 'layouts/404', status: 404
     end
 
-    def api_auth?
-      if @api_auth == nil
-        key = params[:api_key] || request.headers['api_key']
-        @api_auth = (key && User.exists?(api_key: key))
-      end
-
-      @api_auth
-    end
-    
     def generally_authorized?
       true
     end
@@ -113,24 +75,6 @@ class ApplicationController < BaseController
       end
     end
 
-    def authorized?(policy = :view, collections = nil, options = {})
-      @auth_cache ||= {}
-      options.reverse_merge!(required: :any, cache: @auth_cache)
-      Kor::Auth.allowed_to? current_user, policy, collections, options
-    end
-
-    def authorized_collections(policy)
-      Kor::Auth.authorized_collections current_user, policy
-    end
-    
-    def viewable_entities
-      Entity.allowed current_user, :view
-    end
-    
-    def editable_entities
-      Entity.allowed current_user, :edit
-    end
-
     def param_to_array(value, options = {})
       options.reverse_merge! ids: true
 
@@ -138,41 +82,14 @@ class ApplicationController < BaseController
         when String
           results = value.split(',')
           options[:ids] ? results.map{|v| v.to_i} : results
-        when Fixnum then [value]
+        when Integer then [value]
         when Array then value.map{|v| param_to_array(v, options)}.flatten
         when nil then []
         else
           raise "unknown param format to convert to array: #{value}"
       end
     end
-    
-    def authorized_for_relationship?(relationship, policy = :view)
-      if relationship.to && relationship.from
-        case policy
-          when :view
-            view_from = authorized?(:view, relationship.from.collection)
-            view_to = authorized?(:view, relationship.to.collection)
-            
-            view_from and view_to
-          when :create, :delete, :edit
-            view_from = authorized?(:view, relationship.from.collection)
-            view_to = authorized?(:view, relationship.to.collection)
-            edit_from = authorized?(:edit, relationship.from.collection)
-            edit_to = authorized?(:edit, relationship.to.collection)
-            
-            (view_from and edit_to) or (edit_from and view_to)
-          else
-            false
-        end
-      else
-        true
-      end
-    end
 
-    def allowed_to?(policy = :view, collections = Collection.all, options = {})
-      authorized?(policy, collections, options)
-    end
-    
     def user_groups
       UserGroup.owned_by(current_user)
     end
@@ -198,10 +115,6 @@ class ApplicationController < BaseController
       (current_user ? current_user.home_page : nil ) || root_url
     end
     
-    def logged_in?
-      current_user && current_user.name != 'guest'
-    end
-    
     def kor_graph
       @kor_graph ||= Kor::Graph.new(:user => current_user)
     end
@@ -218,7 +131,12 @@ class ApplicationController < BaseController
         :name, :distinct_name, :subtype, :comment, :no_name_statement,
         :tag_list,
         :synonyms => [],
-        :datings_attributes => [:id, :_destroy, :label, :dating_string],
+        :new_datings_attributes => [
+          :id, :_destroy, :label, :dating_string, :lock_version
+        ],
+        :existing_datings_attributes => [
+          :id, :_destroy, :label, :dating_string, :lock_version
+        ],
         :dataset => params[:entity][:dataset].try(:keys),
         :properties => [:label, :value],
         :medium_attributes => [:id, :image, :document]

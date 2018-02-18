@@ -2,86 +2,118 @@ require 'rails_helper'
 
 RSpec.describe KindsController, type: :controller do
 
+  render_views
+
+  def data
+    JSON.parse(response.body)
+  end
+
   before :each do
     request.headers['accept'] = 'application/json'
-  end
-  
-  context 'index and show' do
-    it 'should deny access without a guest account' do
-      works = FactoryGirl.create :works
 
-      get :index
-      expect(response.status).to eq(403)
-
-      get :show, id: works.id
-      expect(response.status).to eq(403)
-    end
-
-    it "should grant access with a guest account" do
-      works = FactoryGirl.create :works
-      guest = FactoryGirl.create :guest
-
-      get :index
-      expect(response.status).to eq(200)
-
-      get :show, id: works.id
-      expect(response.status).to eq(200)
-    end
+    @media = FactoryGirl.create :media
+    @admin = FactoryGirl.create :admin
   end
 
-  context 'create, update and destroy' do
-    it "should deny the update without authentication" do
-      works = FactoryGirl.create :works
+  it 'should retrieve a single kind' do
+    get :show, id: @media.id
+    expect(response.status).to eq(200)
+    expect(data['name']).to eq('Medium')
+  end
 
-      patch :update, id: works.id, kind: {plural_name: 'artworks'}
-      expect(response.status).to eq(403)
+  it 'should retrieve all kinds' do
+    @people = FactoryGirl.create :people
+
+    get :index
+    expect(data['records'].size).to eq(2)
+  end
+
+  context 'as admin' do
+
+    before :each do
+      request.headers['accept'] = 'application/json'
+      request.headers['api_key'] = @admin.api_key
     end
 
-    it "should deny the update without admin rights" do
-      works = FactoryGirl.create :works
-      jdoe = FactoryGirl.create :jdoe
-
-      patch :create,
-        api_key: jdoe.api_key,
-        id: works.id,
-        kind: {name: 'artwork', plural_name: 'artworks'}
-      expect(response.status).to eq(403)
-
-      patch :update,
-        api_key: jdoe.api_key,
-        id: works.id,
-        kind: {plural_name: 'artworks'}
-      expect(response.status).to eq(403)
-
-      patch :destroy, api_key: jdoe.api_key, id: works.id
-      expect(response.status).to eq(403)
+    it 'should create a kind' do
+      post :create, kind: {
+        name: 'person',
+        plural_name: 'people'
+      }
+      expect(response.status).to eq(200)
+      expect(data['record']['id']).not_to be_nil
+      expect(data['messages'].first).to eq('entity type has been created')
     end
 
-    it "should allow the update with admin rights" do
-      works = FactoryGirl.create :works
-      admin = FactoryGirl.create :admin
-
-      patch :create,
-        api_key: admin.api_key,
-        id: works.id,
-        kind: {name: 'artwork', plural_name: 'artworks'}
+    it 'should create a sub kind' do
+      post :create, kind: {
+        name: 'person',
+        plural_name: 'people',
+        parent_ids: [@media.id]
+      }
       expect(response.status).to eq(200)
+      expect(data['record']['parent_ids']).to eq([@media.id])
+    end
 
-      patch :update,
-        api_key: admin.api_key,
-        id: works.id,
-        kind: {plural_name: 'artworks'}
-      expect(response.status).to eq(200)
+    it 'should update a kind' do
+      @people = FactoryGirl.create :people
 
-      patch :destroy, api_key: admin.api_key, id: works.id
+      patch :update, id: @people.id, kind: {
+        name: 'artists',
+        parent_ids: [@media.id]
+      }
       expect(response.status).to eq(200)
+      expect(data['record']['name']).to eq('artists')
+      expect(data['record']['parent_ids']).to eq([@media.id])
+    end
+
+    it 'should move a kind' do
+      @people = FactoryGirl.create :people
+      @works = FactoryGirl.create :works, parent_ids: [@people.id]
+
+      patch :update, id: @works.id, kind: {
+        parent_ids: [@media.id]
+      }
+      expect(response.status).to eq(200)
+      expect(data['record']['parent_ids']).to eq([@media.id])
+    end
+
+    it 'should render errors when the plural name is missing' do
+      post :create, kind: {
+        name: 'person'
+      }
+      expect(response.status).to eq(406)
+      expect(data['errors']['plural_name']).to include('has to be filled in')
+    end
+
+    it 'should ignore addition of non-existing parents' do
+      @people = FactoryGirl.create :people
+
+      patch :update, id: @people.id, kind: {parent_ids: 99}
+      expect(response.status).to eq(200)
+      expect(data['record']['parent_ids']).to be_empty
+    end
+
+    it 'should not delete parents as long as they have chrildren' do
+      @people = FactoryGirl.create :people
+      @works = FactoryGirl.create :works, parent_ids: @people.id
+
+      delete :destroy, id: @people.id
+      expect(response.status).to eq(406)
+      expect(data['messages'].first).to eq("kinds with children can't be deleted")
     end
 
     it 'should deny deleting the medium kind' do
-      media = FactoryGirl.create :media
+      delete :destroy, id: @media.id
+      expect(response.status).to eq(406)
+    end
 
-      delete :destroy, id: media.id
-      expect(response.status).to eq(403)
+    it 'should deny deleting a kind that has entities' do
+      @people = FactoryGirl.create :people
+      @leonardo = FactoryGirl.create :leonardo
+      
+      delete :destroy, id: @people.id
+      expect(response.status).to eq(406)
     end
 
   end

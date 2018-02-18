@@ -1,5 +1,6 @@
 class StaticController < ApplicationController
   skip_before_filter :authentication, :authorization, :maintenance, :except => :help
+  before_filter :session_expiry
   
   def under_maintenance
     # this is for getting back to the login when the user presses f5

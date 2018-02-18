@@ -5,7 +5,31 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
-## Version ???
+## Version X
+
+### Internal
+
+* added lockr.js for localStorage
+
+### User
+
+* kinds and relations can now have semantical parents/children. This is to
+  prepare cross-installation data migrations and reference model compliance
+* kinds and relations can be set to be `abstract` which removes them from the
+  interface but allows them to be used for semantical inheritance.
+* for authentication with an api key via request headers, header name has to be
+  dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`.
+* most parts of OAI-PMH responses are now cached which should enhance
+  performance greatly
+* added reference implementation for OAI-PMH client
+* relations can now only define one source and one target entity type
+  (IMPORTANT: check https://github.com/coneda/kor/issues/94 for migration
+  implications)
+* added reproducible uuids when importing the Erlangen CRM
+* added JSON API endpoints to import wikidata items including properties
+* mirador from http://projectmirador.org/ is now integrated, also via drag&drop
+
+## Version 2.1.0
 
 ### User
 
@@ -15,6 +39,14 @@ commit history on GitHub.
 * relationships may now have one or more date ranges
 * the legal and about pages don't include a fixed headline anymore, this should
   be included within the configured text
+* compatibility with elasticsearch 5.1
+* increased full index speed by using elasticsearch bulk api
+* simple search now sorts on degree of connectivity when score is equal
+* kinds and relations can now have parents allowing a semantic hierarchies (e.g.
+  for mapping to CIDOC CRM implementations)
+* environment authentication now allows to specify a `mail` attribute and
+  a `domain` attribute, the latter overriding the former.
+* resumptionToken within OAI-PMH responses now behaves according to specs
 
 ## Version 2.0.1
 
@@ -26,6 +58,13 @@ commit history on GitHub.
 * 'recently visited' tab (relationship editor) doesn't show expected entities
   (#2161 redmine). The resolution also has the side effect of the history of
   visited entities is now remembered across sessions.
+
+### Internal
+
+* all vms defined by vagrant now use the `bento/ubuntu-16.04` base box
+* a new vagrant vm `bare` is defined that just installs requirements. This
+  serves to test the deploy scripts.
+* using systemd for deploying services via vagrant
 
 ## Version 2.0.0
 

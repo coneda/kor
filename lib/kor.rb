@@ -55,9 +55,6 @@ module Kor
       (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
   end
 
-
-  ####################### expiries #############################################
-
   def self.session_expiry_time
     Time.now + Kor.config['auth']['session_lifetime'].seconds
   end
@@ -89,6 +86,31 @@ module Kor
   def self.video_processor
     @video_processor ||= begin
       system('avconv -version > /dev/null 2> /dev/null') ? 'avconv' : 'ffmpeg'
+    end
+  end
+
+  def self.progress_bar(title, total, options = {})
+    options.reverse_merge!(
+      :title => title,
+      :total => total,
+      :format => "%t: |%B|%R/s|%c/%C (%P%%)|%a%E|",
+      :throttle_rate => 0.5
+    )
+
+    ProgressBar.create(options)
+  end
+
+  def self.is_uuid?(value)
+    value.is_a?(String) &&
+    !!value.match(/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/i)
+  end
+
+  def self.with_exclusive_lock(name, &block)
+    mode = File::RDWR | File::CREAT
+    File.open "#{Rails.root}/tmp/#{name}.lock", mode do |f|
+      f.flock(File::LOCK_EX)
+      yield
+      f.flock(File::LOCK_UN)
     end
   end
 

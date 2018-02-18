@@ -1,0 +1,70 @@
+form {
+  width: 100%;
+
+  kor-field, [data-is=kor-field] {
+    display: block;
+    margin-bottom: 1rem;
+
+    label {
+      font-weight: bold;
+    }
+
+    input, textarea, select {
+      width: 100%;
+    }
+
+    select[multiple] {
+      height: 20em;
+    }
+
+    textarea {
+      height: 20em;
+    }
+
+    input[type=checkbox] {
+      display: block;
+      width: auto;
+    }
+
+    &.errors {
+      input, textarea, select {
+        border: 2px solid #CB1525;
+      }
+    }
+
+    .errors {
+      color: #CB1525;
+      font-weight: normal;
+    }
+  }
+
+  kor-submit {
+    display: block;
+    margin-bottom: 1rem;
+    text-align: right;
+  }
+}
+
+form.kor-horizontal {
+  text-align: right;
+
+  kor-field, [data-is=kor-field] {
+    display: inline;
+    margin-left: 1rem;
+
+    input, select {
+      width: 12rem;
+    }
+
+    input[type=checkbox] {
+      position: relative;
+      top: 2px;
+      display: inline;
+      width: auto;
+    }
+  }
+
+  kor-submit {
+    display: inline;
+  }
+}

@@ -64,6 +64,9 @@ h1, h2, h3, h4, h5, h6, h7
 
 /* remove images before lists but enable them in the redcloth syntax */
 
+.text-left
+  text-align: left
+
 .text-right
   text-align: right
 
@@ -103,8 +106,9 @@ textarea.monospace
 select option
   background-color: $input_background
 
-.focused
-  background-color: $input_background + 14
+input[type=text], input[type=password], textarea
+  &:focus
+    background-color: $input_background + 14
 
 select
   padding-left: 0px
@@ -125,8 +129,9 @@ input
     margin-left: 20px
   &[type=radio]:first-child
     margin-left: 0px
-  &.highlighted_button
-    background-color: $input_background + 65
+
+input[type=submit]:hover
+  background-color: $input_background + 65
     
 textarea
   font-family: Helvetica, Arial, Geneva, sans-serif
@@ -275,6 +280,9 @@ div
     margin-bottom: 85px
     li.inactive_item a
       color: $text
+    select
+      width: 60%
+
   &#footer
     position: relative
     top: -65px
@@ -561,9 +569,17 @@ table.canvas
 
 /* kor_table */
 
+.kor_table th
+  text-align: left
+  vertical-align: bottom
+
+  &.text-right
+    text-align: right
+    padding-right: 6px
+
 table
   &.kor_table
-    thead th
+    th
       padding-top: 5px
       padding-bottom: 5px
 

@@ -19,6 +19,7 @@ describe Entity do
       last_supper = FactoryGirl.create :work, :name => "Das Letzte Abendmahl"
       leonardo = FactoryGirl.create :leonardo
       louvre = FactoryGirl.create :institution, :name => 'Louvre'
+      FactoryGirl.create :is_located_at, :from_kind => @mona_lisa.kind, :to_kind => louvre.kind
       Relationship.relate_and_save(@mona_lisa, 'has been created by', leonardo)
       Relationship.relate_and_save(last_supper, 'has been created by', leonardo)
       Relationship.relate_and_save(@mona_lisa, 'is located at', louvre)

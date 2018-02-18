@@ -79,7 +79,10 @@ function html {
 function images {
   log "copying images"
   rm -rf public/images
-  cp -a widgets/images public/
+
+  if [ -d widgets/images ]; then
+    cp -a widgets/images public/
+  fi
 }
 
 function watch_vendor {

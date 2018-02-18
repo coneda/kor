@@ -1,13 +1,9 @@
 # ConedaKOR #
 
-ConedaKOR allows you to store arbitrary documents and interconnect them with
-relationships. You can build huge semantic networks for an unlimited amount of
-domains. This integrates a sophisticated ontology management tool with an easy
-to use media database.
-
-To learn more and for installation instructions, please have a look at the
-feature list below or visit
-[our website (German)](http://coneda.net/pages/download)
+ConedaKOR is a web based application which allows you to store arbitrary
+documents and interconnect them with relationships. You can build huge semantic
+networks for an unlimited amount of domains. This integrates a sophisticated
+ontology management tool with an easy to use media database.
 
 ## Changelog
 
@@ -50,10 +46,14 @@ see file COPYING
 * Access data via an OAI-PMH interface
 * Vagrant dev environment
 * good unit and integration test coverage
+* checked for security problems with
+  [brakeman](https://github.com/presidentbeef/brakeman)
 * a growing javascript widget library allowing easy integration into other apps
+* support for using Erlangen CRM and similar standards as basis for your
+  ontology (including a convenient OWL import tool)
 
 
-## Documentation
+## System admistrator's documentation
 
 These instructions are intended for system operators who wish to deploy the 
 software for their users.
@@ -64,8 +64,9 @@ software for their users.
 * mysql server (>= 5.5)
 * elasticsearch (>= 1.7.2, < 5.0.0)
 * web server (optional but highly recommended)
+* neo4j (optional)
 
-### Deployment
+### Scripted installation
 
 Before we go into the details of the deployment process, **please be sure to
 backup the database and the `$DEPLOY_TO/shared` directory**. In practice, this
@@ -78,6 +79,9 @@ remotely, deploys the code to the specified directory and runs the necessary
 tasks (compiling assets, starting background jobs, …). The functionality does
 not include the installation of requirements, provisioning of a database server
 nor the setup of a web server, since those differ greatly from server to server.
+Also, it might be that your specific setup requires modification to the script,
+for example to manage the background job, you might prefer to use a systemd,
+changing the way it is restarted.
 
 The script expects a directory `$DEPLOY_TO` on the server where it has write
 permissions. Within, it will create two subdirectories `$DEPLOY_TO/releases` and
@@ -122,6 +126,10 @@ itself, so a call
 would deploy to instance02 according to the configuration above. On terminals 
 that support it, the output is colorized according to the exit code of every
 command issued by the script.
+
+The first time the script is run, some default configuration files are copied to
+the host. It will then stop execution and let you modify the files according to
+your setup. Re-run it when done.
 
 This will also start the background process that converts images and does other
 heavy lifting. However, this does not ensure monitoring nor restarting of that
@@ -275,8 +283,9 @@ all data.
 
 Authentication is performed via a web form at http://kor.example.com/login or by
 providing a valid `api_key` as `GET` or `POST` parameter. You may also specify a
-header `api_key` containing the key. Every user has a key which can be looked up
-by an administrator on the user's administration page.
+header `api-key` containing the key (make sure not to use an underscore). Every
+user has a key which can be looked up by an administrator on the user's
+administration page.
 
 In order to be able to create user accounts, a user needs the `User admin` role.
 
@@ -363,7 +372,7 @@ look like this:
             type: env
             user: ['REMOTE_USER']
             mail: ['mail']
-            domain: example.com
+            domain: ['example.com']
             map_to: my_user_template
 
 This may be combined with script based authentication sources. Authentication is
@@ -371,9 +380,11 @@ only triggered on GET `/env_auth` which redirects to the login form if the
 environment authentication was not successfull. The `domain` value is used to
 extend the username to an email address. So for example, with the above
 configuration, a user logging in as jdoe would be created with an email address
-`jdoe@example.com`. Additionally, the keys mail and full_name can be specified
-which would make the system update successfully authenticated users with those
-attributes.
+`jdoe@example.com` (unless `mail` is found in the request env). Additionally,
+the key `mail` can be supplied which will use that attribute to find the user's
+mail address (overrides the `domain`) setting. Also, a `full_name` can be
+specified which would make the system update successfully authenticated users
+with it.
 
 When the environment yields updated user information like a changed email
 address, the user is updated automatically. However, if that update fails, the
@@ -407,7 +418,7 @@ Two formats are available: `oai_dc` and `kor`. While the former is only
 maintained to fulfill the OAI-PMH specification, the latter gives full access to
 all content within the ConedaKOR installation. According to specification, you
 must choose the format like so `metadataPrefix=kor` as a request parameter. The
-kor format adheres to a schema we provide at
+kor format adheres to a schema that is included in ConedaKOR. It can be found at
 
 https://kor.example.com/schema/1.0/kor.xsd
 
@@ -483,6 +494,55 @@ request's `content-type` header has to be `application/json`
 Have a look at [Authentication](#authentication) to see how you can provide
 authentication credentials.
 
+In general, there are three types of responses:
+
+Requests that **retrieve a single record** will always answered with a
+simple object containing just that record, e.g.
+
+    GET /kinds/1.json
+
+    {
+      "id": 123,
+      "name": "person",
+      "plural_name": "people",
+      ...
+    }
+
+Requests that **retrieve a series of records** (resultsets) will always be
+answered with the objects themselves but also the total number of records, the
+current page and the amount of records per page. Sometimes not full records are
+returned but only their ids in which case the `records` array will be empty and
+there will be an `ids` array instead, e.g.
+
+    GET /kinds.json
+    
+    {
+      "records": [...],
+      "total": 120,
+      "per_page": 10,
+      "page": 7
+    }
+
+Requests that **modify a record** will always be answered with the modified
+record as well as a message indicating the modification applied. Also the
+response code will reflect a successful change (200) or incorrect new data
+(406). This applies to create (POST), update (PATCH) and destroy (DELETE)
+requests, e.g.
+
+    POST /kinds.json
+    with JSON {"kind": {"name": "person", "plural_name": "people"}}
+
+    {
+      "message": "the kind 'person' has been created",
+      "record": {
+        "id": 123,
+        "name": "person",
+        "plural_name": "people",
+        ...
+      }
+    }
+
+
 * `GET /kinds.json`: returns array of all kinds
 * `GET /kinds/1.json`: returns kind with id 1
 * `GET /relations.json`: returns array of all relations
@@ -513,18 +573,12 @@ authentication credentials.
     * `to_kind_id`: limits by the target's kind, comma-separated
     * `page`: requests a specific page from the resultset (default: 1)
     * `per_page`: sets the page size (default: 10, max: 500)
-
-Resultsets are JSON objects having this structure:
-
-    {
-      total: 133,
-      page: 1,
-
-      ids: [13,89,1333],
-      records: [ ... ],
-    }
-
-while `ìds` and `records` are optional.
+* `POST /wikidata/import`: imports a wikidata item. This also creates potential relationships towards previously imported items
+    * `id`: the wikidata id of the item to import e.g. `Q762`
+    * `kind`: the kind of the new entity, e.g. `person`
+    * `collection`: the collection where to create the new entity (the 'create' right is required within that collection)
+    * `locale`: the locale to import from wikidata, defaults to `en`
+* `POST /wikidata/preflight`: simulates the previous method without actually changing any data
 
 Be aware that, if you are requesting related entities to be embedded within
 other entities, those are embedded as a list of directed relationships which
@@ -573,10 +627,23 @@ Those sheets may be modified and imported later on.
 
 * identification columns (id and uuid) are not imported: they are only used to
   identify existing records on imports. Leave empty when adding new data.
+* when creating new records, you will have to fill in at least the columns for
+  kind_id, collection_id and name (or no_name_statement). For the serialized
+  columns, please use their "natural" empty value if you don't use them. So
+  for dataset `{}`, for properties `{}` for synonyms: `[]` for datings: `[]`.
 * the deleted column is not imported: enter any non-empty value in order to
   delete the entity on import.
 * timestamps are not imported: they will be changed if the entity will be
   changed by the import.
+
+#### Importing Erlangen CRM classes
+
+The task will import all classes from
+http://erlangen-crm.org/ontology/ecrm/ecrm_current.owl, documented by
+http://erlangen-crm.org/docs/ecrm/current/index.html into the installation as
+entity types. The types will be set up according to their hierarchy and they
+will be set to be "abstract" which prevents them from showing up in the
+interface.
 
 #### Rebuilding elastic index
 

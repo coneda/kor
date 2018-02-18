@@ -29,13 +29,42 @@ Rails.application.routes.draw do
       get 'cleanup'
     end
   end
-  resources :kinds do
-    resources :fields, :except => 'show'
-    resources :generators
+  resources :kinds, except: ['edit', 'new'] do
+    resources :fields, except: ['show', 'edit', 'new'] do
+      collection do
+        get :types
+      end
+    end
+    resources :generators, except: ['show', 'edit', 'new']
   end
-  resources :relations do
+
+  resources :entities do
     collection do
-      get 'names'
+      get 'multi_upload'
+      get 'gallery'
+      get 'recent'
+      get 'invalid'
+      get 'isolated'
+      get 'recently_created'
+      get 'recently_visited'
+    end
+    
+    member do
+      get 'metadata'
+    end
+
+
+    scope format: :json do
+      # match 'relations', to: 'entities#relation_counts'
+      resources :relationships, only: [:index, :show], controller: 'directed_relationships'
+    end
+  end
+
+  defaults format: :json do
+    resources :relations, except: [:new, :edit] do
+      collection do
+        get 'names'
+      end
     end
   end
 
@@ -193,10 +222,19 @@ Rails.application.routes.draw do
   controller 'session' do
     match '/env_auth', action: 'create', via: :get
   end
+
+  scope 'mirador', controller: 'api/iiif/media', format: :json do
+    root action: 'index', as: 'mirador'
+    match ':id', action: 'show', via: :get, as: :iiif_manifest
+    match ':id/sequence', action: 'sequence', via: :get, as: :iiif_sequence
+    match ':id/canvas', action: 'sequence', via: :get, as: :iiif_canvas
+    match ':id/image', action: 'sequence', via: :get, as: :iiif_image
+  end
   
-  namespace 'api', :format => :json do
-    scope ':version', :version => /[0-9\.]+/, :defaults => {:version => '1.0'} do
-      match 'info', :to => 'public#info', :via => :get
+  namespace 'api', format: :json do
+    scope ':version', version: /[0-9\.]+/, defaults: {version: '1.0'} do
+      match 'info', to: 'public#info', via: :get
+      match 'profile', to: '/users#edit_self', via: :get
     end
 
     scope 'oai-pmh', :format => :xml, :as => 'oai_pmh', :via => [:get, :post] do
@@ -211,6 +249,11 @@ Rails.application.routes.draw do
           match res, :to => "oai_pmh/#{res}#verb_error"
         end
       end
+    end
+
+    scope 'wikidata', format: 'json', controller: 'wikidata' do
+      match 'preflight', action: 'preflight', via: 'POST'
+      match 'import', action: 'import', via: 'POST'
     end
   end
 

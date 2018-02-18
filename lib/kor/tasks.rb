@@ -19,6 +19,7 @@ class Kor::Tasks
   end
 
   def self.index_all(config = {})
+    Kor::Elastic.enable
     Kor::Elastic.drop_index
     Kor::Elastic.create_index
     ActiveRecord::Base.logger.level = Logger::ERROR
@@ -103,6 +104,8 @@ class Kor::Tasks
       groups: Credential.all,
       password: 'admin',
       terms_accepted: true,
+      login_attempts: [],
+      active: true,
 
       admin: true,
       relation_admin: true,
@@ -136,6 +139,12 @@ class Kor::Tasks
     graph.connect_random
   end
 
+  def self.cleanup_sessions(config = {})
+    model = Class.new(ActiveRecord::Base)
+    model.table_name = "sessions"
+    model.where("created_at < ?", 5.days.ago).delete_all
+  end
+  
   def self.list_permissions(config = {})
     puts "Entities: "
     data = [['entity (id)', 'collection (id)'] + Kor::Auth.policies]
@@ -164,6 +173,10 @@ class Kor::Tasks
     print_table data
   end
 
+  def self.cleanup_exception_logs(config = {})
+    ExceptionLog.delete_all
+  end
+
   def self.secrets(config = {})
     data = {}
     ['development', 'test', 'production'].each do |e|
@@ -178,23 +191,27 @@ class Kor::Tasks
   end
 
   def self.consistency_check(config = {})
-    Relationship.includes(:relation, :from, :to).inconsistent.each do |r|
+    Relationship.includes(:relation, :from, :to).inconsistent.find_each do |r|
       puts [
-        "#{r.from.display_name} [#{r.from_id}, #{r.from.kind.name}]".colorize(:blue),
+        "#{r.id} #{r.from.display_name} [#{r.from_id}, #{r.from.kind.name}]".colorize(:blue),
         r.relation.name.colorize(:light_blue),
         "#{r.to.display_name} [#{r.to_id}, #{r.to.kind.name}]".colorize(:blue),
         'is unexpected, the relation expects:',
-        Kind.find(r.relation.from_kind_ids).map{|k| k.name}.join(','),
+        Kind.find(r.relation.from_kind_id).name,
         '->',
-        Kind.find(r.relation.to_kind_ids).map{|k| k.name}.join(',')
+        Kind.find(r.relation.to_kind_id).name
       ].join(' ')
     end
+  end
+
+  def self.import_erlangen_crm(config = {})
+    Kor::Import::ErlangenCrm.new.run
   end
 
 
   protected
 
-    def print_table(data)
+    def self.print_table(data)
       maxes = {}
       data.each do |record|
         row = []

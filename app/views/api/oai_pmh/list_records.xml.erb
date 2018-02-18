@@ -8,5 +8,7 @@
       expirationDate="<%= timestamp 24.hours.from_now %>"
       completeListSize="<%= @records[:total] %>"
     ><%= @records[:token] %></resumptionToken>
+  <% elsif @records[:token] == "" %>
+    <resumptionToken completeListSize="<%= @records[:total] %>"/>
   <% end %>
 </ListRecords>

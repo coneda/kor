@@ -1,7 +1,7 @@
 class ToolsController < ApplicationController
   
   skip_before_action :authentication, :only => 'history'
-  skip_before_action :verify_authenticity_token, only: ['history']
+  skip_before_action :verify_authenticity_token, only: ['history', :mark_as_current]
   skip_before_filter :authorization, :except => [ 
     'remove_from_invalid_entities', 
     'add_to_authority_group', 
@@ -34,6 +34,7 @@ class ToolsController < ApplicationController
 
   def mark_as_current
     if params[:id]
+      session[:bla] = ',p'
       session[:current_history] ||= Array.new
       session[:current_history] << params[:id].to_i unless session[:current_history].last == params[:id].to_i
       session[:current_history] = session[:current_history].last(Kor.config['app.current_history_length'].to_i)
@@ -91,6 +92,8 @@ class ToolsController < ApplicationController
       format.html do 
         if request.referer && request.referer.match(/\/blaze/)
           redirect_to back_save
+        elsif request.referer && request.referer.match(/\/authority_group/)
+          redirect_to :back
         else
           redirect_to :controller => 'tools', :action => 'clipboard'
         end
@@ -103,16 +106,15 @@ class ToolsController < ApplicationController
     end
   end
 
-  def groups_menu
-    session[:expand_group_menu] = params[:folding] == 'expand'
+  def session_info
+    session[:show_session_info] = (params[:show] == 'show')
     render :nothing => true
   end
   
-  def input_menu
-    session[:expand_input_menu] = params[:folding] == 'expand'
+  def groups_menu
+    session[:expand_group_menu] = (params[:folding] == 'expand')
     render :nothing => true
   end
-
 
   def dataset_fields
     begin
@@ -192,7 +194,7 @@ class ToolsController < ApplicationController
         flash[:notice] = I18n.t('messages.entities_moved_to_collection', :o => collection.name)
         redirect_to clipboard_path
       else
-        render_denied_page
+        render_403
       end
     end
   
@@ -213,7 +215,7 @@ class ToolsController < ApplicationController
           redirect_to back_save
         end
       else
-        render_denied_page
+        render_403
       end
     end
 
@@ -229,7 +231,7 @@ class ToolsController < ApplicationController
           redirect_to back_save
         end
       else
-        render_denied_page
+        render_403
       end
     end
 
@@ -267,7 +269,7 @@ class ToolsController < ApplicationController
       
       if @entities.blank?
         flash[:error] = I18n.t("errors.merge_access_denied_on_entities")
-        render_denied_page
+        render_403
       elsif @entities.collect{|e| e.kind.id}.uniq.size != 1
         flash[:error] = I18n.t("errors.only_same_kind")
         redirect_to :controller => 'tools', :action => 'clipboard', :entity_ids => params[:entity_ids]
@@ -329,7 +331,7 @@ class ToolsController < ApplicationController
           redirect_to :action => 'clipboard'
         end
       else
-        render_denied_page
+        render_403
       end
     end
 

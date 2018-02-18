@@ -58,8 +58,8 @@
           %ul.toggling_menu#config_menu{:style => "padding-left: 10px; #{'display: none' unless session[:expand_config_menu]}"}
             = navigation_item I18n.t('general'), config_path(:action => 'general') if current_user.admin?
             = submenu_section do
-              = navigation_item Relation.model_name.human(:count => :other), :controller => 'relations' if current_user.relation_admin?
-              = navigation_item Kind.model_name.human(:count => :other), :controller => 'kinds' if current_user.kind_admin?
+              = navigation_item Relation.model_name.human(:count => :other), '/blaze#/relations' if current_user.relation_admin?
+              = navigation_item Kind.model_name.human(:count => :other), '/blaze#/kinds' if current_user.kind_admin?
             = submenu_section do
               = navigation_item Collection.model_name.human(:count => :other), collections_path if current_user.admin?
               - if current_user.admin?
@@ -78,7 +78,7 @@
         
       - unless Kor.config['maintainer.help_text'].blank?
         %li.inactive_item
-          = link_to I18n.t('nouns.help'), :controller => 'static', :action => 'help'
+          = link_to I18n.t('nouns.help').capitalize_first_letter, :controller => 'static', :action => 'help'
     
     %li.spacer
     

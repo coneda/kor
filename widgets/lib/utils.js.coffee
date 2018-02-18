@@ -38,5 +38,8 @@ wApp.utils = {
       wApp.state.scrollToTopTimeOut = setTimeout('wApp.utils.scrollToTop()', 10)
     else
       clearTimeout wApp.state.scrollToTopTimeOut
+  capitalize: (value) ->
+    value.charAt(0).toUpperCase() + value.slice(1)
 
+  confirm: (string) -> window.confirm(string)
 }

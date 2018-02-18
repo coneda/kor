@@ -2,7 +2,7 @@ class ConfigController < ApplicationController
   layout 'normal_small', :except => 'menu'
 
   def menu
-    session[:expand_config_menu] = params[:folding] == 'expand'
+    session[:expand_config_menu] = (params[:folding] == 'expand')
     render :nothing => true
   end
   

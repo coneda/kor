@@ -5,8 +5,6 @@ describe Kor::Export::MetaData do
   
   it "should correctly include relationship properties" do
     FactoryGirl.create :media
-    FactoryGirl.create :shows
-    FactoryGirl.create :has_created
 
     default = FactoryGirl.create :default
     admins = FactoryGirl.create :admins
@@ -16,6 +14,9 @@ describe Kor::Export::MetaData do
     mona_lisa = FactoryGirl.create :mona_lisa
     leonardo = FactoryGirl.create :leonardo
     
+    FactoryGirl.create :shows, from_kind: image.kind, to_kind: mona_lisa.kind
+    FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
+
     Relationship.relate_and_save image, 'shows', mona_lisa
     Relationship.relate_and_save leonardo, 'has created', mona_lisa, []
 

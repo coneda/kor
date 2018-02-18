@@ -9,6 +9,7 @@ Feature: Media
     Given I am logged in as "admin"
     And the medium "spec/fixtures/image_a.jpg"
     When I go to the entity page for the last medium
+    And I wait for "2" seconds
     And I follow "Rotate_cw"
     Then I should be on the entity page for the last medium
     

@@ -57,7 +57,20 @@ class UsersController < ApplicationController
   end
 
   def show
-    @record = User.find(params[:id])
+    @user = User.find(params[:id])
+  end
+
+  def new
+    @user = User.new
+    @user.groups << Credential.where(:name => Kor.config['auth.default_groups']).to_a
+  end
+  
+  def edit_self
+    if current_user.guest?
+      render_403
+    else
+      @user = User.find(current_user.id)
+    end
   end
 
   def update_self
@@ -126,7 +139,5 @@ class UsersController < ApplicationController
     def generally_authorized?
       current_user.admin?
     end
-
-
 
 end

@@ -2,8 +2,8 @@ This is the ConedaKOR command line utility. It operates several sub-commands and
 features general and specific options (see below).
 
 Commands:
- import                     import data (for now, only excel format is supported)
- export                     export data (for now, only excel format is supported)
+ import /path/to/source/    import data (for now, only excel format is supported)
+ export /path/to/target/    export data (for now, only excel format is supported)
  reset-admin-account        set the password for user admin to "admin"
  reset-guest-account        ensure a working guest account
  index-all                  refresh all indices within elasticsearch
@@ -20,6 +20,7 @@ Commands:
  list-permissions           list permissions and user credentials (for a given pair of entity and user or all)
  cleanup-exception-logs     delete all exception logs
  consistency-check          show consistency problems (e.g. relationships with unexpected endpoints)
+ import-erlangen-crm        import the Erlangen CRM classes as entity types
 
 Please consult
 

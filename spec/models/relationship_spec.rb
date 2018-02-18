@@ -3,9 +3,9 @@ require 'rails_helper'
 describe Relationship do
 
   it "should be creatable and updatable with a relation name" do
-    FactoryGirl.create :has_created
     mona_lisa = FactoryGirl.create :mona_lisa
     leonardo = FactoryGirl.create :leonardo
+    FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
 
     relationship = Relationship.create(
       from: leonardo,
@@ -14,7 +14,6 @@ describe Relationship do
     )
 
     expect(relationship.from_id).to eq(leonardo.id)
-    expect(relationship.relation.name).to eq('has created')
     expect(relationship.to_id).to eq(mona_lisa.id)
 
     relationship = Relationship.create(
@@ -24,18 +23,18 @@ describe Relationship do
     )
 
     expect(relationship.from_id).to eq(leonardo.id)
-    expect(relationship.relation.name).to eq('has created')
     expect(relationship.to_id).to eq(mona_lisa.id)
 
-    relationship.update_attributes(
-      from: leonardo,
-      relation_name: 'has been created by',
-      to: mona_lisa
-    )
+    expect {
+      relationship.update_attributes(
+        from: leonardo,
+        relation_name: 'has been created by',
+        to: mona_lisa
+      )
+    }.to raise_error(Kor::Exception)
 
-    expect(relationship.from_id).to eq(mona_lisa.id)
-    expect(relationship.relation.name).to eq('has created')
-    expect(relationship.to_id).to eq(leonardo.id)
+    expect(relationship.from_id).to eq(leonardo.id)
+    expect(relationship.to_id).to eq(mona_lisa.id)
 
     expect(Relationship.count).to eq(2)
   end
@@ -43,7 +42,7 @@ describe Relationship do
   it "should accept nested attributes for entity datings" do
     leonardo = FactoryGirl.create :leonardo
     mona_lisa = FactoryGirl.create :mona_lisa
-    has_created = FactoryGirl.create :has_created
+    has_created = FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
 
     relationship = Relationship.create(
       relation: has_created,
@@ -61,7 +60,7 @@ describe Relationship do
   it "should search by dating" do
     leonardo = FactoryGirl.create :leonardo
     mona_lisa = FactoryGirl.create :mona_lisa
-    has_created = FactoryGirl.create :has_created
+    has_created = FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
 
     relationship = Relationship.create(
       relation: has_created,

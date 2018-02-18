@@ -4,18 +4,25 @@ class Field < ActiveRecord::Base
   
   serialize :settings, Hash
   
-  belongs_to :kind
+  belongs_to :kind, touch: true
   
   validates :name,
     :presence => true,
-    :format => {:with => /\A[a-z0-9_]+\z/},
+    :format => {:with => /\A[a-z0-9_]+\z/, allow_blank: true},
     :uniqueness => {:scope => :kind_id},
     :white_space => true
   validates :show_label, :form_label, :search_label, presence: true
-  
+
+  validate do |f|
+    if !f.new_record? && f.type_changed?
+      f.errors.add :type, :cannot_be_changed
+    end
+  end
+
   before_validation do |f|
     f.form_label = f.show_label if f.form_label.blank?
     f.search_label = f.show_label if f.search_label.blank?
+    f.type ||= 'Fields::String'
     f.generate_uuid
   end
 
@@ -84,7 +91,6 @@ class Field < ActiveRecord::Base
 
   scope :identifiers, lambda { where(:is_identifier => true) }
 
-
   # Attributes
   
   attr_accessor :entity
@@ -142,7 +148,12 @@ class Field < ActiveRecord::Base
   
   
   # Accessors
+
+  def self.fields
+    []
+  end
   
+  # TODO remove all of those once the kind/field/generator editor is complete
   def self.partial_name
     to_s.split('::').last.underscore
   end

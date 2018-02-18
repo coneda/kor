@@ -30,8 +30,8 @@ FactoryGirl.define do
     end
 
     factory :people do
-      name "Person"
-      plural_name "People"
+      name "person"
+      plural_name "people"
     end
   end
 
@@ -337,6 +337,16 @@ FactoryGirl.define do
         <span ng-show=\"locale() == 'en'\">English</span>
         <span ng-show=\"locale() == 'de'\">Deutsch</span>
       "
+    end
+
+    factory :gnd_id do
+      name "gnd_id"
+      directive "<a href=\"https://example.com/{{entity.fields.gnd_id}}\">GND-ID</>"
+    end
+
+    factory :activity_id do
+      name "activity_id"
+      directive "<a href=\"https://example.com/{{entity.fields.activity_id}}\">ACTIVITY-ID</>"
     end
   end
 

@@ -49,39 +49,46 @@ module Kor::Auth
 
     env_sources.each do |key, source|
       source['user'].each do |ku|
-        # TODO: change this to allow user@domain instead of an email attribute
-        source['mail'].each do |km|
-          Rails.logger.info "trying attributes user:#{ku} and mail:#{km}"
+        if username = env[ku]
+          Rails.logger.info "found username #{username}"
 
-          username = env[ku]
-          mail = env[km]
+          mail_candidates = 
+            (source['mail'] || []).
+              map{|km| env[km]}.
+              select{|e| e.present?} +
+            (source['domain'] || []).
+              map{|d| "#{username}@#{d}"}
 
-          if username && mail
-            Rails.logger.info "user found #{username} (#{mail})"
-
-            full_name = nil
-            source['full_name'].each do |kf|
-              full_name ||= env[kf]
-            end
-
-            if s = source['splitter']
-              username = username.split(Regexp.new(s)).first
-              mail = mail.split(Regexp.new(s)).first
-              full_name = full_name.split(Regexp.new(s)).first if full_name
-            end
-            
-            data = {
-              parent_username: source['map_to'],
-              email: mail,
-              full_name: full_name
-            }
-
-            Rails.logger.info "authorizing user #{username} with data #{data.inspect}"
-            return authorize(username, data)
+          if mail_candidates.empty?
+            Rails.logger.info "no valid mail address found"
           else
-            Rails.logger.info "no values for username and/or mail found: values found: #{username}/#{mail}"
-            false
+            Rails.logger.info "found mail addresses: #{mail_candidates.inspect}"
+            
+            mail_candidates.each do |mail|
+              full_name = nil
+              source['full_name'].each do |kf|
+                full_name ||= env[kf]
+              end
+
+              if s = source['splitter']
+                username = username.split(Regexp.new(s)).first
+                mail = mail.split(Regexp.new(s)).first
+                full_name = full_name.split(Regexp.new(s)).first if full_name
+              end
+              
+              data = {
+                parent_username: source['map_to'],
+                email: mail,
+                full_name: full_name
+              }
+
+              Rails.logger.info "authorizing user #{username} with data #{data.inspect}"
+              return authorize(username, data)
+            end
           end
+        else
+          Rails.logger.info "no username found"
+          false
         end
       end
     end
@@ -90,14 +97,14 @@ module Kor::Auth
   end
 
   def self.script_sources
-    (Kor.config['auth.sources'] || []).select do |key, source|
+    (config['sources'] || []).select do |key, source|
       type = source['type'] || 'script'
       type == 'script'
     end
   end
 
   def self.env_sources
-    (Kor.config['auth.sources'] || []).select do |key, source|
+    (config['sources'] || []).select do |key, source|
       source['type'] == 'env'
     end
   end
@@ -118,7 +125,7 @@ module Kor::Auth
       else
         Rails.logger.info "user couldn't be updated: #{user.errors.full_messages.inspect}"
 
-        if Kor.config['auth.fail_on_update_errors']
+        if config['fail_on_update_errors']
           Rails.logger.info "authentication failed due to update errors"
           nil
         else
@@ -244,6 +251,10 @@ module Kor::Auth
 
   def self.policies
     ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
+  end
+
+  def self.config
+    @config ||= Kor.config['auth']
   end
 
 end

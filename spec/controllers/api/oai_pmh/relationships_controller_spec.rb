@@ -21,8 +21,8 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     mona_lisa = FactoryGirl.create :mona_lisa
     leonardo = FactoryGirl.create :leonardo, :collection_id => priv.id
 
-    FactoryGirl.create :has_created
-    Relationship.relate_and_save mona_lisa, "has created", leonardo
+    FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
+    Relationship.relate_and_save leonardo, "has created", mona_lisa
   end
 
   it "should respond to 'Identify'" do
@@ -241,6 +241,26 @@ describe Api::OaiPmh::RelationshipsController, :type => :controller do
     doc = parse_xml(response.body)
     expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
     expect(doc.xpath("//xmlns:metadata").count).to eq(0)
+  end
+
+  it 'should include properties' do
+    admin = User.admin
+    rel = Relationship.last
+
+    rel.update properties: ['by wikidata', 'A559']
+
+    get(:get_record,
+      format: :xml,
+      identifier: rel.uuid,
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    )
+
+    doc = parse_xml(response.body)
+    properties = doc.xpath("//kor:relationship/kor:properties/kor:property")
+    expect(properties.count).to eq(2)
+    expect(properties.first.text).to eq('by wikidata')
+    expect(properties.last.text).to eq('A559')
   end
 
 end

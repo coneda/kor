@@ -8,7 +8,8 @@ kor.controller('entity_controller', [
 
     update = ->
       promise = es.show(rp.id)
-      promise.success (data) -> scope.entity = data
+      promise.success (data) ->
+        scope.entity = data
       promise.error (data) ->
         return_to = document.location.href
         l.path("/denied")
@@ -27,6 +28,14 @@ kor.controller('entity_controller', [
           field.value && field.show_on_entity
       else
         []
+
+    scope.show_tags = ->
+      if scope.entity
+        scope.entity.kind.settings.tagging &&
+        (
+          (scope.entity.tags && scope.entity.tags.length > 0) ||
+          scope.allowed_to('tagging', scope.entity.collection_id)
+        )
 
     scope.authority_groups = ->
       if scope.entity
@@ -60,5 +69,16 @@ kor.controller('entity_controller', [
 
     scope.close_relationship_editor = ->
       scope.relationship_editor_visible = false
+
+    scope.openMirador = (entity_id, $event) ->
+      $event.preventDefault()
+      $event.stopPropagation()
+      
+      root_url = document.location.href.match(/^(https?\:\/\/[^\/]+\/)/)[0]
+      url = "#{root_url}/mirador?manifest=#{root_url}mirador/#{entity_id}"
+      scope.ow(url)
+      true
+
+    scope.ow = (url) -> window.open(url, '', 'height=800,width=1024')
 
 ])

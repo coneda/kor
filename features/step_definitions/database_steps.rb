@@ -14,23 +14,38 @@ Given /^the collection "([^\"]*)"$/ do |name|
   end
 end
 
-Given /^the kind "([^\"]*)"$/ do |names|
+Given /^the kind "([^\"]*)"(?: inheriting from "([^\"]*)")?$/ do |names, parents|
   components = names.split('/')
   singular = components[0..(components.size / 2 - 1)].join('/')
   plural = components[(components.size / 2)..-1].join('/')
-  Kind.find_or_create_by(:name => singular, :plural_name => plural)
+  kind = Kind.find_or_initialize_by(:name => singular, :plural_name => plural)
+  if parents.present?
+    parents.split(',').each do |parent|
+      kind.parents << Kind.find_by(name: parent)
+    end
+  end
+  kind.save
 end
 
 Given(/^the generator "(.*?)" for kind "(.*?)"$/) do |name, kind_name|
   step "the kind \"#{kind_name}\""
   generator = FactoryGirl.build name
-  Kind.where(:name => kind_name.split('/').first).first.generators << generator
+  kind = Kind.find_by(name: kind_name.split('/').first)
+  kind.generators << generator
+  kind.save
 end
 
-Given /^the relation "([^\"]*)"$/ do |names|
+Given /^the relation "([^\"]*)" inheriting from "([^\"]*)"?$/ do |names, parents|
   name, reverse = names.split('/')
   reverse = name if reverse.blank?
-  Relation.create! :name => name, :reverse_name => reverse
+  relation = Relation.new(
+    name: name,
+    reverse_name: reverse,
+    parents: Relation.where(name: parents.split(','))
+  )
+  relation.from_kind = relation.parents.first.from_kind
+  relation.to_kind = relation.parents.first.to_kind
+  relation.save!
 end
 
 Given /^the medium "([^"]*)"$/ do |path|
@@ -205,6 +220,13 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
   end
 end
 
+Given(/^the entity "([^"]*)" is in authority group "([^"]*)"$/) do |entity, group|
+  entity = Entity.find_by(name: entity)
+  ag = AuthorityGroup.find_by(name: group)
+  ag.entities << entity
+  ag.save
+end
+
 Then /^there should be "([^"]*)" "([^"]*)" entity in the database$/ do |num, kind|
   expect(Kind.find_by_name(kind).entities.count).to eql(num.to_i)
 end
@@ -224,18 +246,29 @@ end
 Given /^the relation "([^"]*)" between "([^"]*)" and "([^"]*)"$/ do |relation, from_kind, to_kind|
   step "the kind \"#{from_kind}\""
   step "the kind \"#{to_kind}\""
-  step "the relation \"#{relation}\""
   
   from_kind = Kind.find_by_name(from_kind.split('/').first)
   to_kind = Kind.find_by_name(to_kind.split('/').first)
-  relation = Relation.find_by_name(relation.split('/').first)
-  relation.from_kind_ids << from_kind.id
-  relation.to_kind_ids << to_kind.id
-  relation.save
+  name = relation.split('/').first
+  reverse_name = relation.split('/').last
+  Relation.find_by(
+    from_kind_id: from_kind.id,
+    name: name,
+    to_kind_id: to_kind.id
+  ) || Relation.find_by(
+    from_kind_id: to_kind.id,
+    reverse_name: name,
+    to_kind_id: from_kind.id
+  ) || FactoryGirl.create(:relation,
+    from_kind_id: from_kind.id,
+    name: name,
+    reverse_name: reverse_name,
+    to_kind_id: to_kind.id
+  )
 end
 
 Given /^the triple "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)"$/ do |from_kind, from_name, relation, to_kind, to_name|
-  step "the relation \"#{relation}\""
+  step "the relation \"#{relation}\" between \"#{from_kind}\" and \"#{to_kind}\""
   step "the entity \"#{from_name}\" of kind \"#{from_kind}\""
   step "the entity \"#{to_name}\" of kind \"#{to_kind}\""
   
@@ -301,20 +334,20 @@ Given /^there are "([^"]*)" entities named "([^"]*)" of kind "([^"]*)"$/ do |num
 end
 
 Given /^Mona Lisa and a medium as correctly related entities$/ do
-  step "the relation \"is shown by/shows\""
-  step "the entity \"Mona Lisa\" of kind \"Werk/Werke\""
+  step "the relation \"is shown by/shows\" between \"work/works\" and \"medium/media\""
+  step "the entity \"Mona Lisa\" of kind \"work/works\""
   step "the medium \"spec/fixtures/image_a.jpg\""
   
   medium = Kind.medium_kind.entities.first
   mona_lisa = Entity.find_by_name('Mona Lisa')
-
+  
   Relationship.relate_and_save(mona_lisa, "is shown by", medium)
 end
 
 Given /^Leonardo, Mona Lisa and a medium as correctly related entities$/ do
   step "Mona Lisa and a medium as correctly related entities"
-  step "the relation \"has created/has been created by\""
-  step "the entity \"Leonardo da Vinci\" of kind \"Person/Personen\""
+  step "the relation \"has created/has been created by\" between \"person/people\" and \"work/works\""
+  step "the entity \"Leonardo da Vinci\" of kind \"person/people\""
 
   leonardo = Entity.find_by_name('Leonardo da Vinci')
   mona_lisa = Entity.find_by_name('Mona Lisa')
@@ -323,10 +356,10 @@ Given /^Leonardo, Mona Lisa and a medium as correctly related entities$/ do
 end
 
 Given /^the entity "([^\"]*)" has ([0-9]+) relationships$/ do |name, amount|
-  step "the relation \"ist äquivalent zu/ist äquivalent zu\""
   entity = Entity.find_by_name(name)
   step "the entity \"Test Entity\" of kind \"#{entity.kind.name}/#{entity.kind.plural_name}\""
   test_entity = Entity.find_by_name("Test Entity")
+  step "the relation \"ist äquivalent zu/ist äquivalent zu\" between \"#{entity.kind.name}\" and \"#{test_entity.kind.name}\""
 
   amount.to_i.times do
     Relationship.relate_and_save(entity, "ist äquivalent zu", test_entity, ['Zusatzinformation'])
@@ -397,9 +430,37 @@ Given(/^there are "([^"]*)" media entities$/) do |amount|
   end
 end
 
+Given(/^the kind "([^"]*)" has identifier "([^"]*)" labelled "([^"]*)"$/) do |kind, field, label|
+  kind = Kind.find_by(name: kind)
+  kind.fields << Field.create(name: field, show_label: label, is_identifier: true)
+end
+
+Given(/^tagging is activated for kind "([^"]*)"$/) do |name|
+  kind = Kind.find_by(name: name)
+  binding.pry
+end
+
 Given(/^the relationship has a dating "([^"]*)"$/) do |dating|
   l, ds = dating.split('|')
   Relationship.last.update_attributes(
     datings_attributes: [{label: l, dating_string: ds}]
   )
+end
+
+Given(/^entity "([^"]*)" has dating "([^"]*)"$/) do |name, dating|
+  label, value = dating.split(/: ?/)
+  Entity.find_by(name: name).datings.create label: label, dating_string: value
+end
+
+Then(/^entity "([^"]*)" should (not )?have dating "([^"]*)"$/) do |name, negation, dating|
+  label, value = dating.split(/: ?/)
+  result = Entity.find_by(name: name).datings.any? do |d|
+    d.label == label && d.dating_string == value
+  end
+
+  if negation
+    expect(result).to be_falsey
+  else
+    expect(result).to be_truthy
+  end
 end

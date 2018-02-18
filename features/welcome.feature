@@ -55,6 +55,4 @@ Feature: Welcome
     And I should not see "Session"
     When I go to the entity page for "Mona Lisa"
     Then I should not see "Clipboard"
-    And I should not see "Session" within "#session_info"
     And I should not see link "Target"
-

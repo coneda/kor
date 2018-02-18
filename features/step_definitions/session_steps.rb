@@ -44,15 +44,11 @@ Given /^I log out$/ do
   step "I click element \"a[href='/logout']\""
 end
 
-When /^"([^\"]*)" is selected as current entity$/ do |name|
-  step "I mark \"#{name}\" as current entity"
-end
-
 When /^I mark "([^\"]*)" as current entity$/ do |name|
   step "I am on the entity page for \"#{name}\""
   step "I should see \"#{name}\""
   find("a[kor-to-current]").click
-  step "I should see \"has been marked as current entity\""
+  step "I should see a message containing \"has been marked as current entity\""
 end
 
 When(/^I put "(.*?)" into the clipboard$/) do |name|
@@ -60,7 +56,7 @@ When(/^I put "(.*?)" into the clipboard$/) do |name|
   step "I should see \"#{name}\""
   sleep 1
   find("a[kor-to-clipboard]").click
-  step "I should see \"has been copied to the clipboard\""
+  step "I should see a message containing \"has been copied to the clipboard\""
 end
 
 Given /^the session has expired$/ do
@@ -90,7 +86,7 @@ Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
     step "I should see \"#{entity.name}\""
     sleep 2
     find("a[kor-to-clipboard]").click
-    step "I should see \"has been copied to the clipboard\""
+    step "I should see a message containing \"has been copied to the clipboard\""
   end
 end
 

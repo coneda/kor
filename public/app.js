@@ -23,8 +23,8 @@
         }, readyRE = /complete|loaded|interactive/, simpleSelectorRE = /^[\w-]*$/, class2type = {}, toString = class2type.toString, zepto = {}, camelize, uniq, tempParent = document.createElement("div"), propMap = {
             tabindex: "tabIndex",
             readonly: "readOnly",
-            "for": "htmlFor",
-            "class": "className",
+            for: "htmlFor",
+            class: "className",
             maxlength: "maxLength",
             cellspacing: "cellSpacing",
             cellpadding: "cellPadding",
@@ -1342,6 +1342,189 @@
 })(Zepto);
 
 (function($) {
+    $.Callbacks = function(options) {
+        options = $.extend({}, options);
+        var memory, fired, firing, firingStart, firingLength, firingIndex, list = [], stack = !options.once && [], fire = function(data) {
+            memory = options.memory && data;
+            fired = true;
+            firingIndex = firingStart || 0;
+            firingStart = 0;
+            firingLength = list.length;
+            firing = true;
+            for (;list && firingIndex < firingLength; ++firingIndex) {
+                if (list[firingIndex].apply(data[0], data[1]) === false && options.stopOnFalse) {
+                    memory = false;
+                    break;
+                }
+            }
+            firing = false;
+            if (list) {
+                if (stack) stack.length && fire(stack.shift()); else if (memory) list.length = 0; else Callbacks.disable();
+            }
+        }, Callbacks = {
+            add: function() {
+                if (list) {
+                    var start = list.length, add = function(args) {
+                        $.each(args, function(_, arg) {
+                            if (typeof arg === "function") {
+                                if (!options.unique || !Callbacks.has(arg)) list.push(arg);
+                            } else if (arg && arg.length && typeof arg !== "string") add(arg);
+                        });
+                    };
+                    add(arguments);
+                    if (firing) firingLength = list.length; else if (memory) {
+                        firingStart = start;
+                        fire(memory);
+                    }
+                }
+                return this;
+            },
+            remove: function() {
+                if (list) {
+                    $.each(arguments, function(_, arg) {
+                        var index;
+                        while ((index = $.inArray(arg, list, index)) > -1) {
+                            list.splice(index, 1);
+                            if (firing) {
+                                if (index <= firingLength) --firingLength;
+                                if (index <= firingIndex) --firingIndex;
+                            }
+                        }
+                    });
+                }
+                return this;
+            },
+            has: function(fn) {
+                return !!(list && (fn ? $.inArray(fn, list) > -1 : list.length));
+            },
+            empty: function() {
+                firingLength = list.length = 0;
+                return this;
+            },
+            disable: function() {
+                list = stack = memory = undefined;
+                return this;
+            },
+            disabled: function() {
+                return !list;
+            },
+            lock: function() {
+                stack = undefined;
+                if (!memory) Callbacks.disable();
+                return this;
+            },
+            locked: function() {
+                return !stack;
+            },
+            fireWith: function(context, args) {
+                if (list && (!fired || stack)) {
+                    args = args || [];
+                    args = [ context, args.slice ? args.slice() : args ];
+                    if (firing) stack.push(args); else fire(args);
+                }
+                return this;
+            },
+            fire: function() {
+                return Callbacks.fireWith(this, arguments);
+            },
+            fired: function() {
+                return !!fired;
+            }
+        };
+        return Callbacks;
+    };
+})(Zepto);
+
+(function($) {
+    var slice = Array.prototype.slice;
+    function Deferred(func) {
+        var tuples = [ [ "resolve", "done", $.Callbacks({
+            once: 1,
+            memory: 1
+        }), "resolved" ], [ "reject", "fail", $.Callbacks({
+            once: 1,
+            memory: 1
+        }), "rejected" ], [ "notify", "progress", $.Callbacks({
+            memory: 1
+        }) ] ], state = "pending", promise = {
+            state: function() {
+                return state;
+            },
+            always: function() {
+                deferred.done(arguments).fail(arguments);
+                return this;
+            },
+            then: function() {
+                var fns = arguments;
+                return Deferred(function(defer) {
+                    $.each(tuples, function(i, tuple) {
+                        var fn = $.isFunction(fns[i]) && fns[i];
+                        deferred[tuple[1]](function() {
+                            var returned = fn && fn.apply(this, arguments);
+                            if (returned && $.isFunction(returned.promise)) {
+                                returned.promise().done(defer.resolve).fail(defer.reject).progress(defer.notify);
+                            } else {
+                                var context = this === promise ? defer.promise() : this, values = fn ? [ returned ] : arguments;
+                                defer[tuple[0] + "With"](context, values);
+                            }
+                        });
+                    });
+                    fns = null;
+                }).promise();
+            },
+            promise: function(obj) {
+                return obj != null ? $.extend(obj, promise) : promise;
+            }
+        }, deferred = {};
+        $.each(tuples, function(i, tuple) {
+            var list = tuple[2], stateString = tuple[3];
+            promise[tuple[1]] = list.add;
+            if (stateString) {
+                list.add(function() {
+                    state = stateString;
+                }, tuples[i ^ 1][2].disable, tuples[2][2].lock);
+            }
+            deferred[tuple[0]] = function() {
+                deferred[tuple[0] + "With"](this === deferred ? promise : this, arguments);
+                return this;
+            };
+            deferred[tuple[0] + "With"] = list.fireWith;
+        });
+        promise.promise(deferred);
+        if (func) func.call(deferred, deferred);
+        return deferred;
+    }
+    $.when = function(sub) {
+        var resolveValues = slice.call(arguments), len = resolveValues.length, i = 0, remain = len !== 1 || sub && $.isFunction(sub.promise) ? len : 0, deferred = remain === 1 ? sub : Deferred(), progressValues, progressContexts, resolveContexts, updateFn = function(i, ctx, val) {
+            return function(value) {
+                ctx[i] = this;
+                val[i] = arguments.length > 1 ? slice.call(arguments) : value;
+                if (val === progressValues) {
+                    deferred.notifyWith(ctx, val);
+                } else if (!--remain) {
+                    deferred.resolveWith(ctx, val);
+                }
+            };
+        };
+        if (len > 1) {
+            progressValues = new Array(len);
+            progressContexts = new Array(len);
+            resolveContexts = new Array(len);
+            for (;i < len; ++i) {
+                if (resolveValues[i] && $.isFunction(resolveValues[i].promise)) {
+                    resolveValues[i].promise().done(updateFn(i, resolveContexts, resolveValues)).fail(deferred.reject).progress(updateFn(i, progressContexts, progressValues));
+                } else {
+                    --remain;
+                }
+            }
+        }
+        if (!remain) deferred.resolveWith(resolveContexts, resolveValues);
+        return deferred.promise();
+    };
+    $.Deferred = Deferred;
+})(Zepto);
+
+(function($) {
     var slice = Array.prototype.slice;
     function Deferred(func) {
         var tuples = [ [ "resolve", "done", $.Callbacks({
@@ -1523,11 +1706,12 @@
 })(Zepto);
 
 (function(global, factory) {
-    typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define([ "exports" ], factory) : factory(global.riot = global.riot || {});
+    typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define([ "exports" ], factory) : factory(global.riot = {});
 })(this, function(exports) {
     "use strict";
     var __TAGS_CACHE = [];
     var __TAG_IMPL = {};
+    var YIELD_TAG = "yield";
     var GLOBAL_MIXIN = "__global_mixin";
     var ATTRS_PREFIX = "riot-";
     var REF_DIRECTIVES = [ "ref", "data-ref" ];
@@ -1537,63 +1721,28 @@
     var LOOP_NO_REORDER_DIRECTIVE = "no-reorder";
     var SHOW_DIRECTIVE = "show";
     var HIDE_DIRECTIVE = "hide";
+    var KEY_DIRECTIVE = "key";
+    var RIOT_EVENTS_KEY = "__riot-events__";
     var T_STRING = "string";
     var T_OBJECT = "object";
     var T_UNDEF = "undefined";
     var T_FUNCTION = "function";
     var XLINK_NS = "http://www.w3.org/1999/xlink";
+    var SVG_NS = "http://www.w3.org/2000/svg";
     var XLINK_REGEX = /^xlink:(\w+)/;
     var WIN = typeof window === T_UNDEF ? undefined : window;
     var RE_SPECIAL_TAGS = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/;
     var RE_SPECIAL_TAGS_NO_OPTION = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?)$/;
-    var RE_RESERVED_NAMES = /^(?:_(?:item|id|parent)|update|root|(?:un)?mount|mixin|is(?:Mounted|Loop)|tags|refs|parent|opts|trigger|o(?:n|ff|ne))$/;
+    var RE_EVENTS_PREFIX = /^on/;
     var RE_HTML_ATTRS = /([-\w]+) ?= ?(?:"([^"]*)|'([^']*)|({[^}]*}))/g;
     var CASE_SENSITIVE_ATTRIBUTES = {
-        viewbox: "viewBox"
+        viewbox: "viewBox",
+        preserveaspectratio: "preserveAspectRatio"
     };
     var RE_BOOL_ATTRS = /^(?:disabled|checked|readonly|required|allowfullscreen|auto(?:focus|play)|compact|controls|default|formnovalidate|hidden|ismap|itemscope|loop|multiple|muted|no(?:resize|shade|validate|wrap)?|open|reversed|seamless|selected|sortable|truespeed|typemustmatch)$/;
     var IE_VERSION = (WIN && WIN.document || {}).documentMode | 0;
-    function isBoolAttr(value) {
-        return RE_BOOL_ATTRS.test(value);
-    }
-    function isFunction(value) {
-        return typeof value === T_FUNCTION;
-    }
-    function isObject(value) {
-        return value && typeof value === T_OBJECT;
-    }
-    function isUndefined(value) {
-        return typeof value === T_UNDEF;
-    }
-    function isString(value) {
-        return typeof value === T_STRING;
-    }
-    function isBlank(value) {
-        return isUndefined(value) || value === null || value === "";
-    }
-    function isArray(value) {
-        return Array.isArray(value) || value instanceof Array;
-    }
-    function isWritable(obj, key) {
-        var descriptor = Object.getOwnPropertyDescriptor(obj, key);
-        return isUndefined(obj[key]) || descriptor && descriptor.writable;
-    }
-    function isReservedName(value) {
-        return RE_RESERVED_NAMES.test(value);
-    }
-    var check = Object.freeze({
-        isBoolAttr: isBoolAttr,
-        isFunction: isFunction,
-        isObject: isObject,
-        isUndefined: isUndefined,
-        isString: isString,
-        isBlank: isBlank,
-        isArray: isArray,
-        isWritable: isWritable,
-        isReservedName: isReservedName
-    });
     function $$(selector, ctx) {
-        return (ctx || document).querySelectorAll(selector);
+        return [].slice.call((ctx || document).querySelectorAll(selector));
     }
     function $(selector, ctx) {
         return (ctx || document).querySelector(selector);
@@ -1604,20 +1753,32 @@
     function createDOMPlaceholder() {
         return document.createTextNode("");
     }
-    function mkEl(name) {
-        return document.createElement(name);
+    function isSvg(el) {
+        var owner = el.ownerSVGElement;
+        return !!owner || owner === null;
     }
-    function setInnerHTML(container, html) {
-        if (!isUndefined(container.innerHTML)) {
-            container.innerHTML = html;
-        } else {
-            var doc = new DOMParser().parseFromString(html, "application/xml");
-            var node = container.ownerDocument.importNode(doc.documentElement, true);
+    function mkEl(name) {
+        return name === "svg" ? document.createElementNS(SVG_NS, name) : document.createElement(name);
+    }
+    function setInnerHTML(container, html, isSvg) {
+        if (isSvg) {
+            var node = container.ownerDocument.importNode(new DOMParser().parseFromString('<svg xmlns="' + SVG_NS + '">' + html + "</svg>", "application/xml").documentElement, true);
             container.appendChild(node);
+        } else {
+            container.innerHTML = html;
         }
+    }
+    function toggleVisibility(dom, show) {
+        dom.style.display = show ? "" : "none";
+        dom.hidden = show ? false : true;
     }
     function remAttr(dom, name) {
         dom.removeAttribute(name);
+    }
+    function styleObjectToString(style) {
+        return Object.keys(style).reduce(function(acc, prop) {
+            return acc + " " + prop + ": " + style[prop] + ";";
+        }, "");
     }
     function getAttr(dom, name) {
         return dom.getAttribute(name);
@@ -1662,9 +1823,12 @@
         $: $,
         createFrag: createFrag,
         createDOMPlaceholder: createDOMPlaceholder,
+        isSvg: isSvg,
         mkEl: mkEl,
         setInnerHTML: setInnerHTML,
+        toggleVisibility: toggleVisibility,
         remAttr: remAttr,
+        styleObjectToString: styleObjectToString,
         getAttr: getAttr,
         setAttr: setAttr,
         safeInsert: safeInsert,
@@ -1679,15 +1843,15 @@
     if (WIN) {
         styleNode = function() {
             var newNode = mkEl("style");
-            setAttr(newNode, "type", "text/css");
             var userNode = $("style[type=riot]");
+            setAttr(newNode, "type", "text/css");
             if (userNode) {
                 if (userNode.id) {
                     newNode.id = userNode.id;
                 }
                 userNode.parentNode.replaceChild(newNode, userNode);
             } else {
-                document.getElementsByTagName("head")[0].appendChild(newNode);
+                document.head.appendChild(newNode);
             }
             return newNode;
         }();
@@ -1718,13 +1882,56 @@
             }
         }
     };
+    var skipRegex = function() {
+        var beforeReChars = "[{(,;:?=|&!^~>%*/";
+        var beforeReWords = [ "case", "default", "do", "else", "in", "instanceof", "prefix", "return", "typeof", "void", "yield" ];
+        var wordsLastChar = beforeReWords.reduce(function(s, w) {
+            return s + w.slice(-1);
+        }, "");
+        var RE_REGEX = /^\/(?=[^*>/])[^[/\\]*(?:(?:\\.|\[(?:\\.|[^\]\\]*)*\])[^[\\/]*)*?\/[gimuy]*/;
+        var RE_VN_CHAR = /[$\w]/;
+        function prev(code, pos) {
+            while (--pos >= 0 && /\s/.test(code[pos])) {}
+            return pos;
+        }
+        function _skipRegex(code, start) {
+            var re = /.*/g;
+            var pos = re.lastIndex = start++;
+            var match = re.exec(code)[0].match(RE_REGEX);
+            if (match) {
+                var next = pos + match[0].length;
+                pos = prev(code, pos);
+                var c = code[pos];
+                if (pos < 0 || ~beforeReChars.indexOf(c)) {
+                    return next;
+                }
+                if (c === ".") {
+                    if (code[pos - 1] === ".") {
+                        start = next;
+                    }
+                } else if (c === "+" || c === "-") {
+                    if (code[--pos] !== c || (pos = prev(code, pos)) < 0 || !RE_VN_CHAR.test(code[pos])) {
+                        start = next;
+                    }
+                } else if (~wordsLastChar.indexOf(c)) {
+                    var end = pos + 1;
+                    while (--pos >= 0 && RE_VN_CHAR.test(code[pos])) {}
+                    if (~beforeReWords.indexOf(code.slice(pos + 1, end))) {
+                        start = next;
+                    }
+                }
+            }
+            return start;
+        }
+        return _skipRegex;
+    }();
     var brackets = function(UNDEF) {
-        var REGLOB = "g", R_MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g, R_STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'|`[^`\\]*(?:\\[\S\s][^`\\]*)*`/g, S_QBLOCKS = R_STRINGS.source + "|" + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + "|" + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source, UNSUPPORTED = RegExp("[\\" + "x00-\\x1F<>a-zA-Z0-9'\",;\\\\]"), NEED_ESCAPE = /(?=[[\]()*+?.^$|])/g, FINDBRACES = {
-            "(": RegExp("([()])|" + S_QBLOCKS, REGLOB),
-            "[": RegExp("([[\\]])|" + S_QBLOCKS, REGLOB),
-            "{": RegExp("([{}])|" + S_QBLOCKS, REGLOB)
+        var REGLOB = "g", R_MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g, R_STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'|`[^`\\]*(?:\\[\S\s][^`\\]*)*`/g, S_QBLOCKS = R_STRINGS.source + "|" + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + "|" + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?([^<]\/)[gim]*/.source, UNSUPPORTED = RegExp("[\\" + "x00-\\x1F<>a-zA-Z0-9'\",;\\\\]"), NEED_ESCAPE = /(?=[[\]()*+?.^$|])/g, S_QBLOCK2 = R_STRINGS.source + "|" + /(\/)(?![*\/])/.source, FINDBRACES = {
+            "(": RegExp("([()])|" + S_QBLOCK2, REGLOB),
+            "[": RegExp("([[\\]])|" + S_QBLOCK2, REGLOB),
+            "{": RegExp("([{}])|" + S_QBLOCK2, REGLOB)
         }, DEFAULT = "{ }";
-        var _pairs = [ "{", "}", "{", "}", /{[^}]*}/, /\\([{}])/g, /\\({)|{/g, RegExp("\\\\(})|([[({])|(})|" + S_QBLOCKS, REGLOB), DEFAULT, /^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/, /(^|[^\\]){=[\S\s]*?}/ ];
+        var _pairs = [ "{", "}", "{", "}", /{[^}]*}/, /\\([{}])/g, /\\({)|{/g, RegExp("\\\\(})|([[({])|(})|" + S_QBLOCK2, REGLOB), DEFAULT, /^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/, /(^|[^\\]){=[\S\s]*?}/ ];
         var cachedBrackets = UNDEF, _regex, _cache = [], _settings;
         function _loopback(re) {
             return re;
@@ -1747,7 +1954,7 @@
             arr[4] = _rewrite(arr[1].length > 1 ? /{[\S\s]*?}/ : _pairs[4], arr);
             arr[5] = _rewrite(pair.length > 3 ? /\\({|})/g : _pairs[5], arr);
             arr[6] = _rewrite(_pairs[6], arr);
-            arr[7] = RegExp("\\\\(" + arr[3] + ")|([[({])|(" + arr[3] + ")|" + S_QBLOCKS, REGLOB);
+            arr[7] = RegExp("\\\\(" + arr[3] + ")|([[({])|(" + arr[3] + ")|" + S_QBLOCK2, REGLOB);
             arr[8] = pair;
             return arr;
         }
@@ -1759,15 +1966,35 @@
                 _bp = _cache;
             }
             var parts = [], match, isexpr, start, pos, re = _bp[6];
+            var qblocks = [];
+            var prevStr = "";
+            var mark, lastIndex;
             isexpr = start = re.lastIndex = 0;
             while (match = re.exec(str)) {
+                lastIndex = re.lastIndex;
                 pos = match.index;
                 if (isexpr) {
                     if (match[2]) {
-                        re.lastIndex = skipBraces(str, match[2], re.lastIndex);
+                        var ch = match[2];
+                        var rech = FINDBRACES[ch];
+                        var ix = 1;
+                        rech.lastIndex = lastIndex;
+                        while (match = rech.exec(str)) {
+                            if (match[1]) {
+                                if (match[1] === ch) {
+                                    ++ix;
+                                } else if (!--ix) {
+                                    break;
+                                }
+                            } else {
+                                rech.lastIndex = pushQBlock(match.index, rech.lastIndex, match[2]);
+                            }
+                        }
+                        re.lastIndex = ix ? str.length : rech.lastIndex;
                         continue;
                     }
                     if (!match[3]) {
+                        re.lastIndex = pushQBlock(pos, lastIndex, match[4]);
                         continue;
                     }
                 }
@@ -1781,24 +2008,30 @@
             if (str && start < str.length) {
                 unescapeStr(str.slice(start));
             }
+            parts.qblocks = qblocks;
             return parts;
             function unescapeStr(s) {
+                if (prevStr) {
+                    s = prevStr + s;
+                    prevStr = "";
+                }
                 if (tmpl || isexpr) {
                     parts.push(s && s.replace(_bp[5], "$1"));
                 } else {
                     parts.push(s);
                 }
             }
-            function skipBraces(s, ch, ix) {
-                var match, recch = FINDBRACES[ch];
-                recch.lastIndex = ix;
-                ix = 1;
-                while (match = recch.exec(s)) {
-                    if (match[1] && !(match[1] === ch ? ++ix : --ix)) {
-                        break;
-                    }
+            function pushQBlock(_pos, _lastIndex, slash) {
+                if (slash) {
+                    _lastIndex = skipRegex(str, _pos);
                 }
-                return ix ? s.length : recch.lastIndex;
+                if (tmpl && _lastIndex > _pos + 2) {
+                    mark = "⁗" + qblocks.length + "~";
+                    qblocks.push(str.slice(_pos, _lastIndex));
+                    prevStr += str.slice(start, _pos) + mark;
+                    start = _lastIndex;
+                }
+                return _lastIndex;
             }
         };
         _brackets.hasExpr = function hasExpr(str) {
@@ -1847,9 +2080,11 @@
         });
         _brackets.settings = typeof riot !== "undefined" && riot.settings || {};
         _brackets.set = _reset;
+        _brackets.skipRegex = skipRegex;
         _brackets.R_STRINGS = R_STRINGS;
         _brackets.R_MLCOMMS = R_MLCOMMS;
         _brackets.S_QBLOCKS = S_QBLOCKS;
+        _brackets.S_QBLOCK2 = S_QBLOCK2;
         return _brackets;
     }();
     var tmpl = function() {
@@ -1858,7 +2093,10 @@
             if (!str) {
                 return str;
             }
-            return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr);
+            return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr.bind({
+                data: data,
+                tmpl: str
+            }));
         }
         _tmpl.hasExpr = brackets.hasExpr;
         _tmpl.loopKeys = brackets.loopKeys;
@@ -1874,10 +2112,9 @@
             if (_tmpl.errorHandler) {
                 _tmpl.errorHandler(err);
             } else if (typeof console !== "undefined" && typeof console.error === "function") {
-                if (err.riotData.tagName) {
-                    console.error("Riot template error thrown in the <%s> tag", err.riotData.tagName);
-                }
-                console.error(err);
+                console.error(err.message);
+                console.log("<%s> %s", err.riotData.tagName || "Unknown tag", this.tmpl);
+                console.log(this.data);
             }
         }
         function _create(str) {
@@ -1887,9 +2124,12 @@
             }
             return new Function("E", expr + ";");
         }
-        var CH_IDEXPR = String.fromCharCode(8279), RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/, RE_QBLOCK = RegExp(brackets.S_QBLOCKS, "g"), RE_DQUOTE = /\u2057/g, RE_QBMARK = /\u2057(\d+)~/g;
+        var RE_DQUOTE = /\u2057/g;
+        var RE_QBMARK = /\u2057(\d+)~/g;
         function _getTmpl(str) {
-            var qstr = [], expr, parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1);
+            var parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1);
+            var qstr = parts.qblocks;
+            var expr;
             if (parts.length > 2 || parts[0]) {
                 var i, j, list = [];
                 for (i = j = 0; i < parts.length; ++i) {
@@ -1902,22 +2142,21 @@
             } else {
                 expr = _parseExpr(parts[1], 0, qstr);
             }
-            if (qstr[0]) {
+            if (qstr.length) {
                 expr = expr.replace(RE_QBMARK, function(_, pos) {
                     return qstr[pos].replace(/\r/g, "\\r").replace(/\n/g, "\\n");
                 });
             }
             return expr;
         }
+        var RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/;
         var RE_BREND = {
             "(": /[()]/g,
             "[": /[[\]]/g,
             "{": /[{}]/g
         };
         function _parseExpr(expr, asText, qstr) {
-            expr = expr.replace(RE_QBLOCK, function(s, div) {
-                return s.length > 2 && !div ? CH_IDEXPR + (qstr.push(s) - 1) + "~" : s;
-            }).replace(/\s+/g, " ").trim().replace(/\ ?([[\({},?\.:])\ ?/g, "$1");
+            expr = expr.replace(/\s+/g, " ").trim().replace(/\ ?([[\({},?\.:])\ ?/g, "$1");
             if (expr) {
                 var list = [], cnt = 0, match;
                 while (expr && (match = expr.match(RE_CSNAME)) && !match.index) {
@@ -1974,7 +2213,7 @@
             }
             return expr;
         }
-        _tmpl.version = brackets.version = "v3.0.3";
+        _tmpl.version = brackets.version = "v3.0.8";
         return _tmpl;
     }();
     var observable$1 = function(el) {
@@ -2049,10 +2288,49 @@
         });
         return el;
     };
+    function isBoolAttr(value) {
+        return RE_BOOL_ATTRS.test(value);
+    }
+    function isFunction(value) {
+        return typeof value === T_FUNCTION;
+    }
+    function isObject(value) {
+        return value && typeof value === T_OBJECT;
+    }
+    function isUndefined(value) {
+        return typeof value === T_UNDEF;
+    }
+    function isString(value) {
+        return typeof value === T_STRING;
+    }
+    function isBlank(value) {
+        return isNil(value) || value === "";
+    }
+    function isNil(value) {
+        return isUndefined(value) || value === null;
+    }
+    function isArray(value) {
+        return Array.isArray(value) || value instanceof Array;
+    }
+    function isWritable(obj, key) {
+        var descriptor = getPropDescriptor(obj, key);
+        return isUndefined(obj[key]) || descriptor && descriptor.writable;
+    }
+    var check = Object.freeze({
+        isBoolAttr: isBoolAttr,
+        isFunction: isFunction,
+        isObject: isObject,
+        isUndefined: isUndefined,
+        isString: isString,
+        isBlank: isBlank,
+        isNil: isNil,
+        isArray: isArray,
+        isWritable: isWritable
+    });
     function each(list, fn) {
         var len = list ? list.length : 0;
         var i = 0;
-        for (;i < len; ++i) {
+        for (;i < len; i++) {
             fn(list[i], i);
         }
         return list;
@@ -2077,9 +2355,26 @@
         }, options));
         return el;
     }
+    var uid = function() {
+        var i = -1;
+        return function() {
+            return ++i;
+        };
+    }();
+    function warn(message) {
+        if (console && console.warn) {
+            console.warn(message);
+        }
+    }
+    var getPropDescriptor = function(o, k) {
+        return Object.getOwnPropertyDescriptor(o, k);
+    };
     function extend(src) {
-        var obj, args = arguments;
-        for (var i = 1; i < args.length; ++i) {
+        var obj;
+        var i = 1;
+        var args = arguments;
+        var l = args.length;
+        for (;i < l; i++) {
             if (obj = args[i]) {
                 for (var key in obj) {
                     if (isWritable(src, key)) {
@@ -2096,14 +2391,18 @@
         toCamel: toCamel,
         startsWith: startsWith,
         defineProperty: defineProperty,
+        uid: uid,
+        warn: warn,
+        getPropDescriptor: getPropDescriptor,
         extend: extend
     });
     var settings$1 = extend(Object.create(brackets.settings), {
-        skipAnonymousTags: true
+        skipAnonymousTags: true,
+        autoUpdate: true
     });
-    var EVENTS_PREFIX_REGEX = /^on/;
     function handleEvent(dom, handler, e) {
-        var ptag = this.__.parent, item = this.__.item;
+        var ptag = this.__.parent;
+        var item = this.__.item;
         if (!item) {
             while (ptag && !item) {
                 item = ptag.__.item;
@@ -2121,6 +2420,9 @@
         }
         e.item = item;
         handler.call(this, e);
+        if (!settings$1.autoUpdate) {
+            return;
+        }
         if (!e.preventUpdate) {
             var p = getImmediateCustomParentTag(this);
             if (p.isMounted) {
@@ -2129,68 +2431,92 @@
         }
     }
     function setEventHandler(name, handler, dom, tag) {
-        var eventName, cb = handleEvent.bind(tag, dom, handler);
+        var eventName;
+        var cb = handleEvent.bind(tag, dom, handler);
         dom[name] = null;
-        eventName = name.replace(EVENTS_PREFIX_REGEX, "");
-        if (!dom._riotEvents) {
-            dom._riotEvents = {};
+        eventName = name.replace(RE_EVENTS_PREFIX, "");
+        if (!contains(tag.__.listeners, dom)) {
+            tag.__.listeners.push(dom);
         }
-        if (dom._riotEvents[name]) {
-            dom.removeEventListener(eventName, dom._riotEvents[name]);
+        if (!dom[RIOT_EVENTS_KEY]) {
+            dom[RIOT_EVENTS_KEY] = {};
         }
-        dom._riotEvents[name] = cb;
+        if (dom[RIOT_EVENTS_KEY][name]) {
+            dom.removeEventListener(eventName, dom[RIOT_EVENTS_KEY][name]);
+        }
+        dom[RIOT_EVENTS_KEY][name] = cb;
         dom.addEventListener(eventName, cb, false);
     }
-    function updateDataIs(expr, parent) {
-        var tagName = tmpl(expr.value, parent), conf, isVirtual, head, ref;
-        if (expr.tag && expr.tagName === tagName) {
-            expr.tag.update();
+    function updateDataIs(expr, parent, tagName) {
+        var tag = expr.tag || expr.dom._tag;
+        var ref;
+        var ref$1 = tag ? tag.__ : {};
+        var head = ref$1.head;
+        var isVirtual = expr.dom.tagName === "VIRTUAL";
+        if (tag && expr.tagName === tagName) {
+            tag.update();
             return;
         }
-        isVirtual = expr.dom.tagName === "VIRTUAL";
-        if (expr.tag) {
+        if (tag) {
             if (isVirtual) {
-                head = expr.tag.__.head;
                 ref = createDOMPlaceholder();
                 head.parentNode.insertBefore(ref, head);
             }
-            expr.tag.unmount(true);
+            tag.unmount(true);
+        }
+        if (!isString(tagName)) {
+            return;
         }
         expr.impl = __TAG_IMPL[tagName];
-        conf = {
+        if (!expr.impl) {
+            return;
+        }
+        expr.tag = tag = initChildTag(expr.impl, {
             root: expr.dom,
             parent: parent,
-            hasImpl: true,
             tagName: tagName
-        };
-        expr.tag = initChildTag(expr.impl, conf, expr.dom.innerHTML, parent);
+        }, expr.dom.innerHTML, parent);
         each(expr.attrs, function(a) {
-            return setAttr(expr.tag.root, a.name, a.value);
+            return setAttr(tag.root, a.name, a.value);
         });
         expr.tagName = tagName;
-        expr.tag.mount();
+        tag.mount();
         if (isVirtual) {
-            makeReplaceVirtual(expr.tag, ref || expr.tag.root);
+            makeReplaceVirtual(tag, ref || tag.root);
         }
         parent.__.onUnmount = function() {
-            var delName = expr.tag.opts.dataIs, tags = expr.tag.parent.tags, _tags = expr.tag.__.parent.tags;
-            arrayishRemove(tags, delName, expr.tag);
-            arrayishRemove(_tags, delName, expr.tag);
-            expr.tag.unmount();
+            var delName = tag.opts.dataIs;
+            arrayishRemove(tag.parent.tags, delName, tag);
+            arrayishRemove(tag.__.parent.tags, delName, tag);
+            tag.unmount();
         };
+    }
+    function normalizeAttrName(attrName) {
+        if (!attrName) {
+            return null;
+        }
+        attrName = attrName.replace(ATTRS_PREFIX, "");
+        if (CASE_SENSITIVE_ATTRIBUTES[attrName]) {
+            attrName = CASE_SENSITIVE_ATTRIBUTES[attrName];
+        }
+        return attrName;
     }
     function updateExpression(expr) {
         if (this.root && getAttr(this.root, "virtualized")) {
             return;
         }
-        var dom = expr.dom, attrName = expr.attr, isToggle = contains([ SHOW_DIRECTIVE, HIDE_DIRECTIVE ], attrName), value = tmpl(expr.expr, this), isValueAttr = attrName === "riot-value", isVirtual = expr.root && expr.root.tagName === "VIRTUAL", parent = dom && (expr.parent || dom.parentNode), old;
-        if (expr.bool) {
-            value = value ? attrName : false;
-        } else if (isUndefined(value) || value === null) {
-            value = "";
-        }
+        var dom = expr.dom;
+        var attrName = normalizeAttrName(expr.attr);
+        var isToggle = contains([ SHOW_DIRECTIVE, HIDE_DIRECTIVE ], attrName);
+        var isVirtual = expr.root && expr.root.tagName === "VIRTUAL";
+        var ref = this.__;
+        var isAnonymous = ref.isAnonymous;
+        var parent = dom && (expr.parent || dom.parentNode);
+        var isStyleAttr = attrName === "style";
+        var isClassAttr = attrName === "class";
+        var value;
         if (expr._riot_id) {
-            if (expr.isMounted) {
+            if (expr.__.wasCreated) {
                 expr.update();
             } else {
                 expr.mount();
@@ -2200,20 +2526,39 @@
             }
             return;
         }
-        old = expr.value;
-        expr.value = value;
         if (expr.update) {
-            expr.update();
+            return expr.update();
+        }
+        var context = isToggle && !isAnonymous ? inheritParentProps.call(this) : this;
+        value = tmpl(expr.expr, context);
+        var hasValue = !isBlank(value);
+        var isObj = isObject(value);
+        if (isObj) {
+            if (isClassAttr) {
+                value = tmpl(JSON.stringify(value), this);
+            } else if (isStyleAttr) {
+                value = styleObjectToString(value);
+            }
+        }
+        if (expr.attr && (!expr.wasParsedOnce || !hasValue || value === false)) {
+            remAttr(dom, getAttr(dom, expr.attr) ? expr.attr : attrName);
+        }
+        if (expr.bool) {
+            value = value ? attrName : false;
+        }
+        if (expr.isRtag) {
+            return updateDataIs(expr, this, value);
+        }
+        if (expr.wasParsedOnce && expr.value === value) {
             return;
         }
-        if (expr.isRtag && value) {
-            return updateDataIs(expr, this);
-        }
-        if (old === value) {
+        expr.value = value;
+        expr.wasParsedOnce = true;
+        if (isObj && !isClassAttr && !isStyleAttr && !isToggle) {
             return;
         }
-        if (isValueAttr && dom.value === value) {
-            return;
+        if (!hasValue) {
+            value = "";
         }
         if (!attrName) {
             value += "";
@@ -2230,36 +2575,21 @@
             }
             return;
         }
-        if (!expr.isAttrRemoved || !value) {
-            remAttr(dom, attrName);
-            expr.isAttrRemoved = true;
-        }
         if (isFunction(value)) {
             setEventHandler(attrName, value, dom, this);
         } else if (isToggle) {
-            if (attrName === HIDE_DIRECTIVE) {
-                value = !value;
-            }
-            dom.style.display = value ? "" : "none";
-        } else if (isValueAttr) {
-            dom.value = value;
-        } else if (startsWith(attrName, ATTRS_PREFIX) && attrName !== IS_DIRECTIVE) {
-            attrName = attrName.slice(ATTRS_PREFIX.length);
-            if (CASE_SENSITIVE_ATTRIBUTES[attrName]) {
-                attrName = CASE_SENSITIVE_ATTRIBUTES[attrName];
-            }
-            if (value != null) {
-                setAttr(dom, attrName, value);
-            }
+            toggleVisibility(dom, attrName === HIDE_DIRECTIVE ? !value : value);
         } else {
             if (expr.bool) {
                 dom[attrName] = value;
-                if (!value) {
-                    return;
-                }
             }
-            if (value === 0 || value && typeof value !== T_OBJECT) {
+            if (attrName === "value" && dom.value !== value) {
+                dom.value = value;
+            } else if (hasValue && value !== false) {
                 setAttr(dom, attrName, value);
+            }
+            if (isStyleAttr && dom.hidden) {
+                toggleVisibility(dom, false);
             }
         }
     }
@@ -2271,7 +2601,7 @@
             remAttr(dom, CONDITIONAL_DIRECTIVE);
             this.tag = tag;
             this.expr = expr;
-            this.stub = document.createTextNode("");
+            this.stub = createDOMPlaceholder();
             this.pristine = dom;
             var p = dom.parentNode;
             p.insertBefore(this.stub, dom);
@@ -2279,13 +2609,12 @@
             return this;
         },
         update: function update() {
-            var newValue = tmpl(this.expr, this.tag);
-            if (newValue && !this.current) {
+            this.value = tmpl(this.expr, this.tag);
+            if (this.value && !this.current) {
                 this.current = this.pristine.cloneNode(true);
                 this.stub.parentNode.insertBefore(this.current, this.stub);
-                this.expressions = [];
-                parseExpressions.apply(this.tag, [ this.current, this.expressions, true ]);
-            } else if (!newValue && this.current) {
+                this.expressions = parseExpressions.apply(this.tag, [ this.current, true ]);
+            } else if (!this.value && this.current) {
                 unmountAll(this.expressions);
                 if (this.current._tag) {
                     this.current._tag.unmount();
@@ -2295,15 +2624,12 @@
                 this.current = null;
                 this.expressions = [];
             }
-            if (newValue) {
+            if (this.value) {
                 updateAllExpressions.call(this.tag, this.expressions);
             }
         },
         unmount: function unmount() {
             unmountAll(this.expressions || []);
-            delete this.pristine;
-            delete this.parentNode;
-            delete this.stub;
         }
     };
     var RefExpr = {
@@ -2313,32 +2639,29 @@
             this.rawValue = attrValue;
             this.parent = parent;
             this.hasExp = tmpl.hasExpr(attrValue);
-            this.firstRun = true;
             return this;
         },
         update: function update() {
-            var value = this.rawValue;
-            if (this.hasExp) {
-                value = tmpl(this.rawValue, this.parent);
-            }
-            if (!this.firstRun && value === this.value) {
-                return;
-            }
+            var old = this.value;
             var customParent = this.parent && getImmediateCustomParentTag(this.parent);
-            var tagOrDom = this.tag || this.dom;
-            if (!isBlank(this.value) && customParent) {
-                arrayishRemove(customParent.refs, this.value, tagOrDom);
+            var tagOrDom = this.dom.__ref || this.tag || this.dom;
+            this.value = this.hasExp ? tmpl(this.rawValue, this.parent) : this.rawValue;
+            if (!isBlank(old) && customParent) {
+                arrayishRemove(customParent.refs, old, tagOrDom);
             }
-            if (isBlank(value)) {
-                remAttr(this.dom, this.attr);
-            } else {
+            if (!isBlank(this.value) && isString(this.value)) {
                 if (customParent) {
-                    arrayishAdd(customParent.refs, value, tagOrDom, null, this.parent.__.index);
+                    arrayishAdd(customParent.refs, this.value, tagOrDom, null, this.parent.__.index);
                 }
-                setAttr(this.dom, this.attr, value);
+                if (this.value !== old) {
+                    setAttr(this.dom, this.attr, this.value);
+                }
+            } else {
+                remAttr(this.dom, this.attr);
             }
-            this.value = value;
-            this.firstRun = false;
+            if (!this.dom.__ref) {
+                this.dom.__ref = tagOrDom;
+            }
         },
         unmount: function unmount() {
             var tagOrDom = this.tag || this.dom;
@@ -2346,8 +2669,6 @@
             if (!isBlank(this.value) && customParent) {
                 arrayishRemove(customParent.refs, this.value, tagOrDom);
             }
-            delete this.dom;
-            delete this.parent;
         }
     };
     function mkitem(expr, key, val, base) {
@@ -2359,7 +2680,8 @@
         return item;
     }
     function unmountRedundant(items, tags) {
-        var i = tags.length, j = items.length;
+        var i = tags.length;
+        var j = items.length;
         while (i > j) {
             i--;
             remove.apply(tags[i], [ tags, i ]);
@@ -2397,9 +2719,31 @@
             root.appendChild(this.root);
         }
     }
+    function getItemId(keyAttr, originalItem, keyedItem, hasKeyAttrExpr) {
+        if (keyAttr) {
+            return hasKeyAttrExpr ? tmpl(keyAttr, keyedItem) : originalItem[keyAttr];
+        }
+        return originalItem;
+    }
     function _each(dom, parent, expr) {
+        var mustReorder = typeof getAttr(dom, LOOP_NO_REORDER_DIRECTIVE) !== T_STRING || remAttr(dom, LOOP_NO_REORDER_DIRECTIVE);
+        var keyAttr = getAttr(dom, KEY_DIRECTIVE);
+        var hasKeyAttrExpr = keyAttr ? tmpl.hasExpr(keyAttr) : false;
+        var tagName = getTagName(dom);
+        var impl = __TAG_IMPL[tagName];
+        var parentNode = dom.parentNode;
+        var placeholder = createDOMPlaceholder();
+        var child = getTag(dom);
+        var ifExpr = getAttr(dom, CONDITIONAL_DIRECTIVE);
+        var tags = [];
+        var isLoop = true;
+        var innerHTML = dom.innerHTML;
+        var isAnonymous = !__TAG_IMPL[tagName];
+        var isVirtual = dom.tagName === "VIRTUAL";
+        var oldItems = [];
+        var hasKeys;
         remAttr(dom, LOOP_DIRECTIVE);
-        var mustReorder = typeof getAttr(dom, LOOP_NO_REORDER_DIRECTIVE) !== T_STRING || remAttr(dom, LOOP_NO_REORDER_DIRECTIVE), tagName = getTagName(dom), impl = __TAG_IMPL[tagName], parentNode = dom.parentNode, placeholder = createDOMPlaceholder(), child = getTag(dom), ifExpr = getAttr(dom, CONDITIONAL_DIRECTIVE), tags = [], oldItems = [], hasKeys, isLoop = true, isAnonymous = !__TAG_IMPL[tagName], isVirtual = dom.tagName === "VIRTUAL";
+        remAttr(dom, KEY_DIRECTIVE);
         expr = tmpl.loopKeys(expr);
         expr.isLoop = true;
         if (ifExpr) {
@@ -2408,7 +2752,15 @@
         parentNode.insertBefore(placeholder, dom);
         parentNode.removeChild(dom);
         expr.update = function updateEach() {
-            var items = tmpl(expr.val, parent), frag = createFrag(), isObject$$1 = !isArray(items) && !isString(items), root = placeholder.parentNode;
+            expr.value = tmpl(expr.val, parent);
+            var items = expr.value;
+            var frag = createFrag();
+            var isObject$$1 = !isArray(items) && !isString(items);
+            var root = placeholder.parentNode;
+            var tmpItems = [];
+            if (!root) {
+                return;
+            }
             if (isObject$$1) {
                 hasKeys = items || false;
                 items = hasKeys ? Object.keys(items).map(function(key) {
@@ -2425,11 +2777,18 @@
                     return !!tmpl(ifExpr, extend(Object.create(parent), item));
                 });
             }
-            each(items, function(item, i) {
-                var doReorder = mustReorder && typeof item === T_OBJECT && !hasKeys, oldPos = oldItems.indexOf(item), isNew = oldPos === -1, pos = !isNew && doReorder ? oldPos : i, tag = tags[pos], mustAppend = i >= oldItems.length, mustCreate = doReorder && isNew || !doReorder && !tag;
-                item = !hasKeys && expr.key ? mkitem(expr, item, i) : item;
+            each(items, function(_item, i) {
+                var item = !hasKeys && expr.key ? mkitem(expr, _item, i) : _item;
+                var itemId = getItemId(keyAttr, _item, item, hasKeyAttrExpr);
+                var doReorder = mustReorder && typeof _item === T_OBJECT && !hasKeys;
+                var oldPos = oldItems.indexOf(itemId);
+                var isNew = oldPos === -1;
+                var pos = !isNew && doReorder ? oldPos : i;
+                var tag = tags[pos];
+                var mustAppend = i >= oldItems.length;
+                var mustCreate = doReorder && isNew || !doReorder && !tag;
                 if (mustCreate) {
-                    tag = new Tag$1(impl, {
+                    tag = createTag(impl, {
                         parent: parent,
                         isLoop: isLoop,
                         isAnonymous: isAnonymous,
@@ -2437,7 +2796,7 @@
                         root: dom.cloneNode(isAnonymous),
                         item: item,
                         index: i
-                    }, dom.innerHTML);
+                    }, innerHTML);
                     tag.mount();
                     if (mustAppend) {
                         append.apply(tag, [ frag || root, isVirtual ]);
@@ -2452,7 +2811,7 @@
                         arrayishAdd(parent.tags, tagName, tag, true);
                     }
                 } else if (pos !== i && doReorder) {
-                    if (contains(items, oldItems[pos])) {
+                    if (keyAttr || contains(items, oldItems[pos])) {
                         move.apply(tag, [ root, tags[i], isVirtual ]);
                         tags.splice(i, 0, tags.splice(pos, 1)[0]);
                         oldItems.splice(i, 0, oldItems.splice(pos, 1)[0]);
@@ -2467,12 +2826,13 @@
                 tag.__.item = item;
                 tag.__.index = i;
                 tag.__.parent = parent;
+                tmpItems[i] = itemId;
                 if (!mustCreate) {
                     tag.update(item);
                 }
             });
             unmountRedundant(items, tags);
-            oldItems = items.slice();
+            oldItems = tmpItems.slice();
             root.insertBefore(frag, placeholder);
         };
         expr.unmount = function() {
@@ -2482,46 +2842,42 @@
         };
         return expr;
     }
-    function parseExpressions(root, expressions, mustIncludeRoot) {
+    function parseExpressions(root, mustIncludeRoot) {
         var this$1 = this;
-        var tree = {
-            parent: {
-                children: expressions
-            }
-        };
-        walkNodes(root, function(dom, ctx) {
-            var type = dom.nodeType, parent = ctx.parent, attr, expr, tagImpl;
+        var expressions = [];
+        walkNodes(root, function(dom) {
+            var type = dom.nodeType;
+            var attr;
+            var tagImpl;
             if (!mustIncludeRoot && dom === root) {
-                return {
-                    parent: parent
-                };
+                return;
             }
             if (type === 3 && dom.parentNode.tagName !== "STYLE" && tmpl.hasExpr(dom.nodeValue)) {
-                parent.children.push({
+                expressions.push({
                     dom: dom,
                     expr: dom.nodeValue
                 });
             }
             if (type !== 1) {
-                return ctx;
+                return;
             }
             var isVirtual = dom.tagName === "VIRTUAL";
             if (attr = getAttr(dom, LOOP_DIRECTIVE)) {
                 if (isVirtual) {
                     setAttr(dom, "loopVirtual", true);
                 }
-                parent.children.push(_each(dom, this$1, attr));
+                expressions.push(_each(dom, this$1, attr));
                 return false;
             }
             if (attr = getAttr(dom, CONDITIONAL_DIRECTIVE)) {
-                parent.children.push(Object.create(IfExpr).init(dom, this$1, attr));
+                expressions.push(Object.create(IfExpr).init(dom, this$1, attr));
                 return false;
             }
-            if (expr = getAttr(dom, IS_DIRECTIVE)) {
-                if (tmpl.hasExpr(expr)) {
-                    parent.children.push({
+            if (attr = getAttr(dom, IS_DIRECTIVE)) {
+                if (tmpl.hasExpr(attr)) {
+                    expressions.push({
                         isRtag: true,
-                        expr: expr,
+                        expr: attr,
                         dom: dom,
                         attrs: [].slice.call(dom.attributes)
                     });
@@ -2540,22 +2896,23 @@
                 }
             }
             if (tagImpl && (dom !== root || mustIncludeRoot)) {
-                if (isVirtual && !getAttr(dom, IS_DIRECTIVE)) {
+                if (isVirtual) {
+                    if (getAttr(dom, IS_DIRECTIVE)) {
+                        warn("Virtual tags shouldn't be used together with the \"" + IS_DIRECTIVE + '" attribute - https://github.com/riot/riot/issues/2511');
+                    }
                     setAttr(dom, "virtualized", true);
-                    var tag = new Tag$1({
+                    var tag = createTag({
                         tmpl: dom.outerHTML
                     }, {
                         root: dom,
                         parent: this$1
                     }, dom.innerHTML);
-                    parent.children.push(tag);
+                    expressions.push(tag);
                 } else {
-                    var conf = {
+                    expressions.push(initChildTag(tagImpl, {
                         root: dom,
-                        parent: this$1,
-                        hasImpl: true
-                    };
-                    parent.children.push(initChildTag(tagImpl, conf, dom.innerHTML, this$1));
+                        parent: this$1
+                    }, dom.innerHTML, this$1));
                     return false;
                 }
             }
@@ -2563,28 +2920,27 @@
                 if (!expr) {
                     return;
                 }
-                parent.children.push(expr);
+                expressions.push(expr);
             } ]);
-            return {
-                parent: parent
-            };
-        }, tree);
-        return {
-            tree: tree,
-            root: root
-        };
+        });
+        return expressions;
     }
     function parseAttributes(dom, attrs, fn) {
         var this$1 = this;
         each(attrs, function(attr) {
-            var name = attr.name, bool = isBoolAttr(name), expr;
-            if (contains(REF_DIRECTIVES, name)) {
+            if (!attr) {
+                return false;
+            }
+            var name = attr.name;
+            var bool = isBoolAttr(name);
+            var expr;
+            if (contains(REF_DIRECTIVES, name) && dom.tagName.toLowerCase() !== YIELD_TAG) {
                 expr = Object.create(RefExpr).init(dom, this$1, name, attr.value);
             } else if (tmpl.hasExpr(attr.value)) {
                 expr = {
                     dom: dom,
                     expr: attr.value,
-                    attr: attr.name,
+                    attr: name,
                     bool: bool
                 };
             }
@@ -2603,6 +2959,7 @@
     };
     var tblTags = IE_VERSION && IE_VERSION < 10 ? RE_SPECIAL_TAGS : RE_SPECIAL_TAGS_NO_OPTION;
     var GENERIC = "div";
+    var SVG = "svg";
     function specialTags(el, tmpl, tagName) {
         var select = tagName[0] === "o", parent = select ? "select>" : "table>";
         el.innerHTML = "<" + parent + tmpl.trim() + "</" + parent;
@@ -2632,17 +2989,19 @@
             return html || def || "";
         });
     }
-    function mkdom(tmpl, html) {
-        var match = tmpl && tmpl.match(/^\s*<([-\w]+)/), tagName = match && match[1].toLowerCase(), el = mkEl(GENERIC);
+    function mkdom(tmpl, html, isSvg$$1) {
+        var match = tmpl && tmpl.match(/^\s*<([-\w]+)/);
+        var tagName = match && match[1].toLowerCase();
+        var el = mkEl(isSvg$$1 ? SVG : GENERIC);
         tmpl = replaceYield(tmpl, html);
         if (tblTags.test(tagName)) {
             el = specialTags(el, tmpl, tagName);
         } else {
-            setInnerHTML(el, tmpl);
+            setInnerHTML(el, tmpl, isSvg$$1);
         }
         return el;
     }
-    function Tag$2(el, opts) {
+    function Tag$1(el, opts) {
         var ref = this;
         var name = ref.name;
         var tmpl = ref.tmpl;
@@ -2662,7 +3021,7 @@
     function tag$1(name, tmpl, css, attrs, fn) {
         if (isFunction(attrs)) {
             fn = attrs;
-            if (/^[\w\-]+\s?=/.test(css)) {
+            if (/^[\w-]+\s?=/.test(css)) {
                 attrs = css;
                 css = "";
             } else {
@@ -2699,14 +3058,15 @@
     }
     function mount$1(selector, tagName, opts) {
         var tags = [];
+        var elem, allTags;
         function pushTagsTo(root) {
             if (root.tagName) {
-                var riotTag = getAttr(root, IS_DIRECTIVE);
+                var riotTag = getAttr(root, IS_DIRECTIVE), tag;
                 if (tagName && riotTag !== tagName) {
                     riotTag = tagName;
                     setAttr(root, IS_DIRECTIVE, tagName);
                 }
-                var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
+                tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
                 if (tag) {
                     tags.push(tag);
                 }
@@ -2719,8 +3079,6 @@
             opts = tagName;
             tagName = 0;
         }
-        var elem;
-        var allTags;
         if (isString(selector)) {
             selector = selector === "*" ? allTags = selectTags() : selector + selectTags(selector.split(/, */));
             elem = selector ? $$(selector) : [];
@@ -2748,7 +3106,7 @@
     var mixins_id = 0;
     function mixin$1(name, mix, g) {
         if (isObject(name)) {
-            mixin$1("__unnamed_" + mixins_id++, name, true);
+            mixin$1("__" + mixins_id++ + "__", name, true);
             return;
         }
         var store = g ? globals : mixins;
@@ -2766,90 +3124,128 @@
         });
     }
     function unregister$1(name) {
-        delete __TAG_IMPL[name];
+        __TAG_IMPL[name] = null;
     }
-    var version = "v3.3.2";
+    var version$1 = "v3.8.1";
     var core = Object.freeze({
-        Tag: Tag$2,
+        Tag: Tag$1,
         tag: tag$1,
         tag2: tag2$1,
         mount: mount$1,
         mixin: mixin$1,
         update: update$1,
         unregister: unregister$1,
-        version: version
+        version: version$1
     });
-    var __uid = 0;
     function updateOpts(isLoop, parent, isAnonymous, opts, instAttrs) {
         if (isLoop && isAnonymous) {
             return;
         }
-        var ctx = !isAnonymous && isLoop ? this : parent || this;
+        var ctx = isLoop ? inheritParentProps.call(this) : parent || this;
         each(instAttrs, function(attr) {
             if (attr.expr) {
-                updateAllExpressions.call(ctx, [ attr.expr ]);
+                updateExpression.call(ctx, attr.expr);
             }
-            opts[toCamel(attr.name)] = attr.expr ? attr.expr.value : attr.value;
+            opts[toCamel(attr.name).replace(ATTRS_PREFIX, "")] = attr.expr ? attr.expr.value : attr.value;
         });
     }
-    function Tag$1(impl, conf, innerHTML) {
+    function setMountState(value) {
+        var ref = this.__;
+        var isAnonymous = ref.isAnonymous;
+        defineProperty(this, "isMounted", value);
+        if (!isAnonymous) {
+            if (value) {
+                this.trigger("mount");
+            } else {
+                this.trigger("unmount");
+                this.off("*");
+                this.__.wasCreated = false;
+            }
+        }
+    }
+    function createTag(impl, conf, innerHTML) {
         if (impl === void 0) impl = {};
         if (conf === void 0) conf = {};
-        var opts = extend({}, conf.opts), parent = conf.parent, isLoop = conf.isLoop, isAnonymous = !!conf.isAnonymous, skipAnonymous = settings$1.skipAnonymousTags && isAnonymous, item = cleanUpData(conf.item), index = conf.index, instAttrs = [], implAttrs = [], expressions = [], root = conf.root, tagName = conf.tagName || getTagName(root), isVirtual = tagName === "virtual", propsInSyncWithParent = [], dom;
+        var tag = conf.context || {};
+        var opts = extend({}, conf.opts);
+        var parent = conf.parent;
+        var isLoop = conf.isLoop;
+        var isAnonymous = !!conf.isAnonymous;
+        var skipAnonymous = settings$1.skipAnonymousTags && isAnonymous;
+        var item = conf.item;
+        var index = conf.index;
+        var instAttrs = [];
+        var implAttrs = [];
+        var expressions = [];
+        var root = conf.root;
+        var tagName = conf.tagName || getTagName(root);
+        var isVirtual = tagName === "virtual";
+        var isInline = !isVirtual && !impl.tmpl;
+        var dom;
         if (!skipAnonymous) {
-            observable$1(this);
+            observable$1(tag);
         }
         if (impl.name && root._tag) {
             root._tag.unmount(true);
         }
-        this.isMounted = false;
-        defineProperty(this, "__", {
+        defineProperty(tag, "isMounted", false);
+        defineProperty(tag, "__", {
             isAnonymous: isAnonymous,
             instAttrs: instAttrs,
             innerHTML: innerHTML,
             tagName: tagName,
             index: index,
             isLoop: isLoop,
+            isInline: isInline,
+            listeners: [],
             virts: [],
+            wasCreated: false,
             tail: null,
             head: null,
             parent: null,
             item: null
         });
-        defineProperty(this, "_riot_id", ++__uid);
-        defineProperty(this, "root", root);
-        extend(this, {
+        defineProperty(tag, "_riot_id", uid());
+        defineProperty(tag, "root", root);
+        extend(tag, {
             opts: opts
         }, item);
-        defineProperty(this, "parent", parent || null);
-        defineProperty(this, "tags", {});
-        defineProperty(this, "refs", {});
-        dom = isLoop && isAnonymous ? root : mkdom(impl.tmpl, innerHTML, isLoop);
-        defineProperty(this, "update", function tagUpdate(data) {
-            var nextOpts = {}, canTrigger = this.isMounted && !skipAnonymous;
-            data = cleanUpData(data);
-            extend(this, data);
-            updateOpts.apply(this, [ isLoop, parent, isAnonymous, nextOpts, instAttrs ]);
-            if (this.isMounted && isFunction(this.shouldUpdate) && !this.shouldUpdate(data, nextOpts)) {
-                return this;
+        defineProperty(tag, "parent", parent || null);
+        defineProperty(tag, "tags", {});
+        defineProperty(tag, "refs", {});
+        if (isInline || isLoop && isAnonymous) {
+            dom = root;
+        } else {
+            if (!isVirtual) {
+                root.innerHTML = "";
             }
-            if (isLoop && isAnonymous) {
-                inheritFrom.apply(this, [ this.parent, propsInSyncWithParent ]);
+            dom = mkdom(impl.tmpl, innerHTML, isSvg(root));
+        }
+        defineProperty(tag, "update", function tagUpdate(data) {
+            var nextOpts = {};
+            var canTrigger = tag.isMounted && !skipAnonymous;
+            if (isAnonymous && parent) {
+                extend(tag, parent);
+            }
+            extend(tag, data);
+            updateOpts.apply(tag, [ isLoop, parent, isAnonymous, nextOpts, instAttrs ]);
+            if (canTrigger && tag.isMounted && isFunction(tag.shouldUpdate) && !tag.shouldUpdate(data, nextOpts)) {
+                return tag;
             }
             extend(opts, nextOpts);
             if (canTrigger) {
-                this.trigger("update", data);
+                tag.trigger("update", data);
             }
-            updateAllExpressions.call(this, expressions);
+            updateAllExpressions.call(tag, expressions);
             if (canTrigger) {
-                this.trigger("updated");
+                tag.trigger("updated");
             }
-            return this;
-        }.bind(this));
-        defineProperty(this, "mixin", function tagMixin() {
-            var this$1 = this;
+            return tag;
+        });
+        defineProperty(tag, "mixin", function tagMixin() {
             each(arguments, function(mix) {
-                var instance, obj;
+                var instance;
+                var obj;
                 var props = [];
                 var propsBlacklist = [ "init", "__proto__" ];
                 mix = isString(mix) ? mixin$1(mix) : mix;
@@ -2864,87 +3260,85 @@
                 } while (obj = Object.getPrototypeOf(obj || instance));
                 each(props, function(key) {
                     if (!contains(propsBlacklist, key)) {
-                        var descriptor = Object.getOwnPropertyDescriptor(instance, key) || Object.getOwnPropertyDescriptor(proto, key);
+                        var descriptor = getPropDescriptor(instance, key) || getPropDescriptor(proto, key);
                         var hasGetterSetter = descriptor && (descriptor.get || descriptor.set);
-                        if (!this$1.hasOwnProperty(key) && hasGetterSetter) {
-                            Object.defineProperty(this$1, key, descriptor);
+                        if (!tag.hasOwnProperty(key) && hasGetterSetter) {
+                            Object.defineProperty(tag, key, descriptor);
                         } else {
-                            this$1[key] = isFunction(instance[key]) ? instance[key].bind(this$1) : instance[key];
+                            tag[key] = isFunction(instance[key]) ? instance[key].bind(tag) : instance[key];
                         }
                     }
                 });
                 if (instance.init) {
-                    instance.init.bind(this$1)();
+                    instance.init.bind(tag)(opts);
                 }
             });
-            return this;
-        }.bind(this));
-        defineProperty(this, "mount", function tagMount() {
-            var this$1 = this;
-            root._tag = this;
+            return tag;
+        });
+        defineProperty(tag, "mount", function tagMount() {
+            root._tag = tag;
             parseAttributes.apply(parent, [ root, root.attributes, function(attr, expr) {
                 if (!isAnonymous && RefExpr.isPrototypeOf(expr)) {
-                    expr.tag = this$1;
+                    expr.tag = tag;
                 }
                 attr.expr = expr;
                 instAttrs.push(attr);
             } ]);
-            implAttrs = [];
             walkAttrs(impl.attrs, function(k, v) {
                 implAttrs.push({
                     name: k,
                     value: v
                 });
             });
-            parseAttributes.apply(this, [ root, implAttrs, function(attr, expr) {
+            parseAttributes.apply(tag, [ root, implAttrs, function(attr, expr) {
                 if (expr) {
                     expressions.push(expr);
                 } else {
                     setAttr(root, attr.name, attr.value);
                 }
             } ]);
-            updateOpts.apply(this, [ isLoop, parent, isAnonymous, opts, instAttrs ]);
+            updateOpts.apply(tag, [ isLoop, parent, isAnonymous, opts, instAttrs ]);
             var globalMixin = mixin$1(GLOBAL_MIXIN);
             if (globalMixin && !skipAnonymous) {
                 for (var i in globalMixin) {
                     if (globalMixin.hasOwnProperty(i)) {
-                        this$1.mixin(globalMixin[i]);
+                        tag.mixin(globalMixin[i]);
                     }
                 }
             }
             if (impl.fn) {
-                impl.fn.call(this, opts);
+                impl.fn.call(tag, opts);
             }
             if (!skipAnonymous) {
-                this.trigger("before-mount");
+                tag.trigger("before-mount");
             }
-            parseExpressions.apply(this, [ dom, expressions, isAnonymous ]);
-            this.update(item);
-            if (!isAnonymous) {
+            each(parseExpressions.apply(tag, [ dom, isAnonymous ]), function(e) {
+                return expressions.push(e);
+            });
+            tag.update(item);
+            if (!isAnonymous && !isInline) {
                 while (dom.firstChild) {
                     root.appendChild(dom.firstChild);
                 }
             }
-            defineProperty(this, "root", root);
-            defineProperty(this, "isMounted", true);
-            if (skipAnonymous) {
-                return;
-            }
-            if (!this.parent) {
-                this.trigger("mount");
-            } else {
-                var p = getImmediateCustomParentTag(this.parent);
+            defineProperty(tag, "root", root);
+            if (!skipAnonymous && tag.parent) {
+                var p = getImmediateCustomParentTag(tag.parent);
                 p.one(!p.isMounted ? "mount" : "updated", function() {
-                    this$1.trigger("mount");
+                    setMountState.call(tag, true);
                 });
+            } else {
+                setMountState.call(tag, true);
             }
-            return this;
-        }.bind(this));
-        defineProperty(this, "unmount", function tagUnmount(mustKeepRoot) {
-            var this$1 = this;
-            var el = this.root, p = el.parentNode, ptag, tagIndex = __TAGS_CACHE.indexOf(this);
+            tag.__.wasCreated = true;
+            return tag;
+        });
+        defineProperty(tag, "unmount", function tagUnmount(mustKeepRoot) {
+            var el = tag.root;
+            var p = el.parentNode;
+            var tagIndex = __TAGS_CACHE.indexOf(tag);
             if (!skipAnonymous) {
-                this.trigger("before-unmount");
+                tag.trigger("before-unmount");
             }
             walkAttrs(impl.attrs, function(name) {
                 if (startsWith(name, ATTRS_PREFIX)) {
@@ -2952,37 +3346,26 @@
                 }
                 remAttr(root, name);
             });
+            tag.__.listeners.forEach(function(dom) {
+                Object.keys(dom[RIOT_EVENTS_KEY]).forEach(function(eventName) {
+                    dom.removeEventListener(eventName, dom[RIOT_EVENTS_KEY][eventName]);
+                });
+            });
             if (tagIndex !== -1) {
                 __TAGS_CACHE.splice(tagIndex, 1);
             }
-            if (p || isVirtual) {
-                if (parent) {
-                    ptag = getImmediateCustomParentTag(parent);
-                    if (isVirtual) {
-                        Object.keys(this.tags).forEach(function(tagName) {
-                            arrayishRemove(ptag.tags, tagName, this$1.tags[tagName]);
-                        });
-                    } else {
-                        arrayishRemove(ptag.tags, tagName, this);
-                        if (parent !== ptag) {
-                            arrayishRemove(parent.tags, tagName, this);
-                        }
-                    }
+            if (parent && !isAnonymous) {
+                var ptag = getImmediateCustomParentTag(parent);
+                if (isVirtual) {
+                    Object.keys(tag.tags).forEach(function(tagName) {
+                        return arrayishRemove(ptag.tags, tagName, tag.tags[tagName]);
+                    });
                 } else {
-                    while (el.firstChild) {
-                        el.removeChild(el.firstChild);
-                    }
-                }
-                if (p) {
-                    if (!mustKeepRoot) {
-                        p.removeChild(el);
-                    } else {
-                        remAttr(p, IS_DIRECTIVE);
-                    }
+                    arrayishRemove(ptag.tags, tagName, tag);
                 }
             }
-            if (this.__.virts) {
-                each(this.__.virts, function(v) {
+            if (tag.__.virts) {
+                each(tag.__.virts, function(v) {
                     if (v.parentNode) {
                         v.parentNode.removeChild(v);
                     }
@@ -2992,35 +3375,29 @@
             each(instAttrs, function(a) {
                 return a.expr && a.expr.unmount && a.expr.unmount();
             });
-            if (this.__.onUnmount) {
-                this.__.onUnmount();
+            if (mustKeepRoot) {
+                setInnerHTML(el, "");
+            } else if (p) {
+                p.removeChild(el);
             }
-            if (!skipAnonymous) {
-                this.trigger("unmount");
-                this.off("*");
+            if (tag.__.onUnmount) {
+                tag.__.onUnmount();
             }
-            defineProperty(this, "isMounted", false);
-            delete this.root._tag;
-            return this;
-        }.bind(this));
+            if (!tag.isMounted) {
+                setMountState.call(tag, true);
+            }
+            setMountState.call(tag, false);
+            delete tag.root._tag;
+            return tag;
+        });
+        return tag;
     }
     function getTag(dom) {
         return dom.tagName && __TAG_IMPL[getAttr(dom, IS_DIRECTIVE) || getAttr(dom, IS_DIRECTIVE) || dom.tagName.toLowerCase()];
     }
-    function inheritFrom(target, propsInSyncWithParent) {
-        var this$1 = this;
-        each(Object.keys(target), function(k) {
-            var mustSync = !isReservedName(k) && contains(propsInSyncWithParent, k);
-            if (isUndefined(this$1[k]) || mustSync) {
-                if (!mustSync) {
-                    propsInSyncWithParent.push(k);
-                }
-                this$1[k] = target[k];
-            }
-        });
-    }
     function moveChildTag(tagName, newPos) {
-        var parent = this.parent, tags;
+        var parent = this.parent;
+        var tags;
         if (!parent) {
             return;
         }
@@ -3032,14 +3409,15 @@
         }
     }
     function initChildTag(child, opts, innerHTML, parent) {
-        var tag = new Tag$1(child, opts, innerHTML), tagName = opts.tagName || getTagName(opts.root, true), ptag = getImmediateCustomParentTag(parent);
+        var tag = createTag(child, opts, innerHTML);
+        var tagName = opts.tagName || getTagName(opts.root, true);
+        var ptag = getImmediateCustomParentTag(parent);
         defineProperty(tag, "parent", ptag);
         tag.__.parent = parent;
         arrayishAdd(ptag.tags, tagName, tag);
         if (ptag !== parent) {
             arrayishAdd(parent.tags, tagName, tag);
         }
-        opts.root.innerHTML = "";
         return tag;
     }
     function getImmediateCustomParentTag(tag) {
@@ -3054,28 +3432,19 @@
     }
     function unmountAll(expressions) {
         each(expressions, function(expr) {
-            if (expr instanceof Tag$1) {
+            if (expr.unmount) {
                 expr.unmount(true);
+            } else if (expr.tagName) {
+                expr.tag.unmount(true);
             } else if (expr.unmount) {
                 expr.unmount();
             }
         });
     }
     function getTagName(dom, skipDataIs) {
-        var child = getTag(dom), namedTag = !skipDataIs && getAttr(dom, IS_DIRECTIVE);
+        var child = getTag(dom);
+        var namedTag = !skipDataIs && getAttr(dom, IS_DIRECTIVE);
         return namedTag && !tmpl.hasExpr(namedTag) ? namedTag : child ? child.name : dom.tagName.toLowerCase();
-    }
-    function cleanUpData(data) {
-        if (!(data instanceof Tag$1) && !(data && isFunction(data.trigger))) {
-            return data;
-        }
-        var o = {};
-        for (var key in data) {
-            if (!RE_RESERVED_NAMES.test(key)) {
-                o[key] = data[key];
-            }
-        }
-        return o;
     }
     function arrayishAdd(obj, key, value, ensureArray, index) {
         var dest = obj[key];
@@ -3118,21 +3487,25 @@
             } else if (obj[key].length === 1 && !ensureArray) {
                 obj[key] = obj[key][0];
             }
-        } else {
+        } else if (obj[key] === value) {
             delete obj[key];
         }
     }
     function mountTo(root, tagName, opts, ctx) {
-        var impl = __TAG_IMPL[tagName], implClass = __TAG_IMPL[tagName].class, tag = ctx || (implClass ? Object.create(implClass.prototype) : {}), innerHTML = root._innerHTML = root._innerHTML || root.innerHTML;
-        root.innerHTML = "";
+        var impl = __TAG_IMPL[tagName];
+        var implClass = __TAG_IMPL[tagName].class;
+        var context = ctx || (implClass ? Object.create(implClass.prototype) : {});
+        var innerHTML = root._innerHTML = root._innerHTML || root.innerHTML;
         var conf = extend({
             root: root,
-            opts: opts
+            opts: opts,
+            context: context
         }, {
             parent: opts ? opts.parent : null
         });
+        var tag;
         if (impl && root) {
-            Tag$1.apply(tag, [ impl, conf, innerHTML ]);
+            tag = createTag(impl, conf, innerHTML);
         }
         if (tag && tag.mount) {
             tag.mount(true);
@@ -3149,7 +3522,11 @@
     }
     function makeVirtual(src, target) {
         var this$1 = this;
-        var head = createDOMPlaceholder(), tail = createDOMPlaceholder(), frag = createFrag(), sib, el;
+        var head = createDOMPlaceholder();
+        var tail = createDOMPlaceholder();
+        var frag = createFrag();
+        var sib;
+        var el;
         this.root.insertBefore(head, this.root.firstChild);
         this.root.appendChild(tail);
         this.__.head = el = head;
@@ -3166,9 +3543,17 @@
             src.appendChild(frag);
         }
     }
+    function inheritParentProps() {
+        if (this.parent) {
+            return extend(Object.create(this), this.parent);
+        }
+        return this;
+    }
     function moveVirtual(src, target) {
         var this$1 = this;
-        var el = this.__.head, frag = createFrag(), sib;
+        var el = this.__.head;
+        var sib;
+        var frag = createFrag();
         while (el) {
             sib = el.nextSibling;
             frag.appendChild(el);
@@ -3194,18 +3579,17 @@
     }
     var tags = Object.freeze({
         getTag: getTag,
-        inheritFrom: inheritFrom,
         moveChildTag: moveChildTag,
         initChildTag: initChildTag,
         getImmediateCustomParentTag: getImmediateCustomParentTag,
         unmountAll: unmountAll,
         getTagName: getTagName,
-        cleanUpData: cleanUpData,
         arrayishAdd: arrayishAdd,
         arrayishRemove: arrayishRemove,
         mountTo: mountTo,
         makeReplaceVirtual: makeReplaceVirtual,
         makeVirtual: makeVirtual,
+        inheritParentProps: inheritParentProps,
         moveVirtual: moveVirtual,
         selectTags: selectTags
     });
@@ -3221,13 +3605,14 @@
         misc: misc,
         tags: tags
     };
-    var Tag$$1 = Tag$2;
-    var tag$$1 = tag$1;
-    var tag2$$1 = tag2$1;
-    var mount$$1 = mount$1;
-    var mixin$$1 = mixin$1;
-    var update$$1 = update$1;
-    var unregister$$1 = unregister$1;
+    var Tag = Tag$1;
+    var tag = tag$1;
+    var tag2 = tag2$1;
+    var mount = mount$1;
+    var mixin = mixin$1;
+    var update = update$1;
+    var unregister = unregister$1;
+    var version = version$1;
     var observable = observable$1;
     var riot$1 = extend({}, core, {
         observable: observable$1,
@@ -3236,18 +3621,146 @@
     });
     exports.settings = settings;
     exports.util = util;
-    exports.Tag = Tag$$1;
-    exports.tag = tag$$1;
-    exports.tag2 = tag2$$1;
-    exports.mount = mount$$1;
-    exports.mixin = mixin$$1;
-    exports.update = update$$1;
-    exports.unregister = unregister$$1;
+    exports.Tag = Tag;
+    exports.tag = tag;
+    exports.tag2 = tag2;
+    exports.mount = mount;
+    exports.mixin = mixin;
+    exports.update = update;
+    exports.unregister = unregister;
+    exports.version = version;
     exports.observable = observable;
     exports["default"] = riot$1;
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
+});
+
+(function(root, factory) {
+    if (typeof exports !== "undefined") {
+        if (typeof module !== "undefined" && module.exports) {
+            exports = module.exports = factory(root, exports);
+        }
+    } else if (typeof define === "function" && define.amd) {
+        define([ "exports" ], function(exports) {
+            root.Lockr = factory(root, exports);
+        });
+    } else {
+        root.Lockr = factory(root, {});
+    }
+})(this, function(root, Lockr) {
+    "use strict";
+    if (!Array.prototype.indexOf) {
+        Array.prototype.indexOf = function(elt) {
+            var len = this.length >>> 0;
+            var from = Number(arguments[1]) || 0;
+            from = from < 0 ? Math.ceil(from) : Math.floor(from);
+            if (from < 0) from += len;
+            for (;from < len; from++) {
+                if (from in this && this[from] === elt) return from;
+            }
+            return -1;
+        };
+    }
+    Lockr.prefix = "";
+    Lockr._getPrefixedKey = function(key, options) {
+        options = options || {};
+        if (options.noPrefix) {
+            return key;
+        } else {
+            return this.prefix + key;
+        }
+    };
+    Lockr.set = function(key, value, options) {
+        var query_key = this._getPrefixedKey(key, options);
+        try {
+            localStorage.setItem(query_key, JSON.stringify({
+                data: value
+            }));
+        } catch (e) {
+            if (console) console.warn("Lockr didn't successfully save the '{" + key + ": " + value + "}' pair, because the localStorage is full.");
+        }
+    };
+    Lockr.get = function(key, missing, options) {
+        var query_key = this._getPrefixedKey(key, options), value;
+        try {
+            value = JSON.parse(localStorage.getItem(query_key));
+        } catch (e) {
+            try {
+                if (localStorage[query_key]) {
+                    value = JSON.parse('{"data":"' + localStorage.getItem(query_key) + '"}');
+                } else {
+                    value = null;
+                }
+            } catch (e) {
+                if (console) console.warn("Lockr could not load the item with key " + key);
+            }
+        }
+        if (value === null) {
+            return missing;
+        } else if (typeof value.data !== "undefined") {
+            return value.data;
+        } else {
+            return missing;
+        }
+    };
+    Lockr.sadd = function(key, value, options) {
+        var query_key = this._getPrefixedKey(key, options), json;
+        var values = Lockr.smembers(key);
+        if (values.indexOf(value) > -1) {
+            return null;
+        }
+        try {
+            values.push(value);
+            json = JSON.stringify({
+                data: values
+            });
+            localStorage.setItem(query_key, json);
+        } catch (e) {
+            console.log(e);
+            if (console) console.warn("Lockr didn't successfully add the " + value + " to " + key + " set, because the localStorage is full.");
+        }
+    };
+    Lockr.smembers = function(key, options) {
+        var query_key = this._getPrefixedKey(key, options), value;
+        try {
+            value = JSON.parse(localStorage.getItem(query_key));
+        } catch (e) {
+            value = null;
+        }
+        if (value === null) return []; else return value.data || [];
+    };
+    Lockr.sismember = function(key, value, options) {
+        var query_key = this._getPrefixedKey(key, options);
+        return Lockr.smembers(key).indexOf(value) > -1;
+    };
+    Lockr.getAll = function() {
+        var keys = Object.keys(localStorage);
+        return keys.map(function(key) {
+            return Lockr.get(key);
+        });
+    };
+    Lockr.srem = function(key, value, options) {
+        var query_key = this._getPrefixedKey(key, options), json, index;
+        var values = Lockr.smembers(key, value);
+        index = values.indexOf(value);
+        if (index > -1) values.splice(index, 1);
+        json = JSON.stringify({
+            data: values
+        });
+        try {
+            localStorage.setItem(query_key, json);
+        } catch (e) {
+            if (console) console.warn("Lockr couldn't remove the " + value + " from the set " + key);
+        }
+    };
+    Lockr.rm = function(key) {
+        localStorage.removeItem(key);
+    };
+    Lockr.flush = function() {
+        localStorage.clear();
+    };
+    return Lockr;
 });
 
 var route = function() {
@@ -3324,7 +3837,7 @@ var route = function() {
         });
         return el;
     };
-    var RE_ORIGIN = /^.+?\/\/+[^\/]+/;
+    var RE_ORIGIN = /^.+?\/\/+[^/]+/;
     var EVENT_LISTENER = "EventListener";
     var REMOVE_EVENT_LISTENER = "remove" + EVENT_LISTENER;
     var ADD_EVENT_LISTENER = "add" + EVENT_LISTENER;
@@ -3350,7 +3863,7 @@ var route = function() {
     var emitStack = [];
     var emitStackLevel = 0;
     function DEFAULT_PARSER(path) {
-        return path.split(/[\/?#]/);
+        return path.split(/[/?#]/);
     }
     function DEFAULT_SECOND_PARSER(path, filter) {
         var f = filter.replace(/\?/g, "\\?").replace(/\*/g, "([^/?#]+?)").replace(/\.\./, ".*");
@@ -3521,14 +4034,16 @@ var route = function() {
     route.start = function(autoExec) {
         if (!started) {
             if (win) {
-                if (document.readyState === "complete") {
+                if (document.readyState === "interactive" || document.readyState === "complete") {
                     start(autoExec);
                 } else {
-                    win[ADD_EVENT_LISTENER]("load", function() {
-                        setTimeout(function() {
-                            start(autoExec);
-                        }, 1);
-                    });
+                    document.onreadystatechange = function() {
+                        if (document.readyState === "interactive") {
+                            setTimeout(function() {
+                                start(autoExec);
+                            }, 1);
+                        }
+                    };
                 }
             }
             started = true;
@@ -3990,7 +4505,7 @@ var route = function() {
                         break;
 
                       case 116:
-                        resultString += "	";
+                        resultString += "\t";
                         break;
 
                       case 117:
@@ -4272,28 +4787,45 @@ var route = function() {
     return Lockr;
 });
 
-var indexOf = [].indexOf || function(item) {
+var Kor, indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
         if (i in this && this[i] === item) return i;
     }
     return -1;
+}, slice = [].slice;
+
+Kor = {
+    loading: false,
+    ajax_loading: function() {
+        console.warn("KOR module used");
+        return Kor.loading = true;
+    },
+    ajax_not_loading: function() {
+        console.warn("KOR module used");
+        return Kor.loading = false;
+    }
 };
 
 Zepto.extend(Zepto.ajaxSettings, {
+    type: "GET",
     dataType: "json",
     contentType: "application/json",
     accept: "application/json",
     beforeSend: function(xhr, settings) {
+        var token;
         if (!settings.url.match(/^http/)) {
             settings.url = "" + wApp.baseUrl + settings.url;
         }
+        Kor.ajax_loading();
         xhr.then(function() {
-            return console.log("ajax " + settings.type, xhr.requestUrl, JSON.parse(xhr.response));
+            return console.log("ajax log", xhr.requestUrl, JSON.parse(xhr.response));
         });
         xhr.requestUrl = settings.url;
-        if (wApp.session.current) {
-            return xhr.setRequestHeader("X-CSRF-Token", wApp.session.csrfToken());
-        }
+        token = Zepto("meta[name=csrf-token]").attr("content");
+        return xhr.setRequestHeader("X-CSRF-Token", token);
+    },
+    complete: function(xhr) {
+        return Kor.ajax_not_loading();
     }
 });
 
@@ -4308,6 +4840,15 @@ window.wApp = {
         return [ wApp.config.setup(), wApp.session.setup(), wApp.i18n.setup(), wApp.info.setup() ];
     }
 };
+
+Zepto.ajax({
+    url: "/api/1.0/info",
+    success: function(data) {
+        window.wApp.data = data;
+        wApp.bus.trigger("auth-data");
+        return riot.update();
+    }
+});
 
 wApp.auth = {
     intersect: function(a, b) {
@@ -4450,6 +4991,28 @@ wApp.mixins.config = {
     }
 };
 
+wApp.bubbling_events = [];
+
+riot.mixin("bubble", {
+    init: function() {
+        var event_name, j, len, ref, results, tag;
+        tag = this;
+        ref = wApp.bubbling_events;
+        results = [];
+        for (j = 0, len = ref.length; j < len; j++) {
+            event_name = ref[j];
+            results.push(tag.on(event_name, function() {
+                var args, ref1;
+                args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+                if (tag.parent) {
+                    return (ref1 = tag.parent).trigger.apply(ref1, [ event_name ].concat(slice.call(args)));
+                }
+            }));
+        }
+        return results;
+    }
+});
+
 wApp.i18n = {
     setup: function() {
         return Zepto.ajax({
@@ -4460,7 +5023,7 @@ wApp.i18n = {
         });
     },
     translate: function(locale, input, options) {
-        var count, error, j, key, len, part, parts, ref, ref1, regex, result, tvalue, value;
+        var count, error, j, key, len, part, parts, ref, regex, result, tvalue, value;
         if (options == null) {
             options = {};
         }
@@ -4477,31 +5040,24 @@ wApp.i18n = {
             }
             count = options.count === 1 ? "one" : "other";
             result = result[count] || result;
-            ref = options.values;
+            ref = options.interpolations;
             for (key in ref) {
                 value = ref[key];
                 regex = new RegExp("%{" + key + "}", "g");
-                result = result.replace(regex, value);
-            }
-            ref1 = options.interpolations;
-            for (key in ref1) {
-                value = ref1[key];
-                regex = new RegExp("%{" + key + "}", "g");
-                tvalue = wApp.i18n.translate(locale, value);
+                tvalue = wApp.i18n.translate(value);
                 if (tvalue && tvalue !== value) {
                     value = tvalue;
                 }
                 result = result.replace(regex, value);
             }
-            if (options["capitalize"]) {
-                result = result.charAt(0).toUpperCase() + result.slice(1);
+            if (options.capitalize) {
+                result = wApp.utils.capitalize(result);
             }
             return result;
         } catch (error1) {
             error = error1;
-            console.log(arguments);
             console.log(error);
-            return input;
+            return "";
         }
     },
     localize: function(locale, input, format_name) {
@@ -4560,6 +5116,8 @@ wApp.mixins.i18n = {
         return wApp.i18n.humanSize(input);
     }
 };
+
+wApp.i18n.t = wApp.i18n.translate;
 
 wApp.info = {
     setup: function() {
@@ -4688,6 +5246,9 @@ wApp.session = {
     },
     csrfToken: function() {
         return wApp.session.current.csrfToken;
+    },
+    data: function() {
+        return wApp.data;
     }
 };
 
@@ -4783,6 +5344,12 @@ wApp.utils = {
         } else {
             return clearTimeout(wApp.state.scrollToTopTimeOut);
         }
+    },
+    capitalize: function(value) {
+        return value.charAt(0).toUpperCase() + value.slice(1);
+    },
+    confirm: function(string) {
+        return window.confirm(string);
     }
 };
 
@@ -4885,6 +5452,287 @@ riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a
     });
 });
 
+riot.tag2("kor-entity-editor", '<h1>Entity Editor</h1> <div class="hr"></div> <form> <kor-field field-id="name" label-key="entity.name" model="{opts.entity}" errors="{errors.name}"></kor-field> <kor-field field-id="distinct_name" label-key="entity.distinct_name" model="{opts.entity}" errors="{errors.distinct_name}"></kor-field> <kor-field field-id="distinct_name" label-key="entity.distinct_name" model="{opts.entity}" errors="{errors.distinct_name}"></kor-field> </form>', "", "", function(opts) {
+    var tag;
+    tag = this;
+});
+
+riot.tag2("kor-field-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.field\', {count: \'other\'})}}}" show="{opts.kind.id}"></kor-t> </h2> <form if="{showForm && types}" onsubmit="{submit}"> <kor-field field-id="type" label-key="field.type" type="select" options="{types_for_select}" allow-no-selection="{false}" model="{field}" onchange="{updateSpecialFields}" is-disabled="{field.id}"></kor-field> <virtual each="{f in specialFields}"> <kor-field field-id="{f.name}" label="{f.label}" model="{field}" errors="{errors[f.name]}"></kor-field> </virtual> <kor-field field-id="name" label-key="field.name" model="{field}" errors="{errors.name}"></kor-field> <kor-field field-id="show_label" label-key="field.show_label" model="{field}" errors="{errors.show_label}"></kor-field> <kor-field field-id="form_label" label-key="field.form_label" model="{field}" errors="{errors.form_label}"></kor-field> <kor-field field-id="search_label" label-key="field.search_label" model="{field}" errors="{errors.search_label}"></kor-field> <kor-field field-id="show_on_entity" type="checkbox" label-key="field.show_on_entity" model="{field}"></kor-field> <kor-field field-id="is_identifier" type="checkbox" label-key="field.is_identifier" model="{field}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
+    var create, params, tag, update;
+    tag = this;
+    tag.errors = {};
+    tag.opts.notify.on("add-field", function() {
+        tag.field = {
+            type: "Fields::String"
+        };
+        tag.showForm = true;
+        return tag.updateSpecialFields();
+    });
+    tag.opts.notify.on("edit-field", function(field) {
+        tag.field = field;
+        tag.showForm = true;
+        return tag.updateSpecialFields();
+    });
+    tag.on("mount", function() {
+        return Zepto.ajax({
+            url: "/kinds/" + tag.opts.kind.id + "/fields/types",
+            success: function(data) {
+                var i, len, t;
+                tag.types = {};
+                tag.types_for_select = [];
+                for (i = 0, len = data.length; i < len; i++) {
+                    t = data[i];
+                    tag.types_for_select.push({
+                        value: t.name,
+                        label: t.label
+                    });
+                    tag.types[t.name] = t;
+                }
+                return tag.updateSpecialFields();
+            }
+        });
+    });
+    tag.updateSpecialFields = function(event) {
+        var typeName, types;
+        if (tag.showForm) {
+            typeName = Zepto("[name=type]").val() || tag.field.type;
+            tag.field.type = typeName;
+            if (types = tag.types) {
+                tag.specialFields = types[typeName].fields;
+                tag.update();
+            }
+        }
+        return true;
+    };
+    tag.submit = function(event) {
+        event.preventDefault();
+        if (tag.field.id) {
+            return update();
+        } else {
+            return create();
+        }
+    };
+    params = function() {
+        var k, ref, results, t;
+        results = {};
+        ref = tag.formFields;
+        for (k in ref) {
+            t = ref[k];
+            results[t.fieldId()] = t.val();
+        }
+        return {
+            field: results,
+            klass: results.type
+        };
+    };
+    create = function() {
+        return Zepto.ajax({
+            type: "POST",
+            url: "/kinds/" + tag.opts.kind.id + "/fields",
+            data: JSON.stringify(params()),
+            success: function() {
+                tag.opts.notify.trigger("refresh");
+                tag.errors = {};
+                return tag.showForm = false;
+            },
+            error: function(request) {
+                var data;
+                data = JSON.parse(request.response);
+                return tag.errors = data.errors;
+            },
+            complete: function() {
+                return tag.update();
+            }
+        });
+    };
+    update = function() {
+        console.log("updating");
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/kinds/" + tag.opts.kind.id + "/fields/" + tag.field.id,
+            data: JSON.stringify(params()),
+            success: function() {
+                tag.opts.notify.trigger("refresh");
+                return tag.showForm = false;
+            },
+            error: function(request) {
+                tag.field = request.responseJSON.record;
+                return tag.field.errors = request.responseJSON.errors;
+            },
+            complete: function() {
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-fields", '<div class="pull-right"> <a href="#/kinds/{opts.kind.id}/fields/new" onclick="{add}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> <kor-t key="activerecord.models.field" with="{{count: \'other\', capitalize: true}}"> /> </strong> <ul if="{kind}"> <li each="{field in kind.fields}"> <div class="pull-right"> <a href="#" onclick="{edit(field)}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(field)}"><i class="fa fa-remove"></i></a> </div> <a href="#" onclick="{edit(field)}">{field.name}</a> </li> </ul>', "", "", function(opts) {
+    var refresh, tag;
+    tag = this;
+    tag.on("mount", function() {
+        return refresh();
+    });
+    tag.opts.notify.on("refresh", function() {
+        return refresh();
+    });
+    tag.add = function(event) {
+        event.preventDefault();
+        return tag.opts.notify.trigger("add-field");
+    };
+    tag.edit = function(field) {
+        return function(event) {
+            event.preventDefault();
+            return tag.opts.notify.trigger("edit-field", field);
+        };
+    };
+    tag.remove = function(field) {
+        return function(event) {
+            event.preventDefault();
+            if (wApp.utils.confirm(wApp.i18n.translate("confirm.general"))) {
+                return Zepto.ajax({
+                    type: "delete",
+                    url: "/kinds/" + tag.opts.kind.id + "/fields/" + field.id,
+                    success: function() {
+                        return refresh();
+                    }
+                });
+            }
+        };
+    };
+    refresh = function() {
+        return Zepto.ajax({
+            url: "/kinds/" + tag.opts.kind.id,
+            data: {
+                include: "fields,inheritance"
+            },
+            success: function(data) {
+                tag.kind = data;
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-generator-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.generator\', {count: \'other\'})}}}" show="{opts.kind.id}"></kor-t> </h2> <form if="{showForm}" onsubmit="{submit}"> <kor-field field-id="name" label-key="generator.name" model="{generator}" errors="{errors.name}"></kor-field> <kor-field field-id="directive" label-key="generator.directive" type="textarea" model="{generator}" errors="{errors.directive}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
+    var create, params, tag, update;
+    tag = this;
+    tag.errors = {};
+    tag.opts.notify.on("add-generator", function() {
+        tag.generator = {};
+        tag.showForm = true;
+        return tag.update();
+    });
+    tag.opts.notify.on("edit-generator", function(generator) {
+        tag.generator = generator;
+        tag.showForm = true;
+        return tag.update();
+    });
+    tag.submit = function(event) {
+        event.preventDefault();
+        if (tag.generator.id) {
+            return update();
+        } else {
+            return create();
+        }
+    };
+    create = function() {
+        return Zepto.ajax({
+            type: "POST",
+            url: "/kinds/" + tag.opts.kind.id + "/generators",
+            data: JSON.stringify(params()),
+            success: function() {
+                tag.opts.notify.trigger("refresh");
+                tag.errors = {};
+                return tag.showForm = false;
+            },
+            error: function(request) {
+                var data;
+                data = JSON.parse(request.response);
+                return tag.errors = data.errors;
+            },
+            complete: function() {
+                return tag.update();
+            }
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/kinds/" + tag.opts.kind.id + "/generators/" + tag.generator.id,
+            data: JSON.stringify(params()),
+            success: function() {
+                tag.opts.notify.trigger("refresh");
+                return tag.showForm = false;
+            },
+            error: function(request) {
+                return tag.generator = request.responseJSON.record;
+            },
+            complete: function() {
+                return tag.update();
+            }
+        });
+    };
+    params = function() {
+        var k, ref, results, t;
+        results = {};
+        ref = tag.formFields;
+        for (k in ref) {
+            t = ref[k];
+            results[t.fieldId()] = t.val();
+        }
+        return {
+            generator: results
+        };
+    };
+});
+
+riot.tag2("kor-generators", '<div class="pull-right"> <a href="#/kinds/{opts.kind.id}/generators/new" onclick="{add}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> <kor-t key="activerecord.models.generator" with="{{count: \'other\', capitalize: true}}"> /> </strong> <ul if="{kind}"> <li each="{generator in kind.generators}"> <div class="pull-right"> <a href="#" onclick="{edit(generator)}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(generator)}"><i class="fa fa-remove"></i></a> </div> <a href="#" onclick="{edit(generator)}">{generator.name}</a> </li> </ul>', "", "", function(opts) {
+    var refresh, tag;
+    tag = this;
+    tag.on("mount", function() {
+        return refresh();
+    });
+    tag.opts.notify.on("refresh", function() {
+        return refresh();
+    });
+    tag.add = function(event) {
+        event.preventDefault();
+        return tag.opts.notify.trigger("add-generator");
+    };
+    tag.edit = function(generator) {
+        return function(event) {
+            event.preventDefault();
+            return tag.opts.notify.trigger("edit-generator", generator);
+        };
+    };
+    tag.remove = function(generator) {
+        return function(event) {
+            event.preventDefault();
+            if (wApp.utils.confirm(wApp.i18n.translate("confirm.general"))) {
+                return Zepto.ajax({
+                    type: "delete",
+                    url: "/kinds/" + tag.opts.kind.id + "/generators/" + generator.id,
+                    success: function() {
+                        return refresh();
+                    }
+                });
+            }
+        };
+    };
+    refresh = function() {
+        return Zepto.ajax({
+            url: "/kinds/" + tag.opts.kind.id,
+            data: {
+                include: "generators,inheritance"
+            },
+            success: function(data) {
+                tag.kind = data;
+                return tag.update();
+            }
+        });
+    };
+});
+
 riot.tag2("kor-invalid-entities", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, queryUpdate, tag;
     tag = this;
@@ -4977,6 +5825,128 @@ riot.tag2("kor-isolated-entities", '<div class="kor-content-box"> <h1>{tcap(\'no
     };
 });
 
+riot.tag2("kor-kind-editor", '<kor-menu-fix></kor-menu-fix> <kor-layout-panel class="left small" if="{opts.kind}"> <kor-panel> <h1> <span show="{opts.kind.id}">{opts.kind.name}</span> <kor-t show="{!opts.kind.id}" key="objects.create" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.kind\')}}}"></kor-t> </h1> <a href="#" onclick="{switchTo(\'general\')}"> » {wApp.i18n.translate(\'general\', {capitalize: true})} </a><br> <a href="#" onclick="{switchTo(\'fields\')}" if="{opts.kind.id}"> » {wApp.i18n.translate(\'activerecord.models.field\', {count: \'other\', capitalize: true})} </a><br> <a href="#" onclick="{switchTo(\'generators\')}" if="{opts.kind.id}"> » {wApp.i18n.translate(\'activerecord.models.generator\', {count: \'other\', capitalize: true})} </a><br> <div class="hr"></div> <div class="text-right"> <a href="#/kinds" class="kor-button">{wApp.i18n.t(\'back_to_list\')}</a> </div> <div class="hr" if="{tab == \'fields\' || tab == \'generators\'}"></div> <kor-fields kind="{opts.kind}" if="{tab == \'fields\'}" notify="{notify}"></kor-fields> <kor-generators kind="{opts.kind}" if="{tab == \'generators\'}" notify="{notify}"></kor-generators> </kor-panel> </kor-layout-panel> <kor-layout-panel class="right large"> <kor-panel> <kor-kind-general-editor if="{tab == \'general\'}" kind="{opts.kind}" notify="{notify}"></kor-kind-general-editor> <kor-field-editor kind="{opts.kind}" if="{tab == \'fields\' && opts.kind.id}" notify="{notify}"></kor-field-editor> <kor-generator-editor kind="{opts.kind}" if="{tab == \'generators\' && opts.kind.id}" notify="{notify}"></kor-generator-editor> </kor-panel> </kor-layout-panel>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.tab = "general";
+    tag.notify = riot.observable();
+    tag.requireRoles = [ "kind_admin" ];
+    tag.mixin(wApp.mixins.session);
+    tag.on("mount", function() {
+        if (tag.opts.id) {
+            return Zepto.ajax({
+                url: "/kinds/" + tag.opts.id,
+                data: {
+                    include: "fields,generators,inheritance"
+                },
+                success: function(data) {
+                    tag.opts.kind = data;
+                    return tag.update();
+                }
+            });
+        } else {
+            return tag.opts.kind = {};
+        }
+    });
+    tag.on("kind-changed", function(new_kind) {
+        wApp.bus.trigger("kinds-changed");
+        tag.opts.kind = new_kind;
+        return tag.update();
+    });
+    tag.switchTo = function(name) {
+        return function(event) {
+            event.preventDefault();
+            tag.tab = name;
+            return tag.update();
+        };
+    };
+    tag.closeModal = function() {
+        if (tag.opts.modal) {
+            tag.opts.modal.trigger("close");
+            return window.location.reload();
+        }
+    };
+});
+
+riot.tag2("kor-kind-general-editor", '<h2> <kor-t key="general" with="{{capitalize: true}}" show="{opts.kind.id}"></kor-t> <kor-t show="{!opts.kind.id}" key="objects.create" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.kind\')}}}"></kor-t> </h2> <form onsubmit="{submit}" if="{possible_parents}"> <kor-field field-id="schema" label-key="kind.schema" model="{opts.kind}"></kor-field> <kor-field field-id="name" label-key="kind.name" model="{opts.kind}" errors="{errors.name}"></kor-field> <kor-field field-id="plural_name" label-key="kind.plural_name" model="{opts.kind}" errors="{errors.plural_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="kind.description" model="{opts.kind}"></kor-field> <kor-field field-id="url" label-key="kind.url" model="{opts.kind}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="kind.parent" model="{opts.kind}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="kind.abstract" model="{opts.kind}"></kor-field> <kor-field field-id="tagging" type="checkbox" label-key="kind.tagging" model="{opts.kind}"></kor-field> <div if="{!is_media()}"> <kor-field field-id="dating_label" label-key="kind.dating_label" model="{opts.kind}"></kor-field> <kor-field field-id="name_label" label-key="kind.name_label" model="{opts.kind}"></kor-field> <kor-field field-id="distinct_name_label" label-key="kind.distinct_name_label" model="{opts.kind}"></kor-field> </div> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
+    var error, success, tag;
+    tag = this;
+    tag.on("mount", function() {
+        tag.errors = {};
+        return Zepto.ajax({
+            type: "get",
+            url: "/kinds",
+            success: function(data) {
+                var i, kind, len, ref;
+                tag.possible_parents = [];
+                ref = data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    kind = ref[i];
+                    if (!tag.opts.kind || tag.opts.kind.id !== kind.id && tag.opts.kind.id !== 1) {
+                        tag.possible_parents.push({
+                            label: kind.name,
+                            value: kind.id
+                        });
+                    }
+                }
+                return tag.update();
+            }
+        });
+    });
+    tag.is_media = function() {
+        return opts.kind && opts.kind.uuid === wApp.data.medium_kind_uuid;
+    };
+    tag.new_record = function() {
+        return !(tag.opts.kind || {}).id;
+    };
+    tag.values = function() {
+        var field, i, len, ref, result;
+        result = {};
+        ref = tag.tags["kor-field"];
+        for (i = 0, len = ref.length; i < len; i++) {
+            field = ref[i];
+            result[field.fieldId()] = field.val();
+        }
+        return result;
+    };
+    success = function(data) {
+        tag.parent.trigger("kind-changed", data.record);
+        tag.errors = {};
+        return tag.update();
+    };
+    error = function(response) {
+        var data;
+        data = JSON.parse(response.response);
+        tag.errors = data.errors;
+        tag.opts.kind = data.record;
+        return tag.update();
+    };
+    tag.submit = function(event) {
+        event.preventDefault();
+        if (tag.new_record()) {
+            return Zepto.ajax({
+                type: "POST",
+                url: "/kinds",
+                data: JSON.stringify({
+                    kind: tag.values()
+                }),
+                success: success,
+                error: error
+            });
+        } else {
+            return Zepto.ajax({
+                type: "PATCH",
+                url: "/kinds/" + tag.opts.kind.id,
+                data: JSON.stringify({
+                    kind: tag.values()
+                }),
+                success: success,
+                error: error
+            });
+        }
+    };
+});
+
 riot.tag2("kor-loading", "<span>... loading ...</span>", "", "", function(opts) {});
 
 riot.tag2("kor-login", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>Login</h1> <div if="{anyFederatedAuth()}"> <div class="hr"></div> <p>{t(\'prompt.federation_login\')}</p> <a href="/env_auth" class="kor-button"> {config()[\'auth\'][\'env_auth_button_label\']} </a> <div class="hr"></div> </div> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <kor-input type="submit" riot-value="{tcap(\'verbs.login\')}"></kor-input> </form> <a href="#/password_recovery">{tcap(\'password_forgotten\')}</a> <div class="hr"></div> <strong> <span class="kor-shine">ConedaKOR</span> {t(\'nouns.version\')} <span class="kor-shine">{info().version}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'provided_by\')} <span class="kor-shine">{info().operator}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'nouns.license\')}<br> <a href="http://www.gnu.org/licenses/agpl-3.0.txt" target="_blank"> {t(\'nouns.agpl\')} </a> </strong> <div class="hr silent"></div> <strong> » <a href="{info().source_code_url}" target="_blank"> {t(\'objects.download\', {interpolations: {o: \'nouns.source_code\'}})} </a> </strong> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <div class="kor-blend"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
@@ -5032,23 +6002,23 @@ riot.tag2("kor-logout", '<a href="#" onclick="{logout}"> {t(\'verbs.logout\')} <
 });
 
 riot.tag2("kor-notifications", '<ul> <li each="{data in messages}" class="bg-warning {kor-fade-animation: data.remove}" onanimationend="{parent.animend}"> <i class="glyphicon glyphicon-exclamation-sign"></i> {data.message} </li> </ul>', "", "", function(opts) {
-    var fading, self;
-    self = this;
-    self.messages = [];
-    self.history = [];
-    self.animend = function(event) {
+    var fading, tag;
+    tag = this;
+    tag.messages = [];
+    tag.history = [];
+    tag.animend = function(event) {
         var i;
-        i = self.messages.indexOf(event.item.data);
-        self.history.push(self.messages[i]);
-        self.messages.splice(i, 1);
-        return self.update();
+        i = tag.messages.indexOf(event.item.data);
+        tag.history.push(tag.messages[i]);
+        tag.messages.splice(i, 1);
+        return tag.update();
     };
     fading = function(data) {
-        self.messages.push(data);
-        self.update();
+        tag.messages.push(data);
+        tag.update();
         return setTimeout(function() {
             data.remove = true;
-            return self.update();
+            return tag.update();
         }, 5e3);
     };
     kor.bus.on("notify", function(data) {
@@ -5057,15 +6027,40 @@ riot.tag2("kor-notifications", '<ul> <li each="{data in messages}" class="bg-war
         if (type === "default") {
             fading(data);
         }
-        return self.update();
+        return tag.update();
     });
 });
 
 riot.tag2("kor-search", '<h1>Search</h1> <form class="form"> <div class="row"> <div class="col-md-3"> <div class="form-group"> <input type="text" name="terms" placeholder="fulltext search ..." class="form-control" id="kor-search-form-terms" onchange="{form_to_url}" riot-value="{params.terms}"> </div> </div> </div> <div class="row"> <div class="col-md-12 collections"> <button class="btn btn-default btn-xs allnone" onclick="{allnone}">all/none</button> <div class="checkbox-inline" each="{collection in collections}"> <label> <input type="checkbox" riot-value="{collection.id}" checked="{parent.is_collection_checked(collection)}" onchange="{parent.form_to_url}"> {collection.name} </label> </div> </div> </div> <div class="row"> <div class="col-md-12 kinds"> <button class="btn btn-default btn-xs allnone" onclick="{allnone}">all/none</button> <div class="checkbox-inline" each="{kind in kinds}"> <label> <input type="checkbox" riot-value="{kind.id}" checked="{parent.is_kind_checked(kind)}" onchange="{parent.form_to_url}"> {kind.plural_name} </label> </div> </div> </div> <div class="row"> <div class="col-md-3 kinds" each="{field in fields}"> <div class="form-group"> <input type="text" name="{field.name}" placeholder="{field.search_label}" class="kor-dataset-field form-control" id="kor-search-form-dataset-{field.name}" onchange="{parent.form_to_url}" riot-value="{parent.params.dataset[field.name]}"> </div> </div> </div> </form>', "", "", function(opts) {
     var tag;
     tag = this;
-    window.x = this;
     tag.params = {};
+});
+
+riot.tag2("kor-sub-menu", '<a href="#" onclick="{toggle}">{opts.label}</a> <div class="content" show="{visible()}"> <yield></yield> </div>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.visible = function() {
+        return (Lockr.get("toggles") || {})[tag.opts.menuId];
+    };
+    tag.toggle = function(event) {
+        var data;
+        event.preventDefault();
+        data = Lockr.get("toggles") || {};
+        data[tag.opts.menuId] = !data[tag.opts.menuId];
+        return Lockr.set("toggles", data);
+    };
+});
+
+riot.tag2("kor-t", "", "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.value = function() {
+        return wApp.i18n.t(tag.opts.key, tag.opts["with"]);
+    };
+    tag.on("updated", function() {
+        return Zepto(tag.root).html(tag.value());
+    });
 });
 
 riot.tag2("kor-users", '<div class="kor-content-box"> <div class="kor-layout-commands"> <a href="#/users/new"><i class="plus"></i></a> </div> <h1>{tcap(\'activerecord.models.user\', {count: \'other\'})}</h1> <form onsubmit="{search}" class="inline"> <kor-input label="{t(\'nouns.search\')}" ref="search" riot-value="{opts.query.search}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <thead> <tr> <th class="tiny">{t(\'activerecord.attributes.user.personal\')}</th> <th class="small">{t(\'activerecord.attributes.user.name\')}</th> <th class="small">{t(\'activerecord.attributes.user.full_name\')}</th> <th>{t(\'activerecord.attributes.user.email\')}</th> <th class="tiny right"> {t(\'activerecord.attributes.user.created_at\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.last_login\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.expires_at\')} </th> <th class="tiny buttons"></th> </tr> </thead> <tbody> <tr each="{user in data.records}"> <td><i show="{user.personal}" class="fa fa-check"></i></td> <td>{user.name}</td> <td>{user.full_name}</td> <td class="force-wrap"> <a href="mailto:{user.email}">{user.email}</a> </td> <td class="right">{l(user.created_at)}</td> <td class="right">{l(user.last_login)}</td> <td class="right">{l(user.expires_at)}</td> <td class="right nobreak"> <a onclick="{resetLoginAttempts(user.id)}"> <i class="three_bars"></i> </a> <a onclick="{resetPassword(user.id)}"> <i class="reset_password"></i> </a> <a href="#/users/{user.id}/edit"><i class="pen"></i></a> <a onclick="{destroy(user.id)}"><i class="x"></i></a> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
@@ -5177,32 +6172,6 @@ riot.tag2("kor-welcome", '<div class="kor-content-box"> <h1>{config().app.welcom
     };
 });
 
-riot.tag2("kor-clipboard-control", '<a onclick="{toggle}"> <i class="target_hit" show="{isIncluded()}"></i> <i class="target" show="{!isIncluded()}"></i> </a>', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.isIncluded = function() {
-        return wApp.clipboard.includes(tag.opts.entity.id);
-    };
-    tag.toggle = function(event) {
-        event.preventDefault();
-        if (tag.isIncluded()) {
-            wApp.clipboard.remove(tag.opts.entity.id);
-            wApp.bus.trigger("message", "notice", tag.t("objects.unmarked_entity_success"));
-        } else {
-            if (wApp.clipboard.ids().length <= 500) {
-                wApp.clipboard.add(tag.opts.entity.id);
-                wApp.bus.trigger("message", "notice", tag.t("objects.marked_entity_success"));
-            } else {
-                wApp.bus.trigger("message", "error", tag.t("errors.clipboard_too_many_elements"));
-            }
-        }
-        return tag.update();
-    };
-});
-
 riot.tag2("kor-clipboard", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="kor-layout-commands"> <a onclick="{reset}"><i class="minus"></i></a> </div> <h1>{tcap(\'nouns.clipboard\')}</h1> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <tbody> <tr each="{entity in data.records}"> <td> <kor-input type="checkbox" ref="entityIds" riot-value="{true}" data-id="{entity.id}"></kor-input> </td> <td> <span show="{!entity.medium}">{entity.display_name}</span> <img show="{entity.medium}" riot-src="{entity.medium.url.icon}" class="image"> </td> <td class="right nobreak"> <a onclick="{remove(entity.id)}"><i class="minus"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, tag;
     tag = this;
@@ -5263,6 +6232,32 @@ riot.tag2("kor-clipboard", '<div class="kor-layout-left kor-layout-large"> <div 
     };
 });
 
+riot.tag2("kor-clipboard-control", '<a onclick="{toggle}"> <i class="target_hit" show="{isIncluded()}"></i> <i class="target" show="{!isIncluded()}"></i> </a>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.isIncluded = function() {
+        return wApp.clipboard.includes(tag.opts.entity.id);
+    };
+    tag.toggle = function(event) {
+        event.preventDefault();
+        if (tag.isIncluded()) {
+            wApp.clipboard.remove(tag.opts.entity.id);
+            wApp.bus.trigger("message", "notice", tag.t("objects.unmarked_entity_success"));
+        } else {
+            if (wApp.clipboard.ids().length <= 500) {
+                wApp.clipboard.add(tag.opts.entity.id);
+                wApp.bus.trigger("message", "notice", tag.t("objects.marked_entity_success"));
+            } else {
+                wApp.bus.trigger("message", "error", tag.t("errors.clipboard_too_many_elements"));
+            }
+        }
+        return tag.update();
+    };
+});
+
 riot.tag2("kor-datings-editor", '<div class="header"> <button onclick="{add}"> {t(\'verbs.add\', {capitalize: true})} </button> <label> {t(         \'activerecord.attributes.relationship.dating.other\',         {capitalize: true}       )} </label> <div class="clearfix"></div> </div> <ul> <li each="{dating, i in opts.datings}" show="{!dating._destroy}"> <kor-input label="{t(\'activerecord.attributes.dating.label\', {capitalize: true})}" riot-value="{dating.label}" ref="datingLabels"></kor-input> <kor-input label="{t(\'activerecord.attributes.dating.dating_string\', {capitalize: true})}" riot-value="{dating.value}" ref="datingDatingStrings"></kor-input> <button onclick="{remove(i)}"> {t(\'verbs.remove\')} </button> </li> </ul>', "", "", function(opts) {
     var tag;
     tag = this;
@@ -5297,6 +6292,16 @@ riot.tag2("kor-datings-editor", '<div class="header"> <button onclick="{add}"> {
             d["value"] = datingDatingStrings[i].value();
         }
         return tag.opts.datings;
+    };
+});
+
+riot.tag2("kor-entity", '<virtual if="{isMedium()}"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{opts.entity}"></kor-clipboard-control> <a href="#/entities/{opts.entity.id}"> <img riot-src="{opts.entity.medium.url.thumbnail}"> </a> <div> {t(\'nouns.content_type\')}: <span class="content-type">{opts.entity.medium.content_type}</span> </div> </virtual> <virtual if="{!isMedium()}"> <a class="name" href="#/entities/{opts.entity.id}">{opts.entity.display_name}</a> <span class="kind">{opts.entity.kind_name}</span> </virtual>', "", 'class="{medium: isMedium()}"', function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.isMedium = function() {
+        return tag.opts.entity && !!tag.opts.entity.medium_id;
     };
 });
 
@@ -5456,13 +6461,98 @@ riot.tag2("kor-entity-selector", '<a onclick="{gotoTab(\'search\')}" class="{\'s
     };
 });
 
-riot.tag2("kor-entity", '<virtual if="{isMedium()}"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{opts.entity}"></kor-clipboard-control> <a href="#/entities/{opts.entity.id}"> <img riot-src="{opts.entity.medium.url.thumbnail}"> </a> <div> {t(\'nouns.content_type\')}: <span class="content-type">{opts.entity.medium.content_type}</span> </div> </virtual> <virtual if="{!isMedium()}"> <a class="name" href="#/entities/{opts.entity.id}">{opts.entity.display_name}</a> <span class="kind">{opts.entity.kind_name}</span> </virtual>', "", 'class="{medium: isMedium()}"', function(opts) {
+riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{inputType()}" name="{opts.fieldId}" riot-value="{value()}" checked="{checked()}"> <textarea if="{has_textarea()}" name="{opts.fieldId}">{value()}</textarea> <select if="{has_select()}" name="{opts.fieldId}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.allowNoSelection}" riot-value="{undefined}" selected="{!!value()}">{noSelectionLabel()}</option> <option each="{o in opts.options}" riot-value="{o.value}" selected="{parent.selected(o.value)}">{o.label}</option> </select> <ul if="{has_errors()}" class="errors"> <li each="{error in errors()}">{error}</li> </ul> </label>', "", "class=\"{'errors': has_errors()}\"", function(opts) {
     var tag;
     tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.isMedium = function() {
-        return tag.opts.entity && !!tag.opts.entity.medium_id;
+    tag.on("mount", function() {
+        var base;
+        if (tag.parent) {
+            (base = tag.parent).formFields || (base.formFields = {});
+            return tag.parent.formFields[tag.fieldId()] = tag;
+        }
+    });
+    tag.on("unmount", function() {
+        var base;
+        if (tag.parent) {
+            (base = tag.parent).formFields || (base.formFields = {});
+            return delete tag.parent.formFields[tag.fieldId()];
+        }
+    });
+    tag.on("updated", function() {
+        if (tag.has_select()) {
+            return Zepto(tag.root).find("select option[selected]").prop("selected", true);
+        }
+    });
+    tag.fieldId = function() {
+        return tag.opts.fieldId;
+    };
+    tag.label = function() {
+        var i, k, keys, len, result;
+        if (tag.opts.label) {
+            return tag.opts.label;
+        } else if (tag.opts.labelKey) {
+            keys = [ tag.opts.labelKey, "activerecord.attributes." + tag.opts.labelKey ];
+            for (i = 0, len = keys.length; i < len; i++) {
+                k = keys[i];
+                if (result = wApp.i18n.t(k, {
+                    capitalize: true
+                })) {
+                    return result;
+                }
+            }
+        } else {
+            return tag.fieldId();
+        }
+    };
+    tag.inputType = function() {
+        return opts.type || "text";
+    };
+    tag.has_input = function() {
+        return !tag.has_textarea() && !tag.has_select();
+    };
+    tag.has_textarea = function() {
+        return tag.inputType() === "textarea";
+    };
+    tag.has_select = function() {
+        return tag.inputType() === "select";
+    };
+    tag.noSelectionLabel = function() {
+        return tag.opts.noSelectionLabel || wApp.i18n.t("nothing_selected");
+    };
+    tag.checked = function() {
+        if (tag.inputType() === "checkbox") {
+            return tag.value();
+        } else {
+            return false;
+        }
+    };
+    tag.selected = function(key) {
+        if (tag.value()) {
+            if (tag.opts.multiple) {
+                return tag.value().indexOf(key) > -1;
+            } else {
+                return tag.value() === key;
+            }
+        }
+    };
+    tag.value = function() {
+        return tag.opts.value || (tag.opts.model ? tag.opts.model[tag.opts.fieldId] : void 0);
+    };
+    tag.errors = function() {
+        var m;
+        return tag.opts.errors || ((m = tag.opts.model) ? (m.errors || {})[tag.opts.fieldId] || [] : []);
+    };
+    tag.has_errors = function() {
+        return tag.errors().length > 0;
+    };
+    tag.val = function() {
+        var element;
+        element = Zepto(tag.root).find("input, textarea, select");
+        if (tag.inputType() === "checkbox") {
+            return element.prop("checked");
+        } else {
+            return element.val();
+        }
     };
 });
 
@@ -5617,6 +6707,150 @@ riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'
     };
 });
 
+riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <kor-field label-key="hide_abstract" type="checkbox" field-id="hideAbstract" onchange="{submit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/kinds/new"> <i class="fa fa-plus-square"></i> </a> </div> <virtual if="{filteredRecords && filteredRecords.length}"> <table each="{records, schema in groupedResults}" class="kor_table text-left"> <thead> <tr> <th>{schema == \'null\' ? t(\'no_schema\') : schema}</th> <th></th> </tr> </thead> <tbody> <tr each="{kind in records}"> <td class="{active: !kind.abstract}"> <div class="name"> <a href="#/kinds/{kind.id}">{kind.name}</a> </div> <div show="{kind.fields.length}"> <span class="label"> {wApp.i18n.t(\'activerecord.models.field\', {count: \'other\'})}: </span> {fieldNamesFor(kind)} </div> <div show="{kind.generators.length}"> <span class="label"> {wApp.i18n.t(\'activerecord.models.generator\', {count: \'other\'})}: </span> {generatorNamesFor(kind)} </div> </td> <td class="text-right buttons"> <a href="#/kinds/{kind.id}"><i class="fa fa-edit"></i></a> <a if="{kind.removable}" href="#/kinds/{kind.id}" onclick="{delete(kind)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </virtual>', "", "", function(opts) {
+    var fetch, filter_records, groupAndSortRecords, tag, typeCompare;
+    tag = this;
+    tag.requireRoles = [ "kind_admin" ];
+    tag.mixin(wApp.mixins.session);
+    tag.t = wApp.i18n.t;
+    tag.on("mount", function() {
+        return fetch();
+    });
+    tag.filters = {};
+    tag["delete"] = function(kind) {
+        return function(event) {
+            event.preventDefault();
+            if (wApp.utils.confirm(wApp.i18n.translate("confirm.general"))) {
+                return Zepto.ajax({
+                    type: "delete",
+                    url: "/kinds/" + kind.id,
+                    success: function() {
+                        return fetch();
+                    }
+                });
+            }
+        };
+    };
+    tag.isMedia = function(kind) {
+        return kind.uuid === wApp.data.medium_kind_uuid;
+    };
+    tag.fieldNamesFor = function(kind) {
+        var k;
+        return function() {
+            var i, len, ref, results1;
+            ref = kind.fields;
+            results1 = [];
+            for (i = 0, len = ref.length; i < len; i++) {
+                k = ref[i];
+                results1.push(k.show_label);
+            }
+            return results1;
+        }().join(", ");
+    };
+    tag.generatorNamesFor = function(kind) {
+        var g;
+        return function() {
+            var i, len, ref, results1;
+            ref = kind.generators;
+            results1 = [];
+            for (i = 0, len = ref.length; i < len; i++) {
+                g = ref[i];
+                results1.push(g.name);
+            }
+            return results1;
+        }().join(", ");
+    };
+    tag.submit = function() {
+        tag.filters.terms = tag.formFields["terms"].val();
+        tag.filters.hideAbstract = tag.formFields["hideAbstract"].val();
+        filter_records();
+        groupAndSortRecords();
+        return tag.update();
+    };
+    tag.delayedSubmit = function(event) {
+        if (tag.delayedTimeout) {
+            tag.delayedTimeout.clearTimeout;
+            tag.delayedTimeout = void 0;
+        }
+        tag.delayedTimeout = window.setTimeout(tag.submit, 300);
+        return true;
+    };
+    filter_records = function() {
+        var kind, re, results;
+        tag.filteredRecords = function() {
+            var i, len, ref;
+            if (tag.filters.terms) {
+                re = new RegExp("" + tag.filters.terms, "i");
+                results = [];
+                ref = tag.data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    kind = ref[i];
+                    if (kind.name.match(re)) {
+                        if (results.indexOf(kind) === -1) {
+                            results.push(kind);
+                        }
+                    }
+                }
+                return results;
+            } else {
+                return tag.data.records;
+            }
+        }();
+        if (tag.filters.hideAbstract) {
+            return tag.filteredRecords = tag.filteredRecords.filter(function(kind) {
+                return !kind.abstract;
+            });
+        }
+    };
+    typeCompare = function(x, y) {
+        if (x.match(/^E\d+/) && y.match(/^E\d+/)) {
+            x = parseInt(x.replace(/^E/, "").split(" ")[0]);
+            y = parseInt(y.replace(/^E/, "").split(" ")[0]);
+        }
+        if (x > y) {
+            return 1;
+        } else {
+            if (x === y) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    };
+    groupAndSortRecords = function() {
+        var i, k, len, name, r, ref, results, v;
+        results = {};
+        ref = tag.filteredRecords;
+        for (i = 0, len = ref.length; i < len; i++) {
+            r = ref[i];
+            results[name = r["schema"]] || (results[name] = []);
+            results[r["schema"]].push(r);
+        }
+        for (k in results) {
+            v = results[k];
+            results[k] = v.sort(function(x, y) {
+                return typeCompare(x.name, y.name);
+            });
+        }
+        return tag.groupedResults = results;
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            type: "get",
+            url: "/kinds",
+            data: {
+                include: "generators,fields,inheritance"
+            },
+            success: function(data) {
+                tag.data = data;
+                filter_records();
+                groupAndSortRecords();
+                return tag.update();
+            }
+        });
+    };
+});
+
 riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> <div if="{!termsAccepted()}"> <div class="hr"></div> <button> {tcap(\'commands.accept_terms\')} </button> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
@@ -5661,6 +6895,39 @@ riot.tag2("kor-media-relation", '<div class="name"> {opts.name} <kor-pagination 
             success: function(data) {
                 tag.data = data;
                 return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-menu-fix", "", "", "", function(opts) {
+    var fixMenu, tag;
+    tag = this;
+    tag.on("mount", function() {
+        return wApp.bus.on("kinds-changed", fixMenu);
+    });
+    tag.on("unmount", function() {
+        return wApp.bus.off("kinds-changed", fixMenu);
+    });
+    fixMenu = function() {
+        return Zepto.ajax({
+            url: "/kinds",
+            data: {
+                only_active: true
+            },
+            success: function(data) {
+                var i, kind, len, placeholder, ref, results, select;
+                select = Zepto("#new_entity_kind_id");
+                placeholder = select.find("option:first-child").remove();
+                select.find("option").remove();
+                select.append(placeholder);
+                ref = data.records;
+                results = [];
+                for (i = 0, len = ref.length; i < len; i++) {
+                    kind = ref[i];
+                    results.push(select.append('<option value="' + kind.id + '">' + kind.name + "</option>"));
+                }
+                return results;
             }
         });
     };
@@ -5978,29 +7245,6 @@ riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" 
     };
 });
 
-riot.tag2("kor-relation-selector", '<kor-input type="select" options="{relationNames}" riot-value="{opts.riotValue}" ref="input">', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.on("criteria-changed", function() {
-        return Zepto.ajax({
-            url: "/relations/names",
-            data: {
-                from_kind_ids: tag.opts.sourceKindId,
-                to_kind_ids: tag.opts.targetKindId
-            },
-            success: function(data) {
-                tag.relationNames = data;
-                return tag.update();
-            }
-        });
-    });
-    tag.value = function() {
-        return tag.refs.input.value();
-    };
-});
-
 riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> {opts.name} <a onclick="{toggle}" class="toggle"> <i show="{!expanded}" class="triangle_up"></i> <i show="{expanded}" class="triangle_down"></i> </a> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}" refresh-handler="{parent.refresh}"></kor-relationship> </virtual>', "", "", function(opts) {
     var fetch, tag, updateExpansion;
     tag = this;
@@ -6054,58 +7298,271 @@ riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="
     };
 });
 
-riot.tag2("kor-relationship-editor", '<h1>{header()}</h1> <form onsubmit="{save}"> <kor-relation-selector source-kind-id="{sourceKindId}" target-kind-id="{targetKindId}" riot-value="{opts.relationship.relation_name}" errors="{errors.relation_id}" ref="relation_name"></kor-relation-selector> <kor-entity-selector relation-name="{relationName}" errors="{errors.to_id}" riot-value="{opts.relationship.to}" ref="target_id"></kor-entity-selector> <div class="hr"></div> <kor-properties-editor properties="{opts.relationship.properties}" ref="properties"></kor-properties-editor> <div class="hr"></div> <kor-datings-editor datings="{opts.relationship.datings}" ref="datings"></kor-datings-editor> <div class="hr"></div> <kor-input type="submit" riot-value="{t(\'verbs.save\')}"></kor-input> <kor-input type="reset" riot-value="{t(\'cancel\')}"></kor-input> </form>', "", "", function(opts) {
+riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-panel> <h1> <span show="{opts.id}" if="{relation}">{relation.name}</span> <span show="{!opts.id}"> {wApp.i18n.t(\'objects.create\', {               \'interpolations\': {                 \'o\': wApp.i18n.t(\'activerecord.models.relation\')               }             })} </span> </h1> <form onsubmit="{submit}" if="{relation && possible_parents}"> <kor-field field-id="schema" label-key="relation.schema" model="{relation}"></kor-field> <kor-field field-id="name" label-key="relation.name" model="{relation}" errors="{errors.name}"></kor-field> <kor-field field-id="reverse_name" label-key="relation.reverse_name" model="{relation}" errors="{errors.reverse_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="relation.description" model="{relation}"></kor-field> <kor-field if="{possible_kinds}" field-id="from_kind_id" type="select" options="{possible_kinds}" label-key="relation.from_kind_id" model="{relation}" errors="{errors.from_kind_id}"></kor-field> <kor-field if="{possible_kinds}" field-id="to_kind_id" type="select" options="{possible_kinds}" label-key="relation.to_kind_id" model="{relation}" errors="{errors.to_kind_id}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="relation.parent" model="{relation}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="relation.abstract" model="{relation}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form> </kor-panel> </kor-layout-panel>', "", "", function(opts) {
+    var error, fetch, fetchPossibleKinds, fetchPossibleParents, success, tag;
+    tag = this;
+    window.t = tag;
+    tag.on("mount", function() {
+        tag.errors = {};
+        if (tag.opts.id) {
+            fetch();
+        } else {
+            tag.relation = {};
+            tag.update();
+        }
+        fetchPossibleParents();
+        return fetchPossibleKinds();
+    });
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/relations/" + tag.opts.id,
+            data: {
+                include: "inheritance,technical"
+            },
+            success: function(data) {
+                tag.relation = data;
+                return tag.update();
+            }
+        });
+    };
+    fetchPossibleParents = function() {
+        return Zepto.ajax({
+            type: "get",
+            url: "/relations",
+            success: function(data) {
+                var i, len, ref, relation;
+                tag.possible_parents = [];
+                ref = data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    relation = ref[i];
+                    if (parseInt(tag.opts.id) !== relation.id) {
+                        tag.possible_parents.push({
+                            label: relation.name,
+                            value: relation.id
+                        });
+                    }
+                }
+                return tag.update();
+            }
+        });
+    };
+    fetchPossibleKinds = function() {
+        return Zepto.ajax({
+            url: "/kinds",
+            success: function(data) {
+                var i, kind, len, ref;
+                tag.possible_kinds = [];
+                ref = data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    kind = ref[i];
+                    tag.possible_kinds.push({
+                        label: kind.name,
+                        value: kind.id
+                    });
+                }
+                return tag.update();
+            }
+        });
+    };
+    tag.new_record = function() {
+        return !tag.opts.id;
+    };
+    tag.values = function() {
+        var field, i, len, ref, result;
+        result = {
+            lock_version: tag.relation.lock_version
+        };
+        ref = tag.tags["kor-field"];
+        for (i = 0, len = ref.length; i < len; i++) {
+            field = ref[i];
+            result[field.fieldId()] = field.val();
+        }
+        return result;
+    };
+    success = function(data) {
+        window.location.hash = "/relations";
+        tag.errors = {};
+        return tag.update();
+    };
+    error = function(response) {
+        var data;
+        data = JSON.parse(response.response);
+        tag.errors = data.errors;
+        tag.relation = data.record;
+        return tag.update();
+    };
+    tag.submit = function(event) {
+        event.preventDefault();
+        if (tag.new_record()) {
+            return Zepto.ajax({
+                type: "POST",
+                url: "/relations",
+                data: JSON.stringify({
+                    relation: tag.values()
+                }),
+                success: success,
+                error: error
+            });
+        } else {
+            return Zepto.ajax({
+                type: "PATCH",
+                url: "/relations/" + tag.opts.id,
+                data: JSON.stringify({
+                    relation: tag.values()
+                }),
+                success: success,
+                error: error
+            });
+        }
+    };
+});
+
+riot.tag2("kor-relation-selector", '<kor-input type="select" options="{relationNames}" riot-value="{opts.riotValue}" ref="input">', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.errors = {};
-    tag.on("update", function() {
-        tag.sourceKindId = tag.opts.source.kind_id;
-        tag.targetKindId = tag.opts.target.kind_id;
-        return tag.relationName = tag.opts.relationship.relation_name;
+    tag.on("criteria-changed", function() {
+        return Zepto.ajax({
+            url: "/relations/names",
+            data: {
+                from_kind_ids: tag.opts.sourceKindId,
+                to_kind_ids: tag.opts.targetKindId
+            },
+            success: function(data) {
+                tag.relationNames = data;
+                return tag.update();
+            }
+        });
     });
-    tag.on("updated", function() {
-        tag.refs["relation_name"].trigger("criteria-changed");
-        return tag.refs["target_id"].trigger("criteria-changed");
-    });
-    tag.submit = function(event) {
-        event.preventDefault();
-        if (tag.opts.relationship) {
-            return Zepto.ajax({
-                type: "PATCH",
-                url: "/relationships/" + tag.opts.relationship.id,
-                data: {
-                    relationship: values()
-                },
-                success: function(data) {
-                    var h;
-                    if (h = tag.opts.doneHandler) {
-                        return h();
-                    }
-                },
-                error: function(xhr) {
-                    tag.errors = JSON.parse(xhr.responseText).errors;
-                    return wApp.utils.scrollToTop();
-                }
-            });
-        }
+    tag.value = function() {
+        return tag.refs.input.value();
     };
-    tag.values = function() {
-        return {
-            properties: tag.refs.properties.value(),
-            datings: tag.refs.datings.value(),
-            relation_name: tag.refs.relation_name.value()
+});
+
+riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/relations/new"> <i class="fa fa-plus-square"></i> </a> </div> <div if="{filteredRecords && !filteredRecords.length}"> {wApp.i18n.t(\'objects.none_found\', {       interpolations: {o: \'activerecord.models.relation.other\'},       capitalize: true     })} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th>{schema == \'null\' ? t(\'no_schema\') : schema}</th> <th> {wApp.i18n.t(\'activerecord.attributes.relation.from_kind_id\')} {wApp.i18n.t(\'activerecord.attributes.relation.to_kind_id\')} </th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="text-right buttons"> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table>', "", "", function(opts) {
+    var fetch, fetchKinds, filter_records, groupAndSortRecords, tag, typeCompare;
+    tag = this;
+    tag.requireRoles = [ "relation_admin" ];
+    tag.mixin(wApp.mixins.session);
+    tag.on("mount", function() {
+        fetch();
+        return fetchKinds();
+    });
+    tag.filters = {};
+    tag["delete"] = function(kind) {
+        return function(event) {
+            event.preventDefault();
+            if (wApp.utils.confirm(wApp.i18n.translate("confirm.general"))) {
+                return Zepto.ajax({
+                    type: "delete",
+                    url: "/relations/" + kind.id,
+                    success: function() {
+                        return fetch();
+                    }
+                });
+            }
         };
     };
-    tag.header = function() {
-        var key;
-        key = !!tag.opts.relationship ? "edit" : "create";
-        return tag.t("objects." + key, {
-            interpolations: {
-                o: "activerecord.models.relationship"
+    tag.submit = function() {
+        tag.filters.terms = tag.formFields["terms"].val();
+        tag.filters.hideAbstract = tag.formFields["hideAbstract"].val();
+        filter_records();
+        groupAndSortRecords();
+        return tag.update();
+    };
+    tag.delayedSubmit = function(event) {
+        if (tag.delayedTimeout) {
+            tag.delayedTimeout.clearTimeout;
+            tag.delayedTimeout = void 0;
+        }
+        tag.delayedTimeout = window.setTimeout(tag.submit, 300);
+        return true;
+    };
+    filter_records = function() {
+        var re, relation, results;
+        return tag.filteredRecords = function() {
+            var i, len, ref;
+            if (tag.filters.terms) {
+                re = new RegExp("" + tag.filters.terms, "i");
+                results = [];
+                ref = tag.data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    relation = ref[i];
+                    if (relation.name.match(re) || relation.reverse_name.match(re)) {
+                        if (results.indexOf(relation) === -1) {
+                            results.push(relation);
+                        }
+                    }
+                }
+                return results;
+            } else {
+                return tag.data.records;
+            }
+        }();
+    };
+    typeCompare = function(x, y) {
+        if (x.match(/^P\d+/) && y.match(/^P\d+/)) {
+            x = parseInt(x.replace(/^P/, "").split(" ")[0]);
+            y = parseInt(y.replace(/^P/, "").split(" ")[0]);
+        }
+        if (x > y) {
+            return 1;
+        } else {
+            if (x === y) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    };
+    groupAndSortRecords = function() {
+        var i, k, len, name, r, ref, results, v;
+        results = {};
+        ref = tag.filteredRecords;
+        for (i = 0, len = ref.length; i < len; i++) {
+            r = ref[i];
+            results[name = r["schema"]] || (results[name] = []);
+            results[r["schema"]].push(r);
+        }
+        for (k in results) {
+            v = results[k];
+            results[k] = v.sort(function(x, y) {
+                return typeCompare(x.name, y.name);
+            });
+        }
+        return tag.groupedResults = results;
+    };
+    tag.kind = function(id) {
+        return tag.kindLookup[id].name;
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/relations",
+            data: {
+                include: "inheritance"
             },
-            capitalize: true
+            success: function(data) {
+                tag.data = data;
+                filter_records();
+                groupAndSortRecords();
+                return tag.update();
+            }
+        });
+    };
+    fetchKinds = function() {
+        return Zepto.ajax({
+            url: "/kinds",
+            success: function(data) {
+                var i, k, len, ref;
+                tag.kindLookup = {};
+                ref = data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    k = ref[i];
+                    tag.kindLookup[k.id] = k;
+                }
+                return tag.update();
+            }
         });
     };
 });
@@ -6178,17 +7635,73 @@ riot.tag2("kor-relationship", '<div class="part"> <virtual if="{!editorActive}">
     };
 });
 
+riot.tag2("kor-relationship-editor", '<h1>{header()}</h1> <form onsubmit="{save}"> <kor-relation-selector source-kind-id="{sourceKindId}" target-kind-id="{targetKindId}" riot-value="{opts.relationship.relation_name}" errors="{errors.relation_id}" ref="relation_name"></kor-relation-selector> <kor-entity-selector relation-name="{relationName}" errors="{errors.to_id}" riot-value="{opts.relationship.to}" ref="target_id"></kor-entity-selector> <div class="hr"></div> <kor-properties-editor properties="{opts.relationship.properties}" ref="properties"></kor-properties-editor> <div class="hr"></div> <kor-datings-editor datings="{opts.relationship.datings}" ref="datings"></kor-datings-editor> <div class="hr"></div> <kor-input type="submit" riot-value="{t(\'verbs.save\')}"></kor-input> <kor-input type="reset" riot-value="{t(\'cancel\')}"></kor-input> </form>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.errors = {};
+    tag.on("update", function() {
+        tag.sourceKindId = tag.opts.source.kind_id;
+        tag.targetKindId = tag.opts.target.kind_id;
+        return tag.relationName = tag.opts.relationship.relation_name;
+    });
+    tag.on("updated", function() {
+        tag.refs["relation_name"].trigger("criteria-changed");
+        return tag.refs["target_id"].trigger("criteria-changed");
+    });
+    tag.submit = function(event) {
+        event.preventDefault();
+        if (tag.opts.relationship) {
+            return Zepto.ajax({
+                type: "PATCH",
+                url: "/relationships/" + tag.opts.relationship.id,
+                data: {
+                    relationship: values()
+                },
+                success: function(data) {
+                    var h;
+                    if (h = tag.opts.doneHandler) {
+                        return h();
+                    }
+                },
+                error: function(xhr) {
+                    tag.errors = JSON.parse(xhr.responseText).errors;
+                    return wApp.utils.scrollToTop();
+                }
+            });
+        }
+    };
+    tag.values = function() {
+        return {
+            properties: tag.refs.properties.value(),
+            datings: tag.refs.datings.value(),
+            relation_name: tag.refs.relation_name.value()
+        };
+    };
+    tag.header = function() {
+        var key;
+        key = !!tag.opts.relationship ? "edit" : "create";
+        return tag.t("objects." + key, {
+            interpolations: {
+                o: "activerecord.models.relationship"
+            },
+            capitalize: true
+        });
+    };
+});
+
 riot.tag2("kor-sa-entity", '<div class="auth" if="{!authorized}"> <strong>Info</strong> <p> It seems you are not allowed to see this content. Please <a href="{login_url()}">login</a> to the kor installation first. </p> </div> <a href="{url()}" if="{authorized}" target="_blank"> <img if="{data.medium}" riot-src="{image_url()}"> <div if="{!data.medium}"> <h3>{data.display_name}</h3> <em if="{include(\'kind\')}"> {data.kind_name} <span show="{data.subtype}">({data.subtype})</span> </em> </div> </a>', "", "class=\"{'kor-style': opts.korStyle, 'kor': opts.korStyle}\"", function(opts) {
-    var self;
-    self = this;
-    self.authorized = true;
-    self.on("mount", function() {
+    var tag;
+    tag = this;
+    tag.authorized = true;
+    tag.on("mount", function() {
         var base;
-        if (self.opts.id) {
+        if (tag.opts.id) {
             base = $("script[kor-url]").attr("kor-url") || "";
             return $.ajax({
                 type: "get",
-                url: base + "/entities/" + self.opts.id,
+                url: base + "/entities/" + tag.opts.id,
                 data: {
                     include: "all"
                 },
@@ -6197,14 +7710,14 @@ riot.tag2("kor-sa-entity", '<div class="auth" if="{!authorized}"> <strong>Info</
                     return xhr.withCredentials = true;
                 },
                 success: function(data) {
-                    self.data = data;
-                    return self.update();
+                    tag.data = data;
+                    return tag.update();
                 },
                 error: function(request) {
-                    self.data = {};
+                    tag.data = {};
                     if (request.status === 403) {
-                        self.authorized = false;
-                        return self.update();
+                        tag.authorized = false;
+                        return tag.update();
                     }
                 }
             });
@@ -6212,39 +7725,51 @@ riot.tag2("kor-sa-entity", '<div class="auth" if="{!authorized}"> <strong>Info</
             return raise("this widget requires an id");
         }
     });
-    self.login_url = function() {
+    tag.login_url = function() {
         var base, return_to;
         base = $("script[kor-url]").attr("kor-url") || "";
         return_to = document.location.href;
         return base + "/login?return_to=" + return_to;
     };
-    self.image_size = function() {
-        return self.opts.korImageSize || "preview";
+    tag.image_size = function() {
+        return tag.opts.korImageSize || "preview";
     };
-    self.image_url = function() {
+    tag.image_url = function() {
         var base, size;
         base = $("script[kor-url]").attr("kor-url") || "";
-        size = self.image_size();
-        return "" + base + self.data.medium.url[size];
+        size = tag.image_size();
+        return "" + base + tag.data.medium.url[size];
     };
-    self.include = function(what) {
+    tag.include = function(what) {
         var includes;
-        includes = (self.opts.korInclude || "").split(/\s+/);
+        includes = (tag.opts.korInclude || "").split(/\s+/);
         return includes.indexOf(what) !== -1;
     };
-    self.url = function() {
+    tag.url = function() {
         var base;
         base = $("[kor-url]").attr("kor-url") || "";
-        return base + "/blaze#/entities/" + self.data.id;
+        return base + "/blaze#/entities/" + tag.data.id;
     };
-    self.human_size = function() {
+    tag.human_size = function() {
         var size;
-        size = self.data.medium.file_size / 1024 / 1024;
+        size = tag.data.medium.file_size / 1024 / 1024;
         return Math.floor(size * 100) / 100;
     };
 });
 
 riot.tag2("kor-stats", "<h1>STATS</h1>", "", "", function(opts) {});
+
+riot.tag2("kor-submit", '<input type="submit" riot-value="{label()}">', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.label = function() {
+        var base;
+        (base = tag.opts).labelKey || (base.labelKey = "verbs.save");
+        return wApp.i18n.t(tag.opts.labelKey, {
+            capitalize: true
+        });
+    };
+});
 
 riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1 show="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <h1 show="{!opts.id}"> {tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.personal\')}" name="make_personal" type="checkbox" riot-value="{data.personal}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.active\')}" name="active" type="checkbox" ref="fields" riot-value="{data.active}"></kor-input> <div class="expires-at"> <kor-input label="{tcap(\'activerecord.attributes.user.expires_at\')}" name="expires_at" ref="fields" riot-value="{valueForDate(data.expires_at)}" errors="{errors.expires_at}" type="{\'date\'}"></kor-input> <button onclick="{expiresIn(0)}"> {tcap(\'activerecord.attributes.user.does_not_expire\')} </button> <button onclick="{expiresIn(7)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 7}})} </button> <button onclick="{expiresIn(30)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 30}})} </button> <button onclick="{expiresIn(180)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 180}})} </button> <div class="clearfix"></div> </div> <div class="hr"></div> <kor-input if="{credentials}" label="{tcap(\'activerecord.attributes.user.groups\')}" name="group_ids" type="select" options="{credentials.records}" multiple="{true}" ref="fields" riot-value="{data.group_ids}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.authority_group_admin\')}" name="authority_group_admin" type="checkbox" ref="fields" riot-value="{data.authority_group_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.relation_admin\')}" name="relation_admin" type="checkbox" ref="fields" riot-value="{data.relation_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.kind_admin\')}" name="kind_admin" type="checkbox" ref="fields" riot-value="{data.kind_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.admin\')}" name="admin" type="checkbox" ref="fields" riot-value="{data.admin}"></kor-input> <div class="hr"></div> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var create, expiresAtTag, fetchCredentials, fetchUser, tag, update, values;
@@ -6370,31 +7895,6 @@ riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show
     };
 });
 
-riot.tag2("w-app-loader", '<div class="app"></div>', "", "", function(opts) {
-    var reloadApp, tag;
-    tag = this;
-    reloadApp = function() {
-        var preloaders;
-        if (tag.mountedApp) {
-            tag.mountedApp.unmount(true);
-        }
-        preloaders = wApp.setup();
-        return $.when.apply($, preloaders).then(function() {
-            var element, opts;
-            element = Zepto(tag.root).find(".app")[0];
-            opts = {
-                routing: true
-            };
-            tag.mountedApp = riot.mount(element, "w-app", opts)[0];
-            return console.log("application (re)loaded");
-        });
-    };
-    wApp.bus.on("reload-app", reloadApp);
-    tag.on("mount", function() {
-        return wApp.bus.trigger("reload-app");
-    });
-});
-
 riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div class="w-content" ref="content"></div> </div> <w-modal></w-modal> <w-messaging></w-messaging>', "", "", function(opts) {
     var redirectTo, tag;
     tag = this;
@@ -6491,9 +7991,6 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                               case "/profile":
                                 return "kor-profile";
 
-                              case "/search":
-                                return "kor-search";
-
                               case "/new-media":
                                 return "kor-new-media";
 
@@ -6511,6 +8008,9 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
 
                               case "/entities/isolated":
                                 return "kor-isolated-entities";
+
+                              case "/search":
+                                return "kor-search";
 
                               default:
                                 return "kor-search";
@@ -6574,6 +8074,31 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
         wApp.routing.path(new_path);
         return null;
     };
+});
+
+riot.tag2("w-app-loader", '<div class="app"></div>', "", "", function(opts) {
+    var reloadApp, tag;
+    tag = this;
+    reloadApp = function() {
+        var preloaders;
+        if (tag.mountedApp) {
+            tag.mountedApp.unmount(true);
+        }
+        preloaders = wApp.setup();
+        return $.when.apply($, preloaders).then(function() {
+            var element, opts;
+            element = Zepto(tag.root).find(".app")[0];
+            opts = {
+                routing: true
+            };
+            tag.mountedApp = riot.mount(element, "w-app", opts)[0];
+            return console.log("application (re)loaded");
+        });
+    };
+    wApp.bus.on("reload-app", reloadApp);
+    tag.on("mount", function() {
+        return wApp.bus.trigger("reload-app");
+    });
 });
 
 riot.tag2("w-bar-chart", '<svg riot-width="{width()}" riot-height="{height()}"> <rect class="bg" riot-width="{width()}" riot-height="{height()}"></rect> <g each="{value, i in sortedItems()}"> <rect class="bar" x="0" riot-y="{yFor(i)}" height="30" riot-width="{widthPercentFor(value)}%"></rect> <text x="5" riot-y="{yForText(i)}" class="label"> {value.label} ({value.value}) </text> </g> </svg>', "", "", function(opts) {
@@ -6680,10 +8205,10 @@ riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'er
     ajaxCompleteHandler = function(event, request, options) {
         var contentType, data, e, i, len, message, ref, results, type;
         contentType = request.getResponseHeader("content-type");
-        if (contentType.match(/^application\/json/) && request.response) {
+        if (contentType && contentType.match(/^application\/json/) && request.response) {
             try {
                 data = JSON.parse(request.response);
-                if (data.messages) {
+                if (data.messages.length) {
                     type = request.status >= 200 && request.status < 300 ? "notice" : "error";
                     ref = data.messages;
                     results = [];

@@ -4,7 +4,7 @@ Attachments.add = function(event) {
   var container = $(event.currentTarget).parents('div.attachments');
   var id = container.attr('id');
   var template = KorTemplate.get('.attachment_' + id);
-  container.append(template);
+  container.find('.ats').append(template.find('.attachment'));
   return false;
 }
 

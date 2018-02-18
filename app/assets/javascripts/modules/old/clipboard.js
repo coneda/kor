@@ -2,6 +2,7 @@ var Clipboard = new Object();
 
 Clipboard.add_user_group = function() {
   var tpl = KorTemplate.get('#user_group_form');
+  
   tpl.submit(function(event){
     var value = $(event.currentTarget).find('input[type=text]').val();
 
@@ -9,7 +10,8 @@ Clipboard.add_user_group = function() {
       url: "/user_groups",
       method: "post",
       data: {'user_group[name]': value},
-      dataType: "html",
+      dataType: 'html',
+      error: function() {console.log(arguments)},
       success: function(data){
         $('#clipboard_action_supplement').load('/tools/new_clipboard_action', {
           clipboard_action: 'add_to_user_group',
@@ -18,7 +20,7 @@ Clipboard.add_user_group = function() {
       }
     });
 
-    return(false);
+    event.preventDefault();
   });
   $('#clipboard_action_supplement').html(tpl);
 }

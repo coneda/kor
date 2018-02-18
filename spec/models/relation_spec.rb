@@ -49,8 +49,12 @@ describe Relation do
   it "should allow setting a custom uuid on creation" do
     test_data
 
-    relation = FactoryGirl.create :is_located_at, :uuid => "1234"
-    expect(relation.uuid).to eq("1234")
+    relation = FactoryGirl.create(
+      :is_located_at, :uuid => "65d89594-4baa-487c-ae77-78f31940cc03",
+      from_kind: @person_kind,
+      to_kind: @person_kind
+    )
+    expect(relation.uuid).to eq("65d89594-4baa-487c-ae77-78f31940cc03")
   end
 
   it "should update directed relationships when its name changes" do
@@ -72,6 +76,24 @@ describe Relation do
     expect(DirectedRelationship.where(relation_name: 'has been created by').count).to eq(0)
     expect(DirectedRelationship.where(relation_name: 'has worked on').count).to eq(2)
     expect(DirectedRelationship.where(relation_name: 'has been worked on by').count).to eq(2)
+  end
+
+  it 'should update directed relationships when its symmetry changes' do
+    default_setup
+
+    is_equivalent_to = FactoryGirl.create(:is_equivalent_to,
+      from_kind_id: @works.id,
+      to_kind_id: @works.id
+    )
+    Relationship.relate_and_save(@last_supper, 'is equivalent to', @mona_lisa)
+
+    expect(Relationship.count).to eq(1)
+    expect(DirectedRelationship.where(relation_name: 'is equivalent to').count).to eq(2)
+
+    is_equivalent_to.update_attributes name: 'is the same as'
+
+    expect(DirectedRelationship.where(relation_name: 'is the same as').count).to eq(1)
+    expect(DirectedRelationship.where(relation_name: 'is equivalent to').count).to eq(1)
   end
 
   it "should get a list of filtered relation names" do
@@ -101,6 +123,31 @@ describe Relation do
     expect(Relation.available_relation_names(to_ids: @works.id)).to(
       eq(["has created", "shows"])
     )
+  end
+
+  it 'should not permit to be more restrictive on endpoints than the parent' do
+    people = FactoryGirl.create(:people)
+    artists = FactoryGirl.create(:kind, name: 'artist', plural_name: 'artists', parents: [people])
+    artworks = FactoryGirl.create(:kind, name: 'artwork', plural_name: 'artworks')
+    paintings = FactoryGirl.create(:kind, name: 'painting', plural_name: 'paintings', parents: [artworks])
+    metaphors = FactoryGirl.create(:kind, name: 'metaphor', plural_name: 'metaphors')
+    has_created = FactoryGirl.create(:has_created,
+      from_kind: people,
+      to_kind: artworks
+    )
+    has_painted = FactoryGirl.create(:relation,
+      name: 'has painted',
+      reverse_name: 'has been painted by',
+      from_kind: artists,
+      to_kind: metaphors
+    )
+
+    has_painted.parents = [has_created]
+    expect(has_painted.valid?).to be_falsey
+    expect(has_painted.errors.full_messages).to eq(["permitted type (to) cannot allow more endpoints than its ancestors"])
+
+    has_painted.to_kind = paintings
+    expect(has_painted.valid?).to be_truthy
   end
 
 end

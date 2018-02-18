@@ -11,7 +11,7 @@ class Kor::CommandLine
       ignore_validations: false,
       collection_id: [],
       kind_id: [],
-      verbose: true
+      verbose: false
     }
     @required = []
     @command = nil
@@ -131,9 +131,12 @@ class Kor::CommandLine
           task :reset_guest_account
         when 'to-neo' then task :to_neo
         when 'connect-random' then task :connect_random
+        when 'cleanup-sessions' then task :cleanup_sessions
         when 'list-permissions' then task :list_permissions
+        when 'cleanup-exception-logs' then task :cleanup_exception_logs
         when 'secrets' then task :secrets
         when 'consistency-check' then task :consistency_check
+        when 'import-erlangen-crm' then task :import_erlangen_crm
         else
           STDERR.puts "command '#{@command}' is not known"
           usage

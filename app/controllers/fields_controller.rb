@@ -1,6 +1,6 @@
 class FieldsController < ApplicationController
 
-  layout 'small_normal'
+  skip_before_filter :authentication, :authorization, only: ['types', 'index']
 
   before_filter do
     params[:klass] ||= 'Fields::String'
@@ -13,45 +13,42 @@ class FieldsController < ApplicationController
     
   end
 
-  def new
-    @field = sanitize_field_class(params[:klass]).constantize.new(field_params)
-    @form_url = kind_fields_path(@kind)
+  def types
+    @types = Kind.available_fields
   end
-  
-  def edit
-    @field = Field.find(params[:id])
-    @form_url = kind_field_path(@kind, @field)
-  end
-  
+
   def update
     @field = Field.find(params[:id])
-    @form_url = kind_field_path(@kind, @field)
-    
-    if @field.update_attributes field_params
-      flash[:notice] = I18n.t('objects.update_success', :o => @field.show_label)
-      redirect_to :action => 'index'
+
+    if @field.update_attributes(field_params)
+      @messages << I18n.t('objects.update_success', o: @field.show_label)
+      render action: 'save'
     else
-      render :action => 'edit'
+      render action: 'save', status: 406
     end
   end
   
   def create
-    @field = sanitize_field_class(params[:klass]).constantize.new(field_params)
-    @form_url = kind_fields_path(@kind)
-    
+    @klass = sanitize_field_class(params[:klass])
+    @field = (@klass ?
+      @klass.constantize.new(field_params) : 
+      Field.new(field_params)
+    )
+    @field.kind_id = params[:kind_id]
+
     if @field.save
-      flash[:notice] = I18n.t('objects.create_success', :o => @field.show_label)
-      redirect_to :action => 'index'
+      @messages << I18n.t('objects.create_success', o: @field.show_label)
+      render action: 'save'
     else
-      render :action => 'new'
+      render action: 'save', status: 406
     end
   end
   
   def destroy
     @field = @fields.find(params[:id])
     @field.destroy
-    flash[:notice] = I18n.t('objects.destroy_success', :o => @field.show_label)
-    redirect_to :action => 'index'
+    @messages << flash[:notice] = I18n.t('objects.destroy_success', o: @field.show_label)
+    render action: 'save'
   end
   
 
@@ -60,17 +57,23 @@ class FieldsController < ApplicationController
     def field_params
       params.fetch(:field, {}).permit(
         :kind_id, :name, :search_label, :form_label, :show_label, :lock_version,
-        :show_on_entity, :type, :is_identifier
+        :show_on_entity, :is_identifier, :regex, :type
       )
     end
 
     def generally_authorized?
-      current_user.kind_admin?
+      if ['update', 'create', 'destroy'].include?(action_name)
+        current_user.kind_admin?
+      else
+        true
+      end
     end
 
     def sanitize_field_class(str)
       if Kind.available_fields.map{|klass| klass.name}.include?(str)
         str
+      else
+        'Fields::String'
       end
     end
 end

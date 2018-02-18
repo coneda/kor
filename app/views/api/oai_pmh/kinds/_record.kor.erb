@@ -1,3 +1,4 @@
+<% cache record do %>
 <kor:kind
   xmlns:kor="https://coneda.net/XMLSchema/1.0/"
   xsi:schemaLocation="https://coneda.net/XMLSchema/1.0/ 
@@ -37,4 +38,15 @@
       </kor:generator>
     <% end %>
   </kor:generators>
+  <kor:parents>
+    <% record.parents.each do |parent| %>
+      <kor:ref type="kind" id="<%= parent.uuid %>"></kor:ref>
+    <% end %>
+  </kor:parents>
+  <kor:children>
+    <% record.children.each do |child| %>
+      <kor:ref type="kind" id="<%= child.uuid %>"></kor:ref>
+    <% end %>
+  </kor:children>
 </kor:kind>
+<% end %>

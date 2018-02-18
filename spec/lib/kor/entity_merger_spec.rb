@@ -87,8 +87,8 @@ describe Kor::EntityMerger do
     third_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Lica"
     leonardo = FactoryGirl.create :leonardo
     institution = FactoryGirl.create :institution
-    FactoryGirl.create :is_located_at
-    FactoryGirl.create :has_created
+    FactoryGirl.create :is_located_at, from_kind: mona_lisa.kind, to_kind: institution.kind
+    FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
     Relationship.relate_and_save mona_lisa, 'is located at', institution
     Relationship.relate_and_save other_mona_lisa, 'has been created by', leonardo
     Relationship.relate_and_save third_mona_lisa, 'has been created by', leonardo
@@ -130,8 +130,8 @@ describe Kor::EntityMerger do
     third_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Lica"
     leonardo = FactoryGirl.create :leonardo
     institution = FactoryGirl.create :institution
-    FactoryGirl.create :is_located_at
-    FactoryGirl.create :has_created
+    FactoryGirl.create :is_located_at, from_kind: mona_lisa.kind, to_kind: institution.kind
+    FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
     Relationship.relate_and_save mona_lisa, 'is located at', institution
     Relationship.relate_and_save other_mona_lisa, 'has been created by', leonardo
     Relationship.relate_and_save third_mona_lisa, 'has been created by', leonardo

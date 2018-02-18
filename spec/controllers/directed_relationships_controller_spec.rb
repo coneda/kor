@@ -13,9 +13,18 @@ describe DirectedRelationshipsController, type: :controller do
   it "should list all relationships" do
     default = FactoryGirl.create :default
     side = FactoryGirl.create :collection, :name => "Side"
+    media = FactoryGirl.create :media
 
-    FactoryGirl.create :has_created
-    FactoryGirl.create :shows
+    works = FactoryGirl.create(:works)
+    people = FactoryGirl.create(:people)
+    FactoryGirl.create(:has_created,
+      from_kind: people,
+      to_kind: works
+    )
+    FactoryGirl.create(:shows,
+      from_kind: works,
+      to_kind: people
+    )
 
     main_artist = FactoryGirl.create :jack, :collection => default
     side_artist = FactoryGirl.create :tom, :collection => side
@@ -38,7 +47,7 @@ describe DirectedRelationshipsController, type: :controller do
     Kor::Auth.grant side, :view, :to => [admins]
 
     get :index
-    expect(response.status).to eq(401)
+    expect(response.status).to eq(403)
 
     guest = FactoryGirl.create :guest
 
@@ -93,9 +102,9 @@ describe DirectedRelationshipsController, type: :controller do
 
   it 'should allow for multiple ids' do
     default_setup relationships: true
-    FactoryGirl.create :relation
-    FactoryGirl.create :is_located_at
     paris = FactoryGirl.create :paris
+    FactoryGirl.create :relation, from_kind: @mona_lisa.kind, to_kind: @last_supper.kind
+    FactoryGirl.create :is_located_at, from_kind: @mona_lisa.kind, to_kind: paris.kind
     Relationship.relate_and_save @mona_lisa, 'is related to', @last_supper
     Relationship.relate_and_save @mona_lisa, 'is located at', paris
 

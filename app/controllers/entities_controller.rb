@@ -207,6 +207,11 @@ class EntitiesController < ApplicationController
     end
   end
 
+  def relation_counts
+    @relations = Entity.find(params[:id]).relation_counts(current_user)
+    format.json {render json: @relations}
+  end
+
   def new
     if authorized? :create, Collection.all, :required => :any
       @entity = Entity.new(:collection_id => current_user.default_collection_id)
@@ -215,7 +220,7 @@ class EntitiesController < ApplicationController
       @entity.no_name_statement = 'enter_name'
       @entity.medium = Medium.new if @entity.kind_id == Kind.medium_kind.id
     else
-      render_denied_page
+      render_403
     end
   end
   
@@ -225,11 +230,12 @@ class EntitiesController < ApplicationController
 
   def edit
     @entity = Entity.find(params[:id])
+    # @entity.datings.build label: @entity.kind.dating_label
 
     if authorized? :edit, @entity.collection
       render :action => 'edit'  
     else
-      render_denied_page
+      render_403
     end
   end
 
@@ -281,13 +287,15 @@ class EntitiesController < ApplicationController
         end
       end
     else
-      render_denied_page
+      render_403
     end
   end
 
   def update
+    params[:entity][:existing_datings_attributes] ||= []
+
     @entity = Entity.find(params[:id])
-    
+
     authorized_to_edit = authorized?(:edit, @entity.collection)
     
     authorized_to_move = if @entity.collection_id == params[:entity][:collection_id].to_i
@@ -308,7 +316,7 @@ class EntitiesController < ApplicationController
         render action: "edit"
       end
     else
-      render_denied_page
+      render_403
     end
   rescue ActiveRecord::StaleObjectError
     flash[:error] = I18n.t('activerecord.errors.messages.stale_entity_update')
@@ -342,7 +350,7 @@ class EntitiesController < ApplicationController
       @entity.destroy
       redirect_to back_save
     else
-      render_denied_page
+      render_403
     end
   end
 

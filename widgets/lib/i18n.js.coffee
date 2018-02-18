@@ -17,25 +17,19 @@ wApp.i18n = {
       
       count = if options.count == 1 then 'one' else 'other'
       result = result[count] || result
-
-      for key, value of options.values
-        regex = new RegExp("%\{#{key}\}", "g")
-        result = result.replace regex, value
-      
       for key, value of options.interpolations
         regex = new RegExp("%\{#{key}\}", "g")
-        tvalue = wApp.i18n.translate(locale, value)
+        tvalue = wApp.i18n.translate(value)
         value = tvalue if tvalue && (tvalue != value)
         result = result.replace regex, value
+      
+      if options.capitalize
+        result = wApp.utils.capitalize(result)
 
-      if options['capitalize']
-        result = result.charAt(0).toUpperCase() + result.slice(1)
-        
       result
     catch error
-      console.log arguments
       console.log error
-      input
+      ""
   localize: (locale, input, format_name = 'default') ->
     try
       return "" unless input
@@ -66,5 +60,6 @@ wApp.mixins.i18n = {
   l: (input, format_name) ->
     wApp.i18n.localize this.locale(), input, format_name
   hs: (input) -> wApp.i18n.humanSize(input)
-
 }
+
+wApp.i18n.t = wApp.i18n.translate

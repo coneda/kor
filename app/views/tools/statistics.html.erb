@@ -4,7 +4,7 @@
   <table class="kor_table">
     <thead>
       <tr>
-        <th><strong><%= User.model_name.human :count => :other %></strong></th>
+        <th><strong><%= User.model_name.human count: :other %></strong></th>
         <th class="number text-right"><strong><%= User.without_predefined.count %></strong></th>
       </tr>
     </thead>
@@ -35,10 +35,12 @@
     </thead>
     <tbody>
       <% Entity.group("kind_id").count.sort{|x, y| y.last - x.last}.each do |stat| %>
-        <tr>
-          <td><%= h Kind.find(stat.first).name %></td>
-          <td class="number text-right"><%= stat.last %></td>
-        </tr>
+        <% if stat.last > 0 %>
+          <tr>
+            <td><%= h Kind.find(stat.first).name %></td>
+            <td class="number text-right"><%= stat.last %></td>
+          </tr>
+        <% end %>
       <% end %>
     </tbody>
   </table>

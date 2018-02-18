@@ -14,6 +14,14 @@ class Kor::Import::Excel < Kor::Export::Excel
     )
     @options[:verbose] = true if @options[:simulate]
     @user = User.find_by_name!(@options[:username])
+
+    validate
+  end
+
+  def validate
+    unless @source_dir
+      raise Kor::Exception, 'no source directory was specified'
+    end
   end
 
   attr_accessor :file
@@ -23,6 +31,10 @@ class Kor::Import::Excel < Kor::Export::Excel
   def run
     if @options[:simulate]
       log "SIMULATION"
+    end
+
+    if @options[:ignore_stale]
+      ActiveRecord::Base.lock_optimistically = false
     end
 
     Dir["#{@source_dir}/*.xls"].each do |file|
@@ -74,12 +86,9 @@ class Kor::Import::Excel < Kor::Export::Excel
               dataset: dataset,
               properties: properties,
               updater: @user,
-              kind_id: row[8]
+              kind_id: row[8],
+              lock_version: row[18]
             )
-
-            unless @options[:ignore_stale]
-              entity.lock_version = row[18]
-            end
 
             # binding.pry
 

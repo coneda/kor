@@ -78,13 +78,13 @@
                     opts.entityIds = wApp.clipboard.ids()
                     'kor-clipboard'
                   when '/profile' then 'kor-profile'
-                  when '/search' then 'kor-search'
                   when '/new-media' then 'kor-new-media'
                   when '/users/new' then 'kor-user-editor'
                   when '/users' then 'kor-users'
                   when '/entities/invalid' then 'kor-invalid-entities'
                   when '/entities/recent' then 'kor-recent-entities'
                   when '/entities/isolated' then 'kor-isolated-entities'
+                  when '/search' then 'kor-search'
                   else
                     'kor-search'
           else
@@ -123,6 +123,19 @@
       wApp.routing.path new_path
       null
 
+    # old code
+    # tag.on 'mount', -> wApp.routing.setup()
+    
+    # wApp.bus.on 'routing:path', (parts) ->
+    #   opts = {}
+    #   tagName = switch parts['hash_path']
+    #     when '/some/path'
+    #       opts['some'] = parts['hash_query'].value
+    #       'some-tag'
+    #     else
+    #       'some-default-tag'
+    #   riot.mount Zepto('.w-content')[0], tagName, opts
+    #   window.scrollTo(0, 0)
 
   </script>
 

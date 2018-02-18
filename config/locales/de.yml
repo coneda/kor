@@ -29,6 +29,7 @@ de:
   to: "zu"
   select_only: "wähle nur"
   back: "zurück"
+  back_to_list: zurück zur Liste
   try_again: "erneut versuchen"
   download_higher_resolution: "in hoher Auflösung %{show} oder %{download}"
   download_metadata: "Metadaten herunterladen"
@@ -60,6 +61,10 @@ de:
   recently_visited: zuletzt angesehen
   recently_created: zuletzt angelegt
   currently_linked: bestehende Verknüpfung
+  nothing_selected: nichts ausgewählt
+  hide_abstract: abstrakte verbergen
+  inherited_from: vererbt von
+  no_schema: ohne Schema
 
   search_term: 
     one: Suchbegriff
@@ -75,16 +80,6 @@ de:
   social_bookmarking:
     digg: "Auf Digg veröffentlichen"
     delicious: "Auf Delicous verlinken"
-
-  kind_settings:
-    dating_label: "Voreingestellte Bezeichnung für Datierungen"
-    distinct_name_label: "Bezeichnung für den eindeutigen Namen"
-    name_label: "Bezeichnung für den Namen"
-    keywords: "Schlagworte"
-    no_keywords: "keine"
-    all_keywords: "freie Eingabe"
-    predefined_keywords: "voreingestellte Liste"
-    tagging: Tagging
 
   prompts:
     please_select: "bitte auswählen"
@@ -503,6 +498,7 @@ de:
     error:
       one: "Fehler"
       other: "Fehler"
+    mirador: "Mirador"
 
 
   objects:
@@ -568,6 +564,7 @@ de:
     reset_clipboard: "Sind Sie sicher, dass Sie die Zwischenablage leeren wollen?"
     long_time_warning: "Diese Operation kann mehrere Minuten dauern, wollen Sie trotzdem fortfahren?"
     delete_publishment: "Die veröffentlichte Gruppe wirklich löschen?"
+    general: "Sind Sie sicher?"
 
   prompt:
     email_for_personal_password_reset: "Bitte geben Sie Ihre Emailadresse ein"
@@ -678,6 +675,9 @@ de:
     publishment_expired: "Dieser Link ist abgelaufen"
     file_too_big: "Die Datei '%{file}' ist zu groß (%{size}MB) und kann nicht hochgeladen werden. Die maximale Größe beträgt %{max}MB"
     clipboard_too_many_elements: "Die Zwischenablage kann nur 500 Elemente beinhalten"
+    kind_has_children: Entitätstypen mit abhängigen Entitätstypen können nicht gelöscht werden
+    kind_has_entities: Entitätstypen mit abhängigen Entitäten können nicht gelöscht werden
+    medium_kind_not_deletable: Der Entitätstype 'Medium' kann nicht gelöscht werden
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
@@ -883,19 +883,28 @@ de:
         from_day: von
         to_day: bis
       kind:
+        schema: Schema
         name: Name
         plural_name: Name im Plural
         description: Beschreibung
-        dataset_class: Felderweiterungen
-        dataset_profile: Profil für Erweiterungen
         wikidata_id: Wikidata ID
+        parent: Stammtyp
+        abstract: abstrakt
+        dating_label: "Voreingestellte Bezeichnung für Datierungen"
+        distinct_name_label: "Bezeichnung für den eindeutigen Namen"
+        name_label: "Bezeichnung für den Namen"
+        tagging: Tagging für diesen Entitätstyp aktivieren
+        url: Schema Url
       relation:
+        schema: Schema
         name: Name
         reverse_name: Umkehrung
         description: Beschreibung
-        from_kind_ids: erlaubte Typen auf dieser Seite
-        to_kind_ids: erlaubte Typen auf dieser Seite
+        from_kind_id: erlaubter Entitätstyp (von)
+        to_kind_id: erlaubter Entitätstyp (zu)
         wikidata_id: Wikidata ID
+        parent: Stammtyp
+        abstract: abstrakt
       relationship:
         from_id: Quelle
         to_id: Ziel
@@ -953,10 +962,10 @@ de:
         no_two_images: "Zwei Bilddateien können nicht angehängt werden"
         defines_non_existent_kind: "definiert ein Feld für einen nicht existierenden Entitätstyp"
         defines_non_existent_relation: "definiert Verknüpfungen für eine nicht existierende Relation"
-        stale_entity_update: "Die Entität wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
-        stale_user_update: "Der Benutzer wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
-        stale_relation_update: "Die Relation wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
-        stale_relationship_update: "Die Verknüpfung wurde in der Zwischenzeit verändern, siehe unten stehende neue Werte"
+        stale_entity_update: "Die Entität wurde in der Zwischenzeit verändern, bitte laden Sie die Seite neu"
+        stale_user_update: "Der Benutzer wurde in der Zwischenzeit verändern, bitte laden Sie die Seite neu"
+        stale_relation_update: "Die Relation wurde in der Zwischenzeit verändern, bitte laden Sie die Seite neu"
+        stale_relationship_update: "Die Verknüpfung wurde in der Zwischenzeit verändern, bitte laden Sie die Seite neu"
         needs_medium: "Die Entität kann nicht als Medium erstellt werden ohne entsprechende Datei"
         needs_file: "Die Entität kann nicht als Medium erstellt werden ohne entsprechende Datei"
         invalid_words: "kann keine Wörter mit mehr als 30 Buchstaben enthalten"
@@ -965,7 +974,13 @@ de:
         whitespace_end: "kann nicht mit einem Leerzeichen enden"
         whitespace_consecutive: "kann keine aufeinander folgende Leerzeichen beinhalten"
         can_not_be_empty: "muss ausgefüllt werden"
-
+        does_not_exist: "existiert nicht"
+        cannot_be_its_own_parent: kann nicht sein eigener Stammtyp sein
+        cannot_result_in_cycle: würde eine zyklisches Schema definieren
+        cannot_be_changed: kann für Typ 'Medium' nicht geändert werden
+        would_result_in_cycle: would result in a circular schema
+        field_type_invalid: Feldtyp ist ungültig
+        cannot_restrict_less_than_parent: kann nicht mehr Entitätstypen erlauben als der Stammtyp
 
   # Mime types
 

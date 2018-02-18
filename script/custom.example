@@ -12,6 +12,12 @@ RAILS_ENV="development"
 # loading the rails environment
 require "#{KOR_ROOT}/config/environment" unless defined?(Rails)
 
+# redirect the logging (default is the file log/production.log)
+# ... to stdout
+# ActiveRecord::Base.logger = Logger.new(STDOUT)
+# .. or to a file
+# ActiveRecord::Base.logger = Logger.new(File.open '/path/to/some/file.log')
+
 # we are wrapping the code to catch validation errors
 begin
   # destroy all users, credentials and collections but the admin and the guest
@@ -61,10 +67,30 @@ begin
   ])
 
   # create a few relations
-  has_created = Relation.create!(:name => "has created", :reverse_name => "was created by")
-  shows = Relation.create!(:name => "shows", :reverse_name => "is shown by")
-  equivalent = Relation.create!(:name => "is equivalent to", :reverse_name => "is equivalent to")
-  is_located_at = Relation.create!(:name => "is located at", :reverse_name => "is location of")
+  has_created = Relation.create!(
+    name: "has created", 
+    reverse_name: "was created by",
+    from_kind: people,
+    to_kind: works
+  )
+  shows = Relation.create!(
+    name: "shows",
+    reverse_name: "is shown by",
+    from_kind: Kind.medium_kind,
+    to_kind: works
+  )
+  equivalent = Relation.create!(
+    name: "is equivalent to",
+    reverse_name: "is equivalent to",
+    from_kind: works,
+    to_kind: works
+  )
+  is_located_at = Relation.create!(
+    name: "is located at",
+    reverse_name: "is location of",
+    :from_kind: work,
+    :to_kind: institutions
+  )
 
   # create some entities
   mona_lisa = Entity.create!(
@@ -115,6 +141,20 @@ begin
 
     Relationship.relate_and_save(work, "is located at", institution)
   end
+
+  # # here is how to remove duplicate relationships
+  # scope = DirectedRelationship.
+  #   group(:from_id, :relation_name, :to_id).
+  #   having("count(*) > 1")
+  # scope.count.each do |criteria, c|
+  #   fid, rn, tid = criteria
+  #   relationships = DirectedRelationship.
+  #     where(from_id: fid, relation_name: rn, to_id: tid).
+  #     map{|dr| dr.relationship}
+  #   # and here you can decide which of the relationships to drop, e.g. all but
+  #   # the first:
+  #   relationships[1..-1].each{|r| r.destroy}
+  # end
 
   # images are converted within a background job. Don't forget to work off that
   # queue unless you have a background job running:

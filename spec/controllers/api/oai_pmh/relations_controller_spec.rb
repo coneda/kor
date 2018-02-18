@@ -9,8 +9,15 @@ describe Api::OaiPmh::RelationsController, :type => :controller do
   before :each do
     FactoryGirl.create :admin
 
-    FactoryGirl.create :has_created
-    FactoryGirl.create :is_equivalent_to
+    works = FactoryGirl.create(:works)
+    FactoryGirl.create(:has_created,
+      from_kind: FactoryGirl.create(:people),
+      to_kind: works
+    )
+    FactoryGirl.create(:is_equivalent_to,
+      from_kind: works,
+      to_kind: works
+    )
   end
 
   it "should respond to 'Identify'" do

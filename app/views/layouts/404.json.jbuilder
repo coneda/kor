@@ -1,0 +1,1 @@
+json.message I18n.t('messages.not_found')

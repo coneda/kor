@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170224111537) do
+ActiveRecord::Schema.define(version: 20171114104306) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -143,6 +143,7 @@ ActiveRecord::Schema.define(version: 20170224111537) do
   add_index "entities", ["creator_id"], name: "index_entities_on_user_id", using: :btree
   add_index "entities", ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
   add_index "entities", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
+  add_index "entities", ["kind_id", "deleted_at"], name: "typey", using: :btree
   add_index "entities", ["name"], name: "index_entities_on_name", using: :btree
   add_index "entities", ["uuid"], name: "index_entities_on_uuid", using: :btree
 
@@ -223,6 +224,13 @@ ActiveRecord::Schema.define(version: 20170224111537) do
   add_index "identifiers", ["value", "kind"], name: "index_identifiers_on_value_and_kind", using: :btree
   add_index "identifiers", ["value"], name: "index_identifiers_on_value", using: :btree
 
+  create_table "kind_inheritances", primary_key: "false", force: :cascade do |t|
+    t.integer  "parent_id",  limit: 4
+    t.integer  "child_id",   limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "kinds", force: :cascade do |t|
     t.string   "uuid",         limit: 255
     t.string   "name",         limit: 255
@@ -233,6 +241,9 @@ ActiveRecord::Schema.define(version: 20170224111537) do
     t.integer  "lock_version", limit: 4,     default: 0
     t.string   "plural_name",  limit: 255
     t.datetime "deleted_at"
+    t.boolean  "abstract"
+    t.string   "url",          limit: 255
+    t.string   "schema",       limit: 255
   end
 
   add_index "kinds", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
@@ -265,17 +276,27 @@ ActiveRecord::Schema.define(version: 20170224111537) do
 
   add_index "publishments", ["user_id"], name: "index_publishments_on_user_id", using: :btree
 
-  create_table "relations", force: :cascade do |t|
-    t.string   "uuid",          limit: 255
-    t.string   "name",          limit: 255
-    t.string   "reverse_name",  limit: 255
+  create_table "relation_inheritances", primary_key: "false", force: :cascade do |t|
+    t.integer  "parent_id",  limit: 4
+    t.integer  "child_id",   limit: 4
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",  limit: 4,     default: 0
-    t.text     "from_kind_ids", limit: 65535
-    t.text     "to_kind_ids",   limit: 65535
-    t.text     "description",   limit: 65535
+  end
+
+  create_table "relations", force: :cascade do |t|
+    t.string   "uuid",         limit: 255
+    t.string   "name",         limit: 255
+    t.string   "reverse_name", limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "lock_version", limit: 4,     default: 0
+    t.text     "description",  limit: 65535
     t.datetime "deleted_at"
+    t.string   "url",          limit: 255
+    t.boolean  "abstract"
+    t.integer  "from_kind_id", limit: 4
+    t.integer  "to_kind_id",   limit: 4
+    t.string   "schema",       limit: 255
   end
 
   add_index "relations", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
@@ -311,6 +332,7 @@ ActiveRecord::Schema.define(version: 20170224111537) do
 
   add_index "relationships", ["from_id"], name: "index_relationships_on_from_id", using: :btree
   add_index "relationships", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
+  add_index "relationships", ["relation_id", "deleted_at"], name: "typey", using: :btree
   add_index "relationships", ["relation_id", "from_id", "to_id"], name: "index_relationships_on_relation_id_and_from_id_and_to_id", using: :btree
   add_index "relationships", ["relation_id"], name: "index_relationships_on_relation_id", using: :btree
   add_index "relationships", ["to_id"], name: "index_relationships_on_to_id", using: :btree

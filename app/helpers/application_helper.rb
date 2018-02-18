@@ -45,16 +45,6 @@ module ApplicationHelper
     render :partial => 'layouts/version_info', :locals => {:newline => options[:newline]}
   end
 
-  # def authorized?(policy = :view, collections = Collection.all, options = {})
-  #   options.reverse_merge!(:required => :any)
-  
-  #   Kor::Auth.allowed_to? current_user, policy, collections, options
-  # end
-  
-  def authorized_collections(policy = :view)
-    Kor::Auth.authorized_collections current_user, policy
-  end
-  
   def kor_translate(item)
     case item
       when TrueClass then I18n.t('yes')
@@ -74,10 +64,6 @@ module ApplicationHelper
     else
       link_to label, :sort_by => criterium, :sort_order => 'ASC'
     end
-  end
-
-  def authorized_collections(policy = :view)
-    Kor::Auth.authorized_collections current_user, policy
   end
 
   def kor_sort(array, criterium = :name)
@@ -126,12 +112,13 @@ module ApplicationHelper
     active &= (current_action == link_action) if options[:highlight] == :action
     active &= !(Array(options[:except]).include? current_action.to_sym)
     active &= (Array(options[:only]).include? current_action.to_sym) if options[:only]
+    active = false if link_action == 'blaze'
 
     content_tag 'li', :class => (active ? 'active_item' : 'inactive_item') do
       link_to label.capitalize_first_letter, target
     end
   end
-  
+
   def submenu_section(&block)
     content = capture(&block).strip.html_safe
     result = content_tag('li', nil, :class => 'small_spacer') + content
@@ -139,7 +126,7 @@ module ApplicationHelper
       result.html_safe
     end
   end
-
+  
   def reset_tag(value = I18n.t('verbs.reset'))
     "<input value=\"#{value}\" type=\"reset\">"
   end

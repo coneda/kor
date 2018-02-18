@@ -3,15 +3,20 @@ class Kor::NeoGraph
   def initialize(user, options = {})
     @user = user
     @options = Rails.configuration.database_configuration[Rails.env]['neo']
+    @transactions = []
   end
 
   def reset!
-    print [
-      "You asked for a neo4j data reset. This is not possible in an efficient",
-      "manner, please stop neo4j, delete its data directory and start neo4j",
-      "again. Then hit enter."
-    ].join(" ")
-    x = STDIN.gets
+    while node_count > 0
+      cypher "MATCH (n) WITH n LIMIT 1000 DETACH DELETE n"
+    end
+
+    # print [
+    #   "You asked for a neo4j data reset. This is not possible in an efficient",
+    #   "manner, please stop neo4j, delete its data directory and start neo4j",
+    #   "again. Then hit enter."
+    # ].join(" ")
+    # x = STDIN.gets
 
     # cypher "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
     # cypher "MATCH ()-[r]-() DELETE r"
@@ -19,13 +24,16 @@ class Kor::NeoGraph
     # cypher "DROP INDEX ON :entity(kind_id)"
   end
 
+  def transaction(&block)
+    response = request "post", "/db/data/transaction"
+    @transactions.push JSON.parse(response.body)
+    yield
+    id = @transactions.pop['commit'].split('/')[-2]
+    response = request "delete", "/db/data/transaction/#{id}"
+  end
+
   def new_progress_bar(title, total)
-    @progress = ProgressBar.create(
-      :title => title,
-      :total => total,
-      :format => "%t: |%B|%a|%E|",
-      :throttle_rate => 0.5
-    )
+    @progress = Kor.progress_bar(title, total)
   end
 
   def increment(i = 1)
@@ -61,77 +69,125 @@ class Kor::NeoGraph
     end
   end
 
+  def node_count
+    response = cypher('MATCH (n) RETURN count(*)')
+    response['results'].first['data'].first['row'].first
+  end
+
   def import_all
     new_progress_bar "importing entities", Entity.count
-    Entity.find_in_batches :batch_size => 100 do |batch|
-      store(batch)
+    Entity.includes(:kind).find_in_batches :batch_size => 100 do |batch|
+      store_entity(batch)
+      increment(batch.size)
     end
-
+    
     cypher "CREATE INDEX ON :entity(id)"
     cypher "CREATE INDEX ON :entity(kind_id)"
+    cypher "CREATE INDEX ON :entity(kind_name)"
+    cypher "CREATE INDEX ON :group(name)"
+
+    new_progress_bar "importing groups", AuthorityGroup.count
+    AuthorityGroup.includes(:entities).find_in_batches :batch_size => 10 do |batch|
+      store_group(batch)
+      increment(batch.size)
+    end
 
     new_progress_bar "importing relationships", Relationship.count
     Relationship.includes(:relation).find_in_batches :batch_size => 1000 do |batch|
-      store(batch)
+      store_relationship(batch)
+      increment(batch.size)
     end
   end
 
-  def store(items)
-    items = Kor.array_wrap(items)
+  def store_entity(entity)
+    entity = [entity] unless entity.is_a?(Array)
+    cypher(
+      "statement" => "UNWIND $props AS map CREATE (n:entity) SET n = map",
+      "parameters" => {
+        "props" => entity.map{ |item|
+          data = {
+            "id" => item.id,
+            "uuid" => item.uuid,
+            "collection_id" => item.collection_id,
+            "name" => item.display_name,
+            "distinct_name" => item.distinct_name || "",
+            "subtype" => item.subtype || "",
+            "medium_id" => item.medium_id || 0,
+            "kind_id" => item.kind_id,
+            'kind' => item.kind.name,
+            "synonyms" => item.synonyms,
+            "created_at" => item.created_at.to_f,
+            "updated_at" => item.updated_at.to_f
+          }
+        }
+      }  
+    )
+  end
 
-    case items.first
-      when Entity
-        cypher(
-          "statement" => "CREATE (n:entity {e}) RETURN n.id, id(n)",
-          "parameters" => {
-            "e" => items.map{ |item|
-              increment
-              {
-                "id" => item.id,
-                "uuid" => item.uuid,
-                "collection_id" => item.collection_id,
-                "name" => item.display_name,
-                "distinct_name" => item.distinct_name || "",
-                "subtype" => item.subtype || "",
-                "medium_id" => item.medium_id || 0,
-                "kind_id" => item.kind_id,
-                "synonyms" => item.synonyms,
-                "created_at" => item.created_at.to_f,
-                "updated_at" => item.updated_at.to_f
-              }
-            }
-          }  
-        )
-      when Relationship
-        # TODO: add relationship datings
-        statements = items.map do |item|
-          {
+  def store_group(group)
+    group = [group] unless group.is_a?(Array)
+    cypher(
+      "statement" => "UNWIND $props AS map CREATE (n:group) SET n = map",
+      "parameters" => {
+        "props" => group.map{ |item|
+          data = {
+            'id' => item.id,
+            'uuid' => item.uuid,
+            'name' => item.name,
+            'created_at' => item.created_at.to_f,
+            'updated_at' => item.updated_at.to_f,
+            'authority_group_category_id' => item.authority_group_category_id
+          }
+        }
+      }  
+    )
+
+    group.each do |g|
+      g.entities.select(:id).find_in_batches batch_size: 100 do |batch|
+        statements = batch.map{|e|
+          data = {
             "statement" => [
-              "MATCH (a:entity),(b:entity)",
-              "WHERE a.id = {from_id} AND b.id = {to_id}",
-              "CREATE (a)-[rn:`#{item.relation.name}` {data}]->(b)",
-              "CREATE (b)-[rr:`#{item.relation.reverse_name}` {data}]->(a)"
+              "MATCH (a:entity),(b:group)",
+              "WHERE a.id = $entity_id AND b.id = $group_id",
+              "CREATE (a)-[rn:`is in`]->(b)",
+              "CREATE (b)-[rr:`contains`]->(a)"
             ].join(" "),
             "parameters" => {
-              "from_id" => item.from_id,
-              "to_id" => item.to_id,
-              "data" => {
-                "id" => item.id,
-                "uuid" => item.uuid,
-                "relation_name" => item.relation.name,
-                "relation_reverse_name" => item.relation.reverse_name,
-                "created_at" => item.created_at.to_f,
-                "updated_at" => item.updated_at.to_f
-              }
+              "entity_id" => e.id,
+              "group_id" => g.id
             }
           }
-        end
-
-        results = cypher(statements)
-        increment items.size
-      else
-        raise "invalid items: #{items.inspect}"
+        }
+        cypher(statements)
+      end
     end
+  end
+
+  def store_relationship(relationship)
+    relationship = [relationship] unless relationship.is_a?(Array)
+    statements = relationship.map do |item|
+      {
+        "statement" => [
+          "MATCH (a:entity),(b:entity)",
+          "WHERE a.id = $from_id AND b.id = $to_id",
+          "CREATE (a)-[rn:`#{item.relation.name}` $data]->(b)",
+          "CREATE (b)-[rr:`#{item.relation.reverse_name}` $data]->(a)"
+        ].join(" "),
+        "parameters" => {
+          "from_id" => item.from_id,
+          "to_id" => item.to_id,
+          "data" => {
+            "id" => item.id,
+            "uuid" => item.uuid,
+            "relation_name" => item.relation.name,
+            "relation_reverse_name" => item.relation.reverse_name,
+            "created_at" => item.created_at.to_f,
+            "updated_at" => item.updated_at.to_f    
+          }
+        }
+      }
+    end
+    cypher(statements)
   end
 
   def cypher(statements = [])
@@ -141,9 +197,15 @@ class Kor::NeoGraph
       else
         statements
     end
-    response = request "post", "/db/data/transaction/commit", {}, JSON.dump(
-      "statements" => data
-    )
+
+    path = if @transactions.present?
+      id = @transactions.last['commit'].split('/')[-2]
+      "/db/data/transaction/#{id}"
+    else
+      '/db/data/transaction/commit'
+    end
+
+    response = request "post", path, {}, JSON.dump("statements" => data)
 
     if response.ok?
       data = JSON.parse(response.body)
@@ -163,7 +225,15 @@ class Kor::NeoGraph
   protected
 
     def client
-      @client ||= HTTPClient.new
+      @client ||= begin
+        c = HTTPClient.new
+        c.set_auth(
+          "http://#{@options['host']}:#{@options['port']}",
+          @options['username'],
+          @options['password']
+        )
+        c
+      end
     end
 
     def request(method, path, params = {}, body = "", headers = {})
@@ -173,6 +243,7 @@ class Kor::NeoGraph
       )
 
       base_url = "http://#{@options['host']}:#{@options['port']}"
+        # p [method, "#{base_url}#{path}", params, body, headers]
       client.request(method, "#{base_url}#{path}", params, body, headers)
     end
 

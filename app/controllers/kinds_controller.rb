@@ -1,50 +1,35 @@
+# TODO: remove non-json responses
 class KindsController < ApplicationController
-  layout 'normal_small'
 
-  skip_before_filter :authentication, :authorization, :legal, only: ['index']
+  skip_before_filter :authentication, :authorization, only: ['index', 'show']
 
   def index
-    @records = Kind.all
-    @total = @records.count
-  end
+    params[:include] = param_to_array(params[:include], ids: false)
 
-  def show
-    @kind = Kind.find(params[:id])
-    
+    @kinds = Kind.all
+    @kinds = @kinds.active if params.has_key?(:only_active)
+
     respond_to do |format|
-      format.json do
-        render :json => @kind
-      end
+      format.html {render :layout => 'wide'}
+      format.json
     end
   end
 
-  def new
-    @kind = Kind.new
-  end
-
-  def edit
+  def show
+    params[:include] = param_to_array(params[:include], ids: false)
+    
     @kind = Kind.find(params[:id])
   end
-  
+
   def create
     @kind = Kind.new(kind_params)
 
-    respond_to do |format|
-      format.html do
-        if @kind.save
-          flash[:notice] = I18n.t( 'objects.create_success', :o => Kind.model_name.human )
-          redirect_to :action => 'index'
-        else
-          render :action => "new"
-        end
-      end
-      format.json do
-        if @kind.save
-          render action: 'show'
-        else
-          render json: @kind.errors, status: 406
-        end
-      end
+    if @kind.save
+      @messages << I18n.t( 'objects.create_success', :o => Kind.model_name.human )
+      render action: 'save'
+    else
+      @messages << I18n.t('activerecord.errors.template.header')
+      render action: 'save', status: 406
     end
   end
 
@@ -54,33 +39,35 @@ class KindsController < ApplicationController
     params[:kind] ||= {}
     params[:kind][:settings] ||= {}
     params[:kind][:settings][:tagging] ||= false
-    
-    respond_to do |format|
-      format.html do
-        if @kind.update_attributes(kind_params)
-          flash[:notice] = I18n.t( 'objects.update_success', :o => Kind.model_name.human )
-          redirect_to :action => 'index'
-        else
-          render :action => "edit"
-        end
-      end
-      format.json do
-        if @kind.update_attributes(kind_params)
-          render action: 'show'
-        else
-          render json: @kind.errors, status: 406
-        end
-      end
+
+    if @kind.update_attributes(kind_params)
+      @messages << I18n.t('objects.update_success', o: Kind.model_name.human)
+      render action: 'save'
+    else
+      @messages << I18n.t('activerecord.errors.template.header')
+      render action: 'save', status: 406
     end
+  rescue ActiveRecord::StaleObjectError => e
+    @messages << I18n.t('activerecord.errors.messages.stale_kind_update')
+    render action: 'save', status: 406
   end
 
   def destroy
     @kind = Kind.find(params[:id])
     
-    unless @kind.medium_kind?
-      render action: 'show'
+    if @kind.medium_kind?
+      @messages << I18n.t('errors.medium_kind_not_deletable')
+      render action: 'save', status: 406
+    elsif @kind.children.present?
+      @messages << I18n.t('errors.kind_has_children')
+      render action: 'save', status: 406
+    elsif @kind.entities.count > 0
+      @messages << I18n.t('errors.kind_has_entities')
+      render action: 'save', status: 406
     else
-      render_403 "the medium kind can't be deleted"
+      @kind.destroy
+      @messages << I18n.t('objects.destroy_success', :o => Kind.model_name.human)
+      render action: 'save'
     end
   end
   
@@ -88,15 +75,15 @@ class KindsController < ApplicationController
   protected
     
     def kind_params
-      params.require(:kind).permit!
+      params.require(:kind).permit(
+        :schema, :name, :plural_name, :description,
+        :tagging, :name_label, :dating_label, :distinct_name_label, :url,
+        :abstract, parent_ids: [], child_ids: [],
+      )
     end
 
     def generally_authorized?
-      if action_name == 'index' || action_name == 'show'
-        true
-      else
-        current_user.kind_admin?
-      end
+      current_user.kind_admin?
     end
 
 end

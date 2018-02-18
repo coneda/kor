@@ -21,7 +21,7 @@
     
   %body
     = render :partial => "layouts/header"
-    = render :partial => "layouts/menu"
+    = render :partial => "layouts/menu.html.haml"
     
     #application
       %table.canvas
@@ -47,7 +47,7 @@
     
     #help{:style => 'display: none', :title => I18n.t('nouns.help')}= help_for(controller_name, action_name)
     #help_button{:style => 'display: none'}
-      = link_to kor_command_image("help")
+      = link_to kor_command_image("help", title: I18n.t('nouns.help'))
     
     #templates{:style => "display: none"}
       .errors
@@ -60,3 +60,5 @@
           
         
       = yield(:templates)
+
+  = javascript_include_tag '/app.js'

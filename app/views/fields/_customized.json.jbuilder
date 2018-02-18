@@ -1,19 +1,16 @@
 additions ||= []
 
-json.id field.id
-json.name field.name
-json.kind_id field.kind_id
-json.value field.value
-json.is_identifier field.is_identifier
-json.show_on_entity field.show_on_entity
+json.extract!(field,
+  :type, :id, :name, :kind_id, :value, :is_identifier, :show_on_entity,
+  :show_label, :form_label, :search_label, :errors
+)
 
-json.show_label field.show_label
-json.form_label field.form_label
-json.search_label field.search_label
+json.type field.class.name
 
 if additions.include?('technical') || additions.include?('all')
-  json.uuid field.uuid
-  json.created_at field.created_at
-  json.updated_at field.updated_at
-  json.settings field.settings
+  json.extract! field, :uuid, :created_at, :updated_at, :settings
+end
+
+if field.is_a?(Fields::Regex)
+  json.extract! field, :regex
 end

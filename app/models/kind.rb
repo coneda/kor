@@ -9,6 +9,11 @@ class Kind < ActiveRecord::Base
   has_many :entities, :dependent => :destroy
   has_many :fields, :dependent => :destroy
   has_many :generators, :dependent => :destroy
+
+  has_many :kind_parent_inheritances, class_name: 'KindInheritance', foreign_key: :child_id, dependent: :destroy
+  has_many :kind_child_inheritances, class_name: 'KindInheritance', foreign_key: :parent_id, dependent: :destroy
+  has_many :parents, through: :kind_parent_inheritances
+  has_many :children, through: :kind_child_inheritances
   
   validates :name,
     :presence => true,
@@ -18,14 +23,58 @@ class Kind < ActiveRecord::Base
   validates :plural_name,
     :presence => true,
     :white_space => true
-  
+
+  validate do |kind|
+    to_check = kind.parents.to_a
+    cycle = false
+    while (k = to_check.pop) && !cycle
+      if k.id == kind.id
+        cycle = true
+      else
+        to_check += k.parents.to_a
+      end
+    end
+
+    if cycle
+      kind.errors.add :parent_ids, :would_result_in_cycle
+    end
+  end
+
   default_scope lambda { order(:name) }
   scope :without_media, lambda { where('id != ?', Kind.medium_kind_id) }
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :allowed, lambda {|user, policies| all}
+  scope :active, lambda {where(abstract: [false, nil])}
 
   before_validation :generate_uuid
+
+  def parent_ids
+    kind_parent_inheritances.pluck(:parent_id)
+  end
+
+  def parent_ids=(values)
+    self.parents = Kind.where(id: values).to_a
+  end
+
+  def child_ids
+    kind_child_inheritances.pluck(:child_id)
+  end
+
+  def deep_child_ids
+    results = kind_child_inheritances.map do |kci|
+      [kci.child_id] + kci.child.deep_child_ids
+    end
+    results.flatten.uniq
+  end
+
+  def child_ids=(values)
+    self.children = Kind.where(id: values).to_a
+  end
+
+  def removable
+    child_ids.empty? && !medium_kind? && entities.count == 0
+  end
 
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
@@ -46,6 +95,7 @@ class Kind < ActiveRecord::Base
     end
   end
   
+  # TODO: still needed?
   def defines_schema?
     !self.fields.empty?
   end
@@ -55,6 +105,10 @@ class Kind < ActiveRecord::Base
   end
   
   # Other
+
+  def medium_kind?
+    uuid == MEDIA_UUID
+  end
   
   def self.medium_kind
     find_by(uuid: MEDIA_UUID)
@@ -84,11 +138,15 @@ class Kind < ActiveRecord::Base
   # Settings
   
   def settings
-    unless self[:settings]
-      self[:settings] = {}
-    end
+    if destroyed?
+      (self[:settings] || {}).symbolize_keys
+    else
+      unless self[:settings]
+        self[:settings] = {}
+      end
 
-    self[:settings].symbolize_keys!
+      self[:settings].symbolize_keys!
+    end
   end
   
   def settings=(values)
@@ -97,7 +155,11 @@ class Kind < ActiveRecord::Base
   end
   
   def name_label
-    settings[:name_label] ||= Entity.human_attribute_name(:name)
+    settings[:name_label].presence || Entity.human_attribute_name(:name)
+  end
+
+  def name_label=(value)
+    settings[:name_label] = value
   end
   
   def tagging
@@ -112,9 +174,17 @@ class Kind < ActiveRecord::Base
   def dating_label
     settings[:dating_label] ||= EntityDating.model_name.human
   end
+
+  def dating_label=(value)
+    settings[:dating_label] = value
+  end
   
   def distinct_name_label
-    settings[:distinct_name_label] ||= Entity.human_attribute_name(:distinct_name)
+    settings[:distinct_name_label].presence || Entity.human_attribute_name(:distinct_name)
+  end
+
+  def distinct_name_label=(value)
+    settings[:distinct_name_label] = value
   end
   
   def requires_naming?

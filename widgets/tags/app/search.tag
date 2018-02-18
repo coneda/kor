@@ -79,7 +79,6 @@
 
   <script type="text/coffee">
     tag = this
-    window.x = this
     tag.params = {}
     
     # tag.on 'mount', ->

@@ -1,9 +1,9 @@
-json.total @total
-json.page @page
-json.per_page @per_page
-json.records @records do |record|
-  json.partial! 'kinds/customized', {
-    kind: record,
+json.total @kinds.count
+json.page params[:page] || 1
+
+json.records @kinds do |kind|
+  json.partial! 'customized', {
+    kind: kind,
     additions: params[:include]
   }
 end

@@ -117,13 +117,13 @@ class UnifyWebServices < ActiveRecord::Migration
 
           if new_refs != e.dataset
             e.dataset = new_refs
-            e.update_column :attachment, JSON.dump(e.attachment)
+            e.update_column :attachment, e.attachment
           end
         end
       end
 
       kind.settings.delete :web_services
-      kind.update_column :settings, YAML.dump(kind.settings)
+      kind.update_column :settings, kind.settings
     end
   end
 

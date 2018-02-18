@@ -1,12 +1,10 @@
 require 'simplecov'
 
 require "cucumber/rspec/doubles"
-require 'capybara/poltergeist'
 require 'factory_girl_rails'
 
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :truncation
-# Cucumber::Rails::Database.javascript_strategy = :truncation
 
 Around do |scenario, block|
   DatabaseCleaner.cleaning(&block)
@@ -32,31 +30,36 @@ Before do |scenario|
   end
 end
 
-Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app,
-    # debug: true,
-    js_errors: false,
-    inspector: false
-  )
-end
+Before('@javascript') do
+  @local_storage_flushed = false
 
-Capybara.register_driver :chromium do |app|
-  Capybara::Selenium::Driver.new(app, :browser => :chrome)
-end
-
-Capybara.register_driver :marionette do |app|
-  Selenium::WebDriver.for :firefox, marionette: true
+  orig = Capybara.current_session.method(:visit)
+  allow(Capybara.current_session).to receive(:visit){ |*args|
+    result = orig.call(*args)
+    unless @local_storage_flushed
+      page.execute_script('try {Lockr.flush()} catch (e) {}')
+      @local_storage_flushed = true
+    end
+    result
+  }
 end
 
 Capybara.default_max_wait_time = 5
-Capybara.javascript_driver = :chromium
-# once marionette works
-# Capybara.javascript_driver = :marionette
+
+Capybara.javascript_driver = :selenium
+Capybara.javascript_driver = :selenium_chrome
 
 if ENV['HEADLESS']
-  Capybara.javascript_driver = :poltergeist
+  Capybara.register_driver :headless_chrome do |app|
+    capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+      chromeOptions: {args: ['headless', 'disable-gpu']}
+    )
+    Capybara::Selenium::Driver.new app,
+      browser: :chrome,
+      desired_capabilities: capabilities
+  end
+  Capybara.javascript_driver = :headless_chrome
 end
-
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassettes'

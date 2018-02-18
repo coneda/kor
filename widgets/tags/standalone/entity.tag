@@ -21,55 +21,55 @@
   </a>
 
   <script type="text/coffee">
-    self = this
-    self.authorized = true
+    tag = this
+    tag.authorized = true
 
-    self.on 'mount', ->
-      if self.opts.id
+    tag.on 'mount', ->
+      if tag.opts.id
         base = $('script[kor-url]').attr('kor-url') || ""
 
         $.ajax(
           type: 'get'
-          url: "#{base}/entities/#{self.opts.id}"
+          url: "#{base}/entities/#{tag.opts.id}"
           data: {include: 'all'}
           dataType: 'json'
           beforeSend: (xhr) -> xhr.withCredentials = true
           success: (data) ->
             # console.log data
-            self.data = data
-            self.update()
+            tag.data = data
+            tag.update()
           error: (request) ->
-            self.data = {}
+            tag.data = {}
             if request.status == 403
-              self.authorized = false
-              self.update()
+              tag.authorized = false
+              tag.update()
         )
       else
         raise "this widget requires an id"
 
-    self.login_url = ->
+    tag.login_url = ->
       base = $('script[kor-url]').attr('kor-url') || ""
       return_to = document.location.href
       "#{base}/login?return_to=#{return_to}"
 
-    self.image_size = ->
-      self.opts.korImageSize || 'preview'
+    tag.image_size = ->
+      tag.opts.korImageSize || 'preview'
 
-    self.image_url = ->
+    tag.image_url = ->
       base = $('script[kor-url]').attr('kor-url') || ""
-      size = self.image_size()
-      "#{base}#{self.data.medium.url[size]}"
+      size = tag.image_size()
+      "#{base}#{tag.data.medium.url[size]}"
 
-    self.include = (what) ->
-      includes = (self.opts.korInclude || "").split(/\s+/)
+    tag.include = (what) ->
+      includes = (tag.opts.korInclude || "").split(/\s+/)
       includes.indexOf(what) != -1
 
-    self.url = ->
+    tag.url = ->
       base = $('[kor-url]').attr('kor-url') || ""
-      "#{base}/blaze#/entities/#{self.data.id}"
+      "#{base}/blaze#/entities/#{tag.data.id}"
 
-    self.human_size = ->
-      size = self.data.medium.file_size / 1024.0 / 1024.0;
+    tag.human_size = ->
+      size = tag.data.medium.file_size / 1024.0 / 1024.0;
       Math.floor(size * 100) / 100
 
   </script>

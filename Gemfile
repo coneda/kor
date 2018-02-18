@@ -16,7 +16,8 @@ gem 'haml'
 gem 'sass'
 gem 'httpclient'
 gem 'acts-as-taggable-on', '~> 3.5'
-gem "paranoia", "~> 2.2"
+gem 'semantic', git: 'https://github.com/jlindsey/semantic'
+gem 'hirb'
 
 gem 'sprockets-rails'
 gem 'jquery-rails'
@@ -24,7 +25,7 @@ gem 'jquery-ui-rails'
 gem 'angularjs-rails', '~> 1.5.2'
 gem 'plupload-rails'
 gem 'coffee-rails'
-gem 'sass-rails'
+gem 'sass-rails', '~> 5.0.6'
 
 gem 'jbuilder'
 gem 'test-unit'
@@ -35,8 +36,9 @@ gem 'rack-cors', :require => 'rack/cors'
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load 
   # (and configure) it in app/controllers/application_controller.rb
+  gem "paranoia", "~> 2.2"
   gem 'delayed_job_active_record'
-  gem 'awesome_nested_set', '~> 3.0.0'
+  gem 'awesome_nested_set', '~> 3.1.1'
   gem 'factory_girl_rails'
 end
 
@@ -44,9 +46,8 @@ gem 'kor_index', path: './plugins/kor_index'
 
 group :test do
   gem 'cucumber-rails', require: false
-  gem 'poltergeist'
   gem 'selenium-webdriver'
-  gem 'rspec-rails', '~> 3.1'
+  gem 'rspec-rails', '~> 3.5.2'
   gem 'capybara'
   gem 'database_cleaner'
   gem 'vcr'

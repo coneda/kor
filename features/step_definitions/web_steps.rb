@@ -31,9 +31,18 @@ When(/^I follow the link with text "([^"]*)"$/) do |text|
   click_link(text)
 end
 
-When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |field, quoted, value|
+When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |locator, quoted, value|
   value = "\"#{value}\"" if quoted == ' quoted'
-  field = all(:css, field).first || find(:fillable_field, field)
+
+  timeout = 5.0
+  field = nil
+  while timeout > 0 && !field
+    field = page.first(:field, locator) || all(:css, locator).first
+    timeout -= 0.2
+    sleep 0.2
+  end
+  # field = all(:css, locator).first || find(:fillable_field, locator)
+  # binding.pry if locator.match /Label/
   field.set value
 end
 
@@ -63,8 +72,13 @@ When /^(?:|I )attach the file "([^"]*)" to "([^"]*)"$/ do |path, field|
   attach_file(field, File.expand_path(path))
 end
 
-Then /^(?:|I )should see "([^"]*)"$/ do |text|
-  expect(page).to have_content(text)
+Then /^(?:|I )should see "([^"]*)"(?: exactly "(\d+)" times?)?$/ do |text, amount|
+  amount = amount.to_i if amount
+  if amount
+    expect(page).to have_content(text, count: amount)
+  else
+    expect(page).to have_content(text)
+  end
 end
 
 Then /^(?:|I )should see \/([^\/]*)\/$/ do |regexp|
@@ -226,26 +240,8 @@ Then /^I should have access: (yes|no)$/ do |yesno|
   end
 end
 
-When /I debug/ do
-  binding.pry
-  x = 15
-end
-
-When(/^I print the url$/) do
-  p current_url
-end
-
 When /^I wait for "([^"]*)" seconds?$/ do |num|
   sleep num.to_f
-end
-
-When /^I fill in "([^"]*)" with harmful code$/ do |field_name|
-  harmful_code = "\\#\\{system 'touch tmp/harmful.txt'\\}"
-  step "I fill in \"#{field_name}\" with \"#{harmful_code}\""
-end
-
-Then /^the harmful code should not have been executed$/ do
-  expect(File.exists? "#{Rails.root}/tmp/harmful.txt").to be_falsey
 end
 
 When /^I click on the player link$/ do
@@ -331,7 +327,7 @@ When(/^I go back$/) do
   page.evaluate_script('window.history.back()')
 end
 
-When(/^I refresh the page$/) do
+When(/^I (?:refresh|reload) the page$/) do
   page.evaluate_script("window.location.reload()")
 end
 
@@ -351,6 +347,70 @@ When(/^I paginate right in the relations$/) do
   end
 end
 
+Then(/^the select "([^"]*)" should have value "([^"]*)"$/) do |name, value|
+  field = page.find_field(name)
+  values = field.all('option[selected]').map{|o| o.text}
+  if field['multiple'].present?
+    expect(values).to eql(value.split ',')
+  else
+    expect(values.first).to eql(value)
+  end
+end
+
+Then(/^options? "([^"]*)" from "([^"]*)" should be selected$/) do |value, field|
+  step "the select \"#{field}\" should have value \"#{value}\""
+end
+
+
+Then(/^"([^"]*)" should not have option "([^"]*)"$/) do |name, value|
+  field = page.find_field(name)
+  options = field.all('option').map{|o| o.text}
+  expect(options).not_to include(value)
+end
+
+When(/^I click icon "([^"]*)"$/) do |name|
+  page.find("i.fa.fa-#{name}").click
+end
+
+Then(/^select "([^"]*)" should be disabled$/) do |label|
+  field = page.find_field(label, disabled: :all) 
+  expect(field['disabled']).to be_present
+end
+
+Then(/^I should( not)? see icon "([^"]*)"$/) do |negation, icon|
+  if negation
+    expect(page).to have_no_css("i.fa.fa-#{icon}")
+  else
+    expect(page).to have_css("i.fa.fa-#{icon}")
+  end
+end
+
+And(/^I should see a message containing "([^"]*)"$/) do |pattern|
+  page.find("#message_area", text: /#{pattern}/)
+end
+
+Then(/^select "([^"]*)" should have selected "([^"]*)"$/) do |field, value|
+  expect(find_field(field).value).to eq(value)
+end
+
 Then(/^field "([^"]*)" should have value "([^"]*)"$/) do |field, value|
   expect(find_field(field).value).to eq(value)
+end
+
+Then(/^I should see the prefilled dating "([^"]*)"$/) do |dating|
+  label, value = dating.split(/: ?/)
+  within '#datings' do
+    find(:xpath, "//input[@value='created in']")
+    find(:xpath, "//input[@value='1503']")
+  end
+end
+
+Then(/^select "([^"]*)" should have( no)? option "([^"]*)"$/) do |name, negation, option|
+  options = page.find("select[name=#{name}]").all('option')
+
+  if negation == ' no'
+    options.all?{|o| o.text != option}
+  else
+    options.any?{|o| o.text == option}
+  end
 end

@@ -89,10 +89,12 @@ kor.filter 'is_medium', [
     (input) ->
       return false unless input
 
+      mk_id = (kd.info || {}).medium_kind_id || 1
+
       if input.kind_id
-        input.kind_id == kd.info.medium_kind_id
+        input.kind_id == mk_id
       else if input.kind && input.kind.id
-        input.kind.id == kd.info.medium_kind_id
+        input.kind.id == mk_id
       else
         throw "can't determine kind id for #{input}"
         false
