@@ -1,6 +1,9 @@
-class CollectionsController < ApplicationController
-  layout 'normal_small'
-  
+# TODO: test this
+class CollectionsController < JsonController
+
+  skip_before_filter :role_auth, only: [:index]
+  before_filter :pagination, only: [:index]
+
   def index
     if current_user.admin?
       @records = Collection.non_personal
@@ -9,7 +12,7 @@ class CollectionsController < ApplicationController
     end
     
     @total = @records.count
-    @per_page = @total
+    @records = @records.pageit(@page, @per_page)
   end
 
   def show
@@ -20,39 +23,32 @@ class CollectionsController < ApplicationController
     @collection = Collection.new
   end
   
+  # TODO: check if this can actually work and if its save. Would be best to
+  # ditch the feature
   def edit_personal
     @collection = Collection.joins(:owner).first
   end
   
-  def edit_merge
-    @collection = Collection.find(params[:id])
-  end
-  
+  # TODO: test this
   def merge
     @collection = Collection.find(params[:id])
     target = Collection.find(params[:collection_id])
     
     if authorized?(:delete, @collection) && authorized?(:create, target)
-      Entity.update_all "collection_id = #{target.id}", ["collection_id = ?", @collection.id]
-      flash[:notice] = I18n.t('messages.entities_moved_to_collection', :o => target.name)
-      redirect_to collections_path
+      Entity.where(collection_id: @collection.id).update_all collection_id: target.id
+      render_200 I18n.t('messages.entities_moved_to_collection', o: target.name)
     else
-      redirect_to denied_page
+      render_403
     end
   end
   
-  def edit
-    @collection = Collection.find(params[:id])
-  end
-
   def create
     @collection = Collection.new(collection_params)
 
     if @collection.save
-      flash[:notice] = I18n.t('objects.create_success', :o => @collection.name)
-      redirect_to collections_path
+      render_200 I18n.t('objects.create_success', o: @collection.name)
     else
-      render :action => "new"
+      render_406 @collection.errors
     end
   end
 
@@ -60,10 +56,9 @@ class CollectionsController < ApplicationController
     @collection = Collection.find(params[:id])
 
     if @collection.update_attributes(collection_params)
-      flash[:notice] = I18n.t('objects.update_success', :o => @collection.name)
-      redirect_to collections_path
+      render_200 I18n.t('objects.update_success', o: @collection.name)
     else
-      render :action => "edit"
+      render_406 @collection.errors
     end
   end
 
@@ -72,16 +67,15 @@ class CollectionsController < ApplicationController
     
     if @collection.entities.count == 0
       @collection.destroy
+      render_200 I18n.t('objects.destroy_success', o: @collection.name)
     else
-      flash[:error] = I18n.t('errors.collection_not_empty_on_delete', :name => @collection.name)
+      render_400 I18n.t('errors.collection_not_empty_on_delete', name: @collection.name)
     end
-    
-    redirect_to(collections_path)
   end
   
   protected
 
-    def generally_authorized?
+    def role_authorized?
       current_user.admin?
     end
 

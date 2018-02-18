@@ -1,6 +1,6 @@
 <kor-kinds>
   <h1>
-    {wApp.i18n.t('activerecord.models.kind', {capitalize: true, count: 'other'})}
+    {t('activerecord.models.kind', {capitalize: true, count: 'other'})}
   </h1>
 
   <form class="kor-horizontal" >
@@ -43,13 +43,13 @@
             </div>
             <div show={kind.fields.length}>
               <span class="label">
-                {wApp.i18n.t('activerecord.models.field', {count: 'other'})}:
+                {t('activerecord.models.field', {count: 'other'})}:
               </span>
               {fieldNamesFor(kind)}
             </div>
             <div show={kind.generators.length}>
               <span class="label">
-                {wApp.i18n.t('activerecord.models.generator', {count: 'other'})}:
+                {t('activerecord.models.generator', {count: 'other'})}:
               </span>
               {generatorNamesFor(kind)}
             </div>
@@ -70,8 +70,8 @@
   <script type="text/coffee">
     tag = this
     tag.requireRoles = ['kind_admin']
-    tag.mixin(wApp.mixins.session)
-    tag.t = wApp.i18n.t
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', -> fetch()
 
@@ -80,7 +80,7 @@
     tag.delete = (kind) ->
       (event) ->
         event.preventDefault()
-        if wApp.utils.confirm wApp.i18n.translate('confirm.general')
+        if wApp.utils.confirm tag.t('confirm.general')
           Zepto.ajax(
             type: 'delete'
             url: "/kinds/#{kind.id}"

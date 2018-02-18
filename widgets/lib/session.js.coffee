@@ -5,7 +5,7 @@ wApp.session = {
       url: '/session'
       success: (data) -> wApp.session.current = data.session
     )
-  csrfToken: -> wApp.session.current.csrfToken
+  csrfToken: -> (wApp.session.current || {}).csrfToken
   data: -> wApp.data
 }
 

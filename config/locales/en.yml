@@ -511,7 +511,7 @@ en:
     create: "create %{o}"
     new: "create %{o}"
     create_success: "%{o} has been created"
-    edit: "%{o} bearbeiten"
+    edit: "edit %{o}"
     update_success: "%{o} has been changed"
     delete: "delete %{o}"
     destroy_success: "%{o} has been deleted"
@@ -630,9 +630,9 @@ en:
     exception_ocurred: |
       For comprehensibility time and state of the application have been recorded.
       If required please contact the administrator of KOR.
-    not_found: "The requested resource could not be found"
     no_exceptions_recorded: "There are no exceptions recorded"
     no_relations_provided: "There is no relation provided for this combination of entity types"
+    not_found: "The requested resource could not be found"
 
   notices:
     creating_zip_file: "Zip file will be created. You will receive an email as soon as the download is ready."

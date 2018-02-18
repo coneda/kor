@@ -1,4 +1,4 @@
-class Collection < ActiveRecord::Base
+class Collection < ApplicationRecord
 
   has_many :entities
   has_many :grants, :dependent => :destroy

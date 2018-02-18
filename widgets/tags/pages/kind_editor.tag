@@ -8,23 +8,23 @@
         <kor-t
           show={!opts.kind.id}
           key="objects.create"
-          with={ {'interpolations': {'o': wApp.i18n.translate('activerecord.models.kind')}} }
+          with={ {'interpolations': {'o': t('activerecord.models.kind')}} }
         />
       </h1>
 
       <a href="#" onclick={switchTo('general')}>
-        » {wApp.i18n.translate('general', {capitalize: true})}
+        » {t('general', {capitalize: true})}
       </a><br />
       <a href="#" onclick={switchTo('fields')} if={opts.kind.id}>
-        » {wApp.i18n.translate('activerecord.models.field', {count: 'other', capitalize: true})}
+        » {t('activerecord.models.field', {count: 'other', capitalize: true})}
       </a><br />
       <a href="#" onclick={switchTo('generators')} if={opts.kind.id}>
-        » {wApp.i18n.translate('activerecord.models.generator', {count: 'other', capitalize: true})}
+        » {t('activerecord.models.generator', {count: 'other', capitalize: true})}
       </a><br />
 
       <div class="hr"></div>
       <div class="text-right">
-        <a href="#/kinds" class="kor-button">{wApp.i18n.t('back_to_list')}</a>
+        <a href="#/kinds" class="kor-button">{t('back_to_list')}</a>
       </div>
 
       <div class="hr" if={tab == 'fields' || tab == 'generators'}></div>
@@ -68,7 +68,8 @@
     tag.tab = 'general'
     tag.notify = riot.observable()
     tag.requireRoles = ['kind_admin']
-    tag.mixin(wApp.mixins.session)
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', ->
       if tag.opts.id

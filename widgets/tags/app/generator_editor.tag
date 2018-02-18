@@ -3,7 +3,7 @@
   <h2>
     <kor-t
       key="objects.edit"
-      with={ {'interpolations': {'o': wApp.i18n.translate('activerecord.models.generator', {count: 'other'})}} }
+      with={ {'interpolations': {'o': 'activerecord.models.generator.other'}} }
       show={opts.kind.id}
     />
   </h2>

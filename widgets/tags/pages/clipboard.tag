@@ -49,8 +49,6 @@
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
 
-    window.t = tag
-
     tag.on 'mount', ->
       if tag.currentUser() && !tag.isGuest()
         fetch()

@@ -64,6 +64,9 @@
               else if m = path.match(/^\/entities\/([0-9]+)$/)
                 opts['id'] = parseInt(m[1])
                 'kor-entity-page'
+              else if m = path.match(/^\/kinds\/([0-9]+)$/)
+                opts['id'] = parseInt(m[1])
+                'kor-kind-editor'
               else
                 switch path
                   when '/clipboard'
@@ -85,6 +88,8 @@
                   when '/entities/recent' then 'kor-recent-entities'
                   when '/entities/isolated' then 'kor-isolated-entities'
                   when '/search' then 'kor-search'
+                  when '/kinds' then 'kor-kinds'
+                  when '/kinds/new' then 'kor-kind-editor'
                   else
                     'kor-search'
           else

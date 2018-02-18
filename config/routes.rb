@@ -29,13 +29,16 @@ Rails.application.routes.draw do
       get 'cleanup'
     end
   end
-  resources :kinds, except: ['edit', 'new'] do
-    resources :fields, except: ['show', 'edit', 'new'] do
-      collection do
-        get :types
+
+  defaults format: :json do
+    resources :kinds, except: ['edit', 'new'] do
+      resources :fields, except: ['show', 'edit', 'new'] do
+        collection do
+          get :types
+        end
       end
+      resources :generators, except: ['show', 'edit', 'new']
     end
-    resources :generators, except: ['show', 'edit', 'new']
   end
 
   resources :entities do
@@ -137,8 +140,8 @@ Rails.application.routes.draw do
   scope '/tools', :controller => 'tools' do
     match 'clipboard', :action => 'clipboard', :via => :get
     match 'statistics', :action => 'statistics', :via => :get
-    match 'credits', :action => 'credits', :via => :get
-    match 'credits/:id', :action => 'credits', :via => :get
+    # match 'credits', :action => 'credits', :via => :get
+    # match 'credits/:id', :action => 'credits', :via => :get
     match 'groups_menu', :action => 'groups_menu', :via => :get
     match 'input_menu', :action => 'input_menu', :via => :get
     match 'relational_form_fields', :action => 'relational_form_fields', :via => :get
@@ -188,10 +191,10 @@ Rails.application.routes.draw do
       collection do
         get 'edit_personal'
       end
-      # member do
-      #   get 'edit_merge'
-      #   patch 'merge'
-      # end
+      member do
+        get 'edit_merge'
+        patch 'merge'
+      end
     end
     resources :credentials, except: ['edit', 'new']
 
@@ -217,8 +220,6 @@ Rails.application.routes.draw do
     end
   end
 
-  
-
   controller 'session' do
     match '/env_auth', action: 'create', via: :get
   end
@@ -231,7 +232,7 @@ Rails.application.routes.draw do
     match ':id/image', action: 'sequence', via: :get, as: :iiif_image
   end
   
-  namespace 'api', format: :json do
+  namespace 'api' do
     scope ':version', version: /[0-9\.]+/, defaults: {version: '1.0'} do
       match 'info', to: 'public#info', via: :get
       match 'profile', to: '/users#edit_self', via: :get

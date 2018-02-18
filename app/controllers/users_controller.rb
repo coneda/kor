@@ -1,4 +1,5 @@
-class UsersController < ApplicationController
+class UsersController < JsonController
+
   layout 'normal_small'
   skip_before_filter :legal, :only => [:accept_terms]
   skip_before_filter :authorization, :only => [:update_self, :accept_terms]
@@ -81,8 +82,7 @@ class UsersController < ApplicationController
         I18n.t('nouns.user', count: 1)
       )
     else
-      @errors = @user.errors
-      render_406
+      render_406 @user.errors
     end
   end
 

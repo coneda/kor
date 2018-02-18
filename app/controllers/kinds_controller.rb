@@ -1,7 +1,7 @@
 # TODO: remove non-json responses
-class KindsController < ApplicationController
+class KindsController < JsonController
 
-  skip_before_filter :authentication, :authorization, only: ['index', 'show']
+  skip_before_filter :authentication, :authorization, only: [:index, :show]
 
   def index
     params[:include] = param_to_array(params[:include], ids: false)

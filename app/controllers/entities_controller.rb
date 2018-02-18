@@ -1,4 +1,5 @@
-class EntitiesController < ApplicationController
+class EntitiesController < JsonController
+
   layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
   skip_before_filter :verify_authenticity_token
 

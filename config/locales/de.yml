@@ -632,9 +632,9 @@ de:
       Der Zeitpunkt und der Zustand der Anwendung wurden zum Zweck der späteren
       Nachvollziehbarkeit aufgezeichnet. Bitte kontaktieren Sie bei Bedarf den
       Administrator dieser Installation von KOR
-    not_found: "Die angefragte Resource konnte nicht gefunden werden"
     no_exceptions_recorded: "es wurden keine Ausnahmen registriert"
     no_relations_provided: "Für diese Kombination ist keine Relation vorgesehen"
+    not_found: "Die angefragte Resource konnte nicht gefunden werden"
 
   notices:
     creating_zip_file: "Zip-Datei wird erstellt, Sie erhalten eine Email, sobald der Download bereit steht"

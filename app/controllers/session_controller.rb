@@ -1,88 +1,102 @@
-require "resolv"
+# TOTO: test this
+# TODO: diff with json authentication_controller
+class SessionController < JsonController
 
-class SessionController < ApiController
+  protect_from_forgery except: [:create, :reset_password]
 
-  skip_before_filter :authentication, :authorization, :legal
-  skip_before_filter :verify_authenticity_token, only: ['create', 'reset_password']
+  skip_before_filter :authentication, :role_auth, :legal
 
   def show
-    
+
   end
 
   def env_auth
     if user = Kor::Auth.env_login(request.env)
       create_session(user)
-      
-      redirect_to(
-        params[:return_to].presence || back ||
-        current_user.home_page ||
-        Kor.config['app.default_home_page'] ||
-        browser_path
-      )
+      render_200 I18n.t('notices.logged_in')
     else
-      redirect_to root_path(return_to: params[:return_to])
+      render_403
     end
   end
-
-  def create
-    if unauthenticated_user = User.find_by(name: params[:username])
-      if unauthenticated_user.too_many_login_attempts?
-        render_403 I18n.t('errors.too_many_login_attempts')
-      else
-        if user = Kor::Auth.login(params[:username], params[:password])
-          user.update_attributes(:login_attempts => [])
-
-          if user.expires_at && (user.expires_at <= Time.now)
-            render_403 I18n.t("errors.account_expired")
-          elsif user.inactive?
-            reset_session
-            render_403 I18n.t("errors.account_inactive")
-          else
-            user.fix_cryptography(params[:password])
-            create_session(user)
-            @messages << I18n.t('notices.logged_in')
-            render action: 'show'
-          end
-        else
-          unauthenticated_user.add_login_attempt
-          unauthenticated_user.save
-          render_403 I18n.t("errors.user_or_pass_refused")
-        end
-      end
-    else
-      render_403 I18n.t("errors.user_or_pass_refused")
-    end
-  end
-
-  def destroy
-    reset_session
-    @current_user = nil
-    @messages << I18n.t("notices.logged_out")
-    render action: 'show'
-  end
-
+  
+  # TODO: make this more secure!
+  # TODO: move this to the users controller
   def reset_password
-    @user = User.find_by(email: params[:email])
+    @user = User.find_by_email(params[:email])
     
     if @user && !@user.admin?
       @user.reset_password
       @user.save
       UserMailer.reset_password(@user).deliver_now
-      @messages << I18n.t('notices.personal_password_reset_success')
-      render action: 'show'
+      render_200 I18n.t('notices.personal_password_reset_success')
     else
       render_404 I18n.t('errors.personal_password_reset_mail_not_found')
     end
+  end
+  
+  def create
+    account_without_password = User.find_by_name(params[:username])
+    if account_without_password && account_without_password.too_many_login_attempts?
+      render_403 I18n.t('errors.too_many_login_attempts')
+    else
+      account = Kor::Auth.login(params[:username], params[:password])
+
+      if account
+        account.update_attributes(login_attempts: [])
+
+        if account.expires_at && (account.expires_at <= Time.now)
+          render_403 I18n.t("errors.account_expired")
+        elsif !account.active
+          reset_session
+          render_403 I18n.t("errors.account_inactive")
+        else
+          account.fix_cryptography(params[:password])
+          create_session(account)
+          render_200 I18n.t('notices.logged_in')
+        end
+      else
+        if account_without_password
+          account_without_password.add_login_attempt
+          account_without_password.save
+        end
+
+        # TODO: check this:
+        # reset_session cant be done here because of http://railsforum.com/viewtopic.php?id=1611 (dead link)
+        reset_session
+        render_403 I18n.t("errors.user_or_pass_refused")
+      end
+    end
+  end
+  
+  def destroy
+    reset_session
+    render_200 I18n.t("notices.logged_out")
   end
 
 
   protected
 
     def create_session(user)
-      session[:expires_at] = Kor.session_expiry_time
       session[:user_id] = user.id
-      user.update_attributes(last_login: Time.now)
       @current_user = nil
+      session[:expires_at] = Kor.session_expiry_time
+      user.update_attributes(last_login: Time.now)
     end
+
+    # TODO: probably not needed anymore
+    # def redirect_after_login
+    #   r_to = 
+    #     params[:return_to].presence ||
+    #     (back || current_user.home_page) ||
+    #     Kor.config['app.default_home_page'] ||
+    #     root_path
+
+    #   if params[:fragment].present?
+    #     params[:fragment] = nil if params[:fragment].match('{{')
+    #     r_to += "##{params[:fragment]}" if params[:fragment].present?
+    #   end
+
+    #   redirect_to r_to
+    # end
 
 end

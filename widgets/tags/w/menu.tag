@@ -64,7 +64,7 @@
         type="select"
         onchange={newEntity}
         options={kinds.records}
-        placeholder={tcap('objects.new', {interpolations: {o: 'nouns.entity'}})}
+        placeholder={tcap('objects.new', {interpolations: {o: 'activerecord.models.entity.one'}})}
         ref="kind_id"
       />
     </li>

@@ -6,11 +6,20 @@ class BaseController < ActionController::Base
     protect_from_forgery with: :exception, unless: :api_auth?
   end
 
+  before_filter :locale
+  before_filter :session_expiry, unless: :api_auth?
+
+  # TODO: refactor authorized objects stuff to somewhere else?
   helper_method(
     :current_user, :logged_in?,
     :authorized?, :allowed_to?, :authorized_collections,
     :authorized_for_relationship?
   )
+
+  if ENV['PROFILE']
+    require 'perftools'
+    around_filter :profile
+  end
 
   protected
 
@@ -29,12 +38,12 @@ class BaseController < ActionController::Base
         request.headers['api_key']
 
       if api_key
-        User.where(:api_key => api_key).first
+        User.find_by(api_key: api_key)
       end
     end
 
     def authorized?(policy = :view, collections = nil, options = {})
-      options.reverse_merge!(:required => :any)
+      options.reverse_merge!(required: :any)
       Kor::Auth.allowed_to? current_user, policy, collections, options
     end
 
@@ -78,9 +87,10 @@ class BaseController < ActionController::Base
     end
     
     def logged_in?
-      current_user && current_user.name != 'guest'
+      current_user && !current_user.guest?
     end
 
+    # TODO: test this
     def session_expiry
       if session_expired?
         session[:user_id] = nil
@@ -90,14 +100,32 @@ class BaseController < ActionController::Base
       end
     end
 
+    # TODO: test this
     def session_expired?
-      if current_user && !current_user.guest? && !api_auth?
-        !!(session[:expires_at] && (session[:expires_at] < Time.now))
+      if current_user && !current_user.guest?
+        session[:expires_at] ||= Kor.session_expiry_time
+        session[:expires_at] < Time.now
       end
     end
 
     def api_auth?
       !!user_by_api_key
+    end
+
+    def locale
+      if current_user && current_user.locale
+        I18n.locale = current_user.locale
+      else
+        I18n.locale = Kor.config['locale'] || I18n.default_locale
+      end
+    end
+
+    def profile
+      path = request.path.gsub("/", "_")
+      path = "#{Rails.root}/tmp/profiles/#{path}"
+      PerfTools::CpuProfiler.start(path) do
+        yield
+      end
     end
 
 end

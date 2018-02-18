@@ -4,10 +4,12 @@
 
   <script type="text/coffee">
     tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
 
     tag.label = ->
       tag.opts.labelKey ||= "verbs.save"
-      wApp.i18n.t(tag.opts.labelKey, capitalize: true)
+      tag.t(tag.opts.labelKey, capitalize: true)
   </script>
   
 </kor-submit>

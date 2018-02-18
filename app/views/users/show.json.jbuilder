@@ -1,4 +1,4 @@
 json.partial! 'customized', {
-  user: @record,
+  user: @user,
   additions: params[:include]
 }

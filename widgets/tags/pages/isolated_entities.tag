@@ -14,7 +14,7 @@
     <div class="hr"></div>
 
     <span show={data && data.total == 0}>
-      {tcap('objects.none_found', {interpolations: {o: 'nouns.entity.one'}})}
+      {tcap('objects.none_found', {interpolations: {o: 'activerecord.models.entity.other'}})}
     </span>
     
     <kor-gallery-grid if={data} entities={data.records} />

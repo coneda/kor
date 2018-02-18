@@ -1,6 +1,6 @@
 <kor-kind-general-editor>
 
-  <h2>
+  <h2 if={opts.kind}>
     <kor-t
       key="general"
       with={ {capitalize: true} }
@@ -9,7 +9,7 @@
     <kor-t
       show={!opts.kind.id}
       key="objects.create"
-      with={ {'interpolations': {'o': wApp.i18n.translate('activerecord.models.kind')}} }
+      with={ {'interpolations': {'o': 'activerecord.models.kind'}} }
     />
   </h2>
 
@@ -100,6 +100,8 @@
 
   <script type="text/coffee">
     tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', ->
       # tag.opts.kind ||= {}

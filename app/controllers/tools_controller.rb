@@ -1,4 +1,4 @@
-class ToolsController < ApplicationController
+class ToolsController < JsonController
   
   skip_before_action :authentication, :only => 'history'
   skip_before_action :verify_authenticity_token, only: ['history', :mark_as_current]

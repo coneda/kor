@@ -9,9 +9,10 @@ wApp.i18n = {
 
     try
       options.count ||= 1
+      options.warnMissingKey = true if options.warnMissingKey == undefined
       parts = input.split(".")
       result = wApp.i18n.translations[locale]
-      
+
       for part in parts
         result = result[part]
       
@@ -19,7 +20,7 @@ wApp.i18n = {
       result = result[count] || result
       for key, value of options.interpolations
         regex = new RegExp("%\{#{key}\}", "g")
-        tvalue = wApp.i18n.translate(value)
+        tvalue = wApp.i18n.translate(locale, value)
         value = tvalue if tvalue && (tvalue != value)
         result = result.replace regex, value
       
@@ -28,7 +29,7 @@ wApp.i18n = {
 
       result
     catch error
-      console.log error
+      console.warn(error, 'for key', input) if options['warnMissingKey']
       ""
   localize: (locale, input, format_name = 'default') ->
     try
@@ -37,8 +38,7 @@ wApp.i18n = {
       date = new Date(input)
       strftime(format, date)
     catch error
-      console.log arguments
-      console.log error
+      console.warn error, 'for key', input
       ""
   humanSize: (input) ->
     if input < 1024

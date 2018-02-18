@@ -37,6 +37,8 @@
 
   <script type="text/coffee">
     tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', ->
       if tag.parent
@@ -59,7 +61,7 @@
       else if tag.opts.labelKey
         keys = [tag.opts.labelKey, "activerecord.attributes.#{tag.opts.labelKey}"]
         for k in keys
-          if result = wApp.i18n.t(k, capitalize: true)
+          if result = tag.t(k, capitalize: true, warnMissingKey: false)
             return result
       else
         tag.fieldId()
@@ -69,7 +71,7 @@
     tag.has_textarea = -> tag.inputType() == 'textarea'
     tag.has_select = -> tag.inputType() == 'select'
     tag.noSelectionLabel = ->
-      tag.opts.noSelectionLabel || wApp.i18n.t('nothing_selected')
+      tag.opts.noSelectionLabel || tag.t('nothing_selected')
 
     tag.checked = -> if tag.inputType() == 'checkbox' then tag.value() else false
     tag.selected = (key) ->

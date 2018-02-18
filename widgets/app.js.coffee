@@ -1,10 +1,11 @@
+# TODO: remove this
 Kor = {
   loading: false
   ajax_loading: ->
-    console.warn("KOR module used")
+    # console.warn("KOR module used")
     Kor.loading = true
   ajax_not_loading: ->
-    console.warn("KOR module used")
+    # console.warn("KOR module used")
     Kor.loading = false
 }
 
@@ -24,8 +25,9 @@ Zepto.extend Zepto.ajaxSettings, {
       console.log('ajax log', xhr.requestUrl, JSON.parse(xhr.response))
 
     xhr.requestUrl = settings.url
-    token = Zepto('meta[name=csrf-token]').attr('content')
-    xhr.setRequestHeader 'X-CSRF-Token', token
+    # token = Zepto('meta[name=csrf-token]').attr('content')
+    if wApp.session
+      xhr.setRequestHeader 'X-CSRF-Token', wApp.session.csrfToken()
 
   complete: (xhr) -> Kor.ajax_not_loading()
 }

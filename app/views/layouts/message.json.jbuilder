@@ -1,4 +1,4 @@
-json.messages @messages
+json.message @message
 
 if @errors
   json.errors @errors
