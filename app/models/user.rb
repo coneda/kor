@@ -31,9 +31,8 @@ class User < ActiveRecord::Base
     :format => {:with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true},
     :white_space => true
   validates :api_key,
-    :presence => true,
     :uniqueness => true,
-    :length => {:minimum => 32}
+    :length => {:minimum => 32, allow_blank: true}
   validates(:plain_password, 
     format: {:allow_nil => true, :with => /\A(.{5,30})|\Z/},
     confirmation: true

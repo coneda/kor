@@ -4,6 +4,6 @@ json.page @page
 json.records @records do |item|
   json.partial! 'users/customized', {
     user: item,
-    additions: params[:include]
+    additions: inclusion
   }
 end

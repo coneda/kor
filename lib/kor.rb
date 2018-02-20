@@ -41,6 +41,7 @@ module Kor
     end
   end
 
+  # TODO: this doesn't seem to work
   def self.repository_uuid
     unless Kor.config["maintainer.repository_uuid"]
       Kor.config["maintainer.repository_uuid"] = SecureRandom.uuid

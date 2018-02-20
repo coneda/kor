@@ -2,7 +2,7 @@
 # TODO: diff with json authentication_controller
 class SessionController < JsonController
 
-  protect_from_forgery except: [:create, :reset_password]
+  protect_from_forgery except: [:create, :destroy, :reset_password]
 
   skip_before_filter :authentication, :role_auth, :legal
 

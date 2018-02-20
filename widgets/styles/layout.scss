@@ -38,7 +38,7 @@
   margin-left: 2rem;
 }
 
-div.hr {
+hr {
   height: 0.1rem;
   border: none;
   background: url(images/dotted_line.gif) top left;
@@ -46,7 +46,7 @@ div.hr {
   margin-bottom: 1.5rem;
 }
 
-div.hr.silent {
+hr.silent {
   background: none;
   margin-top: 1rem;
   margin-bottom: 1rem;

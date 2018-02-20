@@ -45,7 +45,7 @@
           errors={errors.plain_password_confirmation}
         />
 
-        <div class="hr"></div>
+        <hr />
 
         <kor-input
           label={tcap('activerecord.attributes.user.api_key')}
@@ -56,7 +56,7 @@
           errors={errors.api_key}
         />
 
-        <div class="hr"></div>
+        <hr />
 
         <kor-input
           label={tcap('activerecord.attributes.user.locale')}
@@ -67,7 +67,7 @@
           value={data.locale}
         />
 
-        <div class="hr"></div>
+        <hr />
 
         <kor-input
           if={collections}
@@ -79,7 +79,7 @@
           value={data.default_collection_id}
         />
 
-        <div class="hr"></div>
+        <hr />
 
         <kor-input
           type="submit"
@@ -111,7 +111,9 @@
     tag.submit = (event) ->
       event.preventDefault()
       p = update()
-      p.done (data) -> tag.errors = {}
+      p.done (data) ->
+        tag.errors = {}
+        window.history.back()
       p.fail (xhr) ->
         tag.errors = JSON.parse(xhr.responseText).errors
         wApp.utils.scrollToTop()

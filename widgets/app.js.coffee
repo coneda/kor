@@ -13,7 +13,7 @@ Zepto.extend Zepto.ajaxSettings, {
   type: 'GET'
   dataType: 'json'
   contentType: 'application/json'
-  accept: 'application/json'
+  accepts: 'application/json'
   beforeSend: (xhr, settings) ->
     # why are we doing this?
     unless settings.url.match(/^http/)
@@ -34,6 +34,7 @@ Zepto.extend Zepto.ajaxSettings, {
 
 window.wApp = {
   bus: riot.observable()
+  # TODO: data still neded?
   data: {}
   mixins: {}
   state: {}

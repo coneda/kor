@@ -168,5 +168,6 @@ describe User do
   end
 
   it 'should empty the clipboard'
+  it 'can have an empty api key or one that has 32 or more chars'
 
 end

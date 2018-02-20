@@ -169,12 +169,11 @@
     tag.mixin(wApp.mixins.config)
 
     tag.on 'mount', ->
-      $.ajax(
-        url: '/kinds'
-        success: (data) ->
-          tag.kinds = data
-          tag.update()
-      )
+      wApp.bus.on 'reload-kinds', fetchKinds
+      fetchKinds()
+
+    tag.on 'umount', ->
+      wApp.bus.off 'reload-kinds', fetchKinds
 
     tag.toggleGroups = (event) ->
       event.preventDefault()
@@ -191,6 +190,15 @@
       kind_id = tag.refs.kind_id.value()
       wApp.routing.path "/entities/new?kind_id=#{kind_id}"
       tag.refs.kind_id.set(0)
+
+    fetchKinds = ->
+      $.ajax(
+        url: '/kinds'
+        success: (data) ->
+          tag.kinds = data
+          tag.update()
+      )
+
   </script>
 
 </kor-menu>

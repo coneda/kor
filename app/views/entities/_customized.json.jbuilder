@@ -29,7 +29,7 @@ if entity.is_medium?
 end
 
 if authorized?(:view_meta, entity.collection)
-  if additions.include?('technical') || additions.include?('all')
+  if additions.request?('technical')
     json.uuid entity.uuid
     json.created_at entity.created_at
     json.updated_at entity.updated_at
@@ -37,33 +37,33 @@ if authorized?(:view_meta, entity.collection)
   end
 end
 
-if additions.include?('synonyms') || additions.include?('all')
+if additions.request?('synonyms')
   json.synonyms entity.synonyms
 end
 
-if additions.include?('datings') || additions.include?('all')
+if additions.request?('datings')
   json.datings entity.datings do |dating|
     json.partial! 'datings/customized', dating: dating
   end
 end
 
-if additions.include?('dataset') || additions.include?('all')
+if additions.request?('dataset')
   json.dataset entity.dataset
 end
 
-if additions.include?('properties') || additions.include?('all')
+if additions.request?('properties')
   json.properties entity.properties  
 end
 
-if additions.include?('relations') || additions.include?('all')
+if additions.request?('relations')
   json.relations entity.relation_counts(current_user)
 end
 
-if additions.include?('media_relations') || additions.include?('all')
+if additions.request?('media_relations')
   json.media_relations entity.relation_counts(current_user, media: true)
 end
 
-if additions.include?('related') || additions.include?('all')
+if additions.request?('related')
   directed_relationships = entity.outgoing_relationships.
     by_relation_name(related_relation_name).
     by_to_kind(related_kind_id).
@@ -78,7 +78,7 @@ if additions.include?('related') || additions.include?('all')
   end
 end
 
-if additions.include?('gallery_data')
+if additions.request?('gallery_data')
   ors = entity.
     outgoing_relationships.
     allowed(current_user).
@@ -100,13 +100,13 @@ if additions.include?('gallery_data')
   end
 end
 
-if additions.include?('kind') || additions.include?('all')
+if additions.request?('kind')
   json.kind do
     json.partial! 'kinds/customized', kind: entity.kind, additions: ['settings']
   end
 end
 
-if additions.include?('collection') || additions.include?('all')
+if additions.request?('collection')
   json.collection do
     json.partial! 'collections/customized', locals: {
       kor_collection: entity.collection
@@ -114,7 +114,7 @@ if additions.include?('collection') || additions.include?('all')
   end
 end
 
-if additions.include?('user_groups') || additions.include?('all')
+if additions.request?('user_groups')
   json.user_groups entity.user_groups.owned_by(current_user) do |user_group|
     json.partial! 'user_groups/customized', {
       user_group: user_group
@@ -122,7 +122,7 @@ if additions.include?('user_groups') || additions.include?('all')
   end
 end
 
-if additions.include?('groups') || additions.include?('all')
+if additions.request?('groups')
   json.groups entity.authority_groups do |authority_group|
     json.partial! 'authority_groups/customized', {
       authority_group: authority_group
@@ -130,11 +130,11 @@ if additions.include?('groups') || additions.include?('all')
   end
 end
 
-if additions.include?('degree') || additions.include?('all')
+if additions.request?('degree')
   json.degree entity.degree
 end
 
-if additions.include?('users') || additions.include?('all')
+if additions.request?('users')
   if entity.creator_id && entity.creator
     json.creator do
       json.partial! 'users/customized', user: entity.creator
@@ -148,13 +148,13 @@ if additions.include?('users') || additions.include?('all')
   end
 end
 
-if additions.include?('fields') || additions.include?('all')
+if additions.request?('fields')
   json.fields entity.kind.field_instances(entity) do |field|
     json.partial! 'fields/customized', field: field
   end
 end
 
-if additions.include?('generators') || additions.include?('all')
+if additions.request?('generators')
   json.generators entity.kind.generators do |generator|
     json.partial! 'generators/customized', generator: generator
   end

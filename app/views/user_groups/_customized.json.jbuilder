@@ -5,7 +5,7 @@ json.name user_group.name
 json.shared !!user_group.shared
 json.user_id user_group.user_id
 
-if additions.include?('user')
+if additions.request?('user')
   json.user do
     json.partial! 'users/customized', {
       user: user_group.user, additions: additions
@@ -13,7 +13,7 @@ if additions.include?('user')
   end
 end
 
-if additions.include?('technical')
+if additions.request?('technical')
   json.uuid user_group.uuid
   json.lock_version user_group.lock_version
   json.created_at user_group.created_at

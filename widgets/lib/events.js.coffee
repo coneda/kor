@@ -1,3 +1,4 @@
+# TODO: probably not needed anymore
 wApp.bubbling_events = []
 
 riot.mixin 'bubble', {

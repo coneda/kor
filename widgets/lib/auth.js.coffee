@@ -10,17 +10,15 @@ wApp.auth = {
         username: username,
         password: password
       )
-      success: (data) ->
-        wApp.session.current = data.session
-        riot.update()
+      success: (data) -> wApp.bus.trigger('reload-session')
     )
   logout: ->
     Zepto.ajax(
       type: 'delete'
       url: '/logout'
       success: (data) ->
-        wApp.session.current = data.session
-        riot.update()
+        wApp.bus.trigger('reload-session')
+        wApp.routing.path('/')
     )
 }
 

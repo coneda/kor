@@ -163,7 +163,7 @@ module Kor::Auth
       result_ids ||= cids
       result_ids &= cids
     end
-    Collection.where(id: result_ids).to_a
+    Collection.where(id: result_ids)
   end
 
   # def self.authorized_credentials(collection, policy = :view)

@@ -17,7 +17,8 @@ kor-input, [data-is=kor-input] {
   }
 
   textarea {
-    min-height: 5rem;
+    min-height: 15rem;
+    resize: vertical;
   }
 
   input:focus, textarea:focus {
@@ -44,6 +45,22 @@ kor-input, [data-is=kor-input] {
     input, select, textarea {
       border-color: $kor-error;
     }
+  }
+}
+
+kor-input[type=radio], [data-is=kor-input][type=radio] {
+  display: inline-block;
+
+  label {
+    display: inline-block;
+    padding-right: 2em;
+  }
+
+  input {
+    display: inline;
+    width: initial;
+    position: relative;
+    top: 0.7em;
   }
 }
 

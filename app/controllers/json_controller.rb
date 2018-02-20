@@ -5,6 +5,8 @@ class JsonController < BaseController
 
   before_filter :authentication, :role_auth, :legal
 
+  helper_method :inclusion
+
 
   protected
 
@@ -69,6 +71,10 @@ class JsonController < BaseController
         (params[:per_page] || 10).to_i,
         100.to_i
       ].min
+    end
+
+    def inclusion
+      param_to_array(params[:include], ids: false)
     end
 
     def param_to_array(value, options = {})

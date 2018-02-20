@@ -41,28 +41,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :entities do
-    collection do
-      get 'multi_upload'
-      get 'gallery'
-      get 'recent'
-      get 'invalid'
-      get 'isolated'
-      get 'recently_created'
-      get 'recently_visited'
-    end
-    
-    member do
-      get 'metadata'
-    end
-
-
-    scope format: :json do
-      # match 'relations', to: 'entities#relation_counts'
-      resources :relationships, only: [:index, :show], controller: 'directed_relationships'
-    end
-  end
-
   defaults format: :json do
     resources :relations, except: [:new, :edit] do
       collection do

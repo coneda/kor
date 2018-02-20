@@ -25,11 +25,9 @@ class KindsController < JsonController
     @kind = Kind.new(kind_params)
 
     if @kind.save
-      @messages << I18n.t( 'objects.create_success', :o => Kind.model_name.human )
-      render action: 'save'
+      render_200 I18n.t( 'objects.create_success', o: Kind.model_name.human)
     else
-      @messages << I18n.t('activerecord.errors.template.header')
-      render action: 'save', status: 406
+      render_406 @kind.errors
     end
   end
 
@@ -41,33 +39,26 @@ class KindsController < JsonController
     params[:kind][:settings][:tagging] ||= false
 
     if @kind.update_attributes(kind_params)
-      @messages << I18n.t('objects.update_success', o: Kind.model_name.human)
-      render action: 'save'
+      render_200 I18n.t('objects.update_success', o: Kind.model_name.human)
     else
-      @messages << I18n.t('activerecord.errors.template.header')
-      render action: 'save', status: 406
+      render_406 @kind.errors
     end
   rescue ActiveRecord::StaleObjectError => e
-    @messages << I18n.t('activerecord.errors.messages.stale_kind_update')
-    render action: 'save', status: 406
+    render_406 I18n.t('activerecord.errors.messages.stale_kind_update')
   end
 
   def destroy
     @kind = Kind.find(params[:id])
     
     if @kind.medium_kind?
-      @messages << I18n.t('errors.medium_kind_not_deletable')
-      render action: 'save', status: 406
+      render_406 I18n.t('errors.medium_kind_not_deletable')
     elsif @kind.children.present?
-      @messages << I18n.t('errors.kind_has_children')
-      render action: 'save', status: 406
+      render_406 I18n.t('errors.kind_has_children')
     elsif @kind.entities.count > 0
-      @messages << I18n.t('errors.kind_has_entities')
-      render action: 'save', status: 406
+      render_406 I18n.t('errors.kind_has_entities')
     else
       @kind.destroy
-      @messages << I18n.t('objects.destroy_success', :o => Kind.model_name.human)
-      render action: 'save'
+      render_200 I18n.t('objects.destroy_success', o: Kind.model_name.human)
     end
   end
   
@@ -82,6 +73,7 @@ class KindsController < JsonController
       )
     end
 
+    # TODO: replace with new mechanism
     def generally_authorized?
       current_user.kind_admin?
     end

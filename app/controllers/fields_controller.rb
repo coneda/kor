@@ -1,4 +1,4 @@
-class FieldsController < ApplicationController
+class FieldsController < JsonController
 
   skip_before_filter :authentication, :authorization, only: ['types', 'index']
 

@@ -76,29 +76,6 @@ class ApplicationController < BaseController
     #   session[:current_entity]
     # end
 
-    def entity_params
-      params.require(:entity).permit(
-        :lock_version,
-        :kind_id,
-        :collection_id,
-        :name, :distinct_name, :subtype, :comment, :no_name_statement,
-        :tag_list,
-        :synonyms => [],
-        :new_datings_attributes => [
-          :id, :_destroy, :label, :dating_string, :lock_version
-        ],
-        :existing_datings_attributes => [
-          :id, :_destroy, :label, :dating_string, :lock_version
-        ],
-        :dataset => params[:entity][:dataset].try(:keys),
-        :properties => [:label, :value],
-        :medium_attributes => [:id, :image, :document]
-      ).tap do |e|
-        e[:properties] ||= []
-        e[:synonyms] ||= []
-      end
-    end
-
     # def browser_path(path = '')
     #   "#{root_path}##{path}"
     # end

@@ -3,5 +3,5 @@ json.page 1
 json.per_page @records.count
 
 json.records @records do |relation|
-  json.partial! 'customized', relation: relation, additions: params[:include]
+  json.partial! 'customized', relation: relation, additions: inclusion
 end

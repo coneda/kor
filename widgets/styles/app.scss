@@ -48,6 +48,12 @@ h2:first-child, h3:first-child {
   margin-top: 0rem;
 }
 
+hr {
+  border: none;
+  height: 1px;
+  background-color: $kor-notice;
+}
+
 table {
   width: 100%;
   border-spacing: 0.1rem;
@@ -327,6 +333,12 @@ kor-relationship-editor, [data-is=kor-relationship-editor] {
     kor-input, [data-is=kor-input] {
       display: inline;
     }
+  }
+}
+
+kor-entity-editor, [data-is=kor-entity-editor] {
+  kor-input[name=no_name_statement] {
+    margin-top: -1em;
   }
 }
 

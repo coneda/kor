@@ -1,6 +1,5 @@
 class UsersController < JsonController
 
-  layout 'normal_small'
   skip_before_filter :legal, :only => [:accept_terms]
   skip_before_filter :authorization, :only => [:update_self, :accept_terms]
 
@@ -78,9 +77,7 @@ class UsersController < JsonController
     @user = User.find(current_user.id)
 
     if @user.update_attributes(self_user_params)
-      render_200 I18n.t( 'objects.update_success', o:
-        I18n.t('nouns.user', count: 1)
-      )
+      render_200 I18n.t( 'objects.update_success', o: I18n.t('nouns.user'))
     else
       render_406 @user.errors
     end

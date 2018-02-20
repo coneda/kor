@@ -250,7 +250,7 @@ class EntitiesController < JsonController
 
       if @entity.save
         if params[:user_group_name]
-          transit = UserGroup.owned_by(current_user).find_or_create_by(:name => params[:user_group_name])
+          transit = UserGroup.owned_by(current_user).find_or_create_by(name: params[:user_group_name])
           transit.add_entities @entity if transit
         end
 
@@ -258,34 +258,24 @@ class EntitiesController < JsonController
           Relationship.relate_and_save(@entity, params[:relation_name], current_entity)
         end
         
-        respond_to do |format|
-          format.html do
-            flash[:notice] = I18n.t('objects.create_success', :o => @entity.display_name)
-            redirect_to web_path(:anchor => entity_path(@entity))
-          end
-          format.json {render :json => {:success => true}}
-        end
+        render_200 I18n.t('objects.create_success', o: @entity.display_name)
       else
-        respond_to do |format|
-          format.json do
-            if @entity.medium && @entity.medium.errors[:datahash].present?
-              if params[:user_group_name]
-                transit = UserGroup.owned_by(current_user).find_or_create_by(:name => params[:user_group_name])
+        if @entity.medium && @entity.medium.errors[:datahash].present?
+          if params[:user_group_name]
+            transit = UserGroup.owned_by(current_user).find_or_create_by(name: params[:user_group_name])
 
-                if transit
-                  @entity = Medium.where(:datahash => @entity.medium.datahash).first.entity
-                  transit.add_entities @entity
+            if transit
+              @entity = Medium.where(datahash: @entity.medium.datahash).first.entity
+              transit.add_entities @entity
 
-                  render :json => {:success => true}
-                  return
-                end
-              end
+              # TODO: be more specific about what happened
+              render_200
+              return
             end
-
-            render :json => @entity.errors, status: 406
           end
-          format.html {render action: "new", status: :not_acceptable}
         end
+
+        render_406 @entity.errors
       end
     else
       render_403
@@ -311,10 +301,9 @@ class EntitiesController < JsonController
 
       if @entity.update_attributes(entity_params)
         SystemGroup.find_or_create_by(:name => 'invalid').remove_entities @entity
-        flash[:notice] = I18n.t( 'objects.update_success', :o => @entity.display_name )
-        redirect_to web_path(:anchor => entity_path(@entity))
+        render_200 I18n.t('objects.update_success', o: @entity.display_name)
       else
-        render action: "edit"
+        render_406 @entity.errors
       end
     else
       render_403
@@ -354,5 +343,30 @@ class EntitiesController < JsonController
       render_403
     end
   end
+
+  protected
+
+    def entity_params
+      params.require(:entity).permit(
+        :lock_version,
+        :kind_id,
+        :collection_id,
+        :name, :distinct_name, :subtype, :comment, :no_name_statement,
+        :tag_list,
+        :synonyms => [],
+        :new_datings_attributes => [
+          :id, :_destroy, :label, :dating_string, :lock_version
+        ],
+        :existing_datings_attributes => [
+          :id, :_destroy, :label, :dating_string, :lock_version
+        ],
+        :dataset => params[:entity][:dataset].try(:keys),
+        :properties => [:label, :value],
+        :medium_attributes => [:id, :image, :document]
+      ).tap do |e|
+        e[:properties] ||= []
+        e[:synonyms] ||= []
+      end
+    end
 
 end

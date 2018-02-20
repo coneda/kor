@@ -1,6 +1,6 @@
 <kor-input class="{'has-errors': opts.errors}">
 
-  <label>
+  <label if={opts.type != 'radio'}>
     {opts.label}
     <input
       if={opts.type != 'select' && opts.type != 'textarea'}
@@ -32,6 +32,17 @@
       </option>
     </select>
   </label>
+  <virtual if={opts.type == 'radio'}>
+    <label each={item in opts.options}>
+      <input
+        type="radio"
+        name={opts.name}
+        value={item.id || item.value || item}
+        checked={valueFromParent() == (item.id || item.value || item)}
+      />
+      {item.name || item.label || item}
+    </label>
+  </virtual>
   <div class="errors" if={opts.errors}>
     <div each={e in opts.errors}>{e}</div>
   </div>
@@ -43,6 +54,10 @@
     tag.value = ->
       if tag.opts.type == 'checkbox'
         Zepto(tag.root).find('input').prop('checked')
+      else if tag.opts.type == 'radio'
+        for input in Zepto(tag.root).find('input')
+          if (i = $(input)).prop('checked')
+            return i.attr('value')
       else
         result = Zepto(tag.root).find('input, select, textarea').val()
         if result == "0" && tag.opts.type == 'select'

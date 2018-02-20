@@ -1,9 +1,11 @@
 w-messaging, [data-is=w-messaging] {
   position: fixed;
-  right: 0px;
   top: 0px;
+  left: 50%;
+  margin-left: -20em;
 
   .message {
+    width: 40em;
     padding: 1rem;
     margin-bottom: 1px;
   }

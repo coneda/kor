@@ -8,6 +8,8 @@ Bundler.require(*Rails.groups)
 
 $: << File.expand_path('../../lib', __FILE__)
 
+require 'core_ext/array'
+
 require 'kor'
 require 'securerandom'
 
@@ -124,3 +126,4 @@ end
 #       when creating relationships
 # TODO: add consistent optimistic locking
 # TODO: clean up widget directory
+# TODO: ensure stale checks everywhere

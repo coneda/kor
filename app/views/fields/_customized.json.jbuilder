@@ -7,7 +7,7 @@ json.extract!(field,
 
 json.type field.class.name
 
-if additions.include?('technical') || additions.include?('all')
+if additions.request?('technical')
   json.extract! field, :uuid, :created_at, :updated_at, :settings
 end
 

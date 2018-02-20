@@ -1,1 +1,1 @@
-json.partial! 'customized', relation: @relation, additions: params[:include]
+json.partial! 'customized', relation: @relation, additions: inclusion

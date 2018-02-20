@@ -1,12 +1,19 @@
 wApp.session = {
   setup: ->
-    Zepto.ajax(
-      method: 'get',
-      url: '/session'
-      success: (data) -> wApp.session.current = data.session
-    )
+    reload = ->
+      Zepto.ajax(
+        method: 'get',
+        url: '/session'
+        success: (data) ->
+          wApp.session.current = data.session
+          riot.update()
+      )
+    
+    wApp.bus.on 'reload-session', reload
+    reload()
+
   csrfToken: -> (wApp.session.current || {}).csrfToken
-  data: -> wApp.data
+  # data: -> wApp.data
 }
 
 wApp.mixins.sessionAware = {
