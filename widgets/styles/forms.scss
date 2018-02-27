@@ -52,8 +52,14 @@ kor-input[type=radio], [data-is=kor-input][type=radio] {
   display: inline-block;
 
   label {
+    display: block;
+  }
+
+  label.radio {
     display: inline-block;
     padding-right: 2em;
+    position: relative;
+    top: -0.3em;
   }
 
   input {

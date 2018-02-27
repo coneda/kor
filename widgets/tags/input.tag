@@ -33,7 +33,8 @@
     </select>
   </label>
   <virtual if={opts.type == 'radio'}>
-    <label each={item in opts.options}>
+    <label>{opts.label}</label>
+    <label class="radio" each={item in opts.options}>
       <input
         type="radio"
         name={opts.name}

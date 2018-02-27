@@ -24,8 +24,18 @@
         <hr />
 
         <kor-input
-          if={hasName()}
           label={tcap('activerecord.attributes.entity.name')}
+          name="no_name_statement"
+          type="radio"
+          ref="fields.no_name_statement"
+          value={data.no_name_statement}
+          options={noNameStatements}
+          onchange={update}
+          errors={errors.no_name_statement}
+        />
+
+        <kor-input
+          if={hasName()}
           name="name"
           ref="fields"
           value={data.name}
@@ -39,16 +49,6 @@
           ref="fields"
           value={data.distinct_name}
           errors={errors.distinct_name}
-        />
-
-        <kor-input
-          name="no_name_statement"
-          type="radio"
-          ref="fields.no_name_statement"
-          value={data.no_name_statement}
-          options={noNameStatements}
-          onchange={update}
-          errors={errors.no_name_statement}
         />
 
         <hr />
@@ -125,7 +125,7 @@
 
     tag.submit = (event) ->
       event.preventDefault()
-      p = (if tag.id then update() else create())
+      p = (if tag.opts.id then update() else create())
       p.done (data) ->
         tag.errors = {}
         window.history.back()
@@ -180,11 +180,8 @@
     update = ->
       Zepto.ajax(
         type: 'PATCH'
-        url: "/entities/#{tag.id}"
-        data: JSON.stringify(
-          id: tag.id
-          entity: values()
-        )
+        url: "/entities/#{tag.opts.id}"
+        data: JSON.stringify(entity: values())
       )
 
     values = ->

@@ -67,12 +67,16 @@
               else if m = path.match(/^\/kinds\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-kind-editor'
+              # TODO: can this be done somewhere else? smarter?
               else if m = path.match(/^\/entities\/new$/)
                 opts['kindId'] = parts['hash_query']['kind_id']
                 'kor-entity-editor'
               else if m = path.match(/^\/entities\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-entity-editor'
+              else if m = path.match(/^\/collections\/([0-9]+)\/edit$/)
+                opts['id'] = parseInt(m[1])
+                'kor-collection-editor'
               else
                 switch path
                   when '/clipboard'
@@ -96,6 +100,8 @@
                   when '/search' then 'kor-search'
                   when '/kinds' then 'kor-kinds'
                   when '/kinds/new' then 'kor-kind-editor'
+                  when '/collections' then 'kor-collections'
+                  when '/collections/new' then 'kor-collection-editor'
                   else
                     'kor-search'
           else

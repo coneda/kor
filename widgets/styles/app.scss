@@ -104,12 +104,16 @@ button:hover {
   background-color: $kor-button-highlight;
 }
 
+.pull-right {
+  float: right;
+}
+
 w-app, [data-is=w-app] {
   padding: 2rem;
 
-  kor-menu, [data-is=kor-menu] {
+  // kor-menu, [data-is=kor-menu] {
     
-  }
+  // }
 
   .w-content {
     margin-left: 18rem;

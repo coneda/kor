@@ -1,4 +1,4 @@
-class CredentialsController < ApplicationController
+class CredentialsController < JsonController
   layout 'normal_small'
   
   def index

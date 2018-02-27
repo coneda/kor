@@ -40,6 +40,10 @@ class Collection < ApplicationRecord
   end
   
   attr_writer :propagate
+
+  def entity_count
+    entities.count
+  end
   
   def propagate
     @propagate = (@propagate == false ? false : true)
