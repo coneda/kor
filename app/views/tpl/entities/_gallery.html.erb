@@ -34,11 +34,11 @@
                     <div kor-to-clipboard="entity" />
                   </span>
                 </div>
-                <div ng-show="entity.medium">
+                <div ng-show="entity.medium" class="caption">
                   <div>
                     <small>
-                      {{'activerecord.attributes.medium.content_type' | translate}}
-                      <strong ng-bind="entity.content_type.split('/')[1]"></strong>
+                      {{'activerecord.attributes.medium.content_type' | translate | capitalize}}:
+                      <strong ng-bind="entity.medium.content_type.split('/')[1]"></strong>
                     </small>
                   </div>
                 </div>

@@ -17,10 +17,17 @@
         <tbody>
           <tr ng-repeat="row in result.grouped_records">
             <td ng-repeat="entity in row" class="gallery_item">
-              <a href="/blaze#/entities/{{entity.id}}">
-                <span ng-bind="entity.name"></span>
-                <img ng-src="{{entity.medium.url.thumbnail}}" />
-              </a>
+              <div>
+                <a href="/blaze#/entities/{{entity.id}}">
+                  <span ng-bind="entity.name"></span>
+                  <img ng-src="{{entity.medium.url.thumbnail}}" />
+                </a>
+              </div>
+
+              <small ng-if="entity.medium">
+                {{'activerecord.attributes.medium.content_type' | translate | capitalize}}:
+                <strong ng-bind="entity.medium.content_type.split('/')[1]"></strong>
+              </small>
             </td>
           </tr>
         </tbody>

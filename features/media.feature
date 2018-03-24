@@ -43,3 +43,14 @@ Feature: Media
     And I select "side collection" from "entity[collection_id]"
     And I press "Save"
     Then I should not see "Errors occurred"
+
+  @javascript
+  Scenario: display medium file type
+    Given I am logged in as "admin"
+    And the medium "spec/fixtures/image_a.jpg"
+    When I go to the welcome page
+    Then I should see "File type: jpeg"
+    When I go to the new entries page
+    Then I should see "File type: jpeg"
+    When I go to the isolated entities page
+    Then I should see "File type: jpeg"
