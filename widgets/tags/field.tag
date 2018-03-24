@@ -26,9 +26,9 @@
       >{noSelectionLabel()}</option>
       <option
         each={o in opts.options}
-        value={o.value}
-        selected={parent.selected(o.value)}
-      >{o.label}</option>
+        value={o.value || o.id}
+        selected={parent.selected(o.value || o.id)}
+      >{o.label || o.name}</option>
     </select>
     <ul if={has_errors()} class="errors">
       <li each={error in errors()}>{error}</li>

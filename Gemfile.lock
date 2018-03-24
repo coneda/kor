@@ -187,8 +187,6 @@ GEM
       ast (~> 2.2)
     parslet (1.7.1)
       blankslate (>= 2.0, <= 4.0)
-    plupload-rails (1.2.1)
-      rails (>= 3.1)
     power_assert (0.2.7)
     powerpack (0.1.1)
     pry (0.10.4)
@@ -359,7 +357,6 @@ DEPENDENCIES
   paperclip
   paranoia (~> 2.2)
   parslet
-  plupload-rails
   pry
   puma
   quiet_assets

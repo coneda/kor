@@ -102,6 +102,7 @@
                   when '/kinds/new' then 'kor-kind-editor'
                   when '/collections' then 'kor-collections'
                   when '/collections/new' then 'kor-collection-editor'
+                  when '/upload' then 'kor-upload'
                   else
                     'kor-search'
           else

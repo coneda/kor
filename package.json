@@ -25,7 +25,8 @@
     "riot-route": "^3.1.0",
     "strftime": "^0.10.0",
     "uglify-js": "^3.1.8",
-    "zepto": "^1.0.1"
+    "zepto": "^1.0.1",
+    "plupload": "2.3.6"
   },
   "scripts": {
     "build": "widgets/build.sh",

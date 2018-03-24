@@ -4,7 +4,8 @@ class ApplicationController < BaseController
   helper_method :back, :back_save, :home_page, :kor_graph
   
   before_filter(
-    :vars, :authorization
+    # :vars,
+    :authorization
   )
 
   private

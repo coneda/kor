@@ -3,7 +3,7 @@
     {t('activerecord.models.kind', {capitalize: true, count: 'other'})}
   </h1>
 
-  <form class="kor-horizontal" >
+  <form class="kor-horizontal">
 
     <kor-field
       label-key="search_term"

@@ -23,7 +23,7 @@ gem 'sprockets-rails'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'angularjs-rails', '~> 1.5.2'
-gem 'plupload-rails'
+# gem 'plupload-rails'
 gem 'coffee-rails'
 gem 'sass-rails', '~> 5.0.6'
 

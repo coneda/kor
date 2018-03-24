@@ -8,7 +8,7 @@ json.records @records do |record|
   ors = if Relation.primary_relation_names.empty?
     []
   else
-    entity
+    record
       .outgoing_relationships
       .by_relation_name(Relation.primary_relation_names)
       .includes(:to)
