@@ -5,7 +5,7 @@
       if={!opts.noClipboard}
       entity={opts.entity}
     />
-              
+    
     <a href="#/entities/{opts.entity.id}">
       <img src={opts.entity.medium.url.thumbnail} />
     </a>

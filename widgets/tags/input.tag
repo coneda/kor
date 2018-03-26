@@ -66,9 +66,9 @@
         else
           result
     tag.valueFromParent = ->
-      # console.log tag.opts
       if tag.opts.type == 'checkbox' then 1 else tag.opts.riotValue
     tag.checkedFromParent = ->
+      # console.log '---', tag.opts
       tag.opts.type == 'checkbox' && tag.opts.riotValue
     tag.checked = ->
       tag.opts.type == 'checkbox' &&

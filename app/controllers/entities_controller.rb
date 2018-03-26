@@ -254,8 +254,11 @@ class EntitiesController < JsonController
           transit.add_entities @entity if transit
         end
 
-        if !params[:relation_name].blank? && current_entity
-          Relationship.relate_and_save(@entity, params[:relation_name], current_entity)
+        if params[:target_entity_id].present? && params[:relation_name]
+          relationship = Relationship.relate(@entity, params[:relation_name], params[:target_entity_id])
+          if authorized_for_relationship?(relationship, :create)
+            relationship.save!
+          end
         end
         
         render_200 I18n.t('objects.create_success', o: @entity.display_name)
@@ -268,14 +271,13 @@ class EntitiesController < JsonController
               @entity = Medium.where(datahash: @entity.medium.datahash).first.entity
               transit.add_entities @entity
 
-              # TODO: be more specific about what happened
-              render_200
-              return
+              # TODO: make sure this is tested
+              render_200 I18n.t('objects.create_success', o: @entity.display_name, ug: transit.name)
             end
           end
+        else
+          render_406 @entity.errors
         end
-
-        render_406 @entity.errors
       end
     else
       render_403

@@ -41,5 +41,7 @@ wApp.utils = {
   capitalize: (value) ->
     value.charAt(0).toUpperCase() + value.slice(1)
 
-  confirm: (string) -> window.confirm(string)
+  confirm: (string) -> 
+    string ||= wApp.i18n.t(wApp.session.current.locale, 'confirm.sure')
+    window.confirm(string)
 }

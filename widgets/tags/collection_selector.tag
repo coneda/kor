@@ -3,7 +3,7 @@
   <virtual if={data}>
     <kor-input
       if={!opts.multiple}
-      label={tcap('activerecord.attributes.entity.collection_id')}
+      label={tcap('activerecord.models.collection')}
       name={opts.name}
       type="select"
       options={data.records}

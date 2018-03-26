@@ -150,12 +150,12 @@
         url: "/entities/#{tag.opts.id}"
         success: (data) ->
           tag.data = data
-          fetchkind()
+          fetchKind()
       )
 
     fetchKind = ->
       Zepto.ajax(
-        url: "/kinds/#{tag.opts.kindId}"
+        url: "/kinds/#{tag.data['kind_id'] || tag.opts.kindId}"
         data: {include: 'fields'}
         success: (data) ->
           tag.kind = data

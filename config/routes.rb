@@ -41,36 +41,8 @@ Rails.application.routes.draw do
     end
   end
 
-  defaults format: :json do
-    resources :relations, except: [:new, :edit] do
-      collection do
-        get 'names'
-      end
-    end
-  end
-
-  scope format: :json do
-    resources :relationships, only: [:index, :show], controller: 'directed_relationships'
-    resources :relationships, only: [:create, :update, :destroy]
-  end
-  
   resources :authority_group_categories
   resources :system_groups
-  resources :user_groups do
-    member do
-      get 'download_images'
-      get 'share'
-      get 'unshare'
-      get 'show_shared'
-      get 'add_to'
-      get 'remove_from'
-      get 'mark'
-    end
-    
-    collection do
-      get 'shared'
-    end
-  end
   resources :authority_groups, :except => [ :index ] do
     member do
       get 'download_images'
@@ -155,6 +127,32 @@ Rails.application.routes.draw do
     #   match 'about', :action => 'about', :via => :get
     #   match 'help', :action => 'help', :via => :get
     # end
+
+    resources :relations, except: [:new, :edit] do
+      collection do
+        get 'names'
+      end
+    end
+
+    resources :relationships, only: [:index, :show], controller: 'directed_relationships'
+    resources :relationships, only: [:create, :update, :destroy]
+    
+    resources :user_groups do
+      member do
+        get 'download_images'
+        get 'share'
+        get 'unshare'
+        get 'show_shared'
+        get 'add_to'
+        get 'remove_from'
+        get 'mark'
+      end
+      
+      collection do
+        get 'shared'
+      end
+    end
+
     resources :users, except: ['new', 'edit'] do
       member do
         patch 'reset_password'

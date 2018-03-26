@@ -20,7 +20,7 @@ wApp.i18n = {
       result = result[count] || result
       for key, value of options.interpolations
         regex = new RegExp("%\{#{key}\}", "g")
-        tvalue = wApp.i18n.translate(locale, value)
+        tvalue = wApp.i18n.translate(locale, value, warnMissingKey: false)
         value = tvalue if tvalue && (tvalue != value)
         result = result.replace regex, value
       

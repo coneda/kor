@@ -4,8 +4,7 @@ json.page @page
 
 json.records @records do |record|
   json.partial! 'customized', {
-    kor_collection: record,
-    directed_relationship: record,
-    additions: ['all']
+    user_group: record,
+    additions: inclusion
   }
 end

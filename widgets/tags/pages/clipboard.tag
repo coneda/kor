@@ -25,12 +25,14 @@
               />
             </td>
             <td>
-              <span show={!entity.medium}>{entity.display_name}</span>
-              <img
-                show={entity.medium}
-                src={entity.medium.url.icon}
-                class="image"
-              />
+              <a href="#/entities/{entity.id}">
+                <span show={!entity.medium}>{entity.display_name}</span>
+                <img
+                  show={entity.medium}
+                  src={entity.medium.url.icon}
+                  class="image"
+                />
+              </a>
             </td>
             <td class="right nobreak">
               <a onclick={remove(entity.id)}><i class="minus"></i></a>

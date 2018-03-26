@@ -1,4 +1,4 @@
-class RelationsController < ApplicationController
+class RelationsController < JsonController
   skip_before_action :authentication, :only => [:names, :index]
 
   def index
@@ -26,11 +26,9 @@ class RelationsController < ApplicationController
     @relation = Relation.new(relation_params)
 
     if @relation.save
-      @messages << I18n.t('objects.create_success', :o => Relation.model_name.human )
-      render action: 'save'
+      render_200 I18n.t('objects.create_success', o: @relation.name)
     else
-      @messages << I18n.t('activerecord.errors.template.header')
-      render action: 'save', status: 406
+      render_406 @relation.errors
     end
   end
 
@@ -38,23 +36,21 @@ class RelationsController < ApplicationController
     @relation = Relation.find(params[:id])
 
     if @relation.update_attributes(relation_params)
-      @messages << I18n.t('objects.update_success', o: Relation.model_name.human)
-      render action: 'save'
+      render_200 I18n.t('objects.update_success', o: @relation.name)
     else
-      @messages << I18n.t('activerecord.errors.template.header')
-      render action: 'save', status: 406
+      render_406 @relation.errors
     end
   rescue ActiveRecord::StaleObjectError => e
-    @messages << I18n.t('activerecord.errors.messages.stale_relation_update')
-    render action: 'save', status: 406
+    # TODO
+    # @messages << I18n.t('activerecord.errors.messages.stale_relation_update')
+    # render action: 'save', status: 406
   end
 
   def destroy
     @relation = Relation.find(params[:id])
-
     @relation.destroy
-    @messages << I18n.t('objects.destroy_success', :o => Relation.model_name.human)
-    render action: 'save'
+
+    render_200 I18n.t('objects.destroy_success', o: @relation.name)
   end
 
 

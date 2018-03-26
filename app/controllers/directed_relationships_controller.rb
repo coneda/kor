@@ -1,5 +1,6 @@
-class DirectedRelationshipsController < ApplicationController
+class DirectedRelationshipsController < JsonController
 
+  before_filter :pagination, only: [:index]
   skip_before_action :legal, :authentication, :authorization, :only => [:index]
 
   def index
@@ -14,7 +15,7 @@ class DirectedRelationshipsController < ApplicationController
     params[:except_to_kind_id] = param_to_array(params[:except_to_kind_id])
 
     if user = (current_user || User.guest)
-      @directed_relationships = DirectedRelationship.
+      @records = DirectedRelationship.
         order_by_name.
         by_from_entity(params[:from_entity_id]).
         by_to_entity(params[:to_entity_id]).
@@ -23,6 +24,9 @@ class DirectedRelationshipsController < ApplicationController
         by_to_kind(params[:to_kind_id]).
         except_to_kind(params[:except_to_kind_id]).
         allowed(user, :view)
+
+      @total = @records.count
+      @records = @records.pageit(@page, @per_page)
     else
       render_403
     end

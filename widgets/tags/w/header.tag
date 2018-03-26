@@ -26,11 +26,11 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.info)
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+  <script type="text/javascript">
+    tag = this;
+    tag.mixin(wApp.mixins.info);
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
   </script>
 
 </kor-header>

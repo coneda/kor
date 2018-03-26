@@ -2,7 +2,7 @@ additions ||= []
 
 json.extract!(relation,
   :schema, :id, :uuid, :name, :description, :reverse_name, :from_kind_id,
-  :to_kind_id
+  :to_kind_id, :abstract
 )
 
 if additions.request?('technical')

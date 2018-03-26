@@ -4,14 +4,33 @@
     <div class="kor-content-box">
       <h1>upload</h1>
 
-      <kor-collection-selector
-        policy="create"
-        ref="cs"
-      />
+      <form onsubmit={submit}>
+        <kor-collection-selector
+          policy="create"
+          ref="cs"
+        />
 
-      <a class="trigger">
-        » { tcap('objects.add', {interpolations: {o: 'nouns.file.other'}}) }
-      </a>
+        <kor-user-group-selector
+          type="personal"
+          riot-value={l(new Date())}
+          ref="user-group-name"
+        />
+
+        <virtual if={selection}>
+          {tcap('labels.relate_to_via', {interpolations: {to: selection.display_name}})}
+
+          <kor-relation-selector
+            if={selection}
+            source-kind-id={wApp.info.data.medium_kind_id}
+            target-kind-id={selection.kind_id}
+            ref="relation-selector"
+          />
+        </virtual>
+
+        <a class="trigger">
+          » { tcap('objects.add', {interpolations: {o: 'nouns.file.other'}}) }
+        </a>
+      </form>
     </div>
   </div>
 
@@ -45,18 +64,19 @@
         </li>
       </ul>
 
-      <div class="text-right">
-        <kor-input
-          type="submit"
-          value={tcap('verbs.upload')}
-          onclick={submit}
-        />
-        <kor-input
-          type="submit"
-          value={tcap('empty_list')}
-          onclick={abort}
-        />
-      </div>
+      <form class="inline" onsubmit={submit}>
+        <div class="text-right">
+          <kor-input
+            type="submit"
+            value={tcap('verbs.upload')}
+          />
+          <kor-input
+            type="submit"
+            value={tcap('empty_list')}
+            onclick={abort}
+          />
+        </div>
+      </form>
 
     </div>
   </div>
@@ -71,10 +91,8 @@
 
     var uploader = null;
 
-    window.t = tag;
-
     tag.on('mount', function() {
-      init()
+      init();
     })
 
     tag.files = function() {
@@ -99,15 +117,34 @@
       event.preventDefault();
       uploader.setOption('multipart_params', {
         "entity[kind_id]": wApp.info.data.medium_kind_id,
-        "entity[collection_id]": tag.refs['cs'].val()
-        // TODO: reenable adding to user groups and relating to entities
-        // "user_group_name": scope.data.params.user_group_name,
-        // "relation_name": scope.data.params.relation_name
+        "entity[collection_id]": tag.refs['cs'].val(),
+        "user_group_name": tag.refs['user-group-name'].value(),
+        "relation_name": tag.refs['relation-selector'].value(),
+        "target_entity_id": wApp.clipboard.selection()
       });
       uploader.start();
     }
 
+    tag.hasSelection = function() {
+      return !!wApp.clipboard.selection();
+    }
+
+    var fetchSelected = function() {
+      var id = wApp.clipboard.selection();
+      Zepto.ajax({
+        url: '/entities/' + id,
+        success: function(data) {
+          tag.selection = data;
+          tag.update();
+          tag.refs['relation-selector'].trigger('endpoints-changed');
+        }
+      });
+    }
+
     var init = function() {
+      if (tag.hasSelection())
+        fetchSelected();
+
       uploader = new plupload.Uploader({
         browse_button: Zepto('.trigger')[0],
         url: '/entities',

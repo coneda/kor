@@ -523,8 +523,13 @@ en:
     unmarked_entity_success: "the entity has been removed from the clipboard"
     extend_success: "%{o} has been extended until %{until}"
     confirm_destroy: "Do you really want to delete %{o}?"
-    marked_as_current_success: "entity %{o} has been marked as current entity"
+    marked_as_current_success: "the entity has been marked as current entity"
     relate_all_to: "all selected entities will be related with %{o}"
+    create_failed_group_sccess: |
+      The entity %o was not created because a medium with the same data
+      already exists. It was transferred into the user group %ug. Please
+      be aware that the existing medium entity can only be seen if you have
+      sufficient permissions.
 
   move_contents_from: move content from %{o}
 
@@ -918,6 +923,7 @@ en:
         name: description
         group: group to be released
       user_group:
+        name: name
         owner: owner
         shared:
           one: shared

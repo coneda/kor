@@ -8,7 +8,7 @@
     onchange={inputChanged}
     ref="manual"
   />
-  {t('of', {values: {amount: totalPages()}})}
+  {t('of', {interpolations: {amount: totalPages()}})}
   <a show={!isLast()} onclick={toNext}><i class="icon pager_right"></i></a>
 
   <script type="text/coffee">

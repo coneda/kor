@@ -26,31 +26,43 @@
     </table>
   </div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+  <script type="text/javascript">
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
 
-    tag.on 'mount', ->
+    tag.on('mount', function() {
       fetch()
+    })
 
-    tag.onDeleteClicked = (event) ->
-      event.preventDefault()
+    tag.onDeleteClicked = function(event) {
+      event.preventDefault();
+      if (wApp.utils.confirm())
+        destroy(event.item.collection.id);
+    }
 
-    destroy = (id) ->
-      Zepto.ajax(
-        method: 'DELETE'
-        url: "/collections/#{id}"
-        success: fetch
-      )
+    var destroy = function(id) {
+      Zepto.ajax({
+        type: 'DELETE',
+        url: '/collections/' + id,
+        success: fetch,
+        error: function(xhr) {
+          tag.errors = JSON.parse(xhr.responseText).errors
+          wApp.utils.scrollToTop()
+        }
+      })
+    }
 
-    fetch = ->
-      Zepto.ajax(
-        url: '/collections'
-        data: {include: 'counts'}
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+    fetch = function() {
+      Zepto.ajax({
+        url: '/collections',
+        data: {include: 'counts'},
+        success: function(data) {
+          tag.data = data;
+          tag.update();
+        }
+      })
+    }
+
   </script>
 </kor-collections>

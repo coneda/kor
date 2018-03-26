@@ -346,6 +346,12 @@ kor-entity-editor, [data-is=kor-entity-editor] {
   }
 }
 
+kor-clipboard-control {
+  a:hover {
+    text-decoration: none;
+  }
+}
+
 .clearfix {
   clear: both;
 }
@@ -360,4 +366,8 @@ kor-entity-editor, [data-is=kor-entity-editor] {
 
 .kor-notice {
   color: $kor-notice;
+}
+
+.kor-text-right {
+  text-align: right;
 }

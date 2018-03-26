@@ -14,6 +14,7 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.auth)
+    window.x = tag
 
     tag.on 'mount', ->
       wApp.bus.on 'routing:path', tag.routeHandler
@@ -77,6 +78,12 @@
               else if m = path.match(/^\/collections\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-collection-editor'
+              else if m = path.match(/^\/groups\/user\/([0-9]+)\/edit$/)
+                opts['id'] = parseInt(m[1])
+                'kor-user-group-editor'
+              else if m = path.match(/^\/relations\/([0-9]+)\/edit$/)
+                opts['id'] = parseInt(m[1])
+                'kor-relation-editor'
               else
                 switch path
                   when '/clipboard'
@@ -103,6 +110,10 @@
                   when '/collections' then 'kor-collections'
                   when '/collections/new' then 'kor-collection-editor'
                   when '/upload' then 'kor-upload'
+                  when '/groups/user/new' then 'kor-user-group-editor'
+                  when '/groups/user' then 'kor-user-groups'
+                  when '/relations/new' then 'kor-relation-editor'
+                  when '/relations' then 'kor-relations'
                   else
                     'kor-search'
           else
