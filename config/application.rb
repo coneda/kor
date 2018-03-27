@@ -127,3 +127,4 @@ end
 # TODO: add consistent optimistic locking
 # TODO: clean up widget directory
 # TODO: ensure stale checks everywhere
+# TODO: upgrade riotjs

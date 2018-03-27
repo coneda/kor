@@ -355,14 +355,24 @@ class Entity < ActiveRecord::Base
     self.medium ? self.medium.datahash : nil
   end
   
+  # TODO: this used to grab the content type for media, removed because its
+  # probably not needed anymore
   def kind_name(options = {})
     options.reverse_merge!(:include_subtype => true)
-    
-    result = is_medium? ? medium.content_type : kind.name
-    if options[:include_subtype] && !self[:subtype].blank?
-       result += " (#{self[:subtype]})"
+
+    if options[:include_subtype]
+      if is_medium?
+        "#{kind.name} (#{medium.content_type})"
+      else
+        if subtype.present?
+          "#{kind.name} (#{subtype})"
+        else
+          kind.name
+        end
+      end
+    else
+      kind.name
     end
-    result
   end
   
   def has_name_duplicates?

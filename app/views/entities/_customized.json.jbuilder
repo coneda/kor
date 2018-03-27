@@ -13,9 +13,9 @@ if entity.is_medium?
   json.medium_id entity.medium_id
 
   json.medium do
-    json.id entity.medium.id
-    json.file_size entity.medium.file_size
-    json.content_type entity.medium.content_type
+    json.extract! entity.medium, :id, :file_size, :content_type
+    json.video entity.medium.video?
+    json.audio entity.medium.audio?
 
     json.url do
       json.icon entity.medium.url(:icon)
@@ -24,6 +24,17 @@ if entity.is_medium?
       json.screen entity.medium.url(:screen)
       json.normal entity.medium.url(:normal)
       json.original entity.medium.url(:original)
+
+      if entity.medium.video?
+        json.set! 'video/mp4', entity.medium.document.url(:mp4)
+        json.set! 'video/webm', entity.medium.document.url(:webm)
+        json.set! 'video/ogg', entity.medium.document.url(:ogg)
+      end
+
+      if entity.medium.audio?
+        json.set! 'audio/mp3', entity.medium.document.url(:mp3)
+        json.set! 'audio/ogg', entity.medium.document.url(:ogg)
+      end
     end
   end
 end

@@ -158,22 +158,27 @@
       <div class="viewer">
         <h1>{t('activerecord.models.medium', {capitalize: true})}</h1>
 
-        <a href="#/media/data.medium_id">
+        <a href="#/media/{data.id}">
           <img src="{data.medium.url.preview}">
         </a>
 
         <div class="commands">
           <a
             each={op in ['flip', 'flop', 'rotate_cw', 'rotate_ccw', 'rotate_180']}
-            href="/media/{data.medium_id}/{op}"
+            href="#/media/{data.medium_id}/{op}"
             onclick={transform(op)}
           ><i class="{op}"></i></a>
         </div>
 
         
         <div class="formats">
-          <a href="/media/{data.medium.id}">{t('verbs.enlarge')}</a> |
-          <a href="/media/maximize/{data.medium.id}">{t('verbs.maximize')}</a>
+          <a href="#/media/{data.id}">{t('verbs.enlarge')}</a>
+          <span if={!data.medium.video && !data.medium.audio}> |
+            <a
+              href="/media/maximize/{data.medium_id}"
+              target="_blank"
+            >{t('verbs.maximize')}</a>
+          </span>
           <br />
           {t('verbs.download')}:<br />
           <a 

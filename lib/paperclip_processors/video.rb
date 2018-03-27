@@ -11,6 +11,8 @@ class Paperclip::Video < Paperclip::Processor
   end
 
   def self.make_mp4(file, attachment)
+    make_still(file, attachment)
+
     outfile = Tempfile.new(rand.to_s).path + '.mp4'
     args = "-c:v libx264 -crf 28 -c:a aac -b:a 256k -strict experimental"
     args = "-i #{file.path} #{args} #{outfile}"
@@ -32,6 +34,13 @@ class Paperclip::Video < Paperclip::Processor
     args = "-i #{file.path} #{args} #{outfile}"
     Paperclip.run(Kor.video_processor, args)
     File.open(outfile)
+  end
+
+  def self.make_still(file, attachment)
+    outfile = Tempfile.new(rand.to_s).path + '.jpg'
+    args = "-ss 00:00:05 -i #{file.path} -vframes 1 #{outfile}"
+    Paperclip.run(Kor.video_processor, args)
+    attachment.instance.image = File.open(outfile)
   end
 
 end

@@ -84,6 +84,9 @@
               else if m = path.match(/^\/relations\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-relation-editor'
+              else if m = path.match(/^\/media\/([0-9]+)$/)
+                opts['id'] = parseInt(m[1])
+                'kor-medium-page'
               else
                 switch path
                   when '/clipboard'

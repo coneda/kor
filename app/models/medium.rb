@@ -33,6 +33,7 @@ class Medium < ActiveRecord::Base
   process_in_background :document
   process_in_background :image
 
+  # TODO: do we still need this?
   def custom_styles
     result = {}
 
@@ -64,6 +65,16 @@ class Medium < ActiveRecord::Base
     end
       
     []
+  end
+
+  def video?
+    ct = document.content_type
+    ct && !!ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
+  end
+
+  def audio?
+    ct = document.content_type
+    ct && !!document.content_type.match(/^audio\//)
   end
 
   

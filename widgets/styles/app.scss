@@ -352,6 +352,18 @@ kor-clipboard-control {
   }
 }
 
+kor-medium-page, [data-is=kor-medium-page] {
+  a {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+  }
+
+  img {
+    max-width: 100%;
+  }
+}
+
 .clearfix {
   clear: both;
 }
