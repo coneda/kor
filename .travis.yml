@@ -16,6 +16,6 @@ before_install:
 # install: true
 
 script:
-  - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rake db:setup db:test:load
+  - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rake db:drop db:setup db:test:load
   - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rspec spec --format=progress
   - docker run --rm --link mysql:mysql --link elastic:elastic -e HEADLESS=true docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec cucumber features --format=progress

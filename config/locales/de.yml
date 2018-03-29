@@ -865,6 +865,7 @@ de:
         name: Name
         title: Titel
         uuid: UUID
+        search_name: Name / Titel / UUID
         subtype: Typ
         distinct_name: eindeutiger Name
         distinct_title: eindeutiger Titel

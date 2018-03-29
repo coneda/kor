@@ -52,9 +52,6 @@ all:
     max_file_upload_size: 30
     max_download_group_size: 80
 
-  search:
-    entity_name: "Name / Titel / UUID"
-
   # CORS: set the hosts that are allowed to make AJAX requests to this instance
   allowed_origins: ['localhost:8000']
 

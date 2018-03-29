@@ -863,6 +863,7 @@ en:
         name: name
         title: title
         uuid: UUID
+        search_name: Name / Title / UUID
         subtype: type
         distinct_name: distinguished name
         distinct_title: distinguished title
