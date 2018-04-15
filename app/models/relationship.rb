@@ -195,4 +195,7 @@ class Relationship < ActiveRecord::Base
     "#{model_name.cache_key}/#{id}-#{timestamp}"
   end
 
+  # TODO: add method 'describe' that shows from_id - relation -> to_id with
+  # and all that
+
 end

@@ -1,99 +1,160 @@
 <kor-field-editor>
 
-  <h2>
-    <kor-t
-      key="objects.edit"
-      with={ {'interpolations': {'o': 'activerecord.models.field.other'}} }
-      show={opts.kind.id}
-    />
+  <h2 if={opts.id}>
+    {tcap('objects.edit', {interpolations: {o: 'activerecord.models.field'}})}
+  </h2>
+  <h2 if={!opts.id}>
+    {tcap('objects.create', {interpolations: {o: 'activerecord.models.field'}})}
   </h2>
 
-  <form if={showForm && types} onsubmit={submit}>
+  <form if={data && types} onsubmit={submit}>
 
-    <kor-field
-      field-id="type"
-      label-key="field.type"
+    <kor-input
+      name="type"
+      label={tcap('activerecord.attributes.field.type')}
       type="select"
       options={types_for_select}
-      allow-no-selection={false}
-      model={field}
+      riot-value={data.type}
       onchange={updateSpecialFields}
-      is-disabled={field.id}
+      is-disabled={data.id}
+      ref="fields"
     />
 
     <virtual each={f in specialFields}>
-      <kor-field
-        field-id={f.name}
+      <kor-input
+        name="name"
         label={f.label}
-        model={field}
+        riot-value={field[f.name]}
         errors={errors[f.name]}
+        ref="fields"
       />
     </virtual>
 
-    <kor-field
-      field-id="name"
-      label-key="field.name"
-      model={field}
+    <kor-input
+      name="name"
+      label={tcap('activerecord.attributes.field.name')}
+      riot-value={data.name}
       errors={errors.name}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="show_label"
-      label-key="field.show_label"
-      model={field}
+    <kor-input
+      name="show_label"
+      label={tcap('activerecord.attributes.field.show_label')}
+      riot-value={data.show_label}
       errors={errors.show_label}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="form_label"
-      label-key="field.form_label"
-      model={field}
+    <kor-input
+      name="form_label"
+      label={tcap('activerecord.attributes.field.form_label')}
+      riot-value={data.form_label}
       errors={errors.form_label}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="search_label"
-      label-key="field.search_label"
-      model={field}
+    <kor-input
+      name="search_label"
+      label={tcap('activerecord.attributes.field.search_label')}
+      riot-value={data.search_label}
       errors={errors.search_label}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="show_on_entity"
+    <kor-input
+      name="show_on_entity"
       type="checkbox"
-      label-key="field.show_on_entity"
-      model={field}
+      label={tcap('activerecord.attributes.field.show_on_entity')}
+      riot-value={data.show_on_entity}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="is_identifier"
+    <kor-input
+      name="is_identifier"
       type="checkbox"
-      label-key="field.is_identifier"
-      model={field}
+      label={tcap('activerecord.attributes.field.is_identifier')}
+      riot-value={data.is_identifier}
+      ref="fields"
     />
 
     <div class="hr"></div>
 
-    <kor-submit />
+    <kor-input type="submit" />
   </form>
 
   <script type="text/coffee">
     tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
     tag.errors = {}
 
-    tag.opts.notify.on 'add-field', ->
-      tag.field = {type: 'Fields::String'}
-      tag.showForm = true
-      tag.updateSpecialFields()
-
-    tag.opts.notify.on 'edit-field', (field) ->
-      tag.field = field
-      tag.showForm = true
-      tag.updateSpecialFields()
-
     tag.on 'mount', ->
+      if tag.opts.id
+        fetch()
+      else
+        tag.data = {type: 'Fields::String'}
+        tag.update()
+      fetchTypes()
+
+    tag.updateSpecialFields = (event) ->
+      # if tag.showForm
+      # get the tag selection or fall back to the model value
+      typeName = Zepto('[name=type]').val() || tag.data.type
+      # update the model
+      tag.data.type = typeName
+      if types = tag.types
+        tag.specialFields = types[typeName].fields
+        tag.update()
+      # true
+
+    tag.submit = (event) ->
+      event.preventDefault()
+      p = (if tag.opts.id then update() else create())
+      p.done (data) ->
+        tag.errors = {}
+        tag.opts.notify.trigger 'refresh'
+        route("/kinds/#{tag.opts.kindId}/edit")
+      p.fail (xhr) ->
+        tag.errors = JSON.parse(xhr.responseText).errors
+        wApp.utils.scrollToTop()
+      p.always -> tag.update()
+
+    create = ->
+      # console.log values()
       Zepto.ajax(
-        url: "/kinds/#{tag.opts.kind.id}/fields/types"
+        type: 'POST'
+        url: "/kinds/#{tag.opts.kindId}/fields"
+        data: JSON.stringify(values())
+      )
+
+    update = ->
+      Zepto.ajax(
+        type: 'PATCH'
+        url: "/kinds/#{tag.opts.kindId}/fields/#{tag.opts.id}"
+        data: JSON.stringify(values())
+      )
+
+    values = ->
+      results = {}
+      for k, t of tag.refs.fields
+        results[t.name()] = t.value()
+      return {
+        field: results
+        klass: results.type
+      }
+
+    fetch = ->
+      Zepto.ajax(
+        url: "/kinds/#{tag.opts.kindId}/fields/#{tag.opts.id}"
+        success: (data) ->
+          tag.data = data
+          tag.update()
+      )
+
+    fetchTypes = ->
+      Zepto.ajax(
+        url: "/kinds/#{tag.opts.kindId}/fields/types"
         success: (data) ->
           tag.types = {}
           tag.types_for_select = []
@@ -101,63 +162,6 @@
             tag.types_for_select.push(value: t.name, label: t.label)
             tag.types[t.name] = t
           tag.updateSpecialFields()
-      )
-
-    tag.updateSpecialFields = (event) ->
-      if tag.showForm
-        # get the tag selection or fall back to the model value
-        typeName = Zepto('[name=type]').val() || tag.field.type
-        # update the model
-        tag.field.type = typeName
-        if types = tag.types
-          tag.specialFields = types[typeName].fields
-          tag.update()
-      true
-
-    tag.submit = (event) ->
-      event.preventDefault()
-      if tag.field.id then update() else create()
-
-    params = ->
-      results = {}
-      for k, t of tag.formFields
-        results[t.fieldId()] = t.val()
-      return {
-        field: results
-        klass: results.type
-      }
-
-
-    create = ->
-      Zepto.ajax(
-        type: 'POST'
-        url: "/kinds/#{tag.opts.kind.id}/fields"
-        data: JSON.stringify(params())
-        success: ->
-          tag.opts.notify.trigger 'refresh'
-          tag.errors = {}
-          tag.showForm = false
-        error: (request) ->
-          data = JSON.parse(request.response)
-          tag.errors = data.errors
-        complete: ->
-          tag.update()
-      )
-
-    update = ->
-      console.log 'updating'
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/kinds/#{tag.opts.kind.id}/fields/#{tag.field.id}"
-        data: JSON.stringify(params())
-        success: ->
-          tag.opts.notify.trigger 'refresh'
-          tag.showForm = false
-        error: (request) ->
-          tag.field = request.responseJSON.record
-          tag.field.errors = request.responseJSON.errors
-        complete: ->
-          tag.update()
       )
 
   </script>

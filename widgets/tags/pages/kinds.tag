@@ -1,31 +1,28 @@
 <kor-kinds>
-  <h1>
-    {t('activerecord.models.kind', {capitalize: true, count: 'other'})}
-  </h1>
 
-  <form class="kor-horizontal">
+  <div class="kor-content-box">
+    <a href="#/kinds/new" class="pull-right"><i class="plus"></i></a>
+    <h1>{tcap('activerecord.models.kind', {count: 'other'})}</h1>
 
-    <kor-field
-      label-key="search_term"
-      field-id="terms"
-      onkeyup={delayedSubmit}
-    />
+    <form class="inline">
 
-    <kor-field
-      label-key="hide_abstract"
-      type="checkbox"
-      field-id="hideAbstract"
-      onchange={submit}
-    />
+      <kor-input
+        label={tcap('search_term')}
+        name="terms"
+        onkeyup={delayedSubmit}
+        ref="terms"
+      />
 
+      <kor-input
+        label={tcap('hide_abstract')}
+        type="checkbox"
+        name="hideAbstract"
+        onchange={submit}
+        ref="hideAbstract"
+      />
+
+    </form>
     <div class="hr"></div>
-  </form>
-
-  <div class="text-right">
-    <a href="#/kinds/new">
-      <i class="fa fa-plus-square"></i>
-    </a>
-  </div>
 
   <virtual if={filteredRecords && filteredRecords.length}>
     <table each={records, schema in groupedResults} class="kor_table text-left">
@@ -39,7 +36,7 @@
         <tr each={kind in records}>
           <td class={active: !kind.abstract}>
             <div class="name">
-              <a href="#/kinds/{kind.id}">{kind.name}</a>
+              <a href="#/kinds/{kind.id}/edit">{kind.name}</a>
             </div>
             <div show={kind.fields.length}>
               <span class="label">
@@ -54,8 +51,8 @@
               {generatorNamesFor(kind)}
             </div>
           </td>
-          <td class="text-right buttons">
-            <a href="#/kinds/{kind.id}"><i class="fa fa-edit"></i></a>
+          <td class="buttons">
+            <a href="#/kinds/{kind.id}/edit"><i class="fa fa-edit"></i></a>
             <a
               if={kind.removable}
               href="#/kinds/{kind.id}"
@@ -94,8 +91,8 @@
       (g.name for g in kind.generators).join(', ')
 
     tag.submit = ->
-      tag.filters.terms = tag.formFields['terms'].val()
-      tag.filters.hideAbstract = tag.formFields['hideAbstract'].val()
+      tag.filters.terms = tag.refs['terms'].value()
+      tag.filters.hideAbstract = tag.refs['hideAbstract'].value()
       filter_records()
       groupAndSortRecords()
       tag.update()

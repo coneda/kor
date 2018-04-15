@@ -171,9 +171,8 @@ kor-entity, [data-is=kor-entity] {
     position: relative;
 
     kor-clipboard-control, [data-is=kor-clipboard-control] {
-      position: absolute;
-      top: 0px;
-      right: 0rem;
+      display: block;
+      text-align: right;
     }
 
     a {
@@ -362,6 +361,33 @@ kor-medium-page, [data-is=kor-medium-page] {
   img {
     max-width: 100%;
   }
+}
+
+kor-kinds, [data-is=kor-kinds] {
+  // TODO: make this default way of handling a button column
+  td.buttons {
+    width: 6rem;
+    text-align: right;
+  }
+}
+
+kor-generators, kor-fields {
+  display: block;
+
+  ul {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+
+    i.fa-edit {
+      position: relative;
+      top: 1px;
+    }
+  }
+}
+
+kor-generators {
+  margin-top: 1.5em;
 }
 
 .clearfix {

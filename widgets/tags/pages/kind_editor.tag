@@ -1,103 +1,94 @@
 <kor-kind-editor>
-  <kor-menu-fix />
+  <!-- <kor-menu-fix /> -->
 
-  <kor-layout-panel class="left small" if={opts.kind}>
-    <kor-panel>
-      <h1>
-        <span show={opts.kind.id}>{opts.kind.name}</span>
-        <kor-t
-          show={!opts.kind.id}
-          key="objects.create"
-          with={ {'interpolations': {'o': t('activerecord.models.kind')}} }
-        />
+  <div class="kor-layout-left kor-layout-small">
+    <div class="kor-content-box">
+      <h1 if={opts.id && data}>
+        {tcap('objects.edit', {interpolations: {o: data.name}})}
+      </h1>
+      <h1 if={!opts.id}>
+        {tcap('objects.create', {interpolations: {o: 'activerecord.models.kind'}})}
       </h1>
 
-      <a href="#" onclick={switchTo('general')}>
-        » {t('general', {capitalize: true})}
-      </a><br />
-      <a href="#" onclick={switchTo('fields')} if={opts.kind.id}>
-        » {t('activerecord.models.field', {count: 'other', capitalize: true})}
-      </a><br />
-      <a href="#" onclick={switchTo('generators')} if={opts.kind.id}>
-        » {t('activerecord.models.generator', {count: 'other', capitalize: true})}
-      </a><br />
+      <virtual if={opts.id}>
+        <a href="#/kinds/{opts.id}/edit">
+          » {tcap('general', {capitalize: true})}
+        </a><br />
+      </virtual>
 
-      <div class="hr"></div>
+      <hr if={opts.id} />
+
+      <virtual if={data}>
+        <kor-fields
+          kind={data}
+          notify={notify}
+        />
+
+        <kor-generators
+          kind={data}
+          notify={notify}
+        />
+      </virtual>
+
+      <hr if={opts.id} />
+
       <div class="text-right">
         <a href="#/kinds" class="kor-button">{t('back_to_list')}</a>
       </div>
+    </div>
+  </div>
 
-      <div class="hr" if={tab == 'fields' || tab == 'generators'}></div>
+  <div class="kor-layout-right kor-layout-large">
+    <div class="kor-content-box">
+      <virtual if={data}>
+        <kor-kind-general-editor
+          if={!opts.newField && !opts.fieldId && !opts.newGenerator && !opts.generatorId}
+          id="{opts.id}"
+          notify={notify}
+        />
+        <kor-field-editor
+          if={opts.newField || opts.fieldId}
+          id="{opts.fieldId}"
+          kind-id={data.id}
+          notify={notify}
+        />
+        <kor-generator-editor
+          if={opts.newGenerator || opts.generatorId}
+          id="{opts.generatorId}"
+          kind-id={data.id}
+          notify={notify}
+        />
+      </virtual>
+    </div>
+  </div>
 
-      <kor-fields
-        kind={opts.kind}
-        if={tab == 'fields'}
-        notify={notify}
-      />
-
-      <kor-generators
-        kind={opts.kind}
-        if={tab == 'generators'}
-        notify={notify}
-      />
-    </kor-panel>
-  </kor-layout-panel>
-
-  <kor-layout-panel class="right large">
-    <kor-panel>
-      <kor-kind-general-editor
-        if={tab == 'general'}
-        kind={opts.kind}
-        notify={notify}
-      />
-      <kor-field-editor
-        kind={opts.kind}
-        if={tab == 'fields' && opts.kind.id}
-        notify={notify}
-      />
-      <kor-generator-editor
-        kind={opts.kind}
-        if={tab == 'generators' && opts.kind.id}
-        notify={notify}
-      />
-    </kor-panel>
-  </kor-layout-panel>
+  <div class="clearfix"></div>
 
   <script type="text/coffee">
     tag = this
     tag.tab = 'general'
     tag.notify = riot.observable()
-    tag.requireRoles = ['kind_admin']
+    # TODO: make sure this works again
+    # tag.requireRoles = ['kind_admin']
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', ->
-      if tag.opts.id
-        Zepto.ajax(
-          url: "/kinds/#{tag.opts.id}"
-          data: {include: 'fields,generators,inheritance'}
-          success: (data) ->
-            tag.opts.kind = data
-            tag.update()
-        )
-      else
-        tag.opts.kind = {}
+      fetch() if tag.opts.id
+      tag.tab = wApp.routing.query()['section'] || 'general'
+      tag.notify.on 'refresh', fetch
 
-    tag.on 'kind-changed', (new_kind) ->
-      wApp.bus.trigger 'kinds-changed'
-      tag.opts.kind = new_kind
-      tag.update()
+    tag.on 'unmount', ->
+      tag.notify.off 'refresh', fetch
 
-    tag.switchTo = (name) ->
-      (event) ->
-        event.preventDefault()
-        tag.tab = name
-        tag.update()
-
-    tag.closeModal = ->
-      if tag.opts.modal
-        tag.opts.modal.trigger 'close'
-        window.location.reload()
+    fetch = ->
+      Zepto.ajax(
+        url: "/kinds/#{tag.opts.id}"
+        data: {include: 'fields,generators,inheritance'}
+        success: (data) ->
+          tag.data = data
+          tag.update()
+      )
 
   </script>
 

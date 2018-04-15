@@ -65,6 +65,22 @@
               else if m = path.match(/^\/entities\/([0-9]+)$/)
                 opts['id'] = parseInt(m[1])
                 'kor-entity-page'
+              else if m = path.match(/^\/kinds\/([0-9]+)\/edit\/fields\/new$/)
+                opts['id'] = parseInt(m[1])
+                opts['newField'] = true
+                'kor-kind-editor'
+              else if m = path.match(/^\/kinds\/([0-9]+)\/edit\/fields\/([0-9]+)\/edit$/)
+                opts['id'] = parseInt(m[1])
+                opts['fieldId'] = parseInt(m[2])
+                'kor-kind-editor'
+              else if m = path.match(/^\/kinds\/([0-9]+)\/edit\/generators\/new$/)
+                opts['id'] = parseInt(m[1])
+                opts['newGenerator'] = true
+                'kor-kind-editor'
+              else if m = path.match(/^\/kinds\/([0-9]+)\/edit\/generators\/([0-9]+)\/edit$/)
+                opts['id'] = parseInt(m[1])
+                opts['generatorId'] = parseInt(m[2])
+                'kor-kind-editor'
               else if m = path.match(/^\/kinds\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-kind-editor'

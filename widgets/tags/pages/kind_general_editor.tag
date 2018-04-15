@@ -1,100 +1,100 @@
 <kor-kind-general-editor>
 
-  <h2 if={opts.kind}>
-    <kor-t
-      key="general"
-      with={ {capitalize: true} }
-      show={opts.kind.id}
-    />
-    <kor-t
-      show={!opts.kind.id}
-      key="objects.create"
-      with={ {'interpolations': {'o': 'activerecord.models.kind'}} }
-    />
-  </h2>
+  <h2>{tcap('general')}</h2>
 
-  <form onsubmit={submit} if={possible_parents}>
+  <form if={data && possibleParents} onsubmit={submit}>
 
-    <kor-field
-      field-id="schema"
-      label-key="kind.schema"
-      model={opts.kind}
+    <kor-input
+      name="schema"
+      label={tcap('activerecord.attributes.kind.schema')}
+      riot-value={data.schema}
+      ref="fields"
     />
     
-    <kor-field
-      field-id="name"
-      label-key="kind.name"
-      model={opts.kind}
+    <kor-input
+      name="name"
+      label={tcap('activerecord.attributes.kind.name')}
+      riot-value={data.name}
       errors={errors.name}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="plural_name"
-      label-key="kind.plural_name"
-      model={opts.kind}
+    <kor-input
+      name="plural_name"
+      label={tcap('activerecord.attributes.kind.plural_name')}
+      riot-value={data.plural_name}
       errors={errors.plural_name}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="description"
+    <kor-input
+      name="description"
       type="textarea"
-      label-key="kind.description"
-      model={opts.kind}
+      label={tcap('activerecord.attributes.kind.description')}
+      riot-value={data.description}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="url"
-      label-key="kind.url"
-      model={opts.kind}
+    <kor-input
+      name="url"
+      label={tcap('activerecord.attributes.kind.url')}
+      riot-value={data.url}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="parent_ids"
+    <kor-input
+      name="parent_ids"
       type="select"
-      options={possible_parents}
+      options={possibleParents}
       multiple={true}
-      label-key="kind.parent"
-      model={opts.kind}
+      label={tcap('activerecord.attributes.kind.parent')}
+      riot-value={data.parent_ids}
       errors={errors.parent_ids}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="abstract"
+    <kor-input
+      name="abstract"
       type="checkbox"
-      label-key="kind.abstract"
-      model={opts.kind}
+      label={tcap('activerecord.attributes.kind.abstract')}
+      riot-value={data.abstract}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="tagging"
+    <kor-input
+      name="tagging"
       type="checkbox"
-      label-key="kind.tagging"
-      model={opts.kind}
+      label={tcap('activerecord.attributes.kind.tagging')}
+      riot-value={data.tagging}
+      ref="fields"
     />
 
-    <div if={!is_media()}>
-      <kor-field
-        field-id="dating_label"
-        label-key="kind.dating_label"
-        model={opts.kind}
+    <div if={!isMedia()}>
+      <kor-input
+        name="dating_label"
+        label={tcap('activerecord.attributes.kind.dating_label')}
+        riot-value={data.dating_label}
+        ref="fields"
       />
 
-      <kor-field
-        field-id="name_label"
-        label-key="kind.name_label"
-        model={opts.kind}
+      <kor-input
+        name="name_label"
+        label={tcap('activerecord.attributes.kind.name_label')}
+        riot-value={data.name_label}
+        ref="fields"
       />
 
-      <kor-field
-        field-id="distinct_name_label"
-        label-key="kind.distinct_name_label"
-        model={opts.kind}
+      <kor-input
+        name="distinct_name_label"
+        label={tcap('activerecord.attributes.kind.distinct_name_label')}
+        riot-value={data.distinct_name_label}
+        ref="fields"
       />
     </div>
 
     <div class="hr"></div>
 
-    <kor-submit />
+    <kor-input type="submit" />
 
   </form>
 
@@ -104,44 +104,29 @@
     tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', ->
-      # tag.opts.kind ||= {}
       tag.errors = {}
+      fetch()
 
-      Zepto.ajax(
-        type: 'get'
-        url: '/kinds'
-        success: (data) ->
-          tag.possible_parents = []
-          for kind in data.records
-            if !tag.opts.kind || (tag.opts.kind.id != kind.id && tag.opts.kind.id != 1)
-              tag.possible_parents.push(
-                label: kind.name
-                value: kind.id
-              )
-          tag.update()
-      )
+    tag.isMedia = ->
+      tag.opts.id && (tag.data.uuid == wApp.data.medium_kind_uuid)
 
-    tag.is_media = ->
-      opts.kind &&
-      opts.kind.uuid == wApp.data.medium_kind_uuid
-
-    tag.new_record = -> !(tag.opts.kind || {}).id
+    tag.new_record = -> !(tag.data || {}).id
 
     tag.values = ->
       result = {}
-      for field in tag.tags['kor-field']
-        result[field.fieldId()] = field.val()
+      for field in tag.tags['kor-input']
+        result[field.name()] = field.value()
       result
 
     success = (data) ->
-      tag.parent.trigger 'kind-changed', data.record
+      route("/kinds/#{data.id}/edit")
+      # tag.parent.trigger 'kind-changed'
       tag.errors = {}
       tag.update()
 
     error = (response) ->
       data = JSON.parse(response.response)
       tag.errors = data.errors
-      tag.opts.kind = data.record
       tag.update()
 
     tag.submit = (event) ->
@@ -157,11 +142,41 @@
       else
         Zepto.ajax(
           type: 'PATCH'
-          url: "/kinds/#{tag.opts.kind.id}"
+          url: "/kinds/#{tag.data.id}"
           data: JSON.stringify(kind: tag.values())
           success: success
           error: error
         )
+
+    # TODO: fetch new action if there was no id to get a formal empty attribute
+    # set from the server
+    fetch = ->
+      if tag.opts.id
+        Zepto.ajax(
+          url: "/kinds/#{tag.opts.id}"
+          success: (data) ->
+            tag.data = data
+            tag.update()
+            fetchPossibleParents()
+        )
+      else
+        tag.data = {}
+        fetchPossibleParents()
+
+    fetchPossibleParents = ->
+      Zepto.ajax(
+        type: 'get'
+        url: '/kinds'
+        success: (data) ->
+          tag.possibleParents = []
+          for kind in data.records
+            if !tag.data || (tag.data.id != kind.id && tag.data.id != 1)
+              tag.possibleParents.push(
+                label: kind.name
+                value: kind.id
+              )
+          tag.update()
+      )
 
   </script>
 

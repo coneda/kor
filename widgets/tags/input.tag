@@ -19,6 +19,7 @@
       name={opts.name}
       value={valueFromParent()}
       multiple={opts.multiple}
+      disabled={opts.isDisabled}
     >
       <option if={opts.placeholder} value={0}>
         {opts.placeholder}

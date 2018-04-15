@@ -1,89 +1,88 @@
 <kor-generator-editor>
 
-  <h2>
-    <kor-t
-      key="objects.edit"
-      with={ {'interpolations': {'o': 'activerecord.models.generator.other'}} }
-      show={opts.kind.id}
-    />
+  <h2 if={opts.id}>
+    {tcap('objects.edit', {interpolations: {o: 'activerecord.models.generator'}})}
+  </h2>
+  <h2 if={!opts.id}>
+    {tcap('objects.create', {interpolations: {o: 'activerecord.models.generator'}})}
   </h2>
 
-  <form if={showForm} onsubmit={submit}>
-
-    <kor-field
-      field-id="name"
-      label-key="generator.name"
-      model={generator}
+  <form if={data} onsubmit={submit}>
+    <kor-input
+      name="name"
+      label={tcap('activerecord.attributes.generator.name')}
+      riot-value={data.name}
       errors={errors.name}
+      ref="fields"
     />
 
-    <kor-field
-      field-id="directive"
-      label-key="generator.directive"
+    <kor-input
+      name="directive"
+      label={tcap('activerecord.attributes.generator.directive')}
       type="textarea"
-      model={generator}
+      riot-value={data.directive}
       errors={errors.directive}
+      ref="fields"
     />
 
-    <div class="hr"></div>
+    <hr />
 
-    <kor-submit />
+    <kor-input type="submit" />
   </form>
 
 
   <script type="text/coffee">
     tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
     tag.errors = {}
 
-    tag.opts.notify.on 'add-generator', ->
-      tag.generator = {}
-      tag.showForm = true
-      tag.update()
-
-    tag.opts.notify.on 'edit-generator', (generator) ->
-      tag.generator = generator
-      tag.showForm = true
-      tag.update()
+    tag.on 'mount', ->
+      if tag.opts.id
+        fetch()
+      else
+        tag.data = {}
+        tag.update()
 
     tag.submit = (event) ->
       event.preventDefault()
-      if tag.generator.id then update() else create()
+      p = (if tag.opts.id then update() else create())
+      p.done (data) ->
+        tag.errors = {}
+        tag.opts.notify.trigger 'refresh'
+        route("/kinds/#{tag.opts.kindId}/edit")
+      p.fail (xhr) ->
+        tag.errors = JSON.parse(xhr.responseText).errors
+        wApp.utils.scrollToTop()
+      p.always -> tag.update()
 
     create = ->
       Zepto.ajax(
         type: 'POST'
-        url: "/kinds/#{tag.opts.kind.id}/generators"
-        data: JSON.stringify(params())
-        success: ->
-          tag.opts.notify.trigger 'refresh'
-          tag.errors = {}
-          tag.showForm = false
-        error: (request) ->
-          data = JSON.parse(request.response)
-          tag.errors = data.errors
-        complete: ->
-          tag.update()
+        url: "/kinds/#{tag.opts.kindId}/generators"
+        data: JSON.stringify(values())
       )
 
     update = ->
       Zepto.ajax(
         type: 'PATCH'
-        url: "/kinds/#{tag.opts.kind.id}/generators/#{tag.generator.id}"
-        data: JSON.stringify(params())
-        success: ->
-          tag.opts.notify.trigger 'refresh'
-          tag.showForm = false
-        error: (request) ->
-          tag.generator = request.responseJSON.record
-        complete: ->
-          tag.update()
+        url: "/kinds/#{tag.opts.kindId}/generators/#{tag.opts.id}"
+        data: JSON.stringify(values())
       )
 
-    params = ->
+    values = ->
       results = {}
-      for k, t of tag.formFields
-        results[t.fieldId()] = t.val()
+      for k, t of tag.refs.fields
+        results[t.name()] = t.value()
       return {generator: results}
+
+    fetch = ->
+      Zepto.ajax(
+        url: "/kinds/#{tag.opts.kindId}/generators/#{tag.opts.id}"
+        success: (data) ->
+          tag.data = data
+          tag.update()
+      )
 
   </script>
 

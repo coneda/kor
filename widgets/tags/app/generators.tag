@@ -1,41 +1,37 @@
 <kor-generators>
 
-  <div class="pull-right">
-    <a href="#/kinds/{opts.kind.id}/generators/new" onclick={add}>
+  <div class="pull-right kor-text-right">
+    <a href="#/kinds/{opts.kind.id}/edit/generators/new">
       <i class="fa fa-plus-square"></i>
     </a>
   </div>
   
   <strong>
-    <kor-t
-      key="activerecord.models.generator"
-      with={ {count: 'other', capitalize: true} }>
-    />
+    {tcap('activerecord.models.generator', {count: 'other'})}
   </strong>
-  <ul if={kind}>
-    <li each={generator in kind.generators}>
-      <div class="pull-right">
-        <a href="#" onclick={edit(generator)}><i class="fa fa-edit"></i></a>
-        <a href="#" onclick={remove(generator)}><i class="fa fa-remove"></i></a>
+
+  <div class="clearfix"></div>
+
+  <ul if={opts.kind}>
+    <li each={generator in opts.kind.generators}>
+      <div class="pull-right kor-text-right">
+        <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit"><i class="fa fa-edit"></i></a>
+        <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}" onclick={remove(generator)}><i class="fa fa-remove"></i></a>
       </div>
-      <a href="#" onclick={edit(generator)}>{generator.name}</a>
+      <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit">{generator.name}</a>
+      <div class="clearfix"></div>
     </li>
   </ul>
 
+  <div class="clearfix"></div>
+
   <script type="text/coffee">
     tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
 
-    tag.on 'mount', -> refresh()
-    tag.opts.notify.on 'refresh', -> refresh()
-
-    tag.add = (event) ->
-      event.preventDefault()
-      tag.opts.notify.trigger 'add-generator'
-
-    tag.edit = (generator) ->
-      (event) ->
-        event.preventDefault()
-        tag.opts.notify.trigger 'edit-generator', generator
+    tag.on 'mount', ->
+      console.log(tag.opts.kind)
 
     tag.remove = (generator) ->
       (event) ->
@@ -44,19 +40,10 @@
           Zepto.ajax(
             type: 'delete'
             url: "/kinds/#{tag.opts.kind.id}/generators/#{generator.id}"
-            success: -> refresh()
+            success: ->
+              route("/kinds/#{tag.opts.kind.id}/edit")
+              tag.opts.notify.trigger 'refresh'
           )
-
-    refresh = ->
-      Zepto.ajax(
-        url: "/kinds/#{tag.opts.kind.id}"
-        data: {include: 'generators,inheritance'}
-        success: (data) ->
-          # console.log data
-          tag.kind = data
-          tag.update()
-      )
-
 
   </script>
 </kor-generators>

@@ -128,3 +128,4 @@ end
 # TODO: clean up widget directory
 # TODO: ensure stale checks everywhere
 # TODO: upgrade riotjs
+# TODO: save submenu state with Lockr

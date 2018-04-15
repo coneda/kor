@@ -84,7 +84,12 @@ form {
 
     input[type=checkbox] {
       display: block;
-      width: auto;
+      // width: auto;
+      width: 13px;
+      height: 13px;
+      vertical-align: bottom;
+      margin: 0;
+      margin-left: 5px;
     }
 
     select[multiple] {
@@ -94,14 +99,19 @@ form {
 }
 
 form.inline {
-  display: inline;
+  display: inline-block;
   margin-bottom: 0rem;
 
   kor-input, [data-is=kor-input] {
     display: inline;
+    margin-right: 15px;
 
     input, select, textarea {
       width: auto;
+    }
+
+    input[type=checkbox] {
+      display: inline;
     }
   }
 }

@@ -59,8 +59,8 @@ function tags {
 
 function app {
   log "concatenating app"
-  uglifyjs public/vendor.js public/lib.js public/tags.js -o public/app-noboot.js
-  uglifyjs public/app-noboot.js widgets/boot.js -o public/app.js
+  uglifyjs public/vendor.js public/lib.js public/tags.js -b -o public/app-noboot.js
+  uglifyjs public/app-noboot.js widgets/boot.js -b -o public/app.js
 }
 
 function css {

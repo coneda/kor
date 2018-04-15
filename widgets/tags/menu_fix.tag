@@ -1,3 +1,4 @@
+<!-- TODO: can this be dropped? -->
 <kor-menu-fix>
 
   <script type="text/coffee">

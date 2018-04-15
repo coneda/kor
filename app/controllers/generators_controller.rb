@@ -1,52 +1,52 @@
-class GeneratorsController < ApplicationController
-
-  skip_before_filter :authentication, :authorization, only: ['types', 'index']
+class GeneratorsController < JsonController
 
   before_filter do
     @kind = Kind.find(params[:kind_id])
     @generators = @kind.generators
   end
   
-  def index
-    
+  def show
+    @generator = @generators.find(params[:id])
+  end
+
+  def create
+    @generator = @generators.build(generator_params)
+    @generator.kind_id = params[:kind_id]
+
+    if @generator.save
+      render_200 I18n.t('objects.create_success', o: @generator.name)
+    else
+      render_406 @generator.errors
+    end
   end
 
   def update
     @generator = @generators.find(params[:id])
 
     if @generator.update_attributes(generator_params)
-      @messages << I18n.t('objects.update_success', :o => @generator.name)
-      render :action => 'save'
+      render_200 I18n.t('objects.update_success', o: @generator.name)
     else
-      render :action => 'save', status: 406
+      render_406 @generator.errors
     end
   end
-  
-  def create
-    @generator = @generators.new(generator_params)
-    
-    if @generator.save
-      @messages << I18n.t('objects.create_success', :o => @generator.name)
-      render :action => 'save'
-    else
-      render :action => 'save', status: 406
-    end
-  end
-  
+
   def destroy
     @generator = @generators.find(params[:id])
     @generator.destroy
-    @messages << I18n.t('objects.destroy_success', :o => @generator.name)
-    render :action => 'save'
+    render_200 I18n.t('objects.destroy_success', o: @generator.name)
   end
-  
+
   protected
     def generator_params
-      params.fetch(:generator, {}).permit!
+      params.fetch(:generator, {}).permit(:name, :directive)
     end
 
     def generally_authorized?
-      current_user.kind_admin? || (action_name == 'show')
+      if ['update', 'create', 'destroy'].include?(action_name)
+        current_user.kind_admin?
+      else
+        true
+      end
     end
   
 end

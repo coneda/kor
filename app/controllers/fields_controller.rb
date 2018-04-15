@@ -1,7 +1,5 @@
 class FieldsController < JsonController
 
-  skip_before_filter :authentication, :authorization, only: ['types', 'index']
-
   before_filter do
     params[:klass] ||= 'Fields::String'
   
@@ -9,25 +7,14 @@ class FieldsController < JsonController
     @fields = @kind.fields
   end
   
-  def index
-    
+  def show
+    @field = @fields.find(params[:id])
   end
 
   def types
     @types = Kind.available_fields
   end
 
-  def update
-    @field = Field.find(params[:id])
-
-    if @field.update_attributes(field_params)
-      @messages << I18n.t('objects.update_success', o: @field.show_label)
-      render action: 'save'
-    else
-      render action: 'save', status: 406
-    end
-  end
-  
   def create
     @klass = sanitize_field_class(params[:klass])
     @field = (@klass ?
@@ -37,20 +24,28 @@ class FieldsController < JsonController
     @field.kind_id = params[:kind_id]
 
     if @field.save
-      @messages << I18n.t('objects.create_success', o: @field.show_label)
-      render action: 'save'
+      render_200 I18n.t('objects.create_success', o: @field.name)
     else
-      render action: 'save', status: 406
+      render_406 @field.errors
     end
   end
-  
+
+  def update
+    @field = @fields.find(params[:id])
+
+    if @field.update_attributes(field_params)
+      render_200 I18n.t('objects.update_success', o: @field.name)
+    else
+      render_406 @field.errors
+    end
+  end
+
   def destroy
     @field = @fields.find(params[:id])
     @field.destroy
-    @messages << flash[:notice] = I18n.t('objects.destroy_success', o: @field.show_label)
-    render action: 'save'
+    render_200 I18n.t('objects.destroy_success', o: @field.name)
   end
-  
+
 
   protected
 

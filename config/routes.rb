@@ -32,12 +32,12 @@ Rails.application.routes.draw do
 
   defaults format: :json do
     resources :kinds, except: ['edit', 'new'] do
-      resources :fields, except: ['show', 'edit', 'new'] do
+      resources :fields, except: ['edit', 'new', 'index'] do
         collection do
           get :types
         end
       end
-      resources :generators, except: ['show', 'edit', 'new']
+      resources :generators, except: ['edit', 'new', 'index']
     end
   end
 

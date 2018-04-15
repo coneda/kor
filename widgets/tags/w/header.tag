@@ -5,6 +5,8 @@
   </a>
 
   <div class="session">
+    <kor-loading />
+    
     <span>
       <strong>ConedaKOR</strong>
       {t('nouns.version')}
