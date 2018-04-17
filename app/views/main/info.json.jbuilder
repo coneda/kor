@@ -1,8 +1,10 @@
 json.info do
   json.product 'ConedaKOR'
   json.version Kor.version
-  json.operator Kor.config['maintainer']['name']
-  json.email Kor.config['maintainer']['mail']
+  json.operator Kor.settings['maintainer_name']
+  json.email Kor.settings['maintainer_mail']
+  # TODO: imeplement this:
+  # json.federation_auth Kor.federation_auth?
   json.url root_url
   json.uuid Kor.repository_uuid
   json.source_code_url Kor.source_code_url

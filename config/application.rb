@@ -18,9 +18,10 @@ module Kor
     # SQLOrigin.append_to_log
     
     config.autoload_paths << "#{Rails.root}/lib"
+    config.eager_load_paths << "#{Rails.root}/lib"
 
-    config.assets.js_compressor = :uglifier
-    config.assets.precompile += ["kor.js", "blaze.js", "master.css", "blaze.css", "kor_index.js", "kor_index.css"]
+    # config.assets.js_compressor = :uglifier
+    # config.assets.precompile += ["kor.js", "blaze.js", "master.css", "blaze.css", "kor_index.js", "kor_index.css"]
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -42,20 +43,34 @@ module Kor
 
     config.middleware.insert_before 0, "Rack::Cors" do
       allow do
-        origins *Kor::Config.instance['allowed_origins']
+        origins *ENV['CORS_ALLOWED_ORIGINS'].split(/\s+/)
         resource '*', headers: :any, methods: [:get, :options]
       end
     end
 
     config.action_dispatch.perform_deep_munge = false
 
-    initializer 'action_mailer.set_configs' do
-      if mc = Kor::Config.instance['mail']
-        dm = mc['delivery_method'].to_sym
-        config.action_mailer.delivery_method = dm
-        c = (mc["#{dm}_settings"] || {}).symbolize_keys
-        config.action_mailer.send("#{dm}_settings=".to_sym, c)
-      end
+    dm = ENV['MAIL_DELIVERY_METHOD']
+    config.action_mailer.delivery_method = dm
+
+    if dm == 'sendmail'
+      config.action_mailer.sendmail_settings = {
+        location: ENV['MAIL_SENDMAIL_LOCATION'],
+        arguments: ENV['MAIL_SENDMAIL_ARGUMENTS']
+      }
+    end
+
+    if dm == 'smtp'
+      config.action_mailer.smtp_settings = {
+        address: ENV['MAIL_SMTP_ADDRESS'],
+        port: ENV['MAIL_SMTP_PORT'],
+        domain: ENV['MAIL_SMTP_DOMAIN'],
+        user_name: ENV['MAIL_SMTP_USER_NAME'],
+        password: ENV['MAIL_SMTP_PASSWORD'],
+        authentication: ENV['MAIL_SMTP_AUTHENTICATION'],
+        enable_starttls_auth: ENV['MAIL_SMTP_ENABLE_STARTTLS_AUTO'] == 'true',
+        openssl_verify_mode: ENV['MAIL_SMTP_OPENSSL_VERIFY_MODE']
+      }
     end
 
   end

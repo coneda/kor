@@ -60,6 +60,9 @@ class Kor::Tasks
   end
 
   def self.notify_expiring_users(config = {})
+    opts = Kor.default_url_options
+    ActionMailer::Base.default_url_options = opts
+
     users = User.where("expires_at < ? AND expires_at > ?", 2.weeks.from_now, Time.now)
     users.each do |user|
       UserMailer.upcoming_expiry(user).deliver_now

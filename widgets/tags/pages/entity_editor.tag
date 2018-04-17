@@ -5,8 +5,8 @@
       <h1 if={opts.id}>
         {tcap('objects.edit', {interpolations: {o: 'activerecord.models.entity'}})}
       </h1>
-      <h1 if={!opts.id}>
-        {tcap('objects.create', {interpolations: {o: 'activerecord.models.entity'}})}
+      <h1 if={!opts.id && kind}>
+        {tcap('objects.create', {interpolations: {o: kind.name}})}
       </h1>
 
       <form onsubmit={submit} if={data}>
@@ -118,7 +118,7 @@
     tag.on 'mount', ->
       fetchCollections()
       wApp.bus.on 'routing:query', queryHandler
-      queryHandler()
+      fetch tag.opts.kind_id
 
     tag.on 'unmount', ->
       wApp.bus.off 'routing:query', queryHandler
@@ -138,20 +138,20 @@
       tag.refs['fields.no_name_statement'] &&
       tag.refs['fields.no_name_statement'].value() == 'enter_name'
 
-    queryHandler = ->
-      if tag.opts.id
-        fetch()
-      else
-        tag.data['kind_id'] = tag.opts.kindId
-        fetchKind()
+    queryHandler = (parts = {}) ->
+      fetch parts['hash_query']['kind_id']
 
-    fetch = ->
-      Zepto.ajax(
-        url: "/entities/#{tag.opts.id}"
-        success: (data) ->
-          tag.data = data
-          fetchKind()
-      )
+    fetch = (kind_id) ->
+      if tag.opts.id
+        Zepto.ajax(
+          url: "/entities/#{tag.opts.id}"
+          success: (data) ->
+            tag.data = data
+            fetchKind()
+        )
+      else
+        tag.data['kind_id'] = kind_id
+        fetchKind()
 
     fetchKind = ->
       Zepto.ajax(

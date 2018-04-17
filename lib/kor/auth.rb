@@ -44,19 +44,23 @@ module Kor::Auth
     false
   end
 
+  def self.var_to_array(value)
+    value.present? ? value.split(/\s+/) : []
+  end
+
   def self.env_login(env)
     Rails.logger.info "environment auth with env: #{env.inspect}"
 
     env_sources.each do |key, source|
-      source['user'].each do |ku|
+      var_to_array(source['user']).each do |ku|
         if username = env[ku]
           Rails.logger.info "found username #{username}"
 
           mail_candidates = 
-            (source['mail'] || []).
+            var_to_array(source['mail']).
               map{|km| env[km]}.
               select{|e| e.present?} +
-            (source['domain'] || []).
+            var_to_array(source['domain']).
               map{|d| "#{username}@#{d}"}
 
           if mail_candidates.empty?
@@ -66,7 +70,7 @@ module Kor::Auth
             
             mail_candidates.each do |mail|
               full_name = nil
-              source['full_name'].each do |kf|
+              var_to_array(source['full_name']).each do |kf|
                 full_name ||= env[kf]
               end
 

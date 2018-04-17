@@ -627,6 +627,7 @@ en:
       the application. Probably your session has expired.
       Please login again, to have more rights or to renew your
       session.
+    not_logged_in: You are not logged in
     maintenance: |
       We are currently carrying out maintenance work. Therefore the application
       is temporary not available. Please try again later.
@@ -770,6 +771,9 @@ en:
       user:
         one: user
         other: users
+      setting:
+        one: setting
+        other: settings
 
     attributes:
       field:
@@ -970,6 +974,7 @@ en:
         stale_user_update: "The user has been edited meanwhile. Please reload the page"
         stale_relation_update: "The relation has been edited meanwhile. Please reload the page"
         stale_relationship_update: "The link has been edited meanwhile. Please reload the page"
+        stale_config_update: "The configuration has been changed in the meantime"
         needs_medium: "Without a relevant file the entity cannot be created as a medium"
         needs_file: "Without a relevant file the entity cannot be created as a medium"
         invalid_words: "cannot contain words longer than 30 characters"

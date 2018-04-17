@@ -1,7 +1,7 @@
 <kor-welcome>
   
   <div class="kor-content-box">
-    <h1>{config().app.welcome_title}</h1>
+    <h1>{config().welcome_title}</h1>
 
     <div class="target"></div>
 
@@ -19,7 +19,7 @@
     tag.mixin(wApp.mixins.config)
 
     tag.on 'mount', ->
-      Zepto(tag.root).find('.target').html tag.config().app.welcome_html
+      Zepto(tag.root).find('.target').html tag.config().welcome_html
 
       Zepto.ajax(
         url: '/entities/random'

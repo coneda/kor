@@ -154,7 +154,7 @@
       </a>
     </li>
     <li hide={hasAnyRole()}>
-      <a href="mailto:{config().maintainer.mail}">
+      <a href="mailto:{config().maintainer_mail}">
         {tcap('report_a_problem')}
       </a>
     </li>

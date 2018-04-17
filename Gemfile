@@ -33,6 +33,8 @@ gem 'ruby-progressbar'
 gem 'colorize'
 gem 'rack-cors', :require => 'rack/cors'
 
+gem 'dotenv-rails'
+
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load 
   # (and configure) it in app/controllers/application_controller.rb
@@ -68,7 +70,7 @@ end
 group :test, :development do
   gem 'thin'
   gem 'quiet_assets'
-  gem 'pry'
+  gem 'byebug'
 end
 
 group :production do

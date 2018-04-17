@@ -1,11 +1,11 @@
 json.messages @messages
 
 json.session do
-  json.locale Kor.config['app.default_locale']
+  json.locale Kor.settings['default_locale']
   json.csrfToken form_authenticity_token
 
   if current_user
-    json.locale current_user.locale || Kor.config['app.default_locale']
+    json.locale current_user.locale || Kor.settings['default_locale']
 
     json.user do
       json.partial! 'users/customized', {

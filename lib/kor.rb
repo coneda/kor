@@ -1,22 +1,25 @@
 module Kor
   
-  def self.config
-    Kor::Config.instance
+  def self.settings
+    Kor::Settings.instance
   end
   
   def self.help(controller, action)
-    @help ||= begin
-      file = "#{Rails.root}/config/help.yml"
-      if File.exists? file
-        YAML.load_file(file)['de']
-      else
-        {}
-      end
-    end
+    # TODO: implement this via a model per page-tag (widgets)
+    # settings['help'][I18n.locale]['controller#action']
+    # @help ||= begin
+    #   file = "#{Rails.root}/config/help.yml"
+    #   if File.exists? file
+    #     YAML.load_file(file)['de']
+    #   else
+    #     {}
+    #   end
+    # end
     
-    @help['help'][controller][action]
+    # @help['help'][controller][action]
+    ''
   rescue => e
-    ""
+    ''
   end
 
   def self.version
@@ -32,36 +35,35 @@ module Kor
   def self.source_code_url
     if version.match(/\-pre$/)
       if self.commit
-        Kor.config["app.sources.pre_release"].gsub(/\{\{commit\}\}/, Kor.commit)
+        Kor.settings['sources_pre_release'].gsub(/\{\{commit\}\}/, Kor.commit)
       else
-        Kor.config['app.sources.default']
+        Kor.settings['sources_default']
       end
     else
-      Kor.config["app.sources.release"].gsub(/\{\{version\}\}/, Kor.version)
+      Kor.settings['sources_release'].gsub(/\{\{version\}\}/, Kor.version)
     end
   end
 
   # TODO: this doesn't seem to work
   def self.repository_uuid
-    unless Kor.config["maintainer.repository_uuid"]
-      Kor.config["maintainer.repository_uuid"] = SecureRandom.uuid
-      Kor.config.store Kor::Config.app_config_file
+    # TODO: document that the old uuid has to be copied over!
+    Kor.settings.fetch 'repository_uuid' do
+      SecureRandom.uuid
     end
-
-    Kor.config["maintainer.repository_uuid"]
   end
  
-  def self.base_url
-    "#{config['host']['protocol']}://#{config['host']['host']}" +
-      (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
-  end
+  # TODO: shouldn't be needed anymore
+  # def self.base_url
+  #   "#{config['host']['protocol']}://#{config['host']['host']}" +
+  #     (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
+  # end
 
   def self.session_expiry_time
-    Time.now + Kor.config['auth']['session_lifetime'].seconds
+    Time.now + Kor.settings['session_lifetime'].seconds
   end
 
   def self.publishment_expiry_time
-    Kor.config['auth']['publishment_lifetime'].days.from_now
+    Kor.settings['publishment_lifetime'].days.from_now
   end
 
   def self.now
@@ -112,6 +114,26 @@ module Kor
       f.flock(File::LOCK_EX)
       yield
       f.flock(File::LOCK_UN)
+    end
+  end
+
+  def self.default_url_options(request = nil)
+    filename = Rails.root.join('tmp', 'default_url_options.json')
+
+    if request
+      options = {
+        host: request.host,
+        port: request.port,
+        protocol: request.protocol
+      }
+
+      if !File.exists?(filename) || Rails.env.development?
+        File.open filename, 'w' do |f|
+          f.write options.to_json
+        end
+      end
+    else
+      Json.parse(File.read(filename))
     end
   end
 

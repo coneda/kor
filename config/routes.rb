@@ -80,9 +80,9 @@ Rails.application.routes.draw do
     match '/password_reset', :action => 'personal_password_reset', :via => :post
   end
   
-  match 'config/menu', :to => "config#menu", :via => :get
-  match 'config/general', :to => "config#general", :via => :get, :as => "config"
-  match 'config/save_general', :to => "config#save_general", :via => :post
+  # match 'config/menu', :to => "config#menu", :via => :get
+  # match 'config/general', :to => "config#general", :via => :get, :as => "config"
+  # match 'config/save_general', :to => "config#save_general", :via => :post
   
   match '/mark', :to => 'tools#mark', :as => :put_in_clipboard, :via => [:get, :delete]
   match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current, :via => [:get, :delete]
@@ -104,7 +104,7 @@ Rails.application.routes.draw do
   end
   
 
-  defaults format: :json do
+  defaults format: 'json' do
     match 'profile', :to => 'users#update_self', :via => 'patch'
     match 'clipboard', :to => 'tools#clipboard', :via => :get
 
@@ -118,8 +118,10 @@ Rails.application.routes.draw do
     controller 'main' do
       match 'translations', action: 'translations', via: 'get'
       match 'info', action: 'info', via: 'get'
-      match 'config', action: 'kor_config', via: 'get'
     end
+
+    resource 'settings', only: ['show', 'update']
+    # match 'config', action: 'kor_config', via: 'get'
 
     # controller 'static' do
     #   match 'legal', :action => 'legal', :via => :get

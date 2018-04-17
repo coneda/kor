@@ -4,21 +4,14 @@ class ApplicationController < BaseController
   helper_method :back, :back_save, :home_page, :kor_graph
   
   before_filter(
-    # :vars,
     :authorization
   )
 
   private
 
-    # def vars
-    #   @messages = []
-    #   @page = params[:page] || 1
-    #   @per_page = params[:per_page] || 10
+    # def authorization
+    #   render_403 unless generally_authorized?
     # end
-
-    def authorization
-      render_403 unless generally_authorized?
-    end
 
     # def render_403
     #   respond_to do |format|
@@ -36,10 +29,9 @@ class ApplicationController < BaseController
     #   render 'layouts/404', status: 404
     # end
 
-    def generally_authorized?
-      true
-    end
-    
+    # def generally_authorized?
+    #   true
+    # end
     
   protected
 

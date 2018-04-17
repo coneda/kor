@@ -6,8 +6,13 @@ class BaseController < ActionController::Base
     protect_from_forgery with: :exception, unless: :api_auth?
   end
 
-  before_filter :locale
+  before_filter :set_default_url_options, :locale
   before_filter :session_expiry, unless: :api_auth?
+
+  if ENV['PROFILE']
+    require 'perftools'
+    around_filter :profile
+  end
 
   # TODO: refactor authorized objects stuff to somewhere else?
   helper_method(
@@ -16,10 +21,6 @@ class BaseController < ActionController::Base
     :authorized_for_relationship?
   )
 
-  if ENV['PROFILE']
-    require 'perftools'
-    around_filter :profile
-  end
 
   protected
 
@@ -116,7 +117,7 @@ class BaseController < ActionController::Base
       if current_user && current_user.locale
         I18n.locale = current_user.locale
       else
-        I18n.locale = Kor.config['locale'] || I18n.default_locale
+        I18n.locale = Kor.settings['locale'] || I18n.default_locale
       end
     end
 
@@ -126,6 +127,11 @@ class BaseController < ActionController::Base
       PerfTools::CpuProfiler.start(path) do
         yield
       end
+    end
+
+    def set_default_url_options
+      opts = Kor.default_url_options(request)
+      ActionMailer::Base.default_url_options = opts
     end
 
 end

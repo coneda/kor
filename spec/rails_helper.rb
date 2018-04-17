@@ -41,10 +41,15 @@ RSpec.configure do |config|
       Rails.application.load_seed
     end
 
+    if example.metadata[:type] == :controller
+      request.headers["accept"] = 'application/json'
+    end
+
     ActionMailer::Base.deliveries = []
     system "rm -rf #{Medium.media_data_dir}/*"
-    system "rm -f #{Kor::Config.app_config_file}"
     system "rm -rf #{Rails.root}/tmp/export_spec"
-    Kor::Config.reload!
+    
+    Kor::Settings.purge_files!
+    Kor::Settings.instance force_reload: true
   end
 end

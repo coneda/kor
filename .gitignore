@@ -8,24 +8,7 @@ db/*.sqlite3
 public/media
 public/custom.css
 
-
-# Configuration
-
-config/kor.yml
-config/kor.test.yml
-config/kor.development.yml
-config/kor.app.development.yml
-config/database.yml
-config/legal.txt
-config/contact.txt
-config/kor.app.*
-config/testing.txt
-config/kor.app.yml
-config/kor.app.test.yml
-config/locales/*/help.yml
-config/schema_definitions.yml
-config/logrotate.conf
-
+.env
 
 # Development
 

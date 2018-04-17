@@ -4,7 +4,7 @@
     <div class="kor-content-box">
       <h1>Login</h1>
 
-      <div if={anyFederatedAuth()}>
+      <div if={federationAuth()}>
         <div class="hr"></div>
         <p>{t('prompt.federation_login')}</p>
 
@@ -101,10 +101,8 @@
         else
           wApp.bus.trigger 'routing:path', wApp.routing.parts()
 
-    tag.anyFederatedAuth = ->
-      for k, source of tag.config().auth.sources
-        return true if source.type == 'env'
-      false
+    tag.federationAuth = ->
+      tag.config().federation_auth
 
   </script>
 </kor-login>

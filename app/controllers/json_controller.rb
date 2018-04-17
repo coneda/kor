@@ -3,7 +3,7 @@ class JsonController < BaseController
 
   rescue_from ActiveRecord::RecordNotFound, with: :render_404
 
-  before_filter :authentication, :role_auth, :legal
+  before_filter :auth, :legal
 
   helper_method :inclusion
 
@@ -19,6 +19,11 @@ class JsonController < BaseController
       @message = message
       render action: '../layouts/message', status: 400
     end 
+
+    def render_401(message)
+      @message = message || I18n.t('notices.not_logged_in')
+      render action: '../layouts/message', status: 401
+    end
 
     def render_403(message = nil)
       @message = message || I18n.t('notices.access_denied')
@@ -41,21 +46,61 @@ class JsonController < BaseController
       render action: '../layouts/message', status: 500
     end
 
-    # deny service if there is no guest and when we are unauthenticated
-    def authentication
-      if !current_user
-        render_403
+    def auth
+
+    end
+
+    def for_actions(*actions)
+      if actions.include?(params[:action])
+        yield
       end
     end
 
-    # TODO: make this a whitelist?
-    def role_authorized?
-      true
+    def require_user
+      render_401 unless current_user
     end
 
-    def role_auth
-      render_403 unless role_authorized?
+    def require_role(role)
+      if current_user
+        render_403 unless current_user.send("#{role}?".to_sym)
+      else
+        render_401
+      end
     end
+
+    def require_admin
+      require_role 'admin'
+    end
+
+    def require_relation_admin
+      require_role 'relation_admin'
+    end
+
+    def require_authority_group_admin
+      require_role 'authority_group_admin'
+    end
+
+    def require_kind_admin
+      require_role 'kind_admin'
+    end
+
+    # deny service if there is no guest and when we are unauthenticated
+    # def authentication
+    #   if !current_user
+    #     render_403
+    #   end
+    # end
+
+    # # TODO: make this a whitelist?
+    # def role_authorized?
+    #   true
+    # end
+
+    # def role_auth
+    #   if current_user
+    #     render_403 unless role_authorized?
+    #   end
+    # end
 
     # redirects to the legal page if terms have not been accepted
     def legal
@@ -65,6 +110,7 @@ class JsonController < BaseController
     end
 
     # TODO: get config values instead of 10 and 100
+    # TODO: handle this like inclusion, so that we don't need the before filter
     def pagination
       @page = [(params[:page] || 1).to_i, 1].max
       @per_page = [
