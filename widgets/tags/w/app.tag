@@ -133,6 +133,7 @@
                   when '/groups/user' then 'kor-user-groups'
                   when '/relations/new' then 'kor-relation-editor'
                   when '/relations' then 'kor-relations'
+                  when '/settings' then 'kor-settings-editor'
                   else
                     'kor-search'
           else

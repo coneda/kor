@@ -3,7 +3,6 @@
 module Kor
   class Settings
 
-    attr_accessor :mtime
     attr_reader :errors
 
     def initialize
@@ -21,7 +20,6 @@ module Kor
     end
 
     def [](key)
-      load if stale?
       @attributes[key] || defaults[key]
     end
 
@@ -50,14 +48,15 @@ module Kor
 
     def persist
       self.class.with_lock do
-        if stale?(lock: false)
+        if stale?
           @errors << I18n.t('activerecord.errors.messages.stale_config_update')
           false
         else
           File.open filename, 'w' do |f|
+            @attributes['version'] = self['version'] + 1
             f.write @attributes.to_json
           end
-          @mtime = File.stat(filename).mtime
+
           true
         end
       end
@@ -67,28 +66,25 @@ module Kor
       self.class.with_lock do
         if File.exists?(filename)
           File.open filename, 'r' do |f|
-            @mtime = f.stat.mtime
             @attributes = JSON.parse(f.read)
           end
         else
-          @mtime = Time.at(Time.now.to_i)
           @attributes = {}
         end
       end
     end
 
-    def stale?(options = {})
-      options.reverse_merge! lock: true
-
-      if options[:lock]
-        self.class.with_lock {stale_raw?}
-      else
-        stale_raw?
+    def stale?
+      if File.exists?(filename)
+        file_version = JSON.parse(File.read filename)['version']
+        if file_version
+          file_version > self['version']
+        end
       end
     end
 
-    def stale_raw?
-      File.exists?(filename) && File.stat(filename).mtime > self.mtime
+    def ensure_fresh
+      load
     end
 
     def self.purge_files!
@@ -99,7 +95,7 @@ module Kor
     def as_json
       return {
         'values' => defaults.merge(@attributes),
-        'defaults' => defaults
+        'defaults' => defaults,
       }
     end
 
@@ -113,6 +109,24 @@ module Kor
         @attributes['welcome_html'] = self.class.markdown(self['welcome_text'])
         @attributes['legal_html'] = self.class.markdown(self['legal_text'])
         @attributes['about_html'] = self.class.markdown(self['about_text'])
+        @attributes['help_html'] = self.class.markdown(self['help_text'])
+
+        integers = [
+          'current_history_length', 'max_foreground_group_download_size',
+          'max_file_upload_size', 'max_results_per_request',
+          'max_included_results_per_result', 'session_lifetime',
+          'publishment_lifetime', 'max_download_group_size'
+        ]
+        integers.each do |i|
+          @attributes[i] = self[i].to_i
+        end
+
+        integer_arrays = [
+          'default_groups', 'primary_relations', 'secondary_relations'
+        ]
+        integer_arrays.each do |ia|
+          @attributes[ia] = self[ia].map{|i| i.to_i}
+        end
       end
 
       def self.markdown(text)
@@ -121,6 +135,8 @@ module Kor
 
       def self.defaults
         return {
+          'version' => 1,
+
           'default_locale' => 'en',
           'welcome_title' => 'Welcome to ConedaKOR',
           'welcome_text' => 'This text can be configured in the settings',
@@ -141,7 +157,7 @@ module Kor
           'session_lifetime' => 60 * 60 * 2,
           'publishment_lifetime' => 14,
           'default_groups' => [],
-          'env_auth_button_label' => 'federated_login',
+          'env_auth_button_label' => 'federated login',
           'fail_on_update_errors' => true,
 
           'custom_css_file' => 'data/custom.css',
@@ -152,14 +168,14 @@ module Kor
 
           'max_download_group_size' => 80,
 
-          'entity_name' => 'Name / Title / UUID',
+          'search_entity_name' => 'Name / Title / UUID',
 
           'primary_relations' => [],
           'secondary_relations' => [],
 
-          'repository_uuid' => '',
+          'repository_uuid' => nil,
 
-          'help' => {'de' => {}, 'en' => {}}
+          'help_text' => ''
         }
       end
 

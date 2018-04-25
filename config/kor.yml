@@ -1,0 +1,92 @@
+all:
+  host:
+    protocol: http
+    host: example.com
+    port: 80
+
+  app:
+    default_locale: "en"
+    welcome_title: "Welcome to ConedaKOR"
+    welcome_text: "This text can be configured in the general settings"
+    current_history_length: 5
+    max_foreground_group_download_size: 10
+    max_file_upload_size: "100"
+    max_results_per_request: 500
+    max_included_results_per_result: 4
+
+    sources:
+      release: "https://github.com/coneda/kor/releases/tag/v{{version}}"
+      pre_release: "https://github.com/coneda/kor/commit/{{commit}}"
+      default: "https://github.com/coneda/kor"
+
+  maintainer:
+    name: Example Organization
+    mail: admin@example.com
+    legal_text: Beispieltext
+    about_text: Beispieltext
+
+  auth:
+    session_lifetime: 2:00:00
+    publishment_lifetime: 14
+    # TODO: test this
+    default_groups: []
+    env_auth_button_label: "federated login"
+    fail_on_update_errors: true
+
+  # google_analytics:
+  #   id: "12345"
+
+  # piwik:
+  #   url: "https://analytics.example.com"
+  #   id: "1"
+
+  custom_css_file: data/custom.css
+
+  kind_settings:
+    defaults:
+      dating_label: Dating
+      name_label: Name
+      distinct_name_label: distinct Name
+
+  limits:
+    max_file_upload_size: 30
+    max_download_group_size: 80
+
+  # CORS: set the hosts that are allowed to make AJAX requests to this instance
+  allowed_origins: ['localhost:8000', 'http://en.wikipedia.org', 'http://localhost:3000']
+
+  mail:
+    delivery_method: test
+
+production:
+  mail:
+    delivery_method: smtp
+    smtp_settings:
+      host: 127.0.0.1
+      port: 25
+      enable_starttls_auto: false
+      # domain: localhost
+
+test:
+  auth:
+    sources:
+      remote_user:
+        type: 'env'
+        user: ['REMOTE_USER']
+        domain: ['example.com']
+        mail: ['mail']
+        full_name: ['full_name']
+        splitter: '[,;]+'
+        map_to: 'ldap'
+      credentials_via_file:
+        type: script
+        script: spec/fixtures/auth_script.file
+        map_to: ldap
+      credentials_via_env:
+        script: spec/fixtures/auth_script.direct
+        map_to: ldap
+
+  app:
+    gallery:
+      primary_relations: ['shows']
+      secondary_relations: ['has been created by']

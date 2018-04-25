@@ -4,6 +4,7 @@ wApp.i18n = {
       url: '/translations'
       success: (data) -> wApp.i18n.translations = data.translations
     )
+  locales: -> Object.keys(wApp.i18n.translations)
   translate: (locale, input, options = {}) ->
     return "" unless wApp.i18n.translations
 

@@ -92,8 +92,7 @@ class UsersController < JsonController
         'objects.update_success', o: I18n.t('nouns.user', count: 1)
       )
     else
-      @errors = @user.errors
-      render_406 I18n.t('activemodel.errors.template.header')
+      render_406 @user.errors
     end
   end
 
@@ -106,8 +105,7 @@ class UsersController < JsonController
         o: I18n.t('nouns.user', count: 1)
       )
     else
-      @errors = @user.errors
-      render_406 I18n.t('activemodel.errors.template.header')
+      render_406 @user.errors
     end
   end
 

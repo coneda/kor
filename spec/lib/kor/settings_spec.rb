@@ -44,19 +44,13 @@ describe Kor::Settings do
     expect(b.errors).to include('The configuration has been changed in the meantime')
   end
 
-  it 'should reload when the file has been changed' do
-    expect(subject).to receive(:load).once.and_call_original
+  it 'should reload the file' do
+    expect(subject['some']).to be_nil
     system "echo '{\"some\": \"value\"}' > #{described_class.filename}"
-    subject['something']
-    subject['something_else']
+    subject.ensure_fresh
+    expect(subject['some']).to eq('value')
   end
 
-  it 'should reload when another instance modifies the config' do
-    a = described_class.new
-    subject.update 'some' => 'value'
-    expect(a['some']).to eq('value')
-  end
-  
   it 'should not raise an error when the file is missing' do
     expect {
       subject['something']

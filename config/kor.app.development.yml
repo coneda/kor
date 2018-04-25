@@ -1,0 +1,72 @@
+---
+development:
+  maintainer:
+    name: Example Organization
+    mail: admin@example.com
+    legal_text: Beispieltext
+    about_text: Beispieltext
+    help_text: ''
+  host:
+    protocol: http
+    host: example.com
+    port: '80'
+  app:
+    default_locale: en
+    default_home_page: "/entities"
+    max_foreground_group_download_size: '10'
+    max_file_upload_size: '100'
+    current_history_length: '5'
+    gallery:
+      primary_relations:
+      - Bilddatei zu Werk
+      - wird dargestellt durch
+      secondary_relations:
+      - wurde geschaffen von
+    welcome_title: Welcome to ConedaKOR
+    welcome_text: This text can be configured in the general settings
+    max_results_per_request: 500
+    max_included_results_per_result: 4
+    sources:
+      release: https://github.com/coneda/kor/releases/tag/v{{version}}
+      pre_release: https://github.com/coneda/kor/commit/{{commit}}
+      default: https://github.com/coneda/kor
+  help:
+    component_search:
+      component_search: bla
+    entities:
+      index: ''
+      multi_upload: ''
+      gallery: ''
+    authentication:
+      form: ''
+    users:
+      edit_self: ''
+    authority_group_categories:
+      index: ''
+    user_groups:
+      index: ''
+    tools:
+      clipboard: ''
+  auth:
+    session_lifetime: 7200
+    publishment_lifetime: 14
+    default_groups: []
+    env_auth_button_label: federated login
+    fail_on_update_errors: true
+  custom_css_file: data/custom.css
+  kind_settings:
+    defaults:
+      dating_label: Dating
+      name_label: Name
+      distinct_name_label: distinct Name
+  limits:
+    max_file_upload_size: 30
+    max_download_group_size: 80
+  allowed_origins:
+  - localhost:8000
+  - http://en.wikipedia.org
+  - http://localhost:3000
+  mail:
+    delivery_method: test
+  search:
+    entity_name: Name / Titel / UUID

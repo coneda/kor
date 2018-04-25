@@ -50,6 +50,6 @@ RSpec.configure do |config|
     system "rm -rf #{Rails.root}/tmp/export_spec"
     
     Kor::Settings.purge_files!
-    Kor::Settings.instance force_reload: true
+    Kor::Settings.instance.ensure_fresh
   end
 end

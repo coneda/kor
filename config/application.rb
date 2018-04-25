@@ -144,3 +144,4 @@ end
 # TODO: ensure stale checks everywhere
 # TODO: upgrade riotjs
 # TODO: save submenu state with Lockr
+# TODO: change name of credentials class

@@ -6,7 +6,7 @@ class BaseController < ActionController::Base
     protect_from_forgery with: :exception, unless: :api_auth?
   end
 
-  before_filter :set_default_url_options, :locale
+  before_filter :reload_settings, :set_default_url_options, :locale
   before_filter :session_expiry, unless: :api_auth?
 
   if ENV['PROFILE']
@@ -132,6 +132,10 @@ class BaseController < ActionController::Base
     def set_default_url_options
       opts = Kor.default_url_options(request)
       ActionMailer::Base.default_url_options = opts
+    end
+
+    def reload_settings
+      Kor.settings.ensure_fresh
     end
 
 end

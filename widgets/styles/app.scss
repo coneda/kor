@@ -409,3 +409,10 @@ kor-generators {
 .kor-text-right {
   text-align: right;
 }
+
+kor-settings-editor, [data-is=kor-settings-editor] {
+  h2 {
+    margin-top: 4rem;
+    color: white;
+  }
+}

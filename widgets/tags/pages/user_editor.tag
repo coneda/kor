@@ -75,13 +75,13 @@
             {tcap('activerecord.attributes.user.does_not_expire')}
           </button>
           <button onclick={expiresIn(7)}>
-            {tcap('activerecord.attributes.user.expires_in_days', {values: {amount: 7}})}
+            {tcap('activerecord.attributes.user.expires_in_days', {interpolations: {amount: 7}})}
           </button>
           <button onclick={expiresIn(30)}>
-            {tcap('activerecord.attributes.user.expires_in_days', {values: {amount: 30}})}
+            {tcap('activerecord.attributes.user.expires_in_days', {interpolations: {amount: 30}})}
           </button>
           <button onclick={expiresIn(180)}>
-            {tcap('activerecord.attributes.user.expires_in_days', {values: {amount: 180}})}
+            {tcap('activerecord.attributes.user.expires_in_days', {interpolations: {amount: 180}})}
           </button>
 
           <div class="clearfix"></div>
@@ -174,6 +174,8 @@
       
     tag.expiresIn = (days) ->
       (event) ->
+        event.preventDefault()
+
         if days
           date = new Date()
           date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)

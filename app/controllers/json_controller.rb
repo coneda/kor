@@ -12,38 +12,38 @@ class JsonController < BaseController
 
     def render_200(message)
       @message = message
-      render action: '../layouts/message', status: 200
+      render template: 'layouts/message', status: 200
     end
 
     def render_400(message)
       @message = message
-      render action: '../layouts/message', status: 400
+      render template: 'layouts/message', status: 400
     end 
 
     def render_401(message)
       @message = message || I18n.t('notices.not_logged_in')
-      render action: '../layouts/message', status: 401
+      render template: 'layouts/message', status: 401
     end
 
     def render_403(message = nil)
       @message = message || I18n.t('notices.access_denied')
-      render action: '../layouts/message', status: 403
+      render template: 'layouts/message', status: 403
     end
 
     def render_404(message = nil)
       @message = message || I18n.t('messages.not_found')
-      render action: '../layouts/message', status: 404
+      render template: 'layouts/message', status: 404
     end
 
     def render_406(errors, message = nil)
       @errors = errors
       @message = message || I18n.t('activemodel.errors.template.header')
-      render action: '../layouts/message', status: 406
+      render template: 'layouts/message', status: 406
     end
 
     def render_500(message = nil)
       @message = message || I18n.t('errors.exception_ocurred')
-      render action: '../layouts/message', status: 500
+      render template: 'layouts/message', status: 500
     end
 
     def auth

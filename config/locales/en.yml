@@ -154,59 +154,79 @@ en:
       one: biographical information
       other: biographical information
 
-  config:
-    sections:
-      maintainer: site operator
-      host: server
-      mail: email
-      app: application
-      meta_entities: simple input form
-      help: help
-    help:
-      component_search:
-        component_search: simple search
-      entities:
-        index: expert search
-        gallery: new images
-        multi_upload: multiple upload
-      meta_entities:
-        new: simple input mask
-      authentication:
-        form: login
-      users:
-        edit_self: edit profile
-      authority_group_categories:
-        index: global groups
-      user_groups:
-        index: own search
-      tools:
-        clipboard: clipboard
+  # config:
+  #   sections:
+  #     maintainer: site operator
+  #     host: server
+  #     mail: email
+  #     app: application
+  #     meta_entities: simple input form
+  #     help: help
+  #   help:
+  #     component_search:
+  #       component_search: simple search
+  #     entities:
+  #       index: expert search
+  #       gallery: new images
+  #       multi_upload: multiple upload
+  #     meta_entities:
+  #       new: simple input mask
+  #     authentication:
+  #       form: login
+  #     users:
+  #       edit_self: edit profile
+  #     authority_group_categories:
+  #       index: global groups
+  #     user_groups:
+  #       index: own search
+  #     tools:
+  #       clipboard: clipboard
+  settings:
+    branding_and_display: branding and display
+    behavior: behavior
+    other: other
     values:
       default_locale: default language
       default_home_page: default home page after login
       entities: entities
       relationships: relationship
-      edit_own_content: "Allow to users to edit own content"
+      edit_own_content: "Allow users to edit their own content"
       legal_text: text for terms of use
       about_text: text for imprint
-      help_text: general help text (/static/help)
+      help_text: general help text (#/help)
       current_history_length: number of recent entities
-      max_file_upload_size: "maximum file size for uploads"
-      max_foreground_group_download_size: "maximum download size for foreground groups in MB"
-      address: address
-      domain: domain
-      mail: mail address
-      name: name
-      protocol: protocol
-      host: server
-      port: port
-      tls: TLS
+      max_file_upload_size: "maximum file size for uploads [MB]"
+      max_foreground_group_download_size: "maximum download size for foreground groups [MB]"
+      max_results_per_request: "maxium number of results per request"
+      max_included_results_per_result: "maximum number of included objects per result"
+      sources_release: 'source code url for the closest release'
+      sources_pre_release: 'source code url for the closest pre-release'
+      sources_default: 'defeault source code url'
+      # address: address
+      # domain: domain
+      maintainer_mail: Maintainer email address
+      maintainer_name: Maintainer organization
       primary_relationships: "primary relations"
       secondary_relationships: "secondary relations"
-      sender_name: name of sender
-      sender_address: sender adress
+      # sender_name: name of sender
+      # sender_address: sender adress
       welcome_title: "title of welcome page"
       welcome_text: "text of welcome page"
+      session_lifetime: "session lifetime [seconds]"
+      publishment_lifetime: "publishments lifetime [days]"
+      env_auth_button_label: "label for federated login button"
+      fail_on_update_errors: "users created/updated by auth sources must pass validations"
+      custom_css_file: "path to a custom css file"
+      kind_dating_label: "default dating label for new kinds"
+      kind_name_label: "default name label for new kinds"
+      kind_distinct_name_label: "default distinct name label for new kinds"
+      default_groups: "default user groups for new users"
+      max_download_group_size: "maximum downloadable group size [MB]"
+      search_entity_name: 'label for the entity name on the search page'
+      primary_relations: 'primary relations'
+      secondary_relations: 'secondary relations'
+      repository_uuid: 'override the generated repository UUID'
+
 
   pages:
     new_media: new entries
@@ -269,7 +289,7 @@ en:
       one: "signifier"
       other: "signifiers"
     gallery: "gallery"
-    administration: administration
+    administration: admin
     created_at:
       one: "created"
     updated_at:
@@ -377,7 +397,7 @@ en:
     transit:
       one: "transit"
       other: "transits"
-    user_admin: "user administration"
+    user_admin: "user admin"
     exception_log: "error report"
     company_info: "imprint"
     service_info: "use notice"
@@ -408,7 +428,7 @@ en:
     authority_group:
       one: "global group"
       other: "global groups"
-    config: administration
+    config: admin
     user_group:
       one: "personal group"
       other: "personal groups"

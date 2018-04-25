@@ -93,8 +93,8 @@
 
       <ul show={showConfig} class="submenu">
         <li show={hasRole('admin')}>
-          <a href="#/config/general">
-            {tcap('general')}
+          <a href="#/settings">
+            {tcap('activerecord.models.setting', {count: 'other'})}
           </a>
         </li>
         <li show={hasRole('relation_admin')}>
