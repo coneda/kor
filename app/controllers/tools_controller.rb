@@ -37,7 +37,7 @@ class ToolsController < JsonController
       session[:bla] = ',p'
       session[:current_history] ||= Array.new
       session[:current_history] << params[:id].to_i unless session[:current_history].last == params[:id].to_i
-      session[:current_history] = session[:current_history].last(Kor.config['app.current_history_length'].to_i)
+      session[:current_history] = session[:current_history].last(Kor.settings['current_history_length'].to_i)
 
       entity = viewable_entities.find(params[:id])
       entity_name = (entity.is_medium? ? entity.id : "'#{entity.display_name}'")

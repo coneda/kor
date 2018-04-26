@@ -13,8 +13,7 @@ class StaticController < ApplicationController
   end
 
   def legal
-    html = RedCloth.new(Kor.config['maintainer.legal_text']).to_html
-    render json: {html: html}
+    render json: {html: Kor.settings['legal_html']}
   end
 
   # TODO: rename the contact.txt to about.txt  

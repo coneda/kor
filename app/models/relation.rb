@@ -139,7 +139,7 @@ class Relation < ActiveRecord::Base
   }
   scope :pageit, lambda { |page, per_page|
     page = (page || 1) - 1
-    per_page = [(per_page || 30).to_i, Kor.config['app']['max_results_per_request']].min
+    per_page = [(per_page || 30).to_i, Kor.settings['max_results_per_request']].min
     limit(per_page).offset(per_page * page)
   }
   default_scope lambda { order(:name) }
@@ -152,11 +152,11 @@ class Relation < ActiveRecord::Base
   end
 
   def self.primary_relation_names
-    Kor.config['app.gallery.primary_relations'] || []
+    Kor.settings['primary_relations'] || []
   end
   
   def self.secondary_relation_names
-    Kor.config['app.gallery.secondary_relations'] || []
+    Kor.settings['secondary_relations'] || []
   end
 
   def self.reverse_primary_relation_names

@@ -26,7 +26,8 @@ module SelectHelper
   
   def available_home_pages
     result = [
-      ['welcome', Kor.config['app.default_home_page']],
+      # TODO: fix this, the setting doesn't/shouldn't exist anymore
+      ['welcome', Kor.settings['default_home_page']],
       ['new_media', web_path(:anchor => "/entities/gallery")],
       ['expert_search', entities_path],
       ['simple_search', url_for(:controller => 'component_search', :action => 'component_search')]

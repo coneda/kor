@@ -122,7 +122,7 @@ class Medium < ActiveRecord::Base
   end
 
   def validate_file_size
-    max_mb = Kor.config["app.max_file_upload_size"].to_f
+    max_mb = Kor.settings['max_file_upload_size'].to_f
     max_bytes = max_mb * 1024**2
 
     if image_file_size.present? and image_file_size > max_bytes

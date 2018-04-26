@@ -62,7 +62,7 @@ class UsersController < JsonController
 
   def new
     @user = User.new
-    @user.groups << Credential.where(:name => Kor.config['auth.default_groups']).to_a
+    @user.groups << Credential.where(:name => Kor.settings['default_groups']).to_a
   end
   
   def edit_self

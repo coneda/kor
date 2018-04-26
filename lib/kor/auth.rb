@@ -257,6 +257,7 @@ module Kor::Auth
     ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
   end
 
+  # TODO: fix this, since it has to read it from env vars now
   def self.config
     @config ||= Kor.config['auth']
   end

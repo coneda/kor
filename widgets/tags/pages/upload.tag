@@ -115,18 +115,28 @@
 
     tag.submit = function(event) {
       event.preventDefault();
-      uploader.setOption('multipart_params', {
+      var params = {
         "entity[kind_id]": wApp.info.data.medium_kind_id,
         "entity[collection_id]": tag.refs['cs'].val(),
         "user_group_name": tag.refs['user-group-name'].value(),
-        "relation_name": tag.refs['relation-selector'].value(),
         "target_entity_id": wApp.clipboard.selection()
-      });
+      };
+      var rs = tag.refs['relation-selector'];
+      if (rs) {
+        params['relation_name'] = rs.value();
+      }
+      uploader.setOption('multipart_params', params);
       uploader.start();
     }
 
     tag.hasSelection = function() {
       return !!wApp.clipboard.selection();
+    }
+
+    var relationSelectorValue = function() {
+      return tag.refs['relation-selector'] ?
+        tag.refs['relation-selector'].value() :
+        nil
     }
 
     var fetchSelected = function() {

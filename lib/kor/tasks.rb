@@ -116,7 +116,7 @@ class Kor::Tasks
       kind_admin: true,
 
       full_name: u.full_name || I18n.t('users.administrator'),
-      email: u.email || Kor.config['maintainer.mail']
+      email: u.email || Kor.settings['maintainer_mail']
     )
   end
 

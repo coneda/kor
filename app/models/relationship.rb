@@ -91,7 +91,7 @@ class Relationship < ActiveRecord::Base
 
   scope :pageit, lambda { |page, per_page|
     page = (page || 1) - 1
-    per_page = [(per_page || 10).to_i, Kor.config['app']['max_results_per_request']].min
+    per_page = [(per_page || 10).to_i, Kor.settings['max_results_per_request']].min
     limit(per_page).offset(per_page * page)
   }
   scope :with_ends, lambda {

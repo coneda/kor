@@ -12,7 +12,17 @@ class Kor::Elastic
   end
 
   def self.config
-    @config ||= Rails.configuration.database_configuration[Rails.env]['elastic']
+    @config ||= {
+      'url' => ENV['ELASTIC_URL'],
+      'index_a' => ENV['ELASTIC_INDEX_A'],
+      'index_b' => ENV['ELASTIC_INDEX_B'],
+      'token' => ENV['ELASTIC_TOKEN']
+    }
+  end
+
+  def self.current_index
+    # TODO: make this switch to the alternate index by some mechanism
+    config['index_a']
   end
 
   def self.enabled?
@@ -20,7 +30,7 @@ class Kor::Elastic
       when true then true
       when false then false
       else
-        !Rails.env.test?
+        config['ELASTIC_URL'] && !Rails.env.test?
     end
   end
 
@@ -125,7 +135,7 @@ class Kor::Elastic
   end
 
   def self.index_exists?
-    response = raw_request 'head', "/#{config['index']}"
+    response = raw_request 'head', "/#{current_index}"
     response.status != 404
   end
 
@@ -222,7 +232,7 @@ class Kor::Elastic
 
   def self.bulk(data)
     data << "\n" unless data.match(/\n$/)
-    response = raw_request 'post', "/#{config['index']}/entities/_bulk", nil, data
+    response = raw_request 'post', "/#{current_index}/entities/_bulk", nil, data
     require_ok(response)
   end
 
@@ -449,9 +459,9 @@ class Kor::Elastic
     def self.request(method, path, query = {}, body = nil, headers = {})
       return :disabled if !enabled?
       query ||= {}
-      path = "/#{config['index']}#{path}"
+      path = "/#{current_index}#{path}"
       body = (body ? JSON.dump(body) : nil)
-      url = "http://#{config['host']}:#{config['port']}#{path}"
+      url = "http://#{config['url']}#{path}"
       response = raw_request(method, path, query, body, headers)
       require_ok(response)
 
@@ -466,7 +476,7 @@ class Kor::Elastic
 
       query['token'] = config['token'] if config['token']
       headers.reverse_merge 'content-type' => 'application/json', 'accept' => 'application/json'
-      url = "http://#{config['host']}:#{config['port']}#{path}"
+      url = "http://#{config['url']}#{path}"
       client.request(method, url, query, body, headers)
     end
 

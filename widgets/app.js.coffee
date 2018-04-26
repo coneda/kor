@@ -44,10 +44,10 @@ window.wApp = {
     ]
 }
 
-Zepto.ajax(
-  url: "/api/1.0/info"
-  success: (data) ->
-    window.wApp.data = data
-    wApp.bus.trigger 'auth-data'
-    riot.update()
-)
+# Zepto.ajax(
+#   url: "/api/1.0/info"
+#   success: (data) ->
+#     window.wApp.data = data
+#     wApp.bus.trigger 'auth-data'
+#     riot.update()
+# )

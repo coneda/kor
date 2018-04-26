@@ -146,7 +146,7 @@ class EntitiesController < JsonController
     params[:kind_id] = param_to_array(params[:kind_id])
     params[:related_per_page] = [
       (params[:related_per_page] || 1).to_i,
-      Kor.config['app']['max_included_results_per_result']
+      Kor.settings['max_included_results_per_result']
     ].min
     params[:related_relation_name] = param_to_array(params[:related_relation_name], ids: false)
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
@@ -183,7 +183,7 @@ class EntitiesController < JsonController
     params[:include] = param_to_array(params[:include], ids: false)
     params[:related_per_page] = [
       (params[:related_per_page] || 10).to_i,
-      Kor.config['app']['max_results_per_request']
+      Kor.settings['max_results_per_request']
     ].min
     params[:related_relation_name] = param_to_array(params[:related_relation_name], ids: false)
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
@@ -261,6 +261,7 @@ class EntitiesController < JsonController
           end
         end
         
+        @record = @entity
         render_200 I18n.t('objects.create_success', o: @entity.display_name)
       else
         if @entity.medium && @entity.medium.errors[:datahash].present?

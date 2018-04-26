@@ -1,6 +1,6 @@
 class UserMailer < ActionMailer::Base
 
-  default :from => Kor.config['maintainer.mail']
+  default :from => Kor.settings['maintainer_mail']
 
   def reset_password(user)
     @user = user

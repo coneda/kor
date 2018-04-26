@@ -61,7 +61,12 @@
           errors={errors.subtype}
         />
 
-        <div>FIELDS</div>
+        <kor-dataset-fields
+          if={kind}
+          fields={kind.fields}
+          values={data.dataset}
+          ref="fields"
+        />
 
         <kor-input
           label={tcap('activerecord.attributes.entity.comment')}
@@ -128,7 +133,8 @@
       p = (if tag.opts.id then update() else create())
       p.done (data) ->
         tag.errors = {}
-        window.history.back()
+        id = tag.opts.id || data.id
+        wApp.routing.path('/entities/' + id)
       p.fail (xhr) ->
         tag.errors = JSON.parse(xhr.responseText).errors
         wApp.utils.scrollToTop()
@@ -145,6 +151,7 @@
       if tag.opts.id
         Zepto.ajax(
           url: "/entities/#{tag.opts.id}"
+          data: {include: 'dataset,synonyms,properties,datings'}
           success: (data) ->
             tag.data = data
             fetchKind()

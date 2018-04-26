@@ -4,8 +4,8 @@ class MainController < JsonController
   
   # TODO: implement as ajax
   def welcome
-    @title = Kor.config['app.welcome_title']
-    @red_cloth = RedCloth.new(Kor.config['app.welcome_text'] || "")
+    @title = Kor.settings['welcome_title']
+    @red_cloth = RedCloth.new(Kor.settings['welcome_text'] || "")
     @red_cloth.sanitize_html = true
     
     @entities = kor_graph.search(:random).results
@@ -16,14 +16,15 @@ class MainController < JsonController
   end
 
   # TODO: make this more selective as it might contain confidential data
-  def kor_config
-    @raw = Kor.config.raw
-    @raw['maintainer']['legal_html'] = RedCloth.new(@raw['maintainer']['legal_text']).to_html
-    @raw['maintainer']['about_html'] = RedCloth.new(@raw['maintainer']['about_text']).to_html
-    @raw['app']['welcome_html'] = RedCloth.new(@raw['app']['welcome_text']).to_html
+  # TODO: obsolete?
+  # def kor_config
+  #   @raw = Kor.config.raw
+  #   @raw['maintainer']['legal_html'] = RedCloth.new(@raw['maintainer']['legal_text']).to_html
+  #   @raw['maintainer']['about_html'] = RedCloth.new(@raw['maintainer']['about_text']).to_html
+  #   @raw['app']['welcome_html'] = RedCloth.new(@raw['app']['welcome_text']).to_html
 
-    render json: {'config' => @raw}
-  end
+  #   render json: {'config' => @raw}
+  # end
 
   # TODO: implement as ajax
   def statistics
