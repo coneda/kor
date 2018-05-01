@@ -1,6 +1,8 @@
 class CollectionsController < ApplicationController
   layout 'normal_small'
-  
+
+  skip_before_filter :authorization, only: ['index']
+
   def index
     @collections = Collection.non_personal.all
   end

@@ -27,6 +27,15 @@ RSpec.configure do |config|
     end
   end
 
+  config.around :each do |example|
+    begin
+      example.run
+    rescue ActiveRecord::RecordInvalid => e
+      binding.pry
+      p e.record.errors.full_messages
+    end
+  end
+
   config.before :each do |example|
     FactoryGirl.reload
 
