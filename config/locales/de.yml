@@ -72,10 +72,6 @@ de:
   tagging:
     placeholder: "zum bearbeiten hier klicken"
 
-  social_bookmarking:
-    digg: "Auf Digg veröffentlichen"
-    delicious: "Auf Delicous verlinken"
-
   kind_settings:
     dating_label: "Voreingestellte Bezeichnung für Datierungen"
     distinct_name_label: "Bezeichnung für den eindeutigen Namen"

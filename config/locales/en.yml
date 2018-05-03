@@ -58,7 +58,7 @@ en:
   identified: with identifier
   recently_visited: recently visited
   recently_created: recently created
-  currently_linked: currently linked
+  currently_linked: existing relationship
 
   search_term:
     one: search term
@@ -70,10 +70,6 @@ en:
 
   tagging:
     placeholder: "click here to edit"
-
-  social_bookmarking:
-    digg: "publish on Digg"
-    delicious: "link to Delicious"
 
   kind_settings:
     dating_label: "default label for datings"
@@ -549,7 +545,7 @@ en:
 
   confirm:
     delete_collection: "Do you really want to delete this collection?"
-    delete_relationship: "Do you really want to delete this link?"
+    delete_relationship: "Do you really want to delete this relationship?"
     delete_relation: "Do you really want to delete this relation?"
     delete_entity: "Dou you really want to delete this entity?"
     delete_entity_with_groups: "Dou you really want to delete this entity? The following global groups contain the entity: %{authority_groups}"
@@ -607,7 +603,7 @@ en:
     swfupload_success: "the upload was successful"
     none_found: "%{o} not found"
     no_clipboard_action_selected: "you have not selected an action"
-    following_relationship: "the following link should be applied or created"
+    following_relationship: "the following relationship should be applied or created"
     edit_existing_entity: |
       Identical entity already exists. Do you want to
       %{edit_link} or %{show_link} instead?
@@ -677,7 +673,7 @@ en:
   meta:
     description: "Store and manage image data with complex metadata reasonably"
     author: "Coneda UG (Thorsten Wübbena and Moritz Schepp)"
-    keywords: "image picture archive research ontology database entity relation link"
+    keywords: "image picture archive research ontology database entity relation relationship"
 
 
   # ActiveModel
@@ -736,8 +732,8 @@ en:
         one: relation
         other: relations
       relationship:
-        one: link
-        other: links
+        one: relationship
+        other: relationships
       tag:
         one: tag
         other: tags
@@ -952,11 +948,11 @@ en:
         even: "has to be even"
         no_two_images: "you cannot attach two images"
         defines_non_existent_kind: "defines a non existent entity type"
-        defines_non_existent_relation: "defines a link for a non existent relation"
+        defines_non_existent_relation: "defines a relationship for a non existent relation"
         stale_entity_update: "The entity has been edited meanwhile. Please find the new values below"
         stale_user_update: "The user has been edited meanwhile. Please find the new values below"
         stale_relation_update: "The relation has been edited meanwhile. Please find the new values below"
-        stale_relationship_update: "The link has been edited meanwhile. Please find the new values below"
+        stale_relationship_update: "The relationship has been edited meanwhile. Please find the new values below"
         needs_medium: "Without a relevant file the entity cannot be created as a medium"
         needs_file: "Without a relevant file the entity cannot be created as a medium"
         invalid_words: "cannot contain words longer than 30 characters"
