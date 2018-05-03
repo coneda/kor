@@ -19,7 +19,7 @@ en:
   logged_in_as: "logged in as"
   about: "imprint"
   legal: "terms of use"
-  add_relation_search: "additional criteria"
+  add_relation_search: "relationships"
   out_of: "%{current} out of %{all}"
   all: "all"
   all_none: "all/none"
