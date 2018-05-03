@@ -655,11 +655,20 @@ like so:
 ### Development
 
 The easiest way to get started hacking on kor, is to use the included vagrant
-test environment. For now, you can create it with
+test environment. Make sure vagrant and VirtualBox are installed:
 
-    vagrant up
+* install VirtualBox (https://www.virtualbox.org/)
+* install vagrant (https://www.vagrantup.com/)
 
-SSH into the resulting virtual machine and start the development server:
+Also, install the guest additions plugin:
+
+    vagrant plugin install vagrant-vbguest
+
+Then bring up the vagrant VM:
+
+    vagrant up dev
+
+SSH into the resulting VM and start the KOR development server:
 
     vargant ssh
     ...
