@@ -12,8 +12,10 @@ node_js:
   - "6"
 
 before_install:
+  - mysql -e 'CREATE DATABASE kor_test;'
   - cp deploy/database.travis.yml config/database.yml
   - npm install
+  - npm run build
   - bundle install
   - bundle exec rake db:test:load
 
