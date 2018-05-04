@@ -5,11 +5,6 @@ env:
   - MOZ_HEADLESS=1
 
 install:
-  - wget -N https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz -O geckodriver.tar.gz
-  - tar xzf geckodriver.tar.gz
-  - rm geckodriver.tar.gz
-  - chmod +x geckodriver
-  - sudo mv geckodriver /usr/local/bin/geckodriver
   - npm install
   - bundle install --jobs=3 --retry=3 --deployment
   - npm run build
@@ -29,24 +24,15 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install libav-tools imagemagick
   - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.6/elasticsearch-2.4.6.deb && sudo dpkg -i --force-confnew elasticsearch-2.4.6.deb && sudo service elasticsearch restart
-  - mysql -e 'CREATE DATABASE kor_test;'
-  - cp deploy/database.travis.yml config/database.yml
-  # - npm install
-  # - npm run build
-  # - bundle install
-
-  # - deploy/dockerize.sh $TRAVIS_COMMIT test
-  # - docker pull mysql
-  # - docker pull elasticsearch:2.4.4
-  # - docker run -d -e MYSQL_ROOT_PASSWORD=root --name mysql mysql
-  # - docker run -d --name elastic elasticsearch:2.4.4
-
-# install: true
+  - wget -N https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz -O geckodriver.tar.gz
+  - tar xzf geckodriver.tar.gz
+  - rm geckodriver.tar.gz
+  - chmod +x geckodriver
+  - sudo mv geckodriver /usr/local/bin/geckodriver
 
 script:
+  - mysql -e 'CREATE DATABASE kor_test;'
+  - cp deploy/database.travis.yml config/database.yml
   - bundle exec rake db:test:load
   - bundle exec cucumber features/
   - bundle exec rspec spec/
-  # - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rake db:drop db:setup db:test:load
-  # - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rspec spec --format=progress
-  # - docker run --rm --link mysql:mysql --link elastic:elastic -e HEADLESS=true docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec cucumber features --format=progress

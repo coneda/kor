@@ -21,9 +21,9 @@ Feature: Inplace relationship editor
     Given I am logged in as "admin"
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    And I should not see "Create link"
+    And I should not see "Create relationship"
     When I click element "[data-name=plus]" within ".relationships"
-    Then I should see "Create link"
+    Then I should see "Create relationship"
 
   @javascript
   Scenario: Click the 'Create' button without having the form completed
@@ -45,7 +45,7 @@ Feature: Inplace relationship editor
     And I fill in "terms" with "schrei"
     And I click element "[kor-id='2']"
     And I press "Save"
-    And I should not see "Create link"
+    And I should not see "Create relationship"
     Then I should see "Der Schrei" within ".relationship"
 
   @javascript
@@ -58,7 +58,7 @@ Feature: Inplace relationship editor
     And I click button "Add" within ".relationship .properties"
     And I fill in ".property input" with "this is almost certain"
     And I press "Save"
-    And I should not see "Edit link"
+    And I should not see "Edit relationship"
     And I should see "Relationship has been changed"
     And I should see "this is almost certain" within ".relationship"
 
@@ -82,7 +82,7 @@ Feature: Inplace relationship editor
     When I click element "[data-name=pen]" within ".relationships"
     And I select "is equivalent to" from "relation_name"
     And I press "Save"
-    And I should not see "Edit link"
+    And I should not see "Edit relationship"
     And I should see "Relationship has been changed"
     And I should see "is equivalent to" within ".relationships"
     And I should not see "is similar to" within ".relationships"
@@ -98,7 +98,7 @@ Feature: Inplace relationship editor
     And I follow "recently created"
     And I click on entity "The Last Supper"
     And I press "Save"
-    And I should not see "Edit link"
+    And I should not see "Edit relationship"
     And I should see "Relationship has been changed"
     And I should see "is similar to" within ".relationships"
     And I should see "The Last Supper" within ".relationships"

@@ -331,7 +331,7 @@ When(/^I go back$/) do
   page.evaluate_script('window.history.back()')
 end
 
-When(/^I refresh the page$/) do
+When(/^I (?:refresh|reload) the page$/) do
   page.evaluate_script("window.location.reload()")
 end
 

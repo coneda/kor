@@ -175,7 +175,7 @@ Feature: Entities
     Then I should not see "Mona Lisa"
 
     Given user "admin" is allowed to "view" collection "side" through credential "side_admins"
-    When I go to the entity page for "Leonardo da Vinci"
+    When I reload the page
     Then I should see "Mona Lisa"
 
 
