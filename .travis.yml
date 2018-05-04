@@ -9,7 +9,7 @@ install:
   - wget -N https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz -O /opt/geckodriver.tar.gz
   - tar xzf geckodriver.tar.gz
   - rm geckodriver.tar.gz
-  - ln -sfn /opt/geckodriver /usr/local/bin/geckodriver
+  - sudo ln -sfn /opt/geckodriver /usr/local/bin/geckodriver
   - npm install
   - bundle install --jobs=3 --retry=3 --deployment
 
@@ -45,8 +45,8 @@ before_install:
 script:
   - npm run build
   - bundle exec rake db:test:load
-  - bundle exec rspec spec/
   - bundle exec cucumber features/
+  - bundle exec rspec spec/
   # - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rake db:drop db:setup db:test:load
   # - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rspec spec --format=progress
   # - docker run --rm --link mysql:mysql --link elastic:elastic -e HEADLESS=true docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec cucumber features --format=progress
