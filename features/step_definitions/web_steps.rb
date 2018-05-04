@@ -117,7 +117,7 @@ end
 
 When /^I fill in "([^"]*)" attachment "([^"]*)" with "([^"]*)"$/ do |attachment_id, index, values|
   values = values.split('/')
-  attachments = page.all("##{attachment_id} .attachment")
+  attachments = page.all("##{attachment_id} .attachment", minimum: index.to_i)
   attachments[index.to_i - 1].all('input[type=text]').each_with_index do |input, i|
     input.set(values[i]) unless values[i].blank?
   end

@@ -18,4 +18,5 @@ Scenario: Create a resolvable entity and resolve it
   And I go to the path "/resolve/gnd_id/1234"
   Then I should be on the entity page for "Leonardo da Vinci"
   And I go to the path "/resolve/1234"
-  Then I should be on the entity page for "Leonardo da Vinci"
+  Then I should see "Leonardo da Vinci"
+  And I should be on the entity page for "Leonardo da Vinci"
