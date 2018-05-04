@@ -10,6 +10,8 @@ public/custom.css
 
 .env
 
+config/database.yml
+
 # Development
 
 chromedriver.log
