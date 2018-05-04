@@ -31,6 +31,7 @@ class Kor::EntityMerger
       e
     end
     @entity.save!
+    # TODO: make sure this fails if there is no @entity.id
     merge_externals options[:old_ids], @entity.id
     @entity
   end

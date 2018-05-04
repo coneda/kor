@@ -19,7 +19,7 @@ de:
   logged_in_as: "angemeldet als"
   about: "Impressum"
   legal: "Nutzungsbedingungen"
-  add_relation_search: "weitere Kriterien"
+  add_relation_search: "Verknüpfungen"
   out_of: "%{current} von %{all}"
   all: "alle"
   all_none: "alle/keine"
@@ -76,10 +76,6 @@ de:
 
   tagging:
     placeholder: "zum bearbeiten hier klicken"
-
-  social_bookmarking:
-    digg: "Auf Digg veröffentlichen"
-    delicious: "Auf Delicous verlinken"
 
   prompts:
     please_select: "bitte auswählen"
@@ -865,6 +861,7 @@ de:
         name: Name
         title: Titel
         uuid: UUID
+        search_name: Name / Titel / UUID
         subtype: Typ
         distinct_name: eindeutiger Name
         distinct_title: eindeutiger Titel
