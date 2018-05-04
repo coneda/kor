@@ -15,11 +15,12 @@
       return opts.values || {};
     }
 
-    tag.name = function() {return 'dataset';}
+    tag.name = function() {return tag.opts.name;}
 
     tag.value = function() {
       var result = {};
-      for (var i = 0; i < tag.tags['kor-input'].length; i++) {
+      var inputs = tag.tags['kor-input'] || []
+      for (var i = 0; i < inputs.length; i++) {
         var field = tag.tags['kor-input'][i];
         result[field.name()] = field.value();
       }

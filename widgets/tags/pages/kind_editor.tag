@@ -40,6 +40,9 @@
 
   <div class="kor-layout-right kor-layout-large">
     <div class="kor-content-box">
+      <virtual if={!data}>
+        <kor-kind-general-editor notify={notify} />
+      </virtual>
       <virtual if={data}>
         <kor-kind-general-editor
           if={!opts.newField && !opts.fieldId && !opts.newGenerator && !opts.generatorId}
@@ -66,7 +69,6 @@
 
   <script type="text/coffee">
     tag = this
-    tag.tab = 'general'
     tag.notify = riot.observable()
     # TODO: make sure this works again
     # tag.requireRoles = ['kind_admin']
@@ -75,7 +77,6 @@
 
     tag.on 'mount', ->
       fetch() if tag.opts.id
-      tag.tab = wApp.routing.query()['section'] || 'general'
       tag.notify.on 'refresh', fetch
 
     tag.on 'unmount', ->

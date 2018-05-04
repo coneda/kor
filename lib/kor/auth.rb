@@ -179,7 +179,7 @@ module Kor::Auth
   def self.to_ids(objects)
     case objects
       when ActiveRecord::Base then [objects.id]
-      when Fixnum then [objects]
+      when Integer then [objects]
       when Array, ActiveRecord::Relation
         objects.map do |o|
           o.respond_to?(:id) ? o.id : o

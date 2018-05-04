@@ -343,6 +343,22 @@ kor-entity-editor, [data-is=kor-entity-editor] {
   kor-input[name=no_name_statement] {
     margin-top: -1em;
   }
+
+  kor-datings-editor {
+    .header label {
+      font-weight: bold;
+    }
+
+    ul {
+      padding: 1rem;
+
+      li {
+        list-style-type: none;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+      }
+    }
+  }
 }
 
 kor-clipboard-control {

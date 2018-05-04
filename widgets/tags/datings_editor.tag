@@ -1,36 +1,35 @@
 <kor-datings-editor>
 
   <div class="header">
-    <button onclick={add}>
+    <button onclick={add} class="pull-right">
       {t('verbs.add', {capitalize: true})}
     </button>
-    <label>
-      {t(
-        'activerecord.attributes.relationship.dating.other',
-        {capitalize: true}
-      )}
-    </label>
+    <label>{opts.label}</label>
     <div class="clearfix"></div>
   </div>
 
-  <ul>
+  <ul show={anyVisibleDatings()}>
     <li
-      each={dating, i in opts.datings}
+      each={dating, i in data}
       show={!dating._destroy}
+      visible={!dating._destroy}
     >
       <kor-input
         label={t('activerecord.attributes.dating.label', {capitalize: true})}
         value={dating.label}
-        ref="datingLabels"
+        ref="labels"
+        errors={errorsFor(i, 'label')}
       />
       <kor-input
         label={t('activerecord.attributes.dating.dating_string', {capitalize: true})}
-        value={dating.value}
-        ref="datingDatingStrings"
+        value={dating.dating_string}
+        ref="dating_strings"
+        errors={errorsFor(i, 'dating_string')}
       />
-      <button onclick={remove(i)}>
+      <button onclick={remove} class="pull-right">
         {t('verbs.remove')}
       </button>
+      <div class="clearfix"></div>
     </li>
   </ul>
 
@@ -39,30 +38,46 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
 
-    tag.add = (event) ->
-      event.preventDefault()
-      tag.opts.datings.push({})
+    tag.on 'mount', ->
+      tag.data = tag.opts.riotValue || []
       tag.update()
 
-    tag.remove = (index) ->
-      (event) ->
-        event.preventDefault()
-        dating = tag.opts.datings
-        if dating.id
-          tag.opts.datings[index]._destroy = true
-        else
-          tag.opts.datings.splice(index, 1)
-        tag.update()
+    tag.anyVisibleDatings = ->
+      for dating in (tag.data || [])
+        return true if !dating['_destroy']
+      false
+
+    tag.name = -> tag.opts.name
+
+    tag.errorsFor = (i, field) ->
+      e = tag.opts.errors || []
+      o = e[i] || {}
+      o[field]
+
+    tag.add = (event) ->
+      event.preventDefault()
+      tag.data.push({})
+      tag.update()
+
+    tag.remove = (event) ->
+      event.preventDefault()
+      dating = event.item.dating
+      index = event.item.i
+      if dating.id
+        tag.data[index]._destroy = true
+      else
+        tag.data.splice(index, 1)
+      tag.update()
 
     tag.value = ->
-      datingLabels = wApp.utils.toArray(tag.refs['datingLabels'])
-      datingDatingStrings = wApp.utils.toArray(tag.refs['datingDatingStrings'])
+      labelInputs = wApp.utils.toArray(tag.refs['labels'])
+      datingStringInputs = wApp.utils.toArray(tag.refs['dating_strings'])
 
-      for d, i in tag.opts.datings
-        d['label'] = datingLabels[i].value()
-        d['value'] = datingDatingStrings[i].value()
+      for i, dating of tag.data
+        dating['label'] = labelInputs[i].value()
+        dating['dating_string'] = datingStringInputs[i].value()
 
-      tag.opts.datings
+      tag.data
 
   </script>
 

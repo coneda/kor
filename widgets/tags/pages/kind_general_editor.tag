@@ -119,7 +119,7 @@
       result
 
     success = (data) ->
-      route("/kinds/#{data.id}/edit")
+      route("/kinds/#{tag.opts.id}/edit")
       # tag.parent.trigger 'kind-changed'
       tag.errors = {}
       tag.update()

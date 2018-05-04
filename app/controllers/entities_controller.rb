@@ -277,13 +277,19 @@ class EntitiesController < JsonController
             end
           end
         else
-          render_406 @entity.errors
+          render_406 build_nested_errors(@entity)
         end
       end
     else
       render_403
     end
   end
+
+  # def render_406(errors, message = nil)
+  #   @errors = errors
+  #   @message = message || I18n.t('activemodel.errors.template.header')
+  #   render template: 'layouts/message', status: 406
+  # end
 
   def update
     params[:entity][:existing_datings_attributes] ||= []
@@ -306,7 +312,7 @@ class EntitiesController < JsonController
         SystemGroup.find_or_create_by(:name => 'invalid').remove_entities @entity
         render_200 I18n.t('objects.update_success', o: @entity.display_name)
       else
-        render_406 @entity.errors
+        render_406 build_nested_errors(@entity)
       end
     else
       render_403
@@ -357,19 +363,22 @@ class EntitiesController < JsonController
         :name, :distinct_name, :subtype, :comment, :no_name_statement,
         :tag_list,
         :synonyms => [],
-        :new_datings_attributes => [
+        :datings_attributes => [
           :id, :_destroy, :label, :dating_string, :lock_version
         ],
-        :existing_datings_attributes => [
-          :id, :_destroy, :label, :dating_string, :lock_version
-        ],
-        :dataset => params[:entity][:dataset].try(:keys),
+        :dataset => params[:entity][:dataset].permit!,
         :properties => [:label, :value],
         :medium_attributes => [:id, :image, :document]
       ).tap do |e|
         e[:properties] ||= []
         e[:synonyms] ||= []
       end
+    end
+
+    def build_nested_errors(entity)
+      entity.errors.as_json.reject{|k, v| k.match(/^datings/)}.merge(
+        'datings' => entity.datings.map{|d| d.errors.as_json}
+      )
     end
 
 end

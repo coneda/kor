@@ -63,6 +63,7 @@
 
         <kor-dataset-fields
           if={kind}
+          name="dataset"
           fields={kind.fields}
           values={data.dataset}
           ref="fields"
@@ -83,7 +84,14 @@
 
         <hr />
 
-        <div>DATINGS</div>
+        <kor-datings-editor
+          if={data.datings}
+          label={tcap('activerecord.models.entity_dating', {count: 'other'})}
+          name="datings_attributes"
+          ref="fields"
+          value={data.datings}
+          errors={errors.datings}
+        />
 
         <hr />
 
@@ -112,13 +120,16 @@
 
     tag.on 'before-mount', ->
       tag.errors = {}
+      tag.dating_errors = []
+
+      tag.data = {no_name_statement: 'enter_name'}
+
       tag.noNameStatements = [
         {label: tag.t('values.no_name_statements.unknown'), value: 'unknown'},
         {label: tag.t('values.no_name_statements.not_available'), value: 'not_available'},
         {label: tag.t('values.no_name_statements.empty_name'), value: 'empty_name'},
         {label: tag.t('values.no_name_statements.enter_name'), value: 'enter_name'}
       ]
-      tag.data = {no_name_statement: 'enter_name'}
 
     tag.on 'mount', ->
       fetchCollections()

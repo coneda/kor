@@ -34,7 +34,7 @@ class Entity < ActiveRecord::Base
 
   accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
 
-  validates_associated :datings
+  # validates_associated :datings
 
   validates :name, 
     :presence => {:if => :needs_name?},
