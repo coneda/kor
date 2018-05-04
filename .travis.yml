@@ -1,8 +1,15 @@
 dist: trusty
 sudo: required
 
+rvm:
+  - 2.4.1
+
+env:
+  - MOZ_HEADLESS=1
+
 addons:
   chrome: stable
+  firefox: latest
 
 services:
   - mysql
@@ -12,11 +19,14 @@ node_js:
   - "6"
 
 before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install libav-tools imagemagick
+  - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.6/elasticsearch-2.4.6.deb && sudo dpkg -i --force-confnew elasticsearch-2.4.6.deb && sudo service elasticsearch restart
   - mysql -e 'CREATE DATABASE kor_test;'
   - cp deploy/database.travis.yml config/database.yml
   - npm install
   - npm run build
-  - bundle install
+  # - bundle install
   - bundle exec rake db:test:load
 
   # - deploy/dockerize.sh $TRAVIS_COMMIT test
@@ -29,7 +39,7 @@ before_install:
 
 script:
   - bundle exec rspec spec/
-  - HEADLESS=true bundle exec cucumber features/
+  - bundle exec cucumber features/
   # - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rake db:drop db:setup db:test:load
   # - docker run --rm --link mysql:mysql --link elastic:elastic docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec rspec spec --format=progress
   # - docker run --rm --link mysql:mysql --link elastic:elastic -e HEADLESS=true docker.coneda.net:443/kor:$TRAVIS_COMMIT bundle exec cucumber features --format=progress
