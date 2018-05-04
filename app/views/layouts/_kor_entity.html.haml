@@ -3,8 +3,8 @@
 - elsif entity.is_medium?
   .image
     = kor_medium entity, options
-  .content_type{:title => entity_subtitle(entity, false)}
-    = entity_subtitle(entity, false)
+  .content_type{:title => entity_subtitle(entity)}
+    = entity_subtitle(entity)
 - else
   - if options[:link]
     = link_to options[:url] do

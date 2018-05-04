@@ -18,3 +18,7 @@ end
 When /^I open the inspector$/ do
   page.driver.debug  
 end
+
+Given /^everything is processed$/ do
+  Delayed::Worker.new.work_off
+end

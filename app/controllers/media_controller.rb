@@ -23,7 +23,11 @@ class MediaController < ApplicationController
         authorized?(:view, @medium.entity.collection)
       )
     else
-      authorized?(:view, @medium.entity.collection)
+      ref = request.referrer || ''
+      authorized?(:view, @medium.entity.collection) || (
+        ref.match('^' + root_url) &&
+        Publishment.find_by(uuid: ref.split('/').last)
+      )
     end
 
     if auth

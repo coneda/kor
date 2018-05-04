@@ -9,7 +9,7 @@
     
     = kor_input_tag Kind.model_name.human, :control => kind_selector_tag('query[kind_id]', :selected => @query.kind_id, :without_images => true, :no_selection_name => I18n.t('all'), 'kor-submit-on-change' => true)
     
-    = kor_input_tag Kor.config['search.entity_name'], :control => text_field_tag('query[name]', @query.name)
+    = kor_input_tag Entity.human_attribute_name(:search_name), :control => text_field_tag('query[name]', @query.name)
     
     = kor_input_tag EntityDating.model_name.human, :control => text_field_tag('query[dating_string]', @query.criteria[:dating_string])
     

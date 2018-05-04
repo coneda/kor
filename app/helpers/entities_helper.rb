@@ -41,17 +41,11 @@ module EntitiesHelper
     end
   end
   
-  def entity_subtitle(entity, content_type = false)
+  def entity_subtitle(entity)
     if entity.is_medium?
-      result = ""
-      
-      if content_type
-        label = Medium.human_attribute_name(:original_extension)
-        "#{label}: #{content_tag 'span', entity.medium.content_type, :class => 'highlighted_subtitle'}".html_safe
-      else
-        label = Medium.human_attribute_name(:file_type)
-        "#{label}: #{content_tag 'span', entity.medium.original_extension, :class => 'highlighted_subtitle'}".html_safe
-      end
+      label = Medium.human_attribute_name(:content_type).capitalize_first_letter
+      ct = entity.medium.content_type.split('/').last
+      "#{label}: #{content_tag 'strong', ct, :class => 'highlighted_subtitle'}".html_safe
     else
       entity.kind_name
     end

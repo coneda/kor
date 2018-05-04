@@ -14,6 +14,13 @@
 # Deploy
 
 function deploy {
+  if ! which npm > /dev/null ; then
+    echo "WARNING, npm was not found so some assets can't be compiled. As a"
+    echo "fallback, the assets included within the youngest release in this"
+    echo "branch will be deployed. However, they will most probably not work,"
+    echo "if you are not deploying this release"
+  fi
+
   if ! exist "$DEPLOY_TO/shared"; then
     setup
 
@@ -72,10 +79,7 @@ function deploy {
     upload "public/widget-test.html" "$CURRENT_PATH/public/widget-test.html"
     upload "public/*.js" "$CURRENT_PATH/public/"
     upload "public/*.css" "$CURRENT_PATH/public/"
-  else
-    echo "WARNING, npm was not found so some assets can't be compiled. As a"
-    echo "fallback, the assets included within the youngest release in this"
-    echo "branch will be deployed"
+    upload "public/fonts/" "$CURRENT_PATH/public/fonts/"
   fi
 
   remote "touch $CURRENT_PATH/tmp/restart.txt"

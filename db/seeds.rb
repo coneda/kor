@@ -1,5 +1,3 @@
-Kor.config['maintainer.email'] = 'admin@localhost'
-
 administrators = Credential.create!(:name => "admins")
 
 Kor::Tasks.reset_admin_account

@@ -8,6 +8,9 @@ module NavigationHelpers
   def path_to(page_name)
     case page_name
 
+    when /the new entries page/ then '/blaze#/entities/gallery'
+    when /the new entities page/ then '/entities/recent'
+    when /the isolated entities page/ then '/blaze#/entities/isolated'
     when /the config page/ then '/config/general'
     when /the home\s?page/ then '/'
     when /the expert search/ then '/entities'
