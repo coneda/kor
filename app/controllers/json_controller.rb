@@ -10,6 +10,18 @@ class JsonController < BaseController
 
   protected
 
+    def render_created(record)
+      @record = record
+      object_name = @record.try(:display_name) || record.class.model_name.human
+      render_200 I18n.t('objects.create_success', o: object_name)
+    end
+
+    def render_updated(record)
+      @record = record
+      object_name = @record.try(:display_name) || record.class.model_name.human
+      render_200 I18n.t('objects.update_success', o: object_name)
+    end
+
     def render_200(message)
       @message = message
       render template: 'layouts/message', status: 200

@@ -38,9 +38,8 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
 
-    tag.on 'mount', ->
+    tag.on 'update', ->
       tag.data = tag.opts.riotValue || []
-      tag.update()
 
     tag.anyVisibleDatings = ->
       for dating in (tag.data || [])

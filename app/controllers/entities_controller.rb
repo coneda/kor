@@ -262,7 +262,7 @@ class EntitiesController < JsonController
         end
         
         @record = @entity
-        render_200 I18n.t('objects.create_success', o: @entity.display_name)
+        render_created @entity
       else
         if @entity.medium && @entity.medium.errors[:datahash].present?
           if params[:user_group_name]
@@ -285,12 +285,6 @@ class EntitiesController < JsonController
     end
   end
 
-  # def render_406(errors, message = nil)
-  #   @errors = errors
-  #   @message = message || I18n.t('activemodel.errors.template.header')
-  #   render template: 'layouts/message', status: 406
-  # end
-
   def update
     params[:entity][:existing_datings_attributes] ||= []
 
@@ -310,7 +304,7 @@ class EntitiesController < JsonController
 
       if @entity.update_attributes(entity_params)
         SystemGroup.find_or_create_by(:name => 'invalid').remove_entities @entity
-        render_200 I18n.t('objects.update_success', o: @entity.display_name)
+        render_updated @entity
       else
         render_406 build_nested_errors(@entity)
       end
@@ -366,7 +360,7 @@ class EntitiesController < JsonController
         :datings_attributes => [
           :id, :_destroy, :label, :dating_string, :lock_version
         ],
-        :dataset => params[:entity][:dataset].permit!,
+        :dataset => params[:entity][:dataset].try(:permit!),
         :properties => [:label, :value],
         :medium_attributes => [:id, :image, :document]
       ).tap do |e|

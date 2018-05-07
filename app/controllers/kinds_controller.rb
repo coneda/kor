@@ -22,12 +22,12 @@ class KindsController < JsonController
   end
 
   def create
-    @record = Kind.new(kind_params)
+    @kind = Kind.new(kind_params)
 
-    if @record.save
-      render_200 I18n.t('objects.create_success', o: Kind.model_name.human)
+    if @kind.save
+      render_created @kind
     else
-      render_406 @record.errors
+      render_406 @kind.errors
     end
   end
 
@@ -39,7 +39,7 @@ class KindsController < JsonController
     params[:kind][:settings][:tagging] ||= false
 
     if @kind.update_attributes(kind_params)
-      render_200 I18n.t('objects.update_success', o: Kind.model_name.human)
+      render_updated @kind
     else
       render_406 @kind.errors
     end

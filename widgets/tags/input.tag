@@ -6,13 +6,13 @@
       if={opts.type != 'select' && opts.type != 'textarea'}
       type={opts.type || 'text'}
       name={opts.name}
-      riot-value={valueFromParent()}
+      value={valueFromParent()}
       checked={checkedFromParent()}
     />
     <textarea
       if={opts.type == 'textarea'}
       name={opts.name}
-      riot-value={valueFromParent()}
+      value={valueFromParent()}
     ></textarea>
     <select
       if={opts.type == 'select'}

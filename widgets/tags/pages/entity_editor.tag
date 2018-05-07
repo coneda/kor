@@ -23,35 +23,38 @@
 
         <hr />
 
-        <kor-input
-          label={tcap('activerecord.attributes.entity.name')}
-          name="no_name_statement"
-          type="radio"
-          ref="fields.no_name_statement"
-          value={data.no_name_statement}
-          options={noNameStatements}
-          onchange={update}
-          errors={errors.no_name_statement}
-        />
+        <virtual if={!isMedium()}>
+          <kor-input
+            label={tcap('activerecord.attributes.entity.name')}
+            name="no_name_statement"
+            type="radio"
+            ref="fields.no_name_statement"
+            value={data.no_name_statement}
+            options={noNameStatements}
+            onchange={update}
+            errors={errors.no_name_statement}
+          />
 
-        <kor-input
-          if={hasName()}
-          name="name"
-          ref="fields"
-          value={data.name}
-          errors={errors.name}
-        />
+          <kor-input
+            if={hasName()}
+            name="name"
+            ref="fields"
+            value={data.name}
+            errors={errors.name}
+          />
 
-        <kor-input
-          if={hasName()}
-          label={tcap('activerecord.attributes.entity.distinct_name')}
-          name="distinct_name"
-          ref="fields"
-          value={data.distinct_name}
-          errors={errors.distinct_name}
-        />
+          <kor-input
+            if={hasName()}
+            label={tcap('activerecord.attributes.entity.distinct_name')}
+            name="distinct_name"
+            ref="fields"
+            value={data.distinct_name}
+            errors={errors.distinct_name}
+          />
 
-        <hr />
+          <hr />
+        </virtual>
+
 
         <kor-input
           label={tcap('activerecord.attributes.entity.subtype')}
@@ -80,12 +83,16 @@
 
         <hr />
 
-        <div>SYNONYMS</div>
+        <kor-synonyms-editor
+          label={tcap('activerecord.attributes.entity.synonyms')}
+          name="synonyms"
+          ref="fields"
+          value={data.synonyms}
+        />
 
         <hr />
 
         <kor-datings-editor
-          if={data.datings}
           label={tcap('activerecord.models.entity_dating', {count: 'other'})}
           name="datings_attributes"
           ref="fields"
@@ -95,7 +102,12 @@
 
         <hr />
 
-        <div>PROPERTIES</div>
+        <kor-entity-properties-editor
+          label={tcap('activerecord.attributes.entity.properties')}
+          name="properties"
+          ref="fields"
+          value={data.properties}
+        />
 
         <hr />
 
@@ -150,6 +162,10 @@
         tag.errors = JSON.parse(xhr.responseText).errors
         wApp.utils.scrollToTop()
       p.always -> tag.update()
+
+    tag.isMedium = ->
+      kindId = parseInt(tag.data['kind_id']) || tag.opts.kindId
+      kindId == wApp.info.data.medium_kind_id
 
     tag.hasName = ->
       tag.refs['fields.no_name_statement'] &&
