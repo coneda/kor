@@ -6,7 +6,7 @@
       = will_paginate @users, :previous_label => '«', :next_label => '»'
   
     = form_tag({:action => 'index'}, :method => :get) do
-      = I18n.t('nouns.search')
+      = I18n.t('nouns.search').capitalize_first_letter
       %span.indented_once
         = text_field_tag :search_string
 
