@@ -9,6 +9,11 @@
       options={data.records}
       ref="input"
     />
+
+    <virtual if={opts.multiple}>
+      <label>{tcap('activerecord.models.collection')}</label>
+      <strong>{selectedList()}</strong>
+    </virtual>
   </virtual>
 
   <script type="text/javascript">

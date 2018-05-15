@@ -1,3 +1,5 @@
+// TODO: remove this whole directory?
+
 var spec = {
   logPage: function() {console.log(Zepto('html').html())},
   ensureTagElement: function() {

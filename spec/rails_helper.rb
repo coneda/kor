@@ -1,16 +1,26 @@
-ENV["RAILS_ENV"] ||= 'test'
 require 'spec_helper'
-require File.expand_path("../../config/environment", __FILE__)
-require 'rspec/rails'
+ENV['RAILS_ENV'] ||= 'test'
+require File.expand_path('../../config/environment', __FILE__)
 
+# Prevent database truncation if the environment is production
+abort("The Rails environment is running in production mode!") if Rails.env.production?
+
+require 'rspec/rails'
 require 'factory_girl_rails'
 
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
+ActiveRecord::Migration.maintain_test_schema!
+
 RSpec.configure do |config|
-  config.use_transactional_fixtures = false
-  config.infer_base_class_for_anonymous_controllers = false
+  include DataHelper
+
+  config.fixture_path = "#{::Rails.root}/spec/fixtures"
+
+  config.use_transactional_fixtures = true
   # config.infer_spec_type_from_file_location!
+  # config.filter_rails_from_backtrace!
+  # config.filter_gems_from_backtrace("gem name")
 
   config.before :all do
     system "cat /dev/null >| #{Rails.root}/log/test.log"
@@ -18,14 +28,18 @@ RSpec.configure do |config|
     XmlHelper.compile_validator
 
     DatabaseCleaner.clean_with :truncation
-    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean
+    # DatabaseCleaner.strategy = :transaction
+
+    Rails.application.load_seed
+    default_setup
   end
 
-  config.around(:each) do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
-  end
+  # config.around(:each) do |example|
+  #   DatabaseCleaner.cleaning do
+  #     example.run
+  #   end
+  # end
 
   config.around :each do |example|
     begin
@@ -42,6 +56,7 @@ RSpec.configure do |config|
     if example.metadata[:elastic]
       Kor::Elastic.enable
       Kor::Elastic.reset_index
+      Kor::Elastic.index_all full: true
     else
       Kor::Elastic.disable
     end

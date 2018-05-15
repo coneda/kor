@@ -1,193 +1,122 @@
 class Kor::Graph
   
   def initialize(options = {})
+    unless options[:user].is_a?(User)
+      raise Kor::Exception, "#{options[:user].inspect} is no instance of User" 
+    end
+
     @options = options
   end
-  
-  # TODO: experimental path api    
-  # def find_paths(specs = [])
-  #   collection_ids = Kor::Auth.authorized_collections(@options[:user]).map{|c| c.id}
 
-  #   return [] if collection_ids.empty?
+  def search(criteria = {})
+    @criteria = criteria
+    sanitize_criteria
 
-  #   if specs.size > 2
-  #     db = ActiveRecord::Base.connection
-
-  #     query = []
-  #     fields = []
-  #     conditions = []
-  #     binds = []
-
-  #     specs.each_with_index do |spec, i|
-  #       index = i / 2
-
-  #       if i == 0
-  #         fields << "es_#{index}.id AS es_#{index}_id"
-  #         fields << "es_#{index}.kind_id AS es_#{index}_kind_id"
-  #         fields << "es_#{index}.name AS es_#{index}_name"
-  #         query << "JOIN entities AS es_#{index} ON es_#{index}.id = rels_#{index}.from_id"
-
-  #         values = collection_ids.join(',')
-  #         unless values.empty?
-  #           conditions << "es_#{index}.collection_id IN (#{values})"
-  #         end
-
-  #         if spec['id']
-  #           values = (spec['id'].is_a?(Array) ? spec['id'] : [spec['id']])
-  #           unless values.empty?
-  #             conditions << "es_#{index}.id IN (#{values.join(',')})"
-  #             binds << values
-  #           end
-  #         end
-
-  #         if spec['kind_id']
-  #           values = [spec['kind_id'].to_i]
-  #           unless values.empty?
-  #             conditions << "es_#{index}.kind_id IN (#{values.join(',')})"
-  #           end
-  #         end
-  #       elsif i == 1
-  #         fields << "rels_#{index}.id AS rels_#{index}_id"
-  #         fields << "rels_#{index}.relation_id AS rels_#{index}_relation_id"
-  #         fields << "rs_#{index}.name AS rs_#{index}_name"
-  #         fields << "rs_#{index}.reverse_name AS rs_#{index}_reverse_name"
-  #         fields << "rels_#{index}.is_reverse AS rels_#{index}_reverse"
-  #         query << "JOIN relations AS rs_#{index} ON rels_#{index}.relation_id = rs_#{index}.id"
-
-  #         if spec['name']
-  #           rels = Relation.where(:name => spec['name']).pluck(:id)
-  #           reverse_rels = Relation.where(:reverse_name => spec['name']).pluck(:id)
-
-  #           return [] if rels.empty? && reverse_rels.empty?
-
-  #           name_conditions = []
-  #           unless rels.empty?
-  #             name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND NOT rels_#{index}.is_reverse)"
-  #           end
-  #           unless reverse_rels.empty?
-  #             name_conditions << "(rels_#{index}.relation_id IN (#{reverse_rels.join(',')}) AND rels_#{index}.is_reverse)"
-  #           end
-  #           conditions << name_conditions.join(' OR ')
-  #         end
-  #       else
-  #         if i % 2 == 0
-  #           fields << "es_#{index}.id AS es_#{index}_id"
-  #           fields << "es_#{index}.kind_id AS es_#{index}_kind_id"
-  #           fields << "es_#{index}.name AS es_#{index}_name"
-  #           query << "JOIN entities AS es_#{index} ON es_#{index}.id = rels_#{index - 1}.to_id"
-
-  #           values = collection_ids.join(',')
-  #           conditions << "es_#{index}.collection_id IN (#{values})"
-
-  #           if spec['id']
-  #             values = (spec['id'].is_a?(String) ? [spec['id']] : spec['id'])
-  #             unless values.empty?
-  #               conditions << "es_#{index}.id IN ?"
-  #               binds << values
-  #             end
-  #           end
-
-  #           if spec['kind_id']
-  #             values = Array(spec['kind_id'].to_i)
-  #             unless values.empty?
-  #               conditions << "es_#{index}.kind_id IN (#{values.join(',')})"
-  #             end
-  #           end
-  #         else
-  #           fields << "rels_#{index}.id AS rels_#{index}_id"
-  #           fields << "rels_#{index}.relation_id AS rels_#{index}_relation_id"
-  #           fields << "rs_#{index}.name AS rs_#{index}_name"
-  #           fields << "rs_#{index}.reverse_name AS rs_#{index}_reverse_name"
-  #           fields << "rels_#{index}.is_reverse AS rels_#{index}_reverse"
-  #           query << "JOIN directed_relationships AS rels_#{index} ON es_#{index}.id = rels_#{index}.from_id"
-  #           query << "JOIN relations AS rs_#{index} ON rels_#{index}.relation_id = rs_#{index}.id"
-            
-  #           if spec['name']
-  #             rels = Relation.where(:name => spec['name']).pluck(:id)
-  #             reverse_rels = Relation.where(:reverse_name => spec['name']).pluck(:id)
-
-  #             return [] if rels.empty? && reverse_rels.empty?
-
-  #             name_conditions = []
-  #             unless rels.empty?
-  #               name_conditions << "(rels_#{index}.relation_id IN (#{rels.join(',')}) AND NOT rels_#{index}.is_reverse)"
-  #             end
-  #             unless reverse_rels.empty?
-  #               name_conditions << "(rels_#{index}.relation_id IN (#{reverse_rels.join(',')}) AND rels_#{index}.is_reverse)"
-  #             end
-  #             conditions << name_conditions.join(' OR ')
-  #           end
-  #         end
-
-  #         if i >= 4
-  #           if i % 2 == 0
-  #             conditions << "es_#{index}.id != es_#{index - 2}.id"
-  #           else
-  #             # conditions <<
-  #           end
-  #         end
-  #       end
-  #     end
-
-  #     fields = fields.join(', ')
-  #     init = ["SELECT #{fields} FROM directed_relationships AS rels_0"]
-
-  #     query = (init + query).join("\n")
-  #     conditions = conditions.select{|c| c.present?}
-  #     conditions = conditions.map{|c| "(#{c})"}.join(" AND")
-
-  #     final = "#{query}" + (conditions.present? ? " WHERE #{conditions}" : "")
-  #     # puts final
-
-  #     db.select_all(final).map do |r|
-  #       specs.each_with_index.map do |spec, i|
-  #         index = i / 2
-
-  #         if i % 2 == 0
-  #           {
-  #             'id' => r["es_#{index}_id"]
-  #           }
-  #         else
-  #           {
-  #             'id' => r["rels_#{index}_id"],
-  #             'relation_id' => r["rels_#{index}_relation_id"],
-  #             'relation_name' => r["rs_#{index}_name"],
-  #             'relation_reverse_name' => r["rs_#{index}_reverse_name"],
-  #             'reverse' => (r["rels_#{index}_reverse"] == 0 ? false : true)
-  #           }
-  #         end
-  #       end
-  #     end
-  #   else
-  #     []
-  #   end
-  # end
-
-  # def load(paths = [])
-  #   paths.map do |path|
-  #     path.map do |segment|
-  #       if segment.keys == ['id']
-  #         Entity.find(segment['id'])
-  #       else
-  #         segment
-  #       end
-  #     end
-  #   end
-  # end
-  
-  def search(type, options = {})
-    Kor::Graph::Search.create(type, user, options)
+    if criteria[:elastic]
+      by_elastic
+    else
+      by_active_record
+    end
   end
-  
-  def results_from(object)
-    Kor::Graph::Search::Result.from(object)
+
+  def by_elastic
+    unavailable = [:relation_name]
+    if (@criteria.keys & []).size > 0
+      raise "searching by any #{unavailable.inspect} is only available without elasticsearch"
+    end
+
+    collection_ids = 
+      @criteria[:collection_id] || 
+
+    results = elastic.search(
+      page: @criteria[:page],
+      per_page: @criteria[:per_page],
+      term: @criteria[:term],
+      name: @criteria[:name],
+      subtype: @criteria[:subtype],
+      property: @criteria[:property],
+      dataset: @criteria[:dataset],
+      collection_id: collection_id,
+      kind_id: @criteria[:kind_id],
+      tag: @criteria[:tag],
+      related_to: related_to,
+      synonym: @criteria[:synonym],
+      id: @criteria[:id],
+      uuid: @criteria[:uuid],
+      comment: @criteria[:comment]
+    )
   end
-  
-  
-  # Accessors
-  
-  def user
-    @options[:user]
+
+  def by_active_record
+    unavailable = [:term, :property, :dataset, :synonym]
+    if (@criteria.keys & unavailable).size > 0
+      raise Kor::Exception, "searching by any of #{unavailable.inspect} is only available with elasticsearch"
+    end
+
+    results = Entity.
+      without_media.
+      alphabetically.
+      within_collections(collection_id).
+      only_kinds(@criteria[:kind_id]).
+      by_subtype(@criteria[:subtype]).
+      named_like(@criteria[:name]).
+      dated_in(@criteria[:dating]).
+      tagged_with(@criteria[:tag]).
+      related_to(user, @criteria[:related_to]).
+      by_id(@criteria[:id]).
+      by_uuid(@criteria[:uuid]).
+      by_comment(@criteria[:comment])
+
+    Kor::SearchResult.new(
+      total: results.count('entities.id'),
+      records: results.pageit(@criteria[:page], @criteria[:per_page]).to_a
+    )
   end
+
   
+  protected
+
+    def sanitize_criteria
+      arrays = [
+        :kind_id, :collection_id, :tag, :dating, :related_via, :related_to,
+        :subtype, :name, :property, :related_to, :dating, :synonym, :id
+      ]
+
+      arrays.each do |k|
+        @criteria[k] = to_array(@criteria[k])
+      end
+
+      @criteria.delete_if{|k, v| v.nil?}
+    end
+
+    def collection_id
+      results = Kor::Auth.authorized_collections(user, @criteria[:policy]).pluck(:id)
+      if @criteria[:collection_id]
+        results &= @criteria[:collection_id]
+      end
+      results
+    end
+
+    def related_to
+      if @criteria[:related_to]
+        ids = Kor::Auth.authorized_collections(user, @criteria[:policy]).pluck(:id)
+        @criteria[:related_to].map do |rt|
+          rt.merge('entity_collection_id' => ids)
+        end
+      end
+    end
+
+    def to_array(value)
+      return nil if value.nil?
+      value.is_a?(Array) ? value : [value]
+    end
+  
+    def user
+      @options[:user]
+    end
+
+    def elastic
+      @elastic ||= Kor::Elastic.new
+    end
+
 end

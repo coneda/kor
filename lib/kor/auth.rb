@@ -156,6 +156,7 @@ module Kor::Auth
 
   def self.authorized_collections(user, policies = :view, options = {})
     user ||= User.guest
+    policies ||= :view
     policies = [policies] unless policies.is_a?(Array)
 
     options[:cache] ||= {}

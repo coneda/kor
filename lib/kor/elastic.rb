@@ -11,18 +11,20 @@ class Kor::Elastic
     end
   end
 
+  # def initialize(user)
+  #   @user = user
+  # end
+
   def self.config
     @config ||= {
       'url' => ENV['ELASTIC_URL'],
-      'index_a' => ENV['ELASTIC_INDEX_A'],
-      'index_b' => ENV['ELASTIC_INDEX_B'],
+      'index' => ENV['ELASTIC_INDEX'],
       'token' => ENV['ELASTIC_TOKEN']
     }
   end
 
   def self.current_index
-    # TODO: make this switch to the alternate index by some mechanism
-    config['index_a']
+    config['index']
   end
 
   def self.enabled?
@@ -117,7 +119,13 @@ class Kor::Elastic
               "id" => {"type" => "string", "index" => "not_analyzed"},
               "uuid" => {"type" => "string"},
               "tags" => {"type" => "string", "analyzer" => "keyword"},
-              "related" => {"type" => "string"},
+              "related" => {
+                "type" => "object",
+                "properties" => {
+                  "relation_name" => {"type" => "string"},
+                  "entity_name" => {"type" => "string"}
+                }
+              },
               'degree' => {'type' => 'float'},
 
               "sort" => {"type" => "string", "index" => "not_analyzed"},
@@ -155,6 +163,7 @@ class Kor::Elastic
   def self.index_all(options = {})
     return unless enabled?
 
+    # TODO: shouldn't :full be true by default?
     options.reverse_merge! :full => false, :progress => false
 
     @cache = {}
@@ -162,7 +171,11 @@ class Kor::Elastic
     progress = if options[:progress]
       Kor.progress_bar('indexing entities', Entity.without_media.count)
     end
-    scope = Entity.includes(:tags).without_media
+    scope = if options[:full]
+      Entity.includes(:tags, outgoing_relationships: :to).without_media
+    else
+      Entity.includes(:tags).without_media
+    end
     scope.find_in_batches do |batch|
       data = []
       batch.map do |e|
@@ -203,14 +216,20 @@ class Kor::Elastic
 
     if options[:full]
       scope = entity.
-        outgoing.
-        without_media.
-        select([:id, :name, :kind_id, :attachment])
+        outgoing_relationships.
+        except_to_kind(Kind.medium_kind_id)
+        # without_media.
+        # select([:id, :name, :kind_id, :attachment])
 
-      data["related"] = scope.map do |e|
-        [e.name] + fetch(:synonyms, e.id) do
-          e.synonyms
+      data["related"] = scope.map do |dr|
+        names = [dr.to.name] + fetch(:synonyms, dr.to_id) do
+          dr.to.synonyms
         end
+        {
+          'relation_name' => dr.relation_name,
+          'entity_name' => names,
+          'entity_collection_id' => dr.to.collection_id
+        }
       end.flatten.select{|e| e.present?}
     end
 
@@ -236,10 +255,6 @@ class Kor::Elastic
     require_ok(response)
   end
 
-  def initialize(user)
-    @user = user
-  end
-
   def search(query = {})
     query[:analyzer] ||= 'folding'
 
@@ -247,6 +262,7 @@ class Kor::Elastic
 
     # puts JSON.pretty_generate(query)
 
+    # TODO: limit this according to configuration
     page = [(query[:page] || 0).to_i, 1].max
     per_page = [(query[:per_page] || 10).to_i, 500].min
 
@@ -255,21 +271,21 @@ class Kor::Elastic
 
     q = []
 
-    if query[:query].present?
+    if query[:term].present?
       q += if query[:raw]
-        [query[:query]]
+        [query[:term]]
       else
-        result = if Kor.is_uuid?(query[:query])
-          [query[:query]]
+        result = if Kor.is_uuid?(query[:term])
+          [query[:term]]
         else
-          escape tokenize(query[:query])
+          escape tokenize(query[:term])
         end
         result.empty? ? [] : [result.join(' ')]
       end
     end
 
-    if query[:properties]
-      v = query[:properties]
+    if query[:property]
+      v = query[:property]
       q << "properties.label:\"#{v}\" OR properties.value:\"#{v}\""
     end
 
@@ -282,8 +298,8 @@ class Kor::Elastic
       end
     end
 
-    if query[:synonyms].present?
-      v = escape(tokenize(query[:synonyms])).join(' ')
+    if query[:synonym].present?
+      v = escape(tokenize(query[:synonym])).join(' ')
       q << "synonyms:(#{v})" unless v.blank?
     end
 
@@ -317,25 +333,26 @@ class Kor::Elastic
       }
     end
 
-    collection_ids = ::Kor::Auth.authorized_collections(@user).map(&:id)
-    if collection_ids.empty?
-      return self.class.empty_result
-    end
+    # collection_ids = criteria[:collection_id]
+    # ::Kor::Auth.authorized_collections(@user).map(&:id)
+    # if collection_ids.present?
+    #   return self.class.empty_result
+    # end
 
-    if query[:collection_id].present?
-      collection_ids &= to_array(query[:collection_id])
-    end
+    # if query[:collection_id].present?
+    #   collection_ids &= to_array(query[:collection_id])
+    # end
 
     filters = [
       {
         "terms" => {
-          "collection_id" => collection_ids,
+          "collection_id" => query[:collection_id],
         }
       }
     ]
 
     if query[:tags].present?
-      Kor.array_wrap(query[:tags]).each do |tag|
+      query[:tag].each do |tag|
         filters << {
           "term" => {
             "tags" => tag
@@ -353,7 +370,7 @@ class Kor::Elastic
     end
 
     sorting = [{'sort' => 'asc'}]
-    if query[:query].present? || query[:tags].present?
+    if query[:term].present? || query[:tag].present?
       sorting.unshift 'degree' => 'desc'
       sorting.unshift '_score'
     end
@@ -415,7 +432,7 @@ class Kor::Elastic
         'query' => {
           'bool' => {
             'filter' => options[:filters],
-            'must' => options[:queries]
+            # 'must' => options[:queries]
             # 'should' => [
             #   # {
             #   #   'function_score' => {
@@ -476,7 +493,7 @@ class Kor::Elastic
 
       query['token'] = config['token'] if config['token']
       headers.reverse_merge 'content-type' => 'application/json', 'accept' => 'application/json'
-      url = "http://#{config['url']}#{path}"
+      url = "#{config['url']}#{path}"
       client.request(method, url, query, body, headers)
     end
 

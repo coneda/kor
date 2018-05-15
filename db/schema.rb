@@ -77,10 +77,10 @@ ActiveRecord::Schema.define(version: 20171114104306) do
   add_index "credentials_users", ["user_id"], name: "index_credentials_users_on_user_id", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
-    t.integer  "priority",   limit: 4,        default: 0
-    t.integer  "attempts",   limit: 4,        default: 0
-    t.text     "handler",    limit: 16777215
-    t.text     "last_error", limit: 16777215
+    t.integer  "priority",   limit: 4,     default: 0
+    t.integer  "attempts",   limit: 4,     default: 0
+    t.text     "handler",    limit: 65535
+    t.text     "last_error", limit: 65535
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
@@ -138,12 +138,13 @@ ActiveRecord::Schema.define(version: 20171114104306) do
     t.datetime "deleted_at"
   end
 
-  add_index "entities", ["collection_id", "kind_id"], name: "collections_kinds", using: :btree
   add_index "entities", ["created_at"], name: "index_entities_on_created_at", using: :btree
   add_index "entities", ["creator_id"], name: "index_entities_on_user_id", using: :btree
   add_index "entities", ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
   add_index "entities", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
   add_index "entities", ["kind_id", "deleted_at"], name: "typey", using: :btree
+  add_index "entities", ["kind_id"], name: "index_entities_on_kind_id", using: :btree
+  add_index "entities", ["medium_id"], name: "mediy", using: :btree
   add_index "entities", ["name"], name: "index_entities_on_name", using: :btree
   add_index "entities", ["uuid"], name: "index_entities_on_uuid", using: :btree
 
@@ -180,7 +181,6 @@ ActiveRecord::Schema.define(version: 20171114104306) do
   end
 
   add_index "entity_datings", ["entity_id"], name: "index_entity_datings_on_entity_id", using: :btree
-  add_index "entity_datings", ["from_day", "to_day"], name: "timely", using: :btree
 
   create_table "exception_logs", force: :cascade do |t|
     t.string   "kind",       limit: 255

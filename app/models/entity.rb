@@ -440,6 +440,7 @@ class Entity < ActiveRecord::Base
     end
   }  
   scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
+  scope :by_uuid, lambda {|uuid| uuid.present? ? where(uuid: uuid) : all}
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
@@ -451,25 +452,37 @@ class Entity < ActiveRecord::Base
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
   scope :media, lambda { only_kinds(Kind.medium_kind_id) }
   scope :without_media, lambda { without_kinds(Kind.medium_kind_id) }
-  # TODO the scopes are not combinable e.g. id-conditions overwrite each other
-  # TODO: rewrite this not to collect singular entity ids
-  scope :named_like, lambda { |user, pattern|
-    if pattern.blank?
-      all
+  scope :by_subtype, lambda { |subtype| subtype.present? ? where(subtype: subtype) : all }
+  scope :by_comment, lambda { |comment| comment.present? ? where('comment LIKE ?', "%#{comment}%") : all}
+  scope :named_like, lambda { |terms|
+    if terms.present?
+      sql = terms.map{|t| 'name LIKE ? OR distinct_name LIKE ?'}.join(' OR ')
+      values = terms.map{|t| "%#{t}%"}
+      values = values + values
+      where("(#{sql})", *values)
     else
-      pattern_query = pattern.tokenize.map{ |token| "entities.name LIKE ?"}.join(" AND ")
-      pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
-
-      entity_ids = Kor::Elastic.new(user).search(:synonyms => pattern, :size => Entity.count).ids
-      entity_ids += Entity.where([pattern_query.gsub('name','distinct_name')] + pattern_values ).collect{|e| e.id}
-
-      id_query = entity_ids.blank? ? "" : "OR entities.id IN (?)"
-      entity_id_bind_variables = entity_ids.blank? ? [] : [ entity_ids ]
-
-      query = ["(#{pattern_query}) #{id_query}"] + pattern_values + entity_id_bind_variables
-      where(query)
+      all
     end
   }
+  # TODO the scopes are not combinable e.g. id-conditions overwrite each other
+  # TODO: rewrite this not to collect singular entity ids
+  # scope :named_like, lambda { |user, pattern|
+  #   if pattern.blank?
+  #     all
+  #   else
+  #     pattern_query = pattern.tokenize.map{ |token| "entities.name LIKE ?"}.join(" AND ")
+  #     pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
+
+  #     entity_ids = Kor::Elastic.new(user).search(:synonyms => pattern, :size => Entity.count).ids
+  #     entity_ids += Entity.where([pattern_query.gsub('name','distinct_name')] + pattern_values ).collect{|e| e.id}
+
+  #     id_query = entity_ids.blank? ? "" : "OR entities.id IN (?)"
+  #     entity_id_bind_variables = entity_ids.blank? ? [] : [ entity_ids ]
+
+  #     query = ["(#{pattern_query}) #{id_query}"] + pattern_values + entity_id_bind_variables
+  #     where(query)
+  #   end
+  # }
   scope :has_property, lambda { |user, properties|
     if properties.blank?
       all
@@ -503,19 +516,26 @@ class Entity < ActiveRecord::Base
 
     scope
   }
-  scope :dated_in, lambda {|dating|
-    if dating.present?
-      if parsed = Dating.parse(dating)
-        joins(:datings).
-        distinct(:entity_id).
-        where("entity_datings.to_day > ?", EntityDating.julian_date_for(parsed[:from])).
-        where("entity_datings.from_day < ?", EntityDating.julian_date_for(parsed[:to]))
-      else
-        none
+  scope :dated_in, lambda {|datings|
+    results = all
+    if datings.present?
+      sql = []
+      values = []
+      datings.each do |dating|
+        if parsed = Dating.parse(dating)
+          from = EntityDating.julian_date_for(parsed[:from])
+          to = EntityDating.julian_date_for(parsed[:to])
+          sql << '(entity_datings.to_day > ? AND entity_datings.from_day < ?)'
+          values += [from, to]
+        end
       end
-    else
-      all
+
+      if sql.size > 0
+        sql = "(#{sql.join ' OR '})"
+        joins(:datings).distinct(:entity_id).where(sql, *values)
+      end
     end
+    results
   }
   scope :dataset_attributes, lambda { |user, dataset|
     dataset ||= {}
@@ -537,5 +557,8 @@ class Entity < ActiveRecord::Base
 
     offset((page - 1) * per_page).limit(per_page)
   }
+  def self.tagged_with(tags = [])
+    tags.present? ? tagged_with(tags) : all
+  end
   
 end

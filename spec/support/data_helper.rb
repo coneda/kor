@@ -68,42 +68,49 @@ module DataHelper
       relationships: false
     )
 
-    @default = FactoryGirl.create :default
-    @priv = FactoryGirl.create :private
+    default = Collection.find_by(name: 'default')
+    priv = FactoryGirl.create :private
 
-    @media = FactoryGirl.create :media
-    @people = FactoryGirl.create :people
-    @works = FactoryGirl.create :works
+    media = Kind.medium_kind
+    people = FactoryGirl.create :people
+    works = FactoryGirl.create :works
 
-    FactoryGirl.create :has_created, from_kind_id: @people.id, to_kind_id: @works.id
-    FactoryGirl.create :shows, from_kind_id: @media.id, to_kind_id: @works.id
+    FactoryGirl.create :has_created, from_kind_id: people.id, to_kind_id: works.id
+    FactoryGirl.create :shows, from_kind_id: media.id, to_kind_id: works.id
 
-    @leonardo = FactoryGirl.create :leonardo
-    @mona_lisa = FactoryGirl.create :mona_lisa
-    @last_supper = FactoryGirl.create :the_last_supper, collection: @priv
+    leonardo = FactoryGirl.create(:leonardo,
+      datings: [
+        EntityDating.new(label: 'Lebensdaten', dating_string: '1452 bis 1519')
+      ]
+    )
+    mona_lisa = FactoryGirl.create(:mona_lisa,
+      subtype: 'portrait',
+      distinct_name: 'the real one',
+      comment: 'most popular artwork in the world'
+    )
+    last_supper = FactoryGirl.create :the_last_supper, collection: priv
 
     if options[:relationships]
-      Relationship.relate_and_save(@leonardo, 'has created', @mona_lisa)
-      Relationship.relate_and_save(@leonardo, 'has created', @last_supper)
+      Relationship.relate_and_save(leonardo, 'has created', mona_lisa)
+      Relationship.relate_and_save(leonardo, 'has created', last_supper)
     end
 
     if options[:pictures]
-      @picture = FactoryGirl.create :picture_a
+      picture = FactoryGirl.create :picture_a
 
       if options[:relationships]
-        Relationship.relate_and_save(@picture, 'shows', @mona_lisa)
+        Relationship.relate_and_save(picture, 'shows', mona_lisa)
       end
     end
 
-    @admins = FactoryGirl.create :admins
-    @students = FactoryGirl.create :students
+    admins = Credential.find_by(name: 'admins')
+    students = FactoryGirl.create :students
 
-    @admin = FactoryGirl.create :admin, groups: [@admins]
-    @jdoe = FactoryGirl.create :jdoe, :groups => [@students]
+    admin = User.find_by(name: 'name')
+    jdoe = FactoryGirl.create :jdoe, :groups => [students]
     
-    Kor::Auth.grant @default, :all, :to => @admins
-    Kor::Auth.grant @default, :view, :to => @students
-    Kor::Auth.grant @priv, :all, :to => @admins
+    Kor::Auth.grant default, :view, :to => students
+    Kor::Auth.grant priv, :all, :to => admins
   end
 
   def current_user(user)

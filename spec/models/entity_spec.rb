@@ -1,18 +1,16 @@
 require 'rails_helper'
 
-describe Entity do
+RSpec.describe Entity do
   include DataHelper
 
   context 'old specs with bloated dependencies (refactor!)' do
-
     before :each do
       test_data
-      
-      Kor.config.update 'app' => {
-        'gallery' => {
-          'primary_relations' => ['shows'], 
-          'secondary_relations' => ['has been created by']
-      }}
+
+      Kor.settings.update(
+        'primary_relations' => ['shows'],
+        'secondary_relations' => ['has been created by']
+      )
     end
 
     it "should find entities by two or more relationships" do
@@ -43,6 +41,7 @@ describe Entity do
     end
 
     it "should accept nested attributes for entity datings" do
+      debugger
       leonardo = FactoryGirl.create :leonardo, :datings_attributes => [
         { :label => 'Datierung',  :dating_string => "15. Jahrhundert" },
         { :label => 'Datierung',  :dating_string => "15.12.1933" }
@@ -62,7 +61,7 @@ describe Entity do
       expect(Entity.dated_in("544").count).to eql(1)
       expect(Entity.dated_in("300 bis 1900").all).to include(nurnberg)
     end
-    
+
     it "should have an uuid when saved without validation" do
       entity = Kind.find_by_name("Ort").entities.build(:name => "Nürnberg")
       entity.save(:validate => false)
@@ -198,7 +197,6 @@ describe Entity do
       entity = FactoryGirl.build :mona_lisa, kind: people
       expect(entity.valid?).to be_truthy
     end
-
   end
 
   specify "relationships should be destroyed along with the entity" do
