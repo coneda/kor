@@ -17,8 +17,8 @@ services:
   - mysql
   - elasticsearch
 
-node_js:
-  - "6.13.0"
+# node_js:
+#   - "6.13.0"
 
 before_install:
   - sudo apt-get -qq update
@@ -29,6 +29,8 @@ before_install:
   - rm geckodriver.tar.gz
   - chmod +x geckodriver
   - sudo mv geckodriver /usr/local/bin/geckodriver
+  - nvm install v6.13.0
+  - nvm alias default v6.13.0
 
 script:
   - mysql -e 'CREATE DATABASE kor_test;'
