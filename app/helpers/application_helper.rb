@@ -57,12 +57,12 @@ module ApplicationHelper
   def sort_link_to(label, criterium)
     if params[:sort_by] == criterium
       if params[:sort_order] == 'ASC'
-        link_to label, :sort_by => criterium, :sort_order => 'DESC'
+        link_to label.capitalize_first_letter, :sort_by => criterium, :sort_order => 'DESC'
       else
-        link_to label, :sort_by => criterium, :sort_order => 'ASC'
+        link_to label.capitalize_first_letter, :sort_by => criterium, :sort_order => 'ASC'
       end
     else
-      link_to label, :sort_by => criterium, :sort_order => 'ASC'
+      link_to label.capitalize_first_letter, :sort_by => criterium, :sort_order => 'ASC'
     end
   end
 

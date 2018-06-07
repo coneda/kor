@@ -18,7 +18,7 @@
       %tr
         %th= Relation.human_attribute_name(:name).capitalize_first_letter
         %th= Kind.model_name.human(:count => :other).capitalize_first_letter
-        %th= I18n.t("usage_count")
+        %th= I18n.t("usage_count").capitalize_first_letter
         %th
 
       - if @relations.empty?

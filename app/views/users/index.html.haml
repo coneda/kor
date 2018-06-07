@@ -17,7 +17,7 @@
     - else
       %table.kor_table
         %tr
-          %th= User.human_attribute_name(:personal)
+          %th= User.human_attribute_name(:personal).capitalize_first_letter
           %th= sort_link_to User.human_attribute_name('name'), 'name'
           %th= sort_link_to User.human_attribute_name('full_name'), 'full_name'
           %th= sort_link_to User.human_attribute_name('email'), 'email'

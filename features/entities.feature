@@ -46,6 +46,8 @@ Feature: Entities
     When I go to the root page
     And I select "Werk" from "new_entity[kind_id]"
     And I fill in "entity[name]" with "Mona Lisa"
+
+    And I wait for "5" seconds
     
     And I follow "Plus" within "#datings"
     And I fill in "datings" attachment "1" with "/1688"

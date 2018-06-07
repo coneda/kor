@@ -909,6 +909,7 @@ de:
         name: Bezeichnung
         group: zu veröffentlichende Gruppe
       user_group:
+        name: Name
         owner: Besitzer
         shared:
           one: freigegeben

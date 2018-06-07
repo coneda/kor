@@ -907,6 +907,7 @@ en:
         name: description
         group: group to be released
       user_group:
+        name: name
         owner: owner
         shared:
           one: shared

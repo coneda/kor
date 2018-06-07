@@ -3,7 +3,7 @@
 - content_for :content do
   %table.kor_table
     %tr
-      %th= Kind.human_attribute_name('name')
+      %th= Kind.human_attribute_name('name').capitalize_first_letter
       %th
     - @kinds.each do |k|
       %tr{:id => "kind_#{k.id}"}
