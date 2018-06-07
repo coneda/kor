@@ -5,7 +5,7 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
-## Version ???
+## Version 2.1.1
 
 ### User
 
