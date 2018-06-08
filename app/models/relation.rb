@@ -74,6 +74,10 @@ class Relation < ActiveRecord::Base
   after_validation :generate_uuid, :on => :create
   after_save :correct_directed
 
+  def schema=(value)
+    self[:schema] = value.presence
+  end
+
   def parent_ids
     relation_parent_inheritances.pluck(:parent_id)
   end

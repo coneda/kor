@@ -150,4 +150,16 @@ describe Relation do
     expect(has_painted.valid?).to be_truthy
   end
 
+  it 'should save the schema as nil when an empty string is given' do
+    default_setup
+
+    @relation = Relation.first
+    @relation.update schema: 'something'
+    expect(@relation.reload.schema).to eq('something')
+    @relation.update schema: ''
+    expect(@relation.reload.schema).to eq(nil)
+    @relation.update schema: nil
+    expect(@relation.reload.schema).to eq(nil)
+  end
+
 end
