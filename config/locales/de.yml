@@ -17,7 +17,7 @@ de:
   valid_until: "gültig bis"
   my_properties: "eigene Daten"
   logged_in_as: "angemeldet als"
-  about: "Impressum"
+  about: "Impressum / Datenschutzerklärung"
   legal: "Nutzungsbedingungen"
   add_relation_search: "Verknüpfungen"
   out_of: "%{current} von %{all}"
@@ -918,6 +918,7 @@ de:
         name: Bezeichnung
         group: zu veröffentlichende Gruppe
       user_group:
+        name: Name
         owner: Besitzer
         shared:
           one: freigegeben

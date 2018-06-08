@@ -34,10 +34,18 @@
   >
     <thead>
       <tr>
-        <th>{schema == 'null' ? t('no_schema') : schema}</th>
         <th>
-          {wApp.i18n.t('activerecord.attributes.relation.from_kind_id')}
-          {wApp.i18n.t('activerecord.attributes.relation.to_kind_id')}
+          {wApp.i18n.t('activerecord.attributes.relation.name', {capitalize: true})}
+          <span if={schema == 'null' || !schema}>
+            ({wApp.i18n.t('no_schema')})
+          </span>
+          <span if={schema && schema != 'null'}>
+            ({wApp.i18n.t('activerecord.attributes.relation.schema')}: {schema})
+          </span>
+        </th>
+        <th>
+          {wApp.i18n.t('activerecord.attributes.relation.from_kind_id', {capitalize: true})}<br />
+          {wApp.i18n.t('activerecord.attributes.relation.to_kind_id', {capitalize: true})}
         </th>
       </tr>
     </thead>
@@ -51,13 +59,13 @@
         <td>
           <div if={kindLookup}>
             <span class="label">
-              {wApp.i18n.t('activerecord.attributes.relationship.from_id')}:
+              {wApp.i18n.t('activerecord.attributes.relationship.from_id', {capitalize: true})}:
             </span>
             {kind(relation.from_kind_id)}
           </div>
           <div if={kindLookup}>
             <span class="label">
-              {wApp.i18n.t('activerecord.attributes.relationship.to_id')}:
+              {wApp.i18n.t('activerecord.attributes.relationship.to_id', {capitalize: true})}:
             </span>
             {kind(relation.to_kind_id)}
           </div>

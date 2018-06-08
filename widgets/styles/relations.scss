@@ -5,4 +5,8 @@ kor-relations, [data-is=kor-relations] {
   .label, .name {
     color: $kor-shine;
   }
+
+  th:first-child {
+    width: 400px;
+  }
 }

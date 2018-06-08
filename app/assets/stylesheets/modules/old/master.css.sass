@@ -68,7 +68,7 @@ h1, h2, h3, h4, h5, h6, h7
   text-align: left
 
 .text-right
-  text-align: right
+  text-align: right !important
 
 .kor-hidden
   visibility: hidden
@@ -282,7 +282,9 @@ div
       color: $text
     select
       width: 60%
-
+    a
+      display: inline-block
+      line-height: 1.1em
   &#footer
     position: relative
     top: -65px
@@ -580,6 +582,9 @@ table.canvas
 table
   &.kor_table
     th
+      text-align: left
+
+    thead th
       padding-top: 5px
       padding-bottom: 5px
 
@@ -609,6 +614,8 @@ table
           width: 80px
       td.commands
         text-align: right
+      td:last-child
+        border-right: 0px
     span.kind_name
       margin-left: 5px
     th.pagination

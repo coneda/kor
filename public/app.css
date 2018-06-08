@@ -2339,6 +2339,8 @@ kor-relations, [data-is=kor-relations] {
   padding: 30px; }
   kor-relations .label, kor-relations .name, [data-is=kor-relations] .label, [data-is=kor-relations] .name {
     color: #ffffff; }
+  kor-relations th:first-child, [data-is=kor-relations] th:first-child {
+    width: 400px; }
 
 kor-layout-panel, [data-is=kor-layout-panel] {
   box-sizing: border-box; }

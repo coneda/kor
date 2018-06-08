@@ -6,6 +6,12 @@ require 'factory_girl_rails'
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :truncation
 
+Around('@notravis') do |scenario, block|
+  if ENV['TRAVIS'] != 'true'
+    block.call
+  end
+end
+
 Around do |scenario, block|
   DatabaseCleaner.cleaning(&block)
 end

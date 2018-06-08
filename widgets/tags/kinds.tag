@@ -31,7 +31,7 @@
     <table each={records, schema in groupedResults} class="kor_table text-left">
       <thead>
         <tr>
-          <th>{schema == 'null' ? t('no_schema') : schema}</th>
+          <th>{schema == 'null' ? t('no_schema', {capitalize: true}) : schema}</th>
           <th></th>
         </tr>
       </thead>

@@ -5,11 +5,7 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
-## Version X
-
-### Internal
-
-* added lockr.js for localStorage
+## Version 3.0.0
 
 ### User
 
@@ -17,17 +13,26 @@ commit history on GitHub.
   prepare cross-installation data migrations and reference model compliance
 * kinds and relations can be set to be `abstract` which removes them from the
   interface but allows them to be used for semantical inheritance.
+* relations can now only define one source and one target entity type
+  (IMPORTANT: check https://github.com/coneda/kor/issues/94 for migration
+  implications)
+* added reproducible uuids when importing the Erlangen CRM
+* mirador from http://projectmirador.org/ is now integrated, also via drag&drop
+
+### Internal
+
+* added lockr.js for localStorage
+
+## Version 2.1.1
+
+### User
+
 * for authentication with an api key via request headers, header name has to be
   dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`.
 * most parts of OAI-PMH responses are now cached which should enhance
   performance greatly
 * added reference implementation for OAI-PMH client
-* relations can now only define one source and one target entity type
-  (IMPORTANT: check https://github.com/coneda/kor/issues/94 for migration
-  implications)
-* added reproducible uuids when importing the Erlangen CRM
 * added JSON API endpoints to import wikidata items including properties
-* mirador from http://projectmirador.org/ is now integrated, also via drag&drop
 
 ## Version 2.1.0
 

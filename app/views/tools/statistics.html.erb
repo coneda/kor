@@ -4,7 +4,7 @@
   <table class="kor_table">
     <thead>
       <tr>
-        <th><strong><%= User.model_name.human count: :other %></strong></th>
+        <th><strong><%= User.model_name.human(count: :other).capitalize_first_letter %></strong></th>
         <th class="number text-right"><strong><%= User.without_predefined.count %></strong></th>
       </tr>
     </thead>
@@ -29,7 +29,7 @@
   <table class="kor_table">
     <thead>
       <tr>
-        <th><strong><%= Entity.model_name.human :count => :other %></strong></th>
+        <th><strong><%= Entity.model_name.human(:count => :other).capitalize_first_letter %></strong></th>
         <th class="number text-right"><strong><%= Entity.count %></strong></th>
       </tr>
     </thead>
@@ -50,7 +50,7 @@
   <table class="kor_table">
     <thead>
       <tr>
-        <th><strong><%= Relationship.model_name.human :count => :other %></strong></th>
+        <th><strong><%= Relationship.model_name.human(:count => :other).capitalize_first_letter %></strong></th>
         <th class="number text-right"><strong><%= Relationship.count %></strong></th>
       </tr>
     </thead>

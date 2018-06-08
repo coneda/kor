@@ -4,7 +4,7 @@
 
 - content_for :small do
   .content_panel
-    .title= I18n.t('nouns.search')
+    .title= I18n.t('nouns.search').capitalize_first_letter
 
     = form_tag '/entities/component_search', :method => :get, :class => "kor_form", :id => 'search_form' do
       = kor_input_tag Kind.model_name.human, :control => |
@@ -16,10 +16,10 @@
 
       %table#queries
         %tr
-          %td= t('nouns.term', :count => :other)
+          %td= t('nouns.term', :count => :other).capitalize_first_letter
           %td#term_queries
         %tr
-          %td= t('nouns.tag', :count => :other)
+          %td= t('nouns.tag', :count => :other).capitalize_first_letter
           %td#tag_queries
         
         %ul
@@ -43,7 +43,7 @@
         
     = @pagination
 
-    .title= I18n.t('nouns.search_results')
+    .title= I18n.t('nouns.search_results').capitalize_first_letter
     
     %ul
     

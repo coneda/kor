@@ -504,7 +504,7 @@ en:
     create: "create %{o}"
     new: "create %{o}"
     create_success: "%{o} has been created"
-    edit: "%{o} bearbeiten"
+    edit: "edit %{o}"
     update_success: "%{o} has been changed"
     delete: "delete %{o}"
     destroy_success: "%{o} has been deleted"
@@ -916,6 +916,7 @@ en:
         name: description
         group: group to be released
       user_group:
+        name: name
         owner: owner
         shared:
           one: shared
