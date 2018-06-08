@@ -114,6 +114,7 @@ en:
     download: "download"
     does_not_extend: "does not expire"
     expires_after_days: "expires after %{days} days"
+    check: check
 
   title_verbs:
     pen: "edit"
@@ -518,6 +519,9 @@ en:
     confirm_destroy: "Do you really want to delete %{o}?"
     marked_as_current_success: "entity %{o} has been marked as current entity"
     relate_all_to: "all selected entities will be related with %{o}"
+    merge_success: "%{o} has been merged successfully" 
+    could_merge: "the selected %{o} could be merged"
+    invert_success: "%{o} has been inverted"
 
   move_contents_from: move content from %{o}
 
@@ -553,7 +557,8 @@ en:
     remove_from_authority_group: "Do you really want to remove this entity from the global group?"
     delete_kind: "Do you really want to delete this entity type (WARNING: All correspondent entities entities will be lost)?"
     reset_clipboard: "Do you really want to empty the clipboard?"
-    long_time_warning: "This operation could take several minutes. Do you want to continue?"
+    long_time_warning: |
+      This operation could take several minutes. Therefore, parts of the process will be done in the background. Do you want to continue?
     delete_publishment: "Do you really want to delete this published group?"
     general: "Are you sure?"
 
@@ -625,6 +630,10 @@ en:
     not_found: "The requested resource could not be found"
     no_exceptions_recorded: "There are no exceptions recorded"
     no_relations_provided: "There is no relation provided for this combination of entity types"
+    relation_merger_prompt: |
+      Add relations to this merge by clicking on the merge button on the
+      respective row. When you're finished, set one of them as the merge target
+      by clicking it. The star indicates the merge target.
 
   notices:
     creating_zip_file: "Zip file will be created. You will receive an email as soon as the download is ready."
@@ -666,6 +675,7 @@ en:
     kind_has_children: kinds with children can't be deleted
     kind_has_entities: the kind can't be removed because it still has entities
     medium_kind_not_deletable: the medium kind cannot be removed
+    relations_merge_failure: you can only merge relations where the names and endpoints match
 
   labels:
     relate_to_via: 'relate all files with "%{to}" via'
@@ -978,7 +988,6 @@ en:
         field_type_invalid: field type invalid
         cannot_be_changed: can't be changed for medium type
         cannot_restrict_less_than_parent: cannot allow more endpoints than its ancestors
-
 
   # Mime types
 

@@ -71,8 +71,8 @@ class Relation < ActiveRecord::Base
     end
   end
 
-  after_validation :generate_uuid, :on => :create
-  after_save :correct_directed
+  after_validation :generate_uuid, on: :create
+  after_save :correct_directed # TODO: ... unless this is a merge?
 
   def schema=(value)
     self[:schema] = value.presence
@@ -180,6 +180,53 @@ class Relation < ActiveRecord::Base
 
     relation = find_by_reverse_name(name)
     return (result[name] = relation.name) if relation
+  end
+
+  def invert_relationships
+    self.relationships.find_each do |r|
+      r.update(from_id: r.to_id, to_id: r.from_id)
+    end
+  end
+
+  def invert!
+    self.name, self.reverse_name = self.reverse_name, self.name
+    self.from_kind, self.to_kind = self.to_kind, self.from_kind
+    if save
+      self.delay.invert_relationships
+    end
+  end
+
+  def matches_names?(other)
+    name == other.name && reverse_name == other.reverse_name
+  end
+
+  def matches_kinds?(other)
+    from_kind_id == other.from_kind_id && to_kind_id == other.to_kind_id
+  end
+
+  def can_merge?(others)
+    others = [others] unless others.is_a?(Array)
+    others.all? do |other|
+      self != other && matches_names?(other) && matches_kinds?(other)
+    end
+  end
+
+  def adopt_relationships(other)
+    other.relationships.find_each do |r|
+      r.update(relation_id: self.id)
+    end
+  end
+
+  def merge!(others)
+    others = [others] unless others.is_a?(Array)
+    return false unless can_merge?(others)
+
+    others.each do |other|
+      self.delay.adopt_relationships(other)
+      other.destroy
+    end
+
+    self
   end
 
 end

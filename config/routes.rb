@@ -64,6 +64,10 @@ Rails.application.routes.draw do
       collection do
         get 'names'
       end
+      member do
+        put 'invert'
+        post 'merge'
+      end
     end
   end
 

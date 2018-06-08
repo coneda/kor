@@ -9,4 +9,15 @@ kor-relations, [data-is=kor-relations] {
   th:first-child {
     width: 400px;
   }
+
+  .buttons a {
+    display: inline-block;
+    margin-left: 3px;
+  }
+}
+
+kor-relation-merger, [data-is=kor-relation-merger] {
+  ul {
+    margin-top: 12px;
+  }
 }

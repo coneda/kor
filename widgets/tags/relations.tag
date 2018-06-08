@@ -1,11 +1,9 @@
 <kor-relations>
-
   <h1>
     {wApp.i18n.t('activerecord.models.relation', {capitalize: true, count: 'other'})}
   </h1>
 
   <form class="kor-horizontal" >
-
     <kor-field
       label-key="search_term"
       field-id="terms"
@@ -15,10 +13,19 @@
     <div class="hr"></div>
   </form>
 
-  <div class="text-right">
+  <div class="text-right buttons">
+    <a href="#" title={wApp.i18n.t('verbs.merge')} onclick={toggleMerge}>
+      <i class="fa fa-compress" aria-hidden="true"></i>
+    </a>
     <a href="#/relations/new">
       <i class="fa fa-plus-square"></i>
     </a>
+  </div>
+
+  <div show={merge}>
+    <div class="hr"></div>
+    <kor-relation-merger ref="merger" on-done={mergeDone} />
+    <div class="hr"></div>
   </div>
 
   <div if={filteredRecords && !filteredRecords.length}>
@@ -71,6 +78,15 @@
           </div>
         </td>
         <td class="text-right buttons">
+          <a
+            if={merge}
+            href="#"
+            onclick={addToMerge}
+          ><i class="fa fa-compress"></i></a>
+          <a
+            href="#"
+            onclick={invert}
+          ><i class="fa fa-exchange"></i></a>
           <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a>
           <a
             if={relation.removable}
@@ -116,6 +132,28 @@
         tag.delayedTimeout = undefined
       tag.delayedTimeout = window.setTimeout(tag.submit, 300)
       true
+
+    tag.toggleMerge = (event) ->
+      event.preventDefault()
+      tag.merge = !tag.merge
+
+    tag.addToMerge = (event) ->
+      event.preventDefault();
+      tag.refs.merger.addRelation(event.item.relation)
+
+    tag.mergeDone = ->
+      tag.merge = false
+      fetch()
+
+    tag.invert = (event) ->
+      event.preventDefault()
+      relation = event.item.relation
+      if window.confirm(wApp.i18n.t('confirm.long_time_warning'))
+        Zepto.ajax(
+          type: 'PUT'
+          url: '/relations/' + relation.id + '/invert'
+          success: (data) -> fetch()
+        )
 
     filter_records = ->
       tag.filteredRecords = if tag.filters.terms
