@@ -17,7 +17,10 @@
     <a href="#" title={wApp.i18n.t('verbs.merge')} onclick={toggleMerge}>
       <i class="fa fa-compress" aria-hidden="true"></i>
     </a>
-    <a href="#/relations/new">
+    <a
+      href="#/relations/new"
+      title={wApp.i18n.t('objects.new', {interpolations: {o: wApp.i18n.t('activerecord.models.relation')}})}
+    >
       <i class="fa fa-plus-square"></i>
     </a>
   </div>
@@ -82,10 +85,12 @@
             if={merge}
             href="#"
             onclick={addToMerge}
+            title={wApp.i18n.t('add_to_merge')}
           ><i class="fa fa-compress"></i></a>
           <a
             href="#"
             onclick={invert}
+            title={wApp.i18n.t('verbs.invert')}
           ><i class="fa fa-exchange"></i></a>
           <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a>
           <a
@@ -198,6 +203,7 @@
           tag.data = data
           filter_records()
           groupAndSortRecords()
+          tag.refs.merger.reset()
           tag.update()
       )
 

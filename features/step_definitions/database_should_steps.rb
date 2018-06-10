@@ -72,3 +72,8 @@ Then(pattern) do |kind, negation, generator|
     expect(kind.generators.map{|f| f.name}).to include(generator)
   end
 end
+
+Then(/^there should only be one relation "([^"]*)"$/) do |name|
+  name, reverse_name = name.split(/\s*\/\s*/)
+  expect(Relation.where(name: name, reverse_name: reverse_name).count).to eq(1)
+end

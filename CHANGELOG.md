@@ -9,6 +9,7 @@ commit history on GitHub.
 
 ### User
 
+* relations can now be inverted and merged
 * kinds and relations can now have semantical parents/children. This is to
   prepare cross-installation data migrations and reference model compliance
 * kinds and relations can be set to be `abstract` which removes them from the

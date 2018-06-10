@@ -17,7 +17,9 @@ Around do |scenario, block|
 end
 
 Before do |scenario|
-  eval File.read("#{Rails.root}/db/seeds.rb")
+  unless scenario.tags.any?{|st| st.name == '@noseed'}
+    eval File.read("#{Rails.root}/db/seeds.rb")
+  end
 
   system "rm -f #{Rails.root}/config/kor.app.test.yml"
   Kor::Config.reload!

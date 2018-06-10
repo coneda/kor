@@ -64,6 +64,7 @@ en:
   hide_abstract: hide abstract
   inherited_from: inherited from
   no_schema: no schema
+  add_to_merge: add to merge
 
   search_term:
     one: search term
@@ -115,6 +116,7 @@ en:
     does_not_extend: "does not expire"
     expires_after_days: "expires after %{days} days"
     check: check
+    invert: invert
 
   title_verbs:
     pen: "edit"
@@ -519,7 +521,7 @@ en:
     confirm_destroy: "Do you really want to delete %{o}?"
     marked_as_current_success: "entity %{o} has been marked as current entity"
     relate_all_to: "all selected entities will be related with %{o}"
-    merge_success: "%{o} has been merged successfully" 
+    merge_success: "%{o} has been merged successfully"
     could_merge: "the selected %{o} could be merged"
     invert_success: "%{o} has been inverted"
 

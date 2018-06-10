@@ -25,7 +25,11 @@
     var tag = this;
     tag.relations = {};
     tag.target = null;
-    window.t = tag;
+
+    tag.reset = function() {
+      tag.relations = {};
+      tag.target = null;
+    }
 
     tag.addRelation = function(relation) {
       tag.relations[relation.id] = relation;

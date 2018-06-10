@@ -1,3 +1,5 @@
+
+
 Given /^the setup "([^"]*)"$/ do |name|
   case name
     when 'Bamberg'
@@ -59,4 +61,9 @@ Given /^the setup "([^"]*)"$/ do |name|
     else
       raise "unknown setup #{name}"
   end
+end
+
+Given(/^the default test data$/) do
+  require "#{Rails.root}/spec/support/data_helper"
+  Class.new.extend(DataHelper).default_setup relationships: true
 end
