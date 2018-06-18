@@ -211,19 +211,31 @@ class Relation < ActiveRecord::Base
     end
   end
 
-  def adopt_relationships(other)
-    other.relationships.find_each do |r|
-      r.update(relation_id: self.id)
-    end
-  end
-
   def merge!(others)
     others = [others] unless others.is_a?(Array)
     return false unless can_merge?(others)
 
-    others.each do |other|
-      self.delay.adopt_relationships(other)
-      other.destroy
+    self.class.transaction do
+      others.each do |other|
+        Relationship.where(relation_id: other.id).update_all(
+          relation_id: self.id
+        )
+        DirectedRelationship.where(
+          relation_id: other.id,
+          is_reverse: false
+        ).update_all(
+          relation_id: self.id,
+          relation_name: self.name
+        )
+        DirectedRelationship.where(
+          relation_id: other.id,
+          is_reverse: true
+        ).update_all(
+          relation_id: self.id,
+          relation_name: self.reverse_name
+        )
+        other.destroy
+      end
     end
 
     self
