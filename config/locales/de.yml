@@ -680,7 +680,7 @@ de:
     kind_has_children: Entitätstypen mit abhängigen Entitätstypen können nicht gelöscht werden
     kind_has_entities: Entitätstypen mit abhängigen Entitäten können nicht gelöscht werden
     medium_kind_not_deletable: Der Entitätstype 'Medium' kann nicht gelöscht werden
-    relations_merge_failure: Sie können nur gleichnamige Relation zusammenführen, deren Erlaubte Entitätstypen übereinstimmen
+    relations_merge_failure: Sie können nur Relation zusammenführen, deren erlaubte Entitätstypen übereinstimmen
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

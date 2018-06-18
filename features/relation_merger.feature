@@ -23,7 +23,7 @@ Feature: Relation merger
     And I follow "has created / has been created by" within "kor-relation-merger"
     And I press "check"
 
-    Then I should see "you can only merge relations where the names and endpoints match"
+    Then I should see "you can only merge relations with matching endpoints"
     And I ignore the next confirmation box
     When I follow "invert" within "[data-is=kor-relations] tbody tr:nth-child(1)"
     Then I should not see "has been created by / has created" within "[data-is=kor-relations] tbody"

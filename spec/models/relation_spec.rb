@@ -163,7 +163,7 @@ describe Relation do
   end
 
   it 'should allow inverting' do
-    Delayed::Worker.delay_jobs = false
+    # Delayed::Worker.delay_jobs = false
     default_setup relationships: true
 
     relation = Relation.find_by(name: 'has created')
@@ -184,9 +184,11 @@ describe Relation do
     expect(relationship.normal.relation_name).to eq('has been created by')
     expect(relationship.normal.from).to eq(@mona_lisa)
     expect(relationship.normal.to).to eq(@leonardo)
+    expect(relationship.normal.is_reverse).to be_falsey
     expect(relationship.reversal.relation_name).to eq('has created')
     expect(relationship.reversal.from).to eq(@leonardo)
     expect(relationship.reversal.to).to eq(@mona_lisa)
+    expect(relationship.reversal.is_reverse).to be_truthy
 
     relationship = relation.relationships[1]
     expect(relationship.from).to eq(@last_supper)
@@ -194,22 +196,30 @@ describe Relation do
     expect(relationship.normal.relation_name).to eq('has been created by')
     expect(relationship.normal.from).to eq(@last_supper)
     expect(relationship.normal.to).to eq(@leonardo)
+    expect(relationship.normal.is_reverse).to be_falsey
     expect(relationship.reversal.relation_name).to eq('has created')
     expect(relationship.reversal.from).to eq(@leonardo)
     expect(relationship.reversal.to).to eq(@last_supper)
+    expect(relationship.reversal.is_reverse).to be_truthy
   end
 
   it 'should allow merge checks' do
-    Delayed::Worker.delay_jobs = false
     default_setup relationships: true
 
     relation = Relation.find_by(name: 'has created')
     other = FactoryGirl.create :has_created, from_kind_id: @people.id, to_kind_id: @works.id
     another = Relation.find_by(name: 'shows')
+    and_another = FactoryGirl.create(:relation,
+      name: 'creator of',
+      reverse_name: 'created by',
+      from_kind_id: @people.id,
+      to_kind_id: @works.id
+    )
 
     expect(relation.can_merge?(other)).to be_truthy
     expect(relation.can_merge?([other])).to be_truthy
     expect(relation.can_merge?(another)).to be_falsey
+    expect(relation.can_merge?(and_another)).to be_truthy
 
     relation.invert!
     expect(relation.can_merge?(other)).to be_falsey
@@ -218,7 +228,6 @@ describe Relation do
   end
 
   it 'should allow merges' do
-    Delayed::Worker.delay_jobs = false
     default_setup relationships: true
 
     relation = Relation.find_by(name: 'has created')
@@ -239,6 +248,27 @@ describe Relation do
     expect(Relation.count).to eq(2)
     expect(Relationship.count).to eq(2)
     expect(DirectedRelationship.count).to eq(4)
+  end
+
+  it 'should merge relations with different names' do
+    default_setup relationships: true
+
+    relation = Relation.find_by(name: 'has created')
+    other = FactoryGirl.create(:relation,
+      name: 'creator of',
+      reverse_name: 'created by',
+      from_kind_id: @people.id,
+      to_kind_id: @works.id
+    )
+
+    merged = relation.merge!(other)
+
+    expect(merged).to be_a(Relation)
+    expect(Relation.count).to eq(2)
+    expect(Relationship.count).to eq(2)
+    expect(DirectedRelationship.count).to eq(4)
+    expect(Relation.all[0].name).to eq('has created')
+    expect(Relation.all[1].name).to eq('shows')
   end
 
 end

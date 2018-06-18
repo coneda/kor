@@ -72,7 +72,7 @@ class Relation < ActiveRecord::Base
   end
 
   after_validation :generate_uuid, on: :create
-  after_save :correct_directed # TODO: ... unless this is a merge?
+  after_save :correct_directed
 
   def schema=(value)
     self[:schema] = value.presence
@@ -182,22 +182,32 @@ class Relation < ActiveRecord::Base
     return (result[name] = relation.name) if relation
   end
 
-  def invert_relationships
-    self.relationships.find_each do |r|
-      r.update(from_id: r.to_id, to_id: r.from_id)
-    end
-  end
-
   def invert!
-    self.name, self.reverse_name = self.reverse_name, self.name
-    self.from_kind, self.to_kind = self.to_kind, self.from_kind
-    if save
-      self.delay.invert_relationships
+    self.class.transaction do
+      self.update_columns(
+        name: self.reverse_name,
+        reverse_name: self.name,
+        from_kind_id: self.to_kind_id,
+        to_kind_id: self.from_kind_id
+      )
+      self.class.connection.execute([
+        'UPDATE relationships r1, relationships r2',
+        'SET' ,
+          'r1.from_id = r2.to_id,',
+          'r1.to_id = r2.from_id,',
+          'r1.normal_id = r2.reversal_id,',
+          'r1.reversal_id = r2.normal_id',
+        "WHERE r1.id = r2.id AND r2.relation_id = #{self.id}"
+      ].join(' '))
+      # we don't need to swap to_id and from_id on directed relationships
+      # because that would be reverting swapping normal and reverse on the
+      # relationship
+      self.class.connection.execute([
+        'UPDATE directed_relationships r1, directed_relationships r2',
+        'SET r1.is_reverse = NOT r2.is_reverse',
+        "WHERE r1.id = r2.id AND r1.relation_id = #{self.id}"
+      ].join(' '))
     end
-  end
-
-  def matches_names?(other)
-    name == other.name && reverse_name == other.reverse_name
   end
 
   def matches_kinds?(other)
@@ -207,7 +217,7 @@ class Relation < ActiveRecord::Base
   def can_merge?(others)
     others = [others] unless others.is_a?(Array)
     others.all? do |other|
-      self != other && matches_names?(other) && matches_kinds?(other)
+      self != other && matches_kinds?(other)
     end
   end
 

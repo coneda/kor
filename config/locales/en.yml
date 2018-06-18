@@ -677,7 +677,7 @@ en:
     kind_has_children: kinds with children can't be deleted
     kind_has_entities: the kind can't be removed because it still has entities
     medium_kind_not_deletable: the medium kind cannot be removed
-    relations_merge_failure: you can only merge relations where the names and endpoints match
+    relations_merge_failure: you can only merge relations with matching endpoints
 
   labels:
     relate_to_via: 'relate all files with "%{to}" via'
