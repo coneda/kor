@@ -10,6 +10,7 @@
       ({relation.id})
       <i if={relation.id == target} class="fa fa-star"></i>
       <a
+        title={wApp.i18n.t('verbs.remove')}
         href="#"
         onclick={removeRelation}
       ><i class="fa fa-times"></i></a>
@@ -36,7 +37,7 @@
       tag.update();
     }
 
-    tag.removeRelation = function(id) {
+    tag.removeRelation = function(event) {
       event.preventDefault();
       var id = event.item.relation.id;
       delete tag.relations[id];

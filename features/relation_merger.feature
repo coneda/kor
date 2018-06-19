@@ -19,7 +19,13 @@ Feature: Relation merger
     When I follow "merge"
     Then I should see "Add relations to this merge"
     When I follow "add to merge" within "[data-is=kor-relations] tbody tr:nth-child(1)"
-    When I follow "add to merge" within "[data-is=kor-relations] tbody tr:nth-child(2)"
+    And I follow "add to merge" within "[data-is=kor-relations] tbody tr:nth-child(2)"
+
+    # try removing it from the list again
+    And I follow "remove" within "kor-relation-merger li:last-child"
+    Then I should see "Add relations to this merge"
+
+    When I follow "add to merge" within "[data-is=kor-relations] tbody tr:nth-child(1)"
     And I follow "has created / has been created by" within "kor-relation-merger"
     And I press "check"
 
