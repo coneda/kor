@@ -41,13 +41,12 @@
   <div class="kor-layout-right kor-layout-large">
     <div class="kor-content-box">
       <virtual if={!data}>
-        <kor-kind-general-editor notify={notify} />
+        <kor-kind-general-editor />
       </virtual>
       <virtual if={data}>
         <kor-kind-general-editor
           if={!opts.newField && !opts.fieldId && !opts.newGenerator && !opts.generatorId}
           id="{opts.id}"
-          notify={notify}
         />
         <kor-field-editor
           if={opts.newField || opts.fieldId}

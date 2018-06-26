@@ -2,101 +2,103 @@
 
   <h2>{tcap('general')}</h2>
 
-  <form if={data && possibleParents} onsubmit={submit}>
+  <div><!-- TODO: figure out why this has to be here -->
+    <form if={data && possibleParents} onsubmit={submit}>
 
-    <kor-input
-      name="schema"
-      label={tcap('activerecord.attributes.kind.schema')}
-      riot-value={data.schema}
-      ref="fields"
-    />
-    
-    <kor-input
-      name="name"
-      label={tcap('activerecord.attributes.kind.name')}
-      riot-value={data.name}
-      errors={errors.name}
-      ref="fields"
-    />
-
-    <kor-input
-      name="plural_name"
-      label={tcap('activerecord.attributes.kind.plural_name')}
-      riot-value={data.plural_name}
-      errors={errors.plural_name}
-      ref="fields"
-    />
-
-    <kor-input
-      name="description"
-      type="textarea"
-      label={tcap('activerecord.attributes.kind.description')}
-      riot-value={data.description}
-      ref="fields"
-    />
-
-    <kor-input
-      name="url"
-      label={tcap('activerecord.attributes.kind.url')}
-      riot-value={data.url}
-      ref="fields"
-    />
-
-    <kor-input
-      name="parent_ids"
-      type="select"
-      options={possibleParents}
-      multiple={true}
-      label={tcap('activerecord.attributes.kind.parent')}
-      riot-value={data.parent_ids}
-      errors={errors.parent_ids}
-      ref="fields"
-    />
-
-    <kor-input
-      name="abstract"
-      type="checkbox"
-      label={tcap('activerecord.attributes.kind.abstract')}
-      riot-value={data.abstract}
-      ref="fields"
-    />
-
-    <kor-input
-      name="tagging"
-      type="checkbox"
-      label={tcap('activerecord.attributes.kind.tagging')}
-      riot-value={data.tagging}
-      ref="fields"
-    />
-
-    <div if={!isMedia()}>
       <kor-input
-        name="dating_label"
-        label={tcap('activerecord.attributes.kind.dating_label')}
-        riot-value={data.dating_label}
+        name="schema"
+        label={tcap('activerecord.attributes.kind.schema')}
+        riot-value={data.schema}
+        ref="fields"
+      />
+      
+      <kor-input
+        name="name"
+        label={tcap('activerecord.attributes.kind.name')}
+        riot-value={data.name}
+        errors={errors.name}
         ref="fields"
       />
 
       <kor-input
-        name="name_label"
-        label={tcap('activerecord.attributes.kind.name_label')}
-        riot-value={data.name_label}
+        name="plural_name"
+        label={tcap('activerecord.attributes.kind.plural_name')}
+        riot-value={data.plural_name}
+        errors={errors.plural_name}
         ref="fields"
       />
 
       <kor-input
-        name="distinct_name_label"
-        label={tcap('activerecord.attributes.kind.distinct_name_label')}
-        riot-value={data.distinct_name_label}
+        name="description"
+        type="textarea"
+        label={tcap('activerecord.attributes.kind.description')}
+        riot-value={data.description}
         ref="fields"
       />
-    </div>
 
-    <div class="hr"></div>
+      <kor-input
+        name="url"
+        label={tcap('activerecord.attributes.kind.url')}
+        riot-value={data.url}
+        ref="fields"
+      />
 
-    <kor-input type="submit" />
+      <kor-input
+        name="parent_ids"
+        type="select"
+        options={possibleParents}
+        multiple={true}
+        label={tcap('activerecord.attributes.kind.parent')}
+        riot-value={data.parent_ids}
+        errors={errors.parent_ids}
+        ref="fields"
+      />
 
-  </form>
+      <kor-input
+        name="abstract"
+        type="checkbox"
+        label={tcap('activerecord.attributes.kind.abstract')}
+        riot-value={data.abstract}
+        ref="fields"
+      />
+
+      <kor-input
+        name="tagging"
+        type="checkbox"
+        label={tcap('activerecord.attributes.kind.tagging')}
+        riot-value={data.tagging}
+        ref="fields"
+      />
+
+      <div if={!isMedia()}>
+        <kor-input
+          name="dating_label"
+          label={tcap('activerecord.attributes.kind.dating_label')}
+          riot-value={data.dating_label}
+          ref="fields"
+        />
+
+        <kor-input
+          name="name_label"
+          label={tcap('activerecord.attributes.kind.name_label')}
+          riot-value={data.name_label}
+          ref="fields"
+        />
+
+        <kor-input
+          name="distinct_name_label"
+          label={tcap('activerecord.attributes.kind.distinct_name_label')}
+          riot-value={data.distinct_name_label}
+          ref="fields"
+        />
+      </div>
+
+      <div class="hr"></div>
+
+      <kor-input type="submit" />
+
+    </form>
+  </div>
 
   <script type="text/coffee">
     tag = this
@@ -119,7 +121,7 @@
       result
 
     success = (data) ->
-      route("/kinds/#{tag.opts.id}/edit")
+      route("/kinds/#{data.id}/edit")
       # tag.parent.trigger 'kind-changed'
       tag.errors = {}
       tag.update()

@@ -134,8 +134,6 @@
       tag.errors = {}
       tag.dating_errors = []
 
-      tag.data = {no_name_statement: 'enter_name'}
-
       tag.noNameStatements = [
         {label: tag.t('values.no_name_statements.unknown'), value: 'unknown'},
         {label: tag.t('values.no_name_statements.not_available'), value: 'not_available'},
@@ -184,7 +182,10 @@
             fetchKind()
         )
       else
-        tag.data['kind_id'] = kind_id
+        tag.data = {
+          kind_id: kind_id,
+          no_name_statement: 'enter_name'
+        }
         fetchKind()
 
     fetchKind = ->

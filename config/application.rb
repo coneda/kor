@@ -145,3 +145,4 @@ end
 # TODO: upgrade riotjs
 # TODO: save submenu state with Lockr
 # TODO: change name of credentials class
+# TODO: kind editor throws js error ... why?

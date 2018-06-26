@@ -21,8 +21,11 @@
     tag.name = -> tag.opts.name
 
     tag.value = ->
+      text = tag.tags['kor-input'].value()
+      return [] if text.match(/^\s*$/)
+
       results = []
-      for line in tag.tags['kor-input'].value().split(/\n/)
+      for line in text.split(/\n/)
         kv = line.split(/\s*:\s*/)
         results.push {'label': kv[0], 'value': kv[1]}
       results

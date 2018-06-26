@@ -1,5 +1,4 @@
 <kor-synonyms-editor>
-
   <kor-input
     label={opts.label}
     type="textarea"
@@ -17,7 +16,9 @@
     tag.name = -> tag.opts.name
 
     tag.value = ->
-      tag.tags['kor-input'].value().split(/\n/)
-
+      text = tag.tags['kor-input'].value()
+      return [] if text.match(/^\s*$/)
+      
+      s for s in text.split(/\n/) when s
   </script>
 </kor-synonyms-editor>
