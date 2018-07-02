@@ -370,12 +370,10 @@ class Entity < ActiveRecord::Base
   end
   
   def find_name_duplicates
-    if is_medium?
-      []
-    else
-      result = self.class.where(:name => name, :distinct_name => distinct_name, :kind_id => kind_id)
-      new_record? ? result : result.where("id != ?", id)
-    end
+    return [] unless needs_name?
+      
+    result = self.class.where(:name => name, :distinct_name => distinct_name, :kind_id => kind_id)
+    new_record? ? result : result.where("id != ?", id)
   end
 
   def needs_name?
