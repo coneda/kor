@@ -19,6 +19,9 @@ commit history on GitHub.
   implications)
 * added reproducible uuids when importing the Erlangen CRM
 * mirador from http://projectmirador.org/ is now integrated, also via drag&drop
+* 'vor 1883' is now recognized as a valid dating (resulting in an actual date
+  range of 1870-01-01 to 1883-12-31), also 'nach 1883', 'nicht vor 1883', 
+  'nicht nach', 'um 1883', 'circa 1883' are possible.
 
 ### Internal
 

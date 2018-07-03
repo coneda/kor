@@ -132,7 +132,49 @@ describe Kor::Dating::Parser do
       :to => Date.new(1456, 12, 31)
     )
   end
+
+  it "should parse 'vor 1883'" do
+    expect(subject.transform('vor 1883')).to eql(
+      :from => Date.new(1870, 1, 1),
+      :to => Date.new(1883, 12, 31)
+    )
+  end
+
+  it "should parse 'nach 1883'" do
+    expect(subject.transform('nach 1883')).to eql(
+      :from => Date.new(1883, 1, 1),
+      :to => Date.new(1896, 12, 31)
+    )
+  end
+
+  it "should parse 'nicht vor 1883'" do
+    expect(subject.transform('nicht vor 1883')).to eql(
+      :from => Date.new(1883, 1, 1),
+      :to => Date.new(1896, 12, 31)
+    )
+  end
+
+  it "should parse 'nicht nach 1883'" do
+    expect(subject.transform('nicht nach 1883')).to eql(
+      :from => Date.new(1870, 1, 1),
+      :to => Date.new(1883, 12, 31)
+    )
+  end
+
+  it "should parse 'um 1555'" do
+    expect(subject.transform('um 1555')).to eql(
+      :from => Date.new(1550, 1, 1),
+      :to => Date.new(1560, 12, 31)
+    )
+  end
   
+  it "should parse 'circa 1555'" do
+    expect(subject.transform('circa 1555')).to eql(
+      :from => Date.new(1550, 1, 1),
+      :to => Date.new(1560, 12, 31)
+    )
+  end
+
   it "should parse 'ca. 15. Jahrhundert'" do
     expect(subject.transform("ca. 15. Jahrhundert")).to eql(
       :from => Date.new(1375, 1, 1),
@@ -155,6 +197,6 @@ describe Kor::Dating::Parser do
     expect(subject.transform("2. Drittel 16. Jh.")).to eql(:from => Date.new(1533, 1, 1), :to => Date.new(1566, 12, 31))
     expect(subject.transform("3. Drittel 16. Jh.")).to eql(:from => Date.new(1566, 1, 1), :to => Date.new(1599, 12, 31))
   end
-  
+
 end
 

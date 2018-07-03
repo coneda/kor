@@ -18,9 +18,12 @@ class Kor::Dating::Parser < Parslet::Parser
   rule(:age) { str('v.') | str('vor') }
   rule(:bc) { age >> space >> christ }
   rule(:century_string) { str('Jahrhundert') | str('Jh.') }
-  rule(:approx) { str('ca.') }
+  rule(:approx) { str('ca.') | str('um') | str('circa') }
   rule(:unknown) { str('?') }
   rule(:to) { space >> str('bis') >> space }
+  rule(:before) { str('vor') >> space }
+  rule(:after) { str('nach') >> space }
+  rule(:negate) { str('nicht') >> space }
   rule(:part) { str('Anfang') | str('Mitte') | str('Ende') | str('1. Hälfte') | str('2. Hälfte') | str('1. Drittel') | str('2. Drittel') | str('3. Drittel')}
   
   
@@ -33,9 +36,23 @@ class Kor::Dating::Parser < Parslet::Parser
   rule(:date) { day.as(:day) >> str('.') >> month.as(:month) >> str('.') >> whole_number.as(:yearnum) }
   rule(:date_interval) { date.as(:from) >> to >> date.as(:to) }
   rule(:century_interval) { century.as(:from) >> to >> century.as(:to) }
+  rule(:before_year) { negate.maybe.as(:not) >> before >> year.as(:date) }
+  rule(:after_year) { negate.maybe.as(:not) >> after >> year.as(:date) }
   rule(:year_interval) { year.as(:from) >> to >> (year | unknown).as(:to) | (year | unknown).as(:from) >> to >> year.as(:to) }
-  rule(:interval) { date_interval.as(:date_interval) | century_interval.as(:century_interval) | year_interval.as(:year_interval) }
-  rule(:dating) { interval.as(:interval) | century_part.as(:century_part) | century.as(:century) | date.as(:date) | year.as(:year) }
+  rule(:interval) {
+    before_year.as(:before_year) |
+    after_year.as(:after_year) |
+    date_interval.as(:date_interval) |
+    century_interval.as(:century_interval) |
+    year_interval.as(:year_interval)
+  }
+  rule(:dating) {
+    interval.as(:interval) | 
+    century_part.as(:century_part) | 
+    century.as(:century) | 
+    date.as(:date) | 
+    year.as(:year)
+  }
   
   
   root(:dating)

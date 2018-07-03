@@ -88,22 +88,55 @@ class Kor::Dating::Transform < Parslet::Transform
 
     if a[:from] == '?'
       year = a[:to][:from].year
-      distance = (Kor::Dating::Transform.today.year - year) / 10
-      result[:from] = Date.new(year - distance, 1, 1)
-      result[:to] = Date.new(a[:to][:to].year, 12, 31)
+      result = Kor::Dating::Transform.open_start(year)
     else
       from = (a[:from].is_a?(Hash) ? a[:from][:from] : a[:from])
       result[:from] = Date.new(from.year, 1, 1)
       if a[:to] == '?'
         year = result[:from].year
-        distance = (Kor::Dating::Transform.today.year - year) / 10
-        result[:to] = Date.new(year + distance, 12, 31)
+        result = Kor::Dating::Transform.open_end(year)
       else
         result[:to] = Date.new(a[:to].year, 12, 31)
       end
     end
 
     result
+  end
+
+  rule(:before_year => subtree(:a)) do
+    year = a[:date][:from].year
+    if a[:not]
+      Kor::Dating::Transform.open_end(year)
+    else
+      Kor::Dating::Transform.open_start(year)
+    end
+  end
+
+  rule(:after_year => subtree(:a)) do
+    year = a[:date][:from].year
+    if a[:not]
+      Kor::Dating::Transform.open_start(year)
+    else
+      Kor::Dating::Transform.open_end(year)
+    end
+  end
+
+  def self.open_start(year)
+    return {
+      from: Date.new(year - distance(year), 1, 1),
+      to: Date.new(year, 12, 31)
+    }
+  end
+
+  def self.open_end(year)
+    return {
+      from: Date.new(year, 1, 1),
+      to: Date.new(year + distance(year), 12, 31)
+    }
+  end
+
+  def self.distance(year)
+    (today.year - year) / 10
   end
 
   def self.today
