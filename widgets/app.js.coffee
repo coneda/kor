@@ -28,10 +28,16 @@ window.wApp = {
   mixins: {}
 }
 
-Zepto.ajax(
-  url: "/api/1.0/info"
-  success: (data) ->
+if window.wAppNoSessionLoad
+  window.korSessionPromise.success (data) ->
     window.wApp.data = data
     wApp.bus.trigger 'auth-data'
     riot.update()
-)
+else
+  Zepto.ajax(
+    url: "/api/1.0/info"
+    success: (data) ->
+      window.wApp.data = data
+      wApp.bus.trigger 'auth-data'
+      riot.update()
+  )

@@ -29,10 +29,12 @@ kor.service('korData', [
           url: "/api/1.0/info"
           headers: {accept: "application/json"}
         }
-        http(request).success (data) ->
+        promise = http(request).success (data) ->
           service.info = data
           rs.$broadcast "kor-session-load-complete", data
-          wApp.bus.trigger 'angular-data-ready', service
+
+        window.korSessionPromise = promise
+        window.wAppNoSessionLoad = true
         
       toggle_session_panel: (state) ->
         state = if state then 'show' else 'hide'
