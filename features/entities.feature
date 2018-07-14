@@ -236,3 +236,18 @@ Feature: Entities
     Then I should see "by jdoe" within ".master_data"
     And I should see "by administrator" within ".master_data"
 
+
+  @javascript
+  Scenario: Delete an entity
+    Given I am logged in as "admin"
+    And the entity "Mona Lisa" of kind "artwork/artworks"
+    And "Mona Lisa" is selected as current entity
+    When I go to the entity page for "Mona Lisa"
+    And I ignore the next confirmation box
+    And I follow "X"
+    Then I should see "has been deleted"
+    When I follow "Multiple upload"
+    Then I should see "Multiple upload"
+
+
+
