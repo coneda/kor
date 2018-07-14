@@ -91,14 +91,16 @@ Then /^(?:|I )should not see "([^\"]*)"$/ do |text|
 end
 
 Then /^(?:|I )should be on (.+)$/ do |page_name|
-  uri = URI.parse(current_url)
-  expected_path = path_to(page_name)
-  expected_uri = URI.parse("#{uri.scheme}://#{uri.host}:#{uri.port}#{expected_path}")
-  if page_name.match(/ path$/)
-    uri.query = nil
-    expected_uri.query = nil
+  capybara_wait do
+    uri = URI.parse(current_url)
+    expected_path = path_to(page_name)
+    expected_uri = URI.parse("#{uri.scheme}://#{uri.host}:#{uri.port}#{expected_path}")
+    if page_name.match(/ path$/)
+      uri.query = nil
+      expected_uri.query = nil
+    end
+    expect(uri).to eq(expected_uri)
   end
-  expect(uri).to eq(expected_uri)
 end
 
 Then /^I should( not)? see element "(.*?)" with text "(.*?)"$/ do |negative, locator, text|
@@ -131,7 +133,7 @@ end
 
 When /^I fill in "([^"]*)" attachment "([^"]*)" with "([^"]*)"$/ do |attachment_id, index, values|
   values = values.split('/')
-  attachments = page.all("##{attachment_id} .attachment")
+  attachments = page.all("##{attachment_id} .attachment", minimum: index.to_i)
   attachments[index.to_i - 1].all('input[type=text]').each_with_index do |input, i|
     input.set(values[i]) unless values[i].blank?
   end

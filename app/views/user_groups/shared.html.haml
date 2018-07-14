@@ -6,8 +6,8 @@
   - else
     %table.kor_table
       %tr
-        %th= UserGroup.human_attribute_name 'name'
-        %th= UserGroup.human_attribute_name 'owner'
+        %th= UserGroup.human_attribute_name('name').capitalize_first_letter
+        %th= UserGroup.human_attribute_name('owner').capitalize_first_letter
         - if current_user.admin?
           %th.commands
       

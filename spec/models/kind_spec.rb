@@ -76,4 +76,14 @@ describe Kind do
     expect(works.deleted_at).to eq(works.updated_at)
   end
 
+  it 'should save the schema as nil when an empty string is given' do
+    @works = FactoryGirl.create :works
+    @works.update schema: 'something'
+    expect(@works.reload.schema).to eq('something')
+    @works.update schema: ''
+    expect(@works.reload.schema).to eq(nil)
+    @works.update schema: nil
+    expect(@works.reload.schema).to eq(nil)
+  end
+
 end

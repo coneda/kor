@@ -1,5 +1,5 @@
 .content_panel
-  .title= I18n.t('nouns.search')
+  .title= I18n.t('nouns.search').capitalize_first_letter
   
   = form_tag entities_path, :method => :get, :class => 'kor_form', :id => 'search_form' do
     - if current_user.admin?

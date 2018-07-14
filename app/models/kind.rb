@@ -49,6 +49,10 @@ class Kind < ActiveRecord::Base
 
   before_validation :generate_uuid
 
+  def schema=(value)
+    self[:schema] = value.presence
+  end
+
   def parent_ids
     kind_parent_inheritances.pluck(:parent_id)
   end

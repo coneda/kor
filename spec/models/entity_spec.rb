@@ -264,4 +264,22 @@ RSpec.describe Entity do
     end
   end
 
+  it 'should allow more than one entity without a name' do
+    default_setup
+
+    a = @works.entities.create(
+      collection: @default,
+      name: '',
+      no_name_statement: 'unknown'
+    )
+    expect(a).to be_valid
+
+    b = @works.entities.create(
+      collection: @default,
+      name: '',
+      no_name_statement: 'unknown'
+    )
+    expect(b).to be_valid
+  end
+
 end

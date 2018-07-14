@@ -150,4 +150,125 @@ describe Relation do
     expect(has_painted.valid?).to be_truthy
   end
 
+  it 'should save the schema as nil when an empty string is given' do
+    default_setup
+
+    @relation = Relation.first
+    @relation.update schema: 'something'
+    expect(@relation.reload.schema).to eq('something')
+    @relation.update schema: ''
+    expect(@relation.reload.schema).to eq(nil)
+    @relation.update schema: nil
+    expect(@relation.reload.schema).to eq(nil)
+  end
+
+  it 'should allow inverting' do
+    # Delayed::Worker.delay_jobs = false
+    default_setup relationships: true
+
+    relation = Relation.find_by(name: 'has created')
+
+    relation.invert!
+    relation.reload
+
+    expect(Relation.count).to eq(2)
+    expect(Relationship.count).to eq(2)
+    expect(DirectedRelationship.count).to eq(4)
+
+    expect(relation.from_kind).to eq(@works)
+    expect(relation.to_kind).to eq(@people)
+
+    relationship = relation.relationships[0]
+    expect(relationship.from).to eq(@mona_lisa)
+    expect(relationship.to).to eq(@leonardo)
+    expect(relationship.normal.relation_name).to eq('has been created by')
+    expect(relationship.normal.from).to eq(@mona_lisa)
+    expect(relationship.normal.to).to eq(@leonardo)
+    expect(relationship.normal.is_reverse).to be_falsey
+    expect(relationship.reversal.relation_name).to eq('has created')
+    expect(relationship.reversal.from).to eq(@leonardo)
+    expect(relationship.reversal.to).to eq(@mona_lisa)
+    expect(relationship.reversal.is_reverse).to be_truthy
+
+    relationship = relation.relationships[1]
+    expect(relationship.from).to eq(@last_supper)
+    expect(relationship.to).to eq(@leonardo)
+    expect(relationship.normal.relation_name).to eq('has been created by')
+    expect(relationship.normal.from).to eq(@last_supper)
+    expect(relationship.normal.to).to eq(@leonardo)
+    expect(relationship.normal.is_reverse).to be_falsey
+    expect(relationship.reversal.relation_name).to eq('has created')
+    expect(relationship.reversal.from).to eq(@leonardo)
+    expect(relationship.reversal.to).to eq(@last_supper)
+    expect(relationship.reversal.is_reverse).to be_truthy
+  end
+
+  it 'should allow merge checks' do
+    default_setup relationships: true
+
+    relation = Relation.find_by(name: 'has created')
+    other = FactoryGirl.create :has_created, from_kind_id: @people.id, to_kind_id: @works.id
+    another = Relation.find_by(name: 'shows')
+    and_another = FactoryGirl.create(:relation,
+      name: 'creator of',
+      reverse_name: 'created by',
+      from_kind_id: @people.id,
+      to_kind_id: @works.id
+    )
+
+    expect(relation.can_merge?(other)).to be_truthy
+    expect(relation.can_merge?([other])).to be_truthy
+    expect(relation.can_merge?(another)).to be_falsey
+    expect(relation.can_merge?(and_another)).to be_truthy
+
+    relation.invert!
+    expect(relation.can_merge?(other)).to be_falsey
+    other.invert!
+    expect(relation.can_merge?(other)).to be_truthy
+  end
+
+  it 'should allow merges' do
+    default_setup relationships: true
+
+    relation = Relation.find_by(name: 'has created')
+    other = FactoryGirl.create :has_created, from_kind_id: @people.id, to_kind_id: @works.id
+    relation.relationships.last.update_column(:relation_id, other.id)
+    another = Relation.find_by(name: 'shows')
+
+    merged = relation.merge!(another)
+    expect(merged).to be_falsey
+
+    expect(Relation.count).to eq(3)
+    expect(Relationship.count).to eq(2)
+    expect(DirectedRelationship.count).to eq(4)
+
+    merged = relation.merge!(other)
+    expect(merged).to be_truthy
+
+    expect(Relation.count).to eq(2)
+    expect(Relationship.count).to eq(2)
+    expect(DirectedRelationship.count).to eq(4)
+  end
+
+  it 'should merge relations with different names' do
+    default_setup relationships: true
+
+    relation = Relation.find_by(name: 'has created')
+    other = FactoryGirl.create(:relation,
+      name: 'creator of',
+      reverse_name: 'created by',
+      from_kind_id: @people.id,
+      to_kind_id: @works.id
+    )
+
+    merged = relation.merge!(other)
+
+    expect(merged).to be_a(Relation)
+    expect(Relation.count).to eq(2)
+    expect(Relationship.count).to eq(2)
+    expect(DirectedRelationship.count).to eq(4)
+    expect(Relation.all[0].name).to eq('has created')
+    expect(Relation.all[1].name).to eq('shows')
+  end
+
 end

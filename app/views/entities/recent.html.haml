@@ -20,9 +20,9 @@
   - else
     %table.kor_table
       %tr
-        %th= Entity.human_attribute_name(:display_name)
-        %th= Collection.model_name.human
-        %th= Entity.human_attribute_name(:updater)
+        %th= Entity.human_attribute_name(:display_name).capitalize_first_letter
+        %th= Collection.model_name.human.capitalize_first_letter
+        %th= Entity.human_attribute_name(:updater).capitalize_first_letter
       - @entities.each do |e|
         %tr
           %td.subtitle.expanding

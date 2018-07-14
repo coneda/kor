@@ -46,7 +46,7 @@ Feature: Entities
     When I go to the root page
     And I select "Werk" from "new_entity[kind_id]"
     And I fill in "entity[name]" with "Mona Lisa"
-    
+
     And I follow "Plus" within "#datings"
     And I fill in "datings" attachment "1" with "/1688"
     And I follow "Plus" within "#properties"
@@ -71,8 +71,8 @@ Feature: Entities
     And I should see "1688"
     And I should see "Alter"
     And I should see "12"
-    And I should not see "La Bella"
     And I should see "La Gioconde"
+    And I should not see "La Bella"
     
 
   @javascript  
@@ -232,4 +232,19 @@ Feature: Entities
     When I go to the entity page for "Mona Lisa"
     Then I should see "by jdoe" within ".master_data"
     And I should see "by administrator" within ".master_data"
+
+
+  @javascript
+  Scenario: Delete an entity
+    Given I am logged in as "admin"
+    And the entity "Mona Lisa" of kind "artwork/artworks"
+    And I mark "Mona Lisa" as current entity
+    When I go to the entity page for "Mona Lisa"
+    And I ignore the next confirmation box
+    And I follow "X"
+    Then I should see "has been deleted"
+    When I follow "Multiple upload"
+    Then I should see "Multiple upload"
+
+
 

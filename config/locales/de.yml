@@ -17,7 +17,7 @@ de:
   valid_until: "gültig bis"
   my_properties: "eigene Daten"
   logged_in_as: "angemeldet als"
-  about: "Impressum"
+  about: "Impressum / Datenschutzerklärung"
   legal: "Nutzungsbedingungen"
   add_relation_search: "Verknüpfungen"
   out_of: "%{current} von %{all}"
@@ -65,6 +65,7 @@ de:
   hide_abstract: abstrakte verbergen
   inherited_from: vererbt von
   no_schema: ohne Schema
+  add_to_merge: zusammenführen
 
   search_term: 
     one: Suchbegriff
@@ -115,6 +116,8 @@ de:
     download: "herunterladen"
     does_not_extend: "läuft nie ab"
     expires_after_days: "läuft nach %{days} Tagen ab"
+    check: überprüfen
+    invert: invertieren
 
   title_verbs:
     pen: "bearbeiten"
@@ -522,6 +525,9 @@ de:
     confirm_destroy: "%{o} wirklich löschen?"
     marked_as_current_success: "Entität %{o} wurde als aktuelle Entität markiert"
     relate_all_to: "alle ausgewählten Entities werden mit %{o} verknüpft"
+    merge_success: "%{o} wurden erfolgreich zusammengeführt"
+    could_merge: "die ausgewählten %{o} können zusammengeführt werden"
+    invert_success: "%{o} wurde invertiert"
 
   move_contents_from: Inhalte aus %{o} verschieben
 
@@ -631,6 +637,11 @@ de:
     no_exceptions_recorded: "es wurden keine Ausnahmen registriert"
     no_relations_provided: "Für diese Kombination ist keine Relation vorgesehen"
     not_found: "Die angefragte Resource konnte nicht gefunden werden"
+    relation_merger_prompt: |
+      Zusammenführen: Fügen Sie einzelne Relationen hinzu, indem Sie in der 
+      jeweiligen Reihe den Zusammenführen-Knopf klicken. Wenn Sie fertig sind,
+      wählen Sie durch Anklicken eine der Relationen als Ziel aus. Das aktuell
+      ausgewählte Ziel ist mit einem Stern gekennzeichnet.
 
   notices:
     creating_zip_file: "Zip-Datei wird erstellt, Sie erhalten eine Email, sobald der Download bereit steht"
@@ -674,6 +685,7 @@ de:
     kind_has_children: Entitätstypen mit abhängigen Entitätstypen können nicht gelöscht werden
     kind_has_entities: Entitätstypen mit abhängigen Entitäten können nicht gelöscht werden
     medium_kind_not_deletable: Der Entitätstype 'Medium' kann nicht gelöscht werden
+    relations_merge_failure: Sie können nur Relation zusammenführen, deren erlaubte Entitätstypen übereinstimmen
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
@@ -917,6 +929,7 @@ de:
         name: Bezeichnung
         group: zu veröffentlichende Gruppe
       user_group:
+        name: Name
         owner: Besitzer
         shared:
           one: freigegeben

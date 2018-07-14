@@ -1,33 +1,59 @@
 <kor-relations>
 
   <div class="kor-content-box">
-    <a href="#/relations/new" class="pull-right"><i class="plus"></i></a>
-    <h1>{tcap('activerecord.models.relation', {count: 'other'})}</h1>
+    <div class="pull-right">
+      <a href="#" title={t('verbs.merge')} onclick={toggleMerge}>
+        <i class="fa fa-compress" aria-hidden="true"></i>
+      </a>
+      <a
+        href="#/relations/new"
+        title={t('objects.new', {interpolations: {o: t('activerecord.models.relation')}})}
+      >
+        <i class="fa fa-plus-square"></i>
+      </a>
+    </div>
 
-    <form onsubmit={delayedSubmit} class="inline">
+    <h1>
+      {tcap('activerecord.models.relation', {count: 'other'})}
+    </h1>
 
+    <form class="kor-horizontal">
       <kor-input
-        label={tcap('search_term', {count: 'other'})}
         name="terms"
+        label={tcap('search_term')}
         onkeyup={delayedSubmit}
-        ref="terms"
       />
 
       <div class="hr"></div>
     </form>
 
-    <div if={filteredRecords && !filteredRecords.length}>
-      {tcap('objects.none_found', {
-        interpolations: {o: 'activerecord.models.relation.other'},
-      })}
+    <div show={merge}>
+      <div class="hr"></div>
+      <kor-relation-merger ref="merger" on-done={mergeDone} />
+      <div class="hr"></div>
     </div>
 
-    <table each={records, schema in groupedResults}>
+    <div if={filteredRecords && !filteredRecords.length}>
+      {tcap('objects.none_found', {interpolations: {o: 'activerecord.models.relation.other'}})}
+    </div>
+
+    <table
+      class="kor_table text-left"
+      each={records, schema in groupedResults}
+    >
       <thead>
         <tr>
-          <th>{!schema ? t('no_schema') : schema}</th>
           <th>
-            {tcap('activerecord.attributes.relation.from_kind_id')}
+            {tcap('activerecord.attributes.relation.name')}
+            <span if={schema == 'null' || !schema}>
+              ({t('no_schema')})
+            </span>
+            <span if={schema && schema != 'null'}>
+              ({tcap('activerecord.attributes.relation.schema')}: {schema})
+            </span>
+          </th>
+          <th>
+            {tcap('activerecord.attributes.relation.from_kind_id')}<br />
             {tcap('activerecord.attributes.relation.to_kind_id')}
           </th>
         </tr>
@@ -35,30 +61,41 @@
       <tbody>
         <tr each={relation in records}>
           <td>
-            <a href="#/relations/{relation.id}/edit">
+            <a href="#/relations/{relation.id}">
               {relation.name} / {relation.reverse_name}
             </a>
           </td>
           <td>
             <div if={kindLookup}>
               <span class="label">
-                {t('activerecord.attributes.relationship.from_id')}:
+                {tcap('activerecord.attributes.relationship.from_id')}:
               </span>
               {kind(relation.from_kind_id)}
             </div>
             <div if={kindLookup}>
               <span class="label">
-                {t('activerecord.attributes.relationship.to_id')}:
+                {tcap('activerecord.attributes.relationship.to_id')}:
               </span>
               {kind(relation.to_kind_id)}
             </div>
           </td>
-          <td class="kor-text-right">
-            <a href="#/relations/{relation.id}/edit"><i class="fa fa-edit"></i></a>
+          <td class="text-right buttons">
+            <a
+              if={merge}
+              href="#"
+              onclick={addToMerge}
+              title={t('add_to_merge')}
+            ><i class="fa fa-compress"></i></a>
+            <a
+              href="#"
+              onclick={invert}
+              title={t('verbs.invert')}
+            ><i class="fa fa-exchange"></i></a>
+            <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a>
             <a
               if={relation.removable}
               href="#/relations/{relation.id}"
-              onclick={onDeleteClicked}
+              onclick={delete(relation)}
             ><i class="fa fa-remove"></i></a>
           </td>
         </tr>
@@ -66,130 +103,120 @@
     </table>
   </div>
 
-  <script type="text/javascript">
-    tag = this;
-    // reenable this functionality
-    // tag.requireRoles = ['relation_admin'];
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.filters = {};
+  <script type="text/coffee">
+    tag = this
+    tag.requireRoles = ['relation_admin']
+    tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.sessionAware)
 
-    tag.on('mount', function() {
-      fetch();
-      fetchKinds();
-    })
+    tag.on 'mount', -> 
+      fetch()
+      fetchKinds()
 
-    tag.onDeleteClicked = function(event) {
+    tag.filters = {}
+
+    tag.delete = (kind) ->
+      (event) ->
+        event.preventDefault()
+        if wApp.utils.confirm tag.t('confirm.general')
+          Zepto.ajax(
+            type: 'delete'
+            url: "/relations/#{kind.id}"
+            success: -> fetch()
+          )
+
+    tag.submit = ->
+      tag.filters.terms = tag.formFields['terms'].val()
+      tag.filters.hideAbstract = tag.formFields['hideAbstract'].val()
+      filter_records()
+      groupAndSortRecords()
+      tag.update()
+
+    tag.delayedSubmit = (event) ->
+      if tag.delayedTimeout
+        tag.delayedTimeout.clearTimeout 
+        tag.delayedTimeout = undefined
+      tag.delayedTimeout = window.setTimeout(tag.submit, 300)
+      true
+
+    tag.toggleMerge = (event) ->
+      event.preventDefault()
+      tag.merge = !tag.merge
+
+    tag.addToMerge = (event) ->
       event.preventDefault();
-      if (wApp.utils.confirm())
-        destroy(event.item.relation.id);
-    }
+      tag.refs.merger.addRelation(event.item.relation)
 
-    tag.delayedSubmit = function(event) {
-      event.preventDefault();
-      if (tag.delayedTimeout) {
-        window.clearTimeout(tag.delayedTimeout);
-        tag.delayedTimeout = undefined;
-      }
-      // TODO: setTimeout should bot be called from window directly (testing)
-      tag.delayedTimeout = window.setTimeout(submit, 300);
-      return true;
-    }
+    tag.mergeDone = ->
+      tag.merge = false
+      fetch()
 
-    tag.kind = function(id) {return tag.kindLookup[id].name}
+    tag.invert = (event) ->
+      event.preventDefault()
+      relation = event.item.relation
+      if window.confirm(tag.t('confirm.long_time_warning'))
+        Zepto.ajax(
+          type: 'PUT'
+          url: '/relations/' + relation.id + '/invert'
+          success: (data) -> fetch()
+        )
 
-    var submit = function() {
-      tag.filters.terms = tag.refs['terms'].value();
-      filterRecords();
-      groupAndSortRecords();
-      tag.update();
-    }
+    filter_records = ->
+      tag.filteredRecords = if tag.filters.terms
+        re = new RegExp("#{tag.filters.terms}", 'i')
+        results = []
+        for relation in tag.data.records
+          if relation.name.match(re) || relation.reverse_name.match(re)
+            if results.indexOf(relation) == -1
+              results.push(relation)
+        results
+      else
+        tag.data.records
 
-    var filterRecords = function() {
-      if (tag.filters.terms) {
-        re = new RegExp(tag.filters.terms, 'i');
-        results = [];
-        for (var i = 0; i < tag.data.records.length; i++) {
-          var relation = tag.data.records[i];
-          if (relation.name.match(re) || relation.reverse_name.match(re)) {
-            if (results.indexOf(relation) == -1) {
-              results.push(relation);
-            }
-          }
-        }
-        tag.filteredRecords = results;
-      } else 
-        tag.filteredRecords = tag.data.records;
-    }
-
-    var typeCompare = function(x, y) {
-      if (x.match(/^P\d+/) && y.match(/^P\d+/)) {
+    typeCompare = (x, y) ->
+      if x.match(/^P\d+/) && y.match(/^P\d+/)
         x = parseInt(x.replace(/^P/, '').split(' ')[0])
         y = parseInt(y.replace(/^P/, '').split(' ')[0])
-      }
-
-      if (x > y)
-        return 1;
+      if x > y
+        1
       else
-        if (x == y)
+        if x == y
           0
         else
           -1
-    }
 
-    var groupAndSortRecords = function() {
-      var results = {};
-      for (var i = 0; i < tag.filteredRecords.length; i++) {
-        var r = tag.filteredRecords[i];
-        results[r['schema']] = results[r['schema']] || [];
-        results[r['schema']].push(r);
-      }
-      for (var k in results)
-        if (results.hasOwnProperty(k)) {
-          var v = results[k];
-          results[k] = v.sort(function(x, y){return typeCompare(x.name, y.name)})
-        }
-      tag.groupedResults = results;
-    }
+    groupAndSortRecords = ->
+      results = {}
+      for r in tag.filteredRecords
+        results[r['schema']] ||= []
+        results[r['schema']].push r
+      for k, v of results
+        results[k] = v.sort((x, y) -> typeCompare(x.name, y.name))
+      tag.groupedResults = results
 
-    var fetch = function() {
-      Zepto.ajax({
-        url: '/relations',
-        data: {include: 'inheritance'},
-        success: function(data) {
-          tag.data = data;
-          filterRecords();
-          groupAndSortRecords();
-          tag.update();
-        }
-      })
-    }
+    tag.kind = (id) -> tag.kindLookup[id].name
 
-    var fetchKinds = function() {
-      Zepto.ajax({
-        url: '/kinds',
-        success: function(data) {
-          tag.kindLookup = {};
-          for (var i = 0; i < data.records.length; i++) {
-            var k = data.records[i];
-            tag.kindLookup[k.id] = k;
-          }
-          tag.update();
-        }
-      })
-    }
+    fetch = ->
+      Zepto.ajax(
+        url: '/relations'
+        data: {include: 'inheritance'}
+        success: (data) ->
+          tag.data = data
+          filter_records()
+          groupAndSortRecords()
+          tag.refs.merger.reset()
+          tag.update()
+      )
 
-    var destroy = function(id) {
-      Zepto.ajax({
-        type: 'DELETE',
-        url: '/relations/' + id,
-        success: fetch,
-        error: function(xhr) {
-          tag.errors = JSON.parse(xhr.responseText).errors;
-          wApp.utils.scrollToTop();
-        }
-      })
-    }
+    fetchKinds = ->
+      Zepto.ajax(
+        url: '/kinds'
+        success: (data) ->
+          tag.kindLookup = {}
+          for k in data.records
+            tag.kindLookup[k.id] = k
+          tag.update()
+      )
 
   </script>
 

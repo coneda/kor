@@ -3,7 +3,9 @@
 
 <div class="form_field">
   <ul>
-    <li><%= I18n.t 'activerecord.attributes.entity_dating.label' %></li>
+    <li>
+      <%= I18n.t('activerecord.attributes.entity_dating.label').capitalize_first_letter %>
+    </li>
     <li>
       <%= text_field_tag "#{prefix}[label]", label %>
     </li>
@@ -12,7 +14,9 @@
 
 <div class="form_field">
   <ul>
-    <li><%= I18n.t 'activerecord.attributes.entity_dating.dating_string' %></li>
+    <li>
+      <%= I18n.t('activerecord.attributes.entity_dating.dating_string').capitalize_first_letter %>
+    </li>
     <li>
       <%= text_field_tag "#{prefix}[dating_string]", entity_dating.dating_string %>
     </li>

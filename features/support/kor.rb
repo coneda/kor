@@ -6,12 +6,20 @@ require 'factory_girl_rails'
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :truncation
 
+Around('@notravis') do |scenario, block|
+  if ENV['TRAVIS'] != 'true'
+    block.call
+  end
+end
+
 Around do |scenario, block|
   DatabaseCleaner.cleaning(&block)
 end
 
 Before do |scenario|
-  eval File.read("#{Rails.root}/db/seeds.rb")
+  unless scenario.tags.any?{|st| st.name == '@noseed'}
+    eval File.read("#{Rails.root}/db/seeds.rb")
+  end
 
   system "rm -f #{Rails.root}/config/kor.app.test.yml"
   Kor::Config.reload!

@@ -51,3 +51,19 @@ window.wApp = {
 #     wApp.bus.trigger 'auth-data'
 #     riot.update()
 # )
+
+# from v3.0, should not be needed anymore since the angular code isn't used
+# anymore
+# if window.wAppNoSessionLoad
+#   window.korSessionPromise.success (data) ->
+#     window.wApp.data = data
+#     wApp.bus.trigger 'auth-data'
+#     riot.update()
+# else
+#   Zepto.ajax(
+#     url: "/api/1.0/info"
+#     success: (data) ->
+#       window.wApp.data = data
+#       wApp.bus.trigger 'auth-data'
+#       riot.update()
+#   )

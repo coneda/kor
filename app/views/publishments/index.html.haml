@@ -6,9 +6,9 @@
   - else
     %table.kor_table
       %tr
-        %th= I18n.t('nouns.name', :count => 1)
-        %th= I18n.t('nouns.link', :count => 1)
-        %th= I18n.t('valid_until')
+        %th= I18n.t('nouns.name', :count => 1).capitalize_first_letter
+        %th= I18n.t('nouns.link', :count => 1).capitalize_first_letter
+        %th= I18n.t('valid_until').capitalize_first_letter
         %th
       
       - @publishments.each do |p|

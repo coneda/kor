@@ -8,7 +8,7 @@
   
     %table.kor_table
       %tr
-        %th= Collection.human_attribute_name :name
+        %th= Collection.human_attribute_name(:name).capitalize_first_letter
       - @collections.each do |c|
         %tr{:id => "collection_#{c.id}"}
           %td.expanding= h(c.list_name)

@@ -53,6 +53,33 @@ class RelationsController < JsonController
     render_200 I18n.t('objects.destroy_success', o: @relation.name)
   end
 
+  def invert
+    @relation = Relation.find(params[:id])
+
+    @relation.invert!
+    @messages << I18n.t('objects.invert_success', o: Relation.model_name.human)
+    render action: 'save'
+  end
+
+  def merge
+    @relation = Relation.find(params[:id])
+    @others = Relation.find_by!(id: params[:other_id])
+
+    if @relation.can_merge?(@others)
+      if params[:check_only]
+        @messages << I18n.t('objects.could_merge', o: Relation.model_name.human(count: :other))
+      else
+        @relation.merge!(@others)
+        @messages << I18n.t('objects.merge_success', o: Relation.model_name.human(count: :other))
+      end
+
+      render action: 'save'
+    else
+      @messages << I18n.t('errors.relations_merge_failure')
+      render action: 'save', status: 406
+    end
+  end
+
 
   protected
 

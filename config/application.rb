@@ -146,3 +146,5 @@ end
 # TODO: save submenu state with Lockr
 # TODO: change name of credentials class
 # TODO: kind editor throws js error ... why?
+# TODO: change piwik and custom css to a more generic html include possibility
+#       for the end of the header and the end of the body
