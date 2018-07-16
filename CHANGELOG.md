@@ -22,6 +22,7 @@ commit history on GitHub.
 * 'vor 1883' is now recognized as a valid dating (resulting in an actual date
   range of 1870-01-01 to 1883-12-31), also 'nach 1883', 'nicht vor 1883', 
   'nicht nach', 'um 1883', 'circa 1883' are possible.
+* added new field type for mult line text
 
 ### Internal
 
