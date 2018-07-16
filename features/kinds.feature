@@ -192,7 +192,7 @@ Feature: Kinds
     And I follow "Actor"
     And I follow "Fields"
     And I click icon "plus-square" within "kor-fields"
-    And I select "String" from "Type"
+    And I select "string" from "Type"
     And I fill in "Name" with "gnd_id"
     And I fill in "Label" with "GND-ID"
     And I check "Is identifier"
