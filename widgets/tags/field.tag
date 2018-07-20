@@ -27,7 +27,7 @@
       <option
         each={o in opts.options}
         value={o.value}
-        selected={parent.selected(o.value)}
+        selected={selected(o.value)}
       >{o.label}</option>
     </select>
     <ul if={has_errors()} class="errors">
@@ -39,11 +39,13 @@
     tag = this
 
     tag.on 'mount', ->
+      # TODO: we should not be doing this!
       if tag.parent
         tag.parent.formFields ||= {}
         tag.parent.formFields[tag.fieldId()] = tag
 
     tag.on 'unmount', ->
+      # TODO: we should not be doing this!
       if tag.parent
         tag.parent.formFields ||= {}
         delete tag.parent.formFields[tag.fieldId()]
@@ -73,11 +75,11 @@
 
     tag.checked = -> if tag.inputType() == 'checkbox' then tag.value() else false
     tag.selected = (key) ->
-      if tag.value()
-        if tag.opts.multiple
-          tag.value().indexOf(key) > -1
-        else
-          tag.value() == key
+      v = (if tag.opts.model then tag.opts.model[tag.opts.fieldId] else tag.opts.riotValue)
+      if v && tag.opts.multiple
+        v.indexOf(key) > -1
+      else
+        v == key
     tag.value = -> 
       tag.opts.value || if tag.opts.model
         tag.opts.model[tag.opts.fieldId]

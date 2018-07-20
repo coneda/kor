@@ -16,8 +16,7 @@
       type="select"
       options={types_for_select}
       allow-no-selection={false}
-      model={field}
-      onchange={updateSpecialFields}
+      value={field.type}
       is-disabled={field.id}
     />
 
@@ -84,12 +83,14 @@
     tag.opts.notify.on 'add-field', ->
       tag.field = {type: 'Fields::String'}
       tag.showForm = true
-      tag.updateSpecialFields()
+      tag.update()
+      # tag.updateSpecialFields()
 
     tag.opts.notify.on 'edit-field', (field) ->
       tag.field = field
       tag.showForm = true
-      tag.updateSpecialFields()
+      tag.update()
+      # tag.updateSpecialFields()
 
     tag.on 'mount', ->
       Zepto.ajax(
@@ -100,7 +101,7 @@
           for t in data
             tag.types_for_select.push(value: t.name, label: t.label)
             tag.types[t.name] = t
-          tag.updateSpecialFields()
+          # tag.updateSpecialFields()
       )
 
     tag.updateSpecialFields = (event) ->
@@ -145,7 +146,7 @@
       )
 
     update = ->
-      console.log 'updating'
+      # console.log 'updating'
       Zepto.ajax(
         type: 'PATCH'
         url: "/kinds/#{tag.opts.kind.id}/fields/#{tag.field.id}"
