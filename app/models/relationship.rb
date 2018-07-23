@@ -155,6 +155,7 @@ class Relationship < ActiveRecord::Base
       to_id: to_id
     ).first
 
+    # TODO: this does not work
     if dr
       properties == nil || dr.properties == properties
     end

@@ -2,7 +2,7 @@
 
   <div class="kor-layout-left kor-layout-small">
     <div class="kor-content-box">
-      <h1>upload</h1>
+      <h1>{tcap('nouns.mass_upload')}</h1>
 
       <form onsubmit={submit}>
         <kor-collection-selector
@@ -28,7 +28,7 @@
         </virtual>
 
         <a class="trigger">
-          » { tcap('objects.add', {interpolations: {o: 'nouns.file.other'}}) }
+          » {tcap('objects.add', {interpolations: {o: 'nouns.file.other'}})}
         </a>
       </form>
     </div>
@@ -147,6 +147,13 @@
           tag.selection = data;
           tag.update();
           tag.refs['relation-selector'].trigger('endpoints-changed');
+        },
+        error: function(xhr, reason) {
+          if (xhr.status == 404) {
+            wApp.clipboard.unselect();
+            tag.update();
+          } else
+            console.log(xhr, reason);
         }
       });
     }

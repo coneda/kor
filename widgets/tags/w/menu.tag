@@ -19,10 +19,7 @@
       <a href="#/new-media">{tcap('pages.new_media')}</a>
     </li>
     <li>
-      <a href="#/search">{tcap('nouns.simple_search')}</a>
-    </li>
-    <li>
-      <a href="#/search">{tcap('nouns.expert_search')}</a>
+      <a href="#/search">{tcap('nouns.search')}</a>
     </li>
   </ul>
 
@@ -181,6 +178,7 @@
       tag.update()
 
     tag.toggleConfig = (event) ->
+      # TODO: memorize this with local storage (Lockr)
       event.preventDefault()
       tag.showConfig = !tag.showConfig
       tag.update()

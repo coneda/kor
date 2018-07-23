@@ -153,7 +153,7 @@ kor-welcome, [data-is=kor-welcome] {
   }
 }
 
-kor-entity, [data-is=kor-entity] {
+kor-entity {
   .name {
     font-weight: bold;
   }
@@ -170,7 +170,7 @@ kor-entity, [data-is=kor-entity] {
     font-size: $kor-small-font-size;
     position: relative;
 
-    kor-clipboard-control, [data-is=kor-clipboard-control] {
+    kor-clipboard-control {
       display: block;
       text-align: right;
     }
@@ -190,6 +190,32 @@ kor-entity, [data-is=kor-entity] {
       color: $kor-shine;
     }
   }
+
+  // TODO: this is for standalone widgets, find a better solution for this
+  &.kor-style {
+    display: inline-block;
+    vertical-align: bottom;
+    box-sizing: border-box;
+    width: 200px;
+    max-height: 200px;
+    padding: 0.5rem;
+
+    & > a {
+      display: block;
+      text-decoration: none;
+    }
+
+    h3 {
+      margin: 0px;
+      color: white;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      max-height: 160px;
+    }
+  }
 }
 
 kor-gallery-grid, [data-is=kor-gallery-grid] {
@@ -198,10 +224,8 @@ kor-gallery-grid, [data-is=kor-gallery-grid] {
     padding: 1.5rem;
   }
 
-  kor-entity, [data-is=kor-entity] {
-    &.medium {
-      width: 100%;
-    }
+  kor-entity.medium {
+    width: 100%;
   }
 }
 
@@ -229,7 +253,7 @@ kor-pagination, [data-is=kor-pagination] {
 }
 
 kor-users, [data-is=kor-users] {
-  kor-pagination, [data-is=kor-pagination] {
+  kor-pagination {
     float: right;
   }
 }
@@ -276,7 +300,7 @@ kor-relation, [data-is=kor-relation] {
     top: 0.3rem;
   }
 
-  kor-pagination, [data-is=kor-pagination] {
+  kor-pagination {
     float: right;
   }
 }
@@ -286,7 +310,7 @@ kor-media-relation, [data-is=kor-media-relation] {
     margin-bottom: 1rem;
   }
 
-  kor-pagination, [data-is=kor-pagination] {
+  kor-pagination {
     margin-top: 1rem;
   }
 }
@@ -333,7 +357,7 @@ kor-relationship, [data-is=kor-relationship] {
 
 kor-relationship-editor, [data-is=kor-relationship-editor] {
   form {
-    kor-input, [data-is=kor-input] {
+    kor-input {
       display: inline;
     }
   }
@@ -430,5 +454,240 @@ kor-settings-editor, [data-is=kor-settings-editor] {
   h2 {
     margin-top: 4rem;
     color: white;
+  }
+}
+
+kor-collection-selector {
+  i {
+    margin-left: 0.5rem;
+  }
+}
+
+kor-ask-choices, [data-is=kor-ask-choices] {
+  min-width: 40rem;
+
+  kor-input {
+    input[type=checkbox] {
+      float: left;
+      position: relative;
+      vertical-align: bottom;
+      top: -0.5rem;
+      margin-right: 0.8rem;
+    }
+  }
+}
+
+kor-search, [data-is=kor-search] {
+  div.kor-layout-right .kor-content-box {
+    padding-bottom: 0rem;
+  }
+
+  kor-pagination {
+    border-bottom: 1px solid $kor-bg-3;
+    padding-bottom: 1rem;
+    padding-right: 1rem;
+  }
+
+  kor-nothing-found {
+    padding: 3rem;
+  }
+}
+
+kor-search-result {
+  display: block;
+  border-bottom: 1px solid $kor-bg-3;
+
+  a.to-entity {
+    display: block;
+    padding: 0.5rem;
+    text-decoration: none;
+  }
+
+  a.to-entity:hover {
+    background-color: $kor-line-gray;
+  }
+
+  kor-clipboard-control {
+    display: block;
+    float: left;
+  }
+
+  div.labels {
+    margin-left: 5rem;
+    margin-right: 3rem;
+    font-weight: bold;
+  }
+
+  div.kind {
+    color: $kor-text;
+    font-style: italic;
+  }
+
+  div.media {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 5rem;
+    margin-right: 3rem;
+    background-color: $kor-bg-2;
+  }
+
+  kor-entity.medium {
+    height: auto;
+    float: left;
+    padding: 1rem;
+    border-right: 1px solid $kor-bg;
+
+    a.to-medium {
+      display: block;
+
+      img {
+        display: block;
+        max-width: (426px / 4) - 2 * 11px;
+        margin: 0px;
+      }
+    }
+
+    kor-clipboard-control {
+      position: absolute;
+      right: 0.5rem;
+      top: 0.5rem;
+    }
+  }
+
+  kor-entity:nth-child(4) {
+    border: none;
+  }
+}
+
+kor-header, [data-is=kor-header] {
+  display: block;
+  margin-bottom: 3rem;
+
+  .logo {
+    display: block;
+    float: left;
+  }
+
+  .session {
+    float: right;
+
+    img {
+      margin-top: -0.5rem;
+      position: relative;
+      top: 0.5rem;
+    }
+  }
+}
+
+kor-upload, [data-is='kor-upload'] {
+  ul {
+    padding-left: 0px;
+
+    li {
+      list-style-type: none;
+      margin-bottom: 0.5em;
+    }
+  }
+
+  .text-right {
+    text-align: right;
+  }
+}
+
+kor-relations, [data-is=kor-relations] {
+  font-weight: bold;
+  padding: 30px;
+
+  .label, .name {
+    color: $kor-shine;
+  }
+
+  th:first-child {
+    width: 400px;
+  }
+
+  .buttons a {
+    display: inline-block;
+    margin-left: 3px;
+  }
+}
+
+kor-relation-merger, [data-is=kor-relation-merger] {
+  ul {
+    margin-top: 12px;
+  }
+}
+
+kor-entity-page, [data-is=kor-entity-page] {
+  .subtitle {
+    font-size: 1rem;
+    color: $kor-text;
+  }
+
+  .field {
+    font-weight: bold;
+  }
+
+  span.value {
+    font-weight: bold;
+    color: $kor-shine;
+  }
+
+  pre {
+    margin: 0rem;
+    font-family: $kor-font;
+    white-space: pre-wrap;
+  }
+  
+  .viewer {
+    & > a {
+      display: inline-block;
+    }
+
+    img {
+      width: 100%;
+    }
+
+    .commands {
+      text-align: center;
+    }
+  }
+}
+
+kor-notifications {
+  ul {
+    perspective: 1000px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+
+    li {
+      padding: 1rem;
+      list-style-type: none;
+    }
+  }
+}
+
+kor-menu, [data-is=kor-menu] {
+  margin-top: 40px;
+  margin-bottom: 85px;
+  display: block;
+  float: left;
+  width: 180px;
+  font-weight: bold;
+
+  a {
+    color: #bbbbbb !important;
+  }
+
+  li {
+    margin-bottom: 0.1rem;
+  }
+
+  kor-sub-menu, [data-is=kor-sub-menu] {
+    .content {
+      padding-top: 0.2rem;
+      padding-left: 0.5rem;
+    }
   }
 }

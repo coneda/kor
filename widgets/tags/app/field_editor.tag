@@ -14,8 +14,7 @@
       label={tcap('activerecord.attributes.field.type')}
       type="select"
       options={types_for_select}
-      riot-value={data.type}
-      onchange={updateSpecialFields}
+      value={data.type}
       is-disabled={data.id}
       ref="fields"
     />
@@ -97,16 +96,30 @@
         tag.update()
       fetchTypes()
 
-    tag.updateSpecialFields = (event) ->
-      # if tag.showForm
-      # get the tag selection or fall back to the model value
-      typeName = Zepto('[name=type]').val() || tag.data.type
-      # update the model
-      tag.data.type = typeName
-      if types = tag.types
-        tag.specialFields = types[typeName].fields
-        tag.update()
-      # true
+    # TODO: do we still need this?
+    tag.opts.notify.on 'add-field', ->
+      tag.field = {type: 'Fields::String'}
+      tag.showForm = true
+      tag.update()
+      # tag.updateSpecialFields()
+
+    # TODO: do we still need this?
+    tag.opts.notify.on 'edit-field', (field) ->
+      tag.field = field
+      tag.showForm = true
+      tag.update()
+      # tag.updateSpecialFields()
+
+    # tag.updateSpecialFields = (event) ->
+    #   # if tag.showForm
+    #   # get the tag selection or fall back to the model value
+    #   typeName = Zepto('[name=type]').val() || tag.data.type
+    #   # update the model
+    #   tag.data.type = typeName
+    #   if types = tag.types
+    #     tag.specialFields = types[typeName].fields
+    #     tag.update()
+    #   # true
 
     tag.submit = (event) ->
       event.preventDefault()

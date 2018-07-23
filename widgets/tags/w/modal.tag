@@ -8,7 +8,8 @@
     tag.mountedTag = null
 
     wApp.bus.on 'modal', (tagName, opts = {}) ->
-      opts.modal = tagName
+      # opts.modal = tagName
+      opts.modal = tag
       tag.mountedTag = riot.mount(tag.refs.receiver, tagName, opts)[0]
       tag.active = true
       tag.update()

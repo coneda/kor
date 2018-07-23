@@ -192,7 +192,7 @@ Feature: Kinds
     And I follow "Actor"
     And I follow "Fields"
     And I click icon "plus-square" within "kor-fields"
-    And I select "String" from "Type"
+    And I select "string" from "Type"
     And I fill in "Name" with "gnd_id"
     And I fill in "Label" with "GND-ID"
     And I check "Is identifier"
@@ -205,16 +205,18 @@ Feature: Kinds
   Scenario: change field
     Given the kind "Actor/Actors"
     And kind "Actor/Actors" has field "activity_id" of type "Fields::String"
+    And kind "Actor/Actors" has field "notes" of type "Fields::Text"
     And I am logged in as "admin"
     When I follow "Administration"
     And I follow "Entity types"
     And I follow "Actor"
     And I follow "Fields"
-    And I click icon "edit" within "kor-fields"
-    And I fill in "Label" with "A-ID"
+    And I click icon "edit" within "kor-fields li:nth-child(1)" # to test populating form fields correctly
+    And I click icon "edit" within "kor-fields li:nth-child(2)"
+    And I fill in "Label" with "My Notes"
     And I press "Save"
     Then I should see "has been changed"
-    And kind "Actor" should have field "activity_id" with attribute "show_label" being "A-ID"
+    And kind "Actor" should have field "notes" with attribute "show_label" being "My Notes"
 
 
   @javascript

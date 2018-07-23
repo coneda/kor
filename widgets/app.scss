@@ -14,9 +14,14 @@ $kor-input-bg-focus: #333333;
 $kor-button-highlight: #666666;
 $kor-line-gray: #505050;
 
+$kor-font: helvetica, arial;
+$kor-font-size: 11px;
+$kor-line-height: 15px;
+$kor-small-font-size: 0.8rem;
+
 // @import '../public/vendor';
 
-@import 'styles/palette';
+// @import 'styles/palette';
 
 @import 'styles/w/messaging';
 @import 'styles/w/modal';
@@ -24,20 +29,20 @@ $kor-line-gray: #505050;
 
 @import 'styles/layout';
 @import 'styles/app';
-@import 'styles/header';
+// @import 'styles/header';
 @import 'styles/forms';
 @import 'styles/icons';
-@import 'styles/pages';
+// @import 'styles/pages';
 // @import 'styles/notifications';
 // @import 'styles/search';
 // @import 'styles/application';
-@import 'styles/entity';
+// @import 'styles/entity';
 // @import 'styles/form';
-@import 'styles/kinds';
+// @import 'styles/kinds';
 // @import 'styles/kind_editor';
-@import 'styles/relations';
+// @import 'styles/relations';
 // @import 'styles/menu';
 @import 'styles/modal';
-@import 'styles/notifications';
-@import 'styles/search';
-@import 'styles/upload';
+// @import 'styles/notifications';
+// @import 'styles/search';
+// @import 'styles/upload';

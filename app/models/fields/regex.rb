@@ -7,7 +7,7 @@ class Fields::Regex < Field
   end
   
   def self.label
-    'Regex'
+    'regex'
   end
   
   def regex=(value)
@@ -16,7 +16,7 @@ class Fields::Regex < Field
   
   def regex
     if settings[:regex].blank?
-       settings[:regex] = '/^.*$/'
+      settings[:regex] = '/^.*$/'
     end
 
     settings[:regex]

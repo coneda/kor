@@ -3,6 +3,8 @@ class EntitiesController < JsonController
   layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
   skip_before_filter :verify_authenticity_token
 
+  before_filter :pagination, only: ['index']
+
   respond_to :json, only: [:isolated]
 
   def metadata
@@ -142,7 +144,8 @@ class EntitiesController < JsonController
 
   def index
     params[:include] = param_to_array(params[:include], ids: false)
-    params[:ids] = param_to_array(params[:ids])
+
+    # params[:ids] = param_to_array(params[:ids])
     params[:kind_id] = param_to_array(params[:kind_id])
     params[:related_per_page] = [
       (params[:related_per_page] || 1).to_i,
@@ -151,32 +154,33 @@ class EntitiesController < JsonController
     params[:related_relation_name] = param_to_array(params[:related_relation_name], ids: false)
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
 
-    respond_to do |format|
-      format.json do
-        @results = kor_graph.search(:attribute,
-          criteria: {
-            entity_id: params[:ids],
-            name: params[:terms],
-            relation_name: params[:relation_name],
-            kind_id: params[:kind_id]
-          },
-          media: params[:include_media],
-          per_page: params[:per_page],
-          page: params[:page]
-        )
-      end
-      format.html do
-        if params[:query] && @entity = viewable_entities.find_by(:uuid => params[:query][:name])
-          redirect_to web_path(:anchor => entity_path(@entity))
-        else
-          @query = kor_graph.search(:attribute,
-            criteria: params[:query],
-            page: params[:page]
-          )
-          render :layout => 'small_normal_bare'
-        end
-      end
-    end
+    search = Kor::Search.new(
+      collection_id: params[:collection_id],
+      kind_id: params[:kind_id],
+      terms: params[:terms],
+      name: params[:name],
+      dating: params[:dating],
+      page: @page,
+      per_page: @per_page,
+      no_media: params[:no_media]
+    )
+
+    search.run
+
+    @records = search.records
+    @total = search.total
+
+    # @results = kor_graph.search(:attribute,
+    #   criteria: {
+    #     entity_id: params[:ids],
+    #     name: params[:terms],
+    #     relation_name: params[:relation_name],
+    #     kind_id: params[:kind_id]
+    #   },
+    #   media: params[:include_media],
+    #   per_page: params[:per_page],
+    #   page: params[:page]
+    # )
   end
 
   def show

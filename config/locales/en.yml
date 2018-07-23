@@ -45,6 +45,7 @@ en:
   select_collections: select collection
   apply: apply
   cancel: cancel
+  ok: ok
   of: of %{amount}
   empty_list: "empty list"
   results_for: results for
@@ -65,6 +66,7 @@ en:
   inherited_from: inherited from
   no_schema: no schema
   add_to_merge: add to merge
+  no_results: no results
 
   search_term:
     one: search term

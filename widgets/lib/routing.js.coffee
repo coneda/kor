@@ -1,8 +1,9 @@
 wApp.routing = {
-  query: (params) ->
+  query: (params, reset = false) ->
     if params
       result = {}
-      Zepto.extend(result, wApp.routing.query(), params)
+      base = (if reset then {} else wApp.routing.query())
+      Zepto.extend(result, base, params)
       qs = []
       for k, v of result
         if result[k] != null && result[k] != ''

@@ -1,7 +1,7 @@
 class Fields::String < Field
 
   def self.label
-    'String'
+    'string'
   end
 
 end

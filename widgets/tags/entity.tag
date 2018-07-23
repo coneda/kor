@@ -6,10 +6,10 @@
       entity={opts.entity}
     />
     
-    <a href="#/entities/{opts.entity.id}">
+    <a href="#/entities/{opts.entity.id}" class="to-medium">
       <img src={opts.entity.medium.url.thumbnail} />
     </a>
-    <div>
+    <div if={!opts.noContentType}>
       {t('nouns.content_type')}:
       <span class="content-type">{opts.entity.medium.content_type}</span>
     </div>

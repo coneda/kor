@@ -18,7 +18,7 @@ describe FieldsController, type: :controller do
   it 'allow read access to field types' do
     get :types, kind_id: @people.id
     expect(response.status).to eq(200)
-    expect(data).to include(hash_including('name' => 'Fields::String', 'label' => 'String'))
+    expect(data).to include(hash_including('name' => 'Fields::String', 'label' => 'string'))
   end
 
   it 'should allow read access to everybody' do

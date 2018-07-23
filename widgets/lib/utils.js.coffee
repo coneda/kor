@@ -44,4 +44,9 @@ wApp.utils = {
   confirm: (string) -> 
     string ||= wApp.i18n.t(wApp.session.current.locale, 'confirm.sure')
     window.confirm(string)
+
+  toIdArray: (obj) ->
+    return [] unless obj
+    obj = obj.split(',') unless Zepto.isArray(obj)
+    parseInt(o) for o in obj
 }

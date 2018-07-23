@@ -1,0 +1,55 @@
+<kor-kind-selector>
+
+  <kor-input
+    if={kinds}
+    label={tcap('activerecord.models.kind')}
+    type="select"
+    ref="input"
+    options={kinds}
+    placeholder={t('all')}
+    value={opts.riotValue}
+  />
+
+  </kor-input>
+
+  <script type="text/javascript">
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+
+    tag.on('mount', function() {
+      fetch();
+    })
+
+    tag.name = function() {
+      return tag.opts.name;
+    }
+
+    tag.value = function() {
+      var v = tag.refs.input.value();
+      if (v) {
+        return parseInt(v);
+      } else {
+        return v;
+      }
+    }
+
+    var fetch = function() {
+      Zepto.ajax({
+        url: '/kinds',
+        success: function(data) {
+          var results = [];
+          for (var i = 0; i < data.records.length; i++) {
+            var k = data.records[i];
+            if (k.id != wApp.info.data.medium_kind_id) {
+              results.push(k);
+            }
+          }
+          tag.kinds = results;
+          tag.update();
+        }
+      })
+    }
+  </script>
+
+</kor-kind-selector>

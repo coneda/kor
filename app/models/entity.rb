@@ -454,6 +454,7 @@ class Entity < ActiveRecord::Base
   scope :by_comment, lambda { |comment| comment.present? ? where('comment LIKE ?', "%#{comment}%") : all}
   scope :named_like, lambda { |terms|
     if terms.present?
+      terms = terms.split(/\s+/)
       sql = terms.map{|t| 'name LIKE ? OR distinct_name LIKE ?'}.join(' OR ')
       values = terms.map{|t| "%#{t}%"}
       values = values + values
