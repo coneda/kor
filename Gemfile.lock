@@ -131,6 +131,9 @@ GEM
       railties (>= 3.2, < 6.0)
     erubis (2.7.0)
     eventmachine (1.2.5)
+    exception_notification (4.2.2)
+      actionmailer (>= 4.0, < 6)
+      activesupport (>= 4.0, < 6)
     execjs (2.7.0)
     exifr (1.1.1)
     factory_girl (4.7.0)
@@ -349,6 +352,7 @@ DEPENDENCIES
   delayed_job_active_record
   delayed_paperclip
   dotenv-rails
+  exception_notification
   exifr (= 1.1.1)
   factory_girl_rails
   haml

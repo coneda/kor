@@ -76,6 +76,7 @@ end
 
 group :production do
   gem 'puma'
+  gem 'exception_notification'
 end
 
 group :production, :test do

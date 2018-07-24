@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171114104306) do
+ActiveRecord::Schema.define(version: 20180724044142) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4
@@ -181,15 +181,6 @@ ActiveRecord::Schema.define(version: 20171114104306) do
   end
 
   add_index "entity_datings", ["entity_id"], name: "index_entity_datings_on_entity_id", using: :btree
-
-  create_table "exception_logs", force: :cascade do |t|
-    t.string   "kind",       limit: 255
-    t.string   "message",    limit: 255
-    t.text     "backtrace",  limit: 65535
-    t.datetime "created_at"
-    t.string   "uri",        limit: 255
-    t.text     "params",     limit: 65535
-  end
 
   create_table "fields", force: :cascade do |t|
     t.integer  "kind_id",       limit: 4
