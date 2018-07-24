@@ -516,6 +516,8 @@ class Entity < ActiveRecord::Base
     scope
   }
   scope :dated_in, lambda {|datings|
+    datings = [datings] unless datings.is_a?(Array)
+
     results = all
     if datings.present?
       sql = []
@@ -531,7 +533,7 @@ class Entity < ActiveRecord::Base
 
       if sql.size > 0
         sql = "(#{sql.join ' OR '})"
-        joins(:datings).distinct(:entity_id).where(sql, *values)
+        results = joins(:datings).distinct(:entity_id).where(sql, *values)
       end
     end
     results

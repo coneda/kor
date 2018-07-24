@@ -4,7 +4,7 @@
   
   <div>
     <kor-menu />
-    <div class="w-content" ref="content" />
+    <div class="w-content" />
   </div>
 
   <w-modal />
@@ -148,7 +148,7 @@
 
     tag.mountTagAndAnimate = (tagName, opts = {}) ->
       if tagName
-        element = Zepto('.w-content')
+        element = Zepto(tag.root).find('.w-content')
 
         mountIt = ->
           tag.mountedTag = riot.mount(element[0], tagName, opts)[0]

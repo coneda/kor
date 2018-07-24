@@ -23,7 +23,7 @@
     tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', ->
-      Zepto(tag.root).find('.target').html tag.config().maintainer.legal_html
+      Zepto(tag.root).find('.target').html tag.config().legal_html
 
     tag.termsAccepted = ->
       tag.currentUser() && tag.currentUser().terms_accepted

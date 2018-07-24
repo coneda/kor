@@ -3,8 +3,8 @@ FactoryGirl.define do
   factory :kind do
 
     factory :works do
-      name "Werk"
-      plural_name "Werke"
+      name "work"
+      plural_name "works"
     end
 
     factory :media do
@@ -15,18 +15,18 @@ FactoryGirl.define do
     end
 
     factory :locations do
-      name "Ort"
-      plural_name "Orte"
+      name "location"
+      plural_name "locations"
     end
 
     factory :institutions do
-      name "Institution"
-      plural_name "Institutionen"
+      name "institution"
+      plural_name "institutions"
     end
 
     factory :literatures do
-      name "Literatur"
-      plural_name "Literatur"
+      name "literature"
+      plural_name "literature"
     end
 
     factory :people do
@@ -118,7 +118,7 @@ FactoryGirl.define do
 
     factory :work do
       name "A entity"
-      kind { Kind.find_or_create_by name: 'Werk', plural_name: 'Werke' }
+      kind { Kind.find_or_create_by name: 'work', plural_name: 'works' }
 
       factory :mona_lisa do
         name "Mona Lisa"
@@ -151,7 +151,7 @@ FactoryGirl.define do
 
     factory :location do
       name "A location"
-      kind { Kind.find_or_create_by name: "Ort", plural_name: 'Orte' }
+      kind { Kind.find_or_create_by name: "location", plural_name: 'locations' }
 
       factory :united_kingdom do
         name "United Kingdom"
@@ -168,7 +168,7 @@ FactoryGirl.define do
 
     factory :person do
       name "A person"
-      kind { Kind.find_or_create_by name: 'Person', plural_name: 'People' }
+      kind { Kind.find_or_create_by name: 'person', plural_name: 'people' }
 
       factory :jack do
         name "Jack"

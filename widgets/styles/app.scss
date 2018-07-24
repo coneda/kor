@@ -104,46 +104,13 @@ button:hover {
   background-color: $kor-button-highlight;
 }
 
-.pull-right {
-  float: right;
-}
-
-w-app, [data-is=w-app] {
+[data-is=w-app] {
   padding: 2rem;
-
-  // kor-menu, [data-is=kor-menu] {
-    
-  // }
 
   .w-content {
     margin-left: 18rem;
     width: 72rem;
     box-shadow: 0px 0px 25px #000000;
-  }
-}
-
-kor-menu, [data-is=kor-menu] {
-  width: 18rem;
-  float: left;
-  padding-right: 3rem;
-
-  ul {
-    padding: 0px;
-    margin-bottom: 2rem;
-  }
-
-  ul.submenu {
-    padding-left: 1rem;
-  }
-
-  li {
-    list-style-type: none;
-  }
-
-  a {
-    text-decoration: none;
-    font-weight: bold;
-    color: $kor-text;
   }
 }
 
@@ -287,7 +254,7 @@ kor-user-editor, [data-is=kor-user-editor] {
   }
 }
 
-kor-clipboard, [data-is=kor-clipboard] {
+[data-is=kor-clipboard] {
   .image {
     max-width: 13.5rem;
     max-height: 13.5rem;
@@ -680,27 +647,28 @@ kor-notifications {
   }
 }
 
-kor-menu, [data-is=kor-menu] {
-  margin-top: 26px;
-  margin-bottom: 85px;
-  display: block;
+kor-menu {
+  width: 18rem;
   float: left;
-  width: 180px;
-  font-weight: bold;
+  padding-right: 3rem;
 
-  a {
-    color: #bbbbbb !important;
+  ul {
+    padding: 0px;
+    margin-bottom: 2rem;
+  }
+
+  ul.submenu {
+    padding-left: 1rem;
   }
 
   li {
-    margin-bottom: 0.1rem;
+    list-style-type: none;
   }
 
-  kor-sub-menu, [data-is=kor-sub-menu] {
-    .content {
-      padding-top: 0.2rem;
-      padding-left: 0.5rem;
-    }
+  a {
+    text-decoration: none;
+    font-weight: bold;
+    color: $kor-text;
   }
 }
 

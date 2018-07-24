@@ -43,7 +43,7 @@ module Kor
 
     config.middleware.insert_before 0, "Rack::Cors" do
       allow do
-        origins *ENV['CORS_ALLOWED_ORIGINS'].split(/\s+/)
+        origins *(ENV['CORS_ALLOWED_ORIGINS'] || '').split(/\s+/)
         resource '*', headers: :any, methods: [:get, :options]
       end
     end

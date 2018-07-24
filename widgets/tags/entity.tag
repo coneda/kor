@@ -7,7 +7,7 @@
     />
     
     <a href="#/entities/{opts.entity.id}" class="to-medium">
-      <img src={opts.entity.medium.url.thumbnail} />
+      <img riot-src={opts.entity.medium.url.thumbnail} />
     </a>
     <div if={!opts.noContentType}>
       {t('nouns.content_type')}:
@@ -23,12 +23,15 @@
     <span class="kind">{opts.entity.kind_name}</span>
   </virtual>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+  <script type="text/javascript">
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.info);
 
-    tag.isMedium = -> tag.opts.entity && !!tag.opts.entity.medium_id
+    tag.isMedium = function() {
+      return tag.opts.entity && !!tag.opts.entity.medium_id;
+    }
   </script>
 
 </kor-entity>

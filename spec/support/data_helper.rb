@@ -90,6 +90,8 @@ module DataHelper
     )
     last_supper = FactoryGirl.create :the_last_supper, collection: priv
 
+    paris = FactoryGirl.create :paris
+
     if options[:relationships]
       Relationship.relate_and_save(leonardo, 'has created', mona_lisa)
       Relationship.relate_and_save(leonardo, 'has created', last_supper)

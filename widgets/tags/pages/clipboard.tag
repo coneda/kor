@@ -43,6 +43,8 @@
     </div>
   </div>
 
+  <div class="kor-layout-right kor-layout-small"><div class="kor-content-box"></div></div>
+
   <div class="clearfix"></div>
   
   <script type="text/coffee">

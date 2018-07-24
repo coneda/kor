@@ -3,76 +3,82 @@ require 'rails_helper'
 RSpec.describe Entity do
   include DataHelper
 
-  context 'old specs with bloated dependencies (refactor!)' do
-    before :each do
-      test_data
+  before :each do
+    @default = Collection.find_by(name: 'default')
+    @works = Kind.find_by!(name: 'work')
+    @locations = Kind.find_by!(name: 'location')
+  end
 
-      Kor.settings.update(
-        'primary_relations' => ['shows'],
-        'secondary_relations' => ['has been created by']
-      )
-    end
+  context 'old specs with bloated dependencies (refactor!)' do
+    # before :each do
+    #   test_data
+
+    #   Kor.settings.update(
+    #     'primary_relations' => ['shows'],
+    #     'secondary_relations' => ['has been created by']
+    #   )
+    # end
 
     it "should find entities by two or more relationships" do
-      last_supper = FactoryGirl.create :work, :name => "Das Letzte Abendmahl"
-      leonardo = FactoryGirl.create :leonardo
+      last_supper = Entity.find_by!(name: 'The Last Supper')
+      mona_lisa = Entity.find_by!(name: 'Mona Lisa')
+      leonardo = Entity.find_by!(name: 'Leonardo da Vinci')
       louvre = FactoryGirl.create :institution, :name => 'Louvre'
-      FactoryGirl.create :is_located_at, :from_kind => @mona_lisa.kind, :to_kind => louvre.kind
-      Relationship.relate_and_save(@mona_lisa, 'has been created by', leonardo)
+
+      FactoryGirl.create :is_located_at, :from_kind => mona_lisa.kind, :to_kind => louvre.kind
+      Relationship.relate_and_save(mona_lisa, 'has been created by', leonardo)
       Relationship.relate_and_save(last_supper, 'has been created by', leonardo)
-      Relationship.relate_and_save(@mona_lisa, 'is located at', louvre)
+      Relationship.relate_and_save(mona_lisa, 'is located at', louvre)
       
-      work_kind_id = Kind.find_by_name('Werk').id
-      @query = Kor::Graph.new(:user => User.admin).search(:attribute,
-        :criteria => {
-          :kind_id => work_kind_id,
-          :relationships => [
-            { :relation_name => 'is located at', :entity_name => 'louvre'},
-            { :relation_name => 'has been created by', :entity_name => 'leo'}
-          ]
-        },
+      query = Kor::Graph.new(:user => User.admin).search(
+        :kind_id => @works.id,
+        :relationships => [
+          { :relation_name => 'is located at', :entity_name => 'louvre'},
+          { :relation_name => 'has been created by', :entity_name => 'leo'}
+        ],
         :page => 1
       )
       
-      result = @query.results.items
+      result = query.records
       expect(result.size).to eql(2)
-      expect(result.last).to eql(@mona_lisa)
-      expect(result.first).to eql(last_supper)
+      expect(result.first).to eql(mona_lisa)
+      expect(result.last).to eql(last_supper)
     end
 
     it "should accept nested attributes for entity datings" do
-      debugger
-      leonardo = FactoryGirl.create :leonardo, :datings_attributes => [
-        { :label => 'Datierung',  :dating_string => "15. Jahrhundert" },
-        { :label => 'Datierung',  :dating_string => "15.12.1933" }
+      leonardo = Entity.find_by!(name: 'Leonardo da Vinci')
+      leonardo.update datings_attributes: [
+        {label: 'Datierung', dating_string: "15. Jahrhundert"},
+        {label: 'Datierung', dating_string: "15.12.1933"}
       ]
-      expect(leonardo.datings.count).to eql(2)
+      expect(leonardo.datings.count).to eql(3)
     end
     
     it "should search by dating" do
-      nurnberg = FactoryGirl.create :location, :name => "Nürnberg", :datings => [
+      paris = Entity.find_by!(name: 'Paris')
+      paris.update(datings: [
         FactoryGirl.build(:entity_dating, :dating_string => "15. Jahrhundert"),
         FactoryGirl.build(:entity_dating, :dating_string => "18. Jahrhundert"),
         FactoryGirl.build(:entity_dating, :dating_string => "544")
-      ]
-      
-      expect(Entity.dated_in("1534").count).to be_zero
-      expect(Entity.dated_in("1433").count).to eql(1)
-      expect(Entity.dated_in("544").count).to eql(1)
-      expect(Entity.dated_in("300 bis 1900").all).to include(nurnberg)
+      ])
+
+      expect(Entity.dated_in('1534')).not_to include(paris)
+      expect(Entity.dated_in('1433').count).to eql(1)
+      expect(Entity.dated_in('544').count).to eql(1)
+      expect(Entity.dated_in('300 bis 1900').all).to include(paris)
     end
 
     it "should have an uuid when saved without validation" do
-      entity = Kind.find_by_name("Ort").entities.build(:name => "Nürnberg")
+      entity = @locations.entities.build(:name => "Nürnberg")
       entity.save(:validate => false)
       expect(entity.uuid).not_to be_nil
     end
     
     it "should generate correct kind names" do
-      entity = Kind.find_by_name("Ort").entities.build(:name => "Nürnberg")
-      expect(entity.kind_name).to eql("Ort")
-      entity.subtype = "Städtchen"
-      expect(entity.kind_name).to eql("Ort (Städtchen)")
+      entity = @locations.entities.build(:name => "Nürnberg")
+      expect(entity.kind_name).to eql("location")
+      entity.subtype = "village"
+      expect(entity.kind_name).to eql("location (village)")
     end
     
     it "should fire elastic updates" do
@@ -146,7 +152,7 @@ RSpec.describe Entity do
     end
 
     it "should validate against needless spaces" do
-      leonardo = FactoryGirl.build :leonardo
+      leonardo = Entity.find_by name: 'Leonardo da Vinci'
       expect(leonardo.valid?).to be_truthy
 
       leonardo.name = " Leonardo"
@@ -168,17 +174,8 @@ RSpec.describe Entity do
       )
     end
 
-    it "should not allow to create an entity twice" do
-      entity = FactoryGirl.build :mona_lisa
-      expect(entity.valid?).to be_falsey
-      expect(entity.errors.full_messages).to eq([
-        'name is already taken',
-        'distinguished name is invalid'
-      ])
-    end
-
     it "should ensure unique names within the same collection and kind" do
-      entity = FactoryGirl.build :mona_lisa
+      entity = FactoryGirl.build :leonardo
       expect(entity.valid?).to be_falsey
       expect(entity.errors.full_messages).to eq([
         'name is already taken',
@@ -187,31 +184,30 @@ RSpec.describe Entity do
     end
 
     it "should ensure unique names within the same kind but different collections" do
-      priv = FactoryGirl.create :private
-      entity = FactoryGirl.build :mona_lisa, collection: priv
+      priv = Collection.find_by name: 'private'
+      entity = FactoryGirl.build :leonardo, collection: priv
       expect(entity.valid?).to be_falsey
     end
 
     it "should allow equal names within different kinds and the same collection" do
-      people = Kind.where(name: 'Person').first
-      entity = FactoryGirl.build :mona_lisa, kind: people
+      entity = FactoryGirl.build :leonardo, kind: @works
       expect(entity.valid?).to be_truthy
     end
   end
 
   specify "relationships should be destroyed along with the entity" do
-    default_setup relationships: true
+    leonardo = Entity.find_by name: 'Leonardo da Vinci'
 
     expect {
-      @leonardo.destroy
+      leonardo.destroy
     }.to change{Relationship.count}.by(-2)
   end
 
   specify "directed relationships should be destroyed along with the entity" do
-    default_setup relationships: true
+    leonardo = Entity.find_by name: 'Leonardo da Vinci'
 
     expect {
-      @leonardo.destroy
+      leonardo.destroy
     }.to change{DirectedRelationship.count}.by(-4)
   end
 
@@ -235,8 +231,8 @@ RSpec.describe Entity do
 
   context 'determine if it is a medium' do
     before :each do
-      @media = FactoryGirl.create :media
-      @people = FactoryGirl.create :people
+      @media = Kind.medium_kind
+      @people = Kind.find_by!(name: 'person')
     end
 
     it 'should not be a medium by default' do
@@ -265,8 +261,6 @@ RSpec.describe Entity do
   end
 
   it 'should allow more than one entity without a name' do
-    default_setup
-
     a = @works.entities.create(
       collection: @default,
       name: '',
