@@ -150,7 +150,6 @@
 
     fetchPossibleParents = ->
       Zepto.ajax(
-        type: 'get'
         url: '/relations'
         success: (data) ->
           tag.possible_parents = []

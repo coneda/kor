@@ -120,7 +120,7 @@
         event.preventDefault()
         if wApp.utils.confirm tag.t('confirm.general')
           Zepto.ajax(
-            type: 'delete'
+            type: 'DELETE'
             url: "/relations/#{kind.id}"
             success: -> fetch()
           )

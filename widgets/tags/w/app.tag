@@ -51,7 +51,7 @@
             redirectTo '/search'
           else
             'kor-login'
-        when '/stats' then 'kor-stats'
+        when '/statistics' then 'kor-statistics'
         when '/legal' then 'kor-legal'
         when '/about' then 'kor-about'
         else
@@ -134,6 +134,7 @@
                   when '/relations/new' then 'kor-relation-editor'
                   when '/relations' then 'kor-relations'
                   when '/settings' then 'kor-settings-editor'
+                  when '/password-recovery' then 'kor-password-recovery'
                   else
                     'kor-search'
           else

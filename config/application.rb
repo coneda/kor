@@ -148,3 +148,4 @@ end
 # TODO: kind editor throws js error ... why?
 # TODO: change piwik and custom css to a more generic html include possibility
 #       for the end of the header and the end of the body
+# TODO: drop all haml and erb views (most)

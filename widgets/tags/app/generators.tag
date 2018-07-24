@@ -38,7 +38,7 @@
         event.preventDefault()
         if wApp.utils.confirm wApp.i18n.translate('confirm.general')
           Zepto.ajax(
-            type: 'delete'
+            type: 'DELETE'
             url: "/kinds/#{tag.opts.kind.id}/generators/#{generator.id}"
             success: ->
               route("/kinds/#{tag.opts.kind.id}/edit")

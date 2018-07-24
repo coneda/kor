@@ -32,10 +32,10 @@ wApp.i18n = {
     catch error
       console.warn(error, 'for key', input) if options['warnMissingKey']
       ""
-  localize: (locale, input, format_name = 'default') ->
+  localize: (locale, input, format_name = 'date.formats.default') ->
     try
       return "" unless input
-      format = wApp.i18n.translate locale, "date.formats.#{format_name}"
+      format = wApp.i18n.translate locale, format_name
       date = new Date(input)
       strftime(format, date)
     catch error

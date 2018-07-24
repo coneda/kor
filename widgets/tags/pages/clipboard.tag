@@ -28,7 +28,7 @@
               <a href="#/entities/{entity.id}">
                 <span show={!entity.medium}>{entity.display_name}</span>
                 <img
-                  show={entity.medium}
+                  if={entity.medium}
                   src={entity.medium.url.icon}
                   class="image"
                 />

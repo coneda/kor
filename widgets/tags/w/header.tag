@@ -29,7 +29,7 @@
   <div class="clearfix"></div>
 
   <script type="text/javascript">
-    tag = this;
+    var tag = this;
     tag.mixin(wApp.mixins.info);
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);

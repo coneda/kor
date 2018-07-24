@@ -71,6 +71,7 @@ group :test, :development do
   gem 'thin'
   gem 'quiet_assets'
   gem 'byebug'
+  gem 'pry'
 end
 
 group :production do

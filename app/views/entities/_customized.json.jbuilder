@@ -76,6 +76,7 @@ end
 
 if additions.request?('related')
   directed_relationships = entity.outgoing_relationships.
+    allowed(current_user).
     by_relation_name(related_relation_name).
     by_to_kind(related_kind_id).
     includes(to: [:tags, :collection, :kind, :medium]).

@@ -132,6 +132,8 @@ module Kor
           f.write options.to_json
         end
       end
+
+      options
     else
       Json.parse(File.read(filename))
     end

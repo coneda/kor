@@ -70,15 +70,15 @@ Rails.application.routes.draw do
     match 'download/:style/:id', :action => 'download', :as => :download_medium, :via => :get
   end
 
-  controller 'authentication' do
+  # controller 'authentication' do
     # match '/authenticate', :action => 'login', :via => :post
     # match '/env_auth', action: 'env_auth', via: :get
     # match '/login', :action => 'form', :as => :login, :via => :get
     # match '/login', :action => 'login', :via => :post
     # match '/logout', :action => 'logout', :as => :logout, :via => [:get, :delete]
-    match '/password_forgotten', :action => 'password_forgotten', :via => :get
-    match '/password_reset', :action => 'personal_password_reset', :via => :post
-  end
+    # match '/password_forgotten', :action => 'password_forgotten', :via => :get
+    # match '/password_reset', :action => 'personal_password_reset', :via => :post
+  # end
   
   # match 'config/menu', :to => "config#menu", :via => :get
   # match 'config/general', :to => "config#general", :via => :get, :as => "config"
@@ -118,6 +118,7 @@ Rails.application.routes.draw do
     controller 'main' do
       match 'translations', action: 'translations', via: 'get'
       match 'info', action: 'info', via: 'get'
+      match 'statistics', action: 'statistics', via: 'get'
     end
 
     resource 'settings', only: ['show', 'update']

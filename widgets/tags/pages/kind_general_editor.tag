@@ -167,7 +167,6 @@
 
     fetchPossibleParents = ->
       Zepto.ajax(
-        type: 'get'
         url: '/kinds'
         success: (data) ->
           tag.possibleParents = []

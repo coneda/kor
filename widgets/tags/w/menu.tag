@@ -125,14 +125,8 @@
 
   <ul>
     <li>
-      <a href="#/stats">{tcap('nouns.statistics')}</a>
+      <a href="#/statistics">{tcap('nouns.statistics')}</a>
     </li>
-    <li show={hasRole('admin')}>
-      <a href="#/dev">{tcap('activerecord.models.exception_log.other')}</a>
-    </li>
-  </ul>
-
-  <ul>
     <li>
       <a href="#/legal">{tcap('legal')}</a>
     </li>

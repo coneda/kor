@@ -34,7 +34,7 @@
         event.preventDefault()
         if wApp.utils.confirm wApp.i18n.translate('confirm.general')
           Zepto.ajax(
-            type: 'delete'
+            type: 'DELETE'
             url: "/kinds/#{tag.opts.kind.id}/fields/#{field.id}"
             success: ->
               route("/kinds/#{tag.opts.kind.id}/edit")

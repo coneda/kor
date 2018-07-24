@@ -2,7 +2,7 @@
 
   <div class="kor-layout-left kor-layout-small">
     <div class="kor-content-box">
-      <h1>Login</h1>
+      <h1>{tcap('verbs.login')}</h1>
 
       <div if={federationAuth()}>
         <div class="hr"></div>
@@ -34,40 +34,13 @@
         />
       </form>
 
-      <a href="#/password_recovery">{tcap('password_forgotten')}</a>
+      <a href="#/password-recovery" class="password-recovery">
+        {tcap('password_forgotten_question')}
+      </a>
 
-      <div class="hr"></div>
+      <hr />
 
-      <strong>
-        <span class="kor-shine">ConedaKOR</span>
-        {t('nouns.version')}
-        <span class="kor-shine">{info().version}</span>
-      </strong>
-
-      <div class="hr silent"></div>
-
-      <strong>
-        {tcap('provided_by')}
-        <span class="kor-shine">{info().operator}</span>
-      </strong>
-
-      <div class="hr silent"></div>
-
-      <strong>
-        {tcap('nouns.license')}<br />
-        <a href="http://www.gnu.org/licenses/agpl-3.0.txt" target="_blank">
-          {t('nouns.agpl')}
-        </a>
-      </strong>
-
-      <div class="hr silent"></div>
-
-      <strong>
-        »
-        <a href={info().source_code_url} target="_blank">
-          {t('objects.download', {interpolations: {o: 'nouns.source_code'}})}
-        </a>
-      </strong>
+      <kor-login-info />
     </div>
   </div>
 

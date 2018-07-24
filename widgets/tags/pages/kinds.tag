@@ -79,7 +79,7 @@
         event.preventDefault()
         if wApp.utils.confirm tag.t('confirm.general')
           Zepto.ajax(
-            type: 'delete'
+            type: 'DELETE'
             url: "/kinds/#{kind.id}"
             success: -> fetch()
           )
@@ -143,7 +143,6 @@
 
     fetch = ->
       Zepto.ajax(
-        type: 'get'
         url: '/kinds'
         data: {include: 'generators,fields,inheritance'}
         success: (data) ->

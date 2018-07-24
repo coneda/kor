@@ -28,7 +28,7 @@ class MainController < JsonController
 
   # TODO: implement as ajax
   def statistics
-
+    
   end
 
   def translations

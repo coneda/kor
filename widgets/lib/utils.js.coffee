@@ -40,13 +40,11 @@ wApp.utils = {
       clearTimeout wApp.state.scrollToTopTimeOut
   capitalize: (value) ->
     value.charAt(0).toUpperCase() + value.slice(1)
-
   confirm: (string) -> 
     string ||= wApp.i18n.t(wApp.session.current.locale, 'confirm.sure')
     window.confirm(string)
-
   toIdArray: (obj) ->
-    return [] unless obj
+    return null unless obj
     obj = obj.split(',') unless Zepto.isArray(obj)
     parseInt(o) for o in obj
 }

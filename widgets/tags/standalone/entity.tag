@@ -28,8 +28,7 @@
       if tag.opts.id
         base = $('script[kor-url]').attr('kor-url') || ""
 
-        $.ajax(
-          type: 'get'
+        Zepto.ajax(
           url: "#{base}/entities/#{tag.opts.id}"
           data: {include: 'all'}
           dataType: 'json'

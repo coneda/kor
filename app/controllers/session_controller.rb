@@ -22,13 +22,17 @@ class SessionController < JsonController
   # TODO: make this more secure!
   # TODO: move this to the users controller
   def reset_password
-    @user = User.find_by_email(params[:email])
-    
-    if @user && !@user.admin?
-      @user.reset_password
-      @user.save
-      UserMailer.reset_password(@user).deliver_now
-      render_200 I18n.t('notices.personal_password_reset_success')
+    @user = User.find_by(email: params[:email])
+
+    if @user
+      if @user.admin?
+        render_406 nil, I18n.t('errors.personal_password_reset_no_admins')
+      else
+        @user.reset_password
+        @user.save
+        UserMailer.reset_password(@user).deliver_now
+        render_200 I18n.t('notices.personal_password_reset_success')
+      end
     else
       render_404 I18n.t('errors.personal_password_reset_mail_not_found')
     end

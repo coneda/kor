@@ -8,6 +8,7 @@ class MediaController < ApplicationController
     if authorized?(:view, @medium.entity.collection)
       render :layout => 'wide'
     else
+      # TODO: should be handled with riot
       render_403
     end
   end
@@ -36,7 +37,7 @@ class MediaController < ApplicationController
         :disposition => 'inline',
         :filename => @medium.download_filename(style)
     else
-      render_403
+      render nothing: true, status: 403
     end
   end
 
@@ -59,7 +60,8 @@ class MediaController < ApplicationController
         :disposition => 'attachment',
         :filename => @medium.download_filename(style)
     else
-      render_403
+      # TODO: test this, should be json
+      render nothing: true, status: 403
     end
   end
 
@@ -74,7 +76,8 @@ class MediaController < ApplicationController
 
       redirect_to web_path(:anchor => entity_path(@medium.entity))
     else
-      render_403
+      # TODO: test this, should probably be handled as json
+      render nothing: true, status: 403
     end
   end
 

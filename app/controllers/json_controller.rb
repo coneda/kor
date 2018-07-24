@@ -1,7 +1,7 @@
 # TODO: test this
 class JsonController < BaseController
 
-  rescue_from ActiveRecord::RecordNotFound, with: :render_404
+  rescue_from ActiveRecord::RecordNotFound, with: :render_record_not_found
 
   before_filter :auth, :legal
 
@@ -40,6 +40,10 @@ class JsonController < BaseController
     def render_403(message = nil)
       @message = message || I18n.t('notices.access_denied')
       render template: 'layouts/message', status: 403
+    end
+
+    def render_record_not_found(exception)
+      render_404 exception.message
     end
 
     def render_404(message = nil)

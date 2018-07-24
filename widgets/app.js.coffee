@@ -12,7 +12,7 @@ Zepto.extend Zepto.ajaxSettings, {
     wApp.bus.trigger 'ajax-state-changed'
 
     xhr.then ->
-      console.log('ajax log', xhr.requestUrl, JSON.parse(xhr.response))
+      console.log('ajax ' + settings.type + ': ', xhr.requestUrl, JSON.parse(xhr.response))
 
     xhr.always ->
       wApp.state.requests.pop()
@@ -20,7 +20,7 @@ Zepto.extend Zepto.ajaxSettings, {
 
     xhr.requestUrl = settings.url
     # token = Zepto('meta[name=csrf-token]').attr('content')
-    if wApp.session
+    if settings.type.match(/POST|PATCH|PUT|DELETE/i) && wApp.session
       xhr.setRequestHeader 'X-CSRF-Token', wApp.session.csrfToken()
 }
 

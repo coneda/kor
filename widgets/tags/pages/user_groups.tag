@@ -30,10 +30,10 @@
   <div class="clearfix"></div>
 
   <script type="text/javascript">
-    tag = this
-    tag.mixin(wApp.mixins.config)
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+    var tag = this;
+    tag.mixin(wApp.mixins.config);
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
 
     tag.on('mount', function() {
       fetch();
