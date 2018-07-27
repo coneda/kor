@@ -5,6 +5,43 @@ documents and interconnect them with relationships. You can build huge semantic
 networks for an unlimited amount of domains. This integrates a sophisticated
 ontology management tool with an easy to use media database.
 
+## Table Of Contents
+
+- [ConedaKOR](#conedakor)
+  - [Table Of Contents](#table-of-contents)
+  - [Changelog](#changelog)
+  - [User documentation](#user-documentation)
+  - [License](#license)
+  - [Features](#features)
+  - [System admistrator's documentation](#system-admistrators-documentation)
+    - [Requirements](#requirements)
+    - [Scripted installation](#scripted-installation)
+    - [Logging](#logging)
+    - [Database and elasticsearch](#database-and-elasticsearch)
+    - [Configuration & customizations](#configuration--customizations)
+      - [Specific configuration options](#specific-configuration-options)
+    - [Backups](#backups)
+      - [Restore](#restore)
+    - [Authentication](#authentication)
+      - [Unauthenticated access](#unauthenticated-access)
+      - [Permission inheritance](#permission-inheritance)
+      - [External authentication](#external-authentication)
+      - [Authentication via request env](#authentication-via-request-env)
+    - [OAI-PMH Interface](#oai-pmh-interface)
+    - [Widgets](#widgets)
+      - [`<kor-entity>`](#kor-entity)
+    - [JSON API](#json-api)
+    - [Generating a virtual appliance](#generating-a-virtual-appliance)
+    - [Generating docker images](#generating-docker-images)
+    - [Command line tool](#command-line-tool)
+      - [Excel import and export](#excel-import-and-export)
+      - [Rebuilding elastic index](#rebuilding-elastic-index)
+    - [Development](#development)
+      - [Running the test suites](#running-the-test-suites)
+      - [Coverage reports](#coverage-reports)
+      - [Profiling](#profiling)
+      - [Showing media in development](#showing-media-in-development)
+
 ## Changelog
 
 We keep it updated at [CHANGELOG.md](CHANGELOG.md)
