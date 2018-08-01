@@ -31,7 +31,7 @@ kor.controller('entity_controller', [
 
     scope.show_tags = ->
       if scope.entity
-        scope.entity.kind.settings.tagging &&
+        scope.entity.kind.tagging &&
         (
           (scope.entity.tags && scope.entity.tags.length > 0) ||
           scope.allowed_to('tagging', scope.entity.collection_id)
