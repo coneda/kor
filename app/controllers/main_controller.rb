@@ -3,7 +3,7 @@ class MainController < JsonController
   skip_before_action :authentication, :authorization, :legal
   
   def info
-
+    
   end
 
   def statistics

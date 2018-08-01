@@ -219,7 +219,8 @@ kor-login-info {
 kor-pagination, [data-is=kor-pagination] {
   display: block;
   text-align: right;
-  margin-top: -0.2rem;
+  margin-top: -0.5rem;
+  margin-bottom: -3px;
 
   a {
     position: relative;
@@ -228,6 +229,12 @@ kor-pagination, [data-is=kor-pagination] {
 
   input {
     width: 5rem;
+  }
+
+  img[src='images/vertical_dots.gif'] {
+    margin-top: -1rem;
+    position: relative;
+    top: 0.4rem;
   }
 }
 
@@ -255,9 +262,31 @@ kor-user-editor, [data-is=kor-user-editor] {
 }
 
 [data-is=kor-clipboard] {
+  .mass-subselect {
+    float: left;
+  }
+
   .image {
     max-width: 13.5rem;
     max-height: 13.5rem;
+  }
+
+  td:first-child {
+    width: 3rem;
+  }
+
+  td:last-child {
+    width: 3rem;
+  }
+}
+
+kor-clipboard-subselect-control {
+  display: block;
+  text-align: center;
+
+  input {
+    margin: 0px;
+    margin-top: -2px;
   }
 }
 
@@ -429,6 +458,12 @@ kor-generators {
   text-align: right;
 }
 
+.kor-loading-screen {
+  margin: 0px auto;
+  text-align: center;
+  margin-top: 10%;
+}
+
 kor-settings-editor, [data-is=kor-settings-editor] {
   h2 {
     margin-top: 4rem;
@@ -527,9 +562,9 @@ kor-search-result {
     }
 
     kor-clipboard-control {
-      position: absolute;
-      right: 0.5rem;
-      top: 0.5rem;
+      display: block;
+      text-align: right;
+      float: none;
     }
   }
 
@@ -680,5 +715,12 @@ kor-menu {
       width: 8rem;
       text-align: right;
     }
+  }
+}
+
+kor-mass-action {
+  .action {
+    display: block;
+    text-decoration: underline;
   }
 }

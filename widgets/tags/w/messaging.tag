@@ -23,7 +23,7 @@
         type: type,
         content: message
       }
-      window.setTimeout(self.drop, self.opts.duration || 5000)
+      window.setTimeout(self.drop, self.opts.duration || 3000)
       self.update()
 
     ajaxCompleteHandler = (event, request, options) ->

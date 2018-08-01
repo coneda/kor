@@ -1,24 +1,40 @@
 <w-app-loader>
 
-  <div class="app"></div>
+  <div class="app" ref="target">
+    <div class="kor-loading-screen">
+      <img src="/images/loading.gif"><br />
+      <strong>… loading …</strong>
+    </div>
+  </div>
 
-  <script type="text/coffee">
-    tag = this
+  <script type="text/javascript">
+    var tag = this;
 
-    reloadApp = ->
-      if tag.mountedApp
-        tag.mountedApp.unmount(true)
+    var reloadApp = function() {
+      unmount();
 
-      preloaders = wApp.setup()
-      $.when(preloaders...).then ->
-        element = Zepto(tag.root).find('.app')[0]
-        opts = {routing: true}
-        tag.mountedApp = riot.mount(element, 'w-app', opts)[0]
-        console.log 'application (re)loaded'
+      var preloaders = wApp.setup();
+      $.when.apply(null, preloaders).then(function() {
+        mountApp();
+      });
+    }
 
-    wApp.bus.on 'reload-app', reloadApp
-    tag.on 'mount', -> wApp.bus.trigger 'reload-app'
+    var unmount = function() {
+      if (tag.mountedApp) {
+        tag.mountedApp.unmount(true);
+      }
+    }
 
+    var mountApp = function() {
+      var opts = {routing: true};
+      tag.mountedApp = riot.mount(tag.refs.target, 'w-app', opts)[0]
+      console.log('application (re)loaded');
+    }
+
+    wApp.bus.on('reload-app', reloadApp);
+    tag.on('mount', function() {
+      wApp.bus.trigger('reload-app')
+    })
   </script>
 
 </w-app-loader>

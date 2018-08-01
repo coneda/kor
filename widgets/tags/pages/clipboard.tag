@@ -7,22 +7,33 @@
       </div>
       <h1>{tcap('nouns.clipboard')}</h1>
 
-      <div class="hr"></div>
+      <div class="mass-subselect">
+        <a href="#" onclick={selectAll}>{t('all')}</a> |
+        <a href="#" onclick={selectNone}>{t('none')}</a>
+      </div>
+
+      <kor-pagination
+        if={data}
+        page={data.page}
+        per-page={data.per_page}
+        total={data.total}
+        on-paginate={page}
+        per-page-control={true}
+      />
+
+      <hr />
 
       <span show={data && data.total == 0}>
         {tcap('objects.none_found', {interpolations: {o: 'nouns.entity.one'}})}
       </span>
 
+      <kor-nothing-found data={data} />
+
       <table if={data}>
         <tbody>
           <tr each={entity in data.records}>
             <td>
-              <kor-input
-                type="checkbox"
-                ref="entityIds"
-                value={true}
-                data-id={entity.id}
-              />
+              <kor-clipboard-subselect-control entity={entity}/>
             </td>
             <td>
               <a href="#/entities/{entity.id}">
@@ -43,44 +54,102 @@
     </div>
   </div>
 
-  <div class="kor-layout-right kor-layout-small"><div class="kor-content-box"></div></div>
+  <div class="kor-layout-right kor-layout-small">
+    <div class="kor-content-box">
+      <kor-mass-action
+        if={data}
+        ids={selectedIds()}
+        on-action-success={reload}
+      />
+    </div>
+  </div>
 
   <div class="clearfix"></div>
   
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
+  <script type="text/javascript">
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
 
-    tag.on 'mount', ->
-      if tag.currentUser() && !tag.isGuest()
+    tag.on('mount', function() {
+      wApp.bus.on('routing:query', fetch);
+
+      if (tag.currentUser() && !tag.isGuest()) {
         fetch()
-      else
-        h() if h = tag.opts.handlers.accessDenied
+      } else {
+        if (h = tag.opts.handlers.accessDenied) {
+          h()
+        }
+      }
+    })
 
-    tag.selectedIds = ->
-      e.opts.dataId for e in tag.refs.entityIds when e.checked()
+    tag.on('umount', function() {
+      wApp.bus.off('routing:query', fetch);
+    });
 
-    tag.reset = (event) -> 
-      event.preventDefault()
-      h().done(fetch) if h = tag.opts.handlers.reset
+    tag.reload = function() {
+      fetch();
+    }
+
+    tag.selectAll = function(event) {
+      event.preventDefault();
+      wApp.clipboard.subSelectAll();
+    }
+
+    tag.selectNone = function(event) {
+      event.preventDefault();
+      wApp.clipboard.resetSubSelection();
+    }
+
+    tag.selectedIds = function() {
+      return wApp.clipboard.subSelection();
+    }
+
+    tag.reset = function(event) {
+      event.preventDefault();
+      wApp.clipboard.reset();
+      fetch();
+    }
       
-    tag.remove = (id) ->
-      (event) ->
-        event.preventDefault()
-        h(id).done(fetch) if h = tag.opts.handlers.remove
+    tag.remove = function(id) {
+      return function(event) {
+        event.preventDefault();
+        wApp.clipboard.remove(id);
+        fetch();
+      }
+    }
 
-    fetch = ->
-      console.log 'fetching:', tag.opts.entityIds
-      Zepto.ajax(
-        url: '/clipboard'
-        data: {ids: tag.opts.entityIds}
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+    tag.page = function(newPage, newPerPage) {
+      wApp.routing.query({
+        page: newPage,
+        per_page: newPerPage
+      });
+    }
 
+    var urlParams = function() {
+      var results = wApp.routing.query();
+      results['id'] = wApp.clipboard.ids().join(',');
+      return results;
+    }
+
+    var fetch = function() {
+      var params = urlParams();
+
+      if (params['id'].length) {
+        Zepto.ajax({
+          url: '/entities',
+          data: urlParams(),
+          success: function(data) {
+            tag.data = data;
+            tag.update();
+          }
+        })
+      } else {
+        tag.data = null;
+        tag.update();
+      }
+    }
   </script>
 
 </kor-clipboard>

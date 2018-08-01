@@ -105,17 +105,7 @@
                 'kor-medium-page'
               else
                 switch path
-                  when '/clipboard'
-                    opts.handlers.reset = ->
-                      wApp.clipboard.reset()
-                      tag.mountedTag.opts.entityIds = wApp.clipboard.ids()
-                      Zepto.Deferred().resolve()
-                    opts.handlers.remove = (id) ->
-                      wApp.clipboard.remove(id)
-                      tag.mountedTag.opts.entityIds = wApp.clipboard.ids()
-                      Zepto.Deferred().resolve()
-                    opts.entityIds = wApp.clipboard.ids()
-                    'kor-clipboard'
+                  when '/clipboard' then 'kor-clipboard'
                   when '/profile' then 'kor-profile'
                   when '/new-media' then 'kor-new-media'
                   when '/users/new' then 'kor-user-editor'

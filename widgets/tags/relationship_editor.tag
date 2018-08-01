@@ -3,7 +3,6 @@
   <h1>{header()}</h1>
 
   <form onsubmit={save}>
-
     <kor-relation-selector
       source-kind-id={sourceKindId}
       target-kind-id={targetKindId}

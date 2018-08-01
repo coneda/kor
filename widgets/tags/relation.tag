@@ -6,7 +6,7 @@
       page={opts.query.page}
       per-page={data.per_page}
       total={data.total}
-      page-update-handler={pageUpdate}
+      on-paginate={pageUpdate}
     />
 
     {opts.name}

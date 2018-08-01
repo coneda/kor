@@ -121,6 +121,10 @@ Rails.application.routes.draw do
       match 'statistics', action: 'statistics', via: 'get'
     end
 
+    scope 'tools', controller: 'tools' do
+      match 'mass_delete', action: 'mass_delete', via: 'DELETE'
+    end
+
     resource 'settings', only: ['show', 'update']
     # match 'config', action: 'kor_config', via: 'get'
 

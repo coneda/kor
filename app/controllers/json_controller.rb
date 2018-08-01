@@ -125,13 +125,12 @@ class JsonController < BaseController
       end
     end
 
-    # TODO: get config values instead of 10 and 100
     # TODO: handle this like inclusion, so that we don't need the before filter
     def pagination
       @page = [(params[:page] || 1).to_i, 1].max
       @per_page = [
         (params[:per_page] || 10).to_i,
-        100.to_i
+        Kor.settings['max_results_per_request']
       ].min
     end
 

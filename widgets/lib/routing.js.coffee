@@ -10,7 +10,8 @@ wApp.routing = {
           qs.push "#{k}=#{v}"
       route "#{wApp.routing.path()}?#{qs.join '&'}"
     else
-      wApp.routing.parts()['hash_query'] || {}
+      result = wApp.routing.parts()['hash_query'] || {}
+      Zepto.extend({}, result);
   path: (new_path) ->
     if new_path
       route new_path

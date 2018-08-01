@@ -8,7 +8,7 @@ class ToolsController < JsonController
     'remove_from_authority_group' 
   ]
 
-  layout 'normal_small'
+  # layout 'normal_small'
 
 
   def history
@@ -16,48 +16,44 @@ class ToolsController < JsonController
     render :nothing => true
   end
 
-  def statistics
-
-  end
-
   # TODO: handle the whole clipboard functionality with localstorage, e.g.
   # https://github.com/tsironis/lockr
-  def clipboard
-    params[:include] = param_to_array(params[:include], ids: false)
+  # def clipboard
+  #   params[:include] = param_to_array(params[:include], ids: false)
     
-    @per_page = 500
-    @records = viewable_entities.where(id: params[:ids])
-    @total = @records.count
+  #   @per_page = 500
+  #   @records = viewable_entities.where(id: params[:ids])
+  #   @total = @records.count
 
-    render action: '../entities/index'
-  end
+  #   render action: '../entities/index'
+  # end
 
-  def mark_as_current
-    if params[:id]
-      session[:bla] = ',p'
-      session[:current_history] ||= Array.new
-      session[:current_history] << params[:id].to_i unless session[:current_history].last == params[:id].to_i
-      session[:current_history] = session[:current_history].last(Kor.settings['current_history_length'].to_i)
+  # def mark_as_current
+  #   if params[:id]
+  #     session[:bla] = ',p'
+  #     session[:current_history] ||= Array.new
+  #     session[:current_history] << params[:id].to_i unless session[:current_history].last == params[:id].to_i
+  #     session[:current_history] = session[:current_history].last(Kor.settings['current_history_length'].to_i)
 
-      entity = viewable_entities.find(params[:id])
-      entity_name = (entity.is_medium? ? entity.id : "'#{entity.display_name}'")
+  #     entity = viewable_entities.find(params[:id])
+  #     entity_name = (entity.is_medium? ? entity.id : "'#{entity.display_name}'")
 
-      session[:current_entity] = params[:id].to_i || nil
-      flash[:notice] = I18n.t("objects.marked_as_current_success", :o => entity_name)
-    else
-      flash[:error] = I18n.t("objects.marked_as_current_failure", :o => entity_name)
-    end
+  #     session[:current_entity] = params[:id].to_i || nil
+  #     flash[:notice] = I18n.t("objects.marked_as_current_success", :o => entity_name)
+  #   else
+  #     flash[:error] = I18n.t("objects.marked_as_current_failure", :o => entity_name)
+  #   end
 
-    respond_to do |format|
-      format.html { redirect_to back_save }
-      format.json do
-        @current_history = session[:current_history].map{|id| Entity.includes(:medium).find(id)}
-        @notice = flash[:notice]
-        render
-        flash.discard
-      end
-    end
-  end
+  #   respond_to do |format|
+  #     format.html { redirect_to back_save }
+  #     format.json do
+  #       @current_history = session[:current_history].map{|id| Entity.includes(:medium).find(id)}
+  #       @notice = flash[:notice]
+  #       render
+  #       flash.discard
+  #     end
+  #   end
+  # end
   
   # TODO: write integration test for this but implement it within angularjs
   def add_media
@@ -181,6 +177,15 @@ class ToolsController < JsonController
   
 
   ####################### actual clipboard actions #############################
+
+  def mass_delete
+    if params[:ids]
+      Entity.allowed(current_user, :delete).by_id(params[:ids]).destroy_all
+      render_200 I18n.t('notices.entities_destroyed')
+    else
+      render_406 nil, I18n.t('nothing_selected')
+    end
+  end
 
   private
     def move_to_collection
@@ -333,12 +338,6 @@ class ToolsController < JsonController
       else
         render_403
       end
-    end
-
-    def mass_destroy
-      Entity.allowed(current_user, :delete).destroy params[:entity_ids]
-      flash[:notice] = I18n.t('notices.entities_destroyed')
-      redirect_to :action => 'clipboard'
     end
 
 end

@@ -1,5 +1,5 @@
 class CredentialsController < JsonController
-  layout 'normal_small'
+  # layout 'normal_small'
   
   def index
     params[:sort_by] ||= 'name'

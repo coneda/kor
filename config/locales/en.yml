@@ -67,6 +67,7 @@ en:
   no_schema: no schema
   add_to_merge: add to merge
   no_results: no results
+  results_per_page: results / page
 
   search_term:
     one: search term
@@ -142,7 +143,7 @@ en:
     prepare_merge: "merge"
     merge: "merge"
     mass_relate: "relate with"
-    mass_destroy: "delete"
+    mass_delete: "delete"
     add_to_authority_group: "add to a global group"
     add_to_user_group: "add to one of your own groups"
     move_to_collection: "move to collection"

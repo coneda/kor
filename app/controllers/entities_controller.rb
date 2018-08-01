@@ -145,7 +145,7 @@ class EntitiesController < JsonController
   def index
     params[:include] = param_to_array(params[:include], ids: false)
 
-    # params[:ids] = param_to_array(params[:ids])
+    params[:id] = param_to_array(params[:id])
     params[:kind_id] = param_to_array(params[:kind_id])
     params[:related_per_page] = [
       (params[:related_per_page] || 1).to_i,
@@ -154,9 +154,10 @@ class EntitiesController < JsonController
     params[:related_relation_name] = param_to_array(params[:related_relation_name], ids: false)
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
 
-    search = Kor::Search.new(
+    search = Kor::Search.new(current_user,
       collection_id: params[:collection_id],
       kind_id: params[:kind_id],
+      id: params[:id],
       terms: params[:terms],
       name: params[:name],
       dating: params[:dating],

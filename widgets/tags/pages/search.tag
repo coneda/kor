@@ -66,7 +66,7 @@
         page={data.page}
         per-page={data.per_page}
         total={data.total}
-        page-update-handler={page}
+        on-paginate={page}
       />
 
       <kor-search-result

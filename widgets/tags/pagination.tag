@@ -1,20 +1,35 @@
-<kor-pagination show={isActive()}>
+<kor-pagination>
 
-  <span>{t('nouns.page')}</span>
-  <a show={!isFirst()} onclick={toPrevious}><i class="icon pager_left"></i></a>
-  <kor-input
-    type="number"
-    value={currentPage()}
-    onchange={inputChanged}
-    ref="manual"
-  />
-  {t('of', {interpolations: {amount: totalPages()}})}
-  <a show={!isLast()} onclick={toNext}><i class="icon pager_right"></i></a>
+  <virtual if={isActive()}>
+    <span>{t('nouns.page')}</span>
+    <a show={!isFirst()} onclick={toPrevious}><i class="icon pager_left"></i></a>
+    <kor-input
+      type="number"
+      value={currentPage()}
+      onchange={inputChanged}
+      ref="manual"
+    />
+    {t('of', {interpolations: {amount: totalPages()}})}
+    <a show={!isLast()} onclick={toNext}><i class="icon pager_right"></i></a>
+  </virtual>
+
+  <virtual if={opts.perPageControl}>
+    <img src="images/vertical_dots.gif" />
+    <kor-input
+      type="select"
+      options={perPageOptions()}
+      value={opts.perPage}
+      onchange={selectChanged}
+      ref="select"
+    />
+    {t('results_per_page')}
+  </virtual>
 
   <script type="text/coffee">
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.config)
 
     tag.currentPage = -> parseInt(tag.opts.page || 1)
     tag.toFirst = (event) ->
@@ -35,14 +50,28 @@
 
     tag.to = (new_page) ->
       if new_page != tag.currentPage() && new_page >= 1 && new_page <= tag.totalPages()
-        if Zepto.isFunction(tag.opts.pageUpdateHandler)
-          tag.opts.pageUpdateHandler(new_page)
+        if Zepto.isFunction(tag.opts.onPaginate)
+          tag.opts.onPaginate(new_page, tag.opts.perPage)
+
+    tag.changePerPage = (new_per_page) ->
+      if new_per_page != tag.opts.perPage
+        if Zepto.isFunction(tag.opts.onPaginate)
+          tag.opts.onPaginate(1, new_per_page)
 
     tag.totalPages = ->
       Math.ceil(tag.opts.total / tag.opts.perPage)
 
+    tag.perPageOptions = ->
+      defaults = [5, 10, 20, 50, 100]
+      results = (i for i in defaults when i < tag.config().max_results_per_request)
+      results.push tag.config().max_results_per_request
+      results
+
     tag.inputChanged = (event) ->
       tag.to parseInt(tag.refs.manual.value())
+
+    tag.selectChanged = (event) ->
+      tag.changePerPage parseInt(tag.refs.select.value())
 
     tag.isActive = ->
       tag.opts.total && (tag.opts.total > tag.opts.perPage)
