@@ -1,6 +1,6 @@
 <kor-kind-general-editor>
 
-  <h2>
+  <h2 if={opts.kind}>
     <kor-t
       key="general"
       with={ {capitalize: true} }

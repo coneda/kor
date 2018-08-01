@@ -74,7 +74,7 @@
       if tag.opts.id
         Zepto.ajax(
           url: "/kinds/#{tag.opts.id}"
-          data: {include: 'fields,generators,inheritance'}
+          data: {include: 'settings,fields,generators,inheritance'}
           success: (data) ->
             tag.opts.kind = data
             tag.update()

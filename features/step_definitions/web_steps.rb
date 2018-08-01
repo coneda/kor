@@ -416,3 +416,7 @@ Then(/^select "([^"]*)" should have( no)? option "([^"]*)"$/) do |name, negation
     options.any?{|o| o.text == option}
   end
 end
+
+Then(/^"([^"]*)" should be checked$/) do |locator|
+  expect(find_field(locator)).to be_checked
+end
