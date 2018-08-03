@@ -429,7 +429,7 @@ class Entity < ActiveRecord::Base
     end
   }
   scope :by_relation_name, lambda {|relation_name|
-    if relation_name
+    if relation_name.present?
       kind_ids = Relation.where(name: relation_name).map{|r| r.to_kind_id}
       kind_ids << Relation.where(reverse_name: relation_name).map{|r| r.from_kind_id}
       where(kind_id: kind_ids.flatten.uniq)

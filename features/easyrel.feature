@@ -14,7 +14,7 @@ Feature: Inplace relationship editor
     And I am logged in as "jdoe"
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    And I should not see element "img.kor_command_image[data-name='plus']"
+    And I should not see icon link "add relationship"
 
   @javascript
   Scenario: Show the editor after clicking '+'
@@ -22,7 +22,7 @@ Feature: Inplace relationship editor
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
     And I should not see "Create relationship"
-    When I click element "[data-name=plus]" within ".relationships"
+    When I click icon 'add relationship'
     Then I should see "Create relationship"
 
   @javascript
@@ -30,23 +30,22 @@ Feature: Inplace relationship editor
     Given I am logged in as "admin"
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    When I click element "[data-name=plus]" within ".relationships"
+    When I click icon 'add relationship'
     And I press "Save"
-    Then I should see "Relation has to be filled in" within ".kor-errors"
-    And I should see "Target has to be filled in" within ".kor-errors"
+    And I should see "has to be filled in" within "kor-entity-selector"
 
   @javascript
   Scenario: Create a new relationship
     Given I am logged in as "admin"
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    When I click element "[data-name=plus]" within ".relationships"
-    And I select "is equivalent to" from "relation_name"
+    When I click icon 'add relationship'
+    And I select "is equivalent to" from "Relation"
     And I fill in "terms" with "schrei"
-    And I click element "[kor-id='2']"
+    And I click "Der Schrei" within "kor-entity-selector"
     And I press "Save"
     And I should not see "Create relationship"
-    Then I should see "Der Schrei" within ".relationship"
+    Then I should see "Der Schrei" within "kor-relationship"
 
   @javascript
   Scenario: Add properties to an existing relationship
@@ -54,14 +53,15 @@ Feature: Inplace relationship editor
     And the relationship "Mona Lisa" "is similar to" "Der Schrei"
     When I go to the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    When I click element "[data-name=pen]" within ".relationship"
-    And I click button "Add" within ".relationship .properties"
-    And I fill in ".property input" with "this is almost certain"
+    When I click icon "edit relationship"
+    And I click button "Add" within "kor-properties-editor"
+    And I fill in "value" with "this is almost certain"
     And I press "Save"
     And I should not see "Edit relationship"
-    And I should see "Relationship has been changed"
-    And I should see "this is almost certain" within ".relationship"
+    And I should see "relationship has been changed"
+    And I should see "this is almost certain" within "kor-relationship"
 
+  # TODO: continue here
   @javascript
   Scenario: Delete relationship
     Given I am logged in as "admin"
@@ -69,8 +69,8 @@ Feature: Inplace relationship editor
     When I go to the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
     And I ignore the next confirmation box
-    When I click element "[data-name=x]" within ".relationships"
-    And I should see "Relationship has been deleted"
+    When I click icon "delete relationship"
+    And I should see "relationship has been deleted"
     And I should not see "Der Schrei" within ".relationships"
 
   @javascript

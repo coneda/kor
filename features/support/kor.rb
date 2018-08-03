@@ -21,8 +21,8 @@ Before do |scenario|
     eval File.read("#{Rails.root}/db/seeds.rb")
   end
 
-  system "rm -f #{Rails.root}/config/kor.app.test.yml"
-  Kor::Config.reload!
+  # system "rm -f #{Rails.root}/config/kor.app.test.yml"
+  # Kor::Config.reload!
 
   if scenario.tags.any?{|st| st.name == "@elastic"}
     Kor::Elastic.enable
@@ -51,6 +51,12 @@ Before('@javascript') do
     result
   }
 end
+
+# Transform /^table:name,distinct_name,kind,collection/ do |table|
+#   table.map_column!(:distinct_name) {|d| d == "" ? nil : d}
+#   table.map_headers! {|h| h.to_sym}
+#   table
+# end
 
 Capybara.default_max_wait_time = 5
 

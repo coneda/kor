@@ -8,6 +8,7 @@
       name={opts.name}
       value={valueFromParent()}
       checked={checkedFromParent()}
+      placeholder={opts.placeholder}
     />
     <textarea
       if={opts.type == 'textarea'}

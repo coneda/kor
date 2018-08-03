@@ -40,7 +40,7 @@ module NavigationHelpers
     when /the entity page for "([^\"]*)"/
       name = $1
       entity = Entity.find_by_name(name)
-      web_path(:anchor => entity_path(entity))
+      "/#/entities/#{entity.id}"
     when /the entity page for the (first|last) medium/
       media = Kind.medium_kind.entities
       entity = ($1 == 'first' ? media.first : media.last)
@@ -57,7 +57,7 @@ module NavigationHelpers
     when /the clipboard/ then '/tools/clipboard'
     when /the new "([^\"]*)-Entity" page/
       new_entity_path(:kind_id => Kind.find_by_name($1).id)
-    when /the login page/ then login_path
+    when /the login page/ then '/#/login'
     when /the new user group page/ then new_user_group_path
     when /the user group "([^\"]*)"/ then user_group_path(UserGroup.find_by_name($1))
     when /the edit page for user group "([^\"]*)"/ then edit_user_group_path(UserGroup.find_by_name($1))

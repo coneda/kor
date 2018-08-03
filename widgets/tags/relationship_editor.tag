@@ -1,121 +1,134 @@
 <kor-relationship-editor>
 
-  <h1>{header()}</h1>
+  <div class="kor-content-box" if={relationship}>
+    <h1 if={relationship.id}>
+      {tcap('objects.edit', {interpolations: {o: 'activerecord.models.relationship'}})}
+    </h1>
+    <h1 if={!relationship.id}>
+      {tcap('objects.create', {interpolations: {o: 'activerecord.models.relationship'}})}
+    </h1>
 
-  <form onsubmit={save}>
-    <kor-relation-selector
-      source-kind-id={sourceKindId}
-      target-kind-id={targetKindId}
-      value={opts.relationship.relation_name}
-      errors={errors.relation_id}
-      ref="relation_name"
-    />
+    <form onsubmit={save} onreset={cancel} if={relationship}>
+      <kor-relation-selector
+        source-kind-id={sourceKindId}
+        target-kind-id={targetKindId}
+        value={relationship.relation_name}
+        errors={errors.relation_id}
+        ref="relationName"
+        onchange={relationChanged}
+      />
 
-    <kor-entity-selector
-      relation-name={relationName}
-      errors={errors.to_id}
-      value={opts.relationship.to}
-      ref="target_id"
-    />
+      <hr />
 
-    <div class="hr"></div>
+      <kor-entity-selector
+        relation-name={relationship.relation_name}
+        value={relationship.to_id}
+        errors={errors.to_id}
+        ref="targetId"
+        onchange={targetChanged}
+      />
 
-    <kor-properties-editor
-      properties={opts.relationship.properties}
-      ref="properties"
-    />
+      <hr />
 
-    <div class="hr"></div>
+      <kor-properties-editor
+        properties={relationship.properties}
+        ref="properties"
+      />
 
-    <kor-datings-editor
-      datings={opts.relationship.datings}
-      ref="datings"
-    />
+      <hr />
 
-    <div class="hr"></div>
+      <kor-datings-editor
+        value={relationship.datings}
+        ref="datings"
+        errors={errors.datings}
+      />
 
-    <kor-input type="submit" value={t('verbs.save')} />
-    <kor-input type="reset" value={t('cancel')} />
-  </form>
+      <hr />
 
-    <!-- <div class="kor-errors" ng-if="errors">
-      <div ng-show="errors.to_id || errors.from_id">
-        {{'activerecord.attributes.relationship.to_id' | translate | capitalize}}
-        {{'activerecord.errors.messages.can_not_be_empty'| translate}}
-      </div>
-        {{'activerecord.attributes.relationship.relation_id' | translate | capitalize}}
-        {{'activerecord.errors.messages.can_not_be_empty'| translate}}
-      </div>
-      <div ng-show="errors.datings">
-        {{'activerecord.attributes.relationship.dating' | translate | capitalize}}
-        {{'activerecord.errors.messages.invalid'| translate}}
-      </div>
-    </div>
+      <kor-input type="submit" value={tcap('verbs.save')} />
+      <kor-input type="reset" value={tcap('cancel')} />
+    </form>
+  </div>
 
-    <div class="kor-field">
-      <label ng-bind="'activerecord.attributes.relationship.relation_id' | translate | capitalize"></label>
-      <div
-        kor-relation-selector="relation_name"
-        kor-source="source"
-        kor-target="target"
-      ></div>
-    </div>
+  <script type="text/javascript">
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.editor);
 
-    <div class="kor-field">
-      <label ng-bind="'activerecord.attributes.relationship.to_id' | translate | capitalize"></label>
-      <div
-        kor-entity-selector="target"
-        kor-existing="{{existing}}"
-        kor-grid-width="{{grid_width}}"
-        kor-relation-name="relation_name"
-      ></div>
-    </div>
+    tag.resource = {
+      singular: 'relationship',
+      plural: 'relationships'
+    }
 
-  </form> -->
+    tag.resourceId = function() {
+      return tag.relationship.relationship_id;
+    }
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.errors = {}
+    tag.on('mount', function() {
+      tag.relationship = tag.opts.directedRelationship;
+      tag.errors = {};
 
-    tag.on 'update', ->
-      tag.sourceKindId = tag.opts.source.kind_id
-      tag.targetKindId = tag.opts.target.kind_id
-      tag.relationName = tag.opts.relationship.relation_name
+      if (tag.relationship.from_id) {fetchSource();}
+      if (tag.relationship.to_id) {fetchTarget();}
+    });
 
-    tag.on 'updated', ->
-      tag.refs['relation_name'].trigger 'criteria-changed'
-      tag.refs['target_id'].trigger 'criteria-changed'
+    tag.cancel = function() {
+      tag.opts.modal.trigger('close');
+    }
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      if tag.opts.relationship
-        Zepto.ajax(
-          type: 'PATCH'
-          url: "/relationships/#{tag.opts.relationship.id}"
-          data: {relationship: values()}
-          success: (data) ->
-            h() if h = tag.opts.doneHandler
-          error: (xhr) ->
-            tag.errors = JSON.parse(xhr.responseText).errors
-            wApp.utils.scrollToTop()
-        )
+    tag.relationChanged = function() {
+      tag.relationship.relation_name = tag.refs.relationName.value();
+      tag.update();
+      tag.refs.targetId.trigger('reload');
+    }
 
-    tag.values = ->
+    tag.targetChanged = function() {
+      tag.relationship.to_id = tag.refs.targetId.value();
+      fetchTarget();
+    }
+
+    tag.onSuccess = function() {
+      tag.errors = {};
+      tag.update();
+
+      var h = tag.opts.onchange;
+      if (h) {h(tag.formValues());}
+
+      tag.opts.modal.trigger('close');
+    }
+
+    tag.formValues = function() {
       return {
-        properties: tag.refs.properties.value()
-        datings: tag.refs.datings.value()
-        relation_name: tag.refs.relation_name.value()
+        from_id: tag.relationship.from_id,
+        relation_name: tag.refs.relationName.value(),
+        to_id: tag.refs.targetId.value(),
+        properties: tag.refs.properties.value(),
+        datings_attributes: tag.refs.datings.value()
       }
+    }
 
-    tag.header = ->
-      key = if !!tag.opts.relationship then 'edit' else 'create'
-      tag.t("objects.#{key}", {
-        interpolations: {o: 'activerecord.models.relationship'},
-        capitalize: true
+    var fetchSource = function() {
+      Zepto.ajax({
+        url: '/entities/' + tag.relationship.from_id,
+        success: function(data) {
+          tag.sourceKindId = data.kind_id;
+          tag.update()
+          tag.refs.relationName.trigger('reload');
+        }
       })
+    }
 
+    var fetchTarget = function() {
+      Zepto.ajax({
+        url: '/entities/' + tag.relationship.to_id,
+        success: function(data) {
+          tag.targetKindId = data.kind_id;
+          tag.update()
+          tag.refs.relationName.trigger('reload');
+        }
+      })
+    }
   </script>
 
 </kor-relationship-editor>

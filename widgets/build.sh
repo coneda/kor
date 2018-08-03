@@ -49,7 +49,11 @@ function vendor {
 
 function lib {
   log "compiling lib"
-  cat widgets/app.js.coffee widgets/lib/* | node_modules/.bin/coffee -s -b -p > public/lib.js
+  cat \
+    widgets/app.js.coffee widgets/lib/*.js.coffee | \
+    node_modules/.bin/coffee -s -b -p | \
+    cat - widgets/lib/*.js \
+    > public/lib.js
 }
 
 function tags {

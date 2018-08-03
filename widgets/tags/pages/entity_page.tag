@@ -83,7 +83,10 @@
     <div class="kor-layout-bottom">
       <div class="kor-content-box">
         <div class="kor-layout-commands" if={allowedTo('edit')}>
-          <a><i class="plus"></i></a>
+          <a
+            onclick={addRelationship}
+            title={t('objects.add', {interpolations: {o: 'activerecord.models.relationship'}})}
+          ><i class="plus"></i></a>
         </div>
         <h1>{tcap('activerecord.models.relationship', {count: 'other'})}</h1>
 
@@ -258,6 +261,12 @@
       (event) ->
         event.preventDefault()
 
+    tag.addRelationship = (event) ->
+      event.preventDefault()
+      wApp.bus.trigger 'modal', 'kor-relationship-editor', {
+        directedRelationship: {from_id: tag.data.id},
+        onchange: fetch
+      }
 
     fetch = ->
       Zepto.ajax(

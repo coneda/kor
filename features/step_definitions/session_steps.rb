@@ -1,3 +1,15 @@
+Given /^I am logged in as "([^\"]*)"/ do |user|
+  step "the user \"#{user}\""
+  
+  step "I go to the login page"
+  fill_in 'Username', with: user
+  fill_in 'Password', with: user
+  click_button 'Login'
+  expect(page).to have_css('w-messaging .notice', text: 'you have been logged in')
+end
+
+# old?
+
 Given /^the user "([^\"]*)"$/ do |user|
   unless User.exists? :name => user
     FactoryGirl.create :user, :name => user, :password => user, :email => "#{user}@example.com"
@@ -23,16 +35,6 @@ Given /^the user "([^\"]*)" with credential "([^\"]*)"$/ do |user, credential|
   credential = Credential.find_by_name(credential)
   user.groups << credential
   user.save
-end
-
-Given /^I am logged in as "([^\"]*)"/ do |user|
-  step "the user \"#{user}\""
-  
-  step "I go to the login page"
-  step "I fill in \"username\" with \"#{user}\""
-  step "I fill in \"password\" with \"#{user}\""
-  step "I press \"Login\""
-  sleep 1
 end
 
 Given /^I re\-login as "([^"]*)"$/ do |user|

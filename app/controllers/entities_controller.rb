@@ -1,6 +1,7 @@
 class EntitiesController < JsonController
 
-  layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
+  # layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
+  layout false
   skip_before_filter :verify_authenticity_token
 
   before_filter :pagination, only: ['index']

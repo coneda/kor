@@ -5,18 +5,24 @@
       <div class="kor-layout-commands">
         <virtual if={allowedToEdit()}>
           <kor-clipboard-control entity={to()} if={to().medium_id} />
-          <a onclick={activateEditor}><i class="pen"></i></a>
-          <a onclick={delete}><i class="x"></i></a>
+          <a
+            onclick={edit}
+            title={t('objects.edit', {interpolations: {o: 'activerecord.models.relationship'}})}
+          ><i class="pen"></i></a>
+          <a
+            onclick={delete}
+            title={t('objects.delete', {interpolations: {o: 'activerecord.models.relationship'}})}
+          ><i class="x"></i></a>
         </virtual>
       </div>
 
       <kor-entity
         no-clipboard={true}
-        entity={opts.relationship.to}
+        entity={relationship.to}
       />
       
       <a
-        if={opts.relationship.media_relations > 0}
+        if={relationship.media_relations > 0}
         onclick={toggle}
         class="toggle"
       >
@@ -24,9 +30,16 @@
         <i show={expanded} class="triangle_down"></i>
       </a>
 
-      <virtual if={opts.relationship.properties.length > 0}>
-        <div class="hr"></div>
-        <div each={property in opts.relationship.properties}>{property}</div>
+      <virtual if={relationship.properties.length > 0}>
+        <hr />
+        <div each={property in relationship.properties}>{property}</div>
+      </virtual>
+
+      <virtual if={relationship.datings.length > 0}>
+        <hr />
+        <div each={dating in relationship.datings}>
+          {dating.label}: <strong>{dating.dating_string}</strong>
+        </div>
       </virtual>
 
       <div class="clearfix"></div>
@@ -41,13 +54,6 @@
         <div class="clearfix"></div>
       </virtual>
     </virtual>
-
-    <kor-relationship-editor
-      if={editorActive}
-      relationship={opts.relationship}
-      source={opts.entity}
-      target={opts.relationship.to}
-    />
   </div>
 
   <table class="media-relations" if={expanded && data && !editorActive}>
@@ -71,9 +77,10 @@
 
 
     tag.on 'mount', ->
+      tag.relationship = tag.opts.relationship
       tag.opts.query ||= {}
 
-    tag.to = -> tag.opts.relationship.to
+    tag.to = -> tag.relationship.to
 
     tag.toggle = (event) ->
       event.preventDefault()
@@ -81,32 +88,42 @@
 
     tag.on 'toggle', (value) ->
       tag.expanded = (if value == undefined then !tag.expanded else value)
-      fetch() if tag.expanded && !tag.data
+      fetchPage() if tag.expanded && !tag.data
       tag.update()
 
     tag.allowedToEdit = ->
       tag.allowedTo('edit', tag.opts.entity.collection_id) ||
       tag.allowedTo('edit', tag.to().collection_id)
 
-    tag.activateEditor = ->
-      window.t = tag
-      tag.editorActive = !tag.editorActive
-      tag.update()
+    tag.edit = (event) ->
+      event.preventDefault()
+      wApp.bus.trigger 'modal', 'kor-relationship-editor', {
+        directedRelationship: tag.relationship,
+        onchange: reload
+      }
 
     tag.delete = ->
       if confirm(tag.t('confirm.sure'))
         Zepto.ajax(
           type: 'DELETE'
-          url: "/relationships/#{tag.opts.relationship.relationship_id}"
+          url: "/relationships/#{tag.relationship.relationship_id}"
           success: (data) ->
             h() if h = tag.opts.refreshHandler
       )
 
     tag.pageUpdate = (newPage) ->
       tag.opts.query.page = newPage
-      fetch()
+      fetchPage()
 
-    fetch = ->
+    reload = ->
+      Zepto.ajax(
+        url: '/relationships/' + tag.relationship.id,
+        success: (data) ->
+          tag.relationship = data
+          tag.update()
+      )
+
+    fetchPage = ->
       Zepto.ajax(
         url: "/entities/#{tag.to().id}/relationships"
         data: {

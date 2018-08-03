@@ -7,7 +7,7 @@
     <div class="w-content" />
   </div>
 
-  <w-modal />
+  <w-modal ref="modal" />
   <w-messaging />
 
   <script type="text/coffee">
@@ -129,12 +129,17 @@
                     'kor-search'
           else
             'kor-login'
+
+      tag.closeModal()
       tag.mountTagAndAnimate tagName, opts
 
     tag.queryHandler = (parts) ->
       if tag.mountedTag
         tag.mountedTag.opts.query = parts['hash_query']
         tag.mountedTag.trigger 'routing:query'
+
+    tag.closeModal = ->
+      tag.refs.modal.trigger 'close'
 
     tag.mountTagAndAnimate = (tagName, opts = {}) ->
       if tagName

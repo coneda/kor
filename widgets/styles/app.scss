@@ -364,6 +364,8 @@ kor-relationship, [data-is=kor-relationship] {
 }
 
 kor-relationship-editor, [data-is=kor-relationship-editor] {
+  width: 50rem;
+
   form {
     kor-input {
       display: inline;
@@ -722,5 +724,62 @@ kor-mass-action {
   .action {
     display: block;
     text-decoration: underline;
+  }
+}
+
+kor-entity-selector {
+  .header {
+    font-weight: bold;
+  }
+
+  table {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+
+    td {
+      width: 33.3%;
+    }
+
+    td.selected {
+      background-color: $kor-input-bg-focus;
+    }
+  }
+
+  .errors {
+    color: $kor-error;
+  }
+
+  a.selected {
+    text-decoration: underline;
+  }
+
+  kor-input[ref=terms] {
+    display: block;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+kor-properties-editor, kor-datings-editor {
+  .header {
+    font-weight: bold;
+  }
+
+  ul {
+    margin: 1rem;
+    padding: 0px;
+
+    li {
+      list-style-type: none;
+      margin-top: 1rem;
+
+      button {
+        margin-top: 0.5rem;
+      }
+    }
+
+    li:first-child {
+      margin-top: 0px;
+    }
   }
 }

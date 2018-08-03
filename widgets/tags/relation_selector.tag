@@ -6,7 +6,9 @@
     placeholder={t('nothing_selected')}
     options={relationNames}
     value={opts.riotValue}
+    errors={opts.errors}
     ref="input"
+    onchange={onchange}
   >
 
   <script type="text/javascript">
@@ -14,7 +16,23 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 
-    tag.on('endpoints-changed', function() {
+    tag.on('mount', function() {
+      tag.trigger('reload');
+    });
+
+    tag.on('reload', function() {
+      fetch();
+    });
+
+    tag.onchange = function(event) {
+      event.stopPropagation();
+      var h = tag.opts.onchange;
+      if (h) {h();}
+    }
+
+    tag.value = function() {return tag.refs.input.value()}
+
+    var fetch = function() {
       Zepto.ajax({
         url: '/relations/names',
         data: {
@@ -25,10 +43,8 @@
           tag.relationNames = data;
           tag.update();
         }
-      })
-    });
-
-    tag.value = function() {return tag.refs.input.value()}
+      });
+    }
 
   </script>
 

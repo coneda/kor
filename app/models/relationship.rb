@@ -13,8 +13,9 @@ class Relationship < ActiveRecord::Base
 
   has_many :datings, :class_name => "RelationshipDating", :dependent => :destroy
 
-  validates :from_id, :to_id, :relation_id, presence: true
-  validates_associated :datings
+  validates :from_id, :to_id, presence: true
+  validates :relation_id, presence: true, if: :to_id
+  # validates_associated :datings
 
   before_validation :ensure_direction
   after_validation :ensure_uuid, :ensure_unique_properties, :ensure_directed
@@ -54,7 +55,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def ensure_direction
-    if @relation_name
+    if @relation_name && self.from && self.to
       normal = Relation.find_by(
         from_kind_id: self.from.kind_id,
         name: @relation_name,

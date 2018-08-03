@@ -7,6 +7,8 @@ class JsonController < BaseController
 
   helper_method :inclusion
 
+  layout false
+
 
   protected
 

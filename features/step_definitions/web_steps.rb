@@ -1,3 +1,14 @@
+When("I click icon {string}") do |string|
+  find("a[title='#{string}']").click
+end
+
+Then("I should not see icon link {string}") do |string|
+  expect(page).not_to have_css("a[title='#{string}']")
+end
+
+
+# old?
+
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "selectors"))
 
@@ -13,6 +24,10 @@ end
 
 When /^(?:|I )go to (.+)$/ do |page_name|
   visit path_to(page_name)
+end
+
+When "I click {string}" do |string|
+  click_on(string)
 end
 
 When /^(?:|I )press "([^"]*)"$/ do |button|
@@ -370,22 +385,22 @@ Then(/^"([^"]*)" should not have option "([^"]*)"$/) do |name, value|
   expect(options).not_to include(value)
 end
 
-When(/^I click icon "([^"]*)"$/) do |name|
-  page.find("i.fa.fa-#{name}").click
-end
+# When(/^I click icon "([^"]*)"$/) do |name|
+#   page.find("i.fa.fa-#{name}").click
+# end
 
 Then(/^select "([^"]*)" should be disabled$/) do |label|
   field = page.find_field(label, disabled: :all) 
   expect(field['disabled']).to be_present
 end
 
-Then(/^I should( not)? see icon "([^"]*)"$/) do |negation, icon|
-  if negation
-    expect(page).to have_no_css("i.fa.fa-#{icon}")
-  else
-    expect(page).to have_css("i.fa.fa-#{icon}")
-  end
-end
+# Then(/^I should( not)? see icon "([^"]*)"$/) do |negation, icon|
+#   if negation
+#     expect(page).to have_no_css("i.fa.fa-#{icon}")
+#   else
+#     expect(page).to have_css("i.fa.fa-#{icon}")
+#   end
+# end
 
 And(/^I should see a message containing "([^"]*)"$/) do |pattern|
   page.find("#message_area", text: /#{pattern}/)

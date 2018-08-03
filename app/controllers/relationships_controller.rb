@@ -1,54 +1,48 @@
-class RelationshipsController < ApplicationController
+class RelationshipsController < JsonController
 
-  layout 'normal_small'
-  skip_before_filter :legal, :authentication, :authorization, :only => [:index]
+  # layout 'normal_small'
+  # skip_before_filter :legal, :authentication, :authorization, :only => [:index]
 
   def create
     @relationship = Relationship.new(relationship_params)
 
-    if authorized_for_relationship? @relationship, :create
+    if authorized_for_relationship?(@relationship, :create)
       if @relationship.save
-        render :json => {
-          "message" => I18n.t('objects.create_success', :o => I18n.t('nouns.relationship', :count => 1) )
-        }
+        render_200 I18n.t('objects.create_success', o: Relationship.model_name.human)
       else
-        render json: @relationship.errors, status: 406
+        render_406 build_nested_errors(@relationship)
       end
     else
-      render :nothing => true, :status => 403
+      render_403
     end
   end
 
   def update
     @relationship = Relationship.find(params[:id])
     
-    unless authorized_for_relationship? @relationship, :edit
-      render :nothing => true, :status => 403
-    else
+    if authorized_for_relationship?(@relationship, :edit)
       if @relationship.update_attributes(relationship_params)
-        render :json => {
-          "message" => I18n.t('objects.update_success', :o => I18n.t('nouns.relationship', :count => 1) )
-        }
+        render_200 I18n.t('objects.update_success', o: Relationship.model_name.human)
       else
-        render json: @relationship.errors, status: 406
+        render_406 build_nested_errors(@relationship)
       end
+    else
+      render_403
     end
   rescue ActiveRecord::StaleObjectError
-    flash[:error] = I18n.t('activerecord.errors.messages.stale_relationship_update')
-    render :action => 'edit'
+    # TODO: stale
+    # flash[:error] = I18n.t('activerecord.errors.messages.stale_relationship_update')
+    # render :action => 'edit'
   end
 
   def destroy
     @relationship = Relationship.find(params[:id])
 
-    if authorized_for_relationship? @relationship, :delete
+    if authorized_for_relationship?(@relationship, :delete)
       @relationship.destroy
-      @messages << I18n.t('objects.destroy_success',
-        :o => I18n.t('nouns.relationship', :count => 1)
-      )
-      render action: 'save'
+      render_200 I18n.t('objects.destroy_success', o: I18n.t('nouns.relationship', count: 1))
     else
-      render_403 I18n.t('errors.not_allowed_action')
+      render_403
     end
   end
 
@@ -62,6 +56,12 @@ class RelationshipsController < ApplicationController
       ).tap do |w|
         w[:properties] = params[:relationship][:properties]
       end
+    end
+
+    def build_nested_errors(relationship)
+      relationship.errors.as_json.reject{|k, v| k.match(/^datings/)}.merge(
+        'datings' => relationship.datings.map{|d| d.errors.as_json}
+      )
     end
 
 end

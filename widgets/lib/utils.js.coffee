@@ -4,7 +4,7 @@ wApp.utils = {
       str.substr(0, n - 1) + '&hellip;'
     else
       str
-  inGroupsOf: (per_row, array, dummy = null) ->
+  inGroupsOf: (per_row, array, dummy) ->
     result = []
     current = []
     for i in array
@@ -13,7 +13,7 @@ wApp.utils = {
         current = []
       current.push(i)
     if current.length > 0
-      if dummy
+      if dummy != undefined
         while current.length < per_row
           current.push(dummy)
       result.push(current)

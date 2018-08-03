@@ -4,7 +4,7 @@
     <button onclick={add} class="pull-right">
       {t('verbs.add', {capitalize: true})}
     </button>
-    <label>{opts.label}</label>
+    <label>{opts.label || tcap('activerecord.models.entity_dating', {count: 'other'})}</label>
     <div class="clearfix"></div>
   </div>
 
@@ -26,9 +26,11 @@
         ref="dating_strings"
         errors={errorsFor(i, 'dating_string')}
       />
-      <button onclick={remove} class="pull-right">
-        {t('verbs.remove')}
-      </button>
+      <div class="kor-text-right">
+        <button onclick={remove}>
+          {t('verbs.remove')}
+        </button>
+      </div>
       <div class="clearfix"></div>
     </li>
   </ul>

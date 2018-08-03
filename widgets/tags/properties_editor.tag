@@ -1,7 +1,7 @@
 <kor-properties-editor>
 
   <div class="header">
-    <button onclick={add}>
+    <button onclick={add} class="pull-right">
       {t('verbs.add', {capitalize: true})}
     </button>
     <label>
@@ -16,12 +16,15 @@
   <ul>
     <li each={property, i in properties}>
       <kor-input
+        name="value"
         value={property.value}
         ref="inputs"
       />
-      <button onclick={remove(i)}>
-        {t('verbs.remove')}
-      </button>
+      <div class="kor-text-right">
+        <button onclick={remove(i)}>
+          {t('verbs.remove')}
+        </button>
+      </div>
     </li>
   </ul>
 
@@ -32,8 +35,9 @@
 
     tag.on 'mount', ->
       tag.properties = []
-      for p in tag.opts.properties
-        tag.properties.push(value: p)
+      if tag.opts.properties
+        for p in tag.opts.properties
+          tag.properties.push(value: p)
 
     tag.add = (event) ->
       event.preventDefault()
