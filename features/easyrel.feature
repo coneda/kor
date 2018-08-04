@@ -61,7 +61,6 @@ Feature: Inplace relationship editor
     And I should see "relationship has been changed"
     And I should see "this is almost certain" within "kor-relationship"
 
-  # TODO: continue here
   @javascript
   Scenario: Delete relationship
     Given I am logged in as "admin"
@@ -71,7 +70,7 @@ Feature: Inplace relationship editor
     And I ignore the next confirmation box
     When I click icon "delete relationship"
     And I should see "relationship has been deleted"
-    And I should not see "Der Schrei" within ".relationships"
+    And I should not see "Der Schrei" within "kor-relation"
 
   @javascript
   Scenario: Change the relation on an existing relationship
@@ -79,13 +78,13 @@ Feature: Inplace relationship editor
     And the relationship "Mona Lisa" "is similar to" "Der Schrei"
     When I go to the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    When I click element "[data-name=pen]" within ".relationships"
-    And I select "is equivalent to" from "relation_name"
+    When I click icon "edit relationship"
+    And I select "is equivalent to" from "Relation"
     And I press "Save"
     And I should not see "Edit relationship"
-    And I should see "Relationship has been changed"
-    And I should see "is equivalent to" within ".relationships"
-    And I should not see "is similar to" within ".relationships"
+    And I should see "relationship has been changed"
+    And I should see "is equivalent to" within "kor-relation"
+    And I should not see "is similar to" within "kor-relation"
 
   @javascript
   Scenario: Change the target entity on an existing relationship
@@ -94,15 +93,15 @@ Feature: Inplace relationship editor
     And the relationship "Mona Lisa" "is similar to" "Der Schrei"
     When I go to the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    When I click element "[data-name=pen]" within ".relationships"
+    When I click icon "edit relationship" within "kor-relationship"
     And I follow "recently created"
-    And I click on entity "The Last Supper"
+    And I follow "The Last Supper"
     And I press "Save"
     And I should not see "Edit relationship"
-    And I should see "Relationship has been changed"
-    And I should see "is similar to" within ".relationships"
-    And I should see "The Last Supper" within ".relationships"
-    And I should not see "Der Schrei" within ".relationships"
+    And I should see "relationship has been changed"
+    And I should see "is similar to" within "kor-relation"
+    And I should see "The Last Supper" within "kor-relation"
+    And I should not see "Der Schrei" within "kor-relation"
 
   @javascript
   Scenario: Show message when no relations are allowed for this source entity
@@ -110,13 +109,12 @@ Feature: Inplace relationship editor
     And the entity "Leonardo" of kind "person/people"
     When I go to the entity page for "Leonardo"
     And I wait for "2" seconds
-    And I click element "[data-name=plus]" within ".relationships"
+    And I click icon "add relationship"
     Then I should see "There is no relation provided for this combination of entity types"
     Given the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
     When I refresh the page
     Then I should see "Leonardo"
-    And I wait for "2" seconds
-    When I click element "img[data-name=plus]" within ".relationships"
+    And I click icon "add relationship"
     Then select "relation_name" should have option "is equivalent to"
 
   @javascript
@@ -125,30 +123,29 @@ Feature: Inplace relationship editor
     And the entity "Leonardo" of kind "person/people"
     And the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
     When I go to the entity page for "Mona Lisa"
-    And I click element "[data-name=plus]" within ".relationships"
-    And I select "is equivalent to" from "relation_name"
-    Then I follow "recently created" within "[kor-entity-selector]"
-    Then I should see "Leonardo" within "[kor-entity-selector]"
-    And I should see "Der Schrei" within "[kor-entity-selector]"
-    When I select "is similar to" from "relation_name"
-    Then I should not see "Leonardo" within "[kor-entity-selector]"
-    But I should see "Der Schrei" within "[kor-entity-selector]"
+    And I click icon "add relationship"
+    And I select "is equivalent to" from "Relation"
+    Then I follow "recently created" within "kor-entity-selector"
+    Then I should see "Leonardo" within "kor-entity-selector"
+    And I should see "Der Schrei" within "kor-entity-selector"
+    When I select "is similar to" from "Relation"
+    Then I should not see "Leonardo" within "kor-entity-selector"
+    But I should see "Der Schrei" within "kor-entity-selector"
 
   @javascript
   Scenario: Select a target entity and then deselect it again
     Given I am logged in as "admin"
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
-    When I click element "[data-name=plus]" within ".relationships"
+    And I click icon "add relationship"
     And I fill in "terms" with "schrei"
-    And I click element "[kor-id='2']"
+    And I follow "Der Schrei" within "kor-entity-selector"
     And I press "Save"
-    Then I should see "Relation has to be filled in" within ".kor-errors"
-    And I should not see "Target has to be filled in" within ".kor-errors"
-    When I click element "[kor-id='2']" again
+    Then I should see "has to be filled in" within "kor-relation-selector"
+    And I should not see "has to be filled in" within "kor-entity-selector"
+    When I follow "Der Schrei" within "kor-entity-selector"
     And I press "Save"
-    Then I should see "Relation has to be filled in" within ".kor-errors"
-    And I should see "Target has to be filled in" within ".kor-errors"
+    And I should see "has to be filled in" within "kor-entity-selector"
     
   @javascript
   Scenario: Select another entity which should limit the choices for the relation
@@ -156,37 +153,35 @@ Feature: Inplace relationship editor
     And the entity "Leonardo" of kind "person/people"
     And the relation "is equivalent to/is equivalent to" between "person/people" and "artwork/artworks"
     When I go to the entity page for "Mona Lisa"
-    And I click element "[data-name=plus]" within ".relationships"
+    And I click icon "add relationship"
     And I fill in "terms" with "leonardo"
-    And I click element "[kor-id='3']"
+    And I follow "Leonardo"
     Then select "relation_name" should have no option "is similar to"
     Then select "relation_name" should have option "is equivalent to"
-    When I wait for "2" second
-    And I click element "[kor-id='3']" again
+    And I follow "Leonardo"
     Then select "relation_name" should have option "is similar to"
     Then select "relation_name" should have option "is equivalent to"
 
-  # @javascript
-  # Scenario: make use of the relation's default dating label
-  #   Given I am logged in as "admin"
-  #   And the relationship "Mona Lisa" "is similar to" "Der Schrei"
-  #   When I go to the entity page for "Mona Lisa"
-  #   When I click element "[data-name=pen]" within ".relationship"
-  #   When I click button "Add" within ".datings"
-  #   Then field "Type of dating" should have value "Datierung"
+  @javascript
+  Scenario: make use of the default dating label for relations
+    Given I am logged in as "admin"
+    And the relationship "Mona Lisa" "is similar to" "Der Schrei"
+    When I go to the entity page for "Mona Lisa"
+    And I click icon "add relationship"
+    When I click button "Add" within "kor-datings-editor"
+    Then field "Type of dating" should have value "Dating"
 
   @javascript
   Scenario: add a dating
     Given I am logged in as "admin"
     And the relationship "Mona Lisa" "is similar to" "Der Schrei"
     When I go to the entity page for "Mona Lisa"
-    When I click element "[data-name=pen]" within ".relationship"
-    Then I should see "Datings"
-    When I click button "Add" within ".datings"
+    And I click icon "edit relationship"
+    When I click button "Add" within "kor-datings-editor"
     And I fill in "Type of dating" with "first phase"
     And I fill in "Dating" with "15. Jahrhundert"
-    And I press "Save" within ".relationship"
-    Then I should see "first phase: 15. Jahrhundert" within ".relationship"
+    And I press "Save" within "w-modal"
+    Then I should see "first phase: 15. Jahrhundert" within "kor-relationship"
 
   @javascript
   Scenario: remove a dating
@@ -194,9 +189,9 @@ Feature: Inplace relationship editor
     And the relationship "Mona Lisa" "is similar to" "Der Schrei"
     And the relationship has a dating "Datierung|1888"
     When I go to the entity page for "Mona Lisa"
-    When I click element "[data-name=pen]" within ".relationship"
-    And I press "remove" within ".relationship .dating"
-    And I press "Save" within ".relationship"
+    And I click icon "edit relationship"
+    And I press "remove" within "kor-datings-editor"
+    And I press "Save" within "w-modal"
     Then I should not see "Datierung: 1888"
 
 
@@ -205,16 +200,15 @@ Feature: Inplace relationship editor
     Given I am logged in as "admin"
     And the relationship "Mona Lisa" "is similar to" "Der Schrei"
     When I go to the entity page for "Mona Lisa"
-    When I click element "[data-name=pen]" within ".relationship"
-    Then I should see "Datings"
-    When I click button "Add" within ".datings"
+    And I click icon "edit relationship"
+    When I click button "Add" within "kor-datings-editor"
     And I fill in "Type of dating" with "first phase"
     And I fill in "Dating" with "15. Jahrhundert"
-    And I press "Save" within ".relationship"
+    And I press "Save" within "w-modal"
     Then I should see "first phase: 15. Jahrhundert"
-    When I click element "[data-name=pen]" within ".relationship"
-    And I press "remove" within ".relationship .dating"
-    And I press "Save" within ".relationship"
+    And I click icon "edit relationship"
+    And I press "remove" within "kor-datings-editor"
+    And I press "Save" within "w-modal"
     Then I should not see "Datierung: 1888"
 
   @javascript
@@ -222,13 +216,12 @@ Feature: Inplace relationship editor
     Given I am logged in as "admin"
     And the relationship "Mona Lisa" "is similar to" "Der Schrei"
     When I go to the entity page for "Mona Lisa"
-    When I click element "[data-name=pen]" within ".relationship"
-    Then I should see "Datings"
-    When I click button "Add" within ".datings"
+    And I click icon "edit relationship"
+    When I click button "Add" within "kor-datings-editor"
     And I fill in "Type of dating" with "first phase"
     And I fill in "Dating" with "15. Jahrhundert"
-    And I press "remove" within ".relationship .dating"
-    And I press "Save" within ".relationship"
+    And I press "remove" within "kor-datings-editor"
+    And I press "Save" within "w-modal"
     Then I should not see "Datierung: 1888"
 
   @javascript
@@ -236,8 +229,8 @@ Feature: Inplace relationship editor
     Given I am logged in as "admin"
     And the relationship "Mona Lisa" "is similar to" "Der Schrei"
     When I go to the entity page for "Mona Lisa"
-    And I click element "[data-name=pen]" within ".relationship"
-    When I click button "Add" within ".datings"
+    And I click icon "edit relationship"
+    When I click button "Add" within "kor-datings-editor"
     And I fill in "Dating" with "1522 perhaps?"
     And I press "Save"
-    Then I should see "Dating is invalid"
+    Then I should see "is invalid" within "kor-datings-editor"

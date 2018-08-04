@@ -1,6 +1,8 @@
 <kor-relation-selector>
 
   <kor-input
+    if="{relationNames && relationNames.length > 0}"
+    name="relation_name"
     label={tcap('activerecord.models.relation')}
     type="select"
     placeholder={t('nothing_selected')}
@@ -9,7 +11,12 @@
     errors={opts.errors}
     ref="input"
     onchange={onchange}
-  >
+  />
+
+  <span
+    if={relationNames && relationNames.length == 0}
+    class="error"
+  >{t('messages.no_relations_provided')}</span>
 
   <script type="text/javascript">
     var tag = this;

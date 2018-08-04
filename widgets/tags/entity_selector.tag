@@ -1,22 +1,26 @@
 <kor-entity-selector>
   <div class="pull-right">
     <a
+      href="#"
       onclick={gotoTab('search')}
       class="{'selected': currentTab == 'search'}"
     >{t('nouns.search')}</a>
     |
     <a
+      href="#"
       onclick={gotoTab('visited')}
       class="{'selected': currentTab == 'visited'}"
     >{t('recently_visited')}</a>
     |
     <a
+      href="#"
       onclick={gotoTab('created')}
       class="{'selected': currentTab == 'created'}"
     >{t('recently_created')}</a>
     <virtual if={id}>
       |
       <a
+        href="#"
         onclick={gotoTab('current')}
         class="{'selected': currentTab == 'current'}"
       >{t('currently_linked')}</a>
@@ -94,7 +98,11 @@
 
     tag.select = (event) ->
       event.preventDefault()
-      tag.id = event.item.record.id
+      record = event.item.record
+      if tag.isSelected(record)
+        tag.id = undefined
+      else
+        tag.id = record.id
       h() if h = tag.opts.onchange
 
     tag.search = ->
@@ -109,7 +117,6 @@
     tag.value = -> tag.id
 
     fetch = () ->
-      console.log tag.currentTab
       switch tag.currentTab
         when 'current'
           if tag.opts.riotValue

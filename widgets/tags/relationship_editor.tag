@@ -41,6 +41,7 @@
         value={relationship.datings}
         ref="datings"
         errors={errors.datings}
+        for="relationship"
       />
 
       <hr />
@@ -92,8 +93,12 @@
       tag.errors = {};
       tag.update();
 
-      var h = tag.opts.onchange;
-      if (h) {h(tag.formValues());}
+      if (tag.relationship.id) {
+        wApp.bus.trigger('relationship-updated');
+        h = tag.opts.onUpdated;
+      } else {
+        wApp.bus.trigger('relationship-created');
+      }
 
       tag.opts.modal.trigger('close');
     }
@@ -120,14 +125,20 @@
     }
 
     var fetchTarget = function() {
-      Zepto.ajax({
-        url: '/entities/' + tag.relationship.to_id,
-        success: function(data) {
-          tag.targetKindId = data.kind_id;
-          tag.update()
-          tag.refs.relationName.trigger('reload');
-        }
-      })
+      if (tag.relationship.to_id) {
+        Zepto.ajax({
+          url: '/entities/' + tag.relationship.to_id,
+          success: function(data) {
+            tag.targetKindId = data.kind_id;
+            tag.update()
+            tag.refs.relationName.trigger('reload');
+          }
+        })
+      } else {
+        tag.targetKindId = null;
+        tag.update();
+        tag.refs.relationName.trigger('reload')
+      }
     }
   </script>
 

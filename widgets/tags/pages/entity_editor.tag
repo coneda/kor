@@ -93,11 +93,14 @@
         <hr />
 
         <kor-datings-editor
+          if={kind}
           label={tcap('activerecord.models.entity_dating', {count: 'other'})}
           name="datings_attributes"
           ref="fields"
           value={data.datings}
           errors={errors.datings}
+          for="entity"
+          kind={kind}
         />
 
         <hr />
@@ -191,7 +194,7 @@
     fetchKind = ->
       Zepto.ajax(
         url: "/kinds/#{tag.data['kind_id'] || tag.opts.kindId}"
-        data: {include: 'fields'}
+        data: {include: 'fields,settings'}
         success: (data) ->
           tag.kind = data
           tag.update()

@@ -166,6 +166,8 @@ module Kor
           'kind_name_label' => 'Name',
           'kind_distinct_name_label' => 'Distinct Name',
 
+          'relationship_dating_label' => 'Dating',
+
           'max_download_group_size' => 80,
 
           'search_entity_name' => 'Name / Title / UUID',

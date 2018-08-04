@@ -14,7 +14,6 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.auth)
-    window.x = tag
 
     tag.on 'mount', ->
       wApp.bus.on 'routing:path', tag.routeHandler

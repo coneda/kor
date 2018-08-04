@@ -95,6 +95,7 @@
             entity={data}
             name={name}
             total={count}
+            on-updated={reload}
           />
         </div>
       </div>
@@ -217,6 +218,7 @@
             entity={data}
             name={name}
             total={count}
+            on-updated={reload}
           />
         </div>
 
@@ -234,7 +236,13 @@
     tag.mixin(wApp.mixins.auth)
 
     tag.on 'mount', ->
+      wApp.bus.on 'relationship-updated', fetch
+      wApp.bus.on 'relationship-created', fetch
       fetch()
+
+    tag.on 'unmount', ->
+      wApp.bus.off 'relationship-created', fetch
+      wApp.bus.off 'relationship-updated', fetch
 
     tag.delete = (event) ->
       event.preventDefault()
@@ -265,7 +273,7 @@
       event.preventDefault()
       wApp.bus.trigger 'modal', 'kor-relationship-editor', {
         directedRelationship: {from_id: tag.data.id},
-        onchange: fetch
+        onCreated: tag.reload
       }
 
     fetch = ->

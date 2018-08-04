@@ -8,7 +8,7 @@
       page={opts.query.page}
       per-page={data.per_page}
       total={data.total}
-      page-update-handler={pageUpdate}
+      on-paginate={pageUpdate}
     />
 
     <div class="clearfix"></div>
@@ -19,7 +19,6 @@
       each={relationship in data.records}
       entity={parent.opts.entity}
       relationship={relationship}
-      refresh-handler={parent.refresh}
     />
   </virtual>
 
@@ -31,8 +30,12 @@
     tag.mixin(wApp.mixins.info)
 
     tag.on 'mount', ->
+      wApp.bus.on 'relationship-updated', fetch
       tag.opts.query ||= {}
       fetch()
+
+    tag.on 'unmount', ->
+      wApp.bus.off 'relationship-updated', fetch
 
     tag.pageUpdate = (newPage) ->
       opts.query.page = newPage

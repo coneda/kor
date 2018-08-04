@@ -99,7 +99,6 @@
       event.preventDefault()
       wApp.bus.trigger 'modal', 'kor-relationship-editor', {
         directedRelationship: tag.relationship,
-        onchange: reload
       }
 
     tag.delete = ->
@@ -108,20 +107,12 @@
           type: 'DELETE'
           url: "/relationships/#{tag.relationship.relationship_id}"
           success: (data) ->
-            h() if h = tag.opts.refreshHandler
+            wApp.bus.trigger('relationship-deleted')
       )
 
     tag.pageUpdate = (newPage) ->
       tag.opts.query.page = newPage
       fetchPage()
-
-    reload = ->
-      Zepto.ajax(
-        url: '/relationships/' + tag.relationship.id,
-        success: (data) ->
-          tag.relationship = data
-          tag.update()
-      )
 
     fetchPage = ->
       Zepto.ajax(

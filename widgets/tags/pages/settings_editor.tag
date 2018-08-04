@@ -105,6 +105,13 @@
         />
 
         <kor-input
+          name="relationship_dating_label"
+          label={nameFor('relationship_dating_label')}
+          riot-value={valueWithDefaults('relationship_dating_label')}
+          ref="fields"
+        />
+
+        <kor-input
           name="primary_relations"
           label={nameFor('primary_relations')}
           type="select"

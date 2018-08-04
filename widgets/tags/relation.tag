@@ -24,7 +24,6 @@
       each={relationship in data.records}
       entity={parent.opts.entity}
       relationship={relationship}
-      refresh-handler={parent.refresh}
     />
   </virtual>
 
@@ -36,8 +35,14 @@
     tag.mixin(wApp.mixins.info)
 
     tag.on 'mount', ->
+      wApp.bus.on 'relationship-updated', fetch
+      wApp.bus.on 'relationship-deleted', fetch
       tag.opts.query ||= {}
       fetch()
+
+    tag.on 'unmount', ->
+      wApp.bus.off 'relationship-deleted', fetch
+      wApp.bus.off 'relationship-updated', fetch
 
     tag.toggle = (event) ->
       event.preventDefault()
