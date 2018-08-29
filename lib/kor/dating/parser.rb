@@ -7,8 +7,8 @@ class Kor::Dating::Parser < Parslet::Parser
   rule(:positive_number) { zero | natural_number }
   rule(:minus) { match '-' }
   rule(:whole_number) { positive_number | minus >> natural_number}
-  rule(:day) { match['1-2'] >> match['0-9'] | str('3') >> match['0-1'] | match['1-9'] }
-  rule(:month) { str('1') >> match['0-2'] | match['1-9'] }
+  rule(:day) { match['1-2'] >> match['0-9'] | str('3') >> match['0-1'] | match['1-9'] | str('0') >> match['1-9'] }
+  rule(:month) { str('1') >> match['0-2'] | match['1-9'] | str('0') >> match['1-9'] }
   
   
   # Utility
@@ -33,7 +33,9 @@ class Kor::Dating::Parser < Parslet::Parser
   rule(:year) { (approx >> space).maybe.as(:approx) >> natural_number.as(:num) >> (space >> bc).maybe.as(:bc) }
   rule(:century_part) { part.as(:part) >> space >> positive_number.as(:num) >> str('.') >> space >> century_string.as(:cs) >> (space >> bc).maybe.as(:bc) }
   
-  rule(:date) { day.as(:day) >> str('.') >> month.as(:month) >> str('.') >> whole_number.as(:yearnum) }
+  rule(:european_date) { day.as(:day) >> str('.') >> month.as(:month) >> str('.') >> whole_number.as(:yearnum) }
+  rule(:machine_date) { whole_number.as(:yearnum) >> (str('.') | str('-')) >> month.as(:month) >> (str('.') | str('-')) >> day.as(:day) }
+  rule(:date) { european_date | machine_date }
   rule(:date_interval) { date.as(:from) >> to >> date.as(:to) }
   rule(:century_interval) { century.as(:from) >> to >> century.as(:to) }
   rule(:before_year) { negate.maybe.as(:not) >> before >> year.as(:date) }
