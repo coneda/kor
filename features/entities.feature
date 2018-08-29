@@ -9,7 +9,7 @@ Feature: Entities
     Given I am logged in as "admin"
     And 40 invalid entities "Mona Lisa" of kind "Werk" inside collection "default"
     And I follow "Invalid entities"
-    Then I should see "go to page"
+    Then I should see "of 2" within ".w-content"
   
   
   @javascript

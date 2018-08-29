@@ -1342,189 +1342,6 @@
 })(Zepto);
 
 (function($) {
-    $.Callbacks = function(options) {
-        options = $.extend({}, options);
-        var memory, fired, firing, firingStart, firingLength, firingIndex, list = [], stack = !options.once && [], fire = function(data) {
-            memory = options.memory && data;
-            fired = true;
-            firingIndex = firingStart || 0;
-            firingStart = 0;
-            firingLength = list.length;
-            firing = true;
-            for (;list && firingIndex < firingLength; ++firingIndex) {
-                if (list[firingIndex].apply(data[0], data[1]) === false && options.stopOnFalse) {
-                    memory = false;
-                    break;
-                }
-            }
-            firing = false;
-            if (list) {
-                if (stack) stack.length && fire(stack.shift()); else if (memory) list.length = 0; else Callbacks.disable();
-            }
-        }, Callbacks = {
-            add: function() {
-                if (list) {
-                    var start = list.length, add = function(args) {
-                        $.each(args, function(_, arg) {
-                            if (typeof arg === "function") {
-                                if (!options.unique || !Callbacks.has(arg)) list.push(arg);
-                            } else if (arg && arg.length && typeof arg !== "string") add(arg);
-                        });
-                    };
-                    add(arguments);
-                    if (firing) firingLength = list.length; else if (memory) {
-                        firingStart = start;
-                        fire(memory);
-                    }
-                }
-                return this;
-            },
-            remove: function() {
-                if (list) {
-                    $.each(arguments, function(_, arg) {
-                        var index;
-                        while ((index = $.inArray(arg, list, index)) > -1) {
-                            list.splice(index, 1);
-                            if (firing) {
-                                if (index <= firingLength) --firingLength;
-                                if (index <= firingIndex) --firingIndex;
-                            }
-                        }
-                    });
-                }
-                return this;
-            },
-            has: function(fn) {
-                return !!(list && (fn ? $.inArray(fn, list) > -1 : list.length));
-            },
-            empty: function() {
-                firingLength = list.length = 0;
-                return this;
-            },
-            disable: function() {
-                list = stack = memory = undefined;
-                return this;
-            },
-            disabled: function() {
-                return !list;
-            },
-            lock: function() {
-                stack = undefined;
-                if (!memory) Callbacks.disable();
-                return this;
-            },
-            locked: function() {
-                return !stack;
-            },
-            fireWith: function(context, args) {
-                if (list && (!fired || stack)) {
-                    args = args || [];
-                    args = [ context, args.slice ? args.slice() : args ];
-                    if (firing) stack.push(args); else fire(args);
-                }
-                return this;
-            },
-            fire: function() {
-                return Callbacks.fireWith(this, arguments);
-            },
-            fired: function() {
-                return !!fired;
-            }
-        };
-        return Callbacks;
-    };
-})(Zepto);
-
-(function($) {
-    var slice = Array.prototype.slice;
-    function Deferred(func) {
-        var tuples = [ [ "resolve", "done", $.Callbacks({
-            once: 1,
-            memory: 1
-        }), "resolved" ], [ "reject", "fail", $.Callbacks({
-            once: 1,
-            memory: 1
-        }), "rejected" ], [ "notify", "progress", $.Callbacks({
-            memory: 1
-        }) ] ], state = "pending", promise = {
-            state: function() {
-                return state;
-            },
-            always: function() {
-                deferred.done(arguments).fail(arguments);
-                return this;
-            },
-            then: function() {
-                var fns = arguments;
-                return Deferred(function(defer) {
-                    $.each(tuples, function(i, tuple) {
-                        var fn = $.isFunction(fns[i]) && fns[i];
-                        deferred[tuple[1]](function() {
-                            var returned = fn && fn.apply(this, arguments);
-                            if (returned && $.isFunction(returned.promise)) {
-                                returned.promise().done(defer.resolve).fail(defer.reject).progress(defer.notify);
-                            } else {
-                                var context = this === promise ? defer.promise() : this, values = fn ? [ returned ] : arguments;
-                                defer[tuple[0] + "With"](context, values);
-                            }
-                        });
-                    });
-                    fns = null;
-                }).promise();
-            },
-            promise: function(obj) {
-                return obj != null ? $.extend(obj, promise) : promise;
-            }
-        }, deferred = {};
-        $.each(tuples, function(i, tuple) {
-            var list = tuple[2], stateString = tuple[3];
-            promise[tuple[1]] = list.add;
-            if (stateString) {
-                list.add(function() {
-                    state = stateString;
-                }, tuples[i ^ 1][2].disable, tuples[2][2].lock);
-            }
-            deferred[tuple[0]] = function() {
-                deferred[tuple[0] + "With"](this === deferred ? promise : this, arguments);
-                return this;
-            };
-            deferred[tuple[0] + "With"] = list.fireWith;
-        });
-        promise.promise(deferred);
-        if (func) func.call(deferred, deferred);
-        return deferred;
-    }
-    $.when = function(sub) {
-        var resolveValues = slice.call(arguments), len = resolveValues.length, i = 0, remain = len !== 1 || sub && $.isFunction(sub.promise) ? len : 0, deferred = remain === 1 ? sub : Deferred(), progressValues, progressContexts, resolveContexts, updateFn = function(i, ctx, val) {
-            return function(value) {
-                ctx[i] = this;
-                val[i] = arguments.length > 1 ? slice.call(arguments) : value;
-                if (val === progressValues) {
-                    deferred.notifyWith(ctx, val);
-                } else if (!--remain) {
-                    deferred.resolveWith(ctx, val);
-                }
-            };
-        };
-        if (len > 1) {
-            progressValues = new Array(len);
-            progressContexts = new Array(len);
-            resolveContexts = new Array(len);
-            for (;i < len; ++i) {
-                if (resolveValues[i] && $.isFunction(resolveValues[i].promise)) {
-                    resolveValues[i].promise().done(updateFn(i, resolveContexts, resolveValues)).fail(deferred.reject).progress(updateFn(i, progressContexts, progressValues));
-                } else {
-                    --remain;
-                }
-            }
-        }
-        if (!remain) deferred.resolveWith(resolveContexts, resolveValues);
-        return deferred.promise();
-    };
-    $.Deferred = Deferred;
-})(Zepto);
-
-(function($) {
     var slice = Array.prototype.slice;
     function Deferred(func) {
         var tuples = [ [ "resolve", "done", $.Callbacks({
@@ -1709,81 +1526,17 @@
     typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define([ "exports" ], factory) : factory(global.riot = {});
 })(this, function(exports) {
     "use strict";
-    var __TAGS_CACHE = [];
-    var __TAG_IMPL = {};
-    var YIELD_TAG = "yield";
-    var GLOBAL_MIXIN = "__global_mixin";
-    var ATTRS_PREFIX = "riot-";
-    var REF_DIRECTIVES = [ "ref", "data-ref" ];
-    var IS_DIRECTIVE = "data-is";
-    var CONDITIONAL_DIRECTIVE = "if";
-    var LOOP_DIRECTIVE = "each";
-    var LOOP_NO_REORDER_DIRECTIVE = "no-reorder";
-    var SHOW_DIRECTIVE = "show";
-    var HIDE_DIRECTIVE = "hide";
-    var KEY_DIRECTIVE = "key";
-    var RIOT_EVENTS_KEY = "__riot-events__";
-    var T_STRING = "string";
-    var T_OBJECT = "object";
-    var T_UNDEF = "undefined";
-    var T_FUNCTION = "function";
-    var XLINK_NS = "http://www.w3.org/1999/xlink";
-    var SVG_NS = "http://www.w3.org/2000/svg";
-    var XLINK_REGEX = /^xlink:(\w+)/;
-    var WIN = typeof window === T_UNDEF ? undefined : window;
-    var RE_SPECIAL_TAGS = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/;
-    var RE_SPECIAL_TAGS_NO_OPTION = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?)$/;
-    var RE_EVENTS_PREFIX = /^on/;
-    var RE_HTML_ATTRS = /([-\w]+) ?= ?(?:"([^"]*)|'([^']*)|({[^}]*}))/g;
-    var CASE_SENSITIVE_ATTRIBUTES = {
-        viewbox: "viewBox",
-        preserveaspectratio: "preserveAspectRatio"
-    };
-    var RE_BOOL_ATTRS = /^(?:disabled|checked|readonly|required|allowfullscreen|auto(?:focus|play)|compact|controls|default|formnovalidate|hidden|ismap|itemscope|loop|multiple|muted|no(?:resize|shade|validate|wrap)?|open|reversed|seamless|selected|sortable|truespeed|typemustmatch)$/;
-    var IE_VERSION = (WIN && WIN.document || {}).documentMode | 0;
-    function $$(selector, ctx) {
-        return [].slice.call((ctx || document).querySelectorAll(selector));
-    }
     function $(selector, ctx) {
         return (ctx || document).querySelector(selector);
     }
-    function createFrag() {
-        return document.createDocumentFragment();
-    }
-    function createDOMPlaceholder() {
-        return document.createTextNode("");
-    }
-    function isSvg(el) {
-        var owner = el.ownerSVGElement;
-        return !!owner || owner === null;
-    }
-    function mkEl(name) {
+    var __TAGS_CACHE = [], __TAG_IMPL = {}, YIELD_TAG = "yield", GLOBAL_MIXIN = "__global_mixin", ATTRS_PREFIX = "riot-", REF_DIRECTIVES = [ "ref", "data-ref" ], IS_DIRECTIVE = "data-is", CONDITIONAL_DIRECTIVE = "if", LOOP_DIRECTIVE = "each", LOOP_NO_REORDER_DIRECTIVE = "no-reorder", SHOW_DIRECTIVE = "show", HIDE_DIRECTIVE = "hide", KEY_DIRECTIVE = "key", RIOT_EVENTS_KEY = "__riot-events__", T_STRING = "string", T_OBJECT = "object", T_UNDEF = "undefined", T_FUNCTION = "function", XLINK_NS = "http://www.w3.org/1999/xlink", SVG_NS = "http://www.w3.org/2000/svg", XLINK_REGEX = /^xlink:(\w+)/, WIN = typeof window === T_UNDEF ? undefined : window, RE_SPECIAL_TAGS = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/, RE_SPECIAL_TAGS_NO_OPTION = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?)$/, RE_EVENTS_PREFIX = /^on/, RE_HTML_ATTRS = /([-\w]+) ?= ?(?:"([^"]*)|'([^']*)|({[^}]*}))/g, CASE_SENSITIVE_ATTRIBUTES = {
+        viewbox: "viewBox",
+        preserveaspectratio: "preserveAspectRatio"
+    }, RE_BOOL_ATTRS = /^(?:disabled|checked|readonly|required|allowfullscreen|auto(?:focus|play)|compact|controls|default|formnovalidate|hidden|ismap|itemscope|loop|multiple|muted|no(?:resize|shade|validate|wrap)?|open|reversed|seamless|selected|sortable|truespeed|typemustmatch)$/, IE_VERSION = (WIN && WIN.document || {}).documentMode | 0;
+    function makeElement(name) {
         return name === "svg" ? document.createElementNS(SVG_NS, name) : document.createElement(name);
     }
-    function setInnerHTML(container, html, isSvg) {
-        if (isSvg) {
-            var node = container.ownerDocument.importNode(new DOMParser().parseFromString('<svg xmlns="' + SVG_NS + '">' + html + "</svg>", "application/xml").documentElement, true);
-            container.appendChild(node);
-        } else {
-            container.innerHTML = html;
-        }
-    }
-    function toggleVisibility(dom, show) {
-        dom.style.display = show ? "" : "none";
-        dom.hidden = show ? false : true;
-    }
-    function remAttr(dom, name) {
-        dom.removeAttribute(name);
-    }
-    function styleObjectToString(style) {
-        return Object.keys(style).reduce(function(acc, prop) {
-            return acc + " " + prop + ": " + style[prop] + ";";
-        }, "");
-    }
-    function getAttr(dom, name) {
-        return dom.getAttribute(name);
-    }
-    function setAttr(dom, name, val) {
+    function setAttribute(dom, name, val) {
         var xlink = XLINK_REGEX.exec(name);
         if (xlink && xlink[1]) {
             dom.setAttributeNS(XLINK_NS, xlink[1], val);
@@ -1791,60 +1544,15 @@
             dom.setAttribute(name, val);
         }
     }
-    function safeInsert(root, curr, next) {
-        root.insertBefore(curr, next.parentNode && next);
-    }
-    function walkAttrs(html, fn) {
-        if (!html) {
-            return;
-        }
-        var m;
-        while (m = RE_HTML_ATTRS.exec(html)) {
-            fn(m[1].toLowerCase(), m[2] || m[3] || m[4]);
-        }
-    }
-    function walkNodes(dom, fn, context) {
-        if (dom) {
-            var res = fn(dom, context);
-            var next;
-            if (res === false) {
-                return;
-            }
-            dom = dom.firstChild;
-            while (dom) {
-                next = dom.nextSibling;
-                walkNodes(dom, fn, res);
-                dom = next;
-            }
-        }
-    }
-    var dom = Object.freeze({
-        $$: $$,
-        $: $,
-        createFrag: createFrag,
-        createDOMPlaceholder: createDOMPlaceholder,
-        isSvg: isSvg,
-        mkEl: mkEl,
-        setInnerHTML: setInnerHTML,
-        toggleVisibility: toggleVisibility,
-        remAttr: remAttr,
-        styleObjectToString: styleObjectToString,
-        getAttr: getAttr,
-        setAttr: setAttr,
-        safeInsert: safeInsert,
-        walkAttrs: walkAttrs,
-        walkNodes: walkNodes
-    });
     var styleNode;
     var cssTextProp;
     var byName = {};
-    var remainder = [];
     var needsInject = false;
     if (WIN) {
         styleNode = function() {
-            var newNode = mkEl("style");
+            var newNode = makeElement("style");
             var userNode = $("style[type=riot]");
-            setAttr(newNode, "type", "text/css");
+            setAttribute(newNode, "type", "text/css");
             if (userNode) {
                 if (userNode.id) {
                     newNode.id = userNode.id;
@@ -1860,11 +1568,7 @@
     var styleManager = {
         styleNode: styleNode,
         add: function add(css, name) {
-            if (name) {
-                byName[name] = css;
-            } else {
-                remainder.push(css);
-            }
+            byName[name] = css;
             needsInject = true;
         },
         inject: function inject() {
@@ -1874,12 +1578,16 @@
             needsInject = false;
             var style = Object.keys(byName).map(function(k) {
                 return byName[k];
-            }).concat(remainder).join("\n");
+            }).join("\n");
             if (cssTextProp) {
                 cssTextProp.cssText = style;
             } else {
                 styleNode.innerHTML = style;
             }
+        },
+        remove: function remove(name) {
+            delete byName[name];
+            needsInject = true;
         }
     };
     var skipRegex = function() {
@@ -2216,7 +1924,7 @@
         _tmpl.version = brackets.version = "v3.0.8";
         return _tmpl;
     }();
-    var observable$1 = function(el) {
+    var observable = function(el) {
         el = el || {};
         var callbacks = {}, slice = Array.prototype.slice;
         Object.defineProperties(el, {
@@ -2288,87 +1996,16 @@
         });
         return el;
     };
-    function isBoolAttr(value) {
-        return RE_BOOL_ATTRS.test(value);
-    }
-    function isFunction(value) {
-        return typeof value === T_FUNCTION;
-    }
-    function isObject(value) {
-        return value && typeof value === T_OBJECT;
+    function getPropDescriptor(o, k) {
+        return Object.getOwnPropertyDescriptor(o, k);
     }
     function isUndefined(value) {
         return typeof value === T_UNDEF;
-    }
-    function isString(value) {
-        return typeof value === T_STRING;
-    }
-    function isBlank(value) {
-        return isNil(value) || value === "";
-    }
-    function isNil(value) {
-        return isUndefined(value) || value === null;
-    }
-    function isArray(value) {
-        return Array.isArray(value) || value instanceof Array;
     }
     function isWritable(obj, key) {
         var descriptor = getPropDescriptor(obj, key);
         return isUndefined(obj[key]) || descriptor && descriptor.writable;
     }
-    var check = Object.freeze({
-        isBoolAttr: isBoolAttr,
-        isFunction: isFunction,
-        isObject: isObject,
-        isUndefined: isUndefined,
-        isString: isString,
-        isBlank: isBlank,
-        isNil: isNil,
-        isArray: isArray,
-        isWritable: isWritable
-    });
-    function each(list, fn) {
-        var len = list ? list.length : 0;
-        var i = 0;
-        for (;i < len; i++) {
-            fn(list[i], i);
-        }
-        return list;
-    }
-    function contains(array, item) {
-        return array.indexOf(item) !== -1;
-    }
-    function toCamel(str) {
-        return str.replace(/-(\w)/g, function(_, c) {
-            return c.toUpperCase();
-        });
-    }
-    function startsWith(str, value) {
-        return str.slice(0, value.length) === value;
-    }
-    function defineProperty(el, key, value, options) {
-        Object.defineProperty(el, key, extend({
-            value: value,
-            enumerable: false,
-            writable: false,
-            configurable: true
-        }, options));
-        return el;
-    }
-    var uid = function() {
-        var i = -1;
-        return function() {
-            return ++i;
-        };
-    }();
-    function warn(message) {
-        if (console && console.warn) {
-            console.warn(message);
-        }
-    }
-    var getPropDescriptor = function(o, k) {
-        return Object.getOwnPropertyDescriptor(o, k);
-    };
     function extend(src) {
         var obj;
         var i = 1;
@@ -2385,21 +2022,281 @@
         }
         return src;
     }
-    var misc = Object.freeze({
-        each: each,
-        contains: contains,
-        toCamel: toCamel,
-        startsWith: startsWith,
-        defineProperty: defineProperty,
-        uid: uid,
-        warn: warn,
-        getPropDescriptor: getPropDescriptor,
-        extend: extend
-    });
-    var settings$1 = extend(Object.create(brackets.settings), {
+    function create(src) {
+        return Object.create(src);
+    }
+    var settings = extend(create(brackets.settings), {
         skipAnonymousTags: true,
         autoUpdate: true
     });
+    function $$(selector, ctx) {
+        return [].slice.call((ctx || document).querySelectorAll(selector));
+    }
+    function createDOMPlaceholder() {
+        return document.createTextNode("");
+    }
+    function toggleVisibility(dom, show) {
+        dom.style.display = show ? "" : "none";
+        dom.hidden = show ? false : true;
+    }
+    function getAttribute(dom, name) {
+        return dom.getAttribute(name);
+    }
+    function removeAttribute(dom, name) {
+        dom.removeAttribute(name);
+    }
+    function setInnerHTML(container, html, isSvg) {
+        if (isSvg) {
+            var node = container.ownerDocument.importNode(new DOMParser().parseFromString('<svg xmlns="' + SVG_NS + '">' + html + "</svg>", "application/xml").documentElement, true);
+            container.appendChild(node);
+        } else {
+            container.innerHTML = html;
+        }
+    }
+    function walkAttributes(html, fn) {
+        if (!html) {
+            return;
+        }
+        var m;
+        while (m = RE_HTML_ATTRS.exec(html)) {
+            fn(m[1].toLowerCase(), m[2] || m[3] || m[4]);
+        }
+    }
+    function createFragment() {
+        return document.createDocumentFragment();
+    }
+    function safeInsert(root, curr, next) {
+        root.insertBefore(curr, next.parentNode && next);
+    }
+    function styleObjectToString(style) {
+        return Object.keys(style).reduce(function(acc, prop) {
+            return acc + " " + prop + ": " + style[prop] + ";";
+        }, "");
+    }
+    function walkNodes(dom, fn, context) {
+        if (dom) {
+            var res = fn(dom, context);
+            var next;
+            if (res === false) {
+                return;
+            }
+            dom = dom.firstChild;
+            while (dom) {
+                next = dom.nextSibling;
+                walkNodes(dom, fn, res);
+                dom = next;
+            }
+        }
+    }
+    var dom = Object.freeze({
+        $$: $$,
+        $: $,
+        createDOMPlaceholder: createDOMPlaceholder,
+        mkEl: makeElement,
+        setAttr: setAttribute,
+        toggleVisibility: toggleVisibility,
+        getAttr: getAttribute,
+        remAttr: removeAttribute,
+        setInnerHTML: setInnerHTML,
+        walkAttrs: walkAttributes,
+        createFrag: createFragment,
+        safeInsert: safeInsert,
+        styleObjectToString: styleObjectToString,
+        walkNodes: walkNodes
+    });
+    function isNil(value) {
+        return isUndefined(value) || value === null;
+    }
+    function isBlank(value) {
+        return isNil(value) || value === "";
+    }
+    function isFunction(value) {
+        return typeof value === T_FUNCTION;
+    }
+    function isObject(value) {
+        return value && typeof value === T_OBJECT;
+    }
+    function isSvg(el) {
+        var owner = el.ownerSVGElement;
+        return !!owner || owner === null;
+    }
+    function isArray(value) {
+        return Array.isArray(value) || value instanceof Array;
+    }
+    function isBoolAttr(value) {
+        return RE_BOOL_ATTRS.test(value);
+    }
+    function isString(value) {
+        return typeof value === T_STRING;
+    }
+    var check = Object.freeze({
+        isBlank: isBlank,
+        isFunction: isFunction,
+        isObject: isObject,
+        isSvg: isSvg,
+        isWritable: isWritable,
+        isArray: isArray,
+        isBoolAttr: isBoolAttr,
+        isNil: isNil,
+        isString: isString,
+        isUndefined: isUndefined
+    });
+    function contains(array, item) {
+        return array.indexOf(item) !== -1;
+    }
+    function each(list, fn) {
+        var len = list ? list.length : 0;
+        var i = 0;
+        for (;i < len; i++) {
+            fn(list[i], i);
+        }
+        return list;
+    }
+    function startsWith(str, value) {
+        return str.slice(0, value.length) === value;
+    }
+    var uid = function uid() {
+        var i = -1;
+        return function() {
+            return ++i;
+        };
+    }();
+    function define(el, key, value, options) {
+        Object.defineProperty(el, key, extend({
+            value: value,
+            enumerable: false,
+            writable: false,
+            configurable: true
+        }, options));
+        return el;
+    }
+    function toCamel(str) {
+        return str.replace(/-(\w)/g, function(_, c) {
+            return c.toUpperCase();
+        });
+    }
+    function warn(message) {
+        if (console && console.warn) {
+            console.warn(message);
+        }
+    }
+    var misc = Object.freeze({
+        contains: contains,
+        each: each,
+        getPropDescriptor: getPropDescriptor,
+        startsWith: startsWith,
+        uid: uid,
+        defineProperty: define,
+        objectCreate: create,
+        extend: extend,
+        toCamel: toCamel,
+        warn: warn
+    });
+    function arrayishAdd(obj, key, value, ensureArray, index) {
+        var dest = obj[key];
+        var isArr = isArray(dest);
+        var hasIndex = !isUndefined(index);
+        if (dest && dest === value) {
+            return;
+        }
+        if (!dest && ensureArray) {
+            obj[key] = [ value ];
+        } else if (!dest) {
+            obj[key] = value;
+        } else {
+            if (isArr) {
+                var oldIndex = dest.indexOf(value);
+                if (oldIndex === index) {
+                    return;
+                }
+                if (oldIndex !== -1) {
+                    dest.splice(oldIndex, 1);
+                }
+                if (hasIndex) {
+                    dest.splice(index, 0, value);
+                } else {
+                    dest.push(value);
+                }
+            } else {
+                obj[key] = [ dest, value ];
+            }
+        }
+    }
+    function get(dom) {
+        return dom.tagName && __TAG_IMPL[getAttribute(dom, IS_DIRECTIVE) || getAttribute(dom, IS_DIRECTIVE) || dom.tagName.toLowerCase()];
+    }
+    function getName(dom, skipDataIs) {
+        var child = get(dom);
+        var namedTag = !skipDataIs && getAttribute(dom, IS_DIRECTIVE);
+        return namedTag && !tmpl.hasExpr(namedTag) ? namedTag : child ? child.name : dom.tagName.toLowerCase();
+    }
+    function inheritParentProps() {
+        if (this.parent) {
+            return extend(create(this), this.parent);
+        }
+        return this;
+    }
+    var reHasYield = /<yield\b/i, reYieldAll = /<yield\s*(?:\/>|>([\S\s]*?)<\/yield\s*>|>)/gi, reYieldSrc = /<yield\s+to=['"]([^'">]*)['"]\s*>([\S\s]*?)<\/yield\s*>/gi, reYieldDest = /<yield\s+from=['"]?([-\w]+)['"]?\s*(?:\/>|>([\S\s]*?)<\/yield\s*>)/gi, rootEls = {
+        tr: "tbody",
+        th: "tr",
+        td: "tr",
+        col: "colgroup"
+    }, tblTags = IE_VERSION && IE_VERSION < 10 ? RE_SPECIAL_TAGS : RE_SPECIAL_TAGS_NO_OPTION, GENERIC = "div", SVG = "svg";
+    function specialTags(el, tmpl, tagName) {
+        var select = tagName[0] === "o", parent = select ? "select>" : "table>";
+        el.innerHTML = "<" + parent + tmpl.trim() + "</" + parent;
+        parent = el.firstChild;
+        if (select) {
+            parent.selectedIndex = -1;
+        } else {
+            var tname = rootEls[tagName];
+            if (tname && parent.childElementCount === 1) {
+                parent = $(tname, parent);
+            }
+        }
+        return parent;
+    }
+    function replaceYield(tmpl, html) {
+        if (!reHasYield.test(tmpl)) {
+            return tmpl;
+        }
+        var src = {};
+        html = html && html.replace(reYieldSrc, function(_, ref, text) {
+            src[ref] = src[ref] || text;
+            return "";
+        }).trim();
+        return tmpl.replace(reYieldDest, function(_, ref, def) {
+            return src[ref] || def || "";
+        }).replace(reYieldAll, function(_, def) {
+            return html || def || "";
+        });
+    }
+    function mkdom(tmpl, html, isSvg) {
+        var match = tmpl && tmpl.match(/^\s*<([-\w]+)/);
+        var tagName = match && match[1].toLowerCase();
+        var el = makeElement(isSvg ? SVG : GENERIC);
+        tmpl = replaceYield(tmpl, html);
+        if (tblTags.test(tagName)) {
+            el = specialTags(el, tmpl, tagName);
+        } else {
+            setInnerHTML(el, tmpl, isSvg);
+        }
+        return el;
+    }
+    var EVENT_ATTR_RE = /^on/;
+    function isEventAttribute(attribute) {
+        return EVENT_ATTR_RE.test(attribute);
+    }
+    function getImmediateCustomParent(tag) {
+        var ptag = tag;
+        while (ptag.__.isAnonymous) {
+            if (!ptag.parent) {
+                break;
+            }
+            ptag = ptag.parent;
+        }
+        return ptag;
+    }
     function handleEvent(dom, handler, e) {
         var ptag = this.__.parent;
         var item = this.__.item;
@@ -2420,11 +2317,11 @@
         }
         e.item = item;
         handler.call(this, e);
-        if (!settings$1.autoUpdate) {
+        if (!settings.autoUpdate) {
             return;
         }
         if (!e.preventUpdate) {
-            var p = getImmediateCustomParentTag(this);
+            var p = getImmediateCustomParent(this);
             if (p.isMounted) {
                 p.update();
             }
@@ -2446,6 +2343,61 @@
         }
         dom[RIOT_EVENTS_KEY][name] = cb;
         dom.addEventListener(eventName, cb, false);
+    }
+    function initChild(child, opts, innerHTML, parent) {
+        var tag = createTag(child, opts, innerHTML);
+        var tagName = opts.tagName || getName(opts.root, true);
+        var ptag = getImmediateCustomParent(parent);
+        define(tag, "parent", ptag);
+        tag.__.parent = parent;
+        arrayishAdd(ptag.tags, tagName, tag);
+        if (ptag !== parent) {
+            arrayishAdd(parent.tags, tagName, tag);
+        }
+        return tag;
+    }
+    function arrayishRemove(obj, key, value, ensureArray) {
+        if (isArray(obj[key])) {
+            var index = obj[key].indexOf(value);
+            if (index !== -1) {
+                obj[key].splice(index, 1);
+            }
+            if (!obj[key].length) {
+                delete obj[key];
+            } else if (obj[key].length === 1 && !ensureArray) {
+                obj[key] = obj[key][0];
+            }
+        } else if (obj[key] === value) {
+            delete obj[key];
+        }
+    }
+    function makeVirtual(src, target) {
+        var this$1 = this;
+        var head = createDOMPlaceholder();
+        var tail = createDOMPlaceholder();
+        var frag = createFragment();
+        var sib;
+        var el;
+        this.root.insertBefore(head, this.root.firstChild);
+        this.root.appendChild(tail);
+        this.__.head = el = head;
+        this.__.tail = tail;
+        while (el) {
+            sib = el.nextSibling;
+            frag.appendChild(el);
+            this$1.__.virts.push(el);
+            el = sib;
+        }
+        if (target) {
+            src.insertBefore(frag, target.__.head);
+        } else {
+            src.appendChild(frag);
+        }
+    }
+    function makeReplaceVirtual(tag, ref) {
+        var frag = createFragment();
+        makeVirtual.call(tag, frag);
+        ref.parentNode.replaceChild(frag, ref);
     }
     function updateDataIs(expr, parent, tagName) {
         var tag = expr.tag || expr.dom._tag;
@@ -2471,13 +2423,13 @@
         if (!expr.impl) {
             return;
         }
-        expr.tag = tag = initChildTag(expr.impl, {
+        expr.tag = tag = initChild(expr.impl, {
             root: expr.dom,
             parent: parent,
             tagName: tagName
         }, expr.dom.innerHTML, parent);
         each(expr.attrs, function(a) {
-            return setAttr(tag.root, a.name, a.value);
+            return setAttribute(tag.root, a.name, a.value);
         });
         expr.tagName = tagName;
         tag.mount();
@@ -2502,7 +2454,7 @@
         return attrName;
     }
     function updateExpression(expr) {
-        if (this.root && getAttr(this.root, "virtualized")) {
+        if (this.root && getAttribute(this.root, "virtualized")) {
             return;
         }
         var dom = expr.dom;
@@ -2541,7 +2493,7 @@
             }
         }
         if (expr.attr && (!expr.wasParsedOnce || !hasValue || value === false)) {
-            remAttr(dom, getAttr(dom, expr.attr) ? expr.attr : attrName);
+            removeAttribute(dom, getAttribute(dom, expr.attr) ? expr.attr : attrName);
         }
         if (expr.bool) {
             value = value ? attrName : false;
@@ -2575,113 +2527,292 @@
             }
             return;
         }
-        if (isFunction(value)) {
-            setEventHandler(attrName, value, dom, this);
-        } else if (isToggle) {
+        switch (true) {
+          case isFunction(value):
+            if (isEventAttribute(attrName)) {
+                setEventHandler(attrName, value, dom, this);
+            }
+            break;
+
+          case isToggle:
             toggleVisibility(dom, attrName === HIDE_DIRECTIVE ? !value : value);
-        } else {
+            break;
+
+          default:
             if (expr.bool) {
                 dom[attrName] = value;
             }
             if (attrName === "value" && dom.value !== value) {
                 dom.value = value;
             } else if (hasValue && value !== false) {
-                setAttr(dom, attrName, value);
+                setAttribute(dom, attrName, value);
             }
             if (isStyleAttr && dom.hidden) {
                 toggleVisibility(dom, false);
             }
         }
     }
-    function updateAllExpressions(expressions) {
+    function update(expressions) {
         each(expressions, updateExpression.bind(this));
     }
-    var IfExpr = {
-        init: function init(dom, tag, expr) {
-            remAttr(dom, CONDITIONAL_DIRECTIVE);
-            this.tag = tag;
-            this.expr = expr;
-            this.stub = createDOMPlaceholder();
-            this.pristine = dom;
-            var p = dom.parentNode;
-            p.insertBefore(this.stub, dom);
-            p.removeChild(dom);
-            return this;
-        },
-        update: function update() {
-            this.value = tmpl(this.expr, this.tag);
-            if (this.value && !this.current) {
-                this.current = this.pristine.cloneNode(true);
-                this.stub.parentNode.insertBefore(this.current, this.stub);
-                this.expressions = parseExpressions.apply(this.tag, [ this.current, true ]);
-            } else if (!this.value && this.current) {
-                unmountAll(this.expressions);
-                if (this.current._tag) {
-                    this.current._tag.unmount();
-                } else if (this.current.parentNode) {
-                    this.current.parentNode.removeChild(this.current);
-                }
-                this.current = null;
-                this.expressions = [];
-            }
-            if (this.value) {
-                updateAllExpressions.call(this.tag, this.expressions);
-            }
-        },
-        unmount: function unmount() {
-            unmountAll(this.expressions || []);
+    function updateOpts(isLoop, parent, isAnonymous, opts, instAttrs) {
+        if (isLoop && isAnonymous) {
+            return;
         }
-    };
-    var RefExpr = {
-        init: function init(dom, parent, attrName, attrValue) {
-            this.dom = dom;
-            this.attr = attrName;
-            this.rawValue = attrValue;
-            this.parent = parent;
-            this.hasExp = tmpl.hasExpr(attrValue);
-            return this;
-        },
-        update: function update() {
-            var old = this.value;
-            var customParent = this.parent && getImmediateCustomParentTag(this.parent);
-            var tagOrDom = this.dom.__ref || this.tag || this.dom;
-            this.value = this.hasExp ? tmpl(this.rawValue, this.parent) : this.rawValue;
-            if (!isBlank(old) && customParent) {
-                arrayishRemove(customParent.refs, old, tagOrDom);
+        var ctx = isLoop ? inheritParentProps.call(this) : parent || this;
+        each(instAttrs, function(attr) {
+            if (attr.expr) {
+                updateExpression.call(ctx, attr.expr);
             }
-            if (!isBlank(this.value) && isString(this.value)) {
-                if (customParent) {
-                    arrayishAdd(customParent.refs, this.value, tagOrDom, null, this.parent.__.index);
-                }
-                if (this.value !== old) {
-                    setAttr(this.dom, this.attr, this.value);
-                }
+            opts[toCamel(attr.name).replace(ATTRS_PREFIX, "")] = attr.expr ? attr.expr.value : attr.value;
+        });
+    }
+    function componentUpdate(tag, data, expressions) {
+        var __ = tag.__;
+        var nextOpts = {};
+        var canTrigger = tag.isMounted && !__.skipAnonymous;
+        if (__.isAnonymous && __.parent) {
+            extend(tag, __.parent);
+        }
+        extend(tag, data);
+        updateOpts.apply(tag, [ __.isLoop, __.parent, __.isAnonymous, nextOpts, __.instAttrs ]);
+        if (canTrigger && tag.isMounted && isFunction(tag.shouldUpdate) && !tag.shouldUpdate(data, nextOpts)) {
+            return tag;
+        }
+        extend(tag.opts, nextOpts);
+        if (canTrigger) {
+            tag.trigger("update", data);
+        }
+        update.call(tag, expressions);
+        if (canTrigger) {
+            tag.trigger("updated");
+        }
+        return tag;
+    }
+    function query(tags) {
+        if (!tags) {
+            var keys = Object.keys(__TAG_IMPL);
+            return keys + query(keys);
+        }
+        return tags.filter(function(t) {
+            return !/[^-\w]/.test(t);
+        }).reduce(function(list, t) {
+            var name = t.trim().toLowerCase();
+            return list + ",[" + IS_DIRECTIVE + '="' + name + '"]';
+        }, "");
+    }
+    function Tag(el, opts) {
+        var ref = this;
+        var name = ref.name;
+        var tmpl = ref.tmpl;
+        var css = ref.css;
+        var attrs = ref.attrs;
+        var onCreate = ref.onCreate;
+        if (!__TAG_IMPL[name]) {
+            tag(name, tmpl, css, attrs, onCreate);
+            __TAG_IMPL[name].class = this.constructor;
+        }
+        mount$1(el, name, opts, this);
+        if (css) {
+            styleManager.inject();
+        }
+        return this;
+    }
+    function tag(name, tmpl, css, attrs, fn) {
+        if (isFunction(attrs)) {
+            fn = attrs;
+            if (/^[\w-]+\s?=/.test(css)) {
+                attrs = css;
+                css = "";
             } else {
-                remAttr(this.dom, this.attr);
-            }
-            if (!this.dom.__ref) {
-                this.dom.__ref = tagOrDom;
-            }
-        },
-        unmount: function unmount() {
-            var tagOrDom = this.tag || this.dom;
-            var customParent = this.parent && getImmediateCustomParentTag(this.parent);
-            if (!isBlank(this.value) && customParent) {
-                arrayishRemove(customParent.refs, this.value, tagOrDom);
+                attrs = "";
             }
         }
-    };
-    function mkitem(expr, key, val, base) {
-        var item = base ? Object.create(base) : {};
+        if (css) {
+            if (isFunction(css)) {
+                fn = css;
+            } else {
+                styleManager.add(css, name);
+            }
+        }
+        name = name.toLowerCase();
+        __TAG_IMPL[name] = {
+            name: name,
+            tmpl: tmpl,
+            attrs: attrs,
+            fn: fn
+        };
+        return name;
+    }
+    function tag2(name, tmpl, css, attrs, fn) {
+        if (css) {
+            styleManager.add(css, name);
+        }
+        __TAG_IMPL[name] = {
+            name: name,
+            tmpl: tmpl,
+            attrs: attrs,
+            fn: fn
+        };
+        return name;
+    }
+    function mount(selector, tagName, opts) {
+        var tags = [];
+        var elem, allTags;
+        function pushTagsTo(root) {
+            if (root.tagName) {
+                var riotTag = getAttribute(root, IS_DIRECTIVE), tag;
+                if (tagName && riotTag !== tagName) {
+                    riotTag = tagName;
+                    setAttribute(root, IS_DIRECTIVE, tagName);
+                }
+                tag = mount$1(root, riotTag || root.tagName.toLowerCase(), opts);
+                if (tag) {
+                    tags.push(tag);
+                }
+            } else if (root.length) {
+                each(root, pushTagsTo);
+            }
+        }
+        styleManager.inject();
+        if (isObject(tagName)) {
+            opts = tagName;
+            tagName = 0;
+        }
+        if (isString(selector)) {
+            selector = selector === "*" ? allTags = query() : selector + query(selector.split(/, */));
+            elem = selector ? $$(selector) : [];
+        } else {
+            elem = selector;
+        }
+        if (tagName === "*") {
+            tagName = allTags || query();
+            if (elem.tagName) {
+                elem = $$(tagName, elem);
+            } else {
+                var nodeList = [];
+                each(elem, function(_el) {
+                    return nodeList.push($$(tagName, _el));
+                });
+                elem = nodeList;
+            }
+            tagName = 0;
+        }
+        pushTagsTo(elem);
+        return tags;
+    }
+    var mixins = {};
+    var globals = mixins[GLOBAL_MIXIN] = {};
+    var mixins_id = 0;
+    function mixin(name, mix, g) {
+        if (isObject(name)) {
+            mixin("__" + mixins_id++ + "__", name, true);
+            return;
+        }
+        var store = g ? globals : mixins;
+        if (!mix) {
+            if (isUndefined(store[name])) {
+                throw new Error("Unregistered mixin: " + name);
+            }
+            return store[name];
+        }
+        store[name] = isFunction(mix) ? extend(mix.prototype, store[name] || {}) && mix : extend(store[name] || {}, mix);
+    }
+    function update$1() {
+        return each(__TAGS_CACHE, function(tag) {
+            return tag.update();
+        });
+    }
+    function unregister(name) {
+        styleManager.remove(name);
+        return delete __TAG_IMPL[name];
+    }
+    var version = "v3.11.1";
+    var core = Object.freeze({
+        Tag: Tag,
+        tag: tag,
+        tag2: tag2,
+        mount: mount,
+        mixin: mixin,
+        update: update$1,
+        unregister: unregister,
+        version: version
+    });
+    function componentMixin(tag$$1) {
+        var mixins = [], len = arguments.length - 1;
+        while (len-- > 0) mixins[len] = arguments[len + 1];
+        each(mixins, function(mix) {
+            var instance;
+            var obj;
+            var props = [];
+            var propsBlacklist = [ "init", "__proto__" ];
+            mix = isString(mix) ? mixin(mix) : mix;
+            if (isFunction(mix)) {
+                instance = new mix();
+            } else {
+                instance = mix;
+            }
+            var proto = Object.getPrototypeOf(instance);
+            do {
+                props = props.concat(Object.getOwnPropertyNames(obj || instance));
+            } while (obj = Object.getPrototypeOf(obj || instance));
+            each(props, function(key) {
+                if (!contains(propsBlacklist, key)) {
+                    var descriptor = getPropDescriptor(instance, key) || getPropDescriptor(proto, key);
+                    var hasGetterSetter = descriptor && (descriptor.get || descriptor.set);
+                    if (!tag$$1.hasOwnProperty(key) && hasGetterSetter) {
+                        Object.defineProperty(tag$$1, key, descriptor);
+                    } else {
+                        tag$$1[key] = isFunction(instance[key]) ? instance[key].bind(tag$$1) : instance[key];
+                    }
+                }
+            });
+            if (instance.init) {
+                instance.init.bind(tag$$1)(tag$$1.opts);
+            }
+        });
+        return tag$$1;
+    }
+    function moveChild(tagName, newPos) {
+        var parent = this.parent;
+        var tags;
+        if (!parent) {
+            return;
+        }
+        tags = parent.tags[tagName];
+        if (isArray(tags)) {
+            tags.splice(newPos, 0, tags.splice(tags.indexOf(this), 1)[0]);
+        } else {
+            arrayishAdd(parent.tags, tagName, this);
+        }
+    }
+    function moveVirtual(src, target) {
+        var this$1 = this;
+        var el = this.__.head;
+        var sib;
+        var frag = createFragment();
+        while (el) {
+            sib = el.nextSibling;
+            frag.appendChild(el);
+            el = sib;
+            if (el === this$1.__.tail) {
+                frag.appendChild(el);
+                src.insertBefore(frag, target.__.head);
+                break;
+            }
+        }
+    }
+    function mkitem(expr, key, val) {
+        var item = {};
         item[expr.key] = key;
         if (expr.pos) {
             item[expr.pos] = val;
         }
         return item;
     }
-    function unmountRedundant(items, tags) {
+    function unmountRedundant(items, tags, filteredItemsCount) {
         var i = tags.length;
-        var j = items.length;
+        var j = items.length - filteredItemsCount;
         while (i > j) {
             i--;
             remove.apply(tags[i], [ tags, i ]);
@@ -2695,7 +2826,7 @@
     function moveNestedTags(i) {
         var this$1 = this;
         each(Object.keys(this.tags), function(tagName) {
-            moveChildTag.apply(this$1.tags[tagName], [ tagName, i ]);
+            moveChild.apply(this$1.tags[tagName], [ tagName, i ]);
         });
     }
     function move(root, nextTag, isVirtual) {
@@ -2726,67 +2857,62 @@
         return originalItem;
     }
     function _each(dom, parent, expr) {
-        var mustReorder = typeof getAttr(dom, LOOP_NO_REORDER_DIRECTIVE) !== T_STRING || remAttr(dom, LOOP_NO_REORDER_DIRECTIVE);
-        var keyAttr = getAttr(dom, KEY_DIRECTIVE);
+        var mustReorder = typeof getAttribute(dom, LOOP_NO_REORDER_DIRECTIVE) !== T_STRING || removeAttribute(dom, LOOP_NO_REORDER_DIRECTIVE);
+        var keyAttr = getAttribute(dom, KEY_DIRECTIVE);
         var hasKeyAttrExpr = keyAttr ? tmpl.hasExpr(keyAttr) : false;
-        var tagName = getTagName(dom);
+        var tagName = getName(dom);
         var impl = __TAG_IMPL[tagName];
         var parentNode = dom.parentNode;
         var placeholder = createDOMPlaceholder();
-        var child = getTag(dom);
-        var ifExpr = getAttr(dom, CONDITIONAL_DIRECTIVE);
+        var child = get(dom);
+        var ifExpr = getAttribute(dom, CONDITIONAL_DIRECTIVE);
         var tags = [];
         var isLoop = true;
         var innerHTML = dom.innerHTML;
         var isAnonymous = !__TAG_IMPL[tagName];
         var isVirtual = dom.tagName === "VIRTUAL";
         var oldItems = [];
-        var hasKeys;
-        remAttr(dom, LOOP_DIRECTIVE);
-        remAttr(dom, KEY_DIRECTIVE);
+        removeAttribute(dom, LOOP_DIRECTIVE);
+        removeAttribute(dom, KEY_DIRECTIVE);
         expr = tmpl.loopKeys(expr);
         expr.isLoop = true;
         if (ifExpr) {
-            remAttr(dom, CONDITIONAL_DIRECTIVE);
+            removeAttribute(dom, CONDITIONAL_DIRECTIVE);
         }
         parentNode.insertBefore(placeholder, dom);
         parentNode.removeChild(dom);
         expr.update = function updateEach() {
             expr.value = tmpl(expr.val, parent);
             var items = expr.value;
-            var frag = createFrag();
-            var isObject$$1 = !isArray(items) && !isString(items);
+            var frag = createFragment();
+            var isObject = !isArray(items) && !isString(items);
             var root = placeholder.parentNode;
             var tmpItems = [];
+            var hasKeys = isObject && !!items;
             if (!root) {
                 return;
             }
-            if (isObject$$1) {
-                hasKeys = items || false;
-                items = hasKeys ? Object.keys(items).map(function(key) {
+            if (isObject) {
+                items = items ? Object.keys(items).map(function(key) {
                     return mkitem(expr, items[key], key);
                 }) : [];
-            } else {
-                hasKeys = false;
             }
-            if (ifExpr) {
-                items = items.filter(function(item, i) {
-                    if (expr.key && !isObject$$1) {
-                        return !!tmpl(ifExpr, mkitem(expr, item, i, parent));
-                    }
-                    return !!tmpl(ifExpr, extend(Object.create(parent), item));
-                });
-            }
-            each(items, function(_item, i) {
-                var item = !hasKeys && expr.key ? mkitem(expr, _item, i) : _item;
+            var filteredItemsCount = 0;
+            each(items, function(_item, index) {
+                var i = index - filteredItemsCount;
+                var item = !hasKeys && expr.key ? mkitem(expr, _item, index) : _item;
+                if (ifExpr && !tmpl(ifExpr, extend(create(parent), item))) {
+                    filteredItemsCount++;
+                    return;
+                }
                 var itemId = getItemId(keyAttr, _item, item, hasKeyAttrExpr);
-                var doReorder = mustReorder && typeof _item === T_OBJECT && !hasKeys;
+                var doReorder = !isObject && mustReorder && typeof _item === T_OBJECT || keyAttr;
                 var oldPos = oldItems.indexOf(itemId);
                 var isNew = oldPos === -1;
                 var pos = !isNew && doReorder ? oldPos : i;
                 var tag = tags[pos];
                 var mustAppend = i >= oldItems.length;
-                var mustCreate = doReorder && isNew || !doReorder && !tag;
+                var mustCreate = doReorder && isNew || !doReorder && !tag || !tags[i];
                 if (mustCreate) {
                     tag = createTag(impl, {
                         parent: parent,
@@ -2823,15 +2949,17 @@
                         moveNestedTags.call(tag, i);
                     }
                 }
-                tag.__.item = item;
-                tag.__.index = i;
-                tag.__.parent = parent;
+                extend(tag.__, {
+                    item: item,
+                    index: i,
+                    parent: parent
+                });
                 tmpItems[i] = itemId;
                 if (!mustCreate) {
                     tag.update(item);
                 }
             });
-            unmountRedundant(items, tags);
+            unmountRedundant(items, tags, filteredItemsCount);
             oldItems = tmpItems.slice();
             root.insertBefore(frag, placeholder);
         };
@@ -2841,6 +2969,105 @@
             });
         };
         return expr;
+    }
+    var RefExpr = {
+        init: function init(dom, parent, attrName, attrValue) {
+            this.dom = dom;
+            this.attr = attrName;
+            this.rawValue = attrValue;
+            this.parent = parent;
+            this.hasExp = tmpl.hasExpr(attrValue);
+            return this;
+        },
+        update: function update() {
+            var old = this.value;
+            var customParent = this.parent && getImmediateCustomParent(this.parent);
+            var tagOrDom = this.dom.__ref || this.tag || this.dom;
+            this.value = this.hasExp ? tmpl(this.rawValue, this.parent) : this.rawValue;
+            if (!isBlank(old) && customParent) {
+                arrayishRemove(customParent.refs, old, tagOrDom);
+            }
+            if (!isBlank(this.value) && isString(this.value)) {
+                if (customParent) {
+                    arrayishAdd(customParent.refs, this.value, tagOrDom, null, this.parent.__.index);
+                }
+                if (this.value !== old) {
+                    setAttribute(this.dom, this.attr, this.value);
+                }
+            } else {
+                removeAttribute(this.dom, this.attr);
+            }
+            if (!this.dom.__ref) {
+                this.dom.__ref = tagOrDom;
+            }
+        },
+        unmount: function unmount() {
+            var tagOrDom = this.tag || this.dom;
+            var customParent = this.parent && getImmediateCustomParent(this.parent);
+            if (!isBlank(this.value) && customParent) {
+                arrayishRemove(customParent.refs, this.value, tagOrDom);
+            }
+        }
+    };
+    function createRefDirective(dom, tag, attrName, attrValue) {
+        return create(RefExpr).init(dom, tag, attrName, attrValue);
+    }
+    function unmountAll(expressions) {
+        each(expressions, function(expr) {
+            if (expr.unmount) {
+                expr.unmount(true);
+            } else if (expr.tagName) {
+                expr.tag.unmount(true);
+            } else if (expr.unmount) {
+                expr.unmount();
+            }
+        });
+    }
+    var IfExpr = {
+        init: function init(dom, tag, expr) {
+            removeAttribute(dom, CONDITIONAL_DIRECTIVE);
+            extend(this, {
+                tag: tag,
+                expr: expr,
+                stub: createDOMPlaceholder(),
+                pristine: dom
+            });
+            var p = dom.parentNode;
+            p.insertBefore(this.stub, dom);
+            p.removeChild(dom);
+            return this;
+        },
+        update: function update$$1() {
+            this.value = tmpl(this.expr, this.tag);
+            if (!this.stub.parentNode) {
+                return;
+            }
+            if (this.value && !this.current) {
+                this.current = this.pristine.cloneNode(true);
+                this.stub.parentNode.insertBefore(this.current, this.stub);
+                this.expressions = parseExpressions.apply(this.tag, [ this.current, true ]);
+            } else if (!this.value && this.current) {
+                this.unmount();
+                this.current = null;
+                this.expressions = [];
+            }
+            if (this.value) {
+                update.call(this.tag, this.expressions);
+            }
+        },
+        unmount: function unmount() {
+            if (this.current) {
+                if (this.current._tag) {
+                    this.current._tag.unmount();
+                } else if (this.current.parentNode) {
+                    this.current.parentNode.removeChild(this.current);
+                }
+            }
+            unmountAll(this.expressions || []);
+        }
+    };
+    function createIfDirective(dom, tag, attr) {
+        return create(IfExpr).init(dom, tag, attr);
     }
     function parseExpressions(root, mustIncludeRoot) {
         var this$1 = this;
@@ -2862,18 +3089,18 @@
                 return;
             }
             var isVirtual = dom.tagName === "VIRTUAL";
-            if (attr = getAttr(dom, LOOP_DIRECTIVE)) {
+            if (attr = getAttribute(dom, LOOP_DIRECTIVE)) {
                 if (isVirtual) {
-                    setAttr(dom, "loopVirtual", true);
+                    setAttribute(dom, "loopVirtual", true);
                 }
                 expressions.push(_each(dom, this$1, attr));
                 return false;
             }
-            if (attr = getAttr(dom, CONDITIONAL_DIRECTIVE)) {
-                expressions.push(Object.create(IfExpr).init(dom, this$1, attr));
+            if (attr = getAttribute(dom, CONDITIONAL_DIRECTIVE)) {
+                expressions.push(createIfDirective(dom, this$1, attr));
                 return false;
             }
-            if (attr = getAttr(dom, IS_DIRECTIVE)) {
+            if (attr = getAttribute(dom, IS_DIRECTIVE)) {
                 if (tmpl.hasExpr(attr)) {
                     expressions.push({
                         isRtag: true,
@@ -2884,23 +3111,21 @@
                     return false;
                 }
             }
-            tagImpl = getTag(dom);
+            tagImpl = get(dom);
             if (isVirtual) {
-                if (getAttr(dom, "virtualized")) {
+                if (getAttribute(dom, "virtualized")) {
                     dom.parentElement.removeChild(dom);
                 }
-                if (!tagImpl && !getAttr(dom, "virtualized") && !getAttr(dom, "loopVirtual")) {
+                if (!tagImpl && !getAttribute(dom, "virtualized") && !getAttribute(dom, "loopVirtual")) {
                     tagImpl = {
                         tmpl: dom.outerHTML
                     };
                 }
             }
             if (tagImpl && (dom !== root || mustIncludeRoot)) {
-                if (isVirtual) {
-                    if (getAttr(dom, IS_DIRECTIVE)) {
-                        warn("Virtual tags shouldn't be used together with the \"" + IS_DIRECTIVE + '" attribute - https://github.com/riot/riot/issues/2511');
-                    }
-                    setAttr(dom, "virtualized", true);
+                var hasIsDirective = getAttribute(dom, IS_DIRECTIVE);
+                if (isVirtual && !hasIsDirective) {
+                    setAttribute(dom, "virtualized", true);
                     var tag = createTag({
                         tmpl: dom.outerHTML
                     }, {
@@ -2909,7 +3134,10 @@
                     }, dom.innerHTML);
                     expressions.push(tag);
                 } else {
-                    expressions.push(initChildTag(tagImpl, {
+                    if (hasIsDirective && isVirtual) {
+                        warn("Virtual tags shouldn't be used together with the \"" + IS_DIRECTIVE + '" attribute - https://github.com/riot/riot/issues/2511');
+                    }
+                    expressions.push(initChild(tagImpl, {
                         root: dom,
                         parent: this$1
                     }, dom.innerHTML, this$1));
@@ -2935,7 +3163,7 @@
             var bool = isBoolAttr(name);
             var expr;
             if (contains(REF_DIRECTIVES, name) && dom.tagName.toLowerCase() !== YIELD_TAG) {
-                expr = Object.create(RefExpr).init(dom, this$1, name, attr.value);
+                expr = createRefDirective(dom, this$1, name, attr.value);
             } else if (tmpl.hasExpr(attr.value)) {
                 expr = {
                     dom: dom,
@@ -2947,212 +3175,10 @@
             fn(attr, expr);
         });
     }
-    var reHasYield = /<yield\b/i;
-    var reYieldAll = /<yield\s*(?:\/>|>([\S\s]*?)<\/yield\s*>|>)/gi;
-    var reYieldSrc = /<yield\s+to=['"]([^'">]*)['"]\s*>([\S\s]*?)<\/yield\s*>/gi;
-    var reYieldDest = /<yield\s+from=['"]?([-\w]+)['"]?\s*(?:\/>|>([\S\s]*?)<\/yield\s*>)/gi;
-    var rootEls = {
-        tr: "tbody",
-        th: "tr",
-        td: "tr",
-        col: "colgroup"
-    };
-    var tblTags = IE_VERSION && IE_VERSION < 10 ? RE_SPECIAL_TAGS : RE_SPECIAL_TAGS_NO_OPTION;
-    var GENERIC = "div";
-    var SVG = "svg";
-    function specialTags(el, tmpl, tagName) {
-        var select = tagName[0] === "o", parent = select ? "select>" : "table>";
-        el.innerHTML = "<" + parent + tmpl.trim() + "</" + parent;
-        parent = el.firstChild;
-        if (select) {
-            parent.selectedIndex = -1;
-        } else {
-            var tname = rootEls[tagName];
-            if (tname && parent.childElementCount === 1) {
-                parent = $(tname, parent);
-            }
-        }
-        return parent;
-    }
-    function replaceYield(tmpl, html) {
-        if (!reHasYield.test(tmpl)) {
-            return tmpl;
-        }
-        var src = {};
-        html = html && html.replace(reYieldSrc, function(_, ref, text) {
-            src[ref] = src[ref] || text;
-            return "";
-        }).trim();
-        return tmpl.replace(reYieldDest, function(_, ref, def) {
-            return src[ref] || def || "";
-        }).replace(reYieldAll, function(_, def) {
-            return html || def || "";
-        });
-    }
-    function mkdom(tmpl, html, isSvg$$1) {
-        var match = tmpl && tmpl.match(/^\s*<([-\w]+)/);
-        var tagName = match && match[1].toLowerCase();
-        var el = mkEl(isSvg$$1 ? SVG : GENERIC);
-        tmpl = replaceYield(tmpl, html);
-        if (tblTags.test(tagName)) {
-            el = specialTags(el, tmpl, tagName);
-        } else {
-            setInnerHTML(el, tmpl, isSvg$$1);
-        }
-        return el;
-    }
-    function Tag$1(el, opts) {
-        var ref = this;
-        var name = ref.name;
-        var tmpl = ref.tmpl;
-        var css = ref.css;
-        var attrs = ref.attrs;
-        var onCreate = ref.onCreate;
-        if (!__TAG_IMPL[name]) {
-            tag$1(name, tmpl, css, attrs, onCreate);
-            __TAG_IMPL[name].class = this.constructor;
-        }
-        mountTo(el, name, opts, this);
-        if (css) {
-            styleManager.inject();
-        }
-        return this;
-    }
-    function tag$1(name, tmpl, css, attrs, fn) {
-        if (isFunction(attrs)) {
-            fn = attrs;
-            if (/^[\w-]+\s?=/.test(css)) {
-                attrs = css;
-                css = "";
-            } else {
-                attrs = "";
-            }
-        }
-        if (css) {
-            if (isFunction(css)) {
-                fn = css;
-            } else {
-                styleManager.add(css);
-            }
-        }
-        name = name.toLowerCase();
-        __TAG_IMPL[name] = {
-            name: name,
-            tmpl: tmpl,
-            attrs: attrs,
-            fn: fn
-        };
-        return name;
-    }
-    function tag2$1(name, tmpl, css, attrs, fn) {
-        if (css) {
-            styleManager.add(css, name);
-        }
-        __TAG_IMPL[name] = {
-            name: name,
-            tmpl: tmpl,
-            attrs: attrs,
-            fn: fn
-        };
-        return name;
-    }
-    function mount$1(selector, tagName, opts) {
-        var tags = [];
-        var elem, allTags;
-        function pushTagsTo(root) {
-            if (root.tagName) {
-                var riotTag = getAttr(root, IS_DIRECTIVE), tag;
-                if (tagName && riotTag !== tagName) {
-                    riotTag = tagName;
-                    setAttr(root, IS_DIRECTIVE, tagName);
-                }
-                tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
-                if (tag) {
-                    tags.push(tag);
-                }
-            } else if (root.length) {
-                each(root, pushTagsTo);
-            }
-        }
-        styleManager.inject();
-        if (isObject(tagName)) {
-            opts = tagName;
-            tagName = 0;
-        }
-        if (isString(selector)) {
-            selector = selector === "*" ? allTags = selectTags() : selector + selectTags(selector.split(/, */));
-            elem = selector ? $$(selector) : [];
-        } else {
-            elem = selector;
-        }
-        if (tagName === "*") {
-            tagName = allTags || selectTags();
-            if (elem.tagName) {
-                elem = $$(tagName, elem);
-            } else {
-                var nodeList = [];
-                each(elem, function(_el) {
-                    return nodeList.push($$(tagName, _el));
-                });
-                elem = nodeList;
-            }
-            tagName = 0;
-        }
-        pushTagsTo(elem);
-        return tags;
-    }
-    var mixins = {};
-    var globals = mixins[GLOBAL_MIXIN] = {};
-    var mixins_id = 0;
-    function mixin$1(name, mix, g) {
-        if (isObject(name)) {
-            mixin$1("__" + mixins_id++ + "__", name, true);
-            return;
-        }
-        var store = g ? globals : mixins;
-        if (!mix) {
-            if (isUndefined(store[name])) {
-                throw new Error("Unregistered mixin: " + name);
-            }
-            return store[name];
-        }
-        store[name] = isFunction(mix) ? extend(mix.prototype, store[name] || {}) && mix : extend(store[name] || {}, mix);
-    }
-    function update$1() {
-        return each(__TAGS_CACHE, function(tag) {
-            return tag.update();
-        });
-    }
-    function unregister$1(name) {
-        __TAG_IMPL[name] = null;
-    }
-    var version$1 = "v3.8.1";
-    var core = Object.freeze({
-        Tag: Tag$1,
-        tag: tag$1,
-        tag2: tag2$1,
-        mount: mount$1,
-        mixin: mixin$1,
-        update: update$1,
-        unregister: unregister$1,
-        version: version$1
-    });
-    function updateOpts(isLoop, parent, isAnonymous, opts, instAttrs) {
-        if (isLoop && isAnonymous) {
-            return;
-        }
-        var ctx = isLoop ? inheritParentProps.call(this) : parent || this;
-        each(instAttrs, function(attr) {
-            if (attr.expr) {
-                updateExpression.call(ctx, attr.expr);
-            }
-            opts[toCamel(attr.name).replace(ATTRS_PREFIX, "")] = attr.expr ? attr.expr.value : attr.value;
-        });
-    }
     function setMountState(value) {
         var ref = this.__;
         var isAnonymous = ref.isAnonymous;
-        defineProperty(this, "isMounted", value);
+        define(this, "isMounted", value);
         if (!isAnonymous) {
             if (value) {
                 this.trigger("mount");
@@ -3163,33 +3189,163 @@
             }
         }
     }
+    function componentMount(tag$$1, dom, expressions, opts) {
+        var __ = tag$$1.__;
+        var root = __.root;
+        root._tag = tag$$1;
+        parseAttributes.apply(__.parent, [ root, root.attributes, function(attr, expr) {
+            if (!__.isAnonymous && RefExpr.isPrototypeOf(expr)) {
+                expr.tag = tag$$1;
+            }
+            attr.expr = expr;
+            __.instAttrs.push(attr);
+        } ]);
+        walkAttributes(__.impl.attrs, function(k, v) {
+            __.implAttrs.push({
+                name: k,
+                value: v
+            });
+        });
+        parseAttributes.apply(tag$$1, [ root, __.implAttrs, function(attr, expr) {
+            if (expr) {
+                expressions.push(expr);
+            } else {
+                setAttribute(root, attr.name, attr.value);
+            }
+        } ]);
+        updateOpts.apply(tag$$1, [ __.isLoop, __.parent, __.isAnonymous, opts, __.instAttrs ]);
+        var globalMixin = mixin(GLOBAL_MIXIN);
+        if (globalMixin && !__.skipAnonymous) {
+            for (var i in globalMixin) {
+                if (globalMixin.hasOwnProperty(i)) {
+                    tag$$1.mixin(globalMixin[i]);
+                }
+            }
+        }
+        if (__.impl.fn) {
+            __.impl.fn.call(tag$$1, opts);
+        }
+        if (!__.skipAnonymous) {
+            tag$$1.trigger("before-mount");
+        }
+        each(parseExpressions.apply(tag$$1, [ dom, __.isAnonymous ]), function(e) {
+            return expressions.push(e);
+        });
+        tag$$1.update(__.item);
+        if (!__.isAnonymous && !__.isInline) {
+            while (dom.firstChild) {
+                root.appendChild(dom.firstChild);
+            }
+        }
+        define(tag$$1, "root", root);
+        if (!__.skipAnonymous && tag$$1.parent) {
+            var p = getImmediateCustomParent(tag$$1.parent);
+            p.one(!p.isMounted ? "mount" : "updated", function() {
+                setMountState.call(tag$$1, true);
+            });
+        } else {
+            setMountState.call(tag$$1, true);
+        }
+        tag$$1.__.wasCreated = true;
+        return tag$$1;
+    }
+    function tagUnmount(tag, mustKeepRoot, expressions) {
+        var __ = tag.__;
+        var root = __.root;
+        var tagIndex = __TAGS_CACHE.indexOf(tag);
+        var p = root.parentNode;
+        if (!__.skipAnonymous) {
+            tag.trigger("before-unmount");
+        }
+        walkAttributes(__.impl.attrs, function(name) {
+            if (startsWith(name, ATTRS_PREFIX)) {
+                name = name.slice(ATTRS_PREFIX.length);
+            }
+            removeAttribute(root, name);
+        });
+        tag.__.listeners.forEach(function(dom) {
+            Object.keys(dom[RIOT_EVENTS_KEY]).forEach(function(eventName) {
+                dom.removeEventListener(eventName, dom[RIOT_EVENTS_KEY][eventName]);
+            });
+        });
+        if (tagIndex !== -1) {
+            __TAGS_CACHE.splice(tagIndex, 1);
+        }
+        if (__.parent && !__.isAnonymous) {
+            var ptag = getImmediateCustomParent(__.parent);
+            if (__.isVirtual) {
+                Object.keys(tag.tags).forEach(function(tagName) {
+                    return arrayishRemove(ptag.tags, tagName, tag.tags[tagName]);
+                });
+            } else {
+                arrayishRemove(ptag.tags, __.tagName, tag);
+            }
+        }
+        if (tag.__.virts) {
+            each(tag.__.virts, function(v) {
+                if (v.parentNode) {
+                    v.parentNode.removeChild(v);
+                }
+            });
+        }
+        unmountAll(expressions);
+        each(__.instAttrs, function(a) {
+            return a.expr && a.expr.unmount && a.expr.unmount();
+        });
+        if (mustKeepRoot) {
+            setInnerHTML(root, "");
+        } else if (p) {
+            p.removeChild(root);
+        }
+        if (__.onUnmount) {
+            __.onUnmount();
+        }
+        if (!tag.isMounted) {
+            setMountState.call(tag, true);
+        }
+        setMountState.call(tag, false);
+        delete root._tag;
+        return tag;
+    }
     function createTag(impl, conf, innerHTML) {
         if (impl === void 0) impl = {};
         if (conf === void 0) conf = {};
         var tag = conf.context || {};
-        var opts = extend({}, conf.opts);
+        var opts = conf.opts || {};
         var parent = conf.parent;
         var isLoop = conf.isLoop;
         var isAnonymous = !!conf.isAnonymous;
-        var skipAnonymous = settings$1.skipAnonymousTags && isAnonymous;
+        var skipAnonymous = settings.skipAnonymousTags && isAnonymous;
         var item = conf.item;
         var index = conf.index;
         var instAttrs = [];
         var implAttrs = [];
+        var tmpl = impl.tmpl;
         var expressions = [];
         var root = conf.root;
-        var tagName = conf.tagName || getTagName(root);
+        var tagName = conf.tagName || getName(root);
         var isVirtual = tagName === "virtual";
-        var isInline = !isVirtual && !impl.tmpl;
+        var isInline = !isVirtual && !tmpl;
         var dom;
+        if (isInline || isLoop && isAnonymous) {
+            dom = root;
+        } else {
+            if (!isVirtual) {
+                root.innerHTML = "";
+            }
+            dom = mkdom(tmpl, innerHTML, isSvg(root));
+        }
         if (!skipAnonymous) {
-            observable$1(tag);
+            observable(tag);
         }
         if (impl.name && root._tag) {
             root._tag.unmount(true);
         }
-        defineProperty(tag, "isMounted", false);
-        defineProperty(tag, "__", {
+        define(tag, "__", {
+            impl: impl,
+            root: root,
+            skipAnonymous: skipAnonymous,
+            implAttrs: implAttrs,
             isAnonymous: isAnonymous,
             instAttrs: instAttrs,
             innerHTML: innerHTML,
@@ -3197,304 +3353,39 @@
             index: index,
             isLoop: isLoop,
             isInline: isInline,
+            item: item,
+            parent: parent,
             listeners: [],
             virts: [],
             wasCreated: false,
             tail: null,
-            head: null,
-            parent: null,
-            item: null
+            head: null
         });
-        defineProperty(tag, "_riot_id", uid());
-        defineProperty(tag, "root", root);
-        extend(tag, {
-            opts: opts
-        }, item);
-        defineProperty(tag, "parent", parent || null);
-        defineProperty(tag, "tags", {});
-        defineProperty(tag, "refs", {});
-        if (isInline || isLoop && isAnonymous) {
-            dom = root;
-        } else {
-            if (!isVirtual) {
-                root.innerHTML = "";
-            }
-            dom = mkdom(impl.tmpl, innerHTML, isSvg(root));
-        }
-        defineProperty(tag, "update", function tagUpdate(data) {
-            var nextOpts = {};
-            var canTrigger = tag.isMounted && !skipAnonymous;
-            if (isAnonymous && parent) {
-                extend(tag, parent);
-            }
-            extend(tag, data);
-            updateOpts.apply(tag, [ isLoop, parent, isAnonymous, nextOpts, instAttrs ]);
-            if (canTrigger && tag.isMounted && isFunction(tag.shouldUpdate) && !tag.shouldUpdate(data, nextOpts)) {
-                return tag;
-            }
-            extend(opts, nextOpts);
-            if (canTrigger) {
-                tag.trigger("update", data);
-            }
-            updateAllExpressions.call(tag, expressions);
-            if (canTrigger) {
-                tag.trigger("updated");
-            }
-            return tag;
-        });
-        defineProperty(tag, "mixin", function tagMixin() {
-            each(arguments, function(mix) {
-                var instance;
-                var obj;
-                var props = [];
-                var propsBlacklist = [ "init", "__proto__" ];
-                mix = isString(mix) ? mixin$1(mix) : mix;
-                if (isFunction(mix)) {
-                    instance = new mix();
-                } else {
-                    instance = mix;
-                }
-                var proto = Object.getPrototypeOf(instance);
-                do {
-                    props = props.concat(Object.getOwnPropertyNames(obj || instance));
-                } while (obj = Object.getPrototypeOf(obj || instance));
-                each(props, function(key) {
-                    if (!contains(propsBlacklist, key)) {
-                        var descriptor = getPropDescriptor(instance, key) || getPropDescriptor(proto, key);
-                        var hasGetterSetter = descriptor && (descriptor.get || descriptor.set);
-                        if (!tag.hasOwnProperty(key) && hasGetterSetter) {
-                            Object.defineProperty(tag, key, descriptor);
-                        } else {
-                            tag[key] = isFunction(instance[key]) ? instance[key].bind(tag) : instance[key];
-                        }
-                    }
-                });
-                if (instance.init) {
-                    instance.init.bind(tag)(opts);
-                }
-            });
-            return tag;
-        });
-        defineProperty(tag, "mount", function tagMount() {
-            root._tag = tag;
-            parseAttributes.apply(parent, [ root, root.attributes, function(attr, expr) {
-                if (!isAnonymous && RefExpr.isPrototypeOf(expr)) {
-                    expr.tag = tag;
-                }
-                attr.expr = expr;
-                instAttrs.push(attr);
-            } ]);
-            walkAttrs(impl.attrs, function(k, v) {
-                implAttrs.push({
-                    name: k,
-                    value: v
-                });
-            });
-            parseAttributes.apply(tag, [ root, implAttrs, function(attr, expr) {
-                if (expr) {
-                    expressions.push(expr);
-                } else {
-                    setAttr(root, attr.name, attr.value);
-                }
-            } ]);
-            updateOpts.apply(tag, [ isLoop, parent, isAnonymous, opts, instAttrs ]);
-            var globalMixin = mixin$1(GLOBAL_MIXIN);
-            if (globalMixin && !skipAnonymous) {
-                for (var i in globalMixin) {
-                    if (globalMixin.hasOwnProperty(i)) {
-                        tag.mixin(globalMixin[i]);
-                    }
-                }
-            }
-            if (impl.fn) {
-                impl.fn.call(tag, opts);
-            }
-            if (!skipAnonymous) {
-                tag.trigger("before-mount");
-            }
-            each(parseExpressions.apply(tag, [ dom, isAnonymous ]), function(e) {
-                return expressions.push(e);
-            });
-            tag.update(item);
-            if (!isAnonymous && !isInline) {
-                while (dom.firstChild) {
-                    root.appendChild(dom.firstChild);
-                }
-            }
-            defineProperty(tag, "root", root);
-            if (!skipAnonymous && tag.parent) {
-                var p = getImmediateCustomParentTag(tag.parent);
-                p.one(!p.isMounted ? "mount" : "updated", function() {
-                    setMountState.call(tag, true);
-                });
-            } else {
-                setMountState.call(tag, true);
-            }
-            tag.__.wasCreated = true;
-            return tag;
-        });
-        defineProperty(tag, "unmount", function tagUnmount(mustKeepRoot) {
-            var el = tag.root;
-            var p = el.parentNode;
-            var tagIndex = __TAGS_CACHE.indexOf(tag);
-            if (!skipAnonymous) {
-                tag.trigger("before-unmount");
-            }
-            walkAttrs(impl.attrs, function(name) {
-                if (startsWith(name, ATTRS_PREFIX)) {
-                    name = name.slice(ATTRS_PREFIX.length);
-                }
-                remAttr(root, name);
-            });
-            tag.__.listeners.forEach(function(dom) {
-                Object.keys(dom[RIOT_EVENTS_KEY]).forEach(function(eventName) {
-                    dom.removeEventListener(eventName, dom[RIOT_EVENTS_KEY][eventName]);
-                });
-            });
-            if (tagIndex !== -1) {
-                __TAGS_CACHE.splice(tagIndex, 1);
-            }
-            if (parent && !isAnonymous) {
-                var ptag = getImmediateCustomParentTag(parent);
-                if (isVirtual) {
-                    Object.keys(tag.tags).forEach(function(tagName) {
-                        return arrayishRemove(ptag.tags, tagName, tag.tags[tagName]);
-                    });
-                } else {
-                    arrayishRemove(ptag.tags, tagName, tag);
-                }
-            }
-            if (tag.__.virts) {
-                each(tag.__.virts, function(v) {
-                    if (v.parentNode) {
-                        v.parentNode.removeChild(v);
-                    }
-                });
-            }
-            unmountAll(expressions);
-            each(instAttrs, function(a) {
-                return a.expr && a.expr.unmount && a.expr.unmount();
-            });
-            if (mustKeepRoot) {
-                setInnerHTML(el, "");
-            } else if (p) {
-                p.removeChild(el);
-            }
-            if (tag.__.onUnmount) {
-                tag.__.onUnmount();
-            }
-            if (!tag.isMounted) {
-                setMountState.call(tag, true);
-            }
-            setMountState.call(tag, false);
-            delete tag.root._tag;
-            return tag;
-        });
-        return tag;
+        return [ [ "isMounted", false ], [ "_riot_id", uid() ], [ "root", root ], [ "opts", opts, {
+            writable: true,
+            enumerable: true
+        } ], [ "parent", parent || null ], [ "tags", {} ], [ "refs", {} ], [ "update", function(data) {
+            return componentUpdate(tag, data, expressions);
+        } ], [ "mixin", function() {
+            var mixins = [], len = arguments.length;
+            while (len--) mixins[len] = arguments[len];
+            return componentMixin.apply(void 0, [ tag ].concat(mixins));
+        } ], [ "mount", function() {
+            return componentMount(tag, dom, expressions, opts);
+        } ], [ "unmount", function(mustKeepRoot) {
+            return tagUnmount(tag, mustKeepRoot, expressions);
+        } ] ].reduce(function(acc, ref) {
+            var key = ref[0];
+            var value = ref[1];
+            var opts = ref[2];
+            define(tag, key, value, opts);
+            return acc;
+        }, extend(tag, item));
     }
-    function getTag(dom) {
-        return dom.tagName && __TAG_IMPL[getAttr(dom, IS_DIRECTIVE) || getAttr(dom, IS_DIRECTIVE) || dom.tagName.toLowerCase()];
-    }
-    function moveChildTag(tagName, newPos) {
-        var parent = this.parent;
-        var tags;
-        if (!parent) {
-            return;
-        }
-        tags = parent.tags[tagName];
-        if (isArray(tags)) {
-            tags.splice(newPos, 0, tags.splice(tags.indexOf(this), 1)[0]);
-        } else {
-            arrayishAdd(parent.tags, tagName, this);
-        }
-    }
-    function initChildTag(child, opts, innerHTML, parent) {
-        var tag = createTag(child, opts, innerHTML);
-        var tagName = opts.tagName || getTagName(opts.root, true);
-        var ptag = getImmediateCustomParentTag(parent);
-        defineProperty(tag, "parent", ptag);
-        tag.__.parent = parent;
-        arrayishAdd(ptag.tags, tagName, tag);
-        if (ptag !== parent) {
-            arrayishAdd(parent.tags, tagName, tag);
-        }
-        return tag;
-    }
-    function getImmediateCustomParentTag(tag) {
-        var ptag = tag;
-        while (ptag.__.isAnonymous) {
-            if (!ptag.parent) {
-                break;
-            }
-            ptag = ptag.parent;
-        }
-        return ptag;
-    }
-    function unmountAll(expressions) {
-        each(expressions, function(expr) {
-            if (expr.unmount) {
-                expr.unmount(true);
-            } else if (expr.tagName) {
-                expr.tag.unmount(true);
-            } else if (expr.unmount) {
-                expr.unmount();
-            }
-        });
-    }
-    function getTagName(dom, skipDataIs) {
-        var child = getTag(dom);
-        var namedTag = !skipDataIs && getAttr(dom, IS_DIRECTIVE);
-        return namedTag && !tmpl.hasExpr(namedTag) ? namedTag : child ? child.name : dom.tagName.toLowerCase();
-    }
-    function arrayishAdd(obj, key, value, ensureArray, index) {
-        var dest = obj[key];
-        var isArr = isArray(dest);
-        var hasIndex = !isUndefined(index);
-        if (dest && dest === value) {
-            return;
-        }
-        if (!dest && ensureArray) {
-            obj[key] = [ value ];
-        } else if (!dest) {
-            obj[key] = value;
-        } else {
-            if (isArr) {
-                var oldIndex = dest.indexOf(value);
-                if (oldIndex === index) {
-                    return;
-                }
-                if (oldIndex !== -1) {
-                    dest.splice(oldIndex, 1);
-                }
-                if (hasIndex) {
-                    dest.splice(index, 0, value);
-                } else {
-                    dest.push(value);
-                }
-            } else {
-                obj[key] = [ dest, value ];
-            }
-        }
-    }
-    function arrayishRemove(obj, key, value, ensureArray) {
-        if (isArray(obj[key])) {
-            var index = obj[key].indexOf(value);
-            if (index !== -1) {
-                obj[key].splice(index, 1);
-            }
-            if (!obj[key].length) {
-                delete obj[key];
-            } else if (obj[key].length === 1 && !ensureArray) {
-                obj[key] = obj[key][0];
-            }
-        } else if (obj[key] === value) {
-            delete obj[key];
-        }
-    }
-    function mountTo(root, tagName, opts, ctx) {
+    function mount$1(root, tagName, opts, ctx) {
         var impl = __TAG_IMPL[tagName];
         var implClass = __TAG_IMPL[tagName].class;
-        var context = ctx || (implClass ? Object.create(implClass.prototype) : {});
+        var context = ctx || (implClass ? create(implClass.prototype) : {});
         var innerHTML = root._innerHTML = root._innerHTML || root.innerHTML;
         var conf = extend({
             root: root,
@@ -3515,85 +3406,25 @@
         }
         return tag;
     }
-    function makeReplaceVirtual(tag, ref) {
-        var frag = createFrag();
-        makeVirtual.call(tag, frag);
-        ref.parentNode.replaceChild(frag, ref);
-    }
-    function makeVirtual(src, target) {
-        var this$1 = this;
-        var head = createDOMPlaceholder();
-        var tail = createDOMPlaceholder();
-        var frag = createFrag();
-        var sib;
-        var el;
-        this.root.insertBefore(head, this.root.firstChild);
-        this.root.appendChild(tail);
-        this.__.head = el = head;
-        this.__.tail = tail;
-        while (el) {
-            sib = el.nextSibling;
-            frag.appendChild(el);
-            this$1.__.virts.push(el);
-            el = sib;
-        }
-        if (target) {
-            src.insertBefore(frag, target.__.head);
-        } else {
-            src.appendChild(frag);
-        }
-    }
-    function inheritParentProps() {
-        if (this.parent) {
-            return extend(Object.create(this), this.parent);
-        }
-        return this;
-    }
-    function moveVirtual(src, target) {
-        var this$1 = this;
-        var el = this.__.head;
-        var sib;
-        var frag = createFrag();
-        while (el) {
-            sib = el.nextSibling;
-            frag.appendChild(el);
-            el = sib;
-            if (el === this$1.__.tail) {
-                frag.appendChild(el);
-                src.insertBefore(frag, target.__.head);
-                break;
-            }
-        }
-    }
-    function selectTags(tags) {
-        if (!tags) {
-            var keys = Object.keys(__TAG_IMPL);
-            return keys + selectTags(keys);
-        }
-        return tags.filter(function(t) {
-            return !/[^-\w]/.test(t);
-        }).reduce(function(list, t) {
-            var name = t.trim().toLowerCase();
-            return list + ",[" + IS_DIRECTIVE + '="' + name + '"]';
-        }, "");
-    }
     var tags = Object.freeze({
-        getTag: getTag,
-        moveChildTag: moveChildTag,
-        initChildTag: initChildTag,
-        getImmediateCustomParentTag: getImmediateCustomParentTag,
-        unmountAll: unmountAll,
-        getTagName: getTagName,
         arrayishAdd: arrayishAdd,
-        arrayishRemove: arrayishRemove,
-        mountTo: mountTo,
-        makeReplaceVirtual: makeReplaceVirtual,
-        makeVirtual: makeVirtual,
+        getTagName: getName,
         inheritParentProps: inheritParentProps,
+        mountTo: mount$1,
+        selectTags: query,
+        arrayishRemove: arrayishRemove,
+        getTag: get,
+        initChildTag: initChild,
+        moveChildTag: moveChild,
+        makeReplaceVirtual: makeReplaceVirtual,
+        getImmediateCustomParentTag: getImmediateCustomParent,
+        makeVirtual: makeVirtual,
         moveVirtual: moveVirtual,
-        selectTags: selectTags
+        unmountAll: unmountAll,
+        createIfDirective: createIfDirective,
+        createRefDirective: createRefDirective
     });
-    var settings = settings$1;
+    var settings$1 = settings;
     var util = {
         tmpl: tmpl,
         brackets: brackets,
@@ -3605,32 +3436,32 @@
         misc: misc,
         tags: tags
     };
-    var Tag = Tag$1;
-    var tag = tag$1;
-    var tag2 = tag2$1;
-    var mount = mount$1;
-    var mixin = mixin$1;
-    var update = update$1;
-    var unregister = unregister$1;
-    var version = version$1;
-    var observable = observable$1;
+    var Tag$1 = Tag;
+    var tag$1 = tag;
+    var tag2$1 = tag2;
+    var mount$2 = mount;
+    var mixin$1 = mixin;
+    var update$2 = update$1;
+    var unregister$1 = unregister;
+    var version$1 = version;
+    var observable$1 = observable;
     var riot$1 = extend({}, core, {
-        observable: observable$1,
-        settings: settings,
+        observable: observable,
+        settings: settings$1,
         util: util
     });
-    exports.settings = settings;
+    exports.settings = settings$1;
     exports.util = util;
-    exports.Tag = Tag;
-    exports.tag = tag;
-    exports.tag2 = tag2;
-    exports.mount = mount;
-    exports.mixin = mixin;
-    exports.update = update;
-    exports.unregister = unregister;
-    exports.version = version;
-    exports.observable = observable;
-    exports["default"] = riot$1;
+    exports.Tag = Tag$1;
+    exports.tag = tag$1;
+    exports.tag2 = tag2$1;
+    exports.mount = mount$2;
+    exports.mixin = mixin$1;
+    exports.update = update$2;
+    exports.unregister = unregister$1;
+    exports.version = version$1;
+    exports.observable = observable$1;
+    exports.default = riot$1;
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
@@ -3837,31 +3668,8 @@ var route = function() {
         });
         return el;
     };
-    var RE_ORIGIN = /^.+?\/\/+[^/]+/;
-    var EVENT_LISTENER = "EventListener";
-    var REMOVE_EVENT_LISTENER = "remove" + EVENT_LISTENER;
-    var ADD_EVENT_LISTENER = "add" + EVENT_LISTENER;
-    var HAS_ATTRIBUTE = "hasAttribute";
-    var POPSTATE = "popstate";
-    var HASHCHANGE = "hashchange";
-    var TRIGGER = "trigger";
-    var MAX_EMIT_STACK_LEVEL = 3;
-    var win = typeof window != "undefined" && window;
-    var doc = typeof document != "undefined" && document;
-    var hist = win && history;
-    var loc = win && (hist.location || win.location);
-    var prot = Router.prototype;
-    var clickEvent = doc && doc.ontouchstart ? "touchstart" : "click";
-    var central = observable();
-    var started = false;
-    var routeFound = false;
-    var debouncedEmit;
-    var base;
-    var current;
-    var parser;
-    var secondParser;
-    var emitStack = [];
-    var emitStackLevel = 0;
+    var RE_ORIGIN = /^.+?\/\/+[^/]+/, EVENT_LISTENER = "EventListener", REMOVE_EVENT_LISTENER = "remove" + EVENT_LISTENER, ADD_EVENT_LISTENER = "add" + EVENT_LISTENER, HAS_ATTRIBUTE = "hasAttribute", POPSTATE = "popstate", HASHCHANGE = "hashchange", TRIGGER = "trigger", MAX_EMIT_STACK_LEVEL = 3, win = typeof window != "undefined" && window, doc = typeof document != "undefined" && document, hist = win && history, loc = win && (hist.location || win.location), prot = Router.prototype, clickEvent = doc && doc.ontouchstart ? "touchstart" : "click", central = observable();
+    var started = false, routeFound = false, debouncedEmit, base, current, parser, secondParser, emitStack = [], emitStackLevel = 0;
     function DEFAULT_PARSER(path) {
         return path.split(/[/?#]/);
     }
@@ -4660,172 +4468,4632 @@ var route = function() {
     }
 })();
 
-(function(root, factory) {
-    if (typeof exports !== "undefined") {
-        if (typeof module !== "undefined" && module.exports) {
-            exports = module.exports = factory(root, exports);
-        }
-    } else if (typeof define === "function" && define.amd) {
-        define([ "exports" ], function(exports) {
-            root.Lockr = factory(root, exports);
-        });
-    } else {
-        root.Lockr = factory(root, {});
-    }
-})(this, function(root, Lockr) {
-    "use strict";
-    if (!Array.prototype.indexOf) {
-        Array.prototype.indexOf = function(elt) {
-            var len = this.length >>> 0;
-            var from = Number(arguments[1]) || 0;
-            from = from < 0 ? Math.ceil(from) : Math.floor(from);
-            if (from < 0) from += len;
-            for (;from < len; from++) {
-                if (from in this && this[from] === elt) return from;
+!function(e, t) {
+    var i = function() {
+        var e = {};
+        return t.apply(e, arguments), e.moxie;
+    };
+    "function" == typeof define && define.amd ? define("moxie", [], i) : "object" == typeof module && module.exports ? module.exports = i() : e.moxie = i();
+}(this || window, function() {
+    !function(e, t) {
+        "use strict";
+        function i(e, t) {
+            for (var i, n = [], r = 0; r < e.length; ++r) {
+                if (i = s[e[r]] || o(e[r]), !i) throw "module definition dependecy not found: " + e[r];
+                n.push(i);
             }
-            return -1;
-        };
-    }
-    Lockr.prefix = "";
-    Lockr._getPrefixedKey = function(key, options) {
-        options = options || {};
-        if (options.noPrefix) {
-            return key;
-        } else {
-            return this.prefix + key;
+            t.apply(null, n);
         }
-    };
-    Lockr.set = function(key, value, options) {
-        var query_key = this._getPrefixedKey(key, options);
-        try {
-            localStorage.setItem(query_key, JSON.stringify({
-                data: value
-            }));
-        } catch (e) {
-            if (console) console.warn("Lockr didn't successfully save the '{" + key + ": " + value + "}' pair, because the localStorage is full.");
-        }
-    };
-    Lockr.get = function(key, missing, options) {
-        var query_key = this._getPrefixedKey(key, options), value;
-        try {
-            value = JSON.parse(localStorage.getItem(query_key));
-        } catch (e) {
-            try {
-                if (localStorage[query_key]) {
-                    value = JSON.parse('{"data":"' + localStorage.getItem(query_key) + '"}');
-                } else {
-                    value = null;
-                }
-            } catch (e) {
-                if (console) console.warn("Lockr could not load the item with key " + key);
-            }
-        }
-        if (value === null) {
-            return missing;
-        } else if (typeof value.data !== "undefined") {
-            return value.data;
-        } else {
-            return missing;
-        }
-    };
-    Lockr.sadd = function(key, value, options) {
-        var query_key = this._getPrefixedKey(key, options), json;
-        var values = Lockr.smembers(key);
-        if (values.indexOf(value) > -1) {
-            return null;
-        }
-        try {
-            values.push(value);
-            json = JSON.stringify({
-                data: values
+        function n(e, n, r) {
+            if ("string" != typeof e) throw "invalid module definition, module id must be defined and be a string";
+            if (n === t) throw "invalid module definition, dependencies must be specified";
+            if (r === t) throw "invalid module definition, definition function must be specified";
+            i(n, function() {
+                s[e] = r.apply(null, arguments);
             });
-            localStorage.setItem(query_key, json);
-        } catch (e) {
-            console.log(e);
-            if (console) console.warn("Lockr didn't successfully add the " + value + " to " + key + " set, because the localStorage is full.");
         }
-    };
-    Lockr.smembers = function(key, options) {
-        var query_key = this._getPrefixedKey(key, options), value;
-        try {
-            value = JSON.parse(localStorage.getItem(query_key));
-        } catch (e) {
-            value = null;
+        function r(e) {
+            return !!s[e];
         }
-        if (value === null) return []; else return value.data || [];
-    };
-    Lockr.sismember = function(key, value, options) {
-        var query_key = this._getPrefixedKey(key, options);
-        return Lockr.smembers(key).indexOf(value) > -1;
-    };
-    Lockr.getAll = function() {
-        var keys = Object.keys(localStorage);
-        return keys.map(function(key) {
-            return Lockr.get(key);
-        });
-    };
-    Lockr.srem = function(key, value, options) {
-        var query_key = this._getPrefixedKey(key, options), json, index;
-        var values = Lockr.smembers(key, value);
-        index = values.indexOf(value);
-        if (index > -1) values.splice(index, 1);
-        json = JSON.stringify({
-            data: values
-        });
-        try {
-            localStorage.setItem(query_key, json);
-        } catch (e) {
-            if (console) console.warn("Lockr couldn't remove the " + value + " from the set " + key);
+        function o(t) {
+            for (var i = e, n = t.split(/[.\/]/), r = 0; r < n.length; ++r) {
+                if (!i[n[r]]) return;
+                i = i[n[r]];
+            }
+            return i;
         }
-    };
-    Lockr.rm = function(key) {
-        localStorage.removeItem(key);
-    };
-    Lockr.flush = function() {
-        localStorage.clear();
-    };
-    return Lockr;
+        function a(i) {
+            for (var n = 0; n < i.length; n++) {
+                for (var r = e, o = i[n], a = o.split(/[.\/]/), u = 0; u < a.length - 1; ++u) r[a[u]] === t && (r[a[u]] = {}), 
+                r = r[a[u]];
+                r[a[a.length - 1]] = s[o];
+            }
+        }
+        var s = {};
+        n("moxie/core/utils/Basic", [], function() {
+            function e(e) {
+                var t;
+                return e === t ? "undefined" : null === e ? "null" : e.nodeType ? "node" : {}.toString.call(e).match(/\s([a-z|A-Z]+)/)[1].toLowerCase();
+            }
+            function t() {
+                return s(!1, !1, arguments);
+            }
+            function i() {
+                return s(!0, !1, arguments);
+            }
+            function n() {
+                return s(!1, !0, arguments);
+            }
+            function r() {
+                return s(!0, !0, arguments);
+            }
+            function o(t) {
+                switch (e(t)) {
+                  case "array":
+                    return s(!1, !0, [ [], t ]);
+
+                  case "object":
+                    return s(!1, !0, [ {}, t ]);
+
+                  default:
+                    return t;
+                }
+            }
+            function a(i) {
+                switch (e(i)) {
+                  case "array":
+                    return Array.prototype.slice.call(i);
+
+                  case "object":
+                    return t({}, i);
+                }
+                return i;
+            }
+            function s(t, i, n) {
+                var r, o = n[0];
+                return c(n, function(n, u) {
+                    u > 0 && c(n, function(n, u) {
+                        var c = -1 !== h(e(n), [ "array", "object" ]);
+                        return n === r || t && o[u] === r ? !0 : (c && i && (n = a(n)), e(o[u]) === e(n) && c ? s(t, i, [ o[u], n ]) : o[u] = n, 
+                        void 0);
+                    });
+                }), o;
+            }
+            function u(e, t) {
+                function i() {
+                    this.constructor = e;
+                }
+                for (var n in t) ({}).hasOwnProperty.call(t, n) && (e[n] = t[n]);
+                return i.prototype = t.prototype, e.prototype = new i(), e.parent = t.prototype, 
+                e;
+            }
+            function c(e, t) {
+                var i, n, r, o;
+                if (e) {
+                    try {
+                        i = e.length;
+                    } catch (a) {
+                        i = o;
+                    }
+                    if (i === o || "number" != typeof i) {
+                        for (n in e) if (e.hasOwnProperty(n) && t(e[n], n) === !1) return;
+                    } else for (r = 0; i > r; r++) if (t(e[r], r) === !1) return;
+                }
+            }
+            function l(t) {
+                var i;
+                if (!t || "object" !== e(t)) return !0;
+                for (i in t) return !1;
+                return !0;
+            }
+            function d(t, i) {
+                function n(r) {
+                    "function" === e(t[r]) && t[r](function(e) {
+                        ++r < o && !e ? n(r) : i(e);
+                    });
+                }
+                var r = 0, o = t.length;
+                "function" !== e(i) && (i = function() {}), t && t.length || i(), n(r);
+            }
+            function m(e, t) {
+                var i = 0, n = e.length, r = new Array(n);
+                c(e, function(e, o) {
+                    e(function(e) {
+                        if (e) return t(e);
+                        var a = [].slice.call(arguments);
+                        a.shift(), r[o] = a, i++, i === n && (r.unshift(null), t.apply(this, r));
+                    });
+                });
+            }
+            function h(e, t) {
+                if (t) {
+                    if (Array.prototype.indexOf) return Array.prototype.indexOf.call(t, e);
+                    for (var i = 0, n = t.length; n > i; i++) if (t[i] === e) return i;
+                }
+                return -1;
+            }
+            function f(t, i) {
+                var n = [];
+                "array" !== e(t) && (t = [ t ]), "array" !== e(i) && (i = [ i ]);
+                for (var r in t) -1 === h(t[r], i) && n.push(t[r]);
+                return n.length ? n : !1;
+            }
+            function p(e, t) {
+                var i = [];
+                return c(e, function(e) {
+                    -1 !== h(e, t) && i.push(e);
+                }), i.length ? i : null;
+            }
+            function g(e) {
+                var t, i = [];
+                for (t = 0; t < e.length; t++) i[t] = e[t];
+                return i;
+            }
+            function x(e) {
+                return e ? String.prototype.trim ? String.prototype.trim.call(e) : e.toString().replace(/^\s*/, "").replace(/\s*$/, "") : e;
+            }
+            function v(e) {
+                if ("string" != typeof e) return e;
+                var t, i = {
+                    t: 1099511627776,
+                    g: 1073741824,
+                    m: 1048576,
+                    k: 1024
+                };
+                return e = /^([0-9\.]+)([tmgk]?)$/.exec(e.toLowerCase().replace(/[^0-9\.tmkg]/g, "")), 
+                t = e[2], e = +e[1], i.hasOwnProperty(t) && (e *= i[t]), Math.floor(e);
+            }
+            function w(e) {
+                var t = [].slice.call(arguments, 1);
+                return e.replace(/%([a-z])/g, function(e, i) {
+                    var n = t.shift();
+                    switch (i) {
+                      case "s":
+                        return n + "";
+
+                      case "d":
+                        return parseInt(n, 10);
+
+                      case "f":
+                        return parseFloat(n);
+
+                      case "c":
+                        return "";
+
+                      default:
+                        return n;
+                    }
+                });
+            }
+            function y(e, t) {
+                var i = this;
+                setTimeout(function() {
+                    e.call(i);
+                }, t || 1);
+            }
+            var E = function() {
+                var e = 0;
+                return function(t) {
+                    var i, n = new Date().getTime().toString(32);
+                    for (i = 0; 5 > i; i++) n += Math.floor(65535 * Math.random()).toString(32);
+                    return (t || "o_") + n + (e++).toString(32);
+                };
+            }();
+            return {
+                guid: E,
+                typeOf: e,
+                extend: t,
+                extendIf: i,
+                extendImmutable: n,
+                extendImmutableIf: r,
+                clone: o,
+                inherit: u,
+                each: c,
+                isEmptyObj: l,
+                inSeries: d,
+                inParallel: m,
+                inArray: h,
+                arrayDiff: f,
+                arrayIntersect: p,
+                toArray: g,
+                trim: x,
+                sprintf: w,
+                parseSizeStr: v,
+                delay: y
+            };
+        }), n("moxie/core/utils/Encode", [], function() {
+            var e = function(e) {
+                return unescape(encodeURIComponent(e));
+            }, t = function(e) {
+                return decodeURIComponent(escape(e));
+            }, i = function(e, i) {
+                if ("function" == typeof window.atob) return i ? t(window.atob(e)) : window.atob(e);
+                var n, r, o, a, s, u, c, l, d = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", m = 0, h = 0, f = "", p = [];
+                if (!e) return e;
+                e += "";
+                do {
+                    a = d.indexOf(e.charAt(m++)), s = d.indexOf(e.charAt(m++)), u = d.indexOf(e.charAt(m++)), 
+                    c = d.indexOf(e.charAt(m++)), l = a << 18 | s << 12 | u << 6 | c, n = 255 & l >> 16, 
+                    r = 255 & l >> 8, o = 255 & l, p[h++] = 64 == u ? String.fromCharCode(n) : 64 == c ? String.fromCharCode(n, r) : String.fromCharCode(n, r, o);
+                } while (m < e.length);
+                return f = p.join(""), i ? t(f) : f;
+            }, n = function(t, i) {
+                if (i && (t = e(t)), "function" == typeof window.btoa) return window.btoa(t);
+                var n, r, o, a, s, u, c, l, d = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", m = 0, h = 0, f = "", p = [];
+                if (!t) return t;
+                do {
+                    n = t.charCodeAt(m++), r = t.charCodeAt(m++), o = t.charCodeAt(m++), l = n << 16 | r << 8 | o, 
+                    a = 63 & l >> 18, s = 63 & l >> 12, u = 63 & l >> 6, c = 63 & l, p[h++] = d.charAt(a) + d.charAt(s) + d.charAt(u) + d.charAt(c);
+                } while (m < t.length);
+                f = p.join("");
+                var g = t.length % 3;
+                return (g ? f.slice(0, g - 3) : f) + "===".slice(g || 3);
+            };
+            return {
+                utf8_encode: e,
+                utf8_decode: t,
+                atob: i,
+                btoa: n
+            };
+        }), n("moxie/core/utils/Env", [ "moxie/core/utils/Basic" ], function(e) {
+            function i(e, t, i) {
+                var n = 0, r = 0, o = 0, a = {
+                    dev: -6,
+                    alpha: -5,
+                    a: -5,
+                    beta: -4,
+                    b: -4,
+                    RC: -3,
+                    rc: -3,
+                    "#": -2,
+                    p: 1,
+                    pl: 1
+                }, s = function(e) {
+                    return e = ("" + e).replace(/[_\-+]/g, "."), e = e.replace(/([^.\d]+)/g, ".$1.").replace(/\.{2,}/g, "."), 
+                    e.length ? e.split(".") : [ -8 ];
+                }, u = function(e) {
+                    return e ? isNaN(e) ? a[e] || -7 : parseInt(e, 10) : 0;
+                };
+                for (e = s(e), t = s(t), r = Math.max(e.length, t.length), n = 0; r > n; n++) if (e[n] != t[n]) {
+                    if (e[n] = u(e[n]), t[n] = u(t[n]), e[n] < t[n]) {
+                        o = -1;
+                        break;
+                    }
+                    if (e[n] > t[n]) {
+                        o = 1;
+                        break;
+                    }
+                }
+                if (!i) return o;
+                switch (i) {
+                  case ">":
+                  case "gt":
+                    return o > 0;
+
+                  case ">=":
+                  case "ge":
+                    return o >= 0;
+
+                  case "<=":
+                  case "le":
+                    return 0 >= o;
+
+                  case "==":
+                  case "=":
+                  case "eq":
+                    return 0 === o;
+
+                  case "<>":
+                  case "!=":
+                  case "ne":
+                    return 0 !== o;
+
+                  case "":
+                  case "<":
+                  case "lt":
+                    return 0 > o;
+
+                  default:
+                    return null;
+                }
+            }
+            var n = function(e) {
+                var t = "", i = "?", n = "function", r = "undefined", o = "object", a = "name", s = "version", u = {
+                    has: function(e, t) {
+                        return -1 !== t.toLowerCase().indexOf(e.toLowerCase());
+                    },
+                    lowerize: function(e) {
+                        return e.toLowerCase();
+                    }
+                }, c = {
+                    rgx: function() {
+                        for (var t, i, a, s, u, c, l, d = 0, m = arguments; d < m.length; d += 2) {
+                            var h = m[d], f = m[d + 1];
+                            if (typeof t === r) {
+                                t = {};
+                                for (s in f) u = f[s], typeof u === o ? t[u[0]] = e : t[u] = e;
+                            }
+                            for (i = a = 0; i < h.length; i++) if (c = h[i].exec(this.getUA())) {
+                                for (s = 0; s < f.length; s++) l = c[++a], u = f[s], typeof u === o && u.length > 0 ? 2 == u.length ? t[u[0]] = typeof u[1] == n ? u[1].call(this, l) : u[1] : 3 == u.length ? t[u[0]] = typeof u[1] !== n || u[1].exec && u[1].test ? l ? l.replace(u[1], u[2]) : e : l ? u[1].call(this, l, u[2]) : e : 4 == u.length && (t[u[0]] = l ? u[3].call(this, l.replace(u[1], u[2])) : e) : t[u] = l ? l : e;
+                                break;
+                            }
+                            if (c) break;
+                        }
+                        return t;
+                    },
+                    str: function(t, n) {
+                        for (var r in n) if (typeof n[r] === o && n[r].length > 0) {
+                            for (var a = 0; a < n[r].length; a++) if (u.has(n[r][a], t)) return r === i ? e : r;
+                        } else if (u.has(n[r], t)) return r === i ? e : r;
+                        return t;
+                    }
+                }, l = {
+                    browser: {
+                        oldsafari: {
+                            major: {
+                                1: [ "/8", "/1", "/3" ],
+                                2: "/4",
+                                "?": "/"
+                            },
+                            version: {
+                                "1.0": "/8",
+                                1.2: "/1",
+                                1.3: "/3",
+                                "2.0": "/412",
+                                "2.0.2": "/416",
+                                "2.0.3": "/417",
+                                "2.0.4": "/419",
+                                "?": "/"
+                            }
+                        }
+                    },
+                    device: {
+                        sprint: {
+                            model: {
+                                "Evo Shift 4G": "7373KT"
+                            },
+                            vendor: {
+                                HTC: "APA",
+                                Sprint: "Sprint"
+                            }
+                        }
+                    },
+                    os: {
+                        windows: {
+                            version: {
+                                ME: "4.90",
+                                "NT 3.11": "NT3.51",
+                                "NT 4.0": "NT4.0",
+                                2e3: "NT 5.0",
+                                XP: [ "NT 5.1", "NT 5.2" ],
+                                Vista: "NT 6.0",
+                                7: "NT 6.1",
+                                8: "NT 6.2",
+                                8.1: "NT 6.3",
+                                RT: "ARM"
+                            }
+                        }
+                    }
+                }, d = {
+                    browser: [ [ /(opera\smini)\/([\w\.-]+)/i, /(opera\s[mobiletab]+).+version\/([\w\.-]+)/i, /(opera).+version\/([\w\.]+)/i, /(opera)[\/\s]+([\w\.]+)/i ], [ a, s ], [ /\s(opr)\/([\w\.]+)/i ], [ [ a, "Opera" ], s ], [ /(kindle)\/([\w\.]+)/i, /(lunascape|maxthon|netfront|jasmine|blazer)[\/\s]?([\w\.]+)*/i, /(avant\s|iemobile|slim|baidu)(?:browser)?[\/\s]?([\w\.]*)/i, /(?:ms|\()(ie)\s([\w\.]+)/i, /(rekonq)\/([\w\.]+)*/i, /(chromium|flock|rockmelt|midori|epiphany|silk|skyfire|ovibrowser|bolt|iron|vivaldi)\/([\w\.-]+)/i ], [ a, s ], [ /(trident).+rv[:\s]([\w\.]+).+like\sgecko/i ], [ [ a, "IE" ], s ], [ /(edge)\/((\d+)?[\w\.]+)/i ], [ a, s ], [ /(yabrowser)\/([\w\.]+)/i ], [ [ a, "Yandex" ], s ], [ /(comodo_dragon)\/([\w\.]+)/i ], [ [ a, /_/g, " " ], s ], [ /(chrome|omniweb|arora|[tizenoka]{5}\s?browser)\/v?([\w\.]+)/i, /(uc\s?browser|qqbrowser)[\/\s]?([\w\.]+)/i ], [ a, s ], [ /(dolfin)\/([\w\.]+)/i ], [ [ a, "Dolphin" ], s ], [ /((?:android.+)crmo|crios)\/([\w\.]+)/i ], [ [ a, "Chrome" ], s ], [ /XiaoMi\/MiuiBrowser\/([\w\.]+)/i ], [ s, [ a, "MIUI Browser" ] ], [ /android.+version\/([\w\.]+)\s+(?:mobile\s?safari|safari)/i ], [ s, [ a, "Android Browser" ] ], [ /FBAV\/([\w\.]+);/i ], [ s, [ a, "Facebook" ] ], [ /version\/([\w\.]+).+?mobile\/\w+\s(safari)/i ], [ s, [ a, "Mobile Safari" ] ], [ /version\/([\w\.]+).+?(mobile\s?safari|safari)/i ], [ s, a ], [ /webkit.+?(mobile\s?safari|safari)(\/[\w\.]+)/i ], [ a, [ s, c.str, l.browser.oldsafari.version ] ], [ /(konqueror)\/([\w\.]+)/i, /(webkit|khtml)\/([\w\.]+)/i ], [ a, s ], [ /(navigator|netscape)\/([\w\.-]+)/i ], [ [ a, "Netscape" ], s ], [ /(swiftfox)/i, /(icedragon|iceweasel|camino|chimera|fennec|maemo\sbrowser|minimo|conkeror)[\/\s]?([\w\.\+]+)/i, /(firefox|seamonkey|k-meleon|icecat|iceape|firebird|phoenix)\/([\w\.-]+)/i, /(mozilla)\/([\w\.]+).+rv\:.+gecko\/\d+/i, /(polaris|lynx|dillo|icab|doris|amaya|w3m|netsurf)[\/\s]?([\w\.]+)/i, /(links)\s\(([\w\.]+)/i, /(gobrowser)\/?([\w\.]+)*/i, /(ice\s?browser)\/v?([\w\._]+)/i, /(mosaic)[\/\s]([\w\.]+)/i ], [ a, s ] ],
+                    engine: [ [ /windows.+\sedge\/([\w\.]+)/i ], [ s, [ a, "EdgeHTML" ] ], [ /(presto)\/([\w\.]+)/i, /(webkit|trident|netfront|netsurf|amaya|lynx|w3m)\/([\w\.]+)/i, /(khtml|tasman|links)[\/\s]\(?([\w\.]+)/i, /(icab)[\/\s]([23]\.[\d\.]+)/i ], [ a, s ], [ /rv\:([\w\.]+).*(gecko)/i ], [ s, a ] ],
+                    os: [ [ /microsoft\s(windows)\s(vista|xp)/i ], [ a, s ], [ /(windows)\snt\s6\.2;\s(arm)/i, /(windows\sphone(?:\sos)*|windows\smobile|windows)[\s\/]?([ntce\d\.\s]+\w)/i ], [ a, [ s, c.str, l.os.windows.version ] ], [ /(win(?=3|9|n)|win\s9x\s)([nt\d\.]+)/i ], [ [ a, "Windows" ], [ s, c.str, l.os.windows.version ] ], [ /\((bb)(10);/i ], [ [ a, "BlackBerry" ], s ], [ /(blackberry)\w*\/?([\w\.]+)*/i, /(tizen)[\/\s]([\w\.]+)/i, /(android|webos|palm\os|qnx|bada|rim\stablet\sos|meego|contiki)[\/\s-]?([\w\.]+)*/i, /linux;.+(sailfish);/i ], [ a, s ], [ /(symbian\s?os|symbos|s60(?=;))[\/\s-]?([\w\.]+)*/i ], [ [ a, "Symbian" ], s ], [ /\((series40);/i ], [ a ], [ /mozilla.+\(mobile;.+gecko.+firefox/i ], [ [ a, "Firefox OS" ], s ], [ /(nintendo|playstation)\s([wids3portablevu]+)/i, /(mint)[\/\s\(]?(\w+)*/i, /(mageia|vectorlinux)[;\s]/i, /(joli|[kxln]?ubuntu|debian|[open]*suse|gentoo|arch|slackware|fedora|mandriva|centos|pclinuxos|redhat|zenwalk|linpus)[\/\s-]?([\w\.-]+)*/i, /(hurd|linux)\s?([\w\.]+)*/i, /(gnu)\s?([\w\.]+)*/i ], [ a, s ], [ /(cros)\s[\w]+\s([\w\.]+\w)/i ], [ [ a, "Chromium OS" ], s ], [ /(sunos)\s?([\w\.]+\d)*/i ], [ [ a, "Solaris" ], s ], [ /\s([frentopc-]{0,4}bsd|dragonfly)\s?([\w\.]+)*/i ], [ a, s ], [ /(ip[honead]+)(?:.*os\s*([\w]+)*\slike\smac|;\sopera)/i ], [ [ a, "iOS" ], [ s, /_/g, "." ] ], [ /(mac\sos\sx)\s?([\w\s\.]+\w)*/i, /(macintosh|mac(?=_powerpc)\s)/i ], [ [ a, "Mac OS" ], [ s, /_/g, "." ] ], [ /((?:open)?solaris)[\/\s-]?([\w\.]+)*/i, /(haiku)\s(\w+)/i, /(aix)\s((\d)(?=\.|\)|\s)[\w\.]*)*/i, /(plan\s9|minix|beos|os\/2|amigaos|morphos|risc\sos|openvms)/i, /(unix)\s?([\w\.]+)*/i ], [ a, s ] ]
+                }, m = function(e) {
+                    var i = e || (window && window.navigator && window.navigator.userAgent ? window.navigator.userAgent : t);
+                    this.getBrowser = function() {
+                        return c.rgx.apply(this, d.browser);
+                    }, this.getEngine = function() {
+                        return c.rgx.apply(this, d.engine);
+                    }, this.getOS = function() {
+                        return c.rgx.apply(this, d.os);
+                    }, this.getResult = function() {
+                        return {
+                            ua: this.getUA(),
+                            browser: this.getBrowser(),
+                            engine: this.getEngine(),
+                            os: this.getOS()
+                        };
+                    }, this.getUA = function() {
+                        return i;
+                    }, this.setUA = function(e) {
+                        return i = e, this;
+                    }, this.setUA(i);
+                };
+                return m;
+            }(), r = function() {
+                var i = {
+                    access_global_ns: function() {
+                        return !!window.moxie;
+                    },
+                    define_property: function() {
+                        return !1;
+                    }(),
+                    create_canvas: function() {
+                        var e = document.createElement("canvas"), t = !(!e.getContext || !e.getContext("2d"));
+                        return i.create_canvas = t, t;
+                    },
+                    return_response_type: function(t) {
+                        try {
+                            if (-1 !== e.inArray(t, [ "", "text", "document" ])) return !0;
+                            if (window.XMLHttpRequest) {
+                                var i = new XMLHttpRequest();
+                                if (i.open("get", "/"), "responseType" in i) return i.responseType = t, i.responseType !== t ? !1 : !0;
+                            }
+                        } catch (n) {}
+                        return !1;
+                    },
+                    use_blob_uri: function() {
+                        var e = window.URL;
+                        return i.use_blob_uri = e && "createObjectURL" in e && "revokeObjectURL" in e && ("IE" !== a.browser || a.verComp(a.version, "11.0.46", ">=")), 
+                        i.use_blob_uri;
+                    },
+                    use_data_uri: function() {
+                        var e = new Image();
+                        return e.onload = function() {
+                            i.use_data_uri = 1 === e.width && 1 === e.height;
+                        }, setTimeout(function() {
+                            e.src = "data:image/gif;base64,R0lGODlhAQABAIAAAP8AAAAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
+                        }, 1), !1;
+                    }(),
+                    use_data_uri_over32kb: function() {
+                        return i.use_data_uri && ("IE" !== a.browser || a.version >= 9);
+                    },
+                    use_data_uri_of: function(e) {
+                        return i.use_data_uri && 33e3 > e || i.use_data_uri_over32kb();
+                    },
+                    use_fileinput: function() {
+                        if (navigator.userAgent.match(/(Android (1.0|1.1|1.5|1.6|2.0|2.1))|(Windows Phone (OS 7|8.0))|(XBLWP)|(ZuneWP)|(w(eb)?OSBrowser)|(webOS)|(Kindle\/(1.0|2.0|2.5|3.0))/)) return !1;
+                        var e = document.createElement("input");
+                        return e.setAttribute("type", "file"), i.use_fileinput = !e.disabled;
+                    },
+                    use_webgl: function() {
+                        var e, n = document.createElement("canvas"), r = null;
+                        try {
+                            r = n.getContext("webgl") || n.getContext("experimental-webgl");
+                        } catch (o) {}
+                        return r || (r = null), e = !!r, i.use_webgl = e, n = t, e;
+                    }
+                };
+                return function(t) {
+                    var n = [].slice.call(arguments);
+                    return n.shift(), "function" === e.typeOf(i[t]) ? i[t].apply(this, n) : !!i[t];
+                };
+            }(), o = new n().getResult(), a = {
+                can: r,
+                uaParser: n,
+                browser: o.browser.name,
+                version: o.browser.version,
+                os: o.os.name,
+                osVersion: o.os.version,
+                verComp: i,
+                swf_url: "../flash/Moxie.swf",
+                xap_url: "../silverlight/Moxie.xap",
+                global_event_dispatcher: "moxie.core.EventTarget.instance.dispatchEvent"
+            };
+            return a.OS = a.os, a;
+        }), n("moxie/core/Exceptions", [ "moxie/core/utils/Basic" ], function(e) {
+            function t(e, t) {
+                var i;
+                for (i in e) if (e[i] === t) return i;
+                return null;
+            }
+            return {
+                RuntimeError: function() {
+                    function i(e, i) {
+                        this.code = e, this.name = t(n, e), this.message = this.name + (i || ": RuntimeError " + this.code);
+                    }
+                    var n = {
+                        NOT_INIT_ERR: 1,
+                        EXCEPTION_ERR: 3,
+                        NOT_SUPPORTED_ERR: 9,
+                        JS_ERR: 4
+                    };
+                    return e.extend(i, n), i.prototype = Error.prototype, i;
+                }(),
+                OperationNotAllowedException: function() {
+                    function t(e) {
+                        this.code = e, this.name = "OperationNotAllowedException";
+                    }
+                    return e.extend(t, {
+                        NOT_ALLOWED_ERR: 1
+                    }), t.prototype = Error.prototype, t;
+                }(),
+                ImageError: function() {
+                    function i(e) {
+                        this.code = e, this.name = t(n, e), this.message = this.name + ": ImageError " + this.code;
+                    }
+                    var n = {
+                        WRONG_FORMAT: 1,
+                        MAX_RESOLUTION_ERR: 2,
+                        INVALID_META_ERR: 3
+                    };
+                    return e.extend(i, n), i.prototype = Error.prototype, i;
+                }(),
+                FileException: function() {
+                    function i(e) {
+                        this.code = e, this.name = t(n, e), this.message = this.name + ": FileException " + this.code;
+                    }
+                    var n = {
+                        NOT_FOUND_ERR: 1,
+                        SECURITY_ERR: 2,
+                        ABORT_ERR: 3,
+                        NOT_READABLE_ERR: 4,
+                        ENCODING_ERR: 5,
+                        NO_MODIFICATION_ALLOWED_ERR: 6,
+                        INVALID_STATE_ERR: 7,
+                        SYNTAX_ERR: 8
+                    };
+                    return e.extend(i, n), i.prototype = Error.prototype, i;
+                }(),
+                DOMException: function() {
+                    function i(e) {
+                        this.code = e, this.name = t(n, e), this.message = this.name + ": DOMException " + this.code;
+                    }
+                    var n = {
+                        INDEX_SIZE_ERR: 1,
+                        DOMSTRING_SIZE_ERR: 2,
+                        HIERARCHY_REQUEST_ERR: 3,
+                        WRONG_DOCUMENT_ERR: 4,
+                        INVALID_CHARACTER_ERR: 5,
+                        NO_DATA_ALLOWED_ERR: 6,
+                        NO_MODIFICATION_ALLOWED_ERR: 7,
+                        NOT_FOUND_ERR: 8,
+                        NOT_SUPPORTED_ERR: 9,
+                        INUSE_ATTRIBUTE_ERR: 10,
+                        INVALID_STATE_ERR: 11,
+                        SYNTAX_ERR: 12,
+                        INVALID_MODIFICATION_ERR: 13,
+                        NAMESPACE_ERR: 14,
+                        INVALID_ACCESS_ERR: 15,
+                        VALIDATION_ERR: 16,
+                        TYPE_MISMATCH_ERR: 17,
+                        SECURITY_ERR: 18,
+                        NETWORK_ERR: 19,
+                        ABORT_ERR: 20,
+                        URL_MISMATCH_ERR: 21,
+                        QUOTA_EXCEEDED_ERR: 22,
+                        TIMEOUT_ERR: 23,
+                        INVALID_NODE_TYPE_ERR: 24,
+                        DATA_CLONE_ERR: 25
+                    };
+                    return e.extend(i, n), i.prototype = Error.prototype, i;
+                }(),
+                EventException: function() {
+                    function t(e) {
+                        this.code = e, this.name = "EventException";
+                    }
+                    return e.extend(t, {
+                        UNSPECIFIED_EVENT_TYPE_ERR: 0
+                    }), t.prototype = Error.prototype, t;
+                }()
+            };
+        }), n("moxie/core/utils/Dom", [ "moxie/core/utils/Env" ], function(e) {
+            var t = function(e) {
+                return "string" != typeof e ? e : document.getElementById(e);
+            }, i = function(e, t) {
+                if (!e.className) return !1;
+                var i = new RegExp("(^|\\s+)" + t + "(\\s+|$)");
+                return i.test(e.className);
+            }, n = function(e, t) {
+                i(e, t) || (e.className = e.className ? e.className.replace(/\s+$/, "") + " " + t : t);
+            }, r = function(e, t) {
+                if (e.className) {
+                    var i = new RegExp("(^|\\s+)" + t + "(\\s+|$)");
+                    e.className = e.className.replace(i, function(e, t, i) {
+                        return " " === t && " " === i ? " " : "";
+                    });
+                }
+            }, o = function(e, t) {
+                return e.currentStyle ? e.currentStyle[t] : window.getComputedStyle ? window.getComputedStyle(e, null)[t] : void 0;
+            }, a = function(t, i) {
+                function n(e) {
+                    var t, i, n = 0, r = 0;
+                    return e && (i = e.getBoundingClientRect(), t = "CSS1Compat" === c.compatMode ? c.documentElement : c.body, 
+                    n = i.left + t.scrollLeft, r = i.top + t.scrollTop), {
+                        x: n,
+                        y: r
+                    };
+                }
+                var r, o, a, s = 0, u = 0, c = document;
+                if (t = t, i = i || c.body, t && t.getBoundingClientRect && "IE" === e.browser && (!c.documentMode || c.documentMode < 8)) return o = n(t), 
+                a = n(i), {
+                    x: o.x - a.x,
+                    y: o.y - a.y
+                };
+                for (r = t; r && r != i && r.nodeType; ) s += r.offsetLeft || 0, u += r.offsetTop || 0, 
+                r = r.offsetParent;
+                for (r = t.parentNode; r && r != i && r.nodeType; ) s -= r.scrollLeft || 0, u -= r.scrollTop || 0, 
+                r = r.parentNode;
+                return {
+                    x: s,
+                    y: u
+                };
+            }, s = function(e) {
+                return {
+                    w: e.offsetWidth || e.clientWidth,
+                    h: e.offsetHeight || e.clientHeight
+                };
+            };
+            return {
+                get: t,
+                hasClass: i,
+                addClass: n,
+                removeClass: r,
+                getStyle: o,
+                getPos: a,
+                getSize: s
+            };
+        }), n("moxie/core/EventTarget", [ "moxie/core/utils/Env", "moxie/core/Exceptions", "moxie/core/utils/Basic" ], function(e, t, i) {
+            function n() {
+                this.uid = i.guid();
+            }
+            var r = {};
+            return i.extend(n.prototype, {
+                init: function() {
+                    this.uid || (this.uid = i.guid("uid_"));
+                },
+                addEventListener: function(e, t, n, o) {
+                    var a, s = this;
+                    return this.hasOwnProperty("uid") || (this.uid = i.guid("uid_")), e = i.trim(e), 
+                    /\s/.test(e) ? (i.each(e.split(/\s+/), function(e) {
+                        s.addEventListener(e, t, n, o);
+                    }), void 0) : (e = e.toLowerCase(), n = parseInt(n, 10) || 0, a = r[this.uid] && r[this.uid][e] || [], 
+                    a.push({
+                        fn: t,
+                        priority: n,
+                        scope: o || this
+                    }), r[this.uid] || (r[this.uid] = {}), r[this.uid][e] = a, void 0);
+                },
+                hasEventListener: function(e) {
+                    var t;
+                    return e ? (e = e.toLowerCase(), t = r[this.uid] && r[this.uid][e]) : t = r[this.uid], 
+                    t ? t : !1;
+                },
+                removeEventListener: function(e, t) {
+                    var n, o, a = this;
+                    if (e = e.toLowerCase(), /\s/.test(e)) return i.each(e.split(/\s+/), function(e) {
+                        a.removeEventListener(e, t);
+                    }), void 0;
+                    if (n = r[this.uid] && r[this.uid][e]) {
+                        if (t) {
+                            for (o = n.length - 1; o >= 0; o--) if (n[o].fn === t) {
+                                n.splice(o, 1);
+                                break;
+                            }
+                        } else n = [];
+                        n.length || (delete r[this.uid][e], i.isEmptyObj(r[this.uid]) && delete r[this.uid]);
+                    }
+                },
+                removeAllEventListeners: function() {
+                    r[this.uid] && delete r[this.uid];
+                },
+                dispatchEvent: function(e) {
+                    var n, o, a, s, u, c = {}, l = !0;
+                    if ("string" !== i.typeOf(e)) {
+                        if (s = e, "string" !== i.typeOf(s.type)) throw new t.EventException(t.EventException.UNSPECIFIED_EVENT_TYPE_ERR);
+                        e = s.type, s.total !== u && s.loaded !== u && (c.total = s.total, c.loaded = s.loaded), 
+                        c.async = s.async || !1;
+                    }
+                    if (-1 !== e.indexOf("::") ? function(t) {
+                        n = t[0], e = t[1];
+                    }(e.split("::")) : n = this.uid, e = e.toLowerCase(), o = r[n] && r[n][e]) {
+                        o.sort(function(e, t) {
+                            return t.priority - e.priority;
+                        }), a = [].slice.call(arguments), a.shift(), c.type = e, a.unshift(c);
+                        var d = [];
+                        i.each(o, function(e) {
+                            a[0].target = e.scope, c.async ? d.push(function(t) {
+                                setTimeout(function() {
+                                    t(e.fn.apply(e.scope, a) === !1);
+                                }, 1);
+                            }) : d.push(function(t) {
+                                t(e.fn.apply(e.scope, a) === !1);
+                            });
+                        }), d.length && i.inSeries(d, function(e) {
+                            l = !e;
+                        });
+                    }
+                    return l;
+                },
+                bindOnce: function(e, t, i, n) {
+                    var r = this;
+                    r.bind.call(this, e, function o() {
+                        return r.unbind(e, o), t.apply(this, arguments);
+                    }, i, n);
+                },
+                bind: function() {
+                    this.addEventListener.apply(this, arguments);
+                },
+                unbind: function() {
+                    this.removeEventListener.apply(this, arguments);
+                },
+                unbindAll: function() {
+                    this.removeAllEventListeners.apply(this, arguments);
+                },
+                trigger: function() {
+                    return this.dispatchEvent.apply(this, arguments);
+                },
+                handleEventProps: function(e) {
+                    var t = this;
+                    this.bind(e.join(" "), function(e) {
+                        var t = "on" + e.type.toLowerCase();
+                        "function" === i.typeOf(this[t]) && this[t].apply(this, arguments);
+                    }), i.each(e, function(e) {
+                        e = "on" + e.toLowerCase(e), "undefined" === i.typeOf(t[e]) && (t[e] = null);
+                    });
+                }
+            }), n.instance = new n(), n;
+        }), n("moxie/runtime/Runtime", [ "moxie/core/utils/Env", "moxie/core/utils/Basic", "moxie/core/utils/Dom", "moxie/core/EventTarget" ], function(e, t, i, n) {
+            function r(e, n, o, s, u) {
+                var c, l = this, d = t.guid(n + "_"), m = u || "browser";
+                e = e || {}, a[d] = this, o = t.extend({
+                    access_binary: !1,
+                    access_image_binary: !1,
+                    display_media: !1,
+                    do_cors: !1,
+                    drag_and_drop: !1,
+                    filter_by_extension: !0,
+                    resize_image: !1,
+                    report_upload_progress: !1,
+                    return_response_headers: !1,
+                    return_response_type: !1,
+                    return_status_code: !0,
+                    send_custom_headers: !1,
+                    select_file: !1,
+                    select_folder: !1,
+                    select_multiple: !0,
+                    send_binary_string: !1,
+                    send_browser_cookies: !0,
+                    send_multipart: !0,
+                    slice_blob: !1,
+                    stream_upload: !1,
+                    summon_file_dialog: !1,
+                    upload_filesize: !0,
+                    use_http_method: !0
+                }, o), e.preferred_caps && (m = r.getMode(s, e.preferred_caps, m)), c = function() {
+                    var e = {};
+                    return {
+                        exec: function(t, i, n, r) {
+                            return c[i] && (e[t] || (e[t] = {
+                                context: this,
+                                instance: new c[i]()
+                            }), e[t].instance[n]) ? e[t].instance[n].apply(this, r) : void 0;
+                        },
+                        removeInstance: function(t) {
+                            delete e[t];
+                        },
+                        removeAllInstances: function() {
+                            var i = this;
+                            t.each(e, function(e, n) {
+                                "function" === t.typeOf(e.instance.destroy) && e.instance.destroy.call(e.context), 
+                                i.removeInstance(n);
+                            });
+                        }
+                    };
+                }(), t.extend(this, {
+                    initialized: !1,
+                    uid: d,
+                    type: n,
+                    mode: r.getMode(s, e.required_caps, m),
+                    shimid: d + "_container",
+                    clients: 0,
+                    options: e,
+                    can: function(e, i) {
+                        var n = arguments[2] || o;
+                        if ("string" === t.typeOf(e) && "undefined" === t.typeOf(i) && (e = r.parseCaps(e)), 
+                        "object" === t.typeOf(e)) {
+                            for (var a in e) if (!this.can(a, e[a], n)) return !1;
+                            return !0;
+                        }
+                        return "function" === t.typeOf(n[e]) ? n[e].call(this, i) : i === n[e];
+                    },
+                    getShimContainer: function() {
+                        var e, n = i.get(this.shimid);
+                        return n || (e = i.get(this.options.container) || document.body, n = document.createElement("div"), 
+                        n.id = this.shimid, n.className = "moxie-shim moxie-shim-" + this.type, t.extend(n.style, {
+                            position: "absolute",
+                            top: "0px",
+                            left: "0px",
+                            width: "1px",
+                            height: "1px",
+                            overflow: "hidden"
+                        }), e.appendChild(n), e = null), n;
+                    },
+                    getShim: function() {
+                        return c;
+                    },
+                    shimExec: function(e, t) {
+                        var i = [].slice.call(arguments, 2);
+                        return l.getShim().exec.call(this, this.uid, e, t, i);
+                    },
+                    exec: function(e, t) {
+                        var i = [].slice.call(arguments, 2);
+                        return l[e] && l[e][t] ? l[e][t].apply(this, i) : l.shimExec.apply(this, arguments);
+                    },
+                    destroy: function() {
+                        if (l) {
+                            var e = i.get(this.shimid);
+                            e && e.parentNode.removeChild(e), c && c.removeAllInstances(), this.unbindAll(), 
+                            delete a[this.uid], this.uid = null, d = l = c = e = null;
+                        }
+                    }
+                }), this.mode && e.required_caps && !this.can(e.required_caps) && (this.mode = !1);
+            }
+            var o = {}, a = {};
+            return r.order = "html5,flash,silverlight,html4", r.getRuntime = function(e) {
+                return a[e] ? a[e] : !1;
+            }, r.addConstructor = function(e, t) {
+                t.prototype = n.instance, o[e] = t;
+            }, r.getConstructor = function(e) {
+                return o[e] || null;
+            }, r.getInfo = function(e) {
+                var t = r.getRuntime(e);
+                return t ? {
+                    uid: t.uid,
+                    type: t.type,
+                    mode: t.mode,
+                    can: function() {
+                        return t.can.apply(t, arguments);
+                    }
+                } : null;
+            }, r.parseCaps = function(e) {
+                var i = {};
+                return "string" !== t.typeOf(e) ? e || {} : (t.each(e.split(","), function(e) {
+                    i[e] = !0;
+                }), i);
+            }, r.can = function(e, t) {
+                var i, n, o = r.getConstructor(e);
+                return o ? (i = new o({
+                    required_caps: t
+                }), n = i.mode, i.destroy(), !!n) : !1;
+            }, r.thatCan = function(e, t) {
+                var i = (t || r.order).split(/\s*,\s*/);
+                for (var n in i) if (r.can(i[n], e)) return i[n];
+                return null;
+            }, r.getMode = function(e, i, n) {
+                var r = null;
+                if ("undefined" === t.typeOf(n) && (n = "browser"), i && !t.isEmptyObj(e)) {
+                    if (t.each(i, function(i, n) {
+                        if (e.hasOwnProperty(n)) {
+                            var o = e[n](i);
+                            if ("string" == typeof o && (o = [ o ]), r) {
+                                if (!(r = t.arrayIntersect(r, o))) return r = !1;
+                            } else r = o;
+                        }
+                    }), r) return -1 !== t.inArray(n, r) ? n : r[0];
+                    if (r === !1) return !1;
+                }
+                return n;
+            }, r.getGlobalEventTarget = function() {
+                if (/^moxie\./.test(e.global_event_dispatcher) && !e.can("access_global_ns")) {
+                    var i = t.guid("moxie_event_target_");
+                    window[i] = function(e, t) {
+                        n.instance.dispatchEvent(e, t);
+                    }, e.global_event_dispatcher = i;
+                }
+                return e.global_event_dispatcher;
+            }, r.capTrue = function() {
+                return !0;
+            }, r.capFalse = function() {
+                return !1;
+            }, r.capTest = function(e) {
+                return function() {
+                    return !!e;
+                };
+            }, r;
+        }), n("moxie/runtime/RuntimeClient", [ "moxie/core/utils/Env", "moxie/core/Exceptions", "moxie/core/utils/Basic", "moxie/runtime/Runtime" ], function(e, t, i, n) {
+            return function() {
+                var e;
+                i.extend(this, {
+                    connectRuntime: function(r) {
+                        function o(i) {
+                            var a, u;
+                            return i.length ? (a = i.shift().toLowerCase(), (u = n.getConstructor(a)) ? (e = new u(r), 
+                            e.bind("Init", function() {
+                                e.initialized = !0, setTimeout(function() {
+                                    e.clients++, s.ruid = e.uid, s.trigger("RuntimeInit", e);
+                                }, 1);
+                            }), e.bind("Error", function() {
+                                e.destroy(), o(i);
+                            }), e.bind("Exception", function(e, i) {
+                                var n = i.name + "(#" + i.code + ")" + (i.message ? ", from: " + i.message : "");
+                                s.trigger("RuntimeError", new t.RuntimeError(t.RuntimeError.EXCEPTION_ERR, n));
+                            }), e.mode ? (e.init(), void 0) : (e.trigger("Error"), void 0)) : (o(i), void 0)) : (s.trigger("RuntimeError", new t.RuntimeError(t.RuntimeError.NOT_INIT_ERR)), 
+                            e = null, void 0);
+                        }
+                        var a, s = this;
+                        if ("string" === i.typeOf(r) ? a = r : "string" === i.typeOf(r.ruid) && (a = r.ruid), 
+                        a) {
+                            if (e = n.getRuntime(a)) return s.ruid = a, e.clients++, e;
+                            throw new t.RuntimeError(t.RuntimeError.NOT_INIT_ERR);
+                        }
+                        o((r.runtime_order || n.order).split(/\s*,\s*/));
+                    },
+                    disconnectRuntime: function() {
+                        e && --e.clients <= 0 && e.destroy(), e = null;
+                    },
+                    getRuntime: function() {
+                        return e && e.uid ? e : e = null;
+                    },
+                    exec: function() {
+                        return e ? e.exec.apply(this, arguments) : null;
+                    },
+                    can: function(t) {
+                        return e ? e.can(t) : !1;
+                    }
+                });
+            };
+        }), n("moxie/file/Blob", [ "moxie/core/utils/Basic", "moxie/core/utils/Encode", "moxie/runtime/RuntimeClient" ], function(e, t, i) {
+            function n(o, a) {
+                function s(t, i, o) {
+                    var a, s = r[this.uid];
+                    return "string" === e.typeOf(s) && s.length ? (a = new n(null, {
+                        type: o,
+                        size: i - t
+                    }), a.detach(s.substr(t, a.size)), a) : null;
+                }
+                i.call(this), o && this.connectRuntime(o), a ? "string" === e.typeOf(a) && (a = {
+                    data: a
+                }) : a = {}, e.extend(this, {
+                    uid: a.uid || e.guid("uid_"),
+                    ruid: o,
+                    size: a.size || 0,
+                    type: a.type || "",
+                    slice: function(e, t, i) {
+                        return this.isDetached() ? s.apply(this, arguments) : this.getRuntime().exec.call(this, "Blob", "slice", this.getSource(), e, t, i);
+                    },
+                    getSource: function() {
+                        return r[this.uid] ? r[this.uid] : null;
+                    },
+                    detach: function(e) {
+                        if (this.ruid && (this.getRuntime().exec.call(this, "Blob", "destroy"), this.disconnectRuntime(), 
+                        this.ruid = null), e = e || "", "data:" == e.substr(0, 5)) {
+                            var i = e.indexOf(";base64,");
+                            this.type = e.substring(5, i), e = t.atob(e.substring(i + 8));
+                        }
+                        this.size = e.length, r[this.uid] = e;
+                    },
+                    isDetached: function() {
+                        return !this.ruid && "string" === e.typeOf(r[this.uid]);
+                    },
+                    destroy: function() {
+                        this.detach(), delete r[this.uid];
+                    }
+                }), a.data ? this.detach(a.data) : r[this.uid] = a;
+            }
+            var r = {};
+            return n;
+        }), n("moxie/core/I18n", [ "moxie/core/utils/Basic" ], function(e) {
+            var t = {};
+            return {
+                addI18n: function(i) {
+                    return e.extend(t, i);
+                },
+                translate: function(e) {
+                    return t[e] || e;
+                },
+                _: function(e) {
+                    return this.translate(e);
+                },
+                sprintf: function(t) {
+                    var i = [].slice.call(arguments, 1);
+                    return t.replace(/%[a-z]/g, function() {
+                        var t = i.shift();
+                        return "undefined" !== e.typeOf(t) ? t : "";
+                    });
+                }
+            };
+        }), n("moxie/core/utils/Mime", [ "moxie/core/utils/Basic", "moxie/core/I18n" ], function(e, t) {
+            var i = "application/msword,doc dot,application/pdf,pdf,application/pgp-signature,pgp,application/postscript,ps ai eps,application/rtf,rtf,application/vnd.ms-excel,xls xlb xlt xla,application/vnd.ms-powerpoint,ppt pps pot ppa,application/zip,zip,application/x-shockwave-flash,swf swfl,application/vnd.openxmlformats-officedocument.wordprocessingml.document,docx,application/vnd.openxmlformats-officedocument.wordprocessingml.template,dotx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,xlsx,application/vnd.openxmlformats-officedocument.presentationml.presentation,pptx,application/vnd.openxmlformats-officedocument.presentationml.template,potx,application/vnd.openxmlformats-officedocument.presentationml.slideshow,ppsx,application/x-javascript,js,application/json,json,audio/mpeg,mp3 mpga mpega mp2,audio/x-wav,wav,audio/x-m4a,m4a,audio/ogg,oga ogg,audio/aiff,aiff aif,audio/flac,flac,audio/aac,aac,audio/ac3,ac3,audio/x-ms-wma,wma,image/bmp,bmp,image/gif,gif,image/jpeg,jpg jpeg jpe,image/photoshop,psd,image/png,png,image/svg+xml,svg svgz,image/tiff,tiff tif,text/plain,asc txt text diff log,text/html,htm html xhtml,text/css,css,text/csv,csv,text/rtf,rtf,video/mpeg,mpeg mpg mpe m2v,video/quicktime,qt mov,video/mp4,mp4,video/x-m4v,m4v,video/x-flv,flv,video/x-ms-wmv,wmv,video/avi,avi,video/webm,webm,video/3gpp,3gpp 3gp,video/3gpp2,3g2,video/vnd.rn-realvideo,rv,video/ogg,ogv,video/x-matroska,mkv,application/vnd.oasis.opendocument.formula-template,otf,application/octet-stream,exe", n = {}, r = {}, o = function(e) {
+                var t, i, o, a = e.split(/,/);
+                for (t = 0; t < a.length; t += 2) {
+                    for (o = a[t + 1].split(/ /), i = 0; i < o.length; i++) n[o[i]] = a[t];
+                    r[a[t]] = o;
+                }
+            }, a = function(t, i) {
+                var n, r, o, a, s = [];
+                for (r = 0; r < t.length; r++) for (n = t[r].extensions.toLowerCase().split(/\s*,\s*/), 
+                o = 0; o < n.length; o++) {
+                    if ("*" === n[o]) return [];
+                    if (a = s[n[o]], i && /^\w+$/.test(n[o])) s.push("." + n[o]); else if (a && -1 === e.inArray(a, s)) s.push(a); else if (!a) return [];
+                }
+                return s;
+            }, s = function(t) {
+                var i = [];
+                return e.each(t, function(t) {
+                    if (t = t.toLowerCase(), "*" === t) return i = [], !1;
+                    var n = t.match(/^(\w+)\/(\*|\w+)$/);
+                    n && ("*" === n[2] ? e.each(r, function(e, t) {
+                        new RegExp("^" + n[1] + "/").test(t) && [].push.apply(i, r[t]);
+                    }) : r[t] && [].push.apply(i, r[t]));
+                }), i;
+            }, u = function(i) {
+                var n = [], r = [];
+                return "string" === e.typeOf(i) && (i = e.trim(i).split(/\s*,\s*/)), r = s(i), n.push({
+                    title: t.translate("Files"),
+                    extensions: r.length ? r.join(",") : "*"
+                }), n;
+            }, c = function(e) {
+                var t = e && e.match(/\.([^.]+)$/);
+                return t ? t[1].toLowerCase() : "";
+            }, l = function(e) {
+                return n[c(e)] || "";
+            };
+            return o(i), {
+                mimes: n,
+                extensions: r,
+                addMimeType: o,
+                extList2mimes: a,
+                mimes2exts: s,
+                mimes2extList: u,
+                getFileExtension: c,
+                getFileMime: l
+            };
+        }), n("moxie/file/FileInput", [ "moxie/core/utils/Basic", "moxie/core/utils/Env", "moxie/core/utils/Mime", "moxie/core/utils/Dom", "moxie/core/Exceptions", "moxie/core/EventTarget", "moxie/core/I18n", "moxie/runtime/Runtime", "moxie/runtime/RuntimeClient" ], function(e, t, i, n, r, o, a, s, u) {
+            function c(t) {
+                var o, c, d;
+                if (-1 !== e.inArray(e.typeOf(t), [ "string", "node" ]) && (t = {
+                    browse_button: t
+                }), c = n.get(t.browse_button), !c) throw new r.DOMException(r.DOMException.NOT_FOUND_ERR);
+                d = {
+                    accept: [ {
+                        title: a.translate("All Files"),
+                        extensions: "*"
+                    } ],
+                    multiple: !1,
+                    required_caps: !1,
+                    container: c.parentNode || document.body
+                }, t = e.extend({}, d, t), "string" == typeof t.required_caps && (t.required_caps = s.parseCaps(t.required_caps)), 
+                "string" == typeof t.accept && (t.accept = i.mimes2extList(t.accept)), o = n.get(t.container), 
+                o || (o = document.body), "static" === n.getStyle(o, "position") && (o.style.position = "relative"), 
+                o = c = null, u.call(this), e.extend(this, {
+                    uid: e.guid("uid_"),
+                    ruid: null,
+                    shimid: null,
+                    files: null,
+                    init: function() {
+                        var i = this;
+                        i.bind("RuntimeInit", function(r, o) {
+                            i.ruid = o.uid, i.shimid = o.shimid, i.bind("Ready", function() {
+                                i.trigger("Refresh");
+                            }, 999), i.bind("Refresh", function() {
+                                var i, r, a, s, u;
+                                a = n.get(t.browse_button), s = n.get(o.shimid), a && (i = n.getPos(a, n.get(t.container)), 
+                                r = n.getSize(a), u = parseInt(n.getStyle(a, "z-index"), 10) || 0, s && e.extend(s.style, {
+                                    top: i.y + "px",
+                                    left: i.x + "px",
+                                    width: r.w + "px",
+                                    height: r.h + "px",
+                                    zIndex: u + 1
+                                })), s = a = null;
+                            }), o.exec.call(i, "FileInput", "init", t);
+                        }), i.connectRuntime(e.extend({}, t, {
+                            required_caps: {
+                                select_file: !0
+                            }
+                        }));
+                    },
+                    getOption: function(e) {
+                        return t[e];
+                    },
+                    setOption: function(e, n) {
+                        if (t.hasOwnProperty(e)) {
+                            var o = t[e];
+                            switch (e) {
+                              case "accept":
+                                "string" == typeof n && (n = i.mimes2extList(n));
+                                break;
+
+                              case "container":
+                              case "required_caps":
+                                throw new r.FileException(r.FileException.NO_MODIFICATION_ALLOWED_ERR);
+                            }
+                            t[e] = n, this.exec("FileInput", "setOption", e, n), this.trigger("OptionChanged", e, n, o);
+                        }
+                    },
+                    disable: function(t) {
+                        var i = this.getRuntime();
+                        i && this.exec("FileInput", "disable", "undefined" === e.typeOf(t) ? !0 : t);
+                    },
+                    refresh: function() {
+                        this.trigger("Refresh");
+                    },
+                    destroy: function() {
+                        var t = this.getRuntime();
+                        t && (t.exec.call(this, "FileInput", "destroy"), this.disconnectRuntime()), "array" === e.typeOf(this.files) && e.each(this.files, function(e) {
+                            e.destroy();
+                        }), this.files = null, this.unbindAll();
+                    }
+                }), this.handleEventProps(l);
+            }
+            var l = [ "ready", "change", "cancel", "mouseenter", "mouseleave", "mousedown", "mouseup" ];
+            return c.prototype = o.instance, c;
+        }), n("moxie/file/File", [ "moxie/core/utils/Basic", "moxie/core/utils/Mime", "moxie/file/Blob" ], function(e, t, i) {
+            function n(n, r) {
+                r || (r = {}), i.apply(this, arguments), this.type || (this.type = t.getFileMime(r.name));
+                var o;
+                if (r.name) o = r.name.replace(/\\/g, "/"), o = o.substr(o.lastIndexOf("/") + 1); else if (this.type) {
+                    var a = this.type.split("/")[0];
+                    o = e.guid(("" !== a ? a : "file") + "_"), t.extensions[this.type] && (o += "." + t.extensions[this.type][0]);
+                }
+                e.extend(this, {
+                    name: o || e.guid("file_"),
+                    relativePath: "",
+                    lastModifiedDate: r.lastModifiedDate || new Date().toLocaleString()
+                });
+            }
+            return n.prototype = i.prototype, n;
+        }), n("moxie/file/FileDrop", [ "moxie/core/I18n", "moxie/core/utils/Dom", "moxie/core/Exceptions", "moxie/core/utils/Basic", "moxie/core/utils/Env", "moxie/file/File", "moxie/runtime/RuntimeClient", "moxie/core/EventTarget", "moxie/core/utils/Mime" ], function(e, t, i, n, r, o, a, s, u) {
+            function c(i) {
+                var r, o = this;
+                "string" == typeof i && (i = {
+                    drop_zone: i
+                }), r = {
+                    accept: [ {
+                        title: e.translate("All Files"),
+                        extensions: "*"
+                    } ],
+                    required_caps: {
+                        drag_and_drop: !0
+                    }
+                }, i = "object" == typeof i ? n.extend({}, r, i) : r, i.container = t.get(i.drop_zone) || document.body, 
+                "static" === t.getStyle(i.container, "position") && (i.container.style.position = "relative"), 
+                "string" == typeof i.accept && (i.accept = u.mimes2extList(i.accept)), a.call(o), 
+                n.extend(o, {
+                    uid: n.guid("uid_"),
+                    ruid: null,
+                    files: null,
+                    init: function() {
+                        o.bind("RuntimeInit", function(e, t) {
+                            o.ruid = t.uid, t.exec.call(o, "FileDrop", "init", i), o.dispatchEvent("ready");
+                        }), o.connectRuntime(i);
+                    },
+                    destroy: function() {
+                        var e = this.getRuntime();
+                        e && (e.exec.call(this, "FileDrop", "destroy"), this.disconnectRuntime()), this.files = null, 
+                        this.unbindAll();
+                    }
+                }), this.handleEventProps(l);
+            }
+            var l = [ "ready", "dragenter", "dragleave", "drop", "error" ];
+            return c.prototype = s.instance, c;
+        }), n("moxie/file/FileReader", [ "moxie/core/utils/Basic", "moxie/core/utils/Encode", "moxie/core/Exceptions", "moxie/core/EventTarget", "moxie/file/Blob", "moxie/runtime/RuntimeClient" ], function(e, t, i, n, r, o) {
+            function a() {
+                function n(e, n) {
+                    if (this.trigger("loadstart"), this.readyState === a.LOADING) return this.trigger("error", new i.DOMException(i.DOMException.INVALID_STATE_ERR)), 
+                    this.trigger("loadend"), void 0;
+                    if (!(n instanceof r)) return this.trigger("error", new i.DOMException(i.DOMException.NOT_FOUND_ERR)), 
+                    this.trigger("loadend"), void 0;
+                    if (this.result = null, this.readyState = a.LOADING, n.isDetached()) {
+                        var o = n.getSource();
+                        switch (e) {
+                          case "readAsText":
+                          case "readAsBinaryString":
+                            this.result = o;
+                            break;
+
+                          case "readAsDataURL":
+                            this.result = "data:" + n.type + ";base64," + t.btoa(o);
+                        }
+                        this.readyState = a.DONE, this.trigger("load"), this.trigger("loadend");
+                    } else this.connectRuntime(n.ruid), this.exec("FileReader", "read", e, n);
+                }
+                o.call(this), e.extend(this, {
+                    uid: e.guid("uid_"),
+                    readyState: a.EMPTY,
+                    result: null,
+                    error: null,
+                    readAsBinaryString: function(e) {
+                        n.call(this, "readAsBinaryString", e);
+                    },
+                    readAsDataURL: function(e) {
+                        n.call(this, "readAsDataURL", e);
+                    },
+                    readAsText: function(e) {
+                        n.call(this, "readAsText", e);
+                    },
+                    abort: function() {
+                        this.result = null, -1 === e.inArray(this.readyState, [ a.EMPTY, a.DONE ]) && (this.readyState === a.LOADING && (this.readyState = a.DONE), 
+                        this.exec("FileReader", "abort"), this.trigger("abort"), this.trigger("loadend"));
+                    },
+                    destroy: function() {
+                        this.abort(), this.exec("FileReader", "destroy"), this.disconnectRuntime(), this.unbindAll();
+                    }
+                }), this.handleEventProps(s), this.bind("Error", function(e, t) {
+                    this.readyState = a.DONE, this.error = t;
+                }, 999), this.bind("Load", function() {
+                    this.readyState = a.DONE;
+                }, 999);
+            }
+            var s = [ "loadstart", "progress", "load", "abort", "error", "loadend" ];
+            return a.EMPTY = 0, a.LOADING = 1, a.DONE = 2, a.prototype = n.instance, a;
+        }), n("moxie/core/utils/Url", [ "moxie/core/utils/Basic" ], function(e) {
+            var t = function(i, n) {
+                var r, o = [ "source", "scheme", "authority", "userInfo", "user", "pass", "host", "port", "relative", "path", "directory", "file", "query", "fragment" ], a = o.length, s = {
+                    http: 80,
+                    https: 443
+                }, u = {}, c = /^(?:([^:\/?#]+):)?(?:\/\/()(?:(?:()(?:([^:@\/]*):?([^:@\/]*))?@)?(\[[\da-fA-F:]+\]|[^:\/?#]*)(?::(\d*))?))?()(?:(()(?:(?:[^?#\/]*\/)*)()(?:[^?#]*))(?:\\?([^#]*))?(?:#(.*))?)/, l = c.exec(i || ""), d = /^\/\/\w/.test(i);
+                switch (e.typeOf(n)) {
+                  case "undefined":
+                    n = t(document.location.href, !1);
+                    break;
+
+                  case "string":
+                    n = t(n, !1);
+                }
+                for (;a--; ) l[a] && (u[o[a]] = l[a]);
+                if (r = !d && !u.scheme, (d || r) && (u.scheme = n.scheme), r) {
+                    u.host = n.host, u.port = n.port;
+                    var m = "";
+                    /^[^\/]/.test(u.path) && (m = n.path, m = /\/[^\/]*\.[^\/]*$/.test(m) ? m.replace(/\/[^\/]+$/, "/") : m.replace(/\/?$/, "/")), 
+                    u.path = m + (u.path || "");
+                }
+                return u.port || (u.port = s[u.scheme] || 80), u.port = parseInt(u.port, 10), u.path || (u.path = "/"), 
+                delete u.source, u;
+            }, i = function(e) {
+                var i = {
+                    http: 80,
+                    https: 443
+                }, n = "object" == typeof e ? e : t(e);
+                return n.scheme + "://" + n.host + (n.port !== i[n.scheme] ? ":" + n.port : "") + n.path + (n.query ? n.query : "");
+            }, n = function(e) {
+                function i(e) {
+                    return [ e.scheme, e.host, e.port ].join("/");
+                }
+                return "string" == typeof e && (e = t(e)), i(t()) === i(e);
+            };
+            return {
+                parseUrl: t,
+                resolveUrl: i,
+                hasSameOrigin: n
+            };
+        }), n("moxie/runtime/RuntimeTarget", [ "moxie/core/utils/Basic", "moxie/runtime/RuntimeClient", "moxie/core/EventTarget" ], function(e, t, i) {
+            function n() {
+                this.uid = e.guid("uid_"), t.call(this), this.destroy = function() {
+                    this.disconnectRuntime(), this.unbindAll();
+                };
+            }
+            return n.prototype = i.instance, n;
+        }), n("moxie/file/FileReaderSync", [ "moxie/core/utils/Basic", "moxie/runtime/RuntimeClient", "moxie/core/utils/Encode" ], function(e, t, i) {
+            return function() {
+                function n(e, t) {
+                    if (!t.isDetached()) {
+                        var n = this.connectRuntime(t.ruid).exec.call(this, "FileReaderSync", "read", e, t);
+                        return this.disconnectRuntime(), n;
+                    }
+                    var r = t.getSource();
+                    switch (e) {
+                      case "readAsBinaryString":
+                        return r;
+
+                      case "readAsDataURL":
+                        return "data:" + t.type + ";base64," + i.btoa(r);
+
+                      case "readAsText":
+                        for (var o = "", a = 0, s = r.length; s > a; a++) o += String.fromCharCode(r[a]);
+                        return o;
+                    }
+                }
+                t.call(this), e.extend(this, {
+                    uid: e.guid("uid_"),
+                    readAsBinaryString: function(e) {
+                        return n.call(this, "readAsBinaryString", e);
+                    },
+                    readAsDataURL: function(e) {
+                        return n.call(this, "readAsDataURL", e);
+                    },
+                    readAsText: function(e) {
+                        return n.call(this, "readAsText", e);
+                    }
+                });
+            };
+        }), n("moxie/xhr/FormData", [ "moxie/core/Exceptions", "moxie/core/utils/Basic", "moxie/file/Blob" ], function(e, t, i) {
+            function n() {
+                var e, n = [];
+                t.extend(this, {
+                    append: function(r, o) {
+                        var a = this, s = t.typeOf(o);
+                        o instanceof i ? e = {
+                            name: r,
+                            value: o
+                        } : "array" === s ? (r += "[]", t.each(o, function(e) {
+                            a.append(r, e);
+                        })) : "object" === s ? t.each(o, function(e, t) {
+                            a.append(r + "[" + t + "]", e);
+                        }) : "null" === s || "undefined" === s || "number" === s && isNaN(o) ? a.append(r, "false") : n.push({
+                            name: r,
+                            value: o.toString()
+                        });
+                    },
+                    hasBlob: function() {
+                        return !!this.getBlob();
+                    },
+                    getBlob: function() {
+                        return e && e.value || null;
+                    },
+                    getBlobName: function() {
+                        return e && e.name || null;
+                    },
+                    each: function(i) {
+                        t.each(n, function(e) {
+                            i(e.value, e.name);
+                        }), e && i(e.value, e.name);
+                    },
+                    destroy: function() {
+                        e = null, n = [];
+                    }
+                });
+            }
+            return n;
+        }), n("moxie/xhr/XMLHttpRequest", [ "moxie/core/utils/Basic", "moxie/core/Exceptions", "moxie/core/EventTarget", "moxie/core/utils/Encode", "moxie/core/utils/Url", "moxie/runtime/Runtime", "moxie/runtime/RuntimeTarget", "moxie/file/Blob", "moxie/file/FileReaderSync", "moxie/xhr/FormData", "moxie/core/utils/Env", "moxie/core/utils/Mime" ], function(e, t, i, n, r, o, a, s, u, c, l, d) {
+            function m() {
+                this.uid = e.guid("uid_");
+            }
+            function h() {
+                function i(e, t) {
+                    return I.hasOwnProperty(e) ? 1 === arguments.length ? l.can("define_property") ? I[e] : A[e] : (l.can("define_property") ? I[e] = t : A[e] = t, 
+                    void 0) : void 0;
+                }
+                function u(t) {
+                    function n() {
+                        _ && (_.destroy(), _ = null), s.dispatchEvent("loadend"), s = null;
+                    }
+                    function r(r) {
+                        _.bind("LoadStart", function(e) {
+                            i("readyState", h.LOADING), s.dispatchEvent("readystatechange"), s.dispatchEvent(e), 
+                            L && s.upload.dispatchEvent(e);
+                        }), _.bind("Progress", function(e) {
+                            i("readyState") !== h.LOADING && (i("readyState", h.LOADING), s.dispatchEvent("readystatechange")), 
+                            s.dispatchEvent(e);
+                        }), _.bind("UploadProgress", function(e) {
+                            L && s.upload.dispatchEvent({
+                                type: "progress",
+                                lengthComputable: !1,
+                                total: e.total,
+                                loaded: e.loaded
+                            });
+                        }), _.bind("Load", function(t) {
+                            i("readyState", h.DONE), i("status", Number(r.exec.call(_, "XMLHttpRequest", "getStatus") || 0)), 
+                            i("statusText", f[i("status")] || ""), i("response", r.exec.call(_, "XMLHttpRequest", "getResponse", i("responseType"))), 
+                            ~e.inArray(i("responseType"), [ "text", "" ]) ? i("responseText", i("response")) : "document" === i("responseType") && i("responseXML", i("response")), 
+                            U = r.exec.call(_, "XMLHttpRequest", "getAllResponseHeaders"), s.dispatchEvent("readystatechange"), 
+                            i("status") > 0 ? (L && s.upload.dispatchEvent(t), s.dispatchEvent(t)) : (F = !0, 
+                            s.dispatchEvent("error")), n();
+                        }), _.bind("Abort", function(e) {
+                            s.dispatchEvent(e), n();
+                        }), _.bind("Error", function(e) {
+                            F = !0, i("readyState", h.DONE), s.dispatchEvent("readystatechange"), M = !0, s.dispatchEvent(e), 
+                            n();
+                        }), r.exec.call(_, "XMLHttpRequest", "send", {
+                            url: x,
+                            method: v,
+                            async: T,
+                            user: w,
+                            password: y,
+                            headers: S,
+                            mimeType: D,
+                            encoding: O,
+                            responseType: s.responseType,
+                            withCredentials: s.withCredentials,
+                            options: k
+                        }, t);
+                    }
+                    var s = this;
+                    E = new Date().getTime(), _ = new a(), "string" == typeof k.required_caps && (k.required_caps = o.parseCaps(k.required_caps)), 
+                    k.required_caps = e.extend({}, k.required_caps, {
+                        return_response_type: s.responseType
+                    }), t instanceof c && (k.required_caps.send_multipart = !0), e.isEmptyObj(S) || (k.required_caps.send_custom_headers = !0), 
+                    B || (k.required_caps.do_cors = !0), k.ruid ? r(_.connectRuntime(k)) : (_.bind("RuntimeInit", function(e, t) {
+                        r(t);
+                    }), _.bind("RuntimeError", function(e, t) {
+                        s.dispatchEvent("RuntimeError", t);
+                    }), _.connectRuntime(k));
+                }
+                function g() {
+                    i("responseText", ""), i("responseXML", null), i("response", null), i("status", 0), 
+                    i("statusText", ""), E = b = null;
+                }
+                var x, v, w, y, E, b, _, R, A = this, I = {
+                    timeout: 0,
+                    readyState: h.UNSENT,
+                    withCredentials: !1,
+                    status: 0,
+                    statusText: "",
+                    responseType: "",
+                    responseXML: null,
+                    responseText: null,
+                    response: null
+                }, T = !0, S = {}, O = null, D = null, N = !1, C = !1, L = !1, M = !1, F = !1, B = !1, P = null, H = null, k = {}, U = "";
+                e.extend(this, I, {
+                    uid: e.guid("uid_"),
+                    upload: new m(),
+                    open: function(o, a, s, u, c) {
+                        var l;
+                        if (!o || !a) throw new t.DOMException(t.DOMException.SYNTAX_ERR);
+                        if (/[\u0100-\uffff]/.test(o) || n.utf8_encode(o) !== o) throw new t.DOMException(t.DOMException.SYNTAX_ERR);
+                        if (~e.inArray(o.toUpperCase(), [ "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT", "TRACE", "TRACK" ]) && (v = o.toUpperCase()), 
+                        ~e.inArray(v, [ "CONNECT", "TRACE", "TRACK" ])) throw new t.DOMException(t.DOMException.SECURITY_ERR);
+                        if (a = n.utf8_encode(a), l = r.parseUrl(a), B = r.hasSameOrigin(l), x = r.resolveUrl(a), 
+                        (u || c) && !B) throw new t.DOMException(t.DOMException.INVALID_ACCESS_ERR);
+                        if (w = u || l.user, y = c || l.pass, T = s || !0, T === !1 && (i("timeout") || i("withCredentials") || "" !== i("responseType"))) throw new t.DOMException(t.DOMException.INVALID_ACCESS_ERR);
+                        N = !T, C = !1, S = {}, g.call(this), i("readyState", h.OPENED), this.dispatchEvent("readystatechange");
+                    },
+                    setRequestHeader: function(r, o) {
+                        var a = [ "accept-charset", "accept-encoding", "access-control-request-headers", "access-control-request-method", "connection", "content-length", "cookie", "cookie2", "content-transfer-encoding", "date", "expect", "host", "keep-alive", "origin", "referer", "te", "trailer", "transfer-encoding", "upgrade", "user-agent", "via" ];
+                        if (i("readyState") !== h.OPENED || C) throw new t.DOMException(t.DOMException.INVALID_STATE_ERR);
+                        if (/[\u0100-\uffff]/.test(r) || n.utf8_encode(r) !== r) throw new t.DOMException(t.DOMException.SYNTAX_ERR);
+                        return r = e.trim(r).toLowerCase(), ~e.inArray(r, a) || /^(proxy\-|sec\-)/.test(r) ? !1 : (S[r] ? S[r] += ", " + o : S[r] = o, 
+                        !0);
+                    },
+                    hasRequestHeader: function(e) {
+                        return e && S[e.toLowerCase()] || !1;
+                    },
+                    getAllResponseHeaders: function() {
+                        return U || "";
+                    },
+                    getResponseHeader: function(t) {
+                        return t = t.toLowerCase(), F || ~e.inArray(t, [ "set-cookie", "set-cookie2" ]) ? null : U && "" !== U && (R || (R = {}, 
+                        e.each(U.split(/\r\n/), function(t) {
+                            var i = t.split(/:\s+/);
+                            2 === i.length && (i[0] = e.trim(i[0]), R[i[0].toLowerCase()] = {
+                                header: i[0],
+                                value: e.trim(i[1])
+                            });
+                        })), R.hasOwnProperty(t)) ? R[t].header + ": " + R[t].value : null;
+                    },
+                    overrideMimeType: function(n) {
+                        var r, o;
+                        if (~e.inArray(i("readyState"), [ h.LOADING, h.DONE ])) throw new t.DOMException(t.DOMException.INVALID_STATE_ERR);
+                        if (n = e.trim(n.toLowerCase()), /;/.test(n) && (r = n.match(/^([^;]+)(?:;\scharset\=)?(.*)$/)) && (n = r[1], 
+                        r[2] && (o = r[2])), !d.mimes[n]) throw new t.DOMException(t.DOMException.SYNTAX_ERR);
+                        P = n, H = o;
+                    },
+                    send: function(i, r) {
+                        if (k = "string" === e.typeOf(r) ? {
+                            ruid: r
+                        } : r ? r : {}, this.readyState !== h.OPENED || C) throw new t.DOMException(t.DOMException.INVALID_STATE_ERR);
+                        if (i instanceof s) k.ruid = i.ruid, D = i.type || "application/octet-stream"; else if (i instanceof c) {
+                            if (i.hasBlob()) {
+                                var o = i.getBlob();
+                                k.ruid = o.ruid, D = o.type || "application/octet-stream";
+                            }
+                        } else "string" == typeof i && (O = "UTF-8", D = "text/plain;charset=UTF-8", i = n.utf8_encode(i));
+                        this.withCredentials || (this.withCredentials = k.required_caps && k.required_caps.send_browser_cookies && !B), 
+                        L = !N && this.upload.hasEventListener(), F = !1, M = !i, N || (C = !0), u.call(this, i);
+                    },
+                    abort: function() {
+                        if (F = !0, N = !1, ~e.inArray(i("readyState"), [ h.UNSENT, h.OPENED, h.DONE ])) i("readyState", h.UNSENT); else {
+                            if (i("readyState", h.DONE), C = !1, !_) throw new t.DOMException(t.DOMException.INVALID_STATE_ERR);
+                            _.getRuntime().exec.call(_, "XMLHttpRequest", "abort", M), M = !0;
+                        }
+                    },
+                    destroy: function() {
+                        _ && ("function" === e.typeOf(_.destroy) && _.destroy(), _ = null), this.unbindAll(), 
+                        this.upload && (this.upload.unbindAll(), this.upload = null);
+                    }
+                }), this.handleEventProps(p.concat([ "readystatechange" ])), this.upload.handleEventProps(p);
+            }
+            var f = {
+                100: "Continue",
+                101: "Switching Protocols",
+                102: "Processing",
+                200: "OK",
+                201: "Created",
+                202: "Accepted",
+                203: "Non-Authoritative Information",
+                204: "No Content",
+                205: "Reset Content",
+                206: "Partial Content",
+                207: "Multi-Status",
+                226: "IM Used",
+                300: "Multiple Choices",
+                301: "Moved Permanently",
+                302: "Found",
+                303: "See Other",
+                304: "Not Modified",
+                305: "Use Proxy",
+                306: "Reserved",
+                307: "Temporary Redirect",
+                400: "Bad Request",
+                401: "Unauthorized",
+                402: "Payment Required",
+                403: "Forbidden",
+                404: "Not Found",
+                405: "Method Not Allowed",
+                406: "Not Acceptable",
+                407: "Proxy Authentication Required",
+                408: "Request Timeout",
+                409: "Conflict",
+                410: "Gone",
+                411: "Length Required",
+                412: "Precondition Failed",
+                413: "Request Entity Too Large",
+                414: "Request-URI Too Long",
+                415: "Unsupported Media Type",
+                416: "Requested Range Not Satisfiable",
+                417: "Expectation Failed",
+                422: "Unprocessable Entity",
+                423: "Locked",
+                424: "Failed Dependency",
+                426: "Upgrade Required",
+                500: "Internal Server Error",
+                501: "Not Implemented",
+                502: "Bad Gateway",
+                503: "Service Unavailable",
+                504: "Gateway Timeout",
+                505: "HTTP Version Not Supported",
+                506: "Variant Also Negotiates",
+                507: "Insufficient Storage",
+                510: "Not Extended"
+            };
+            m.prototype = i.instance;
+            var p = [ "loadstart", "progress", "abort", "error", "load", "timeout", "loadend" ];
+            return h.UNSENT = 0, h.OPENED = 1, h.HEADERS_RECEIVED = 2, h.LOADING = 3, h.DONE = 4, 
+            h.prototype = i.instance, h;
+        }), n("moxie/runtime/Transporter", [ "moxie/core/utils/Basic", "moxie/core/utils/Encode", "moxie/runtime/RuntimeClient", "moxie/core/EventTarget" ], function(e, t, i, n) {
+            function r() {
+                function n() {
+                    l = d = 0, c = this.result = null;
+                }
+                function o(t, i) {
+                    var n = this;
+                    u = i, n.bind("TransportingProgress", function(t) {
+                        d = t.loaded, l > d && -1 === e.inArray(n.state, [ r.IDLE, r.DONE ]) && a.call(n);
+                    }, 999), n.bind("TransportingComplete", function() {
+                        d = l, n.state = r.DONE, c = null, n.result = u.exec.call(n, "Transporter", "getAsBlob", t || "");
+                    }, 999), n.state = r.BUSY, n.trigger("TransportingStarted"), a.call(n);
+                }
+                function a() {
+                    var e, i = this, n = l - d;
+                    m > n && (m = n), e = t.btoa(c.substr(d, m)), u.exec.call(i, "Transporter", "receive", e, l);
+                }
+                var s, u, c, l, d, m;
+                i.call(this), e.extend(this, {
+                    uid: e.guid("uid_"),
+                    state: r.IDLE,
+                    result: null,
+                    transport: function(t, i, r) {
+                        var a = this;
+                        if (r = e.extend({
+                            chunk_size: 204798
+                        }, r), (s = r.chunk_size % 3) && (r.chunk_size += 3 - s), m = r.chunk_size, n.call(this), 
+                        c = t, l = t.length, "string" === e.typeOf(r) || r.ruid) o.call(a, i, this.connectRuntime(r)); else {
+                            var u = function(e, t) {
+                                a.unbind("RuntimeInit", u), o.call(a, i, t);
+                            };
+                            this.bind("RuntimeInit", u), this.connectRuntime(r);
+                        }
+                    },
+                    abort: function() {
+                        var e = this;
+                        e.state = r.IDLE, u && (u.exec.call(e, "Transporter", "clear"), e.trigger("TransportingAborted")), 
+                        n.call(e);
+                    },
+                    destroy: function() {
+                        this.unbindAll(), u = null, this.disconnectRuntime(), n.call(this);
+                    }
+                });
+            }
+            return r.IDLE = 0, r.BUSY = 1, r.DONE = 2, r.prototype = n.instance, r;
+        }), n("moxie/image/Image", [ "moxie/core/utils/Basic", "moxie/core/utils/Dom", "moxie/core/Exceptions", "moxie/file/FileReaderSync", "moxie/xhr/XMLHttpRequest", "moxie/runtime/Runtime", "moxie/runtime/RuntimeClient", "moxie/runtime/Transporter", "moxie/core/utils/Env", "moxie/core/EventTarget", "moxie/file/Blob", "moxie/file/File", "moxie/core/utils/Encode" ], function(e, t, i, n, r, o, a, s, u, c, l, d, m) {
+            function h() {
+                function n(e) {
+                    try {
+                        return e || (e = this.exec("Image", "getInfo")), this.size = e.size, this.width = e.width, 
+                        this.height = e.height, this.type = e.type, this.meta = e.meta, "" === this.name && (this.name = e.name), 
+                        !0;
+                    } catch (t) {
+                        return this.trigger("error", t.code), !1;
+                    }
+                }
+                function c(t) {
+                    var n = e.typeOf(t);
+                    try {
+                        if (t instanceof h) {
+                            if (!t.size) throw new i.DOMException(i.DOMException.INVALID_STATE_ERR);
+                            p.apply(this, arguments);
+                        } else if (t instanceof l) {
+                            if (!~e.inArray(t.type, [ "image/jpeg", "image/png" ])) throw new i.ImageError(i.ImageError.WRONG_FORMAT);
+                            g.apply(this, arguments);
+                        } else if (-1 !== e.inArray(n, [ "blob", "file" ])) c.call(this, new d(null, t), arguments[1]); else if ("string" === n) "data:" === t.substr(0, 5) ? c.call(this, new l(null, {
+                            data: t
+                        }), arguments[1]) : x.apply(this, arguments); else {
+                            if ("node" !== n || "img" !== t.nodeName.toLowerCase()) throw new i.DOMException(i.DOMException.TYPE_MISMATCH_ERR);
+                            c.call(this, t.src, arguments[1]);
+                        }
+                    } catch (r) {
+                        this.trigger("error", r.code);
+                    }
+                }
+                function p(t, i) {
+                    var n = this.connectRuntime(t.ruid);
+                    this.ruid = n.uid, n.exec.call(this, "Image", "loadFromImage", t, "undefined" === e.typeOf(i) ? !0 : i);
+                }
+                function g(t, i) {
+                    function n(e) {
+                        r.ruid = e.uid, e.exec.call(r, "Image", "loadFromBlob", t);
+                    }
+                    var r = this;
+                    r.name = t.name || "", t.isDetached() ? (this.bind("RuntimeInit", function(e, t) {
+                        n(t);
+                    }), i && "string" == typeof i.required_caps && (i.required_caps = o.parseCaps(i.required_caps)), 
+                    this.connectRuntime(e.extend({
+                        required_caps: {
+                            access_image_binary: !0,
+                            resize_image: !0
+                        }
+                    }, i))) : n(this.connectRuntime(t.ruid));
+                }
+                function x(e, t) {
+                    var i, n = this;
+                    i = new r(), i.open("get", e), i.responseType = "blob", i.onprogress = function(e) {
+                        n.trigger(e);
+                    }, i.onload = function() {
+                        g.call(n, i.response, !0);
+                    }, i.onerror = function(e) {
+                        n.trigger(e);
+                    }, i.onloadend = function() {
+                        i.destroy();
+                    }, i.bind("RuntimeError", function(e, t) {
+                        n.trigger("RuntimeError", t);
+                    }), i.send(null, t);
+                }
+                a.call(this), e.extend(this, {
+                    uid: e.guid("uid_"),
+                    ruid: null,
+                    name: "",
+                    size: 0,
+                    width: 0,
+                    height: 0,
+                    type: "",
+                    meta: {},
+                    clone: function() {
+                        this.load.apply(this, arguments);
+                    },
+                    load: function() {
+                        c.apply(this, arguments);
+                    },
+                    resize: function(t) {
+                        var n, r, o = this, a = {
+                            x: 0,
+                            y: 0,
+                            width: o.width,
+                            height: o.height
+                        }, s = e.extendIf({
+                            width: o.width,
+                            height: o.height,
+                            type: o.type || "image/jpeg",
+                            quality: 90,
+                            crop: !1,
+                            fit: !0,
+                            preserveHeaders: !0,
+                            resample: "default",
+                            multipass: !0
+                        }, t);
+                        try {
+                            if (!o.size) throw new i.DOMException(i.DOMException.INVALID_STATE_ERR);
+                            if (o.width > h.MAX_RESIZE_WIDTH || o.height > h.MAX_RESIZE_HEIGHT) throw new i.ImageError(i.ImageError.MAX_RESOLUTION_ERR);
+                            if (n = o.meta && o.meta.tiff && o.meta.tiff.Orientation || 1, -1 !== e.inArray(n, [ 5, 6, 7, 8 ])) {
+                                var u = s.width;
+                                s.width = s.height, s.height = u;
+                            }
+                            if (s.crop) {
+                                switch (r = Math.max(s.width / o.width, s.height / o.height), t.fit ? (a.width = Math.min(Math.ceil(s.width / r), o.width), 
+                                a.height = Math.min(Math.ceil(s.height / r), o.height), r = s.width / a.width) : (a.width = Math.min(s.width, o.width), 
+                                a.height = Math.min(s.height, o.height), r = 1), "boolean" == typeof s.crop && (s.crop = "cc"), 
+                                s.crop.toLowerCase().replace(/_/, "-")) {
+                                  case "rb":
+                                  case "right-bottom":
+                                    a.x = o.width - a.width, a.y = o.height - a.height;
+                                    break;
+
+                                  case "cb":
+                                  case "center-bottom":
+                                    a.x = Math.floor((o.width - a.width) / 2), a.y = o.height - a.height;
+                                    break;
+
+                                  case "lb":
+                                  case "left-bottom":
+                                    a.x = 0, a.y = o.height - a.height;
+                                    break;
+
+                                  case "lt":
+                                  case "left-top":
+                                    a.x = 0, a.y = 0;
+                                    break;
+
+                                  case "ct":
+                                  case "center-top":
+                                    a.x = Math.floor((o.width - a.width) / 2), a.y = 0;
+                                    break;
+
+                                  case "rt":
+                                  case "right-top":
+                                    a.x = o.width - a.width, a.y = 0;
+                                    break;
+
+                                  case "rc":
+                                  case "right-center":
+                                  case "right-middle":
+                                    a.x = o.width - a.width, a.y = Math.floor((o.height - a.height) / 2);
+                                    break;
+
+                                  case "lc":
+                                  case "left-center":
+                                  case "left-middle":
+                                    a.x = 0, a.y = Math.floor((o.height - a.height) / 2);
+                                    break;
+
+                                  case "cc":
+                                  case "center-center":
+                                  case "center-middle":
+                                  default:
+                                    a.x = Math.floor((o.width - a.width) / 2), a.y = Math.floor((o.height - a.height) / 2);
+                                }
+                                a.x = Math.max(a.x, 0), a.y = Math.max(a.y, 0);
+                            } else r = Math.min(s.width / o.width, s.height / o.height), r > 1 && !s.fit && (r = 1);
+                            this.exec("Image", "resize", a, r, s);
+                        } catch (c) {
+                            o.trigger("error", c.code);
+                        }
+                    },
+                    downsize: function(t) {
+                        var i, n = {
+                            width: this.width,
+                            height: this.height,
+                            type: this.type || "image/jpeg",
+                            quality: 90,
+                            crop: !1,
+                            fit: !1,
+                            preserveHeaders: !0,
+                            resample: "default"
+                        };
+                        i = "object" == typeof t ? e.extend(n, t) : e.extend(n, {
+                            width: arguments[0],
+                            height: arguments[1],
+                            crop: arguments[2],
+                            preserveHeaders: arguments[3]
+                        }), this.resize(i);
+                    },
+                    crop: function(e, t, i) {
+                        this.downsize(e, t, !0, i);
+                    },
+                    getAsCanvas: function() {
+                        if (!u.can("create_canvas")) throw new i.RuntimeError(i.RuntimeError.NOT_SUPPORTED_ERR);
+                        return this.exec("Image", "getAsCanvas");
+                    },
+                    getAsBlob: function(e, t) {
+                        if (!this.size) throw new i.DOMException(i.DOMException.INVALID_STATE_ERR);
+                        return this.exec("Image", "getAsBlob", e || "image/jpeg", t || 90);
+                    },
+                    getAsDataURL: function(e, t) {
+                        if (!this.size) throw new i.DOMException(i.DOMException.INVALID_STATE_ERR);
+                        return this.exec("Image", "getAsDataURL", e || "image/jpeg", t || 90);
+                    },
+                    getAsBinaryString: function(e, t) {
+                        var i = this.getAsDataURL(e, t);
+                        return m.atob(i.substring(i.indexOf("base64,") + 7));
+                    },
+                    embed: function(n, r) {
+                        function o(t, r) {
+                            var o = this;
+                            if (u.can("create_canvas")) {
+                                var l = o.getAsCanvas();
+                                if (l) return n.appendChild(l), l = null, o.destroy(), c.trigger("embedded"), void 0;
+                            }
+                            var d = o.getAsDataURL(t, r);
+                            if (!d) throw new i.ImageError(i.ImageError.WRONG_FORMAT);
+                            if (u.can("use_data_uri_of", d.length)) n.innerHTML = '<img src="' + d + '" width="' + o.width + '" height="' + o.height + '" alt="" />', 
+                            o.destroy(), c.trigger("embedded"); else {
+                                var h = new s();
+                                h.bind("TransportingComplete", function() {
+                                    a = c.connectRuntime(this.result.ruid), c.bind("Embedded", function() {
+                                        e.extend(a.getShimContainer().style, {
+                                            top: "0px",
+                                            left: "0px",
+                                            width: o.width + "px",
+                                            height: o.height + "px"
+                                        }), a = null;
+                                    }, 999), a.exec.call(c, "ImageView", "display", this.result.uid, width, height), 
+                                    o.destroy();
+                                }), h.transport(m.atob(d.substring(d.indexOf("base64,") + 7)), t, {
+                                    required_caps: {
+                                        display_media: !0
+                                    },
+                                    runtime_order: "flash,silverlight",
+                                    container: n
+                                });
+                            }
+                        }
+                        var a, c = this, l = e.extend({
+                            width: this.width,
+                            height: this.height,
+                            type: this.type || "image/jpeg",
+                            quality: 90,
+                            fit: !0,
+                            resample: "nearest"
+                        }, r);
+                        try {
+                            if (!(n = t.get(n))) throw new i.DOMException(i.DOMException.INVALID_NODE_TYPE_ERR);
+                            if (!this.size) throw new i.DOMException(i.DOMException.INVALID_STATE_ERR);
+                            this.width > h.MAX_RESIZE_WIDTH || this.height > h.MAX_RESIZE_HEIGHT;
+                            var d = new h();
+                            return d.bind("Resize", function() {
+                                o.call(this, l.type, l.quality);
+                            }), d.bind("Load", function() {
+                                this.downsize(l);
+                            }), this.meta.thumb && this.meta.thumb.width >= l.width && this.meta.thumb.height >= l.height ? d.load(this.meta.thumb.data) : d.clone(this, !1), 
+                            d;
+                        } catch (f) {
+                            this.trigger("error", f.code);
+                        }
+                    },
+                    destroy: function() {
+                        this.ruid && (this.getRuntime().exec.call(this, "Image", "destroy"), this.disconnectRuntime()), 
+                        this.meta && this.meta.thumb && this.meta.thumb.data.destroy(), this.unbindAll();
+                    }
+                }), this.handleEventProps(f), this.bind("Load Resize", function() {
+                    return n.call(this);
+                }, 999);
+            }
+            var f = [ "progress", "load", "error", "resize", "embedded" ];
+            return h.MAX_RESIZE_WIDTH = 8192, h.MAX_RESIZE_HEIGHT = 8192, h.prototype = c.instance, 
+            h;
+        }), n("moxie/runtime/html5/Runtime", [ "moxie/core/utils/Basic", "moxie/core/Exceptions", "moxie/runtime/Runtime", "moxie/core/utils/Env" ], function(e, t, i, n) {
+            function o(t) {
+                var o = this, u = i.capTest, c = i.capTrue, l = e.extend({
+                    access_binary: u(window.FileReader || window.File && window.File.getAsDataURL),
+                    access_image_binary: function() {
+                        return o.can("access_binary") && !!s.Image;
+                    },
+                    display_media: u((n.can("create_canvas") || n.can("use_data_uri_over32kb")) && r("moxie/image/Image")),
+                    do_cors: u(window.XMLHttpRequest && "withCredentials" in new XMLHttpRequest()),
+                    drag_and_drop: u(function() {
+                        var e = document.createElement("div");
+                        return ("draggable" in e || "ondragstart" in e && "ondrop" in e) && ("IE" !== n.browser || n.verComp(n.version, 9, ">"));
+                    }()),
+                    filter_by_extension: u(function() {
+                        return !("Chrome" === n.browser && n.verComp(n.version, 28, "<") || "IE" === n.browser && n.verComp(n.version, 10, "<") || "Safari" === n.browser && n.verComp(n.version, 7, "<") || "Firefox" === n.browser && n.verComp(n.version, 37, "<"));
+                    }()),
+                    return_response_headers: c,
+                    return_response_type: function(e) {
+                        return "json" === e && window.JSON ? !0 : n.can("return_response_type", e);
+                    },
+                    return_status_code: c,
+                    report_upload_progress: u(window.XMLHttpRequest && new XMLHttpRequest().upload),
+                    resize_image: function() {
+                        return o.can("access_binary") && n.can("create_canvas");
+                    },
+                    select_file: function() {
+                        return n.can("use_fileinput") && window.File;
+                    },
+                    select_folder: function() {
+                        return o.can("select_file") && ("Chrome" === n.browser && n.verComp(n.version, 21, ">=") || "Firefox" === n.browser && n.verComp(n.version, 42, ">="));
+                    },
+                    select_multiple: function() {
+                        return !(!o.can("select_file") || "Safari" === n.browser && "Windows" === n.os || "iOS" === n.os && n.verComp(n.osVersion, "7.0.0", ">") && n.verComp(n.osVersion, "8.0.0", "<"));
+                    },
+                    send_binary_string: u(window.XMLHttpRequest && (new XMLHttpRequest().sendAsBinary || window.Uint8Array && window.ArrayBuffer)),
+                    send_custom_headers: u(window.XMLHttpRequest),
+                    send_multipart: function() {
+                        return !!(window.XMLHttpRequest && new XMLHttpRequest().upload && window.FormData) || o.can("send_binary_string");
+                    },
+                    slice_blob: u(window.File && (File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice)),
+                    stream_upload: function() {
+                        return o.can("slice_blob") && o.can("send_multipart");
+                    },
+                    summon_file_dialog: function() {
+                        return o.can("select_file") && !("Firefox" === n.browser && n.verComp(n.version, 4, "<") || "Opera" === n.browser && n.verComp(n.version, 12, "<") || "IE" === n.browser && n.verComp(n.version, 10, "<"));
+                    },
+                    upload_filesize: c,
+                    use_http_method: c
+                }, arguments[2]);
+                i.call(this, t, arguments[1] || a, l), e.extend(this, {
+                    init: function() {
+                        this.trigger("Init");
+                    },
+                    destroy: function(e) {
+                        return function() {
+                            e.call(o), e = o = null;
+                        };
+                    }(this.destroy)
+                }), e.extend(this.getShim(), s);
+            }
+            var a = "html5", s = {};
+            return i.addConstructor(a, o), s;
+        }), n("moxie/runtime/html5/file/Blob", [ "moxie/runtime/html5/Runtime", "moxie/file/Blob" ], function(e, t) {
+            function i() {
+                function e(e, t, i) {
+                    var n;
+                    if (!window.File.prototype.slice) return (n = window.File.prototype.webkitSlice || window.File.prototype.mozSlice) ? n.call(e, t, i) : null;
+                    try {
+                        return e.slice(), e.slice(t, i);
+                    } catch (r) {
+                        return e.slice(t, i - t);
+                    }
+                }
+                this.slice = function() {
+                    return new t(this.getRuntime().uid, e.apply(this, arguments));
+                }, this.destroy = function() {
+                    this.getRuntime().getShim().removeInstance(this.uid);
+                };
+            }
+            return e.Blob = i;
+        }), n("moxie/core/utils/Events", [ "moxie/core/utils/Basic" ], function(e) {
+            function t() {
+                this.returnValue = !1;
+            }
+            function i() {
+                this.cancelBubble = !0;
+            }
+            var n = {}, r = "moxie_" + e.guid(), o = function(o, a, s, u) {
+                var c, l;
+                a = a.toLowerCase(), o.addEventListener ? (c = s, o.addEventListener(a, c, !1)) : o.attachEvent && (c = function() {
+                    var e = window.event;
+                    e.target || (e.target = e.srcElement), e.preventDefault = t, e.stopPropagation = i, 
+                    s(e);
+                }, o.attachEvent("on" + a, c)), o[r] || (o[r] = e.guid()), n.hasOwnProperty(o[r]) || (n[o[r]] = {}), 
+                l = n[o[r]], l.hasOwnProperty(a) || (l[a] = []), l[a].push({
+                    func: c,
+                    orig: s,
+                    key: u
+                });
+            }, a = function(t, i, o) {
+                var a, s;
+                if (i = i.toLowerCase(), t[r] && n[t[r]] && n[t[r]][i]) {
+                    a = n[t[r]][i];
+                    for (var u = a.length - 1; u >= 0 && (a[u].orig !== o && a[u].key !== o || (t.removeEventListener ? t.removeEventListener(i, a[u].func, !1) : t.detachEvent && t.detachEvent("on" + i, a[u].func), 
+                    a[u].orig = null, a[u].func = null, a.splice(u, 1), o === s)); u--) ;
+                    if (a.length || delete n[t[r]][i], e.isEmptyObj(n[t[r]])) {
+                        delete n[t[r]];
+                        try {
+                            delete t[r];
+                        } catch (c) {
+                            t[r] = s;
+                        }
+                    }
+                }
+            }, s = function(t, i) {
+                t && t[r] && e.each(n[t[r]], function(e, n) {
+                    a(t, n, i);
+                });
+            };
+            return {
+                addEvent: o,
+                removeEvent: a,
+                removeAllEvents: s
+            };
+        }), n("moxie/runtime/html5/file/FileInput", [ "moxie/runtime/html5/Runtime", "moxie/file/File", "moxie/core/utils/Basic", "moxie/core/utils/Dom", "moxie/core/utils/Events", "moxie/core/utils/Mime", "moxie/core/utils/Env" ], function(e, t, i, n, r, o, a) {
+            function s() {
+                var e, s;
+                i.extend(this, {
+                    init: function(u) {
+                        var c, l, d, m, h, f, p = this, g = p.getRuntime();
+                        e = u, d = o.extList2mimes(e.accept, g.can("filter_by_extension")), l = g.getShimContainer(), 
+                        l.innerHTML = '<input id="' + g.uid + '" type="file" style="font-size:999px;opacity:0;"' + (e.multiple && g.can("select_multiple") ? "multiple" : "") + (e.directory && g.can("select_folder") ? "webkitdirectory directory" : "") + (d ? ' accept="' + d.join(",") + '"' : "") + " />", 
+                        c = n.get(g.uid), i.extend(c.style, {
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%"
+                        }), m = n.get(e.browse_button), s = n.getStyle(m, "z-index") || "auto", g.can("summon_file_dialog") && ("static" === n.getStyle(m, "position") && (m.style.position = "relative"), 
+                        r.addEvent(m, "click", function(e) {
+                            var t = n.get(g.uid);
+                            t && !t.disabled && t.click(), e.preventDefault();
+                        }, p.uid), p.bind("Refresh", function() {
+                            h = parseInt(s, 10) || 1, n.get(e.browse_button).style.zIndex = h, this.getRuntime().getShimContainer().style.zIndex = h - 1;
+                        })), f = g.can("summon_file_dialog") ? m : l, r.addEvent(f, "mouseover", function() {
+                            p.trigger("mouseenter");
+                        }, p.uid), r.addEvent(f, "mouseout", function() {
+                            p.trigger("mouseleave");
+                        }, p.uid), r.addEvent(f, "mousedown", function() {
+                            p.trigger("mousedown");
+                        }, p.uid), r.addEvent(n.get(e.container), "mouseup", function() {
+                            p.trigger("mouseup");
+                        }, p.uid), (g.can("summon_file_dialog") ? c : m).setAttribute("tabindex", -1), c.onchange = function x() {
+                            if (p.files = [], i.each(this.files, function(i) {
+                                var n = "";
+                                return e.directory && "." == i.name ? !0 : (i.webkitRelativePath && (n = "/" + i.webkitRelativePath.replace(/^\//, "")), 
+                                i = new t(g.uid, i), i.relativePath = n, p.files.push(i), void 0);
+                            }), "IE" !== a.browser && "IEMobile" !== a.browser) this.value = ""; else {
+                                var n = this.cloneNode(!0);
+                                this.parentNode.replaceChild(n, this), n.onchange = x;
+                            }
+                            p.files.length && p.trigger("change");
+                        }, p.trigger({
+                            type: "ready",
+                            async: !0
+                        }), l = null;
+                    },
+                    setOption: function(e, t) {
+                        var i = this.getRuntime(), r = n.get(i.uid);
+                        switch (e) {
+                          case "accept":
+                            if (t) {
+                                var a = t.mimes || o.extList2mimes(t, i.can("filter_by_extension"));
+                                r.setAttribute("accept", a.join(","));
+                            } else r.removeAttribute("accept");
+                            break;
+
+                          case "directory":
+                            t && i.can("select_folder") ? (r.setAttribute("directory", ""), r.setAttribute("webkitdirectory", "")) : (r.removeAttribute("directory"), 
+                            r.removeAttribute("webkitdirectory"));
+                            break;
+
+                          case "multiple":
+                            t && i.can("select_multiple") ? r.setAttribute("multiple", "") : r.removeAttribute("multiple");
+                        }
+                    },
+                    disable: function(e) {
+                        var t, i = this.getRuntime();
+                        (t = n.get(i.uid)) && (t.disabled = !!e);
+                    },
+                    destroy: function() {
+                        var t = this.getRuntime(), i = t.getShim(), o = t.getShimContainer(), a = e && n.get(e.container), u = e && n.get(e.browse_button);
+                        a && r.removeAllEvents(a, this.uid), u && (r.removeAllEvents(u, this.uid), u.style.zIndex = s), 
+                        o && (r.removeAllEvents(o, this.uid), o.innerHTML = ""), i.removeInstance(this.uid), 
+                        e = o = a = u = i = null;
+                    }
+                });
+            }
+            return e.FileInput = s;
+        }), n("moxie/runtime/html5/file/FileDrop", [ "moxie/runtime/html5/Runtime", "moxie/file/File", "moxie/core/utils/Basic", "moxie/core/utils/Dom", "moxie/core/utils/Events", "moxie/core/utils/Mime" ], function(e, t, i, n, r, o) {
+            function a() {
+                function e(e) {
+                    if (!e.dataTransfer || !e.dataTransfer.types) return !1;
+                    var t = i.toArray(e.dataTransfer.types || []);
+                    return -1 !== i.inArray("Files", t) || -1 !== i.inArray("public.file-url", t) || -1 !== i.inArray("application/x-moz-file", t);
+                }
+                function a(e, i) {
+                    if (u(e)) {
+                        var n = new t(f, e);
+                        n.relativePath = i || "", p.push(n);
+                    }
+                }
+                function s(e) {
+                    for (var t = [], n = 0; n < e.length; n++) [].push.apply(t, e[n].extensions.split(/\s*,\s*/));
+                    return -1 === i.inArray("*", t) ? t : [];
+                }
+                function u(e) {
+                    if (!g.length) return !0;
+                    var t = o.getFileExtension(e.name);
+                    return !t || -1 !== i.inArray(t, g);
+                }
+                function c(e, t) {
+                    var n = [];
+                    i.each(e, function(e) {
+                        var t = e.webkitGetAsEntry();
+                        t && (t.isFile ? a(e.getAsFile(), t.fullPath) : n.push(t));
+                    }), n.length ? l(n, t) : t();
+                }
+                function l(e, t) {
+                    var n = [];
+                    i.each(e, function(e) {
+                        n.push(function(t) {
+                            d(e, t);
+                        });
+                    }), i.inSeries(n, function() {
+                        t();
+                    });
+                }
+                function d(e, t) {
+                    e.isFile ? e.file(function(i) {
+                        a(i, e.fullPath), t();
+                    }, function() {
+                        t();
+                    }) : e.isDirectory ? m(e, t) : t();
+                }
+                function m(e, t) {
+                    function i(e) {
+                        r.readEntries(function(t) {
+                            t.length ? ([].push.apply(n, t), i(e)) : e();
+                        }, e);
+                    }
+                    var n = [], r = e.createReader();
+                    i(function() {
+                        l(n, t);
+                    });
+                }
+                var h, f, p = [], g = [];
+                i.extend(this, {
+                    init: function(t) {
+                        var n, o = this;
+                        h = t, f = o.ruid, g = s(h.accept), n = h.container, r.addEvent(n, "dragover", function(t) {
+                            e(t) && (t.preventDefault(), t.dataTransfer.dropEffect = "copy");
+                        }, o.uid), r.addEvent(n, "drop", function(t) {
+                            e(t) && (t.preventDefault(), p = [], t.dataTransfer.items && t.dataTransfer.items[0].webkitGetAsEntry ? c(t.dataTransfer.items, function() {
+                                o.files = p, o.trigger("drop");
+                            }) : (i.each(t.dataTransfer.files, function(e) {
+                                a(e);
+                            }), o.files = p, o.trigger("drop")));
+                        }, o.uid), r.addEvent(n, "dragenter", function() {
+                            o.trigger("dragenter");
+                        }, o.uid), r.addEvent(n, "dragleave", function() {
+                            o.trigger("dragleave");
+                        }, o.uid);
+                    },
+                    destroy: function() {
+                        r.removeAllEvents(h && n.get(h.container), this.uid), f = p = g = h = null, this.getRuntime().getShim().removeInstance(this.uid);
+                    }
+                });
+            }
+            return e.FileDrop = a;
+        }), n("moxie/runtime/html5/file/FileReader", [ "moxie/runtime/html5/Runtime", "moxie/core/utils/Encode", "moxie/core/utils/Basic" ], function(e, t, i) {
+            function n() {
+                function e(e) {
+                    return t.atob(e.substring(e.indexOf("base64,") + 7));
+                }
+                var n, r = !1;
+                i.extend(this, {
+                    read: function(t, o) {
+                        var a = this;
+                        a.result = "", n = new window.FileReader(), n.addEventListener("progress", function(e) {
+                            a.trigger(e);
+                        }), n.addEventListener("load", function(t) {
+                            a.result = r ? e(n.result) : n.result, a.trigger(t);
+                        }), n.addEventListener("error", function(e) {
+                            a.trigger(e, n.error);
+                        }), n.addEventListener("loadend", function(e) {
+                            n = null, a.trigger(e);
+                        }), "function" === i.typeOf(n[t]) ? (r = !1, n[t](o.getSource())) : "readAsBinaryString" === t && (r = !0, 
+                        n.readAsDataURL(o.getSource()));
+                    },
+                    abort: function() {
+                        n && n.abort();
+                    },
+                    destroy: function() {
+                        n = null, this.getRuntime().getShim().removeInstance(this.uid);
+                    }
+                });
+            }
+            return e.FileReader = n;
+        }), n("moxie/runtime/html5/xhr/XMLHttpRequest", [ "moxie/runtime/html5/Runtime", "moxie/core/utils/Basic", "moxie/core/utils/Mime", "moxie/core/utils/Url", "moxie/file/File", "moxie/file/Blob", "moxie/xhr/FormData", "moxie/core/Exceptions", "moxie/core/utils/Env" ], function(e, t, i, n, r, o, a, s, u) {
+            function c() {
+                function e(e, t) {
+                    var i, n, r = this;
+                    i = t.getBlob().getSource(), n = new window.FileReader(), n.onload = function() {
+                        t.append(t.getBlobName(), new o(null, {
+                            type: i.type,
+                            data: n.result
+                        })), f.send.call(r, e, t);
+                    }, n.readAsBinaryString(i);
+                }
+                function c() {
+                    return !window.XMLHttpRequest || "IE" === u.browser && u.verComp(u.version, 8, "<") ? function() {
+                        for (var e = [ "Msxml2.XMLHTTP.6.0", "Microsoft.XMLHTTP" ], t = 0; t < e.length; t++) try {
+                            return new ActiveXObject(e[t]);
+                        } catch (i) {}
+                    }() : new window.XMLHttpRequest();
+                }
+                function l(e) {
+                    var t = e.responseXML, i = e.responseText;
+                    return "IE" === u.browser && i && t && !t.documentElement && /[^\/]+\/[^\+]+\+xml/.test(e.getResponseHeader("Content-Type")) && (t = new window.ActiveXObject("Microsoft.XMLDOM"), 
+                    t.async = !1, t.validateOnParse = !1, t.loadXML(i)), t && ("IE" === u.browser && 0 !== t.parseError || !t.documentElement || "parsererror" === t.documentElement.tagName) ? null : t;
+                }
+                function d(e) {
+                    var t = "----moxieboundary" + new Date().getTime(), i = "--", n = "\r\n", r = "", a = this.getRuntime();
+                    if (!a.can("send_binary_string")) throw new s.RuntimeError(s.RuntimeError.NOT_SUPPORTED_ERR);
+                    return m.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + t), 
+                    e.each(function(e, a) {
+                        r += e instanceof o ? i + t + n + 'Content-Disposition: form-data; name="' + a + '"; filename="' + unescape(encodeURIComponent(e.name || "blob")) + '"' + n + "Content-Type: " + (e.type || "application/octet-stream") + n + n + e.getSource() + n : i + t + n + 'Content-Disposition: form-data; name="' + a + '"' + n + n + unescape(encodeURIComponent(e)) + n;
+                    }), r += i + t + i + n;
+                }
+                var m, h, f = this;
+                t.extend(this, {
+                    send: function(i, r) {
+                        var s = this, l = "Mozilla" === u.browser && u.verComp(u.version, 4, ">=") && u.verComp(u.version, 7, "<"), f = "Android Browser" === u.browser, p = !1;
+                        if (h = i.url.replace(/^.+?\/([\w\-\.]+)$/, "$1").toLowerCase(), m = c(), m.open(i.method, i.url, i.async, i.user, i.password), 
+                        r instanceof o) r.isDetached() && (p = !0), r = r.getSource(); else if (r instanceof a) {
+                            if (r.hasBlob()) if (r.getBlob().isDetached()) r = d.call(s, r), p = !0; else if ((l || f) && "blob" === t.typeOf(r.getBlob().getSource()) && window.FileReader) return e.call(s, i, r), 
+                            void 0;
+                            if (r instanceof a) {
+                                var g = new window.FormData();
+                                r.each(function(e, t) {
+                                    e instanceof o ? g.append(t, e.getSource()) : g.append(t, e);
+                                }), r = g;
+                            }
+                        }
+                        m.upload ? (i.withCredentials && (m.withCredentials = !0), m.addEventListener("load", function(e) {
+                            s.trigger(e);
+                        }), m.addEventListener("error", function(e) {
+                            s.trigger(e);
+                        }), m.addEventListener("progress", function(e) {
+                            s.trigger(e);
+                        }), m.upload.addEventListener("progress", function(e) {
+                            s.trigger({
+                                type: "UploadProgress",
+                                loaded: e.loaded,
+                                total: e.total
+                            });
+                        })) : m.onreadystatechange = function() {
+                            switch (m.readyState) {
+                              case 1:
+                                break;
+
+                              case 2:
+                                break;
+
+                              case 3:
+                                var e, t;
+                                try {
+                                    n.hasSameOrigin(i.url) && (e = m.getResponseHeader("Content-Length") || 0), m.responseText && (t = m.responseText.length);
+                                } catch (r) {
+                                    e = t = 0;
+                                }
+                                s.trigger({
+                                    type: "progress",
+                                    lengthComputable: !!e,
+                                    total: parseInt(e, 10),
+                                    loaded: t
+                                });
+                                break;
+
+                              case 4:
+                                m.onreadystatechange = function() {};
+                                try {
+                                    if (m.status >= 200 && m.status < 400) {
+                                        s.trigger("load");
+                                        break;
+                                    }
+                                } catch (r) {}
+                                s.trigger("error");
+                            }
+                        }, t.isEmptyObj(i.headers) || t.each(i.headers, function(e, t) {
+                            m.setRequestHeader(t, e);
+                        }), "" !== i.responseType && "responseType" in m && (m.responseType = "json" !== i.responseType || u.can("return_response_type", "json") ? i.responseType : "text"), 
+                        p ? m.sendAsBinary ? m.sendAsBinary(r) : function() {
+                            for (var e = new Uint8Array(r.length), t = 0; t < r.length; t++) e[t] = 255 & r.charCodeAt(t);
+                            m.send(e.buffer);
+                        }() : m.send(r), s.trigger("loadstart");
+                    },
+                    getStatus: function() {
+                        try {
+                            if (m) return m.status;
+                        } catch (e) {}
+                        return 0;
+                    },
+                    getResponse: function(e) {
+                        var t = this.getRuntime();
+                        try {
+                            switch (e) {
+                              case "blob":
+                                var n = new r(t.uid, m.response), o = m.getResponseHeader("Content-Disposition");
+                                if (o) {
+                                    var a = o.match(/filename=([\'\"'])([^\1]+)\1/);
+                                    a && (h = a[2]);
+                                }
+                                return n.name = h, n.type || (n.type = i.getFileMime(h)), n;
+
+                              case "json":
+                                return u.can("return_response_type", "json") ? m.response : 200 === m.status && window.JSON ? JSON.parse(m.responseText) : null;
+
+                              case "document":
+                                return l(m);
+
+                              default:
+                                return "" !== m.responseText ? m.responseText : null;
+                            }
+                        } catch (s) {
+                            return null;
+                        }
+                    },
+                    getAllResponseHeaders: function() {
+                        try {
+                            return m.getAllResponseHeaders();
+                        } catch (e) {}
+                        return "";
+                    },
+                    abort: function() {
+                        m && m.abort();
+                    },
+                    destroy: function() {
+                        f = h = null, this.getRuntime().getShim().removeInstance(this.uid);
+                    }
+                });
+            }
+            return e.XMLHttpRequest = c;
+        }), n("moxie/runtime/html5/utils/BinaryReader", [ "moxie/core/utils/Basic" ], function(e) {
+            function t(e) {
+                e instanceof ArrayBuffer ? i.apply(this, arguments) : n.apply(this, arguments);
+            }
+            function i(t) {
+                var i = new DataView(t);
+                e.extend(this, {
+                    readByteAt: function(e) {
+                        return i.getUint8(e);
+                    },
+                    writeByteAt: function(e, t) {
+                        i.setUint8(e, t);
+                    },
+                    SEGMENT: function(e, n, r) {
+                        switch (arguments.length) {
+                          case 2:
+                            return t.slice(e, e + n);
+
+                          case 1:
+                            return t.slice(e);
+
+                          case 3:
+                            if (null === r && (r = new ArrayBuffer()), r instanceof ArrayBuffer) {
+                                var o = new Uint8Array(this.length() - n + r.byteLength);
+                                e > 0 && o.set(new Uint8Array(t.slice(0, e)), 0), o.set(new Uint8Array(r), e), o.set(new Uint8Array(t.slice(e + n)), e + r.byteLength), 
+                                this.clear(), t = o.buffer, i = new DataView(t);
+                                break;
+                            }
+
+                          default:
+                            return t;
+                        }
+                    },
+                    length: function() {
+                        return t ? t.byteLength : 0;
+                    },
+                    clear: function() {
+                        i = t = null;
+                    }
+                });
+            }
+            function n(t) {
+                function i(e, i, n) {
+                    n = 3 === arguments.length ? n : t.length - i - 1, t = t.substr(0, i) + e + t.substr(n + i);
+                }
+                e.extend(this, {
+                    readByteAt: function(e) {
+                        return t.charCodeAt(e);
+                    },
+                    writeByteAt: function(e, t) {
+                        i(String.fromCharCode(t), e, 1);
+                    },
+                    SEGMENT: function(e, n, r) {
+                        switch (arguments.length) {
+                          case 1:
+                            return t.substr(e);
+
+                          case 2:
+                            return t.substr(e, n);
+
+                          case 3:
+                            i(null !== r ? r : "", e, n);
+                            break;
+
+                          default:
+                            return t;
+                        }
+                    },
+                    length: function() {
+                        return t ? t.length : 0;
+                    },
+                    clear: function() {
+                        t = null;
+                    }
+                });
+            }
+            return e.extend(t.prototype, {
+                littleEndian: !1,
+                read: function(e, t) {
+                    var i, n, r;
+                    if (e + t > this.length()) throw new Error("You are trying to read outside the source boundaries.");
+                    for (n = this.littleEndian ? 0 : -8 * (t - 1), r = 0, i = 0; t > r; r++) i |= this.readByteAt(e + r) << Math.abs(n + 8 * r);
+                    return i;
+                },
+                write: function(e, t, i) {
+                    var n, r;
+                    if (e > this.length()) throw new Error("You are trying to write outside the source boundaries.");
+                    for (n = this.littleEndian ? 0 : -8 * (i - 1), r = 0; i > r; r++) this.writeByteAt(e + r, 255 & t >> Math.abs(n + 8 * r));
+                },
+                BYTE: function(e) {
+                    return this.read(e, 1);
+                },
+                SHORT: function(e) {
+                    return this.read(e, 2);
+                },
+                LONG: function(e) {
+                    return this.read(e, 4);
+                },
+                SLONG: function(e) {
+                    var t = this.read(e, 4);
+                    return t > 2147483647 ? t - 4294967296 : t;
+                },
+                CHAR: function(e) {
+                    return String.fromCharCode(this.read(e, 1));
+                },
+                STRING: function(e, t) {
+                    return this.asArray("CHAR", e, t).join("");
+                },
+                asArray: function(e, t, i) {
+                    for (var n = [], r = 0; i > r; r++) n[r] = this[e](t + r);
+                    return n;
+                }
+            }), t;
+        }), n("moxie/runtime/html5/image/JPEGHeaders", [ "moxie/runtime/html5/utils/BinaryReader", "moxie/core/Exceptions" ], function(e, t) {
+            return function i(n) {
+                var r, o, a, s = [], u = 0;
+                if (r = new e(n), 65496 !== r.SHORT(0)) throw r.clear(), new t.ImageError(t.ImageError.WRONG_FORMAT);
+                for (o = 2; o <= r.length(); ) if (a = r.SHORT(o), a >= 65488 && 65495 >= a) o += 2; else {
+                    if (65498 === a || 65497 === a) break;
+                    u = r.SHORT(o + 2) + 2, a >= 65505 && 65519 >= a && s.push({
+                        hex: a,
+                        name: "APP" + (15 & a),
+                        start: o,
+                        length: u,
+                        segment: r.SEGMENT(o, u)
+                    }), o += u;
+                }
+                return r.clear(), {
+                    headers: s,
+                    restore: function(t) {
+                        var i, n, r;
+                        for (r = new e(t), o = 65504 == r.SHORT(2) ? 4 + r.SHORT(4) : 2, n = 0, i = s.length; i > n; n++) r.SEGMENT(o, 0, s[n].segment), 
+                        o += s[n].length;
+                        return t = r.SEGMENT(), r.clear(), t;
+                    },
+                    strip: function(t) {
+                        var n, r, o, a;
+                        for (o = new i(t), r = o.headers, o.purge(), n = new e(t), a = r.length; a--; ) n.SEGMENT(r[a].start, r[a].length, "");
+                        return t = n.SEGMENT(), n.clear(), t;
+                    },
+                    get: function(e) {
+                        for (var t = [], i = 0, n = s.length; n > i; i++) s[i].name === e.toUpperCase() && t.push(s[i].segment);
+                        return t;
+                    },
+                    set: function(e, t) {
+                        var i, n, r, o = [];
+                        for ("string" == typeof t ? o.push(t) : o = t, i = n = 0, r = s.length; r > i && (s[i].name === e.toUpperCase() && (s[i].segment = o[n], 
+                        s[i].length = o[n].length, n++), !(n >= o.length)); i++) ;
+                    },
+                    purge: function() {
+                        this.headers = s = [];
+                    }
+                };
+            };
+        }), n("moxie/runtime/html5/image/ExifParser", [ "moxie/core/utils/Basic", "moxie/runtime/html5/utils/BinaryReader", "moxie/core/Exceptions" ], function(e, i, n) {
+            function r(o) {
+                function a(i, r) {
+                    var o, a, s, u, c, m, h, f, p = this, g = [], x = {}, v = {
+                        1: "BYTE",
+                        7: "UNDEFINED",
+                        2: "ASCII",
+                        3: "SHORT",
+                        4: "LONG",
+                        5: "RATIONAL",
+                        9: "SLONG",
+                        10: "SRATIONAL"
+                    }, w = {
+                        BYTE: 1,
+                        UNDEFINED: 1,
+                        ASCII: 1,
+                        SHORT: 2,
+                        LONG: 4,
+                        RATIONAL: 8,
+                        SLONG: 4,
+                        SRATIONAL: 8
+                    };
+                    for (o = p.SHORT(i), a = 0; o > a; a++) if (g = [], h = i + 2 + 12 * a, s = r[p.SHORT(h)], 
+                    s !== t) {
+                        if (u = v[p.SHORT(h += 2)], c = p.LONG(h += 2), m = w[u], !m) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
+                        if (h += 4, m * c > 4 && (h = p.LONG(h) + d.tiffHeader), h + m * c >= this.length()) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
+                        "ASCII" !== u ? (g = p.asArray(u, h, c), f = 1 == c ? g[0] : g, x[s] = l.hasOwnProperty(s) && "object" != typeof f ? l[s][f] : f) : x[s] = e.trim(p.STRING(h, c).replace(/\0$/, ""));
+                    }
+                    return x;
+                }
+                function s(e, t, i) {
+                    var n, r, o, a = 0;
+                    if ("string" == typeof t) {
+                        var s = c[e.toLowerCase()];
+                        for (var u in s) if (s[u] === t) {
+                            t = u;
+                            break;
+                        }
+                    }
+                    n = d[e.toLowerCase() + "IFD"], r = this.SHORT(n);
+                    for (var l = 0; r > l; l++) if (o = n + 12 * l + 2, this.SHORT(o) == t) {
+                        a = o + 8;
+                        break;
+                    }
+                    if (!a) return !1;
+                    try {
+                        this.write(a, i, 4);
+                    } catch (m) {
+                        return !1;
+                    }
+                    return !0;
+                }
+                var u, c, l, d, m, h;
+                if (i.call(this, o), c = {
+                    tiff: {
+                        274: "Orientation",
+                        270: "ImageDescription",
+                        271: "Make",
+                        272: "Model",
+                        305: "Software",
+                        34665: "ExifIFDPointer",
+                        34853: "GPSInfoIFDPointer"
+                    },
+                    exif: {
+                        36864: "ExifVersion",
+                        40961: "ColorSpace",
+                        40962: "PixelXDimension",
+                        40963: "PixelYDimension",
+                        36867: "DateTimeOriginal",
+                        33434: "ExposureTime",
+                        33437: "FNumber",
+                        34855: "ISOSpeedRatings",
+                        37377: "ShutterSpeedValue",
+                        37378: "ApertureValue",
+                        37383: "MeteringMode",
+                        37384: "LightSource",
+                        37385: "Flash",
+                        37386: "FocalLength",
+                        41986: "ExposureMode",
+                        41987: "WhiteBalance",
+                        41990: "SceneCaptureType",
+                        41988: "DigitalZoomRatio",
+                        41992: "Contrast",
+                        41993: "Saturation",
+                        41994: "Sharpness"
+                    },
+                    gps: {
+                        0: "GPSVersionID",
+                        1: "GPSLatitudeRef",
+                        2: "GPSLatitude",
+                        3: "GPSLongitudeRef",
+                        4: "GPSLongitude"
+                    },
+                    thumb: {
+                        513: "JPEGInterchangeFormat",
+                        514: "JPEGInterchangeFormatLength"
+                    }
+                }, l = {
+                    ColorSpace: {
+                        1: "sRGB",
+                        0: "Uncalibrated"
+                    },
+                    MeteringMode: {
+                        0: "Unknown",
+                        1: "Average",
+                        2: "CenterWeightedAverage",
+                        3: "Spot",
+                        4: "MultiSpot",
+                        5: "Pattern",
+                        6: "Partial",
+                        255: "Other"
+                    },
+                    LightSource: {
+                        1: "Daylight",
+                        2: "Fliorescent",
+                        3: "Tungsten",
+                        4: "Flash",
+                        9: "Fine weather",
+                        10: "Cloudy weather",
+                        11: "Shade",
+                        12: "Daylight fluorescent (D 5700 - 7100K)",
+                        13: "Day white fluorescent (N 4600 -5400K)",
+                        14: "Cool white fluorescent (W 3900 - 4500K)",
+                        15: "White fluorescent (WW 3200 - 3700K)",
+                        17: "Standard light A",
+                        18: "Standard light B",
+                        19: "Standard light C",
+                        20: "D55",
+                        21: "D65",
+                        22: "D75",
+                        23: "D50",
+                        24: "ISO studio tungsten",
+                        255: "Other"
+                    },
+                    Flash: {
+                        0: "Flash did not fire",
+                        1: "Flash fired",
+                        5: "Strobe return light not detected",
+                        7: "Strobe return light detected",
+                        9: "Flash fired, compulsory flash mode",
+                        13: "Flash fired, compulsory flash mode, return light not detected",
+                        15: "Flash fired, compulsory flash mode, return light detected",
+                        16: "Flash did not fire, compulsory flash mode",
+                        24: "Flash did not fire, auto mode",
+                        25: "Flash fired, auto mode",
+                        29: "Flash fired, auto mode, return light not detected",
+                        31: "Flash fired, auto mode, return light detected",
+                        32: "No flash function",
+                        65: "Flash fired, red-eye reduction mode",
+                        69: "Flash fired, red-eye reduction mode, return light not detected",
+                        71: "Flash fired, red-eye reduction mode, return light detected",
+                        73: "Flash fired, compulsory flash mode, red-eye reduction mode",
+                        77: "Flash fired, compulsory flash mode, red-eye reduction mode, return light not detected",
+                        79: "Flash fired, compulsory flash mode, red-eye reduction mode, return light detected",
+                        89: "Flash fired, auto mode, red-eye reduction mode",
+                        93: "Flash fired, auto mode, return light not detected, red-eye reduction mode",
+                        95: "Flash fired, auto mode, return light detected, red-eye reduction mode"
+                    },
+                    ExposureMode: {
+                        0: "Auto exposure",
+                        1: "Manual exposure",
+                        2: "Auto bracket"
+                    },
+                    WhiteBalance: {
+                        0: "Auto white balance",
+                        1: "Manual white balance"
+                    },
+                    SceneCaptureType: {
+                        0: "Standard",
+                        1: "Landscape",
+                        2: "Portrait",
+                        3: "Night scene"
+                    },
+                    Contrast: {
+                        0: "Normal",
+                        1: "Soft",
+                        2: "Hard"
+                    },
+                    Saturation: {
+                        0: "Normal",
+                        1: "Low saturation",
+                        2: "High saturation"
+                    },
+                    Sharpness: {
+                        0: "Normal",
+                        1: "Soft",
+                        2: "Hard"
+                    },
+                    GPSLatitudeRef: {
+                        N: "North latitude",
+                        S: "South latitude"
+                    },
+                    GPSLongitudeRef: {
+                        E: "East longitude",
+                        W: "West longitude"
+                    }
+                }, d = {
+                    tiffHeader: 10
+                }, m = d.tiffHeader, u = {
+                    clear: this.clear
+                }, e.extend(this, {
+                    read: function() {
+                        try {
+                            return r.prototype.read.apply(this, arguments);
+                        } catch (e) {
+                            throw new n.ImageError(n.ImageError.INVALID_META_ERR);
+                        }
+                    },
+                    write: function() {
+                        try {
+                            return r.prototype.write.apply(this, arguments);
+                        } catch (e) {
+                            throw new n.ImageError(n.ImageError.INVALID_META_ERR);
+                        }
+                    },
+                    UNDEFINED: function() {
+                        return this.BYTE.apply(this, arguments);
+                    },
+                    RATIONAL: function(e) {
+                        return this.LONG(e) / this.LONG(e + 4);
+                    },
+                    SRATIONAL: function(e) {
+                        return this.SLONG(e) / this.SLONG(e + 4);
+                    },
+                    ASCII: function(e) {
+                        return this.CHAR(e);
+                    },
+                    TIFF: function() {
+                        return h || null;
+                    },
+                    EXIF: function() {
+                        var t = null;
+                        if (d.exifIFD) {
+                            try {
+                                t = a.call(this, d.exifIFD, c.exif);
+                            } catch (i) {
+                                return null;
+                            }
+                            if (t.ExifVersion && "array" === e.typeOf(t.ExifVersion)) {
+                                for (var n = 0, r = ""; n < t.ExifVersion.length; n++) r += String.fromCharCode(t.ExifVersion[n]);
+                                t.ExifVersion = r;
+                            }
+                        }
+                        return t;
+                    },
+                    GPS: function() {
+                        var t = null;
+                        if (d.gpsIFD) {
+                            try {
+                                t = a.call(this, d.gpsIFD, c.gps);
+                            } catch (i) {
+                                return null;
+                            }
+                            t.GPSVersionID && "array" === e.typeOf(t.GPSVersionID) && (t.GPSVersionID = t.GPSVersionID.join("."));
+                        }
+                        return t;
+                    },
+                    thumb: function() {
+                        if (d.IFD1) try {
+                            var e = a.call(this, d.IFD1, c.thumb);
+                            if ("JPEGInterchangeFormat" in e) return this.SEGMENT(d.tiffHeader + e.JPEGInterchangeFormat, e.JPEGInterchangeFormatLength);
+                        } catch (t) {}
+                        return null;
+                    },
+                    setExif: function(e, t) {
+                        return "PixelXDimension" !== e && "PixelYDimension" !== e ? !1 : s.call(this, "exif", e, t);
+                    },
+                    clear: function() {
+                        u.clear(), o = c = l = h = d = u = null;
+                    }
+                }), 65505 !== this.SHORT(0) || "EXIF\0" !== this.STRING(4, 5).toUpperCase()) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
+                if (this.littleEndian = 18761 == this.SHORT(m), 42 !== this.SHORT(m += 2)) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
+                d.IFD0 = d.tiffHeader + this.LONG(m += 2), h = a.call(this, d.IFD0, c.tiff), "ExifIFDPointer" in h && (d.exifIFD = d.tiffHeader + h.ExifIFDPointer, 
+                delete h.ExifIFDPointer), "GPSInfoIFDPointer" in h && (d.gpsIFD = d.tiffHeader + h.GPSInfoIFDPointer, 
+                delete h.GPSInfoIFDPointer), e.isEmptyObj(h) && (h = null);
+                var f = this.LONG(d.IFD0 + 12 * this.SHORT(d.IFD0) + 2);
+                f && (d.IFD1 = d.tiffHeader + f);
+            }
+            return r.prototype = i.prototype, r;
+        }), n("moxie/runtime/html5/image/JPEG", [ "moxie/core/utils/Basic", "moxie/core/Exceptions", "moxie/runtime/html5/image/JPEGHeaders", "moxie/runtime/html5/utils/BinaryReader", "moxie/runtime/html5/image/ExifParser" ], function(e, t, i, n, r) {
+            function o(o) {
+                function a(e) {
+                    var t, i, n = 0;
+                    for (e || (e = c); n <= e.length(); ) {
+                        if (t = e.SHORT(n += 2), t >= 65472 && 65475 >= t) return n += 5, {
+                            height: e.SHORT(n),
+                            width: e.SHORT(n += 2)
+                        };
+                        i = e.SHORT(n += 2), n += i - 2;
+                    }
+                    return null;
+                }
+                function s() {
+                    var e, t, i = d.thumb();
+                    return i && (e = new n(i), t = a(e), e.clear(), t) ? (t.data = i, t) : null;
+                }
+                function u() {
+                    d && l && c && (d.clear(), l.purge(), c.clear(), m = l = d = c = null);
+                }
+                var c, l, d, m;
+                if (c = new n(o), 65496 !== c.SHORT(0)) throw new t.ImageError(t.ImageError.WRONG_FORMAT);
+                l = new i(o);
+                try {
+                    d = new r(l.get("app1")[0]);
+                } catch (h) {}
+                m = a.call(this), e.extend(this, {
+                    type: "image/jpeg",
+                    size: c.length(),
+                    width: m && m.width || 0,
+                    height: m && m.height || 0,
+                    setExif: function(t, i) {
+                        return d ? ("object" === e.typeOf(t) ? e.each(t, function(e, t) {
+                            d.setExif(t, e);
+                        }) : d.setExif(t, i), l.set("app1", d.SEGMENT()), void 0) : !1;
+                    },
+                    writeHeaders: function() {
+                        return arguments.length ? l.restore(arguments[0]) : l.restore(o);
+                    },
+                    stripHeaders: function(e) {
+                        return l.strip(e);
+                    },
+                    purge: function() {
+                        u.call(this);
+                    }
+                }), d && (this.meta = {
+                    tiff: d.TIFF(),
+                    exif: d.EXIF(),
+                    gps: d.GPS(),
+                    thumb: s()
+                });
+            }
+            return o;
+        }), n("moxie/runtime/html5/image/PNG", [ "moxie/core/Exceptions", "moxie/core/utils/Basic", "moxie/runtime/html5/utils/BinaryReader" ], function(e, t, i) {
+            function n(n) {
+                function r() {
+                    var e, t;
+                    return e = a.call(this, 8), "IHDR" == e.type ? (t = e.start, {
+                        width: s.LONG(t),
+                        height: s.LONG(t += 4)
+                    }) : null;
+                }
+                function o() {
+                    s && (s.clear(), n = l = u = c = s = null);
+                }
+                function a(e) {
+                    var t, i, n, r;
+                    return t = s.LONG(e), i = s.STRING(e += 4, 4), n = e += 4, r = s.LONG(e + t), {
+                        length: t,
+                        type: i,
+                        start: n,
+                        CRC: r
+                    };
+                }
+                var s, u, c, l;
+                s = new i(n), function() {
+                    var t = 0, i = 0, n = [ 35152, 20039, 3338, 6666 ];
+                    for (i = 0; i < n.length; i++, t += 2) if (n[i] != s.SHORT(t)) throw new e.ImageError(e.ImageError.WRONG_FORMAT);
+                }(), l = r.call(this), t.extend(this, {
+                    type: "image/png",
+                    size: s.length(),
+                    width: l.width,
+                    height: l.height,
+                    purge: function() {
+                        o.call(this);
+                    }
+                }), o.call(this);
+            }
+            return n;
+        }), n("moxie/runtime/html5/image/ImageInfo", [ "moxie/core/utils/Basic", "moxie/core/Exceptions", "moxie/runtime/html5/image/JPEG", "moxie/runtime/html5/image/PNG" ], function(e, t, i, n) {
+            return function(r) {
+                var o, a = [ i, n ];
+                o = function() {
+                    for (var e = 0; e < a.length; e++) try {
+                        return new a[e](r);
+                    } catch (i) {}
+                    throw new t.ImageError(t.ImageError.WRONG_FORMAT);
+                }(), e.extend(this, {
+                    type: "",
+                    size: 0,
+                    width: 0,
+                    height: 0,
+                    setExif: function() {},
+                    writeHeaders: function(e) {
+                        return e;
+                    },
+                    stripHeaders: function(e) {
+                        return e;
+                    },
+                    purge: function() {
+                        r = null;
+                    }
+                }), e.extend(this, o), this.purge = function() {
+                    o.purge(), o = null;
+                };
+            };
+        }), n("moxie/runtime/html5/image/ResizerCanvas", [], function() {
+            function e(i, n, r) {
+                var o = i.width > i.height ? "width" : "height", a = Math.round(i[o] * n), s = !1;
+                "nearest" !== r && (.5 > n || n > 2) && (n = .5 > n ? .5 : 2, s = !0);
+                var u = t(i, n);
+                return s ? e(u, a / u[o], r) : u;
+            }
+            function t(e, t) {
+                var i = e.width, n = e.height, r = Math.round(i * t), o = Math.round(n * t), a = document.createElement("canvas");
+                return a.width = r, a.height = o, a.getContext("2d").drawImage(e, 0, 0, i, n, 0, 0, r, o), 
+                e = null, a;
+            }
+            return {
+                scale: e
+            };
+        }), n("moxie/runtime/html5/image/Image", [ "moxie/runtime/html5/Runtime", "moxie/core/utils/Basic", "moxie/core/Exceptions", "moxie/core/utils/Encode", "moxie/file/Blob", "moxie/file/File", "moxie/runtime/html5/image/ImageInfo", "moxie/runtime/html5/image/ResizerCanvas", "moxie/core/utils/Mime", "moxie/core/utils/Env" ], function(e, t, i, n, r, o, a, s, u) {
+            function c() {
+                function e() {
+                    if (!v && !g) throw new i.ImageError(i.DOMException.INVALID_STATE_ERR);
+                    return v || g;
+                }
+                function c() {
+                    var t = e();
+                    return "canvas" == t.nodeName.toLowerCase() ? t : (v = document.createElement("canvas"), 
+                    v.width = t.width, v.height = t.height, v.getContext("2d").drawImage(t, 0, 0), v);
+                }
+                function l(e) {
+                    return n.atob(e.substring(e.indexOf("base64,") + 7));
+                }
+                function d(e, t) {
+                    return "data:" + (t || "") + ";base64," + n.btoa(e);
+                }
+                function m(e) {
+                    var t = this;
+                    g = new Image(), g.onerror = function() {
+                        p.call(this), t.trigger("error", i.ImageError.WRONG_FORMAT);
+                    }, g.onload = function() {
+                        t.trigger("load");
+                    }, g.src = "data:" == e.substr(0, 5) ? e : d(e, y.type);
+                }
+                function h(e, t) {
+                    var n, r = this;
+                    return window.FileReader ? (n = new FileReader(), n.onload = function() {
+                        t.call(r, this.result);
+                    }, n.onerror = function() {
+                        r.trigger("error", i.ImageError.WRONG_FORMAT);
+                    }, n.readAsDataURL(e), void 0) : t.call(this, e.getAsDataURL());
+                }
+                function f(e, i) {
+                    var n = Math.PI / 180, r = document.createElement("canvas"), o = r.getContext("2d"), a = e.width, s = e.height;
+                    switch (t.inArray(i, [ 5, 6, 7, 8 ]) > -1 ? (r.width = s, r.height = a) : (r.width = a, 
+                    r.height = s), i) {
+                      case 2:
+                        o.translate(a, 0), o.scale(-1, 1);
+                        break;
+
+                      case 3:
+                        o.translate(a, s), o.rotate(180 * n);
+                        break;
+
+                      case 4:
+                        o.translate(0, s), o.scale(1, -1);
+                        break;
+
+                      case 5:
+                        o.rotate(90 * n), o.scale(1, -1);
+                        break;
+
+                      case 6:
+                        o.rotate(90 * n), o.translate(0, -s);
+                        break;
+
+                      case 7:
+                        o.rotate(90 * n), o.translate(a, -s), o.scale(-1, 1);
+                        break;
+
+                      case 8:
+                        o.rotate(-90 * n), o.translate(-a, 0);
+                    }
+                    return o.drawImage(e, 0, 0, a, s), r;
+                }
+                function p() {
+                    x && (x.purge(), x = null), w = g = v = y = null, b = !1;
+                }
+                var g, x, v, w, y, E = this, b = !1, _ = !0;
+                t.extend(this, {
+                    loadFromBlob: function(e) {
+                        var t = this.getRuntime(), n = arguments.length > 1 ? arguments[1] : !0;
+                        if (!t.can("access_binary")) throw new i.RuntimeError(i.RuntimeError.NOT_SUPPORTED_ERR);
+                        return y = e, e.isDetached() ? (w = e.getSource(), m.call(this, w), void 0) : (h.call(this, e.getSource(), function(e) {
+                            n && (w = l(e)), m.call(this, e);
+                        }), void 0);
+                    },
+                    loadFromImage: function(e, t) {
+                        this.meta = e.meta, y = new o(null, {
+                            name: e.name,
+                            size: e.size,
+                            type: e.type
+                        }), m.call(this, t ? w = e.getAsBinaryString() : e.getAsDataURL());
+                    },
+                    getInfo: function() {
+                        var t, i = this.getRuntime();
+                        return !x && w && i.can("access_image_binary") && (x = new a(w)), t = {
+                            width: e().width || 0,
+                            height: e().height || 0,
+                            type: y.type || u.getFileMime(y.name),
+                            size: w && w.length || y.size || 0,
+                            name: y.name || "",
+                            meta: null
+                        }, _ && (t.meta = x && x.meta || this.meta || {}, !t.meta || !t.meta.thumb || t.meta.thumb.data instanceof r || (t.meta.thumb.data = new r(null, {
+                            type: "image/jpeg",
+                            data: t.meta.thumb.data
+                        }))), t;
+                    },
+                    resize: function(t, i, n) {
+                        var r = document.createElement("canvas");
+                        if (r.width = t.width, r.height = t.height, r.getContext("2d").drawImage(e(), t.x, t.y, t.width, t.height, 0, 0, r.width, r.height), 
+                        v = s.scale(r, i), _ = n.preserveHeaders, !_) {
+                            var o = this.meta && this.meta.tiff && this.meta.tiff.Orientation || 1;
+                            v = f(v, o);
+                        }
+                        this.width = v.width, this.height = v.height, b = !0, this.trigger("Resize");
+                    },
+                    getAsCanvas: function() {
+                        return v || (v = c()), v.id = this.uid + "_canvas", v;
+                    },
+                    getAsBlob: function(e, t) {
+                        return e !== this.type ? (b = !0, new o(null, {
+                            name: y.name || "",
+                            type: e,
+                            data: E.getAsDataURL(e, t)
+                        })) : new o(null, {
+                            name: y.name || "",
+                            type: e,
+                            data: E.getAsBinaryString(e, t)
+                        });
+                    },
+                    getAsDataURL: function(e) {
+                        var t = arguments[1] || 90;
+                        if (!b) return g.src;
+                        if (c(), "image/jpeg" !== e) return v.toDataURL("image/png");
+                        try {
+                            return v.toDataURL("image/jpeg", t / 100);
+                        } catch (i) {
+                            return v.toDataURL("image/jpeg");
+                        }
+                    },
+                    getAsBinaryString: function(e, t) {
+                        if (!b) return w || (w = l(E.getAsDataURL(e, t))), w;
+                        if ("image/jpeg" !== e) w = l(E.getAsDataURL(e, t)); else {
+                            var i;
+                            t || (t = 90), c();
+                            try {
+                                i = v.toDataURL("image/jpeg", t / 100);
+                            } catch (n) {
+                                i = v.toDataURL("image/jpeg");
+                            }
+                            w = l(i), x && (w = x.stripHeaders(w), _ && (x.meta && x.meta.exif && x.setExif({
+                                PixelXDimension: this.width,
+                                PixelYDimension: this.height
+                            }), w = x.writeHeaders(w)), x.purge(), x = null);
+                        }
+                        return b = !1, w;
+                    },
+                    destroy: function() {
+                        E = null, p.call(this), this.getRuntime().getShim().removeInstance(this.uid);
+                    }
+                });
+            }
+            return e.Image = c;
+        }), n("moxie/runtime/flash/Runtime", [ "moxie/core/utils/Basic", "moxie/core/utils/Env", "moxie/core/utils/Dom", "moxie/core/Exceptions", "moxie/runtime/Runtime" ], function(e, t, i, n, o) {
+            function a() {
+                var e;
+                try {
+                    e = navigator.plugins["Shockwave Flash"], e = e.description;
+                } catch (t) {
+                    try {
+                        e = new ActiveXObject("ShockwaveFlash.ShockwaveFlash").GetVariable("$version");
+                    } catch (i) {
+                        e = "0.0";
+                    }
+                }
+                return e = e.match(/\d+/g), parseFloat(e[0] + "." + e[1]);
+            }
+            function s(e) {
+                var n = i.get(e);
+                n && "OBJECT" == n.nodeName && ("IE" === t.browser ? (n.style.display = "none", 
+                function r() {
+                    4 == n.readyState ? u(e) : setTimeout(r, 10);
+                }()) : n.parentNode.removeChild(n));
+            }
+            function u(e) {
+                var t = i.get(e);
+                if (t) {
+                    for (var n in t) "function" == typeof t[n] && (t[n] = null);
+                    t.parentNode.removeChild(t);
+                }
+            }
+            function c(u) {
+                var c, m = this;
+                u = e.extend({
+                    swf_url: t.swf_url
+                }, u), o.call(this, u, l, {
+                    access_binary: function(e) {
+                        return e && "browser" === m.mode;
+                    },
+                    access_image_binary: function(e) {
+                        return e && "browser" === m.mode;
+                    },
+                    display_media: o.capTest(r("moxie/image/Image")),
+                    do_cors: o.capTrue,
+                    drag_and_drop: !1,
+                    report_upload_progress: function() {
+                        return "client" === m.mode;
+                    },
+                    resize_image: o.capTrue,
+                    return_response_headers: !1,
+                    return_response_type: function(t) {
+                        return "json" === t && window.JSON ? !0 : !e.arrayDiff(t, [ "", "text", "document" ]) || "browser" === m.mode;
+                    },
+                    return_status_code: function(t) {
+                        return "browser" === m.mode || !e.arrayDiff(t, [ 200, 404 ]);
+                    },
+                    select_file: o.capTrue,
+                    select_multiple: o.capTrue,
+                    send_binary_string: function(e) {
+                        return e && "browser" === m.mode;
+                    },
+                    send_browser_cookies: function(e) {
+                        return e && "browser" === m.mode;
+                    },
+                    send_custom_headers: function(e) {
+                        return e && "browser" === m.mode;
+                    },
+                    send_multipart: o.capTrue,
+                    slice_blob: function(e) {
+                        return e && "browser" === m.mode;
+                    },
+                    stream_upload: function(e) {
+                        return e && "browser" === m.mode;
+                    },
+                    summon_file_dialog: !1,
+                    upload_filesize: function(t) {
+                        return e.parseSizeStr(t) <= 2097152 || "client" === m.mode;
+                    },
+                    use_http_method: function(t) {
+                        return !e.arrayDiff(t, [ "GET", "POST" ]);
+                    }
+                }, {
+                    access_binary: function(e) {
+                        return e ? "browser" : "client";
+                    },
+                    access_image_binary: function(e) {
+                        return e ? "browser" : "client";
+                    },
+                    report_upload_progress: function(e) {
+                        return e ? "browser" : "client";
+                    },
+                    return_response_type: function(t) {
+                        return e.arrayDiff(t, [ "", "text", "json", "document" ]) ? "browser" : [ "client", "browser" ];
+                    },
+                    return_status_code: function(t) {
+                        return e.arrayDiff(t, [ 200, 404 ]) ? "browser" : [ "client", "browser" ];
+                    },
+                    send_binary_string: function(e) {
+                        return e ? "browser" : "client";
+                    },
+                    send_browser_cookies: function(e) {
+                        return e ? "browser" : "client";
+                    },
+                    send_custom_headers: function(e) {
+                        return e ? "browser" : "client";
+                    },
+                    slice_blob: function(e) {
+                        return e ? "browser" : "client";
+                    },
+                    stream_upload: function(e) {
+                        return e ? "client" : "browser";
+                    },
+                    upload_filesize: function(t) {
+                        return e.parseSizeStr(t) >= 2097152 ? "client" : "browser";
+                    }
+                }, "client"), a() < 11.3 && (this.mode = !1), e.extend(this, {
+                    getShim: function() {
+                        return i.get(this.uid);
+                    },
+                    shimExec: function(e, t) {
+                        var i = [].slice.call(arguments, 2);
+                        return m.getShim().exec(this.uid, e, t, i);
+                    },
+                    init: function() {
+                        var i, r, a;
+                        a = this.getShimContainer(), e.extend(a.style, {
+                            position: "absolute",
+                            top: "-8px",
+                            left: "-8px",
+                            width: "9px",
+                            height: "9px",
+                            overflow: "hidden"
+                        }), i = '<object id="' + this.uid + '" type="application/x-shockwave-flash" data="' + u.swf_url + '" ', 
+                        "IE" === t.browser && (i += 'classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" '), 
+                        i += 'width="100%" height="100%" style="outline:0"><param name="movie" value="' + u.swf_url + '" />' + '<param name="flashvars" value="uid=' + escape(this.uid) + "&target=" + o.getGlobalEventTarget() + '" />' + '<param name="wmode" value="transparent" />' + '<param name="allowscriptaccess" value="always" />' + "</object>", 
+                        "IE" === t.browser ? (r = document.createElement("div"), a.appendChild(r), r.outerHTML = i, 
+                        r = a = null) : a.innerHTML = i, c = setTimeout(function() {
+                            m && !m.initialized && m.trigger("Error", new n.RuntimeError(n.RuntimeError.NOT_INIT_ERR));
+                        }, 5e3);
+                    },
+                    destroy: function(e) {
+                        return function() {
+                            s(m.uid), e.call(m), clearTimeout(c), u = c = e = m = null;
+                        };
+                    }(this.destroy)
+                }, d);
+            }
+            var l = "flash", d = {};
+            return o.addConstructor(l, c), d;
+        }), n("moxie/runtime/flash/file/Blob", [ "moxie/runtime/flash/Runtime", "moxie/file/Blob" ], function(e, t) {
+            var i = {
+                slice: function(e, i, n, r) {
+                    var o = this.getRuntime();
+                    return 0 > i ? i = Math.max(e.size + i, 0) : i > 0 && (i = Math.min(i, e.size)), 
+                    0 > n ? n = Math.max(e.size + n, 0) : n > 0 && (n = Math.min(n, e.size)), e = o.shimExec.call(this, "Blob", "slice", i, n, r || ""), 
+                    e && (e = new t(o.uid, e)), e;
+                }
+            };
+            return e.Blob = i;
+        }), n("moxie/runtime/flash/file/FileInput", [ "moxie/runtime/flash/Runtime", "moxie/file/File", "moxie/core/utils/Dom", "moxie/core/utils/Basic" ], function(e, t, i, n) {
+            var r = {
+                init: function(e) {
+                    var r = this, o = this.getRuntime(), a = i.get(e.browse_button);
+                    a && (a.setAttribute("tabindex", -1), a = null), this.bind("Change", function() {
+                        var e = o.shimExec.call(r, "FileInput", "getFiles");
+                        r.files = [], n.each(e, function(e) {
+                            r.files.push(new t(o.uid, e));
+                        });
+                    }, 999), this.getRuntime().shimExec.call(this, "FileInput", "init", {
+                        accept: e.accept,
+                        multiple: e.multiple
+                    }), this.trigger("ready");
+                }
+            };
+            return e.FileInput = r;
+        }), n("moxie/runtime/flash/file/FileReader", [ "moxie/runtime/flash/Runtime", "moxie/core/utils/Encode" ], function(e, t) {
+            function i(e, i) {
+                switch (i) {
+                  case "readAsText":
+                    return t.atob(e, "utf8");
+
+                  case "readAsBinaryString":
+                    return t.atob(e);
+
+                  case "readAsDataURL":
+                    return e;
+                }
+                return null;
+            }
+            var n = {
+                read: function(e, t) {
+                    var n = this;
+                    return n.result = "", "readAsDataURL" === e && (n.result = "data:" + (t.type || "") + ";base64,"), 
+                    n.bind("Progress", function(t, r) {
+                        r && (n.result += i(r, e));
+                    }, 999), n.getRuntime().shimExec.call(this, "FileReader", "readAsBase64", t.uid);
+                }
+            };
+            return e.FileReader = n;
+        }), n("moxie/runtime/flash/file/FileReaderSync", [ "moxie/runtime/flash/Runtime", "moxie/core/utils/Encode" ], function(e, t) {
+            function i(e, i) {
+                switch (i) {
+                  case "readAsText":
+                    return t.atob(e, "utf8");
+
+                  case "readAsBinaryString":
+                    return t.atob(e);
+
+                  case "readAsDataURL":
+                    return e;
+                }
+                return null;
+            }
+            var n = {
+                read: function(e, t) {
+                    var n, r = this.getRuntime();
+                    return (n = r.shimExec.call(this, "FileReaderSync", "readAsBase64", t.uid)) ? ("readAsDataURL" === e && (n = "data:" + (t.type || "") + ";base64," + n), 
+                    i(n, e, t.type)) : null;
+                }
+            };
+            return e.FileReaderSync = n;
+        }), n("moxie/runtime/flash/runtime/Transporter", [ "moxie/runtime/flash/Runtime", "moxie/file/Blob" ], function(e, t) {
+            var i = {
+                getAsBlob: function(e) {
+                    var i = this.getRuntime(), n = i.shimExec.call(this, "Transporter", "getAsBlob", e);
+                    return n ? new t(i.uid, n) : null;
+                }
+            };
+            return e.Transporter = i;
+        }), n("moxie/runtime/flash/xhr/XMLHttpRequest", [ "moxie/runtime/flash/Runtime", "moxie/core/utils/Basic", "moxie/file/Blob", "moxie/file/File", "moxie/file/FileReaderSync", "moxie/runtime/flash/file/FileReaderSync", "moxie/xhr/FormData", "moxie/runtime/Transporter", "moxie/runtime/flash/runtime/Transporter" ], function(e, t, i, n, r, o, a, s) {
+            var u = {
+                send: function(e, n) {
+                    function r() {
+                        e.transport = l.mode, l.shimExec.call(c, "XMLHttpRequest", "send", e, n);
+                    }
+                    function o(e, t) {
+                        l.shimExec.call(c, "XMLHttpRequest", "appendBlob", e, t.uid), n = null, r();
+                    }
+                    function u(e, t) {
+                        var i = new s();
+                        i.bind("TransportingComplete", function() {
+                            t(this.result);
+                        }), i.transport(e.getSource(), e.type, {
+                            ruid: l.uid
+                        });
+                    }
+                    var c = this, l = c.getRuntime();
+                    if (t.isEmptyObj(e.headers) || t.each(e.headers, function(e, t) {
+                        l.shimExec.call(c, "XMLHttpRequest", "setRequestHeader", t, e.toString());
+                    }), n instanceof a) {
+                        var d;
+                        if (n.each(function(e, t) {
+                            e instanceof i ? d = t : l.shimExec.call(c, "XMLHttpRequest", "append", t, e);
+                        }), n.hasBlob()) {
+                            var m = n.getBlob();
+                            m.isDetached() ? u(m, function(e) {
+                                m.destroy(), o(d, e);
+                            }) : o(d, m);
+                        } else n = null, r();
+                    } else n instanceof i ? n.isDetached() ? u(n, function(e) {
+                        n.destroy(), n = e.uid, r();
+                    }) : (n = n.uid, r()) : r();
+                },
+                getResponse: function(e) {
+                    var i, o, a = this.getRuntime();
+                    if (o = a.shimExec.call(this, "XMLHttpRequest", "getResponseAsBlob")) {
+                        if (o = new n(a.uid, o), "blob" === e) return o;
+                        try {
+                            if (i = new r(), ~t.inArray(e, [ "", "text" ])) return i.readAsText(o);
+                            if ("json" === e && window.JSON) return JSON.parse(i.readAsText(o));
+                        } finally {
+                            o.destroy();
+                        }
+                    }
+                    return null;
+                },
+                abort: function() {
+                    var e = this.getRuntime();
+                    e.shimExec.call(this, "XMLHttpRequest", "abort"), this.dispatchEvent("readystatechange"), 
+                    this.dispatchEvent("abort");
+                }
+            };
+            return e.XMLHttpRequest = u;
+        }), n("moxie/runtime/flash/image/Image", [ "moxie/runtime/flash/Runtime", "moxie/core/utils/Basic", "moxie/runtime/Transporter", "moxie/file/Blob", "moxie/file/FileReaderSync" ], function(e, t, i, n, r) {
+            var o = {
+                loadFromBlob: function(e) {
+                    function t(e) {
+                        r.shimExec.call(n, "Image", "loadFromBlob", e.uid), n = r = null;
+                    }
+                    var n = this, r = n.getRuntime();
+                    if (e.isDetached()) {
+                        var o = new i();
+                        o.bind("TransportingComplete", function() {
+                            t(o.result.getSource());
+                        }), o.transport(e.getSource(), e.type, {
+                            ruid: r.uid
+                        });
+                    } else t(e.getSource());
+                },
+                loadFromImage: function(e) {
+                    var t = this.getRuntime();
+                    return t.shimExec.call(this, "Image", "loadFromImage", e.uid);
+                },
+                getInfo: function() {
+                    var e = this.getRuntime(), t = e.shimExec.call(this, "Image", "getInfo");
+                    return t.meta && t.meta.thumb && t.meta.thumb.data && !(e.meta.thumb.data instanceof n) && (t.meta.thumb.data = new n(e.uid, t.meta.thumb.data)), 
+                    t;
+                },
+                getAsBlob: function(e, t) {
+                    var i = this.getRuntime(), r = i.shimExec.call(this, "Image", "getAsBlob", e, t);
+                    return r ? new n(i.uid, r) : null;
+                },
+                getAsDataURL: function() {
+                    var e, t = this.getRuntime(), i = t.Image.getAsBlob.apply(this, arguments);
+                    return i ? (e = new r(), e.readAsDataURL(i)) : null;
+                }
+            };
+            return e.Image = o;
+        }), n("moxie/runtime/silverlight/Runtime", [ "moxie/core/utils/Basic", "moxie/core/utils/Env", "moxie/core/utils/Dom", "moxie/core/Exceptions", "moxie/runtime/Runtime" ], function(e, t, i, n, o) {
+            function a(e) {
+                var t, i, n, r, o, a = !1, s = null, u = 0;
+                try {
+                    try {
+                        s = new ActiveXObject("AgControl.AgControl"), s.IsVersionSupported(e) && (a = !0), 
+                        s = null;
+                    } catch (c) {
+                        var l = navigator.plugins["Silverlight Plug-In"];
+                        if (l) {
+                            for (t = l.description, "1.0.30226.2" === t && (t = "2.0.30226.2"), i = t.split("."); i.length > 3; ) i.pop();
+                            for (;i.length < 4; ) i.push(0);
+                            for (n = e.split("."); n.length > 4; ) n.pop();
+                            do {
+                                r = parseInt(n[u], 10), o = parseInt(i[u], 10), u++;
+                            } while (u < n.length && r === o);
+                            o >= r && !isNaN(r) && (a = !0);
+                        }
+                    }
+                } catch (d) {
+                    a = !1;
+                }
+                return a;
+            }
+            function s(s) {
+                var l, d = this;
+                s = e.extend({
+                    xap_url: t.xap_url
+                }, s), o.call(this, s, u, {
+                    access_binary: o.capTrue,
+                    access_image_binary: o.capTrue,
+                    display_media: o.capTest(r("moxie/image/Image")),
+                    do_cors: o.capTrue,
+                    drag_and_drop: !1,
+                    report_upload_progress: o.capTrue,
+                    resize_image: o.capTrue,
+                    return_response_headers: function(e) {
+                        return e && "client" === d.mode;
+                    },
+                    return_response_type: function(e) {
+                        return "json" !== e ? !0 : !!window.JSON;
+                    },
+                    return_status_code: function(t) {
+                        return "client" === d.mode || !e.arrayDiff(t, [ 200, 404 ]);
+                    },
+                    select_file: o.capTrue,
+                    select_multiple: o.capTrue,
+                    send_binary_string: o.capTrue,
+                    send_browser_cookies: function(e) {
+                        return e && "browser" === d.mode;
+                    },
+                    send_custom_headers: function(e) {
+                        return e && "client" === d.mode;
+                    },
+                    send_multipart: o.capTrue,
+                    slice_blob: o.capTrue,
+                    stream_upload: !0,
+                    summon_file_dialog: !1,
+                    upload_filesize: o.capTrue,
+                    use_http_method: function(t) {
+                        return "client" === d.mode || !e.arrayDiff(t, [ "GET", "POST" ]);
+                    }
+                }, {
+                    return_response_headers: function(e) {
+                        return e ? "client" : "browser";
+                    },
+                    return_status_code: function(t) {
+                        return e.arrayDiff(t, [ 200, 404 ]) ? "client" : [ "client", "browser" ];
+                    },
+                    send_browser_cookies: function(e) {
+                        return e ? "browser" : "client";
+                    },
+                    send_custom_headers: function(e) {
+                        return e ? "client" : "browser";
+                    },
+                    use_http_method: function(t) {
+                        return e.arrayDiff(t, [ "GET", "POST" ]) ? "client" : [ "client", "browser" ];
+                    }
+                }), a("2.0.31005.0") && "Opera" !== t.browser || (this.mode = !1), e.extend(this, {
+                    getShim: function() {
+                        return i.get(this.uid).content.Moxie;
+                    },
+                    shimExec: function(e, t) {
+                        var i = [].slice.call(arguments, 2);
+                        return d.getShim().exec(this.uid, e, t, i);
+                    },
+                    init: function() {
+                        var e;
+                        e = this.getShimContainer(), e.innerHTML = '<object id="' + this.uid + '" data="data:application/x-silverlight," type="application/x-silverlight-2" width="100%" height="100%" style="outline:none;">' + '<param name="source" value="' + s.xap_url + '"/>' + '<param name="background" value="Transparent"/>' + '<param name="windowless" value="true"/>' + '<param name="enablehtmlaccess" value="true"/>' + '<param name="initParams" value="uid=' + this.uid + ",target=" + o.getGlobalEventTarget() + '"/>' + "</object>", 
+                        l = setTimeout(function() {
+                            d && !d.initialized && d.trigger("Error", new n.RuntimeError(n.RuntimeError.NOT_INIT_ERR));
+                        }, "Windows" !== t.OS ? 1e4 : 5e3);
+                    },
+                    destroy: function(e) {
+                        return function() {
+                            e.call(d), clearTimeout(l), s = l = e = d = null;
+                        };
+                    }(this.destroy)
+                }, c);
+            }
+            var u = "silverlight", c = {};
+            return o.addConstructor(u, s), c;
+        }), n("moxie/runtime/silverlight/file/Blob", [ "moxie/runtime/silverlight/Runtime", "moxie/core/utils/Basic", "moxie/runtime/flash/file/Blob" ], function(e, t, i) {
+            return e.Blob = t.extend({}, i);
+        }), n("moxie/runtime/silverlight/file/FileInput", [ "moxie/runtime/silverlight/Runtime", "moxie/file/File", "moxie/core/utils/Dom", "moxie/core/utils/Basic" ], function(e, t, i, n) {
+            function r(e) {
+                for (var t = "", i = 0; i < e.length; i++) t += ("" !== t ? "|" : "") + e[i].title + " | *." + e[i].extensions.replace(/,/g, ";*.");
+                return t;
+            }
+            var o = {
+                init: function(e) {
+                    var o = this, a = this.getRuntime(), s = i.get(e.browse_button);
+                    s && (s.setAttribute("tabindex", -1), s = null), this.bind("Change", function() {
+                        var e = a.shimExec.call(o, "FileInput", "getFiles");
+                        o.files = [], n.each(e, function(e) {
+                            o.files.push(new t(a.uid, e));
+                        });
+                    }, 999), a.shimExec.call(this, "FileInput", "init", r(e.accept), e.multiple), this.trigger("ready");
+                },
+                setOption: function(e, t) {
+                    "accept" == e && (t = r(t)), this.getRuntime().shimExec.call(this, "FileInput", "setOption", e, t);
+                }
+            };
+            return e.FileInput = o;
+        }), n("moxie/runtime/silverlight/file/FileDrop", [ "moxie/runtime/silverlight/Runtime", "moxie/core/utils/Dom", "moxie/core/utils/Events" ], function(e, t, i) {
+            var n = {
+                init: function() {
+                    var e, n = this, r = n.getRuntime();
+                    return e = r.getShimContainer(), i.addEvent(e, "dragover", function(e) {
+                        e.preventDefault(), e.stopPropagation(), e.dataTransfer.dropEffect = "copy";
+                    }, n.uid), i.addEvent(e, "dragenter", function(e) {
+                        e.preventDefault();
+                        var i = t.get(r.uid).dragEnter(e);
+                        i && e.stopPropagation();
+                    }, n.uid), i.addEvent(e, "drop", function(e) {
+                        e.preventDefault();
+                        var i = t.get(r.uid).dragDrop(e);
+                        i && e.stopPropagation();
+                    }, n.uid), r.shimExec.call(this, "FileDrop", "init");
+                }
+            };
+            return e.FileDrop = n;
+        }), n("moxie/runtime/silverlight/file/FileReader", [ "moxie/runtime/silverlight/Runtime", "moxie/core/utils/Basic", "moxie/runtime/flash/file/FileReader" ], function(e, t, i) {
+            return e.FileReader = t.extend({}, i);
+        }), n("moxie/runtime/silverlight/file/FileReaderSync", [ "moxie/runtime/silverlight/Runtime", "moxie/core/utils/Basic", "moxie/runtime/flash/file/FileReaderSync" ], function(e, t, i) {
+            return e.FileReaderSync = t.extend({}, i);
+        }), n("moxie/runtime/silverlight/runtime/Transporter", [ "moxie/runtime/silverlight/Runtime", "moxie/core/utils/Basic", "moxie/runtime/flash/runtime/Transporter" ], function(e, t, i) {
+            return e.Transporter = t.extend({}, i);
+        }), n("moxie/runtime/silverlight/xhr/XMLHttpRequest", [ "moxie/runtime/silverlight/Runtime", "moxie/core/utils/Basic", "moxie/runtime/flash/xhr/XMLHttpRequest", "moxie/runtime/silverlight/file/FileReaderSync", "moxie/runtime/silverlight/runtime/Transporter" ], function(e, t, i) {
+            return e.XMLHttpRequest = t.extend({}, i);
+        }), n("moxie/runtime/silverlight/image/Image", [ "moxie/runtime/silverlight/Runtime", "moxie/core/utils/Basic", "moxie/file/Blob", "moxie/runtime/flash/image/Image" ], function(e, t, i, n) {
+            return e.Image = t.extend({}, n, {
+                getInfo: function() {
+                    var e = this.getRuntime(), n = [ "tiff", "exif", "gps", "thumb" ], r = {
+                        meta: {}
+                    }, o = e.shimExec.call(this, "Image", "getInfo");
+                    return o.meta && (t.each(n, function(e) {
+                        var t, i, n, a, s = o.meta[e];
+                        if (s && s.keys) for (r.meta[e] = {}, i = 0, n = s.keys.length; n > i; i++) t = s.keys[i], 
+                        a = s[t], a && (/^(\d|[1-9]\d+)$/.test(a) ? a = parseInt(a, 10) : /^\d*\.\d+$/.test(a) && (a = parseFloat(a)), 
+                        r.meta[e][t] = a);
+                    }), r.meta && r.meta.thumb && r.meta.thumb.data && !(e.meta.thumb.data instanceof i) && (r.meta.thumb.data = new i(e.uid, r.meta.thumb.data))), 
+                    r.width = parseInt(o.width, 10), r.height = parseInt(o.height, 10), r.size = parseInt(o.size, 10), 
+                    r.type = o.type, r.name = o.name, r;
+                },
+                resize: function(e, t, i) {
+                    this.getRuntime().shimExec.call(this, "Image", "resize", e.x, e.y, e.width, e.height, t, i.preserveHeaders, i.resample);
+                }
+            });
+        }), n("moxie/runtime/html4/Runtime", [ "moxie/core/utils/Basic", "moxie/core/Exceptions", "moxie/runtime/Runtime", "moxie/core/utils/Env" ], function(e, t, i, n) {
+            function o(t) {
+                var o = this, u = i.capTest, c = i.capTrue;
+                i.call(this, t, a, {
+                    access_binary: u(window.FileReader || window.File && File.getAsDataURL),
+                    access_image_binary: !1,
+                    display_media: u((n.can("create_canvas") || n.can("use_data_uri_over32kb")) && r("moxie/image/Image")),
+                    do_cors: !1,
+                    drag_and_drop: !1,
+                    filter_by_extension: u(function() {
+                        return !("Chrome" === n.browser && n.verComp(n.version, 28, "<") || "IE" === n.browser && n.verComp(n.version, 10, "<") || "Safari" === n.browser && n.verComp(n.version, 7, "<") || "Firefox" === n.browser && n.verComp(n.version, 37, "<"));
+                    }()),
+                    resize_image: function() {
+                        return s.Image && o.can("access_binary") && n.can("create_canvas");
+                    },
+                    report_upload_progress: !1,
+                    return_response_headers: !1,
+                    return_response_type: function(t) {
+                        return "json" === t && window.JSON ? !0 : !!~e.inArray(t, [ "text", "document", "" ]);
+                    },
+                    return_status_code: function(t) {
+                        return !e.arrayDiff(t, [ 200, 404 ]);
+                    },
+                    select_file: function() {
+                        return n.can("use_fileinput");
+                    },
+                    select_multiple: !1,
+                    send_binary_string: !1,
+                    send_custom_headers: !1,
+                    send_multipart: !0,
+                    slice_blob: !1,
+                    stream_upload: function() {
+                        return o.can("select_file");
+                    },
+                    summon_file_dialog: function() {
+                        return o.can("select_file") && !("Firefox" === n.browser && n.verComp(n.version, 4, "<") || "Opera" === n.browser && n.verComp(n.version, 12, "<") || "IE" === n.browser && n.verComp(n.version, 10, "<"));
+                    },
+                    upload_filesize: c,
+                    use_http_method: function(t) {
+                        return !e.arrayDiff(t, [ "GET", "POST" ]);
+                    }
+                }), e.extend(this, {
+                    init: function() {
+                        this.trigger("Init");
+                    },
+                    destroy: function(e) {
+                        return function() {
+                            e.call(o), e = o = null;
+                        };
+                    }(this.destroy)
+                }), e.extend(this.getShim(), s);
+            }
+            var a = "html4", s = {};
+            return i.addConstructor(a, o), s;
+        }), n("moxie/runtime/html4/file/FileInput", [ "moxie/runtime/html4/Runtime", "moxie/file/File", "moxie/core/utils/Basic", "moxie/core/utils/Dom", "moxie/core/utils/Events", "moxie/core/utils/Mime", "moxie/core/utils/Env" ], function(e, t, i, n, r, o, a) {
+            function s() {
+                function e() {
+                    var o, c, d, m, h, f, p = this, g = p.getRuntime();
+                    f = i.guid("uid_"), o = g.getShimContainer(), s && (d = n.get(s + "_form"), d && (i.extend(d.style, {
+                        top: "100%"
+                    }), d.firstChild.setAttribute("tabindex", -1))), m = document.createElement("form"), 
+                    m.setAttribute("id", f + "_form"), m.setAttribute("method", "post"), m.setAttribute("enctype", "multipart/form-data"), 
+                    m.setAttribute("encoding", "multipart/form-data"), i.extend(m.style, {
+                        overflow: "hidden",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%"
+                    }), h = document.createElement("input"), h.setAttribute("id", f), h.setAttribute("type", "file"), 
+                    h.setAttribute("accept", l.join(",")), g.can("summon_file_dialog") && h.setAttribute("tabindex", -1), 
+                    i.extend(h.style, {
+                        fontSize: "999px",
+                        opacity: 0
+                    }), m.appendChild(h), o.appendChild(m), i.extend(h.style, {
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%"
+                    }), "IE" === a.browser && a.verComp(a.version, 10, "<") && i.extend(h.style, {
+                        filter: "progid:DXImageTransform.Microsoft.Alpha(opacity=0)"
+                    }), h.onchange = function() {
+                        var i;
+                        this.value && (i = this.files ? this.files[0] : {
+                            name: this.value
+                        }, i = new t(g.uid, i), this.onchange = function() {}, e.call(p), p.files = [ i ], 
+                        h.setAttribute("id", i.uid), m.setAttribute("id", i.uid + "_form"), p.trigger("change"), 
+                        h = m = null);
+                    }, g.can("summon_file_dialog") && (c = n.get(u.browse_button), r.removeEvent(c, "click", p.uid), 
+                    r.addEvent(c, "click", function(e) {
+                        h && !h.disabled && h.click(), e.preventDefault();
+                    }, p.uid)), s = f, o = d = c = null;
+                }
+                var s, u, c, l = [];
+                i.extend(this, {
+                    init: function(t) {
+                        var i, a = this, s = a.getRuntime();
+                        u = t, l = o.extList2mimes(t.accept, s.can("filter_by_extension")), i = s.getShimContainer(), 
+                        function() {
+                            var e, o, l;
+                            e = n.get(t.browse_button), c = n.getStyle(e, "z-index") || "auto", s.can("summon_file_dialog") ? ("static" === n.getStyle(e, "position") && (e.style.position = "relative"), 
+                            a.bind("Refresh", function() {
+                                o = parseInt(c, 10) || 1, n.get(u.browse_button).style.zIndex = o, this.getRuntime().getShimContainer().style.zIndex = o - 1;
+                            })) : e.setAttribute("tabindex", -1), l = s.can("summon_file_dialog") ? e : i, r.addEvent(l, "mouseover", function() {
+                                a.trigger("mouseenter");
+                            }, a.uid), r.addEvent(l, "mouseout", function() {
+                                a.trigger("mouseleave");
+                            }, a.uid), r.addEvent(l, "mousedown", function() {
+                                a.trigger("mousedown");
+                            }, a.uid), r.addEvent(n.get(t.container), "mouseup", function() {
+                                a.trigger("mouseup");
+                            }, a.uid), e = null;
+                        }(), e.call(this), i = null, a.trigger({
+                            type: "ready",
+                            async: !0
+                        });
+                    },
+                    setOption: function(e, t) {
+                        var i, r = this.getRuntime();
+                        "accept" == e && (l = t.mimes || o.extList2mimes(t, r.can("filter_by_extension"))), 
+                        i = n.get(s), i && i.setAttribute("accept", l.join(","));
+                    },
+                    disable: function(e) {
+                        var t;
+                        (t = n.get(s)) && (t.disabled = !!e);
+                    },
+                    destroy: function() {
+                        var e = this.getRuntime(), t = e.getShim(), i = e.getShimContainer(), o = u && n.get(u.container), a = u && n.get(u.browse_button);
+                        o && r.removeAllEvents(o, this.uid), a && (r.removeAllEvents(a, this.uid), a.style.zIndex = c), 
+                        i && (r.removeAllEvents(i, this.uid), i.innerHTML = ""), t.removeInstance(this.uid), 
+                        s = l = u = i = o = a = t = null;
+                    }
+                });
+            }
+            return e.FileInput = s;
+        }), n("moxie/runtime/html4/file/FileReader", [ "moxie/runtime/html4/Runtime", "moxie/runtime/html5/file/FileReader" ], function(e, t) {
+            return e.FileReader = t;
+        }), n("moxie/runtime/html4/xhr/XMLHttpRequest", [ "moxie/runtime/html4/Runtime", "moxie/core/utils/Basic", "moxie/core/utils/Dom", "moxie/core/utils/Url", "moxie/core/Exceptions", "moxie/core/utils/Events", "moxie/file/Blob", "moxie/xhr/FormData" ], function(e, t, i, n, r, o, a, s) {
+            function u() {
+                function e(e) {
+                    var t, n, r, a, s = this, u = !1;
+                    if (l) {
+                        if (t = l.id.replace(/_iframe$/, ""), n = i.get(t + "_form")) {
+                            for (r = n.getElementsByTagName("input"), a = r.length; a--; ) switch (r[a].getAttribute("type")) {
+                              case "hidden":
+                                r[a].parentNode.removeChild(r[a]);
+                                break;
+
+                              case "file":
+                                u = !0;
+                            }
+                            r = [], u || n.parentNode.removeChild(n), n = null;
+                        }
+                        setTimeout(function() {
+                            o.removeEvent(l, "load", s.uid), l.parentNode && l.parentNode.removeChild(l);
+                            var t = s.getRuntime().getShimContainer();
+                            t.children.length || t.parentNode.removeChild(t), t = l = null, e();
+                        }, 1);
+                    }
+                }
+                var u, c, l;
+                t.extend(this, {
+                    send: function(d, m) {
+                        function h() {
+                            var i = w.getShimContainer() || document.body, r = document.createElement("div");
+                            r.innerHTML = '<iframe id="' + f + '_iframe" name="' + f + '_iframe" src="javascript:&quot;&quot;" style="display:none"></iframe>', 
+                            l = r.firstChild, i.appendChild(l), o.addEvent(l, "load", function() {
+                                var i;
+                                try {
+                                    i = l.contentWindow.document || l.contentDocument || window.frames[l.id].document, 
+                                    /^4(0[0-9]|1[0-7]|2[2346])\s/.test(i.title) ? u = i.title.replace(/^(\d+).*$/, "$1") : (u = 200, 
+                                    c = t.trim(i.body.innerHTML), v.trigger({
+                                        type: "progress",
+                                        loaded: c.length,
+                                        total: c.length
+                                    }), x && v.trigger({
+                                        type: "uploadprogress",
+                                        loaded: x.size || 1025,
+                                        total: x.size || 1025
+                                    }));
+                                } catch (r) {
+                                    if (!n.hasSameOrigin(d.url)) return e.call(v, function() {
+                                        v.trigger("error");
+                                    }), void 0;
+                                    u = 404;
+                                }
+                                e.call(v, function() {
+                                    v.trigger("load");
+                                });
+                            }, v.uid);
+                        }
+                        var f, p, g, x, v = this, w = v.getRuntime();
+                        if (u = c = null, m instanceof s && m.hasBlob()) {
+                            if (x = m.getBlob(), f = x.uid, g = i.get(f), p = i.get(f + "_form"), !p) throw new r.DOMException(r.DOMException.NOT_FOUND_ERR);
+                        } else f = t.guid("uid_"), p = document.createElement("form"), p.setAttribute("id", f + "_form"), 
+                        p.setAttribute("method", d.method), p.setAttribute("enctype", "multipart/form-data"), 
+                        p.setAttribute("encoding", "multipart/form-data"), w.getShimContainer().appendChild(p);
+                        p.setAttribute("target", f + "_iframe"), m instanceof s && m.each(function(e, i) {
+                            if (e instanceof a) g && g.setAttribute("name", i); else {
+                                var n = document.createElement("input");
+                                t.extend(n, {
+                                    type: "hidden",
+                                    name: i,
+                                    value: e
+                                }), g ? p.insertBefore(n, g) : p.appendChild(n);
+                            }
+                        }), p.setAttribute("action", d.url), h(), p.submit(), v.trigger("loadstart");
+                    },
+                    getStatus: function() {
+                        return u;
+                    },
+                    getResponse: function(e) {
+                        if ("json" === e && "string" === t.typeOf(c) && window.JSON) try {
+                            return JSON.parse(c.replace(/^\s*<pre[^>]*>/, "").replace(/<\/pre>\s*$/, ""));
+                        } catch (i) {
+                            return null;
+                        }
+                        return c;
+                    },
+                    abort: function() {
+                        var t = this;
+                        l && l.contentWindow && (l.contentWindow.stop ? l.contentWindow.stop() : l.contentWindow.document.execCommand ? l.contentWindow.document.execCommand("Stop") : l.src = "about:blank"), 
+                        e.call(this, function() {
+                            t.dispatchEvent("abort");
+                        });
+                    },
+                    destroy: function() {
+                        this.getRuntime().getShim().removeInstance(this.uid);
+                    }
+                });
+            }
+            return e.XMLHttpRequest = u;
+        }), n("moxie/runtime/html4/image/Image", [ "moxie/runtime/html4/Runtime", "moxie/runtime/html5/image/Image" ], function(e, t) {
+            return e.Image = t;
+        }), a([ "moxie/core/utils/Basic", "moxie/core/utils/Encode", "moxie/core/utils/Env", "moxie/core/Exceptions", "moxie/core/utils/Dom", "moxie/core/EventTarget", "moxie/runtime/Runtime", "moxie/runtime/RuntimeClient", "moxie/file/Blob", "moxie/core/I18n", "moxie/core/utils/Mime", "moxie/file/FileInput", "moxie/file/File", "moxie/file/FileDrop", "moxie/file/FileReader", "moxie/core/utils/Url", "moxie/runtime/RuntimeTarget", "moxie/xhr/FormData", "moxie/xhr/XMLHttpRequest", "moxie/image/Image", "moxie/core/utils/Events", "moxie/runtime/html5/image/ResizerCanvas" ]);
+    }(this);
 });
 
-var Kor, indexOf = [].indexOf || function(item) {
+!function(e, t) {
+    var i = function() {
+        var e = {};
+        return t.apply(e, arguments), e.plupload;
+    };
+    "function" == typeof define && define.amd ? define("plupload", [ "./moxie" ], i) : "object" == typeof module && module.exports ? module.exports = i(require("./moxie")) : e.plupload = i(e.moxie);
+}(this || window, function(e) {
+    !function(e, t, i) {
+        function n(e) {
+            function t(e, t, i) {
+                var r = {
+                    chunks: "slice_blob",
+                    jpgresize: "send_binary_string",
+                    pngresize: "send_binary_string",
+                    progress: "report_upload_progress",
+                    multi_selection: "select_multiple",
+                    dragdrop: "drag_and_drop",
+                    drop_element: "drag_and_drop",
+                    headers: "send_custom_headers",
+                    urlstream_upload: "send_binary_string",
+                    canSendBinary: "send_binary",
+                    triggerDialog: "summon_file_dialog"
+                };
+                r[e] ? n[r[e]] = t : i || (n[e] = t);
+            }
+            var i = e.required_features, n = {};
+            return "string" == typeof i ? l.each(i.split(/\s*,\s*/), function(e) {
+                t(e, !0);
+            }) : "object" == typeof i ? l.each(i, function(e, i) {
+                t(i, e);
+            }) : i === !0 && (e.chunk_size && e.chunk_size > 0 && (n.slice_blob = !0), l.isEmptyObj(e.resize) && e.multipart !== !1 || (n.send_binary_string = !0), 
+            e.http_method && (n.use_http_method = e.http_method), l.each(e, function(e, i) {
+                t(i, !!e, !0);
+            })), n;
+        }
+        var r = window.setTimeout, s = {}, a = t.core.utils, o = t.runtime.Runtime, l = {
+            VERSION: "2.3.6",
+            STOPPED: 1,
+            STARTED: 2,
+            QUEUED: 1,
+            UPLOADING: 2,
+            FAILED: 4,
+            DONE: 5,
+            GENERIC_ERROR: -100,
+            HTTP_ERROR: -200,
+            IO_ERROR: -300,
+            SECURITY_ERROR: -400,
+            INIT_ERROR: -500,
+            FILE_SIZE_ERROR: -600,
+            FILE_EXTENSION_ERROR: -601,
+            FILE_DUPLICATE_ERROR: -602,
+            IMAGE_FORMAT_ERROR: -700,
+            MEMORY_ERROR: -701,
+            IMAGE_DIMENSIONS_ERROR: -702,
+            moxie: t,
+            mimeTypes: a.Mime.mimes,
+            ua: a.Env,
+            typeOf: a.Basic.typeOf,
+            extend: a.Basic.extend,
+            guid: a.Basic.guid,
+            getAll: function(e) {
+                var t, i = [];
+                "array" !== l.typeOf(e) && (e = [ e ]);
+                for (var n = e.length; n--; ) t = l.get(e[n]), t && i.push(t);
+                return i.length ? i : null;
+            },
+            get: a.Dom.get,
+            each: a.Basic.each,
+            getPos: a.Dom.getPos,
+            getSize: a.Dom.getSize,
+            xmlEncode: function(e) {
+                var t = {
+                    "<": "lt",
+                    ">": "gt",
+                    "&": "amp",
+                    '"': "quot",
+                    "'": "#39"
+                }, i = /[<>&\"\']/g;
+                return e ? ("" + e).replace(i, function(e) {
+                    return t[e] ? "&" + t[e] + ";" : e;
+                }) : e;
+            },
+            toArray: a.Basic.toArray,
+            inArray: a.Basic.inArray,
+            inSeries: a.Basic.inSeries,
+            addI18n: t.core.I18n.addI18n,
+            translate: t.core.I18n.translate,
+            sprintf: a.Basic.sprintf,
+            isEmptyObj: a.Basic.isEmptyObj,
+            hasClass: a.Dom.hasClass,
+            addClass: a.Dom.addClass,
+            removeClass: a.Dom.removeClass,
+            getStyle: a.Dom.getStyle,
+            addEvent: a.Events.addEvent,
+            removeEvent: a.Events.removeEvent,
+            removeAllEvents: a.Events.removeAllEvents,
+            cleanName: function(e) {
+                var t, i;
+                for (i = [ /[\300-\306]/g, "A", /[\340-\346]/g, "a", /\307/g, "C", /\347/g, "c", /[\310-\313]/g, "E", /[\350-\353]/g, "e", /[\314-\317]/g, "I", /[\354-\357]/g, "i", /\321/g, "N", /\361/g, "n", /[\322-\330]/g, "O", /[\362-\370]/g, "o", /[\331-\334]/g, "U", /[\371-\374]/g, "u" ], 
+                t = 0; t < i.length; t += 2) e = e.replace(i[t], i[t + 1]);
+                return e = e.replace(/\s+/g, "_"), e = e.replace(/[^a-z0-9_\-\.]+/gi, "");
+            },
+            buildUrl: function(e, t) {
+                var i = "";
+                return l.each(t, function(e, t) {
+                    i += (i ? "&" : "") + encodeURIComponent(t) + "=" + encodeURIComponent(e);
+                }), i && (e += (e.indexOf("?") > 0 ? "&" : "?") + i), e;
+            },
+            formatSize: function(e) {
+                function t(e, t) {
+                    return Math.round(e * Math.pow(10, t)) / Math.pow(10, t);
+                }
+                if (e === i || /\D/.test(e)) return l.translate("N/A");
+                var n = Math.pow(1024, 4);
+                return e > n ? t(e / n, 1) + " " + l.translate("tb") : e > (n /= 1024) ? t(e / n, 1) + " " + l.translate("gb") : e > (n /= 1024) ? t(e / n, 1) + " " + l.translate("mb") : e > 1024 ? Math.round(e / 1024) + " " + l.translate("kb") : e + " " + l.translate("b");
+            },
+            parseSize: a.Basic.parseSizeStr,
+            predictRuntime: function(e, t) {
+                var i, n;
+                return i = new l.Uploader(e), n = o.thatCan(i.getOption().required_features, t || e.runtimes), 
+                i.destroy(), n;
+            },
+            addFileFilter: function(e, t) {
+                s[e] = t;
+            }
+        };
+        l.addFileFilter("mime_types", function(e, t, i) {
+            e.length && !e.regexp.test(t.name) ? (this.trigger("Error", {
+                code: l.FILE_EXTENSION_ERROR,
+                message: l.translate("File extension error."),
+                file: t
+            }), i(!1)) : i(!0);
+        }), l.addFileFilter("max_file_size", function(e, t, i) {
+            var n;
+            e = l.parseSize(e), t.size !== n && e && t.size > e ? (this.trigger("Error", {
+                code: l.FILE_SIZE_ERROR,
+                message: l.translate("File size error."),
+                file: t
+            }), i(!1)) : i(!0);
+        }), l.addFileFilter("prevent_duplicates", function(e, t, i) {
+            if (e) for (var n = this.files.length; n--; ) if (t.name === this.files[n].name && t.size === this.files[n].size) return this.trigger("Error", {
+                code: l.FILE_DUPLICATE_ERROR,
+                message: l.translate("Duplicate file error."),
+                file: t
+            }), i(!1), void 0;
+            i(!0);
+        }), l.addFileFilter("prevent_empty", function(e, t, n) {
+            e && !t.size && t.size !== i ? (this.trigger("Error", {
+                code: l.FILE_SIZE_ERROR,
+                message: l.translate("File size error."),
+                file: t
+            }), n(!1)) : n(!0);
+        }), l.Uploader = function(e) {
+            function a() {
+                var e, t, i = 0;
+                if (this.state == l.STARTED) {
+                    for (t = 0; t < D.length; t++) e || D[t].status != l.QUEUED ? i++ : (e = D[t], this.trigger("BeforeUpload", e) && (e.status = l.UPLOADING, 
+                    this.trigger("UploadFile", e)));
+                    i == D.length && (this.state !== l.STOPPED && (this.state = l.STOPPED, this.trigger("StateChanged")), 
+                    this.trigger("UploadComplete", D));
+                }
+            }
+            function u(e) {
+                e.percent = e.size > 0 ? Math.ceil(100 * (e.loaded / e.size)) : 100, d();
+            }
+            function d() {
+                var e, t, n, r = 0;
+                for (I.reset(), e = 0; e < D.length; e++) t = D[e], t.size !== i ? (I.size += t.origSize, 
+                n = t.loaded * t.origSize / t.size, (!t.completeTimestamp || t.completeTimestamp > S) && (r += n), 
+                I.loaded += n) : I.size = i, t.status == l.DONE ? I.uploaded++ : t.status == l.FAILED ? I.failed++ : I.queued++;
+                I.size === i ? I.percent = D.length > 0 ? Math.ceil(100 * (I.uploaded / D.length)) : 0 : (I.bytesPerSec = Math.ceil(r / ((+new Date() - S || 1) / 1e3)), 
+                I.percent = I.size > 0 ? Math.ceil(100 * (I.loaded / I.size)) : 0);
+            }
+            function c() {
+                var e = F[0] || P[0];
+                return e ? e.getRuntime().uid : !1;
+            }
+            function f() {
+                this.bind("FilesAdded FilesRemoved", function(e) {
+                    e.trigger("QueueChanged"), e.refresh();
+                }), this.bind("CancelUpload", b), this.bind("BeforeUpload", m), this.bind("UploadFile", _), 
+                this.bind("UploadProgress", E), this.bind("StateChanged", v), this.bind("QueueChanged", d), 
+                this.bind("Error", R), this.bind("FileUploaded", y), this.bind("Destroy", z);
+            }
+            function p(e, i) {
+                var n = this, r = 0, s = [], a = {
+                    runtime_order: e.runtimes,
+                    required_caps: e.required_features,
+                    preferred_caps: x,
+                    swf_url: e.flash_swf_url,
+                    xap_url: e.silverlight_xap_url
+                };
+                l.each(e.runtimes.split(/\s*,\s*/), function(t) {
+                    e[t] && (a[t] = e[t]);
+                }), e.browse_button && l.each(e.browse_button, function(i) {
+                    s.push(function(s) {
+                        var u = new t.file.FileInput(l.extend({}, a, {
+                            accept: e.filters.mime_types,
+                            name: e.file_data_name,
+                            multiple: e.multi_selection,
+                            container: e.container,
+                            browse_button: i
+                        }));
+                        u.onready = function() {
+                            var e = o.getInfo(this.ruid);
+                            l.extend(n.features, {
+                                chunks: e.can("slice_blob"),
+                                multipart: e.can("send_multipart"),
+                                multi_selection: e.can("select_multiple")
+                            }), r++, F.push(this), s();
+                        }, u.onchange = function() {
+                            n.addFile(this.files);
+                        }, u.bind("mouseenter mouseleave mousedown mouseup", function(t) {
+                            U || (e.browse_button_hover && ("mouseenter" === t.type ? l.addClass(i, e.browse_button_hover) : "mouseleave" === t.type && l.removeClass(i, e.browse_button_hover)), 
+                            e.browse_button_active && ("mousedown" === t.type ? l.addClass(i, e.browse_button_active) : "mouseup" === t.type && l.removeClass(i, e.browse_button_active)));
+                        }), u.bind("mousedown", function() {
+                            n.trigger("Browse");
+                        }), u.bind("error runtimeerror", function() {
+                            u = null, s();
+                        }), u.init();
+                    });
+                }), e.drop_element && l.each(e.drop_element, function(e) {
+                    s.push(function(i) {
+                        var s = new t.file.FileDrop(l.extend({}, a, {
+                            drop_zone: e
+                        }));
+                        s.onready = function() {
+                            var e = o.getInfo(this.ruid);
+                            l.extend(n.features, {
+                                chunks: e.can("slice_blob"),
+                                multipart: e.can("send_multipart"),
+                                dragdrop: e.can("drag_and_drop")
+                            }), r++, P.push(this), i();
+                        }, s.ondrop = function() {
+                            n.addFile(this.files);
+                        }, s.bind("error runtimeerror", function() {
+                            s = null, i();
+                        }), s.init();
+                    });
+                }), l.inSeries(s, function() {
+                    "function" == typeof i && i(r);
+                });
+            }
+            function g(e, n, r, s) {
+                var a = new t.image.Image();
+                try {
+                    a.onload = function() {
+                        n.width > this.width && n.height > this.height && n.quality === i && n.preserve_headers && !n.crop ? (this.destroy(), 
+                        s(e)) : a.downsize(n.width, n.height, n.crop, n.preserve_headers);
+                    }, a.onresize = function() {
+                        var t = this.getAsBlob(e.type, n.quality);
+                        this.destroy(), s(t);
+                    }, a.bind("error runtimeerror", function() {
+                        this.destroy(), s(e);
+                    }), a.load(e, r);
+                } catch (o) {
+                    s(e);
+                }
+            }
+            function h(e, i, r) {
+                function s(e, i, n) {
+                    var r = O[e];
+                    switch (e) {
+                      case "max_file_size":
+                        "max_file_size" === e && (O.max_file_size = O.filters.max_file_size = i);
+                        break;
+
+                      case "chunk_size":
+                        (i = l.parseSize(i)) && (O[e] = i, O.send_file_name = !0);
+                        break;
+
+                      case "multipart":
+                        O[e] = i, i || (O.send_file_name = !0);
+                        break;
+
+                      case "http_method":
+                        O[e] = "PUT" === i.toUpperCase() ? "PUT" : "POST";
+                        break;
+
+                      case "unique_names":
+                        O[e] = i, i && (O.send_file_name = !0);
+                        break;
+
+                      case "filters":
+                        "array" === l.typeOf(i) && (i = {
+                            mime_types: i
+                        }), n ? l.extend(O.filters, i) : O.filters = i, i.mime_types && ("string" === l.typeOf(i.mime_types) && (i.mime_types = t.core.utils.Mime.mimes2extList(i.mime_types)), 
+                        i.mime_types.regexp = function(e) {
+                            var t = [];
+                            return l.each(e, function(e) {
+                                l.each(e.extensions.split(/,/), function(e) {
+                                    /^\s*\*\s*$/.test(e) ? t.push("\\.*") : t.push("\\." + e.replace(new RegExp("[" + "/^$.*+?|()[]{}\\".replace(/./g, "\\$&") + "]", "g"), "\\$&"));
+                                });
+                            }), new RegExp("(" + t.join("|") + ")$", "i");
+                        }(i.mime_types), O.filters.mime_types = i.mime_types);
+                        break;
+
+                      case "resize":
+                        O.resize = i ? l.extend({
+                            preserve_headers: !0,
+                            crop: !1
+                        }, i) : !1;
+                        break;
+
+                      case "prevent_duplicates":
+                        O.prevent_duplicates = O.filters.prevent_duplicates = !!i;
+                        break;
+
+                      case "container":
+                      case "browse_button":
+                      case "drop_element":
+                        i = "container" === e ? l.get(i) : l.getAll(i);
+
+                      case "runtimes":
+                      case "multi_selection":
+                      case "flash_swf_url":
+                      case "silverlight_xap_url":
+                        O[e] = i, n || (u = !0);
+                        break;
+
+                      default:
+                        O[e] = i;
+                    }
+                    n || a.trigger("OptionChanged", e, i, r);
+                }
+                var a = this, u = !1;
+                "object" == typeof e ? l.each(e, function(e, t) {
+                    s(t, e, r);
+                }) : s(e, i, r), r ? (O.required_features = n(l.extend({}, O)), x = n(l.extend({}, O, {
+                    required_features: !0
+                }))) : u && (a.trigger("Destroy"), p.call(a, O, function(e) {
+                    e ? (a.runtime = o.getInfo(c()).type, a.trigger("Init", {
+                        runtime: a.runtime
+                    }), a.trigger("PostInit")) : a.trigger("Error", {
+                        code: l.INIT_ERROR,
+                        message: l.translate("Init error.")
+                    });
+                }));
+            }
+            function m(e, t) {
+                if (e.settings.unique_names) {
+                    var i = t.name.match(/\.([^.]+)$/), n = "part";
+                    i && (n = i[1]), t.target_name = t.id + "." + n;
+                }
+            }
+            function _(e, i) {
+                function n() {
+                    c-- > 0 ? r(s, 1e3) : (i.loaded = p, e.trigger("Error", {
+                        code: l.HTTP_ERROR,
+                        message: l.translate("HTTP Error."),
+                        file: i,
+                        response: T.responseText,
+                        status: T.status,
+                        responseHeaders: T.getAllResponseHeaders()
+                    }));
+                }
+                function s() {
+                    var t, n, r = {};
+                    i.status === l.UPLOADING && e.state !== l.STOPPED && (e.settings.send_file_name && (r.name = i.target_name || i.name), 
+                    d && f.chunks && o.size > d ? (n = Math.min(d, o.size - p), t = o.slice(p, p + n)) : (n = o.size, 
+                    t = o), d && f.chunks && (e.settings.send_chunk_number ? (r.chunk = Math.ceil(p / d), 
+                    r.chunks = Math.ceil(o.size / d)) : (r.offset = p, r.total = o.size)), e.trigger("BeforeChunkUpload", i, r, t, p) && a(r, t, n));
+                }
+                function a(a, d, g) {
+                    var m;
+                    T = new t.xhr.XMLHttpRequest(), T.upload && (T.upload.onprogress = function(t) {
+                        i.loaded = Math.min(i.size, p + t.loaded), e.trigger("UploadProgress", i);
+                    }), T.onload = function() {
+                        return T.status < 200 || T.status >= 400 ? (n(), void 0) : (c = e.settings.max_retries, 
+                        g < o.size ? (d.destroy(), p += g, i.loaded = Math.min(p, o.size), e.trigger("ChunkUploaded", i, {
+                            offset: i.loaded,
+                            total: o.size,
+                            response: T.responseText,
+                            status: T.status,
+                            responseHeaders: T.getAllResponseHeaders()
+                        }), "Android Browser" === l.ua.browser && e.trigger("UploadProgress", i)) : i.loaded = i.size, 
+                        d = m = null, !p || p >= o.size ? (i.size != i.origSize && (o.destroy(), o = null), 
+                        e.trigger("UploadProgress", i), i.status = l.DONE, i.completeTimestamp = +new Date(), 
+                        e.trigger("FileUploaded", i, {
+                            response: T.responseText,
+                            status: T.status,
+                            responseHeaders: T.getAllResponseHeaders()
+                        })) : r(s, 1), void 0);
+                    }, T.onerror = function() {
+                        n();
+                    }, T.onloadend = function() {
+                        this.destroy();
+                    }, e.settings.multipart && f.multipart ? (T.open(e.settings.http_method, u, !0), 
+                    l.each(e.settings.headers, function(e, t) {
+                        T.setRequestHeader(t, e);
+                    }), m = new t.xhr.FormData(), l.each(l.extend(a, e.settings.multipart_params), function(e, t) {
+                        m.append(t, e);
+                    }), m.append(e.settings.file_data_name, d), T.send(m, h)) : (u = l.buildUrl(e.settings.url, l.extend(a, e.settings.multipart_params)), 
+                    T.open(e.settings.http_method, u, !0), l.each(e.settings.headers, function(e, t) {
+                        T.setRequestHeader(t, e);
+                    }), T.hasRequestHeader("Content-Type") || T.setRequestHeader("Content-Type", "application/octet-stream"), 
+                    T.send(d, h));
+                }
+                var o, u = e.settings.url, d = e.settings.chunk_size, c = e.settings.max_retries, f = e.features, p = 0, h = {
+                    runtime_order: e.settings.runtimes,
+                    required_caps: e.settings.required_features,
+                    preferred_caps: x,
+                    swf_url: e.settings.flash_swf_url,
+                    xap_url: e.settings.silverlight_xap_url
+                };
+                i.loaded && (p = i.loaded = d ? d * Math.floor(i.loaded / d) : 0), o = i.getSource(), 
+                l.isEmptyObj(e.settings.resize) || -1 === l.inArray(o.type, [ "image/jpeg", "image/png" ]) ? s() : g(o, e.settings.resize, h, function(e) {
+                    o = e, i.size = e.size, s();
+                });
+            }
+            function E(e, t) {
+                u(t);
+            }
+            function v(e) {
+                if (e.state == l.STARTED) S = +new Date(); else if (e.state == l.STOPPED) for (var t = e.files.length - 1; t >= 0; t--) e.files[t].status == l.UPLOADING && (e.files[t].status = l.QUEUED, 
+                d());
+            }
+            function b() {
+                T && T.abort();
+            }
+            function y(e) {
+                d(), r(function() {
+                    a.call(e);
+                }, 1);
+            }
+            function R(e, t) {
+                t.code === l.INIT_ERROR ? e.destroy() : t.code === l.HTTP_ERROR && (t.file.status = l.FAILED, 
+                t.file.completeTimestamp = +new Date(), u(t.file), e.state == l.STARTED && (e.trigger("CancelUpload"), 
+                r(function() {
+                    a.call(e);
+                }, 1)));
+            }
+            function z(e) {
+                e.stop(), l.each(D, function(e) {
+                    e.destroy();
+                }), D = [], F.length && (l.each(F, function(e) {
+                    e.destroy();
+                }), F = []), P.length && (l.each(P, function(e) {
+                    e.destroy();
+                }), P = []), x = {}, U = !1, S = T = null, I.reset();
+            }
+            var O, S, I, T, w = l.guid(), D = [], x = {}, F = [], P = [], U = !1;
+            O = {
+                chunk_size: 0,
+                file_data_name: "file",
+                filters: {
+                    mime_types: [],
+                    max_file_size: 0,
+                    prevent_duplicates: !1,
+                    prevent_empty: !0
+                },
+                flash_swf_url: "js/Moxie.swf",
+                http_method: "POST",
+                max_retries: 0,
+                multipart: !0,
+                multi_selection: !0,
+                resize: !1,
+                runtimes: o.order,
+                send_file_name: !0,
+                send_chunk_number: !0,
+                silverlight_xap_url: "js/Moxie.xap"
+            }, h.call(this, e, null, !0), I = new l.QueueProgress(), l.extend(this, {
+                id: w,
+                uid: w,
+                state: l.STOPPED,
+                features: {},
+                runtime: null,
+                files: D,
+                settings: O,
+                total: I,
+                init: function() {
+                    var e, t, i = this;
+                    return e = i.getOption("preinit"), "function" == typeof e ? e(i) : l.each(e, function(e, t) {
+                        i.bind(t, e);
+                    }), f.call(i), l.each([ "container", "browse_button", "drop_element" ], function(e) {
+                        return null === i.getOption(e) ? (t = {
+                            code: l.INIT_ERROR,
+                            message: l.sprintf(l.translate("%s specified, but cannot be found."), e)
+                        }, !1) : void 0;
+                    }), t ? i.trigger("Error", t) : O.browse_button || O.drop_element ? (p.call(i, O, function(e) {
+                        var t = i.getOption("init");
+                        "function" == typeof t ? t(i) : l.each(t, function(e, t) {
+                            i.bind(t, e);
+                        }), e ? (i.runtime = o.getInfo(c()).type, i.trigger("Init", {
+                            runtime: i.runtime
+                        }), i.trigger("PostInit")) : i.trigger("Error", {
+                            code: l.INIT_ERROR,
+                            message: l.translate("Init error.")
+                        });
+                    }), void 0) : i.trigger("Error", {
+                        code: l.INIT_ERROR,
+                        message: l.translate("You must specify either browse_button or drop_element.")
+                    });
+                },
+                setOption: function(e, t) {
+                    h.call(this, e, t, !this.runtime);
+                },
+                getOption: function(e) {
+                    return e ? O[e] : O;
+                },
+                refresh: function() {
+                    F.length && l.each(F, function(e) {
+                        e.trigger("Refresh");
+                    }), this.trigger("Refresh");
+                },
+                start: function() {
+                    this.state != l.STARTED && (this.state = l.STARTED, this.trigger("StateChanged"), 
+                    a.call(this));
+                },
+                stop: function() {
+                    this.state != l.STOPPED && (this.state = l.STOPPED, this.trigger("StateChanged"), 
+                    this.trigger("CancelUpload"));
+                },
+                disableBrowse: function() {
+                    U = arguments[0] !== i ? arguments[0] : !0, F.length && l.each(F, function(e) {
+                        e.disable(U);
+                    }), this.trigger("DisableBrowse", U);
+                },
+                getFile: function(e) {
+                    var t;
+                    for (t = D.length - 1; t >= 0; t--) if (D[t].id === e) return D[t];
+                },
+                addFile: function(e, i) {
+                    function n(e, t) {
+                        var i = [];
+                        l.each(u.settings.filters, function(t, n) {
+                            s[n] && i.push(function(i) {
+                                s[n].call(u, t, e, function(e) {
+                                    i(!e);
+                                });
+                            });
+                        }), l.inSeries(i, t);
+                    }
+                    function a(e) {
+                        var s = l.typeOf(e);
+                        if (e instanceof t.file.File) {
+                            if (!e.ruid && !e.isDetached()) {
+                                if (!o) return !1;
+                                e.ruid = o, e.connectRuntime(o);
+                            }
+                            a(new l.File(e));
+                        } else e instanceof t.file.Blob ? (a(e.getSource()), e.destroy()) : e instanceof l.File ? (i && (e.name = i), 
+                        d.push(function(t) {
+                            n(e, function(i) {
+                                i || (D.push(e), f.push(e), u.trigger("FileFiltered", e)), r(t, 1);
+                            });
+                        })) : -1 !== l.inArray(s, [ "file", "blob" ]) ? a(new t.file.File(null, e)) : "node" === s && "filelist" === l.typeOf(e.files) ? l.each(e.files, a) : "array" === s && (i = null, 
+                        l.each(e, a));
+                    }
+                    var o, u = this, d = [], f = [];
+                    o = c(), a(e), d.length && l.inSeries(d, function() {
+                        f.length && u.trigger("FilesAdded", f);
+                    });
+                },
+                removeFile: function(e) {
+                    for (var t = "string" == typeof e ? e : e.id, i = D.length - 1; i >= 0; i--) if (D[i].id === t) return this.splice(i, 1)[0];
+                },
+                splice: function(e, t) {
+                    var n = D.splice(e === i ? 0 : e, t === i ? D.length : t), r = !1;
+                    return this.state == l.STARTED && (l.each(n, function(e) {
+                        return e.status === l.UPLOADING ? (r = !0, !1) : void 0;
+                    }), r && this.stop()), this.trigger("FilesRemoved", n), l.each(n, function(e) {
+                        e.destroy();
+                    }), r && this.start(), n;
+                },
+                dispatchEvent: function(e) {
+                    var t, i;
+                    if (e = e.toLowerCase(), t = this.hasEventListener(e)) {
+                        t.sort(function(e, t) {
+                            return t.priority - e.priority;
+                        }), i = [].slice.call(arguments), i.shift(), i.unshift(this);
+                        for (var n = 0; n < t.length; n++) if (t[n].fn.apply(t[n].scope, i) === !1) return !1;
+                    }
+                    return !0;
+                },
+                bind: function(e, t, i, n) {
+                    l.Uploader.prototype.bind.call(this, e, t, n, i);
+                },
+                destroy: function() {
+                    this.trigger("Destroy"), O = I = null, this.unbindAll();
+                }
+            });
+        }, l.Uploader.prototype = t.core.EventTarget.instance, l.File = function() {
+            function e(e) {
+                l.extend(this, {
+                    id: l.guid(),
+                    name: e.name || e.fileName,
+                    type: e.type || "",
+                    relativePath: e.relativePath || "",
+                    size: e.fileSize || e.size,
+                    origSize: e.fileSize || e.size,
+                    loaded: 0,
+                    percent: 0,
+                    status: l.QUEUED,
+                    lastModifiedDate: e.lastModifiedDate || new Date().toLocaleString(),
+                    completeTimestamp: 0,
+                    getNative: function() {
+                        var e = this.getSource().getSource();
+                        return -1 !== l.inArray(l.typeOf(e), [ "blob", "file" ]) ? e : null;
+                    },
+                    getSource: function() {
+                        return t[this.id] ? t[this.id] : null;
+                    },
+                    destroy: function() {
+                        var e = this.getSource();
+                        e && (e.destroy(), delete t[this.id]);
+                    }
+                }), t[this.id] = e;
+            }
+            var t = {};
+            return e;
+        }(), l.QueueProgress = function() {
+            var e = this;
+            e.size = 0, e.loaded = 0, e.uploaded = 0, e.failed = 0, e.queued = 0, e.percent = 0, 
+            e.bytesPerSec = 0, e.reset = function() {
+                e.size = e.loaded = e.uploaded = e.failed = e.queued = e.percent = e.bytesPerSec = 0;
+            };
+        }, e.plupload = l;
+    }(this, e);
+});
+
+var autoComplete = function() {
+    function autoComplete(options) {
+        if (!document.querySelector) return;
+        function hasClass(el, className) {
+            return el.classList ? el.classList.contains(className) : new RegExp("\\b" + className + "\\b").test(el.className);
+        }
+        function addEvent(el, type, handler) {
+            if (el.attachEvent) el.attachEvent("on" + type, handler); else el.addEventListener(type, handler);
+        }
+        function removeEvent(el, type, handler) {
+            if (el.detachEvent) el.detachEvent("on" + type, handler); else el.removeEventListener(type, handler);
+        }
+        function live(elClass, event, cb, context) {
+            addEvent(context || document, event, function(e) {
+                var found, el = e.target || e.srcElement;
+                while (el && !(found = hasClass(el, elClass))) el = el.parentElement;
+                if (found) cb.call(el, e);
+            });
+        }
+        var o = {
+            selector: 0,
+            source: 0,
+            minChars: 3,
+            delay: 150,
+            offsetLeft: 0,
+            offsetTop: 1,
+            cache: 1,
+            menuClass: "",
+            renderItem: function(item, search) {
+                search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+                var re = new RegExp("(" + search.split(" ").join("|") + ")", "gi");
+                return '<div class="autocomplete-suggestion" data-val="' + item + '">' + item.replace(re, "<b>$1</b>") + "</div>";
+            },
+            onSelect: function(e, term, item) {}
+        };
+        for (var k in options) {
+            if (options.hasOwnProperty(k)) o[k] = options[k];
+        }
+        var elems = typeof o.selector == "object" ? [ o.selector ] : document.querySelectorAll(o.selector);
+        for (var i = 0; i < elems.length; i++) {
+            var that = elems[i];
+            that.sc = document.createElement("div");
+            that.sc.className = "autocomplete-suggestions " + o.menuClass;
+            that.autocompleteAttr = that.getAttribute("autocomplete");
+            that.setAttribute("autocomplete", "off");
+            that.cache = {};
+            that.last_val = "";
+            that.updateSC = function(resize, next) {
+                var rect = that.getBoundingClientRect();
+                that.sc.style.left = Math.round(rect.left + (window.pageXOffset || document.documentElement.scrollLeft) + o.offsetLeft) + "px";
+                that.sc.style.top = Math.round(rect.bottom + (window.pageYOffset || document.documentElement.scrollTop) + o.offsetTop) + "px";
+                that.sc.style.width = Math.round(rect.right - rect.left) + "px";
+                if (!resize) {
+                    that.sc.style.display = "block";
+                    if (!that.sc.maxHeight) {
+                        that.sc.maxHeight = parseInt((window.getComputedStyle ? getComputedStyle(that.sc, null) : that.sc.currentStyle).maxHeight);
+                    }
+                    if (!that.sc.suggestionHeight) that.sc.suggestionHeight = that.sc.querySelector(".autocomplete-suggestion").offsetHeight;
+                    if (that.sc.suggestionHeight) if (!next) that.sc.scrollTop = 0; else {
+                        var scrTop = that.sc.scrollTop, selTop = next.getBoundingClientRect().top - that.sc.getBoundingClientRect().top;
+                        if (selTop + that.sc.suggestionHeight - that.sc.maxHeight > 0) that.sc.scrollTop = selTop + that.sc.suggestionHeight + scrTop - that.sc.maxHeight; else if (selTop < 0) that.sc.scrollTop = selTop + scrTop;
+                    }
+                }
+            };
+            addEvent(window, "resize", that.updateSC);
+            document.body.appendChild(that.sc);
+            live("autocomplete-suggestion", "mouseleave", function(e) {
+                var sel = that.sc.querySelector(".autocomplete-suggestion.selected");
+                if (sel) setTimeout(function() {
+                    sel.className = sel.className.replace("selected", "");
+                }, 20);
+            }, that.sc);
+            live("autocomplete-suggestion", "mouseover", function(e) {
+                var sel = that.sc.querySelector(".autocomplete-suggestion.selected");
+                if (sel) sel.className = sel.className.replace("selected", "");
+                this.className += " selected";
+            }, that.sc);
+            live("autocomplete-suggestion", "mousedown", function(e) {
+                if (hasClass(this, "autocomplete-suggestion")) {
+                    var v = this.getAttribute("data-val");
+                    that.value = v;
+                    o.onSelect(e, v, this);
+                    that.sc.style.display = "none";
+                }
+            }, that.sc);
+            that.blurHandler = function() {
+                try {
+                    var over_sb = document.querySelector(".autocomplete-suggestions:hover");
+                } catch (e) {
+                    var over_sb = 0;
+                }
+                if (!over_sb) {
+                    that.last_val = that.value;
+                    that.sc.style.display = "none";
+                    setTimeout(function() {
+                        that.sc.style.display = "none";
+                    }, 350);
+                } else if (that !== document.activeElement) setTimeout(function() {
+                    that.focus();
+                }, 20);
+            };
+            addEvent(that, "blur", that.blurHandler);
+            var suggest = function(data) {
+                var val = that.value;
+                that.cache[val] = data;
+                if (data.length && val.length >= o.minChars) {
+                    var s = "";
+                    for (var i = 0; i < data.length; i++) s += o.renderItem(data[i], val);
+                    that.sc.innerHTML = s;
+                    that.updateSC(0);
+                } else that.sc.style.display = "none";
+            };
+            that.keydownHandler = function(e) {
+                var key = window.event ? e.keyCode : e.which;
+                if ((key == 40 || key == 38) && that.sc.innerHTML) {
+                    var next, sel = that.sc.querySelector(".autocomplete-suggestion.selected");
+                    if (!sel) {
+                        next = key == 40 ? that.sc.querySelector(".autocomplete-suggestion") : that.sc.childNodes[that.sc.childNodes.length - 1];
+                        next.className += " selected";
+                        that.value = next.getAttribute("data-val");
+                    } else {
+                        next = key == 40 ? sel.nextSibling : sel.previousSibling;
+                        if (next) {
+                            sel.className = sel.className.replace("selected", "");
+                            next.className += " selected";
+                            that.value = next.getAttribute("data-val");
+                        } else {
+                            sel.className = sel.className.replace("selected", "");
+                            that.value = that.last_val;
+                            next = 0;
+                        }
+                    }
+                    that.updateSC(0, next);
+                    return false;
+                } else if (key == 27) {
+                    that.value = that.last_val;
+                    that.sc.style.display = "none";
+                } else if (key == 13 || key == 9) {
+                    var sel = that.sc.querySelector(".autocomplete-suggestion.selected");
+                    if (sel && that.sc.style.display != "none") {
+                        o.onSelect(e, sel.getAttribute("data-val"), sel);
+                        setTimeout(function() {
+                            that.sc.style.display = "none";
+                        }, 20);
+                    }
+                }
+            };
+            addEvent(that, "keydown", that.keydownHandler);
+            that.keyupHandler = function(e) {
+                var key = window.event ? e.keyCode : e.which;
+                if (!key || (key < 35 || key > 40) && key != 13 && key != 27) {
+                    var val = that.value;
+                    if (val.length >= o.minChars) {
+                        if (val != that.last_val) {
+                            that.last_val = val;
+                            clearTimeout(that.timer);
+                            if (o.cache) {
+                                if (val in that.cache) {
+                                    suggest(that.cache[val]);
+                                    return;
+                                }
+                                for (var i = 1; i < val.length - o.minChars; i++) {
+                                    var part = val.slice(0, val.length - i);
+                                    if (part in that.cache && !that.cache[part].length) {
+                                        suggest([]);
+                                        return;
+                                    }
+                                }
+                            }
+                            that.timer = setTimeout(function() {
+                                o.source(val, suggest);
+                            }, o.delay);
+                        }
+                    } else {
+                        that.last_val = val;
+                        that.sc.style.display = "none";
+                    }
+                }
+            };
+            addEvent(that, "keyup", that.keyupHandler);
+            that.focusHandler = function(e) {
+                that.last_val = "\n";
+                that.keyupHandler(e);
+            };
+            if (!o.minChars) addEvent(that, "focus", that.focusHandler);
+        }
+        this.destroy = function() {
+            for (var i = 0; i < elems.length; i++) {
+                var that = elems[i];
+                removeEvent(window, "resize", that.updateSC);
+                removeEvent(that, "blur", that.blurHandler);
+                removeEvent(that, "focus", that.focusHandler);
+                removeEvent(that, "keydown", that.keydownHandler);
+                removeEvent(that, "keyup", that.keyupHandler);
+                if (that.autocompleteAttr) that.setAttribute("autocomplete", that.autocompleteAttr); else that.removeAttribute("autocomplete");
+                document.body.removeChild(that.sc);
+                that = null;
+            }
+        };
+    }
+    return autoComplete;
+}();
+
+(function() {
+    if (typeof define === "function" && define.amd) define("autoComplete", function() {
+        return autoComplete;
+    }); else if (typeof module !== "undefined" && module.exports) module.exports = autoComplete; else window.autoComplete = autoComplete;
+})();
+
+var indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
         if (i in this && this[i] === item) return i;
     }
     return -1;
-}, slice = [].slice;
-
-Kor = {
-    loading: false,
-    ajax_loading: function() {
-        console.warn("KOR module used");
-        return Kor.loading = true;
-    },
-    ajax_not_loading: function() {
-        console.warn("KOR module used");
-        return Kor.loading = false;
-    }
 };
 
 Zepto.extend(Zepto.ajaxSettings, {
     type: "GET",
     dataType: "json",
     contentType: "application/json",
-    accept: "application/json",
+    accepts: "application/json",
     beforeSend: function(xhr, settings) {
-        var token;
         if (!settings.url.match(/^http/)) {
             settings.url = "" + wApp.baseUrl + settings.url;
         }
-        Kor.ajax_loading();
+        wApp.state.requests.push(xhr);
+        wApp.bus.trigger("ajax-state-changed");
         xhr.then(function() {
-            return console.log("ajax log", xhr.requestUrl, JSON.parse(xhr.response));
+            return console.log("ajax " + settings.type + ": ", xhr.requestUrl, JSON.parse(xhr.response));
+        });
+        xhr.always(function() {
+            wApp.state.requests.pop();
+            return wApp.bus.trigger("ajax-state-changed");
         });
         xhr.requestUrl = settings.url;
-        token = Zepto("meta[name=csrf-token]").attr("content");
-        return xhr.setRequestHeader("X-CSRF-Token", token);
-    },
-    complete: function(xhr) {
-        return Kor.ajax_not_loading();
+        if (settings.type.match(/POST|PATCH|PUT|DELETE/i) && wApp.session) {
+            return xhr.setRequestHeader("X-CSRF-Token", wApp.session.csrfToken());
+        }
     }
 });
 
@@ -4833,22 +9101,15 @@ window.wApp = {
     bus: riot.observable(),
     data: {},
     mixins: {},
-    state: {},
+    state: {
+        requests: []
+    },
     baseUrl: $("script[kor-url]").attr("kor-url") || "",
     setup: function() {
         wApp.clipboard.setup();
         return [ wApp.config.setup(), wApp.session.setup(), wApp.i18n.setup(), wApp.info.setup() ];
     }
 };
-
-Zepto.ajax({
-    url: "/api/1.0/info",
-    success: function(data) {
-        window.wApp.data = data;
-        wApp.bus.trigger("auth-data");
-        return riot.update();
-    }
-});
 
 wApp.auth = {
     intersect: function(a, b) {
@@ -4874,8 +9135,7 @@ wApp.auth = {
                 password: password
             }),
             success: function(data) {
-                wApp.session.current = data.session;
-                return riot.update();
+                return wApp.bus.trigger("reload-session");
             }
         });
     },
@@ -4884,8 +9144,8 @@ wApp.auth = {
             type: "delete",
             url: "/logout",
             success: function(data) {
-                wApp.session.current = data.session;
-                return riot.update();
+                wApp.bus.trigger("reload-session");
+                return wApp.routing.path("/");
             }
         });
     }
@@ -4952,17 +9212,37 @@ wApp.mixins.auth = {
 
 wApp.clipboard = {
     add: function(id) {
-        return Lockr.sadd("clipboard", id);
+        Lockr.sadd("clipboard", id);
+        return wApp.bus.trigger("clipboard-changed");
     },
     remove: function(id) {
-        console.log("removing: " + id);
-        return Lockr.srem("clipboard", id);
+        Lockr.srem("clipboard", id);
+        wApp.bus.trigger("clipboard-changed");
+        if (wApp.clipboard.subSelected(id)) {
+            return wApp.clipboard.unSubSelect(id);
+        }
     },
     includes: function(id) {
         return Lockr.sismember("clipboard", id);
     },
+    select: function(id) {
+        Lockr.set("selection", id);
+        return wApp.bus.trigger("clipboard-changed");
+    },
+    unselect: function() {
+        Lockr.rm("selection");
+        return wApp.bus.trigger("clipboard-changed");
+    },
+    selected: function(id) {
+        return wApp.clipboard.selection() === id;
+    },
+    selection: function() {
+        return Lockr.get("selection");
+    },
     reset: function() {
-        return Lockr.rm("clipboard");
+        Lockr.rm("clipboard");
+        wApp.clipboard.unselect();
+        return wApp.clipboard.resetSubSelection();
     },
     ids: function() {
         return Lockr.smembers("clipboard");
@@ -4971,15 +9251,43 @@ wApp.clipboard = {
         return wApp.bus.on("logout", function() {
             return wApp.clipboard.reset();
         });
+    },
+    subSelect: function(id) {
+        Lockr.sadd("clipboard-subselection", id);
+        return wApp.bus.trigger("clipboard-subselection-changed");
+    },
+    unSubSelect: function(id) {
+        Lockr.srem("clipboard-subselection", id);
+        return wApp.bus.trigger("clipboard-subselection-changed");
+    },
+    resetSubSelection: function() {
+        Lockr.rm("clipboard-subselection");
+        return wApp.bus.trigger("clipboard-subselection-changed");
+    },
+    subSelected: function(id) {
+        return Lockr.sismember("clipboard-subselection", id);
+    },
+    subSelection: function() {
+        return Lockr.smembers("clipboard-subselection");
+    },
+    subSelectAll: function() {
+        var id, j, len, ref, results;
+        ref = wApp.clipboard.ids();
+        results = [];
+        for (j = 0, len = ref.length; j < len; j++) {
+            id = ref[j];
+            results.push(wApp.clipboard.subSelect(id));
+        }
+        return results;
     }
 };
 
 wApp.config = {
     setup: function() {
         return Zepto.ajax({
-            url: "/config",
+            url: "/settings",
             success: function(data) {
-                return wApp.config.data = data.config;
+                return wApp.config.data = data;
             }
         });
     }
@@ -4987,31 +9295,9 @@ wApp.config = {
 
 wApp.mixins.config = {
     config: function() {
-        return wApp.config.data;
+        return wApp.config.data.values;
     }
 };
-
-wApp.bubbling_events = [];
-
-riot.mixin("bubble", {
-    init: function() {
-        var event_name, j, len, ref, results, tag;
-        tag = this;
-        ref = wApp.bubbling_events;
-        results = [];
-        for (j = 0, len = ref.length; j < len; j++) {
-            event_name = ref[j];
-            results.push(tag.on(event_name, function() {
-                var args, ref1;
-                args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-                if (tag.parent) {
-                    return (ref1 = tag.parent).trigger.apply(ref1, [ event_name ].concat(slice.call(args)));
-                }
-            }));
-        }
-        return results;
-    }
-});
 
 wApp.i18n = {
     setup: function() {
@@ -5021,6 +9307,9 @@ wApp.i18n = {
                 return wApp.i18n.translations = data.translations;
             }
         });
+    },
+    locales: function() {
+        return Object.keys(wApp.i18n.translations);
     },
     translate: function(locale, input, options) {
         var count, error, j, key, len, part, parts, ref, regex, result, tvalue, value;
@@ -5032,6 +9321,9 @@ wApp.i18n = {
         }
         try {
             options.count || (options.count = 1);
+            if (options.warnMissingKey === void 0) {
+                options.warnMissingKey = true;
+            }
             parts = input.split(".");
             result = wApp.i18n.translations[locale];
             for (j = 0, len = parts.length; j < len; j++) {
@@ -5044,7 +9336,9 @@ wApp.i18n = {
             for (key in ref) {
                 value = ref[key];
                 regex = new RegExp("%{" + key + "}", "g");
-                tvalue = wApp.i18n.translate(value);
+                tvalue = wApp.i18n.translate(locale, value, {
+                    warnMissingKey: false
+                });
                 if (tvalue && tvalue !== value) {
                     value = tvalue;
                 }
@@ -5056,26 +9350,27 @@ wApp.i18n = {
             return result;
         } catch (error1) {
             error = error1;
-            console.log(error);
+            if (options["warnMissingKey"]) {
+                console.warn(error, "for key", input);
+            }
             return "";
         }
     },
     localize: function(locale, input, format_name) {
         var date, error, format;
         if (format_name == null) {
-            format_name = "default";
+            format_name = "date.formats.default";
         }
         try {
             if (!input) {
                 return "";
             }
-            format = wApp.i18n.translate(locale, "date.formats." + format_name);
+            format = wApp.i18n.translate(locale, format_name);
             date = new Date(input);
             return strftime(format, date);
         } catch (error1) {
             error = error1;
-            console.log(arguments);
-            console.log(error);
+            console.warn(error, "for key", input);
             return "";
         }
     },
@@ -5140,11 +9435,15 @@ wApp.mixins.info = {
 };
 
 wApp.routing = {
-    query: function(params) {
-        var k, qs, result, v;
+    query: function(params, reset) {
+        var base, k, qs, result, v;
+        if (reset == null) {
+            reset = false;
+        }
         if (params) {
             result = {};
-            Zepto.extend(result, wApp.routing.query(), params);
+            base = reset ? {} : wApp.routing.query();
+            Zepto.extend(result, base, params);
             qs = [];
             for (k in result) {
                 v = result[k];
@@ -5154,7 +9453,8 @@ wApp.routing = {
             }
             return route(wApp.routing.path() + "?" + qs.join("&"));
         } else {
-            return wApp.routing.parts()["hash_query"] || {};
+            result = wApp.routing.parts()["hash_query"] || {};
+            return Zepto.extend({}, result);
         }
     },
     path: function(new_path) {
@@ -5236,19 +9536,22 @@ wApp.routing = {
 
 wApp.session = {
     setup: function() {
-        return Zepto.ajax({
-            method: "get",
-            url: "/session",
-            success: function(data) {
-                return wApp.session.current = data.session;
-            }
-        });
+        var reload;
+        reload = function() {
+            return Zepto.ajax({
+                method: "get",
+                url: "/session",
+                success: function(data) {
+                    wApp.session.current = data.session;
+                    return riot.update();
+                }
+            });
+        };
+        wApp.bus.on("reload-session", reload);
+        return reload();
     },
     csrfToken: function() {
-        return wApp.session.current.csrfToken;
-    },
-    data: function() {
-        return wApp.data;
+        return (wApp.session.current || {}).csrfToken;
     }
 };
 
@@ -5283,9 +9586,6 @@ wApp.utils = {
     },
     inGroupsOf: function(per_row, array, dummy) {
         var current, i, j, len, result;
-        if (dummy == null) {
-            dummy = null;
-        }
         result = [];
         current = [];
         for (j = 0, len = array.length; j < len; j++) {
@@ -5297,7 +9597,7 @@ wApp.utils = {
             current.push(i);
         }
         if (current.length > 0) {
-            if (dummy) {
+            if (dummy !== void 0) {
                 while (current.length < per_row) {
                     current.push(dummy);
                 }
@@ -5349,133 +9649,169 @@ wApp.utils = {
         return value.charAt(0).toUpperCase() + value.slice(1);
     },
     confirm: function(string) {
+        string || (string = wApp.i18n.t(wApp.session.current.locale, "confirm.sure"));
         return window.confirm(string);
+    },
+    toIdArray: function(obj) {
+        var j, len, o, results;
+        if (!obj) {
+            return null;
+        }
+        if (!Zepto.isArray(obj)) {
+            obj = obj.split(",");
+        }
+        results = [];
+        for (j = 0, len = obj.length; j < len; j++) {
+            o = obj[j];
+            results.push(parseInt(o));
+        }
+        return results;
     }
 };
 
-riot.tag2("kor-about", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.mixin(wApp.mixins.config);
-    tag.on("mount", function() {
-        return Zepto(tag.root).find(".target").html(tag.config().maintainer.about_html);
-    });
+wApp.mixins.editor = {
+    resource: {
+        singular: "unknown-resource",
+        plural: "unknown-resources"
+    },
+    resourceId: function() {
+        return tag.opts.id;
+    },
+    save: function(event) {
+        event.preventDefault();
+        var p = this.resourceId() ? this.updateRequest() : this.createRequest();
+        p.done(this.onSuccess);
+        p.fail(this.onError);
+        p.always(this.onComplete);
+    },
+    createRequest: function() {
+        var data = {};
+        data[this.resource.singular] = this.formValues();
+        return Zepto.ajax({
+            type: "POST",
+            url: "/" + this.resource.plural,
+            data: JSON.stringify(data)
+        });
+    },
+    updateRequest: function() {
+        var data = {};
+        data[this.resource.singular] = this.formValues();
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/" + this.resource.plural + "/" + this.resourceId(),
+            data: JSON.stringify(data)
+        });
+    },
+    onSuccess: function(data) {
+        this.errors = {};
+        wApp.routing.path("/" + this.resource.plural);
+    },
+    onError: function(xhr) {
+        this.errors = JSON.parse(xhr.responseText).errors;
+        wApp.utils.scrollToTop();
+    },
+    onComplete: function() {
+        this.update();
+    },
+    formValues: function() {
+        var results = {};
+        for (var i = 0; i < this.refs.fields.length; i++) {
+            var f = this.refs.fields[i];
+            results[f.name()] = f.value();
+        }
+        return results;
+    }
+};
+
+riot.tag2("kor-add-to-user-group", "<strong>HELLO</strong>", "", "", function(opts) {
+    var tag = this;
 });
 
-riot.tag2("kor-access-denied", '<div class="kor-layout-left kor-layout-large kor-clear-after"> <div class="kor-content-box"> <h1>{tcap(\'notices.access_denied\')}</h1> {t(\'messages.access_denied\')} <div class="hr"></div> <a href="#/login?return_to={returnTo()}">{t(\'verbs.login\')}</a> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var tag;
+riot.tag2("kor-field-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <h2 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <form if="{data && types}" onsubmit="{submit}"> <kor-input name="type" label="{tcap(\'activerecord.attributes.field.type\')}" type="select" options="{types_for_select}" riot-value="{data.type}" is-disabled="{data.id}" ref="fields"></kor-input> <virtual each="{f in specialFields}"> <kor-input name="name" label="{f.label}" riot-value="{field[f.name]}" errors="{errors[f.name]}" ref="fields"></kor-input> </virtual> <kor-input name="name" label="{tcap(\'activerecord.attributes.field.name\')}" riot-value="{data.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="show_label" label="{tcap(\'activerecord.attributes.field.show_label\')}" riot-value="{data.show_label}" errors="{errors.show_label}" ref="fields"></kor-input> <kor-input name="form_label" label="{tcap(\'activerecord.attributes.field.form_label\')}" riot-value="{data.form_label}" errors="{errors.form_label}" ref="fields"></kor-input> <kor-input name="search_label" label="{tcap(\'activerecord.attributes.field.search_label\')}" riot-value="{data.search_label}" errors="{errors.search_label}" ref="fields"></kor-input> <kor-input name="show_on_entity" type="checkbox" label="{tcap(\'activerecord.attributes.field.show_on_entity\')}" riot-value="{data.show_on_entity}" ref="fields"></kor-input> <kor-input name="is_identifier" type="checkbox" label="{tcap(\'activerecord.attributes.field.is_identifier\')}" riot-value="{data.is_identifier}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
+    var create, fetch, fetchTypes, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.returnTo = function() {
-        return encodeURIComponent(wApp.routing.fragment());
-    };
-});
-
-riot.tag2("kor-application", '<div class="container"> <a href="#/login">login</a> <a href="#/welcome">welcome</a> <a href="#/search">search</a> <a href="#/logout">logout</a> </div> <kor-js-extensions></kor-js-extensions> <kor-router></kor-router> <kor-notifications></kor-notifications> <div id="page-container" class="container"> <kor-page class="kor-appear-animation"></kor-page> </div>', "", "", function(opts) {
-    var mount_page, self;
-    self = this;
-    window.kor = {
-        url: self.opts.baseUrl || "",
-        bus: riot.observable(),
-        load_session: function() {
-            return $.ajax({
-                type: "get",
-                url: kor.url + "/api/1.0/info",
-                success: function(data) {
-                    kor.info = data;
-                    return kor.bus.trigger("data.info");
-                }
-            });
-        },
-        login: function(username, password) {
-            return $.ajax({
-                type: "post",
-                url: kor.url + "/login",
-                data: JSON.stringify({
-                    username: username,
-                    password: password
-                }),
-                success: function(data) {
-                    return kor.load_session();
-                }
-            });
-        },
-        logout: function() {
-            return $.ajax({
-                type: "delete",
-                url: kor.url + "/logout",
-                success: function() {
-                    return kor.load_session();
-                }
-            });
-        }
-    };
-    riot.mixin({
-        kor: kor
-    });
-    $.extend($.ajaxSettings, {
-        contentType: "application/json",
-        dataType: "json",
-        error: function(request) {
-            return kor.bus.trigger("notify", JSON.parse(request.response));
-        }
-    });
-    mount_page = function(tag) {
-        var element;
-        if (self.mounted_page !== tag) {
-            if (self.page_tag) {
-                self.page_tag.unmount(true);
-            }
-            element = $(self.root).find("kor-page");
-            self.page_tag = riot.mount(element[0], tag)[0];
-            element.detach();
-            $(self["page-container"]).append(element);
-            return self.mounted_page = tag;
-        }
-    };
-    self.on("mount", function() {
-        mount_page("kor-loading");
-        return kor.load_session();
-    });
-    kor.bus.on("page.welcome", function() {
-        return mount_page("kor-welcome");
-    });
-    kor.bus.on("page.login", function() {
-        return mount_page("kor-login");
-    });
-    kor.bus.on("page.entity", function() {
-        return mount_page("kor-entity");
-    });
-    kor.bus.on("page.search", function() {
-        return mount_page("kor-search");
-    });
-});
-
-riot.tag2("kor-entity-editor", '<h1>Entity Editor</h1> <div class="hr"></div> <form> <kor-field field-id="name" label-key="entity.name" model="{opts.entity}" errors="{errors.name}"></kor-field> <kor-field field-id="distinct_name" label-key="entity.distinct_name" model="{opts.entity}" errors="{errors.distinct_name}"></kor-field> <kor-field field-id="distinct_name" label-key="entity.distinct_name" model="{opts.entity}" errors="{errors.distinct_name}"></kor-field> </form>', "", "", function(opts) {
-    var tag;
-    tag = this;
-});
-
-riot.tag2("kor-field-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.field\', {count: \'other\'})}}}" show="{opts.kind.id}"></kor-t> </h2> <form if="{showForm && types}" onsubmit="{submit}"> <kor-field field-id="type" label-key="field.type" type="select" options="{types_for_select}" allow-no-selection="{false}" model="{field}" onchange="{updateSpecialFields}" is-disabled="{field.id}"></kor-field> <virtual each="{f in specialFields}"> <kor-field field-id="{f.name}" label="{f.label}" model="{field}" errors="{errors[f.name]}"></kor-field> </virtual> <kor-field field-id="name" label-key="field.name" model="{field}" errors="{errors.name}"></kor-field> <kor-field field-id="show_label" label-key="field.show_label" model="{field}" errors="{errors.show_label}"></kor-field> <kor-field field-id="form_label" label-key="field.form_label" model="{field}" errors="{errors.form_label}"></kor-field> <kor-field field-id="search_label" label-key="field.search_label" model="{field}" errors="{errors.search_label}"></kor-field> <kor-field field-id="show_on_entity" type="checkbox" label-key="field.show_on_entity" model="{field}"></kor-field> <kor-field field-id="is_identifier" type="checkbox" label-key="field.is_identifier" model="{field}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
-    var create, params, tag, update;
-    tag = this;
     tag.errors = {};
+    tag.on("mount", function() {
+        if (tag.opts.id) {
+            fetch();
+        } else {
+            tag.data = {
+                type: "Fields::String"
+            };
+            tag.update();
+        }
+        return fetchTypes();
+    });
     tag.opts.notify.on("add-field", function() {
         tag.field = {
             type: "Fields::String"
         };
         tag.showForm = true;
-        return tag.updateSpecialFields();
+        return tag.update();
     });
     tag.opts.notify.on("edit-field", function(field) {
         tag.field = field;
         tag.showForm = true;
-        return tag.updateSpecialFields();
+        return tag.update();
     });
-    tag.on("mount", function() {
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            tag.errors = {};
+            tag.opts.notify.trigger("refresh");
+            return route("/kinds/" + tag.opts.kindId + "/edit");
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    create = function() {
         return Zepto.ajax({
-            url: "/kinds/" + tag.opts.kind.id + "/fields/types",
+            type: "POST",
+            url: "/kinds/" + tag.opts.kindId + "/fields",
+            data: JSON.stringify(values())
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/kinds/" + tag.opts.kindId + "/fields/" + tag.opts.id,
+            data: JSON.stringify(values())
+        });
+    };
+    values = function() {
+        var k, ref, results, t;
+        results = {};
+        ref = tag.refs.fields;
+        for (k in ref) {
+            t = ref[k];
+            results[t.name()] = t.value();
+        }
+        return {
+            field: results,
+            klass: results.type
+        };
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/kinds/" + tag.opts.kindId + "/fields/" + tag.opts.id,
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    fetchTypes = function() {
+        return Zepto.ajax({
+            url: "/kinds/" + tag.opts.kindId + "/fields/types",
             success: function(data) {
                 var i, len, t;
                 tag.types = {};
@@ -5491,501 +9827,125 @@ riot.tag2("kor-field-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpol
                 return tag.updateSpecialFields();
             }
         });
-    });
-    tag.updateSpecialFields = function(event) {
-        var typeName, types;
-        if (tag.showForm) {
-            typeName = Zepto("[name=type]").val() || tag.field.type;
-            tag.field.type = typeName;
-            if (types = tag.types) {
-                tag.specialFields = types[typeName].fields;
-                tag.update();
-            }
-        }
-        return true;
-    };
-    tag.submit = function(event) {
-        event.preventDefault();
-        if (tag.field.id) {
-            return update();
-        } else {
-            return create();
-        }
-    };
-    params = function() {
-        var k, ref, results, t;
-        results = {};
-        ref = tag.formFields;
-        for (k in ref) {
-            t = ref[k];
-            results[t.fieldId()] = t.val();
-        }
-        return {
-            field: results,
-            klass: results.type
-        };
-    };
-    create = function() {
-        return Zepto.ajax({
-            type: "POST",
-            url: "/kinds/" + tag.opts.kind.id + "/fields",
-            data: JSON.stringify(params()),
-            success: function() {
-                tag.opts.notify.trigger("refresh");
-                tag.errors = {};
-                return tag.showForm = false;
-            },
-            error: function(request) {
-                var data;
-                data = JSON.parse(request.response);
-                return tag.errors = data.errors;
-            },
-            complete: function() {
-                return tag.update();
-            }
-        });
-    };
-    update = function() {
-        console.log("updating");
-        return Zepto.ajax({
-            type: "PATCH",
-            url: "/kinds/" + tag.opts.kind.id + "/fields/" + tag.field.id,
-            data: JSON.stringify(params()),
-            success: function() {
-                tag.opts.notify.trigger("refresh");
-                return tag.showForm = false;
-            },
-            error: function(request) {
-                tag.field = request.responseJSON.record;
-                return tag.field.errors = request.responseJSON.errors;
-            },
-            complete: function() {
-                return tag.update();
-            }
-        });
     };
 });
 
-riot.tag2("kor-fields", '<div class="pull-right"> <a href="#/kinds/{opts.kind.id}/fields/new" onclick="{add}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> <kor-t key="activerecord.models.field" with="{{count: \'other\', capitalize: true}}"> /> </strong> <ul if="{kind}"> <li each="{field in kind.fields}"> <div class="pull-right"> <a href="#" onclick="{edit(field)}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(field)}"><i class="fa fa-remove"></i></a> </div> <a href="#" onclick="{edit(field)}">{field.name}</a> </li> </ul>', "", "", function(opts) {
-    var refresh, tag;
+riot.tag2("kor-fields", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/new"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.field\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{field in opts.kind.fields}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(field)}"><i class="fa fa-remove"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit">{field.name}</a> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag;
     tag = this;
-    tag.on("mount", function() {
-        return refresh();
-    });
-    tag.opts.notify.on("refresh", function() {
-        return refresh();
-    });
-    tag.add = function(event) {
-        event.preventDefault();
-        return tag.opts.notify.trigger("add-field");
-    };
-    tag.edit = function(field) {
-        return function(event) {
-            event.preventDefault();
-            return tag.opts.notify.trigger("edit-field", field);
-        };
-    };
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
     tag.remove = function(field) {
         return function(event) {
             event.preventDefault();
             if (wApp.utils.confirm(wApp.i18n.translate("confirm.general"))) {
                 return Zepto.ajax({
-                    type: "delete",
+                    type: "DELETE",
                     url: "/kinds/" + tag.opts.kind.id + "/fields/" + field.id,
                     success: function() {
-                        return refresh();
+                        route("/kinds/" + tag.opts.kind.id + "/edit");
+                        return tag.opts.notify.trigger("refresh");
                     }
                 });
             }
         };
     };
-    refresh = function() {
-        return Zepto.ajax({
-            url: "/kinds/" + tag.opts.kind.id,
-            data: {
-                include: "fields,inheritance"
-            },
-            success: function(data) {
-                tag.kind = data;
-                return tag.update();
-            }
-        });
-    };
 });
 
-riot.tag2("kor-generator-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.generator\', {count: \'other\'})}}}" show="{opts.kind.id}"></kor-t> </h2> <form if="{showForm}" onsubmit="{submit}"> <kor-field field-id="name" label-key="generator.name" model="{generator}" errors="{errors.name}"></kor-field> <kor-field field-id="directive" label-key="generator.directive" type="textarea" model="{generator}" errors="{errors.directive}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
-    var create, params, tag, update;
+riot.tag2("kor-generator-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.generator\'}})} </h2> <h2 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.generator\'}})} </h2> <form if="{data}" onsubmit="{submit}"> <kor-input name="name" label="{tcap(\'activerecord.attributes.generator.name\')}" riot-value="{data.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="directive" label="{tcap(\'activerecord.attributes.generator.directive\')}" type="textarea" riot-value="{data.directive}" errors="{errors.directive}" ref="fields"></kor-input> <hr> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
+    var create, fetch, tag, update, values;
     tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
     tag.errors = {};
-    tag.opts.notify.on("add-generator", function() {
-        tag.generator = {};
-        tag.showForm = true;
-        return tag.update();
-    });
-    tag.opts.notify.on("edit-generator", function(generator) {
-        tag.generator = generator;
-        tag.showForm = true;
-        return tag.update();
+    tag.on("mount", function() {
+        if (tag.opts.id) {
+            return fetch();
+        } else {
+            tag.data = {};
+            return tag.update();
+        }
     });
     tag.submit = function(event) {
+        var p;
         event.preventDefault();
-        if (tag.generator.id) {
-            return update();
-        } else {
-            return create();
-        }
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            tag.errors = {};
+            tag.opts.notify.trigger("refresh");
+            return route("/kinds/" + tag.opts.kindId + "/edit");
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
     };
     create = function() {
         return Zepto.ajax({
             type: "POST",
-            url: "/kinds/" + tag.opts.kind.id + "/generators",
-            data: JSON.stringify(params()),
-            success: function() {
-                tag.opts.notify.trigger("refresh");
-                tag.errors = {};
-                return tag.showForm = false;
-            },
-            error: function(request) {
-                var data;
-                data = JSON.parse(request.response);
-                return tag.errors = data.errors;
-            },
-            complete: function() {
-                return tag.update();
-            }
+            url: "/kinds/" + tag.opts.kindId + "/generators",
+            data: JSON.stringify(values())
         });
     };
     update = function() {
         return Zepto.ajax({
             type: "PATCH",
-            url: "/kinds/" + tag.opts.kind.id + "/generators/" + tag.generator.id,
-            data: JSON.stringify(params()),
-            success: function() {
-                tag.opts.notify.trigger("refresh");
-                return tag.showForm = false;
-            },
-            error: function(request) {
-                return tag.generator = request.responseJSON.record;
-            },
-            complete: function() {
-                return tag.update();
-            }
+            url: "/kinds/" + tag.opts.kindId + "/generators/" + tag.opts.id,
+            data: JSON.stringify(values())
         });
     };
-    params = function() {
+    values = function() {
         var k, ref, results, t;
         results = {};
-        ref = tag.formFields;
+        ref = tag.refs.fields;
         for (k in ref) {
             t = ref[k];
-            results[t.fieldId()] = t.val();
+            results[t.name()] = t.value();
         }
         return {
             generator: results
         };
     };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/kinds/" + tag.opts.kindId + "/generators/" + tag.opts.id,
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
 });
 
-riot.tag2("kor-generators", '<div class="pull-right"> <a href="#/kinds/{opts.kind.id}/generators/new" onclick="{add}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> <kor-t key="activerecord.models.generator" with="{{count: \'other\', capitalize: true}}"> /> </strong> <ul if="{kind}"> <li each="{generator in kind.generators}"> <div class="pull-right"> <a href="#" onclick="{edit(generator)}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(generator)}"><i class="fa fa-remove"></i></a> </div> <a href="#" onclick="{edit(generator)}">{generator.name}</a> </li> </ul>', "", "", function(opts) {
-    var refresh, tag;
+riot.tag2("kor-generators", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/new"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.generator\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{generator in opts.kind.generators}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit"><i class="fa fa-edit"></i></a> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}" onclick="{remove(generator)}"><i class="fa fa-remove"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit">{generator.name}</a> <div class="clearfix"></div> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag;
     tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
     tag.on("mount", function() {
-        return refresh();
+        return console.log(tag.opts.kind);
     });
-    tag.opts.notify.on("refresh", function() {
-        return refresh();
-    });
-    tag.add = function(event) {
-        event.preventDefault();
-        return tag.opts.notify.trigger("add-generator");
-    };
-    tag.edit = function(generator) {
-        return function(event) {
-            event.preventDefault();
-            return tag.opts.notify.trigger("edit-generator", generator);
-        };
-    };
     tag.remove = function(generator) {
         return function(event) {
             event.preventDefault();
             if (wApp.utils.confirm(wApp.i18n.translate("confirm.general"))) {
                 return Zepto.ajax({
-                    type: "delete",
+                    type: "DELETE",
                     url: "/kinds/" + tag.opts.kind.id + "/generators/" + generator.id,
                     success: function() {
-                        return refresh();
+                        route("/kinds/" + tag.opts.kind.id + "/edit");
+                        return tag.opts.notify.trigger("refresh");
                     }
                 });
             }
         };
     };
-    refresh = function() {
-        return Zepto.ajax({
-            url: "/kinds/" + tag.opts.kind.id,
-            data: {
-                include: "generators,inheritance"
-            },
-            success: function(data) {
-                tag.kind = data;
-                return tag.update();
-            }
-        });
-    };
-});
-
-riot.tag2("kor-invalid-entities", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var fetch, queryUpdate, tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.on("mount", function() {
-        var h;
-        if (tag.allowedTo("delete")) {
-            fetch();
-            tag.on("routing:query", fetch);
-            if (h = tag.opts.handlers.pageTitleUpdate) {
-                return h(tag.t("pages.invalid_entities"));
-            }
-        } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
-        }
-    });
-    fetch = function() {
-        return Zepto.ajax({
-            url: "/entities/invalid",
-            data: {
-                include: "kind",
-                page: tag.opts.query.page
-            },
-            success: function(data) {
-                tag.data = data;
-                return tag.update();
-            }
-        });
-    };
-    tag.pageUpdate = function(newPage) {
-        return queryUpdate({
-            page: newPage
-        });
-    };
-    queryUpdate = function(newQuery) {
-        var h;
-        if (h = tag.opts.handlers.queryUpdate) {
-            return h(newQuery);
-        }
-    };
-});
-
-riot.tag2("kor-isolated-entities", '<div class="kor-content-box"> <h1>{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
-    var fetch, queryUpdate, tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.on("mount", function() {
-        var h;
-        if (tag.allowedTo("edit")) {
-            fetch();
-            tag.on("routing:query", fetch);
-            if (h = tag.opts.handlers.pageTitleUpdate) {
-                return h(tag.t("pages.isolated_entities"));
-            }
-        } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
-        }
-    });
-    fetch = function() {
-        return Zepto.ajax({
-            url: "/entities/isolated",
-            data: {
-                include: "kind",
-                page: tag.opts.query.page
-            },
-            success: function(data) {
-                tag.data = data;
-                return tag.update();
-            }
-        });
-    };
-    tag.pageUpdate = function(newPage) {
-        return queryUpdate({
-            page: newPage
-        });
-    };
-    queryUpdate = function(newQuery) {
-        var h;
-        if (h = tag.opts.handlers.queryUpdate) {
-            return h(newQuery);
-        }
-    };
-});
-
-riot.tag2("kor-kind-editor", '<kor-menu-fix></kor-menu-fix> <kor-layout-panel class="left small" if="{opts.kind}"> <kor-panel> <h1> <span show="{opts.kind.id}">{opts.kind.name}</span> <kor-t show="{!opts.kind.id}" key="objects.create" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.kind\')}}}"></kor-t> </h1> <a href="#" onclick="{switchTo(\'general\')}"> » {wApp.i18n.translate(\'general\', {capitalize: true})} </a><br> <a href="#" onclick="{switchTo(\'fields\')}" if="{opts.kind.id}"> » {wApp.i18n.translate(\'activerecord.models.field\', {count: \'other\', capitalize: true})} </a><br> <a href="#" onclick="{switchTo(\'generators\')}" if="{opts.kind.id}"> » {wApp.i18n.translate(\'activerecord.models.generator\', {count: \'other\', capitalize: true})} </a><br> <div class="hr"></div> <div class="text-right"> <a href="#/kinds" class="kor-button">{wApp.i18n.t(\'back_to_list\')}</a> </div> <div class="hr" if="{tab == \'fields\' || tab == \'generators\'}"></div> <kor-fields kind="{opts.kind}" if="{tab == \'fields\'}" notify="{notify}"></kor-fields> <kor-generators kind="{opts.kind}" if="{tab == \'generators\'}" notify="{notify}"></kor-generators> </kor-panel> </kor-layout-panel> <kor-layout-panel class="right large"> <kor-panel> <kor-kind-general-editor if="{tab == \'general\'}" kind="{opts.kind}" notify="{notify}"></kor-kind-general-editor> <kor-field-editor kind="{opts.kind}" if="{tab == \'fields\' && opts.kind.id}" notify="{notify}"></kor-field-editor> <kor-generator-editor kind="{opts.kind}" if="{tab == \'generators\' && opts.kind.id}" notify="{notify}"></kor-generator-editor> </kor-panel> </kor-layout-panel>', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.tab = "general";
-    tag.notify = riot.observable();
-    tag.requireRoles = [ "kind_admin" ];
-    tag.mixin(wApp.mixins.session);
-    tag.on("mount", function() {
-        if (tag.opts.id) {
-            return Zepto.ajax({
-                url: "/kinds/" + tag.opts.id,
-                data: {
-                    include: "fields,generators,inheritance"
-                },
-                success: function(data) {
-                    tag.opts.kind = data;
-                    return tag.update();
-                }
-            });
-        } else {
-            return tag.opts.kind = {};
-        }
-    });
-    tag.on("kind-changed", function(new_kind) {
-        wApp.bus.trigger("kinds-changed");
-        tag.opts.kind = new_kind;
-        return tag.update();
-    });
-    tag.switchTo = function(name) {
-        return function(event) {
-            event.preventDefault();
-            tag.tab = name;
-            return tag.update();
-        };
-    };
-    tag.closeModal = function() {
-        if (tag.opts.modal) {
-            tag.opts.modal.trigger("close");
-            return window.location.reload();
-        }
-    };
-});
-
-riot.tag2("kor-kind-general-editor", '<h2> <kor-t key="general" with="{{capitalize: true}}" show="{opts.kind.id}"></kor-t> <kor-t show="{!opts.kind.id}" key="objects.create" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.kind\')}}}"></kor-t> </h2> <form onsubmit="{submit}" if="{possible_parents}"> <kor-field field-id="schema" label-key="kind.schema" model="{opts.kind}"></kor-field> <kor-field field-id="name" label-key="kind.name" model="{opts.kind}" errors="{errors.name}"></kor-field> <kor-field field-id="plural_name" label-key="kind.plural_name" model="{opts.kind}" errors="{errors.plural_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="kind.description" model="{opts.kind}"></kor-field> <kor-field field-id="url" label-key="kind.url" model="{opts.kind}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="kind.parent" model="{opts.kind}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="kind.abstract" model="{opts.kind}"></kor-field> <kor-field field-id="tagging" type="checkbox" label-key="kind.tagging" model="{opts.kind}"></kor-field> <div if="{!is_media()}"> <kor-field field-id="dating_label" label-key="kind.dating_label" model="{opts.kind}"></kor-field> <kor-field field-id="name_label" label-key="kind.name_label" model="{opts.kind}"></kor-field> <kor-field field-id="distinct_name_label" label-key="kind.distinct_name_label" model="{opts.kind}"></kor-field> </div> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
-    var error, success, tag;
-    tag = this;
-    tag.on("mount", function() {
-        tag.errors = {};
-        return Zepto.ajax({
-            type: "get",
-            url: "/kinds",
-            success: function(data) {
-                var i, kind, len, ref;
-                tag.possible_parents = [];
-                ref = data.records;
-                for (i = 0, len = ref.length; i < len; i++) {
-                    kind = ref[i];
-                    if (!tag.opts.kind || tag.opts.kind.id !== kind.id && tag.opts.kind.id !== 1) {
-                        tag.possible_parents.push({
-                            label: kind.name,
-                            value: kind.id
-                        });
-                    }
-                }
-                return tag.update();
-            }
-        });
-    });
-    tag.is_media = function() {
-        return opts.kind && opts.kind.uuid === wApp.data.medium_kind_uuid;
-    };
-    tag.new_record = function() {
-        return !(tag.opts.kind || {}).id;
-    };
-    tag.values = function() {
-        var field, i, len, ref, result;
-        result = {};
-        ref = tag.tags["kor-field"];
-        for (i = 0, len = ref.length; i < len; i++) {
-            field = ref[i];
-            result[field.fieldId()] = field.val();
-        }
-        return result;
-    };
-    success = function(data) {
-        tag.parent.trigger("kind-changed", data.record);
-        tag.errors = {};
-        return tag.update();
-    };
-    error = function(response) {
-        var data;
-        data = JSON.parse(response.response);
-        tag.errors = data.errors;
-        tag.opts.kind = data.record;
-        return tag.update();
-    };
-    tag.submit = function(event) {
-        event.preventDefault();
-        if (tag.new_record()) {
-            return Zepto.ajax({
-                type: "POST",
-                url: "/kinds",
-                data: JSON.stringify({
-                    kind: tag.values()
-                }),
-                success: success,
-                error: error
-            });
-        } else {
-            return Zepto.ajax({
-                type: "PATCH",
-                url: "/kinds/" + tag.opts.kind.id,
-                data: JSON.stringify({
-                    kind: tag.values()
-                }),
-                success: success,
-                error: error
-            });
-        }
-    };
 });
 
 riot.tag2("kor-loading", "<span>... loading ...</span>", "", "", function(opts) {});
-
-riot.tag2("kor-login", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>Login</h1> <div if="{anyFederatedAuth()}"> <div class="hr"></div> <p>{t(\'prompt.federation_login\')}</p> <a href="/env_auth" class="kor-button"> {config()[\'auth\'][\'env_auth_button_label\']} </a> <div class="hr"></div> </div> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <kor-input type="submit" riot-value="{tcap(\'verbs.login\')}"></kor-input> </form> <a href="#/password_recovery">{tcap(\'password_forgotten\')}</a> <div class="hr"></div> <strong> <span class="kor-shine">ConedaKOR</span> {t(\'nouns.version\')} <span class="kor-shine">{info().version}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'provided_by\')} <span class="kor-shine">{info().operator}</span> </strong> <div class="hr silent"></div> <strong> {tcap(\'nouns.license\')}<br> <a href="http://www.gnu.org/licenses/agpl-3.0.txt" target="_blank"> {t(\'nouns.agpl\')} </a> </strong> <div class="hr silent"></div> <strong> » <a href="{info().source_code_url}" target="_blank"> {t(\'objects.download\', {interpolations: {o: \'nouns.source_code\'}})} </a> </strong> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <div class="kor-blend"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.info);
-    tag.mixin(wApp.mixins.config);
-    tag.on("mount", function() {
-        return Zepto(tag.root).find("input").first().focus();
-    });
-    tag.submit = function(event) {
-        var password, username;
-        event.preventDefault();
-        username = tag.refs.username.value();
-        password = tag.refs.password.value();
-        return wApp.auth.login(username, password).then(function() {
-            var parts, r;
-            parts = wApp.routing.parts();
-            if (r = parts.hash_query.return_to) {
-                return window.location.hash = decodeURIComponent(r);
-            } else {
-                return wApp.bus.trigger("routing:path", wApp.routing.parts());
-            }
-        });
-    };
-    tag.anyFederatedAuth = function() {
-        var k, ref, source;
-        ref = tag.config().auth.sources;
-        for (k in ref) {
-            source = ref[k];
-            if (source.type === "env") {
-                return true;
-            }
-        }
-        return false;
-    };
-});
 
 riot.tag2("kor-logout", '<a href="#" onclick="{logout}"> {t(\'verbs.logout\')} </a>', "", 'show="{isLoggedIn()}"', function(opts) {
     var tag;
@@ -6031,12 +9991,6 @@ riot.tag2("kor-notifications", '<ul> <li each="{data in messages}" class="bg-war
     });
 });
 
-riot.tag2("kor-search", '<h1>Search</h1> <form class="form"> <div class="row"> <div class="col-md-3"> <div class="form-group"> <input type="text" name="terms" placeholder="fulltext search ..." class="form-control" id="kor-search-form-terms" onchange="{form_to_url}" riot-value="{params.terms}"> </div> </div> </div> <div class="row"> <div class="col-md-12 collections"> <button class="btn btn-default btn-xs allnone" onclick="{allnone}">all/none</button> <div class="checkbox-inline" each="{collection in collections}"> <label> <input type="checkbox" riot-value="{collection.id}" checked="{parent.is_collection_checked(collection)}" onchange="{parent.form_to_url}"> {collection.name} </label> </div> </div> </div> <div class="row"> <div class="col-md-12 kinds"> <button class="btn btn-default btn-xs allnone" onclick="{allnone}">all/none</button> <div class="checkbox-inline" each="{kind in kinds}"> <label> <input type="checkbox" riot-value="{kind.id}" checked="{parent.is_kind_checked(kind)}" onchange="{parent.form_to_url}"> {kind.plural_name} </label> </div> </div> </div> <div class="row"> <div class="col-md-3 kinds" each="{field in fields}"> <div class="form-group"> <input type="text" name="{field.name}" placeholder="{field.search_label}" class="kor-dataset-field form-control" id="kor-search-form-dataset-{field.name}" onchange="{parent.form_to_url}" riot-value="{parent.params.dataset[field.name]}"> </div> </div> </div> </form>', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.params = {};
-});
-
 riot.tag2("kor-sub-menu", '<a href="#" onclick="{toggle}">{opts.label}</a> <div class="content" show="{visible()}"> <yield></yield> </div>', "", "", function(opts) {
     var tag;
     tag = this;
@@ -6052,194 +10006,66 @@ riot.tag2("kor-sub-menu", '<a href="#" onclick="{toggle}">{opts.label}</a> <div 
     };
 });
 
-riot.tag2("kor-t", "", "", "", function(opts) {
-    var tag;
-    tag = this;
+riot.tag2("kor-ask-choices", '<div class="kor-content-box" if="{ready()}"> <virtual each="{choice in opts.choices}"> <kor-input label="{choice.name || choice.label}" name="{choice.id || choice.value}" riot-value="{isChecked(choice)}" type="checkbox" ref="choices"></kor-input> <div class="clearfix"></div> </virtual> <hr> <div class="kor-text-right"> <button onclick="{cancel}">{t(\'cancel\')}</button> <button onclick="{ok}">{t(\'ok\')}</button> </div> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("before-mount", function() {
+        console.log(tag.opts);
+        fromOpts();
+    });
+    tag.ok = function(event) {
+        var results = tag.value();
+        tag.opts.modal.trigger("close");
+        if (h = tag.opts.notify) {
+            h(results);
+        }
+    };
+    tag.cancel = function(event) {
+        tag.opts.modal.trigger("close");
+    };
+    tag.ready = function() {
+        return Zepto.isArray(tag.ids);
+    };
     tag.value = function() {
-        return wApp.i18n.t(tag.opts.key, tag.opts["with"]);
-    };
-    tag.on("updated", function() {
-        return Zepto(tag.root).html(tag.value());
-    });
-});
-
-riot.tag2("kor-users", '<div class="kor-content-box"> <div class="kor-layout-commands"> <a href="#/users/new"><i class="plus"></i></a> </div> <h1>{tcap(\'activerecord.models.user\', {count: \'other\'})}</h1> <form onsubmit="{search}" class="inline"> <kor-input label="{t(\'nouns.search\')}" ref="search" riot-value="{opts.query.search}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <thead> <tr> <th class="tiny">{t(\'activerecord.attributes.user.personal\')}</th> <th class="small">{t(\'activerecord.attributes.user.name\')}</th> <th class="small">{t(\'activerecord.attributes.user.full_name\')}</th> <th>{t(\'activerecord.attributes.user.email\')}</th> <th class="tiny right"> {t(\'activerecord.attributes.user.created_at\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.last_login\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.expires_at\')} </th> <th class="tiny buttons"></th> </tr> </thead> <tbody> <tr each="{user in data.records}"> <td><i show="{user.personal}" class="fa fa-check"></i></td> <td>{user.name}</td> <td>{user.full_name}</td> <td class="force-wrap"> <a href="mailto:{user.email}">{user.email}</a> </td> <td class="right">{l(user.created_at)}</td> <td class="right">{l(user.last_login)}</td> <td class="right">{l(user.expires_at)}</td> <td class="right nobreak"> <a onclick="{resetLoginAttempts(user.id)}"> <i class="three_bars"></i> </a> <a onclick="{resetPassword(user.id)}"> <i class="reset_password"></i> </a> <a href="#/users/{user.id}/edit"><i class="pen"></i></a> <a onclick="{destroy(user.id)}"><i class="x"></i></a> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
-    var fetch, queryUpdate, tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.on("mount", function() {
-        var h;
-        if (tag.hasRole("admin")) {
-            fetch();
-            return tag.on("routing:query", fetch);
+        if (Zepto.isArray(tag.refs["choices"])) {
+            var results = [];
+            for (var i = 0; i < tag.refs["choices"].length; i++) {
+                var c = tag.refs["choices"][i];
+                if (c.value()) {
+                    results.push(c.name());
+                }
+            }
+            return results;
         } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
+            return [ tag.refs["choices"].value() ];
         }
-    });
-    fetch = function(newOpts) {
-        return Zepto.ajax({
-            url: "/users",
-            data: {
-                include: "security,technical",
-                search_string: tag.opts.query.search,
-                page: tag.opts.query.page
-            },
-            success: function(data) {
-                tag.data = data;
-                return tag.update();
-            }
-        });
     };
-    tag.resetLoginAttempts = function(id) {
-        return function(event) {
-            event.preventDefault();
-            return Zepto.ajax({
-                type: "PATCH",
-                url: "/users/" + id + "/reset_login_attempts"
-            });
-        };
+    tag.isChecked = function(choice) {
+        return tag.ids.indexOf(choice.id || choice.value) > -1;
     };
-    tag.resetPassword = function(id) {
-        return function(event) {
-            event.preventDefault();
-            if (confirm(tag.t("confirm.sure"))) {
-                return Zepto.ajax({
-                    type: "PATCH",
-                    url: "/users/" + id + "/reset_password"
-                });
-            }
-        };
-    };
-    tag.destroy = function(id) {
-        return function(event) {
-            event.preventDefault();
-            if (confirm(tag.t("confirm.sure"))) {
-                return Zepto.ajax({
-                    type: "DELETE",
-                    url: "/users/" + id,
-                    success: function() {
-                        return fetch();
-                    }
-                });
-            }
-        };
-    };
-    tag.pageUpdate = function(newPage) {
-        return queryUpdate({
-            page: newPage
-        });
-    };
-    tag.search = function(event) {
-        event.preventDefault();
-        return queryUpdate({
-            page: 1,
-            search: tag.refs.search.value()
-        });
-    };
-    queryUpdate = function(newQuery) {
-        var h;
-        if (h = tag.opts.handlers.queryUpdate) {
-            return h(newQuery);
-        }
+    var fromOpts = function() {
+        tag.ids = tag.opts.riotValue || [];
     };
 });
 
-riot.tag2("kor-welcome", '<div class="kor-content-box"> <h1>{config().app.welcome_title}</h1> <div class="target"></div> <div class="teaser" if="{currentUser()}"> <span>{t(\'pages.random_entities\')}</span> <div class="hr"></div> <kor-gallery-grid entities="{entities()}"></kor-gallery-grid> </div> </div>', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.config);
-    tag.on("mount", function() {
-        Zepto(tag.root).find(".target").html(tag.config().app.welcome_html);
-        return Zepto.ajax({
-            url: "/entities/random",
-            data: {
-                include: "gallery_data"
-            },
-            success: function(data) {
-                tag.data = data;
-                return tag.update();
-            }
-        });
-    });
-    tag.entities = function() {
-        return (tag.data || {}).records || [];
-    };
-});
-
-riot.tag2("kor-clipboard", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="kor-layout-commands"> <a onclick="{reset}"><i class="minus"></i></a> </div> <h1>{tcap(\'nouns.clipboard\')}</h1> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <tbody> <tr each="{entity in data.records}"> <td> <kor-input type="checkbox" ref="entityIds" riot-value="{true}" data-id="{entity.id}"></kor-input> </td> <td> <span show="{!entity.medium}">{entity.display_name}</span> <img show="{entity.medium}" riot-src="{entity.medium.url.icon}" class="image"> </td> <td class="right nobreak"> <a onclick="{remove(entity.id)}"><i class="minus"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var fetch, tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    window.t = tag;
-    tag.on("mount", function() {
-        var h;
-        if (tag.currentUser() && !tag.isGuest()) {
-            return fetch();
-        } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
-        }
-    });
-    tag.selectedIds = function() {
-        var e, i, len, ref, results;
-        ref = tag.refs.entityIds;
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-            e = ref[i];
-            if (e.checked()) {
-                results.push(e.opts.dataId);
-            }
-        }
-        return results;
-    };
-    tag.reset = function(event) {
-        var h;
-        event.preventDefault();
-        if (h = tag.opts.handlers.reset) {
-            return h().done(fetch);
-        }
-    };
-    tag.remove = function(id) {
-        return function(event) {
-            var h;
-            event.preventDefault();
-            if (h = tag.opts.handlers.remove) {
-                return h(id).done(fetch);
-            }
-        };
-    };
-    fetch = function() {
-        console.log("fetching:", tag.opts.entityIds);
-        return Zepto.ajax({
-            url: "/clipboard",
-            data: {
-                ids: tag.opts.entityIds
-            },
-            success: function(data) {
-                tag.data = data;
-                return tag.update();
-            }
-        });
-    };
-});
-
-riot.tag2("kor-clipboard-control", '<a onclick="{toggle}"> <i class="target_hit" show="{isIncluded()}"></i> <i class="target" show="{!isIncluded()}"></i> </a>', "", "", function(opts) {
+riot.tag2("kor-clipboard-control", '<a onclick="{toggle}" if="{!isGuest()}"> <i class="target_hit" show="{isIncluded()}"></i> <i class="target" show="{!isIncluded()}"></i> </a> <a onclick="{toggleSelection}" if="{!isGuest()}"> <i class="select_hit" show="{isSelected()}"></i> <i class="select" show="{!isSelected()}"></i> </a>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        return wApp.bus.on("clipboard-changed", tag.update);
+    });
+    tag.on("unmount", function() {
+        return wApp.bus.off("clipboard-changed", tag.update);
+    });
     tag.isIncluded = function() {
         return wApp.clipboard.includes(tag.opts.entity.id);
+    };
+    tag.isSelected = function() {
+        return wApp.clipboard.selected(tag.opts.entity.id);
     };
     tag.toggle = function(event) {
         event.preventDefault();
@@ -6256,146 +10082,249 @@ riot.tag2("kor-clipboard-control", '<a onclick="{toggle}"> <i class="target_hit"
         }
         return tag.update();
     };
+    tag.toggleSelection = function(event) {
+        event.preventDefault();
+        if (!tag.isSelected()) {
+            wApp.clipboard.select(tag.opts.entity.id);
+            wApp.bus.trigger("message", "notice", tag.t("objects.marked_as_current_success"));
+            return tag.update();
+        }
+    };
 });
 
-riot.tag2("kor-datings-editor", '<div class="header"> <button onclick="{add}"> {t(\'verbs.add\', {capitalize: true})} </button> <label> {t(         \'activerecord.attributes.relationship.dating.other\',         {capitalize: true}       )} </label> <div class="clearfix"></div> </div> <ul> <li each="{dating, i in opts.datings}" show="{!dating._destroy}"> <kor-input label="{t(\'activerecord.attributes.dating.label\', {capitalize: true})}" riot-value="{dating.label}" ref="datingLabels"></kor-input> <kor-input label="{t(\'activerecord.attributes.dating.dating_string\', {capitalize: true})}" riot-value="{dating.value}" ref="datingDatingStrings"></kor-input> <button onclick="{remove(i)}"> {t(\'verbs.remove\')} </button> </li> </ul>', "", "", function(opts) {
-    var tag;
-    tag = this;
+riot.tag2("kor-clipboard-subselect-control", '<kor-input type="checkbox" riot-value="{checked()}" onchange="{change}"></kor-input>', "", "", function(opts) {
+    var tag = this;
+    tag.checked = function() {
+        return wApp.clipboard.subSelected(tag.opts.entity.id);
+    };
+    tag.change = function(event) {
+        var e = Zepto(event.target);
+        var id = tag.opts.entity.id;
+        if (e.prop("checked")) {
+            wApp.clipboard.subSelect(id);
+        } else {
+            wApp.clipboard.unSubSelect(id);
+        }
+    };
+});
+
+riot.tag2("kor-collection-selector", '<virtual if="{collections}"> <kor-input if="{!opts.multiple}" label="{tcap(\'activerecord.models.collection\')}" name="{opts.name}" type="select" options="{collections}" ref="input"></kor-input> <virtual if="{opts.multiple}"> <label>{tcap(\'activerecord.models.collection\', {count: \'other\'})}:</label> <strong if="{ids.length == 0}">{t(\'all\')}</strong> <strong if="{ids.length > 0}">{selectedList()}</strong> <a onclick="{selectCollections}"><i class="fa fa-edit"></i></a> </virtual> </virtual>', "", "", function(opts) {
+    var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.add = function(event) {
-        event.preventDefault();
-        tag.opts.datings.push({});
-        return tag.update();
-    };
-    tag.remove = function(index) {
-        return function(event) {
-            var dating;
-            event.preventDefault();
-            dating = tag.opts.datings;
-            if (dating.id) {
-                tag.opts.datings[index]._destroy = true;
-            } else {
-                tag.opts.datings.splice(index, 1);
-            }
-            return tag.update();
-        };
+    tag.on("before-mount", function() {
+        tag.ids = tag.opts.riotValue || [];
+    });
+    tag.on("mount", function() {
+        fetch();
+    });
+    tag.name = function() {
+        return tag.opts.name;
     };
     tag.value = function() {
-        var d, datingDatingStrings, datingLabels, i, j, len, ref;
-        datingLabels = wApp.utils.toArray(tag.refs["datingLabels"]);
-        datingDatingStrings = wApp.utils.toArray(tag.refs["datingDatingStrings"]);
-        ref = tag.opts.datings;
-        for (i = j = 0, len = ref.length; j < len; i = ++j) {
-            d = ref[i];
-            d["label"] = datingLabels[i].value();
-            d["value"] = datingDatingStrings[i].value();
+        if (tag.opts.multiple) {
+            return tag.ids;
+        } else {
+            return tag.refs["input"].value();
         }
-        return tag.opts.datings;
+    };
+    tag.selectCollections = function(event) {
+        event.preventDefault();
+        wApp.bus.trigger("modal", "kor-ask-choices", {
+            choices: allowedCollections(),
+            multiple: true,
+            notify: newSelection,
+            riotValue: tag.ids
+        });
+    };
+    tag.selectedList = function() {
+        var results = [];
+        for (var i = 0; i < tag.collections.length; i++) {
+            var c = tag.collections[i];
+            if (tag.ids.indexOf(c.id) != -1) {
+                results.push(c.name);
+            }
+        }
+        return results.join(", ");
+    };
+    var newSelection = function(ids) {
+        tag.ids = ids;
+        tag.update();
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/collections",
+            success: function(data) {
+                tag.collections = data.records;
+                tag.update();
+            }
+        });
+    };
+    var allowedCollections = function() {
+        var allowed = wApp.session.current.user.permissions.collections[tag.opts.policy];
+        var results = [];
+        for (var i = 0; i < tag.collections.length; i++) {
+            var c = tag.collections[i];
+            if (allowed.indexOf(c.id) != -1) {
+                results.push(c);
+            }
+        }
+        return results;
     };
 });
 
-riot.tag2("kor-entity", '<virtual if="{isMedium()}"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{opts.entity}"></kor-clipboard-control> <a href="#/entities/{opts.entity.id}"> <img riot-src="{opts.entity.medium.url.thumbnail}"> </a> <div> {t(\'nouns.content_type\')}: <span class="content-type">{opts.entity.medium.content_type}</span> </div> </virtual> <virtual if="{!isMedium()}"> <a class="name" href="#/entities/{opts.entity.id}">{opts.entity.display_name}</a> <span class="kind">{opts.entity.kind_name}</span> </virtual>', "", 'class="{medium: isMedium()}"', function(opts) {
+riot.tag2("kor-dataset-fields", '<kor-input each="{field in opts.fields}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields"></kor-input>', "", "", function(opts) {
+    var tag = this;
+    tag.values = function() {
+        return opts.values || {};
+    };
+    tag.name = function() {
+        return tag.opts.name;
+    };
+    tag.value = function() {
+        var result = {};
+        var inputs = tag.tags["kor-input"] || [];
+        for (var i = 0; i < inputs.length; i++) {
+            var field = tag.tags["kor-input"][i];
+            result[field.name()] = field.value();
+        }
+        return result;
+    };
+});
+
+riot.tag2("kor-datings-editor", '<div class="header"> <button onclick="{add}" class="pull-right"> {t(\'verbs.add\', {capitalize: true})} </button> <label>{opts.label || tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}</label> <div class="clearfix"></div> </div> <ul show="{anyVisibleDatings()}"> <li each="{dating, i in data}" show="{!dating._destroy}" visible="{!dating._destroy}"> <kor-input label="{t(\'activerecord.attributes.dating.label\', {capitalize: true})}" riot-value="{dating.label}" ref="labels" errors="{errorsFor(i, \'label\')}"></kor-input> <kor-input label="{t(\'activerecord.attributes.dating.dating_string\', {capitalize: true})}" riot-value="{dating.dating_string}" ref="dating_strings" errors="{errorsFor(i, \'dating_string\')}"></kor-input> <div class="kor-text-right"> <button onclick="{remove}"> {t(\'verbs.remove\')} </button> </div> <div class="clearfix"></div> </li> </ul>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        tag.data = tag.opts.riotValue || [];
+        return tag.update();
+    });
+    tag.anyVisibleDatings = function() {
+        var dating, j, len, ref;
+        ref = tag.data || [];
+        for (j = 0, len = ref.length; j < len; j++) {
+            dating = ref[j];
+            if (!dating["_destroy"]) {
+                return true;
+            }
+        }
+        return false;
+    };
+    tag.name = function() {
+        return tag.opts.name;
+    };
+    tag.errorsFor = function(i, field) {
+        var e, o;
+        e = tag.opts.errors || [];
+        o = e[i] || {};
+        return o[field];
+    };
+    tag.add = function(event) {
+        var dl;
+        event.preventDefault();
+        dl = "";
+        if (tag.opts["for"] === "relationship") {
+            dl = wApp.config.data.values.relationship_dating_label;
+        }
+        if (tag.opts["for"] === "entity") {
+            dl = tag.opts.kind.settings.dating_label;
+        }
+        tag.data.push({
+            label: dl
+        });
+        return tag.update();
+    };
+    tag.remove = function(event) {
+        var dating, index;
+        event.preventDefault();
+        dating = event.item.dating;
+        index = event.item.i;
+        if (dating.id) {
+            tag.data[index]._destroy = true;
+        } else {
+            tag.data.splice(index, 1);
+        }
+        return tag.update();
+    };
+    tag.value = function() {
+        var dating, datingStringInputs, i, labelInputs, ref;
+        labelInputs = wApp.utils.toArray(tag.refs["labels"]);
+        datingStringInputs = wApp.utils.toArray(tag.refs["dating_strings"]);
+        ref = tag.data;
+        for (i in ref) {
+            dating = ref[i];
+            dating["label"] = labelInputs[i].value();
+            dating["dating_string"] = datingStringInputs[i].value();
+        }
+        return tag.data;
+    };
+});
+
+riot.tag2("kor-entity", '<virtual if="{isMedium()}"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{opts.entity}"></kor-clipboard-control> <a href="#/entities/{opts.entity.id}" class="to-medium"> <img riot-src="{opts.entity.medium.url.thumbnail}"> </a> <div if="{!opts.noContentType}"> {t(\'nouns.content_type\')}: <span class="content-type">{opts.entity.medium.content_type}</span> </div> </virtual> <virtual if="{!isMedium()}"> <a class="name" href="#/entities/{opts.entity.id}">{opts.entity.display_name}</a> <span class="kind">{opts.entity.kind_name}</span> </virtual>', "", 'class="{medium: isMedium()}"', function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.info);
     tag.isMedium = function() {
         return tag.opts.entity && !!tag.opts.entity.medium_id;
     };
 });
 
-riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands"> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <a href="#/entities/{data.id}/edit"><i class="pen"></i></a> </virtual> <a if="{allowedTo(\'edit\', data.collection_id)}" onclick="{delete}"><i class="x"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{field.value}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a><i class="plus"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.creator}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span show="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updater}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span show="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <span class="value">{authorityGroups()}</span> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/data.medium_id"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="/media/{data.medium_id}/{op}" onclick="{transform(op)}"><i class="{op}"></i></a> </div> <div class="formats"> <a href="/media/{data.medium.id}">{t(\'verbs.enlarge\')}</a> | <a href="/media/maximize/{data.medium.id}">{t(\'verbs.maximize\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="/media/download/original/{data.medium.id}}">{t(\'nouns.original\')}</a> | <a href="/media/download/normal/{data.medium.id}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="/tools/add_media/{data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var fetch, tag;
+riot.tag2("kor-entity-properties-editor", '<kor-input label="{opts.label}" type="textarea" riot-value="{valueFromParent()}"></kor-input>', "", "", function(opts) {
+    var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.on("mount", function() {
-        return fetch();
-    });
-    tag["delete"] = function(event) {
-        var message;
-        event.preventDefault();
-        message = tag.t("objects.confirm_destroy", {
-            interpolations: {
-                o: "activerecord.models.entity"
-            }
-        });
-        if (confirm(message)) {
-            return console.log("deleting");
-        }
-    };
-    tag.visibleFields = function() {
-        var f, i, len, ref, results;
-        ref = tag.data.fields;
+    tag.valueFromParent = function() {
+        var i, len, p, ref, results;
         results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-            f = ref[i];
-            if (f.value && f.show_on_entity) {
-                results.push(f);
+        if (opts.riotValue) {
+            ref = opts.riotValue;
+            for (i = 0, len = ref.length; i < len; i++) {
+                p = ref[i];
+                results.push(p.label + ": " + p.value);
             }
+        }
+        return results.join("\n");
+    };
+    tag.name = function() {
+        return tag.opts.name;
+    };
+    tag.value = function() {
+        var i, kv, len, line, ref, results, text;
+        text = tag.tags["kor-input"].value();
+        if (text.match(/^\s*$/)) {
+            return [];
+        }
+        results = [];
+        ref = text.split(/\n/);
+        for (i = 0, len = ref.length; i < len; i++) {
+            line = ref[i];
+            kv = line.split(/\s*:\s*/);
+            results.push({
+                label: kv[0],
+                value: kv[1]
+            });
         }
         return results;
     };
-    tag.authorityGroups = function() {
-        var g;
-        return function() {
-            var i, len, ref, results;
-            ref = tag.data.groups;
-            results = [];
-            for (i = 0, len = ref.length; i < len; i++) {
-                g = ref[i];
-                results.push(g.name);
-            }
-            return results;
-        }().join(", ");
-    };
-    tag.showTagging = function() {
-        return tag.data.kind.settings.tagging === "1" && (tag.data.tags.length > 0 || tag.allowedTo("tagging", tag.data.collection_id));
-    };
-    tag.transform = function(op) {
-        return function(event) {
-            return event.preventDefault();
-        };
-    };
-    fetch = function() {
-        return Zepto.ajax({
-            url: "/entities/" + tag.opts.id,
-            data: {
-                include: "all"
-            },
-            success: function(data) {
-                var h;
-                tag.data = data;
-                if (h = tag.opts.handlers.pageTitleUpdate) {
-                    return h(tag.data.name);
-                }
-            },
-            error: function() {
-                var h;
-                if (h = tag.opts.handlers.accessDenied) {
-                    return h();
-                }
-            },
-            complete: function() {
-                return tag.update();
-            }
-        });
-    };
-    tag.inplaceTagHandlers = {
-        doneHandler: fetch
-    };
 });
 
-riot.tag2("kor-entity-selector", '<a onclick="{gotoTab(\'search\')}" class="{\'selected\': currentTab == \'search\'}">{t(\'nouns.search\')}</a> | <a onclick="{gotoTab(\'visited\')}" class="{\'selected\': currentTab == \'visited\'}">{t(\'recently_visited\')}</a> | <a onclick="{gotoTab(\'created\')}" class="{\'selected\': currentTab == \'created\'}">{t(\'recently_created\')}</a> <virtual if="{opts.riotValue}"> | <a onclick="{gotoTab(\'current\')}" class="{\'selected\': currentTab == \'current\'}">{t(\'currently_linked\')}</a> </virtual> <kor-pagination if="{data}" page="{page}" per-page="{9}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <table if="{!!groupedEntities}"> <tbody> <tr each="{row in groupedEntities}"> <td each="{record in row}" onclick="{select(record)}" class="{selected: isSelected(record)}"> <kor-entity entity="{record}"></kor-entity> </td> </tr> </tbody> </table>', "", "", function(opts) {
+riot.tag2("kor-entity-selector", '<div class="pull-right"> <a href="#" onclick="{gotoTab(\'search\')}" class="{\'selected\': currentTab == \'search\'}">{t(\'nouns.search\')}</a> | <a href="#" onclick="{gotoTab(\'visited\')}" class="{\'selected\': currentTab == \'visited\'}">{t(\'recently_visited\')}</a> | <a href="#" onclick="{gotoTab(\'created\')}" class="{\'selected\': currentTab == \'created\'}">{t(\'recently_created\')}</a> <virtual if="{id}"> | <a href="#" onclick="{gotoTab(\'current\')}" class="{\'selected\': currentTab == \'current\'}">{t(\'currently_linked\')}</a> </virtual> </div> <div class="header"> <label>{opts.label || tcap(\'activerecord.models.entity\')}</label> </div> <kor-input if="{currentTab == \'search\'}" name="terms" placeholder="{tcap(\'nouns.term\')}" ref="terms" onkeyup="{search}"></kor-input> <kor-pagination if="{data}" page="{page}" per-page="{9}" total="{data.total}" on-paginate="{paginate}"></kor-pagination> <table if="{!!groupedEntities}"> <tbody> <tr each="{row in groupedEntities}"> <td each="{record in row}" onclick="{select}" class="{selected: isSelected(record)}"> <kor-entity if="{record}" entity="{record}"></kor-entity> </td> </tr> </tbody> </table> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "", function(opts) {
     var fetch, group, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.currentTab = "current";
     tag.page = 1;
-    tag.on("criteria-changed", function() {
+    tag.on("before-mount", function() {
+        tag.id = tag.opts.riotValue;
+        tag.currentTab = tag.id ? "current" : "search";
+        tag.trigger("reload");
+        return tag.update();
+    });
+    tag.on("reload", function() {
         return fetch();
     });
     tag.gotoTab = function(newTab) {
@@ -6403,28 +10332,57 @@ riot.tag2("kor-entity-selector", '<a onclick="{gotoTab(\'search\')}" class="{\'s
             event.preventDefault();
             if (tag.currentTab !== newTab) {
                 tag.currentTab = newTab;
+                tag.data = {};
+                tag.groupedEntities = [];
                 fetch();
                 return tag.update();
             }
         };
     };
     tag.isSelected = function(record) {
-        return tag.opts.riotValue && tag.opts.riotValue.id === record.id;
+        return record && tag.id === record.id;
     };
-    tag.select = function(record) {
-        return tag.opts.entity = record;
+    tag.select = function(event) {
+        var h, record;
+        event.preventDefault();
+        record = event.item.record;
+        if (tag.isSelected(record)) {
+            tag.id = void 0;
+        } else {
+            tag.id = record.id;
+        }
+        if (h = tag.opts.onchange) {
+            return h();
+        }
     };
-    tag.pageUpdate = function(newPage) {
+    tag.search = function() {
+        if (tag.to) {
+            window.clearTimeout(tag.to);
+        }
+        return tag.to = window.setTimeout(fetch, 300);
+    };
+    tag.paginate = function(newPage) {
         tag.page = newPage;
         return fetch();
+    };
+    tag.value = function() {
+        return tag.id;
     };
     fetch = function() {
         switch (tag.currentTab) {
           case "current":
-            tag.data = {
-                records: [ tag.opts.riotValue ]
-            };
-            return group();
+            if (tag.opts.riotValue) {
+                return Zepto.ajax({
+                    url: "/entities/" + tag.opts.riotValue,
+                    success: function(data) {
+                        tag.data = {
+                            records: [ data ]
+                        };
+                        return group();
+                    }
+                });
+            }
+            break;
 
           case "visited":
             return Zepto.ajax({
@@ -6453,15 +10411,29 @@ riot.tag2("kor-entity-selector", '<a onclick="{gotoTab(\'search\')}" class="{\'s
                     return group();
                 }
             });
+
+          case "search":
+            if (tag.refs.terms) {
+                return Zepto.ajax({
+                    url: "/entities",
+                    data: {
+                        terms: tag.refs.terms.value()
+                    },
+                    success: function(data) {
+                        tag.data = data;
+                        return group();
+                    }
+                });
+            }
         }
     };
     group = function() {
-        tag.groupedEntities = wApp.utils.inGroupsOf(3, tag.data.records);
+        tag.groupedEntities = wApp.utils.inGroupsOf(3, tag.data.records, null);
         return tag.update();
     };
 });
 
-riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{inputType()}" name="{opts.fieldId}" riot-value="{value()}" checked="{checked()}"> <textarea if="{has_textarea()}" name="{opts.fieldId}">{value()}</textarea> <select if="{has_select()}" name="{opts.fieldId}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.allowNoSelection}" riot-value="{undefined}" selected="{!!value()}">{noSelectionLabel()}</option> <option each="{o in opts.options}" riot-value="{o.value}" selected="{parent.selected(o.value)}">{o.label}</option> </select> <ul if="{has_errors()}" class="errors"> <li each="{error in errors()}">{error}</li> </ul> </label>', "", "class=\"{'errors': has_errors()}\"", function(opts) {
+riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{inputType()}" name="{opts.fieldId}" riot-value="{value()}" checked="{checked()}"> <textarea if="{has_textarea()}" name="{opts.fieldId}">{value()}</textarea> <select if="{has_select()}" name="{opts.fieldId}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.allowNoSelection}" riot-value="{undefined}" selected="{!!value()}">{noSelectionLabel()}</option> <option each="{o in opts.options}" riot-value="{o.value}" selected="{selected(o.value)}">{o.label}</option> </select> <ul if="{has_errors()}" class="errors"> <li each="{error in errors()}">{error}</li> </ul> </label>', "", "class=\"{'errors': has_errors()}\"", function(opts) {
     var tag;
     tag = this;
     tag.on("mount", function() {
@@ -6527,12 +10499,12 @@ riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{input
         }
     };
     tag.selected = function(key) {
-        if (tag.value()) {
-            if (tag.opts.multiple) {
-                return tag.value().indexOf(key) > -1;
-            } else {
-                return tag.value() === key;
-            }
+        var v;
+        v = tag.opts.model ? tag.opts.model[tag.opts.fieldId] : tag.opts.riotValue;
+        if (v && tag.opts.multiple) {
+            return v.indexOf(key) > -1;
+        } else {
+            return v === key;
         }
     };
     tag.value = function() {
@@ -6654,16 +10626,24 @@ riot.tag2("kor-inplace-tags", '<virtual if="{opts.entity.tags.length > 0}"> <spa
     };
 });
 
-riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{valueFromParent()}" checked="{checkedFromParent()}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{valueFromParent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{valueFromParent()}" multiple="{opts.multiple}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}"> {item.name || item.label || item} </option> </select> </label> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
+riot.tag2("kor-input", '<label if="{opts.type != \'radio\'}"> {opts.label} <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{valueFromParent()}" checked="{checkedFromParent()}" placeholder="{opts.placeholder}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{valueFromParent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{valueFromParent()}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}"> {item.name || item.label || item} </option> </select> </label> <virtual if="{opts.type == \'radio\'}"> <label>{opts.label}</label> <label class="radio" each="{item in opts.options}"> <input type="radio" name="{opts.name}" riot-value="{item.id || item.value || item}" checked="{valueFromParent() == (item.id || item.value || item)}"> {item.name || item.label || item} </label> </virtual> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
     var tag;
     tag = this;
     tag.name = function() {
         return tag.opts.name;
     };
     tag.value = function() {
-        var result;
+        var i, input, j, len, ref, result;
         if (tag.opts.type === "checkbox") {
             return Zepto(tag.root).find("input").prop("checked");
+        } else if (tag.opts.type === "radio") {
+            ref = Zepto(tag.root).find("input");
+            for (j = 0, len = ref.length; j < len; j++) {
+                input = ref[j];
+                if ((i = $(input)).prop("checked")) {
+                    return i.attr("value");
+                }
+            }
         } else {
             result = Zepto(tag.root).find("input, select, textarea").val();
             if (result === "0" && tag.opts.type === "select") {
@@ -6707,12 +10687,841 @@ riot.tag2("kor-input", '<label> {opts.label} <input if="{opts.type != \'select\'
     };
 });
 
-riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <kor-field label-key="hide_abstract" type="checkbox" field-id="hideAbstract" onchange="{submit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/kinds/new"> <i class="fa fa-plus-square"></i> </a> </div> <virtual if="{filteredRecords && filteredRecords.length}"> <table each="{records, schema in groupedResults}" class="kor_table text-left"> <thead> <tr> <th>{schema == \'null\' ? t(\'no_schema\') : schema}</th> <th></th> </tr> </thead> <tbody> <tr each="{kind in records}"> <td class="{active: !kind.abstract}"> <div class="name"> <a href="#/kinds/{kind.id}">{kind.name}</a> </div> <div show="{kind.fields.length}"> <span class="label"> {wApp.i18n.t(\'activerecord.models.field\', {count: \'other\'})}: </span> {fieldNamesFor(kind)} </div> <div show="{kind.generators.length}"> <span class="label"> {wApp.i18n.t(\'activerecord.models.generator\', {count: \'other\'})}: </span> {generatorNamesFor(kind)} </div> </td> <td class="text-right buttons"> <a href="#/kinds/{kind.id}"><i class="fa fa-edit"></i></a> <a if="{kind.removable}" href="#/kinds/{kind.id}" onclick="{delete(kind)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </virtual>', "", "", function(opts) {
+riot.tag2("kor-kind-selector", '<kor-input if="{kinds}" label="{tcap(\'activerecord.models.kind\')}" type="select" ref="input" options="{kinds}" placeholder="{t(\'all\')}" riot-value="{opts.riotValue}"></kor-input> </kor-input>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        fetch();
+    });
+    tag.name = function() {
+        return tag.opts.name;
+    };
+    tag.value = function() {
+        var v = tag.refs.input.value();
+        if (v) {
+            return parseInt(v);
+        } else {
+            return v;
+        }
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/kinds",
+            success: function(data) {
+                var results = [];
+                for (var i = 0; i < data.records.length; i++) {
+                    var k = data.records[i];
+                    if (k.id != wApp.info.data.medium_kind_id) {
+                        results.push(k);
+                    }
+                }
+                tag.kinds = results;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-loading", '<img show="{ajaxInProgress()}" src="/images/loading.gif">', "", "", function(opts) {
+    var tag = this;
+    tag.on("mount", function() {
+        wApp.bus.on("ajax-state-changed", tag.update);
+    });
+    tag.off("mount", function() {
+        wApp.bus.off("ajax-state-changed", tag.update);
+    });
+    tag.ajaxInProgress = function() {
+        return wApp.state.requests.length > 0;
+    };
+});
+
+riot.tag2("kor-login-info", '<div class="item"> <span class="kor-shine">ConedaKOR</span> {t(\'nouns.version\')} <span class="kor-shine">{info().version}</span> </div> <div class="item"> {tcap(\'provided_by\')}<br> <span class="kor-shine">{info().operator}</span> </div> <div class="item"> {tcap(\'nouns.license\')}<br> <a href="http://www.gnu.org/licenses/agpl-3.0.txt" target="_blank"> {t(\'nouns.agpl\')} </a> </div> <div class="item"> » <a href="{info().source_code_url}" target="_blank"> {t(\'objects.download\', {interpolations: {o: \'nouns.source_code\'}})} </a> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.info);
+});
+
+riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amount"> {opts.ids.length} {t(\'activerecord.models.entity\', {count: \'other\'})} </div> <hr> <a class="action" onclick="{merge}">{tcap(\'clipboard_actions.merge\')}</a> <a class="action" onclick="{massRelate}">{tcap(\'clipboard_actions.mass_relate\')}</a> <a class="action" onclick="{massDelete}">{tcap(\'clipboard_actions.mass_delete\')}</a> <a class="action" onclick="{addToAuthorityGroup}">{tcap(\'clipboard_actions.add_to_authority_group\')}</a> <a class="action" onclick="{addToUserGroup}">{tcap(\'clipboard_actions.add_to_user_group\')}</a> <a class="action" onclick="{moveToCollection}">{tcap(\'clipboard_actions.move_to_collection\')}</a>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.merge = function() {};
+    tag.massRelate = function() {};
+    tag.massDelete = function() {
+        if (wApp.utils.confirm()) {
+            var data = {
+                ids: wApp.clipboard.subSelection()
+            };
+            Zepto.ajax({
+                type: "DELETE",
+                url: "/tools/mass_delete",
+                data: JSON.stringify(data),
+                success: function(data) {
+                    var ids = wApp.clipboard.subSelection();
+                    for (var i = 0; i < ids.length; i++) {
+                        wApp.clipboard.remove(ids[i]);
+                    }
+                    notify();
+                }
+            });
+        }
+    };
+    tag.addToAuthorityGroup = function() {};
+    tag.addToUserGroup = function() {
+        var ids = wApp.clipboard.subSelection();
+        wApp.bus.trigger("modal", "kor-add-to-user-group", {
+            id: ids
+        });
+    };
+    tag.moveToCollection = function() {};
+    var notify = function() {
+        var h = tag.opts.onActionSuccess;
+        if (h) {
+            h();
+        }
+    };
+});
+
+riot.tag2("kor-media-relation", '<div class="name"> {opts.name} <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{pageUpdate}"></kor-pagination> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}"></kor-relationship> </virtual>', "", "", function(opts) {
+    var fetch, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.info);
+    tag.on("mount", function() {
+        var base;
+        wApp.bus.on("relationship-updated", fetch);
+        (base = tag.opts).query || (base.query = {});
+        return fetch();
+    });
+    tag.on("unmount", function() {
+        return wApp.bus.off("relationship-updated", fetch);
+    });
+    tag.pageUpdate = function(newPage) {
+        opts.query.page = newPage;
+        return fetch();
+    };
+    tag.refresh = function() {
+        return fetch();
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/" + tag.opts.entity.id + "/relationships",
+            data: {
+                page: tag.opts.query.page,
+                relation_name: tag.opts.name,
+                to_kind_id: tag.info().medium_kind_id
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-menu-fix", "", "", "", function(opts) {
+    var fixMenu, tag;
+    tag = this;
+    tag.on("mount", function() {
+        return wApp.bus.on("kinds-changed", fixMenu);
+    });
+    tag.on("unmount", function() {
+        return wApp.bus.off("kinds-changed", fixMenu);
+    });
+    fixMenu = function() {
+        return Zepto.ajax({
+            url: "/kinds",
+            data: {
+                only_active: true
+            },
+            success: function(data) {
+                var i, kind, len, placeholder, ref, results, select;
+                select = Zepto("#new_entity_kind_id");
+                placeholder = select.find("option:first-child").remove();
+                select.find("option").remove();
+                select.append(placeholder);
+                ref = data.records;
+                results = [];
+                for (i = 0, len = ref.length; i < len; i++) {
+                    kind = ref[i];
+                    results.push(select.append('<option value="' + kind.id + '">' + kind.name + "</option>"));
+                }
+                return results;
+            }
+        });
+    };
+});
+
+riot.tag2("kor-nothing-found", "<span>{t('no_results')}</span>", "", 'show="{!opts.data || opts.data.total == 0}"', function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+});
+
+riot.tag2("kor-about", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.config);
+    tag.on("mount", function() {
+        return Zepto(tag.root).find(".target").html(tag.config().about_html);
+    });
+});
+
+riot.tag2("kor-access-denied", '<div class="kor-layout-left kor-layout-large kor-clear-after"> <div class="kor-content-box"> <h1>{tcap(\'notices.access_denied\')}</h1> {t(\'messages.access_denied\')} <div class="hr"></div> <a href="#/login?return_to={returnTo()}">{t(\'verbs.login\')}</a> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.returnTo = function() {
+        return encodeURIComponent(wApp.routing.fragment());
+    };
+});
+
+riot.tag2("kor-clipboard", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="kor-layout-commands"> <a onclick="{reset}"><i class="minus"></i></a> </div> <h1>{tcap(\'nouns.clipboard\')}</h1> <div class="mass-subselect"> <a href="#" onclick="{selectAll}">{t(\'all\')}</a> | <a href="#" onclick="{selectNone}">{t(\'none\')}</a> </div> <kor-pagination if="{data}" page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" per-page-control="{true}"></kor-pagination> <hr> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-nothing-found data="{data}"></kor-nothing-found> <table if="{data}"> <tbody> <tr each="{entity in data.records}"> <td> <kor-clipboard-subselect-control entity="{entity}"></kor-clipboard-subselect-control> </td> <td> <a href="#/entities/{entity.id}"> <span show="{!entity.medium}">{entity.display_name}</span> <img if="{entity.medium}" riot-src="{entity.medium.url.icon}" class="image"> </a> </td> <td class="right nobreak"> <a onclick="{remove(entity.id)}"><i class="minus"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box"> <kor-mass-action if="{data}" ids="{selectedIds()}" on-action-success="{reload}"></kor-mass-action> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        wApp.bus.on("routing:query", fetch);
+        if (tag.currentUser() && !tag.isGuest()) {
+            fetch();
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                h();
+            }
+        }
+    });
+    tag.on("umount", function() {
+        wApp.bus.off("routing:query", fetch);
+    });
+    tag.reload = function() {
+        fetch();
+    };
+    tag.selectAll = function(event) {
+        event.preventDefault();
+        wApp.clipboard.subSelectAll();
+    };
+    tag.selectNone = function(event) {
+        event.preventDefault();
+        wApp.clipboard.resetSubSelection();
+    };
+    tag.selectedIds = function() {
+        return wApp.clipboard.subSelection();
+    };
+    tag.reset = function(event) {
+        event.preventDefault();
+        wApp.clipboard.reset();
+        fetch();
+    };
+    tag.remove = function(id) {
+        return function(event) {
+            event.preventDefault();
+            wApp.clipboard.remove(id);
+            fetch();
+        };
+    };
+    tag.page = function(newPage, newPerPage) {
+        wApp.routing.query({
+            page: newPage,
+            per_page: newPerPage
+        });
+    };
+    var urlParams = function() {
+        var results = wApp.routing.query();
+        results["id"] = wApp.clipboard.ids().join(",");
+        return results;
+    };
+    var fetch = function() {
+        var params = urlParams();
+        if (params["id"].length) {
+            Zepto.ajax({
+                url: "/entities",
+                data: urlParams(),
+                success: function(data) {
+                    tag.data = data;
+                    tag.update();
+                }
+            });
+        } else {
+            tag.data = null;
+            tag.update();
+        }
+    };
+});
+
+riot.tag2("kor-collection-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.collection\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.collection\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.collection.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var create, fetch, fetchCredentials, tag, update, values;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("before-mount", function() {
+        tag.errors = {};
+        return tag.data = {};
+    });
+    tag.on("mount", function() {
+        if (tag.opts.id) {
+            fetch();
+        }
+        return fetchCredentials();
+    });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            tag.errors = {};
+            return window.history.back();
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/collections/" + tag.opts.id,
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    create = function() {
+        console.log(values());
+        return Zepto.ajax({
+            type: "POST",
+            url: "/collections",
+            data: JSON.stringify({
+                collection: values()
+            })
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/collections/" + tag.opts.id,
+            data: JSON.stringify({
+                collection: values()
+            })
+        });
+    };
+    values = function() {
+        return {
+            name: tag.refs.fields.value()
+        };
+    };
+    fetchCredentials = function() {
+        return Zepto.ajax({
+            url: "/credentials",
+            success: function(data) {
+                tag.credentials = data;
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-collections", '<div class="kor-content-box"> <a href="#/collections/new" class="pull-right"><i class="plus"></i></a> <h1>{tcap(\'activerecord.models.collection\', {count: \'other\'})}</h1> <table> <thead> <th>{tcap(\'activerecord.attributes.collection.name\')}</th> <th class="right"># {tcap(\'activerecord.models.entity.other\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{collection in data.records}"> <td>{collection.name}</td> <td class="right">{collection.entity_count}</td> <td class="right"> <a href="#/collections/{collection.id}/edit"><i class="pen"></i></a> <a href="#/collections/{collection.id}/destroy" onclick="{onDeleteClicked}"><i class="x"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        fetch();
+    });
+    tag.onDeleteClicked = function(event) {
+        event.preventDefault();
+        if (wApp.utils.confirm()) destroy(event.item.collection.id);
+    };
+    var destroy = function(id) {
+        Zepto.ajax({
+            type: "DELETE",
+            url: "/collections/" + id,
+            success: fetch,
+            error: function(xhr) {
+                tag.errors = JSON.parse(xhr.responseText).errors;
+                wApp.utils.scrollToTop();
+            }
+        });
+    };
+    fetch = function() {
+        Zepto.ajax({
+            url: "/collections",
+            data: {
+                include: "counts"
+            },
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <hr> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.name\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}"></kor-input> <kor-input if="{hasName()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input if="{hasName()}" label="{tcap(\'activerecord.attributes.entity.distinct_name\')}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <hr> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <hr> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var create, fetch, fetchCollections, fetchKind, queryHandler, tag, update, values;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("before-mount", function() {
+        tag.errors = {};
+        tag.dating_errors = [];
+        return tag.noNameStatements = [ {
+            label: tag.t("values.no_name_statements.unknown"),
+            value: "unknown"
+        }, {
+            label: tag.t("values.no_name_statements.not_available"),
+            value: "not_available"
+        }, {
+            label: tag.t("values.no_name_statements.empty_name"),
+            value: "empty_name"
+        }, {
+            label: tag.t("values.no_name_statements.enter_name"),
+            value: "enter_name"
+        } ];
+    });
+    tag.on("mount", function() {
+        fetchCollections();
+        wApp.bus.on("routing:query", queryHandler);
+        return fetch(tag.opts.kind_id);
+    });
+    tag.on("unmount", function() {
+        return wApp.bus.off("routing:query", queryHandler);
+    });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            var id;
+            tag.errors = {};
+            id = tag.opts.id || data.id;
+            return wApp.routing.path("/entities/" + id);
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    tag.isMedium = function() {
+        var kindId;
+        kindId = parseInt(tag.data["kind_id"]) || tag.opts.kindId;
+        return kindId === wApp.info.data.medium_kind_id;
+    };
+    tag.hasName = function() {
+        return tag.refs["fields.no_name_statement"] && tag.refs["fields.no_name_statement"].value() === "enter_name";
+    };
+    queryHandler = function(parts) {
+        if (parts == null) {
+            parts = {};
+        }
+        return fetch(parts["hash_query"]["kind_id"]);
+    };
+    fetch = function(kind_id) {
+        if (tag.opts.id) {
+            return Zepto.ajax({
+                url: "/entities/" + tag.opts.id,
+                data: {
+                    include: "dataset,synonyms,properties,datings"
+                },
+                success: function(data) {
+                    tag.data = data;
+                    return fetchKind();
+                }
+            });
+        } else {
+            tag.data = {
+                kind_id: kind_id,
+                no_name_statement: "enter_name"
+            };
+            return fetchKind();
+        }
+    };
+    fetchKind = function() {
+        return Zepto.ajax({
+            url: "/kinds/" + (tag.data["kind_id"] || tag.opts.kindId),
+            data: {
+                include: "fields,settings"
+            },
+            success: function(data) {
+                tag.kind = data;
+                return tag.update();
+            }
+        });
+    };
+    fetchCollections = function() {
+        return Zepto.ajax({
+            url: "/collections",
+            success: function(data) {
+                tag.collections = data.records;
+                return tag.update();
+            }
+        });
+    };
+    create = function() {
+        return Zepto.ajax({
+            type: "POST",
+            url: "/entities",
+            data: JSON.stringify({
+                entity: values()
+            })
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/entities/" + tag.opts.id,
+            data: JSON.stringify({
+                entity: values()
+            })
+        });
+    };
+    values = function() {
+        var f, i, len, ref, results;
+        results = {};
+        results.no_name_statement = tag.refs["fields.no_name_statement"].value();
+        results.kind_id = tag.data.kind_id || tag.opts.kindId;
+        ref = tag.refs.fields;
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            results[f.name()] = f.value();
+        }
+        return results;
+    };
+});
+
+riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands"> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <a href="#/entities/{data.id}/edit"><i class="pen"></i></a> </virtual> <a if="{allowedTo(\'edit\', data.collection_id)}" onclick="{delete}"><i class="x"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{field.value}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="plus"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.creator}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span show="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updater}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span show="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <span class="value">{authorityGroups()}</span> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}"><i class="{op}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="/media/maximize/{data.medium_id}" target="_blank">{t(\'verbs.maximize\')}</a> </span> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="/media/download/original/{data.medium.id}}">{t(\'nouns.original\')}</a> | <a href="/media/download/normal/{data.medium.id}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="/tools/add_media/{data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var fetch, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        wApp.bus.on("relationship-updated", fetch);
+        wApp.bus.on("relationship-created", fetch);
+        return fetch();
+    });
+    tag.on("unmount", function() {
+        wApp.bus.off("relationship-created", fetch);
+        return wApp.bus.off("relationship-updated", fetch);
+    });
+    tag["delete"] = function(event) {
+        var message;
+        event.preventDefault();
+        message = tag.t("objects.confirm_destroy", {
+            interpolations: {
+                o: "activerecord.models.entity"
+            }
+        });
+        if (confirm(message)) {
+            return console.log("deleting");
+        }
+    };
+    tag.visibleFields = function() {
+        var f, i, len, ref, results;
+        ref = tag.data.fields;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            if (f.value && f.show_on_entity) {
+                results.push(f);
+            }
+        }
+        return results;
+    };
+    tag.authorityGroups = function() {
+        var g;
+        return function() {
+            var i, len, ref, results;
+            ref = tag.data.groups;
+            results = [];
+            for (i = 0, len = ref.length; i < len; i++) {
+                g = ref[i];
+                results.push(g.name);
+            }
+            return results;
+        }().join(", ");
+    };
+    tag.showTagging = function() {
+        return tag.data.kind.settings.tagging === "1" && (tag.data.tags.length > 0 || tag.allowedTo("tagging", tag.data.collection_id));
+    };
+    tag.transform = function(op) {
+        return function(event) {
+            return event.preventDefault();
+        };
+    };
+    tag.addRelationship = function(event) {
+        event.preventDefault();
+        return wApp.bus.trigger("modal", "kor-relationship-editor", {
+            directedRelationship: {
+                from_id: tag.data.id
+            },
+            onCreated: tag.reload
+        });
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/" + tag.opts.id,
+            data: {
+                include: "all"
+            },
+            success: function(data) {
+                var h;
+                tag.data = data;
+                if (h = tag.opts.handlers.pageTitleUpdate) {
+                    return h(tag.data.name);
+                }
+            },
+            error: function() {
+                var h;
+                if (h = tag.opts.handlers.accessDenied) {
+                    return h();
+                }
+            },
+            complete: function() {
+                return tag.update();
+            }
+        });
+    };
+    tag.inplaceTagHandlers = {
+        doneHandler: fetch
+    };
+});
+
+riot.tag2("kor-invalid-entities", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var fetch, queryUpdate, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        var h;
+        if (tag.allowedTo("delete")) {
+            fetch();
+            tag.on("routing:query", fetch);
+            if (h = tag.opts.handlers.pageTitleUpdate) {
+                return h(tag.t("pages.invalid_entities"));
+            }
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/invalid",
+            data: {
+                include: "kind",
+                page: tag.opts.query.page
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    tag.pageUpdate = function(newPage) {
+        return queryUpdate({
+            page: newPage
+        });
+    };
+    queryUpdate = function(newQuery) {
+        var h;
+        if (h = tag.opts.handlers.queryUpdate) {
+            return h(newQuery);
+        }
+    };
+});
+
+riot.tag2("kor-isolated-entities", '<div class="kor-content-box"> <h1>{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+    var fetch, queryUpdate, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        var h;
+        if (tag.allowedTo("edit")) {
+            fetch();
+            tag.on("routing:query", fetch);
+            if (h = tag.opts.handlers.pageTitleUpdate) {
+                return h(tag.t("pages.isolated_entities"));
+            }
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/isolated",
+            data: {
+                include: "kind",
+                page: tag.opts.query.page
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    tag.pageUpdate = function(newPage) {
+        return queryUpdate({
+            page: newPage
+        });
+    };
+    queryUpdate = function(newQuery) {
+        var h;
+        if (h = tag.opts.handlers.queryUpdate) {
+            return h(newQuery);
+        }
+    };
+});
+
+riot.tag2("kor-kind-editor", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1 if="{opts.id && data}"> {tcap(\'objects.edit\', {interpolations: {o: data.name}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.kind\'}})} </h1> <virtual if="{opts.id}"> <a href="#/kinds/{opts.id}/edit"> » {tcap(\'general\', {capitalize: true})} </a><br> </virtual> <hr if="{opts.id}"> <virtual if="{data}"> <kor-fields kind="{data}" notify="{notify}"></kor-fields> <kor-generators kind="{data}" notify="{notify}"></kor-generators> </virtual> <hr if="{opts.id}"> <div class="text-right"> <a href="#/kinds" class="kor-button">{t(\'back_to_list\')}</a> </div> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <virtual if="{!data}"> <kor-kind-general-editor></kor-kind-general-editor> </virtual> <virtual if="{data}"> <kor-kind-general-editor if="{!opts.newField && !opts.fieldId && !opts.newGenerator && !opts.generatorId}" id="{opts.id}"></kor-kind-general-editor> <kor-field-editor if="{opts.newField || opts.fieldId}" id="{opts.fieldId}" kind-id="{data.id}" notify="{notify}"></kor-field-editor> <kor-generator-editor if="{opts.newGenerator || opts.generatorId}" id="{opts.generatorId}" kind-id="{data.id}" notify="{notify}"></kor-generator-editor> </virtual> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var fetch, tag;
+    tag = this;
+    tag.notify = riot.observable();
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        if (tag.opts.id) {
+            fetch();
+        }
+        return tag.notify.on("refresh", fetch);
+    });
+    tag.on("unmount", function() {
+        return tag.notify.off("refresh", fetch);
+    });
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/kinds/" + tag.opts.id,
+            data: {
+                include: "fields,generators,inheritance"
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-kind-general-editor", '<h2>{tcap(\'general\')}</h2> <div> <form if="{data && possibleParents}" onsubmit="{submit}"> <kor-input name="schema" label="{tcap(\'activerecord.attributes.kind.schema\')}" riot-value="{data.schema}" ref="fields"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.kind.name\')}" riot-value="{data.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="plural_name" label="{tcap(\'activerecord.attributes.kind.plural_name\')}" riot-value="{data.plural_name}" errors="{errors.plural_name}" ref="fields"></kor-input> <kor-input name="description" type="textarea" label="{tcap(\'activerecord.attributes.kind.description\')}" riot-value="{data.description}" ref="fields"></kor-input> <kor-input name="url" label="{tcap(\'activerecord.attributes.kind.url\')}" riot-value="{data.url}" ref="fields"></kor-input> <kor-input name="parent_ids" type="select" options="{possibleParents}" multiple="{true}" label="{tcap(\'activerecord.attributes.kind.parent\')}" riot-value="{data.parent_ids}" errors="{errors.parent_ids}" ref="fields"></kor-input> <kor-input name="abstract" type="checkbox" label="{tcap(\'activerecord.attributes.kind.abstract\')}" riot-value="{data.abstract}" ref="fields"></kor-input> <kor-input name="tagging" type="checkbox" label="{tcap(\'activerecord.attributes.kind.tagging\')}" riot-value="{data.tagging}" ref="fields"></kor-input> <div if="{!isMedia()}"> <kor-input name="dating_label" label="{tcap(\'activerecord.attributes.kind.dating_label\')}" riot-value="{data.dating_label}" ref="fields"></kor-input> <kor-input name="name_label" label="{tcap(\'activerecord.attributes.kind.name_label\')}" riot-value="{data.name_label}" ref="fields"></kor-input> <kor-input name="distinct_name_label" label="{tcap(\'activerecord.attributes.kind.distinct_name_label\')}" riot-value="{data.distinct_name_label}" ref="fields"></kor-input> </div> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div>', "", "", function(opts) {
+    var error, fetch, fetchPossibleParents, success, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        tag.errors = {};
+        return fetch();
+    });
+    tag.isMedia = function() {
+        return tag.opts.id && tag.data.uuid === wApp.data.medium_kind_uuid;
+    };
+    tag.new_record = function() {
+        return !(tag.data || {}).id;
+    };
+    tag.values = function() {
+        var field, i, len, ref, result;
+        result = {};
+        ref = tag.tags["kor-input"];
+        for (i = 0, len = ref.length; i < len; i++) {
+            field = ref[i];
+            result[field.name()] = field.value();
+        }
+        return result;
+    };
+    success = function(data) {
+        route("/kinds/" + data.id + "/edit");
+        tag.errors = {};
+        return tag.update();
+    };
+    error = function(response) {
+        var data;
+        data = JSON.parse(response.response);
+        tag.errors = data.errors;
+        return tag.update();
+    };
+    tag.submit = function(event) {
+        event.preventDefault();
+        if (tag.new_record()) {
+            return Zepto.ajax({
+                type: "POST",
+                url: "/kinds",
+                data: JSON.stringify({
+                    kind: tag.values()
+                }),
+                success: success,
+                error: error
+            });
+        } else {
+            return Zepto.ajax({
+                type: "PATCH",
+                url: "/kinds/" + tag.data.id,
+                data: JSON.stringify({
+                    kind: tag.values()
+                }),
+                success: success,
+                error: error
+            });
+        }
+    };
+    fetch = function() {
+        if (tag.opts.id) {
+            return Zepto.ajax({
+                url: "/kinds/" + tag.opts.id,
+                success: function(data) {
+                    tag.data = data;
+                    tag.update();
+                    return fetchPossibleParents();
+                }
+            });
+        } else {
+            tag.data = {};
+            return fetchPossibleParents();
+        }
+    };
+    fetchPossibleParents = function() {
+        return Zepto.ajax({
+            url: "/kinds",
+            success: function(data) {
+                var i, kind, len, ref;
+                tag.possibleParents = [];
+                ref = data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    kind = ref[i];
+                    if (!tag.data || tag.data.id !== kind.id && tag.data.id !== 1) {
+                        tag.possibleParents.push({
+                            label: kind.name,
+                            value: kind.id
+                        });
+                    }
+                }
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-kinds", '<div class="kor-content-box"> <a href="#/kinds/new" class="pull-right"><i class="plus"></i></a> <h1>{tcap(\'activerecord.models.kind\', {count: \'other\'})}</h1> <form class="inline"> <kor-input label="{tcap(\'search_term\')}" name="terms" onkeyup="{delayedSubmit}" ref="terms"></kor-input> <kor-input label="{tcap(\'hide_abstract\')}" type="checkbox" name="hideAbstract" onchange="{submit}" ref="hideAbstract"></kor-input> </form> <div class="hr"></div> <virtual if="{filteredRecords && filteredRecords.length}"> <table each="{records, schema in groupedResults}" class="kor_table text-left"> <thead> <tr> <th>{schema == \'null\' ? tcap(\'no_schema\') : schema}</th> <th></th> </tr> </thead> <tbody> <tr each="{kind in records}"> <td class="{active: !kind.abstract}"> <div class="name"> <a href="#/kinds/{kind.id}/edit">{kind.name}</a> </div> <div show="{kind.fields.length}"> <span class="label"> {t(\'activerecord.models.field\', {count: \'other\'})}: </span> {fieldNamesFor(kind)} </div> <div show="{kind.generators.length}"> <span class="label"> {t(\'activerecord.models.generator\', {count: \'other\'})}: </span> {generatorNamesFor(kind)} </div> </td> <td class="buttons"> <a href="#/kinds/{kind.id}/edit"><i class="fa fa-edit"></i></a> <a if="{kind.removable}" href="#/kinds/{kind.id}" onclick="{delete(kind)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </virtual>', "", "", function(opts) {
     var fetch, filter_records, groupAndSortRecords, tag, typeCompare;
     tag = this;
     tag.requireRoles = [ "kind_admin" ];
-    tag.mixin(wApp.mixins.session);
-    tag.t = wApp.i18n.t;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
     tag.on("mount", function() {
         return fetch();
     });
@@ -6720,9 +11529,9 @@ riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capital
     tag["delete"] = function(kind) {
         return function(event) {
             event.preventDefault();
-            if (wApp.utils.confirm(wApp.i18n.translate("confirm.general"))) {
+            if (wApp.utils.confirm(tag.t("confirm.general"))) {
                 return Zepto.ajax({
-                    type: "delete",
+                    type: "DELETE",
                     url: "/kinds/" + kind.id,
                     success: function() {
                         return fetch();
@@ -6761,8 +11570,8 @@ riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capital
         }().join(", ");
     };
     tag.submit = function() {
-        tag.filters.terms = tag.formFields["terms"].val();
-        tag.filters.hideAbstract = tag.formFields["hideAbstract"].val();
+        tag.filters.terms = tag.refs["terms"].value();
+        tag.filters.hideAbstract = tag.refs["hideAbstract"].value();
         filter_records();
         groupAndSortRecords();
         return tag.update();
@@ -6836,7 +11645,6 @@ riot.tag2("kor-kinds", '<h1> {wApp.i18n.t(\'activerecord.models.kind\', {capital
     };
     fetch = function() {
         return Zepto.ajax({
-            type: "get",
             url: "/kinds",
             data: {
                 include: "generators,fields,inheritance"
@@ -6858,82 +11666,65 @@ riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div clas
     tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.i18n);
     tag.on("mount", function() {
-        return Zepto(tag.root).find(".target").html(tag.config().maintainer.legal_html);
+        return Zepto(tag.root).find(".target").html(tag.config().legal_html);
     });
     tag.termsAccepted = function() {
         return tag.currentUser() && tag.currentUser().terms_accepted;
     };
 });
 
-riot.tag2("kor-media-relation", '<div class="name"> {opts.name} <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}" refresh-handler="{parent.refresh}"></kor-relationship> </virtual>', "", "", function(opts) {
-    var fetch, tag;
+riot.tag2("kor-login", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'verbs.login\')}</h1> <div if="{federationAuth()}"> <div class="hr"></div> <p>{t(\'prompt.federation_login\')}</p> <a href="/env_auth" class="kor-button"> {config()[\'auth\'][\'env_auth_button_label\']} </a> <div class="hr"></div> </div> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <kor-input type="submit" riot-value="{tcap(\'verbs.login\')}"></kor-input> </form> <a href="#/password-recovery" class="password-recovery"> {tcap(\'password_forgotten_question\')} </a> <hr> <kor-login-info></kor-login-info> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <div class="kor-blend"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
     tag.mixin(wApp.mixins.info);
+    tag.mixin(wApp.mixins.config);
     tag.on("mount", function() {
-        var base;
-        (base = tag.opts).query || (base.query = {});
-        return fetch();
+        return Zepto(tag.root).find("input").first().focus();
     });
-    tag.pageUpdate = function(newPage) {
-        opts.query.page = newPage;
-        return fetch();
+    tag.submit = function(event) {
+        var password, username;
+        event.preventDefault();
+        username = tag.refs.username.value();
+        password = tag.refs.password.value();
+        return wApp.auth.login(username, password).then(function() {
+            var parts, r;
+            parts = wApp.routing.parts();
+            if (r = parts.hash_query.return_to) {
+                return window.location.hash = decodeURIComponent(r);
+            } else {
+                return wApp.bus.trigger("routing:path", wApp.routing.parts());
+            }
+        });
     };
-    tag.refresh = function() {
-        return fetch();
+    tag.federationAuth = function() {
+        return tag.config().federation_auth;
     };
-    fetch = function() {
-        return Zepto.ajax({
-            url: "/entities/" + tag.opts.entity.id + "/relationships",
+});
+
+riot.tag2("kor-medium-page", '<div class="kor-content-box"> <a if="{data}" href="#/entities/{data.id}"> <img if="{!data.medium.video &&! data.medium.audio}" riot-src="{data.medium.url.screen}"> <video if="{data.medium.video}" controls mute autoplay> <source riot-src="{data.medium.url[\'video/mp4\']}" type="video/mp4"> <source riot-src="{data.medium.url[\'video/webm\']}" type="video/webm"> <source riot-src="{data.medium.url[\'video/ogg\']}" type="video/ogg"> </video> <audio if="{data.medium.audio}" controls> <source riot-src="{data.medium.url[\'audio/mp3\']}" type="audio/mp3"> <source riot-src="{data.medium.url[\'audio/ogg\']}" type="audio/ogg"> </audio> </a> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        fetch();
+    });
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/entities/" + tag.opts.id,
             data: {
-                page: tag.opts.query.page,
-                relation_name: tag.opts.name,
-                to_kind_id: tag.info().medium_kind_id
+                includes: "medium"
             },
             success: function(data) {
                 tag.data = data;
-                return tag.update();
+                tag.update();
             }
         });
     };
 });
 
-riot.tag2("kor-menu-fix", "", "", "", function(opts) {
-    var fixMenu, tag;
-    tag = this;
-    tag.on("mount", function() {
-        return wApp.bus.on("kinds-changed", fixMenu);
-    });
-    tag.on("unmount", function() {
-        return wApp.bus.off("kinds-changed", fixMenu);
-    });
-    fixMenu = function() {
-        return Zepto.ajax({
-            url: "/kinds",
-            data: {
-                only_active: true
-            },
-            success: function(data) {
-                var i, kind, len, placeholder, ref, results, select;
-                select = Zepto("#new_entity_kind_id");
-                placeholder = select.find("option:first-child").remove();
-                select.find("option").remove();
-                select.append(placeholder);
-                ref = data.records;
-                results = [];
-                for (i = 0, len = ref.length; i < len; i++) {
-                    kind = ref[i];
-                    results.push(select.append('<option value="' + kind.id + '">' + kind.name + "</option>"));
-                }
-                return results;
-            }
-        });
-    };
-});
-
-riot.tag2("kor-new-media", '<div class="kor-content-box"> <h1>{tcap(\'pages.new_media\')}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+riot.tag2("kor-new-media", '<div class="kor-content-box"> <h1>{tcap(\'pages.new_media\')}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
     var fetch, queryUpdate, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -6972,63 +11763,27 @@ riot.tag2("kor-new-media", '<div class="kor-content-box"> <h1>{tcap(\'pages.new_
     };
 });
 
-riot.tag2("kor-pagination", '<span>{t(\'nouns.page\')}</span> <a show="{!isFirst()}" onclick="{toPrevious}"><i class="icon pager_left"></i></a> <kor-input riot-value="{currentPage()}" onchange="{inputChanged}" ref="manual" type="{\'number\'}"></kor-input> {t(\'of\', {values: {amount: totalPages()}})} <a show="{!isLast()}" onclick="{toNext}"><i class="icon pager_right"></i></a>', "", 'show="{isActive()}"', function(opts) {
-    var tag;
-    tag = this;
+riot.tag2("kor-password-recovery", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'password_reset\')}</h1> <form onsubmit="{submit}"> <kor-input label="{tcap(\'prompt.email_for_personal_password_reset\')}" name="email" type="text" ref="fields"></kor-input> <div class="kor-text-right"> <kor-input type="submit" riot-value="{tcap(\'verbs.reset\')}"></kor-input> </div> </form> <hr> <kor-login-info></kor-login-info> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <div class="kor-blend"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.currentPage = function() {
-        return parseInt(tag.opts.page || 1);
-    };
-    tag.toFirst = function(event) {
-        if (event) {
-            event.preventDefault();
-        }
-        return tag.to(1);
-    };
-    tag.toNext = function(event) {
-        if (event) {
-            event.preventDefault();
-        }
-        return tag.to(tag.currentPage() + 1);
-    };
-    tag.toPrevious = function(event) {
-        if (event) {
-            event.preventDefault();
-        }
-        return tag.to(tag.currentPage() - 1);
-    };
-    tag.toLast = function(event) {
-        if (event) {
-            event.preventDefault();
-        }
-        return tag.to(tag.totalPages());
-    };
-    tag.isFirst = function() {
-        return tag.currentPage() === 1;
-    };
-    tag.isLast = function() {
-        return tag.currentPage() === tag.totalPages();
-    };
-    tag.to = function(new_page) {
-        if (new_page !== tag.currentPage() && new_page >= 1 && new_page <= tag.totalPages()) {
-            if (Zepto.isFunction(tag.opts.pageUpdateHandler)) {
-                return tag.opts.pageUpdateHandler(new_page);
+    tag.submit = function(event) {
+        event.preventDefault();
+        var params = {
+            email: tag.refs.fields.value()
+        };
+        var promise = Zepto.ajax({
+            type: "POST",
+            url: "/reset_password",
+            data: JSON.stringify(params),
+            success: function(data) {
+                wApp.routing.path("/login");
             }
-        }
-    };
-    tag.totalPages = function() {
-        return Math.ceil(tag.opts.total / tag.opts.perPage);
-    };
-    tag.inputChanged = function(event) {
-        return tag.to(parseInt(tag.refs.manual.value()));
-    };
-    tag.isActive = function() {
-        return tag.opts.total && tag.opts.total > tag.opts.perPage;
+        });
     };
 });
 
-riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'objects.edit\', {interpolations: {o: \'nouns.profile\'}})}</h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" name="password" type="password" ref="fields" riot-value="{data.password}" errors="{errors.password}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.plain_password_confirmation\')}" name="plain_password_confirmation" type="password" ref="fields" errors="{errors.plain_password_confirmation}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.locale\')}" name="locale" type="select" options="{[\'de\', \'en\']}" ref="fields" riot-value="{data.locale}"></kor-input> <div class="hr"></div> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.user.default_collection_id\')}" name="default_collection_id" type="select" options="{collections.records}" ref="fields" riot-value="{data.default_collection_id}"></kor-input> <div class="hr"></div> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'objects.edit\', {interpolations: {o: \'nouns.profile\'}})}</h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" name="password" type="password" ref="fields" riot-value="{data.password}" errors="{errors.password}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.plain_password_confirmation\')}" name="plain_password_confirmation" type="password" ref="fields" errors="{errors.plain_password_confirmation}"></kor-input> <hr> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <hr> <kor-input label="{tcap(\'activerecord.attributes.user.locale\')}" name="locale" type="select" options="{[\'de\', \'en\']}" ref="fields" riot-value="{data.locale}"></kor-input> <hr> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.user.default_collection_id\')}" name="default_collection_id" type="select" options="{collections.records}" ref="fields" riot-value="{data.default_collection_id}"></kor-input> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var expiresAtTag, fetchCollections, fetchUser, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -7053,7 +11808,9 @@ riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{l
         event.preventDefault();
         p = update();
         p.done(function(data) {
-            return tag.errors = {};
+            tag.errors = {};
+            window.history.back();
+            return riot.update();
         });
         p.fail(function(xhr) {
             tag.errors = JSON.parse(xhr.responseText).errors;
@@ -7136,51 +11893,7 @@ riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{l
     };
 });
 
-riot.tag2("kor-properties-editor", '<div class="header"> <button onclick="{add}"> {t(\'verbs.add\', {capitalize: true})} </button> <label> {t(         \'activerecord.attributes.relationship.property.other\',         {capitalize: true}       )} </label> <div class="clearfix"></div> </div> <ul> <li each="{property, i in properties}"> <kor-input riot-value="{property.value}" ref="inputs"></kor-input> <button onclick="{remove(i)}"> {t(\'verbs.remove\')} </button> </li> </ul>', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.on("mount", function() {
-        var i, len, p, ref, results;
-        tag.properties = [];
-        ref = tag.opts.properties;
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-            p = ref[i];
-            results.push(tag.properties.push({
-                value: p
-            }));
-        }
-        return results;
-    });
-    tag.add = function(event) {
-        event.preventDefault();
-        tag.properties.push({
-            value: ""
-        });
-        return tag.update();
-    };
-    tag.remove = function(index) {
-        return function(event) {
-            event.preventDefault();
-            tag.properties.splice(index, 1);
-            return tag.update();
-        };
-    };
-    tag.value = function() {
-        var e, i, len, ref, results;
-        ref = wApp.utils.toArray(tag.refs.inputs);
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-            e = ref[i];
-            results.push(e.value());
-        }
-        return results;
-    };
-});
-
-riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'nouns.new_entity\', {count: \'other\'})}</h1> <form> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" type="select" options="{collections.records}" placeholder="{t(\'prompts.please_select\')}" onchange="{collectionSelected}" ref="collectionId" riot-value="{opts.query.collection_id}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> <th>{tcap(\'activerecord.attributes.entity.collection_id\')}</th> <th>{tcap(\'activerecord.attributes.entity.updater\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> <td> {entity.collection.name} </td> <td> {(entity.updater || entity.creator || {}).full_name} </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'nouns.new_entity\', {count: \'other\'})}</h1> <form> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" type="select" options="{collections.records}" placeholder="{t(\'prompts.please_select\')}" onchange="{collectionSelected}" ref="collectionId" riot-value="{opts.query.collection_id}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> <th>{tcap(\'activerecord.attributes.entity.collection_id\')}</th> <th>{tcap(\'activerecord.attributes.entity.updater\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> <td> {entity.collection.name} </td> <td> {(entity.updater || entity.creator || {}).full_name} </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, fetchCollections, queryUpdate, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -7245,63 +11958,11 @@ riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" 
     };
 });
 
-riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> {opts.name} <a onclick="{toggle}" class="toggle"> <i show="{!expanded}" class="triangle_up"></i> <i show="{expanded}" class="triangle_down"></i> </a> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}" refresh-handler="{parent.refresh}"></kor-relationship> </virtual>', "", "", function(opts) {
-    var fetch, tag, updateExpansion;
+riot.tag2("kor-relation-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.relation\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.relation\'}})} </h1> <form onsubmit="{submit}" if="{relation && possible_parents}"> <kor-input name="schema" label="{tcap(\'activerecord.attributes.relation.schema\')}" ref="fields"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.relation.name\')}" riot-value="{relation.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="reverse_name" label="{tcap(\'activerecord.attributes.relation.reverse_name\')}" riot-value="{relation.reverse_name}" errors="{errors.reverse_name}" ref="fields"></kor-input> <kor-input name="description" type="textarea" label="{tcap(\'activerecord.attributes.relation.description\')}" riot-value="{relation.description}" ref="fields"></kor-input> <kor-input if="{possible_kinds}" name="from_kind_id" type="select" options="{possible_kinds}" label="{tcap(\'activerecord.attributes.relation.from_kind_id\')}" riot-value="{relation.from_kind_id}" errors="{errors.from_kind_id}" ref="fields"></kor-input> <kor-input if="{possible_kinds}" name="to_kind_id" type="select" options="{possible_kinds}" label="{tcap(\'activerecord.attributes.relation.to_kind_id\')}" riot-value="{relation.to_kind_id}" errors="{errors.to_kind_id}" ref="fields"></kor-input> <kor-input name="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label="{tcap(\'activerecord.attributes.relation.parent\')}" riot-value="{relation.parent_ids}" errors="{errors.parent_ids}" ref="fields"></kor-input> <kor-input name="abstract" type="checkbox" label="{tcap(\'activerecord.attributes.relation.abstract\')}" riot-value="{relation.abstract}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var create, fetch, fetchPossibleKinds, fetchPossibleParents, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.mixin(wApp.mixins.info);
-    tag.on("mount", function() {
-        var base;
-        (base = tag.opts).query || (base.query = {});
-        return fetch();
-    });
-    tag.toggle = function(event) {
-        event.preventDefault();
-        tag.expanded = !tag.expanded;
-        return updateExpansion();
-    };
-    tag.pageUpdate = function(newPage) {
-        opts.query.page = newPage;
-        return fetch();
-    };
-    tag.refresh = function() {
-        return fetch();
-    };
-    fetch = function() {
-        return Zepto.ajax({
-            url: "/entities/" + tag.opts.entity.id + "/relationships",
-            data: {
-                page: tag.opts.query.page,
-                relation_name: tag.opts.name,
-                except_to_kind_id: tag.info().medium_kind_id
-            },
-            success: function(data) {
-                tag.data = data;
-                tag.update();
-                return updateExpansion();
-            }
-        });
-    };
-    updateExpansion = function() {
-        var i, len, r, ref, results;
-        if (tag.expanded !== void 0) {
-            ref = tag.tags["kor-relationship"];
-            results = [];
-            for (i = 0, len = ref.length; i < len; i++) {
-                r = ref[i];
-                results.push(r.trigger("toggle", tag.expanded));
-            }
-            return results;
-        }
-    };
-});
-
-riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-panel> <h1> <span show="{opts.id}" if="{relation}">{relation.name}</span> <span show="{!opts.id}"> {wApp.i18n.t(\'objects.create\', {               \'interpolations\': {                 \'o\': wApp.i18n.t(\'activerecord.models.relation\')               }             })} </span> </h1> <form onsubmit="{submit}" if="{relation && possible_parents}"> <kor-field field-id="schema" label-key="relation.schema" model="{relation}"></kor-field> <kor-field field-id="name" label-key="relation.name" model="{relation}" errors="{errors.name}"></kor-field> <kor-field field-id="reverse_name" label-key="relation.reverse_name" model="{relation}" errors="{errors.reverse_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="relation.description" model="{relation}"></kor-field> <kor-field if="{possible_kinds}" field-id="from_kind_id" type="select" options="{possible_kinds}" label-key="relation.from_kind_id" model="{relation}" errors="{errors.from_kind_id}"></kor-field> <kor-field if="{possible_kinds}" field-id="to_kind_id" type="select" options="{possible_kinds}" label-key="relation.to_kind_id" model="{relation}" errors="{errors.to_kind_id}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="relation.parent" model="{relation}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="relation.abstract" model="{relation}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form> </kor-panel> </kor-layout-panel>', "", "", function(opts) {
-    var error, fetch, fetchPossibleKinds, fetchPossibleParents, success, tag;
-    tag = this;
-    window.t = tag;
     tag.on("mount", function() {
         tag.errors = {};
         if (tag.opts.id) {
@@ -7313,6 +11974,53 @@ riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-pan
         fetchPossibleParents();
         return fetchPossibleKinds();
     });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            tag.errors = {};
+            return window.history.back();
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    create = function() {
+        console.log(values());
+        return Zepto.ajax({
+            type: "POST",
+            url: "/relations",
+            data: JSON.stringify({
+                relation: values()
+            })
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/relations/" + tag.opts.id,
+            data: JSON.stringify({
+                relation: values()
+            })
+        });
+    };
+    values = function() {
+        var field, i, len, ref, result;
+        result = {
+            lock_version: tag.relation.lock_version
+        };
+        ref = tag.refs["fields"];
+        for (i = 0, len = ref.length; i < len; i++) {
+            field = ref[i];
+            result[field.name()] = field.value();
+        }
+        return result;
+    };
     fetch = function() {
         return Zepto.ajax({
             url: "/relations/" + tag.opts.id,
@@ -7327,7 +12035,6 @@ riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-pan
     };
     fetchPossibleParents = function() {
         return Zepto.ajax({
-            type: "get",
             url: "/relations",
             success: function(data) {
                 var i, len, ref, relation;
@@ -7364,87 +12071,14 @@ riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-pan
             }
         });
     };
-    tag.new_record = function() {
-        return !tag.opts.id;
-    };
-    tag.values = function() {
-        var field, i, len, ref, result;
-        result = {
-            lock_version: tag.relation.lock_version
-        };
-        ref = tag.tags["kor-field"];
-        for (i = 0, len = ref.length; i < len; i++) {
-            field = ref[i];
-            result[field.fieldId()] = field.val();
-        }
-        return result;
-    };
-    success = function(data) {
-        window.location.hash = "/relations";
-        tag.errors = {};
-        return tag.update();
-    };
-    error = function(response) {
-        var data;
-        data = JSON.parse(response.response);
-        tag.errors = data.errors;
-        tag.relation = data.record;
-        return tag.update();
-    };
-    tag.submit = function(event) {
-        event.preventDefault();
-        if (tag.new_record()) {
-            return Zepto.ajax({
-                type: "POST",
-                url: "/relations",
-                data: JSON.stringify({
-                    relation: tag.values()
-                }),
-                success: success,
-                error: error
-            });
-        } else {
-            return Zepto.ajax({
-                type: "PATCH",
-                url: "/relations/" + tag.opts.id,
-                data: JSON.stringify({
-                    relation: tag.values()
-                }),
-                success: success,
-                error: error
-            });
-        }
-    };
 });
 
-riot.tag2("kor-relation-selector", '<kor-input type="select" options="{relationNames}" riot-value="{opts.riotValue}" ref="input">', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.on("criteria-changed", function() {
-        return Zepto.ajax({
-            url: "/relations/names",
-            data: {
-                from_kind_ids: tag.opts.sourceKindId,
-                to_kind_ids: tag.opts.targetKindId
-            },
-            success: function(data) {
-                tag.relationNames = data;
-                return tag.update();
-            }
-        });
-    });
-    tag.value = function() {
-        return tag.refs.input.value();
-    };
-});
-
-riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/relations/new"> <i class="fa fa-plus-square"></i> </a> </div> <div if="{filteredRecords && !filteredRecords.length}"> {wApp.i18n.t(\'objects.none_found\', {       interpolations: {o: \'activerecord.models.relation.other\'},       capitalize: true     })} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th>{schema == \'null\' ? t(\'no_schema\') : schema}</th> <th> {wApp.i18n.t(\'activerecord.attributes.relation.from_kind_id\')} {wApp.i18n.t(\'activerecord.attributes.relation.to_kind_id\')} </th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="text-right buttons"> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table>', "", "", function(opts) {
+riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right"> <a href="#" title="{t(\'verbs.merge\')}" onclick="{toggleMerge}"> <i class="fa fa-compress" aria-hidden="true"></i> </a> <a href="#/relations/new" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.relation\')}})}"> <i class="fa fa-plus-square"></i> </a> </div> <h1> {tcap(\'activerecord.models.relation\', {count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-input name="terms" label="{tcap(\'search_term\')}" onkeyup="{delayedSubmit}"></kor-input> <div class="hr"></div> </form> <div show="{merge}"> <div class="hr"></div> <kor-relation-merger ref="merger" on-done="{mergeDone}"></kor-relation-merger> <div class="hr"></div> </div> <div if="{filteredRecords && !filteredRecords.length}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.relation.other\'}})} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th> {tcap(\'activerecord.attributes.relation.name\')} <span if="{schema == \'null\' || !schema}"> ({t(\'no_schema\')}) </span> <span if="{schema && schema != \'null\'}"> ({tcap(\'activerecord.attributes.relation.schema\')}: {schema}) </span> </th> <th> {tcap(\'activerecord.attributes.relation.from_kind_id\')}<br> {tcap(\'activerecord.attributes.relation.to_kind_id\')} </th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="text-right buttons"> <a if="{merge}" href="#" onclick="{addToMerge}" title="{t(\'add_to_merge\')}"><i class="fa fa-compress"></i></a> <a href="#" onclick="{invert}" title="{t(\'verbs.invert\')}"><i class="fa fa-exchange"></i></a> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
     var fetch, fetchKinds, filter_records, groupAndSortRecords, tag, typeCompare;
     tag = this;
     tag.requireRoles = [ "relation_admin" ];
-    tag.mixin(wApp.mixins.session);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.sessionAware);
     tag.on("mount", function() {
         fetch();
         return fetchKinds();
@@ -7453,9 +12087,9 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
     tag["delete"] = function(kind) {
         return function(event) {
             event.preventDefault();
-            if (wApp.utils.confirm(wApp.i18n.translate("confirm.general"))) {
+            if (wApp.utils.confirm(tag.t("confirm.general"))) {
                 return Zepto.ajax({
-                    type: "delete",
+                    type: "DELETE",
                     url: "/relations/" + kind.id,
                     success: function() {
                         return fetch();
@@ -7478,6 +12112,32 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
         }
         tag.delayedTimeout = window.setTimeout(tag.submit, 300);
         return true;
+    };
+    tag.toggleMerge = function(event) {
+        event.preventDefault();
+        return tag.merge = !tag.merge;
+    };
+    tag.addToMerge = function(event) {
+        event.preventDefault();
+        return tag.refs.merger.addRelation(event.item.relation);
+    };
+    tag.mergeDone = function() {
+        tag.merge = false;
+        return fetch();
+    };
+    tag.invert = function(event) {
+        var relation;
+        event.preventDefault();
+        relation = event.item.relation;
+        if (window.confirm(tag.t("confirm.long_time_warning"))) {
+            return Zepto.ajax({
+                type: "PUT",
+                url: "/relations/" + relation.id + "/invert",
+                success: function(data) {
+                    return fetch();
+                }
+            });
+        }
     };
     filter_records = function() {
         var re, relation, results;
@@ -7546,6 +12206,7 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
                 tag.data = data;
                 filter_records();
                 groupAndSortRecords();
+                tag.refs.merger.reset();
                 return tag.update();
             }
         });
@@ -7567,211 +12228,281 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
     };
 });
 
-riot.tag2("kor-relationship", '<div class="part"> <virtual if="{!editorActive}"> <div class="kor-layout-commands"> <virtual if="{allowedToEdit()}"> <kor-clipboard-control entity="{to()}" if="{to().medium_id}"></kor-clipboard-control> <a onclick="{activateEditor}"><i class="pen"></i></a> <a onclick="{delete}"><i class="x"></i></a> </virtual> </div> <kor-entity no-clipboard="{true}" entity="{opts.relationship.to}"></kor-entity> <a if="{opts.relationship.media_relations > 0}" onclick="{toggle}" class="toggle"> <i show="{!expanded}" class="triangle_up"></i> <i show="{expanded}" class="triangle_down"></i> </a> <virtual if="{opts.relationship.properties.length > 0}"> <div class="hr"></div> <div each="{property in opts.relationship.properties}">{property}</div> </virtual> <div class="clearfix"></div> <virtual if="{expanded && data}"> <kor-pagination page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="clearfix"></div> </virtual> </virtual> <kor-relationship-editor if="{editorActive}" relationship="{opts.relationship}" source="{opts.entity}" target="{opts.relationship.to}"></kor-relationship-editor> </div> <table class="media-relations" if="{expanded && data && !editorActive}"> <tbody> <tr each="{row in wApp.utils.inGroupsOf(3, data.records)}"> <td each="{relationship in row}"> <a href="#/entities/{relationship.to.id}"> <img riot-src="{relationship.to.medium.url.thumbnail}"> </a> </td> </tr> </tbody> </table>', "", "", function(opts) {
-    var fetch, tag;
+riot.tag2("kor-search", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector name="collection_id" multiple="{true}" riot-value="{criteria.collection_id}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" riot-value="{criteria.kind_id}" ref="fields"></kor-kind-selector> <kor-input name="terms" label="{tcap(\'nouns.term\', {count: \'other\'})}" riot-value="{criteria.terms}" ref="fields"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.entity.name\')}" riot-value="{criteria.name}" ref="fields"></kor-input> <kor-input name="tags" label="{tcap(\'nouns.tag\', {count: \'other\'})}" riot-value="{criteria.tags}" ref="fields"></kor-input> <kor-input name="dating" label="{tcap(\'activerecord.models.entity_dating\')}" riot-value="{criteria.dating}" ref="fields"></kor-input> <div class="kor-text-right"> <kor-input type="submit" riot-value="{tcap(\'verbs.search\')}"></kor-input> </div> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search_results\')}</h1> </div> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <virtual if="{data && data.total > 0}"> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}"></kor-pagination> <kor-search-result each="{entity in data.records}" entity="{entity}"></kor-search-result> </virtual> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("before-mount", function() {
+        tag.criteria = urlParams();
+    });
+    tag.on("mount", function() {
+        fetch();
+        tag.on("routing:query", fetch);
+    });
+    tag.on("unmount", function() {
+        tag.off("routing:query", fetch);
+    });
+    tag.submit = function(event) {
+        event.preventDefault();
+        wApp.routing.query(params(), true);
+    };
+    tag.page = function(newPage) {
+        wApp.routing.query({
+            page: newPage
+        });
+    };
+    var params = function() {
+        var results = {
+            page: 1
+        };
+        for (var i = 0; i < tag.refs.fields.length; i++) {
+            var f = tag.refs.fields[i];
+            var v = f.value();
+            if (v != "" && v != [] && v != undefined) {
+                if (Zepto.isArray(v)) {
+                    results[f.name()] = v.join(",");
+                } else {
+                    results[f.name()] = v;
+                }
+            }
+        }
+        return results;
+    };
+    var urlParams = function() {
+        var results = wApp.routing.query();
+        results["collection_id"] = wApp.utils.toIdArray(results["collection_id"]);
+        return results;
+    };
+    var fetch = function() {
+        tag.criteria = urlParams();
+        var params = Zepto.extend({}, tag.criteria, {
+            no_media: true,
+            include: "related",
+            related_kind_id: wApp.info.data.medium_kind_id,
+            related_per_page: 4
+        });
+        Zepto.ajax({
+            url: "/entities",
+            data: params,
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </h1> <form onsubmit="{submit}" if="{values && groups && relations}"> <h2>{tcap(\'settings.branding_and_display\')}</h2> <kor-input name="maintainer_name" label="{nameFor(\'maintainer_name\')}" riot-value="{valueWithDefaults(\'maintainer_name\')}" ref="fields"></kor-input> <kor-input name="maintainer_mail" label="{nameFor(\'maintainer_mail\')}" riot-value="{valueWithDefaults(\'maintainer_mail\')}" ref="fields"></kor-input> <kor-input name="welcome_title" label="{nameFor(\'welcome_title\')}" riot-value="{valueWithDefaults(\'welcome_title\')}" ref="fields"></kor-input> <kor-input name="welcome_text" label="{nameFor(\'welcome_text\')}" type="textarea" riot-value="{valueWithDefaults(\'welcome_text\')}" ref="fields"></kor-input> <kor-input name="legal_text" label="{nameFor(\'legal_text\')}" type="textarea" riot-value="{valueWithDefaults(\'legal_text\')}" ref="fields"></kor-input> <kor-input name="about_text" label="{nameFor(\'about_text\')}" type="textarea" riot-value="{valueWithDefaults(\'about_text\')}" ref="fields"></kor-input> <kor-input name="help_text" label="{nameFor(\'help_text\')}" type="textarea" riot-value="{valueWithDefaults(\'help_text\')}" ref="fields"></kor-input> <kor-input name="custom_css_file" label="{nameFor(\'custom_css_file\')}" riot-value="{valueWithDefaults(\'custom_css_file\')}" ref="fields"></kor-input> <kor-input name="env_auth_button_label" label="{nameFor(\'env_auth_button_label\')}" riot-value="{valueWithDefaults(\'env_auth_button_label\')}" ref="fields"></kor-input> <kor-input name="search_entity_name" label="{nameFor(\'search_entity_name\')}" riot-value="{valueWithDefaults(\'search_entity_name\')}" ref="fields"></kor-input> <kor-input name="kind_dating_label" label="{nameFor(\'kind_dating_label\')}" riot-value="{valueWithDefaults(\'kind_dating_label\')}" ref="fields"></kor-input> <kor-input name="kind_name_label" label="{nameFor(\'kind_name_label\')}" riot-value="{valueWithDefaults(\'kind_name_label\')}" ref="fields"></kor-input> <kor-input name="kind_distinct_name_label" label="{nameFor(\'kind_distinct_name_label\')}" riot-value="{valueWithDefaults(\'kind_distinct_name_label\')}" ref="fields"></kor-input> <kor-input name="relationship_dating_label" label="{nameFor(\'relationship_dating_label\')}" riot-value="{valueWithDefaults(\'relationship_dating_label\')}" ref="fields"></kor-input> <kor-input name="primary_relations" label="{nameFor(\'primary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'primary_relations\')}" ref="fields"></kor-input> <kor-input name="secondary_relations" label="{nameFor(\'secondary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'secondary_relations\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.behavior\')}</h2> <kor-input name="default_locale" label="{nameFor(\'default_locale\')}" type="select" options="{wApp.i18n.locales()}" riot-value="{valueWithDefaults(\'default_locale\')}" ref="fields"></kor-input> <kor-input name="current_history_length" label="{nameFor(\'current_history_length\')}" riot-value="{valueWithDefaults(\'current_history_length\')}" ref="fields" type="number"></kor-input> <kor-input name="max_foreground_group_download_size" label="{nameFor(\'max_foreground_group_download_size\')}" riot-value="{valueWithDefaults(\'max_foreground_group_download_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_file_upload_size" label="{nameFor(\'max_file_upload_size\')}" riot-value="{valueWithDefaults(\'max_file_upload_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_results_per_request" label="{nameFor(\'max_results_per_request\')}" riot-value="{valueWithDefaults(\'max_results_per_request\')}" ref="fields" type="number"></kor-input> <kor-input name="max_included_results_per_result" label="{nameFor(\'max_included_results_per_result\')}" riot-value="{valueWithDefaults(\'max_included_results_per_result\')}" ref="fields" type="number"></kor-input> <kor-input name="session_lifetime" label="{nameFor(\'session_lifetime\')}" riot-value="{valueWithDefaults(\'session_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="publishment_lifetime" label="{nameFor(\'publishment_lifetime\')}" riot-value="{valueWithDefaults(\'publishment_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="default_groups" label="{nameFor(\'default_groups\')}" type="select" multiple="{true}" options="{groups}" riot-value="{valueWithDefaults(\'default_groups\')}" ref="fields"></kor-input> <kor-input name="fail_on_update_errors" label="{nameFor(\'fail_on_update_errors\')}" type="checkbox" riot-value="{valueWithDefaults(\'fail_on_update_errors\')}" ref="fields"></kor-input> <kor-input name="max_download_group_size" label="{nameFor(\'max_download_group_size\')}" riot-value="{valueWithDefaults(\'max_download_group_size\')}" ref="fields" type="number"></kor-input> <h2>{tcap(\'settings.other\')}</h2> <kor-input name="sources_release" label="{nameFor(\'sources_release\')}" riot-value="{valueWithDefaults(\'sources_release\')}" ref="fields"></kor-input> <kor-input name="sources_pre_release" label="{nameFor(\'sources_pre_release\')}" riot-value="{valueWithDefaults(\'sources_pre_release\')}" ref="fields"></kor-input> <kor-input name="sources_default" label="{nameFor(\'sources_default\')}" riot-value="{valueWithDefaults(\'sources_default\')}" ref="fields"></kor-input> <kor-input name="repository_uuid" label="{nameFor(\'repository_uuid\')}" riot-value="{valueWithDefaults(\'repository_uuid\')}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var fetch, fetchGroups, fetchRelations, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.mixin(wApp.mixins.info);
+    tag.errors = {};
     tag.on("mount", function() {
-        var base;
-        return (base = tag.opts).query || (base.query = {});
+        fetch();
+        fetchGroups();
+        return fetchRelations();
     });
-    tag.to = function() {
-        return tag.opts.relationship.to;
+    tag.valueWithDefaults = function(key) {
+        return tag.values[key];
     };
-    tag.toggle = function(event) {
+    tag.nameFor = function(key) {
+        return tag.tcap("settings.values." + key);
+    };
+    tag.submit = function(event) {
+        var p;
         event.preventDefault();
-        return tag.trigger("toggle");
+        p = update();
+        p.done(function(data) {
+            return tag.errors = {};
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
     };
-    tag.on("toggle", function(value) {
-        tag.expanded = value === void 0 ? !tag.expanded : value;
-        if (tag.expanded && !tag.data) {
-            fetch();
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/settings",
+            data: JSON.stringify({
+                settings: values(),
+                mtime: tag.mtime
+            })
+        });
+    };
+    values = function() {
+        var field, i, len, ref, result;
+        result = {};
+        ref = tag.refs["fields"];
+        for (i = 0, len = ref.length; i < len; i++) {
+            field = ref[i];
+            result[field.name()] = field.value();
         }
-        return tag.update();
-    });
-    tag.allowedToEdit = function() {
-        return tag.allowedTo("edit", tag.opts.entity.collection_id) || tag.allowedTo("edit", tag.to().collection_id);
-    };
-    tag.activateEditor = function() {
-        window.t = tag;
-        tag.editorActive = !tag.editorActive;
-        return tag.update();
-    };
-    tag["delete"] = function() {
-        if (confirm(tag.t("confirm.sure"))) {
-            return Zepto.ajax({
-                type: "DELETE",
-                url: "/relationships/" + tag.opts.relationship.relationship_id,
-                success: function(data) {
-                    var h;
-                    if (h = tag.opts.refreshHandler) {
-                        return h();
-                    }
-                }
-            });
-        }
-    };
-    tag.pageUpdate = function(newPage) {
-        tag.opts.query.page = newPage;
-        return fetch();
+        return result;
     };
     fetch = function() {
         return Zepto.ajax({
-            url: "/entities/" + tag.to().id + "/relationships",
-            data: {
-                page: tag.opts.query.page,
-                per_page: 9,
-                relation_name: tag.opts.name,
-                to_kind_id: tag.info().medium_kind_id
-            },
+            url: "/settings",
             success: function(data) {
-                tag.data = data;
+                tag.values = data.values;
+                tag.defaults = data.defaults;
+                tag.mtime = data.mtime;
+                return tag.update();
+            }
+        });
+    };
+    fetchGroups = function() {
+        return Zepto.ajax({
+            url: "/credentials",
+            success: function(data) {
+                tag.groups = data.records;
+                return tag.update();
+            }
+        });
+    };
+    fetchRelations = function() {
+        return Zepto.ajax({
+            url: "/relations",
+            success: function(data) {
+                tag.relations = data.records;
                 return tag.update();
             }
         });
     };
 });
 
-riot.tag2("kor-relationship-editor", '<h1>{header()}</h1> <form onsubmit="{save}"> <kor-relation-selector source-kind-id="{sourceKindId}" target-kind-id="{targetKindId}" riot-value="{opts.relationship.relation_name}" errors="{errors.relation_id}" ref="relation_name"></kor-relation-selector> <kor-entity-selector relation-name="{relationName}" errors="{errors.to_id}" riot-value="{opts.relationship.to}" ref="target_id"></kor-entity-selector> <div class="hr"></div> <kor-properties-editor properties="{opts.relationship.properties}" ref="properties"></kor-properties-editor> <div class="hr"></div> <kor-datings-editor datings="{opts.relationship.datings}" ref="datings"></kor-datings-editor> <div class="hr"></div> <kor-input type="submit" riot-value="{t(\'verbs.save\')}"></kor-input> <kor-input type="reset" riot-value="{t(\'cancel\')}"></kor-input> </form>', "", "", function(opts) {
-    var tag;
-    tag = this;
+riot.tag2("kor-statistics", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.statistics\')}</h1> <p if="{data}">{validity()}</p> <table if="{data}"> <thead> <tr> <th>{tcap(\'activerecord.models.user\')}</th> <th>{data.user_count}</th> </tr> </thead> <tbody> <tr> <td>{tcap(\'logged_in_recently\')}</td> <td>{data.user_count_logged_in_recently}</td> </tr> <tr> <td>{tcap(\'logged_in_last_year\')}</td> <td>{data.user_count_logged_in_last_year}</td> </tr> <tr> <td>{tcap(\'created_recently\')}</td> <td>{data.user_count_created_recently}</td> </tr> </tbody> </table> <table if="{data}"> <thead> <tr> <th>{tcap(\'activerecord.models.entity\')}</th> <th>{data.entity_count}</th> </tr> </thead> <tbody> <tr each="{stat in data.entities_by_kind}"> <td>{stat.kind_name}</td> <td>{stat.count}</td> </tr> </tbody> </table> <table if="{data}"> <thead> <tr> <th>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</th> <th>{data.relationship_count}</th> </tr> </thead> <tbody> <tr each="{stat in data.relationships_by_relation}"> <td>{stat.relation_name}</td> <td>{stat.count}</td> </tr> </tbody> </table> </div> </div> <div class="kor-layout-right"></div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.errors = {};
-    tag.on("update", function() {
-        tag.sourceKindId = tag.opts.source.kind_id;
-        tag.targetKindId = tag.opts.target.kind_id;
-        return tag.relationName = tag.opts.relationship.relation_name;
+    tag.on("mount", function() {
+        fetch();
     });
-    tag.on("updated", function() {
-        tag.refs["relation_name"].trigger("criteria-changed");
-        return tag.refs["target_id"].trigger("criteria-changed");
+    tag.validity = function() {
+        return tag.t("messages.statistics_validity", {
+            interpolations: {
+                date: tag.l(tag.data.timestamp, "time.formats.exact")
+            }
+        });
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/statistics",
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-upload", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.mass_upload\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector policy="create" ref="cs"></kor-collection-selector> <kor-user-group-selector type="personal" riot-value="{l(new Date())}" ref="user-group-name"></kor-user-group-selector> <virtual if="{selection}"> {tcap(\'labels.relate_to_via\', {interpolations: {to: selection.display_name}})} <kor-relation-selector if="{selection}" source-kind-id="{wApp.info.data.medium_kind_id}" target-kind-id="{selection.kind_id}" ref="relation-selector"></kor-relation-selector> </virtual> <a class="trigger"> » {tcap(\'objects.add\', {interpolations: {o: \'nouns.file.other\'}})} </a> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <ul> <li each="{job in files()}"> <div class="pull-right"> <a ref="#" onclick="{remove}">x</a> </div> <strong>{job.name}</strong> <div> {hs(job.size)} <span show="{job.percent > 0}"> <span show="{job.percent < 100}"> {job.percent} </span> <span show="{job.percent == 100 && !job.error}"> ... {t(\'done\')} </span> </span> <div class="kor-error" if="{job.error}"> <strong>{job.error.parsed_response.message}: <div each="{errors, field in job.error.parsed_response.errors}"> <span>{errors.join(\', \')}</span> </div> </strong> </div> </div> </li> </ul> <form class="inline" onsubmit="{submit}"> <div class="text-right"> <kor-input type="submit" riot-value="{tcap(\'verbs.upload\')}"></kor-input> <kor-input type="submit" riot-value="{tcap(\'empty_list\')}" onclick="{abort}"></kor-input> </div> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    var uploader = null;
+    tag.on("mount", function() {
+        init();
     });
+    tag.files = function() {
+        if (uploader) return uploader.files; else return [];
+    };
+    tag.remove = function(event) {
+        event.preventDefault();
+        uploader.removeFile(event.item.job);
+    };
+    tag.abort = function(event) {
+        event.preventDefault();
+        uploader.stop();
+        uploader.splice(0, uploader.files.length);
+    };
     tag.submit = function(event) {
         event.preventDefault();
-        if (tag.opts.relationship) {
-            return Zepto.ajax({
-                type: "PATCH",
-                url: "/relationships/" + tag.opts.relationship.id,
-                data: {
-                    relationship: values()
-                },
-                success: function(data) {
-                    var h;
-                    if (h = tag.opts.doneHandler) {
-                        return h();
-                    }
-                },
-                error: function(xhr) {
-                    tag.errors = JSON.parse(xhr.responseText).errors;
-                    return wApp.utils.scrollToTop();
-                }
-            });
-        }
-    };
-    tag.values = function() {
-        return {
-            properties: tag.refs.properties.value(),
-            datings: tag.refs.datings.value(),
-            relation_name: tag.refs.relation_name.value()
+        var params = {
+            "entity[kind_id]": wApp.info.data.medium_kind_id,
+            "entity[collection_id]": tag.refs["cs"].val(),
+            user_group_name: tag.refs["user-group-name"].value(),
+            target_entity_id: wApp.clipboard.selection()
         };
-    };
-    tag.header = function() {
-        var key;
-        key = !!tag.opts.relationship ? "edit" : "create";
-        return tag.t("objects." + key, {
-            interpolations: {
-                o: "activerecord.models.relationship"
-            },
-            capitalize: true
-        });
-    };
-});
-
-riot.tag2("kor-sa-entity", '<div class="auth" if="{!authorized}"> <strong>Info</strong> <p> It seems you are not allowed to see this content. Please <a href="{login_url()}">login</a> to the kor installation first. </p> </div> <a href="{url()}" if="{authorized}" target="_blank"> <img if="{data.medium}" riot-src="{image_url()}"> <div if="{!data.medium}"> <h3>{data.display_name}</h3> <em if="{include(\'kind\')}"> {data.kind_name} <span show="{data.subtype}">({data.subtype})</span> </em> </div> </a>', "", "class=\"{'kor-style': opts.korStyle, 'kor': opts.korStyle}\"", function(opts) {
-    var tag;
-    tag = this;
-    tag.authorized = true;
-    tag.on("mount", function() {
-        var base;
-        if (tag.opts.id) {
-            base = $("script[kor-url]").attr("kor-url") || "";
-            return $.ajax({
-                type: "get",
-                url: base + "/entities/" + tag.opts.id,
-                data: {
-                    include: "all"
-                },
-                dataType: "json",
-                beforeSend: function(xhr) {
-                    return xhr.withCredentials = true;
-                },
-                success: function(data) {
-                    tag.data = data;
-                    return tag.update();
-                },
-                error: function(request) {
-                    tag.data = {};
-                    if (request.status === 403) {
-                        tag.authorized = false;
-                        return tag.update();
-                    }
-                }
-            });
-        } else {
-            return raise("this widget requires an id");
+        var rs = tag.refs["relation-selector"];
+        if (rs) {
+            params["relation_name"] = rs.value();
         }
-    });
-    tag.login_url = function() {
-        var base, return_to;
-        base = $("script[kor-url]").attr("kor-url") || "";
-        return_to = document.location.href;
-        return base + "/login?return_to=" + return_to;
+        uploader.setOption("multipart_params", params);
+        uploader.start();
     };
-    tag.image_size = function() {
-        return tag.opts.korImageSize || "preview";
+    tag.hasSelection = function() {
+        return !!wApp.clipboard.selection();
     };
-    tag.image_url = function() {
-        var base, size;
-        base = $("script[kor-url]").attr("kor-url") || "";
-        size = tag.image_size();
-        return "" + base + tag.data.medium.url[size];
+    var relationSelectorValue = function() {
+        return tag.refs["relation-selector"] ? tag.refs["relation-selector"].value() : nil;
     };
-    tag.include = function(what) {
-        var includes;
-        includes = (tag.opts.korInclude || "").split(/\s+/);
-        return includes.indexOf(what) !== -1;
-    };
-    tag.url = function() {
-        var base;
-        base = $("[kor-url]").attr("kor-url") || "";
-        return base + "/blaze#/entities/" + tag.data.id;
-    };
-    tag.human_size = function() {
-        var size;
-        size = tag.data.medium.file_size / 1024 / 1024;
-        return Math.floor(size * 100) / 100;
-    };
-});
-
-riot.tag2("kor-stats", "<h1>STATS</h1>", "", "", function(opts) {});
-
-riot.tag2("kor-submit", '<input type="submit" riot-value="{label()}">', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.label = function() {
-        var base;
-        (base = tag.opts).labelKey || (base.labelKey = "verbs.save");
-        return wApp.i18n.t(tag.opts.labelKey, {
-            capitalize: true
+    var fetchSelected = function() {
+        var id = wApp.clipboard.selection();
+        Zepto.ajax({
+            url: "/entities/" + id,
+            success: function(data) {
+                tag.selection = data;
+                tag.update();
+                tag.refs["relation-selector"].trigger("endpoints-changed");
+            },
+            error: function(xhr, reason) {
+                if (xhr.status == 404) {
+                    wApp.clipboard.unselect();
+                    tag.update();
+                } else console.log(xhr, reason);
+            }
         });
     };
+    var init = function() {
+        if (tag.hasSelection()) fetchSelected();
+        uploader = new plupload.Uploader({
+            browse_button: Zepto(".trigger")[0],
+            url: "/entities",
+            headers: {
+                accept: "application/json"
+            },
+            file_data_name: "entity[medium_attributes][document]"
+        });
+        uploader.bind("QueueChanged", function(up) {
+            tag.update();
+        });
+        uploader.bind("UploadProgress", function(up, file) {
+            tag.update();
+        });
+        uploader.bind("FileUploaded", function(up, file, response) {
+            var doit = function() {
+                uploader.removeFile(file);
+            };
+            setTimeout(doit, 300);
+        });
+        uploader.bind("Error", function(up, error) {
+            if (error.code == -600) {
+                var message = tag.t("errors.file_too_big", {
+                    interpolations: {
+                        file: error.file.name,
+                        size: (error.file.origSize / 1024 / 1024).toFixed(2),
+                        max: scope.max_file_size()
+                    }
+                });
+                window.alert(message);
+            } else {
+                console.log(error);
+                error.parsed_response = JSON.parse(error.response);
+                error.file.error = error;
+                tag.update();
+            }
+        });
+        uploader.init();
+    };
 });
 
-riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1 show="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <h1 show="{!opts.id}"> {tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.personal\')}" name="make_personal" type="checkbox" riot-value="{data.personal}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.active\')}" name="active" type="checkbox" ref="fields" riot-value="{data.active}"></kor-input> <div class="expires-at"> <kor-input label="{tcap(\'activerecord.attributes.user.expires_at\')}" name="expires_at" ref="fields" riot-value="{valueForDate(data.expires_at)}" errors="{errors.expires_at}" type="{\'date\'}"></kor-input> <button onclick="{expiresIn(0)}"> {tcap(\'activerecord.attributes.user.does_not_expire\')} </button> <button onclick="{expiresIn(7)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 7}})} </button> <button onclick="{expiresIn(30)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 30}})} </button> <button onclick="{expiresIn(180)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {values: {amount: 180}})} </button> <div class="clearfix"></div> </div> <div class="hr"></div> <kor-input if="{credentials}" label="{tcap(\'activerecord.attributes.user.groups\')}" name="group_ids" type="select" options="{credentials.records}" multiple="{true}" ref="fields" riot-value="{data.group_ids}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.authority_group_admin\')}" name="authority_group_admin" type="checkbox" ref="fields" riot-value="{data.authority_group_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.relation_admin\')}" name="relation_admin" type="checkbox" ref="fields" riot-value="{data.relation_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.kind_admin\')}" name="kind_admin" type="checkbox" ref="fields" riot-value="{data.kind_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.admin\')}" name="admin" type="checkbox" ref="fields" riot-value="{data.admin}"></kor-input> <div class="hr"></div> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1 show="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <h1 show="{!opts.id}"> {tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.personal\')}" name="make_personal" type="checkbox" riot-value="{data.personal}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.active\')}" name="active" type="checkbox" ref="fields" riot-value="{data.active}"></kor-input> <div class="expires-at"> <kor-input label="{tcap(\'activerecord.attributes.user.expires_at\')}" name="expires_at" ref="fields" riot-value="{valueForDate(data.expires_at)}" errors="{errors.expires_at}" type="{\'date\'}"></kor-input> <button onclick="{expiresIn(0)}"> {tcap(\'activerecord.attributes.user.does_not_expire\')} </button> <button onclick="{expiresIn(7)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {interpolations: {amount: 7}})} </button> <button onclick="{expiresIn(30)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {interpolations: {amount: 30}})} </button> <button onclick="{expiresIn(180)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {interpolations: {amount: 180}})} </button> <div class="clearfix"></div> </div> <div class="hr"></div> <kor-input if="{credentials}" label="{tcap(\'activerecord.attributes.user.groups\')}" name="group_ids" type="select" options="{credentials.records}" multiple="{true}" ref="fields" riot-value="{data.group_ids}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.authority_group_admin\')}" name="authority_group_admin" type="checkbox" ref="fields" riot-value="{data.authority_group_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.relation_admin\')}" name="relation_admin" type="checkbox" ref="fields" riot-value="{data.relation_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.kind_admin\')}" name="kind_admin" type="checkbox" ref="fields" riot-value="{data.kind_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.admin\')}" name="admin" type="checkbox" ref="fields" riot-value="{data.admin}"></kor-input> <div class="hr"></div> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var create, expiresAtTag, fetchCredentials, fetchUser, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -7812,6 +12543,7 @@ riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show
     tag.expiresIn = function(days) {
         return function(event) {
             var date;
+            event.preventDefault();
             if (days) {
                 date = new Date();
                 date.setTime(date.getTime() + days * 24 * 60 * 60 * 1e3);
@@ -7895,7 +12627,809 @@ riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show
     };
 });
 
-riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div class="w-content" ref="content"></div> </div> <w-modal></w-modal> <w-messaging></w-messaging>', "", "", function(opts) {
+riot.tag2("kor-user-group-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user_group\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.user_group\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user_group.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var create, fetch, tag, update, values;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("before-mount", function() {
+        tag.errors = {};
+        return tag.data = {};
+    });
+    tag.on("mount", function() {
+        if (tag.opts.id) {
+            return fetch();
+        }
+    });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            tag.errors = {};
+            return window.history.back();
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/user_groups/" + tag.opts.id,
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    create = function() {
+        console.log(values());
+        return Zepto.ajax({
+            type: "POST",
+            url: "/user_groups",
+            data: JSON.stringify({
+                user_group: values()
+            })
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/user_groups/" + tag.opts.id,
+            data: JSON.stringify({
+                user_group: values()
+            })
+        });
+    };
+    values = function() {
+        return {
+            name: tag.refs.fields.value()
+        };
+    };
+});
+
+riot.tag2("kor-user-groups", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <a href="#/groups/user/new" class="pull-right"><i class="plus"></i></a> <h1>{tcap(\'activerecord.models.user_group\', {count: \'other\'})}</h1> <table> <thead> <th>{tcap(\'activerecord.attributes.user_group.name\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{user_group in data.records}"> <td>{user_group.name}</td> <td class="right"> <a href="#/groups/user/{user_group.id}/edit"><i class="pen"></i></a> <a href="#/groups/user/{user_group.id}/destroy" onclick="{onDeleteClicked}"><i class="x"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.config);
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        fetch();
+    });
+    tag.onDeleteClicked = function(event) {
+        event.preventDefault();
+        if (wApp.utils.confirm()) destroy(event.item.user_group.id);
+    };
+    var destroy = function(id) {
+        Zepto.ajax({
+            type: "DELETE",
+            url: "/user_groups/" + id,
+            success: fetch
+        });
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/user_groups",
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-users", '<div class="kor-content-box"> <div class="kor-layout-commands"> <a href="#/users/new"><i class="plus"></i></a> </div> <h1>{tcap(\'activerecord.models.user\', {count: \'other\'})}</h1> <form onsubmit="{search}" class="inline"> <kor-input label="{t(\'nouns.search\')}" ref="search" riot-value="{opts.query.search}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <thead> <tr> <th class="tiny">{t(\'activerecord.attributes.user.personal\')}</th> <th class="small">{t(\'activerecord.attributes.user.name\')}</th> <th class="small">{t(\'activerecord.attributes.user.full_name\')}</th> <th>{t(\'activerecord.attributes.user.email\')}</th> <th class="tiny right"> {t(\'activerecord.attributes.user.created_at\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.last_login\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.expires_at\')} </th> <th class="tiny buttons"></th> </tr> </thead> <tbody> <tr each="{user in data.records}"> <td><i show="{user.personal}" class="fa fa-check"></i></td> <td>{user.name}</td> <td>{user.full_name}</td> <td class="force-wrap"> <a href="mailto:{user.email}">{user.email}</a> </td> <td class="right">{l(user.created_at)}</td> <td class="right">{l(user.last_login)}</td> <td class="right">{l(user.expires_at)}</td> <td class="right nobreak"> <a onclick="{resetLoginAttempts(user.id)}"> <i class="three_bars"></i> </a> <a onclick="{resetPassword(user.id)}"> <i class="reset_password"></i> </a> <a href="#/users/{user.id}/edit"><i class="pen"></i></a> <a onclick="{destroy(user.id)}"><i class="x"></i></a> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+    var fetch, queryUpdate, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.on("mount", function() {
+        var h;
+        if (tag.hasRole("admin")) {
+            fetch();
+            return tag.on("routing:query", fetch);
+        } else {
+            if (h = tag.opts.handlers.accessDenied) {
+                return h();
+            }
+        }
+    });
+    fetch = function(newOpts) {
+        return Zepto.ajax({
+            url: "/users",
+            data: {
+                include: "security,technical",
+                search_string: tag.opts.query.search,
+                page: tag.opts.query.page
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    tag.resetLoginAttempts = function(id) {
+        return function(event) {
+            event.preventDefault();
+            return Zepto.ajax({
+                type: "PATCH",
+                url: "/users/" + id + "/reset_login_attempts"
+            });
+        };
+    };
+    tag.resetPassword = function(id) {
+        return function(event) {
+            event.preventDefault();
+            if (confirm(tag.t("confirm.sure"))) {
+                return Zepto.ajax({
+                    type: "PATCH",
+                    url: "/users/" + id + "/reset_password"
+                });
+            }
+        };
+    };
+    tag.destroy = function(id) {
+        return function(event) {
+            event.preventDefault();
+            if (confirm(tag.t("confirm.sure"))) {
+                return Zepto.ajax({
+                    type: "DELETE",
+                    url: "/users/" + id,
+                    success: function() {
+                        return fetch();
+                    }
+                });
+            }
+        };
+    };
+    tag.pageUpdate = function(newPage) {
+        return queryUpdate({
+            page: newPage
+        });
+    };
+    tag.search = function(event) {
+        event.preventDefault();
+        return queryUpdate({
+            page: 1,
+            search: tag.refs.search.value()
+        });
+    };
+    queryUpdate = function(newQuery) {
+        var h;
+        if (h = tag.opts.handlers.queryUpdate) {
+            return h(newQuery);
+        }
+    };
+});
+
+riot.tag2("kor-welcome", '<div class="kor-content-box"> <h1>{config().welcome_title}</h1> <div class="target"></div> <div class="teaser" if="{currentUser()}"> <span>{t(\'pages.random_entities\')}</span> <div class="hr"></div> <kor-gallery-grid entities="{entities()}"></kor-gallery-grid> </div> </div>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.config);
+    tag.on("mount", function() {
+        Zepto(tag.root).find(".target").html(tag.config().welcome_html);
+        return Zepto.ajax({
+            url: "/entities/random",
+            data: {
+                include: "gallery_data"
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    });
+    tag.entities = function() {
+        return (tag.data || {}).records || [];
+    };
+});
+
+riot.tag2("kor-pagination", '<virtual if="{isActive()}"> <span>{t(\'nouns.page\')}</span> <a show="{!isFirst()}" onclick="{toPrevious}"><i class="icon pager_left"></i></a> <kor-input riot-value="{currentPage()}" onchange="{inputChanged}" ref="manual" type="{\'number\'}"></kor-input> {t(\'of\', {interpolations: {amount: totalPages()}})} <a show="{!isLast()}" onclick="{toNext}"><i class="icon pager_right"></i></a> </virtual> <virtual if="{opts.perPageControl}"> <img src="images/vertical_dots.gif"> <kor-input type="select" options="{perPageOptions()}" riot-value="{opts.perPage}" onchange="{selectChanged}" ref="select"></kor-input> {t(\'results_per_page\')} </virtual>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.config);
+    tag.currentPage = function() {
+        return parseInt(tag.opts.page || 1);
+    };
+    tag.toFirst = function(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        return tag.to(1);
+    };
+    tag.toNext = function(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        return tag.to(tag.currentPage() + 1);
+    };
+    tag.toPrevious = function(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        return tag.to(tag.currentPage() - 1);
+    };
+    tag.toLast = function(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        return tag.to(tag.totalPages());
+    };
+    tag.isFirst = function() {
+        return tag.currentPage() === 1;
+    };
+    tag.isLast = function() {
+        return tag.currentPage() === tag.totalPages();
+    };
+    tag.to = function(new_page) {
+        if (new_page !== tag.currentPage() && new_page >= 1 && new_page <= tag.totalPages()) {
+            if (Zepto.isFunction(tag.opts.onPaginate)) {
+                return tag.opts.onPaginate(new_page, tag.opts.perPage);
+            }
+        }
+    };
+    tag.changePerPage = function(new_per_page) {
+        if (new_per_page !== tag.opts.perPage) {
+            if (Zepto.isFunction(tag.opts.onPaginate)) {
+                return tag.opts.onPaginate(1, new_per_page);
+            }
+        }
+    };
+    tag.totalPages = function() {
+        return Math.ceil(tag.opts.total / tag.opts.perPage);
+    };
+    tag.perPageOptions = function() {
+        var defaults, i, results;
+        defaults = [ 5, 10, 20, 50, 100 ];
+        results = function() {
+            var j, len, results1;
+            results1 = [];
+            for (j = 0, len = defaults.length; j < len; j++) {
+                i = defaults[j];
+                if (i < tag.config().max_results_per_request) {
+                    results1.push(i);
+                }
+            }
+            return results1;
+        }();
+        results.push(tag.config().max_results_per_request);
+        return results;
+    };
+    tag.inputChanged = function(event) {
+        return tag.to(parseInt(tag.refs.manual.value()));
+    };
+    tag.selectChanged = function(event) {
+        return tag.changePerPage(parseInt(tag.refs.select.value()));
+    };
+    tag.isActive = function() {
+        return tag.opts.total && tag.opts.total > tag.opts.perPage;
+    };
+});
+
+riot.tag2("kor-properties-editor", '<div class="header"> <button onclick="{add}" class="pull-right"> {t(\'verbs.add\', {capitalize: true})} </button> <label> {t(         \'activerecord.attributes.relationship.property.other\',         {capitalize: true}       )} </label> <div class="clearfix"></div> </div> <ul> <li each="{property, i in properties}"> <kor-input name="value" riot-value="{property.value}" ref="inputs"></kor-input> <div class="kor-text-right"> <button onclick="{remove(i)}"> {t(\'verbs.remove\')} </button> </div> </li> </ul>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        var i, len, p, ref, results;
+        tag.properties = [];
+        if (tag.opts.properties) {
+            ref = tag.opts.properties;
+            results = [];
+            for (i = 0, len = ref.length; i < len; i++) {
+                p = ref[i];
+                results.push(tag.properties.push({
+                    value: p
+                }));
+            }
+            return results;
+        }
+    });
+    tag.add = function(event) {
+        event.preventDefault();
+        tag.properties.push({
+            value: ""
+        });
+        return tag.update();
+    };
+    tag.remove = function(index) {
+        return function(event) {
+            event.preventDefault();
+            tag.properties.splice(index, 1);
+            return tag.update();
+        };
+    };
+    tag.value = function() {
+        var e, i, len, ref, results;
+        ref = wApp.utils.toArray(tag.refs.inputs);
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            e = ref[i];
+            results.push(e.value());
+        }
+        return results;
+    };
+});
+
+riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{pageUpdate}"></kor-pagination> {opts.name} <a onclick="{toggle}" class="toggle"> <i show="{!expanded}" class="triangle_up"></i> <i show="{expanded}" class="triangle_down"></i> </a> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}"></kor-relationship> </virtual>', "", "", function(opts) {
+    var fetch, tag, updateExpansion;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.info);
+    tag.on("mount", function() {
+        var base;
+        wApp.bus.on("relationship-updated", fetch);
+        wApp.bus.on("relationship-deleted", fetch);
+        (base = tag.opts).query || (base.query = {});
+        return fetch();
+    });
+    tag.on("unmount", function() {
+        wApp.bus.off("relationship-deleted", fetch);
+        return wApp.bus.off("relationship-updated", fetch);
+    });
+    tag.toggle = function(event) {
+        event.preventDefault();
+        tag.expanded = !tag.expanded;
+        return updateExpansion();
+    };
+    tag.pageUpdate = function(newPage) {
+        opts.query.page = newPage;
+        return fetch();
+    };
+    tag.refresh = function() {
+        return fetch();
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/entities/" + tag.opts.entity.id + "/relationships",
+            data: {
+                page: tag.opts.query.page,
+                relation_name: tag.opts.name,
+                except_to_kind_id: tag.info().medium_kind_id
+            },
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+                return updateExpansion();
+            }
+        });
+    };
+    updateExpansion = function() {
+        var i, len, r, ref, results;
+        if (tag.expanded !== void 0) {
+            ref = tag.tags["kor-relationship"];
+            results = [];
+            for (i = 0, len = ref.length; i < len; i++) {
+                r = ref[i];
+                results.push(r.trigger("toggle", tag.expanded));
+            }
+            return results;
+        }
+    };
+});
+
+riot.tag2("kor-relation-merger", '{t(\'messages.relation_merger_prompt\')} <ul if="{ids(true).length > 0}"> <li each="{relation, id in relations}"> <a href="#" onclick="{setAsTarget}">{relation.name} / {relation.reverse_name}</a> ({relation.id}) <i if="{relation.id == target}" class="fa fa-star"></i> <a title="{t(\'verbs.remove\')}" href="#" onclick="{removeRelation}"><i class="fa fa-times"></i></a> </li> </ul> <div class="text-right" if="{valid()}"> <button onclick="{check}">{t(\'verbs.check\')}</button> <button onclick="{merge}">{t(\'verbs.merge\')}</button> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.relations = {};
+    tag.target = null;
+    tag.reset = function() {
+        tag.relations = {};
+        tag.target = null;
+    };
+    tag.addRelation = function(relation) {
+        tag.relations[relation.id] = relation;
+        tag.update();
+    };
+    tag.removeRelation = function(event) {
+        event.preventDefault();
+        var id = event.item.relation.id;
+        delete tag.relations[id];
+        if (tag.target == id) {
+            tag.target = null;
+        }
+        tag.update();
+    };
+    tag.setAsTarget = function(event) {
+        event.preventDefault();
+        var id = event.item.relation.id;
+        tag.target = id;
+        tag.update();
+    };
+    tag.ids = function(includeTarget) {
+        var results = [];
+        Zepto.each(tag.relations, function(k, v) {
+            k = parseInt(k);
+            if (includeTarget || k != tag.target) {
+                results.push(k);
+            }
+        });
+        return results;
+    };
+    tag.valid = function() {
+        return tag.target && tag.ids().length > 0;
+    };
+    tag.check = function() {
+        submit(true);
+    };
+    tag.merge = function() {
+        if (window.confirm(tag.t("confirm.long_time_warning"))) {
+            submit(false);
+        }
+    };
+    var done = function() {
+        var h = tag.opts.onDone;
+        if (h) {
+            h();
+        }
+    };
+    var submit = function(check_only) {
+        var params = {
+            other_id: tag.ids()
+        };
+        if (check_only != false) {
+            params["check_only"] = true;
+        }
+        Zepto.ajax({
+            type: "POST",
+            url: "/relations/" + tag.target + "/merge",
+            data: JSON.stringify(params),
+            success: function(data) {
+                if (check_only == false) {
+                    done();
+                }
+            },
+            error: function() {
+                console.log(arguments);
+            }
+        });
+    };
+});
+
+riot.tag2("kor-relation-selector", '<kor-input if="{relationNames && relationNames.length > 0}" name="relation_name" label="{tcap(\'activerecord.models.relation\')}" type="select" placeholder="{t(\'nothing_selected\')}" options="{relationNames}" riot-value="{opts.riotValue}" errors="{opts.errors}" ref="input" onchange="{onchange}"></kor-input> <span if="{relationNames && relationNames.length == 0}" class="error">{t(\'messages.no_relations_provided\')}</span>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        tag.trigger("reload");
+    });
+    tag.on("reload", function() {
+        fetch();
+    });
+    tag.onchange = function(event) {
+        event.stopPropagation();
+        var h = tag.opts.onchange;
+        if (h) {
+            h();
+        }
+    };
+    tag.value = function() {
+        return tag.refs.input.value();
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/relations/names",
+            data: {
+                from_kind_ids: tag.opts.sourceKindId,
+                to_kind_ids: tag.opts.targetKindId
+            },
+            success: function(data) {
+                tag.relationNames = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-relationship", '<div class="part"> <virtual if="{!editorActive}"> <div class="kor-layout-commands"> <virtual if="{allowedToEdit()}"> <kor-clipboard-control entity="{to()}" if="{to().medium_id}"></kor-clipboard-control> <a onclick="{edit}" title="{t(\'objects.edit\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="pen"></i></a> <a onclick="{delete}" title="{t(\'objects.delete\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="x"></i></a> </virtual> </div> <kor-entity no-clipboard="{true}" entity="{relationship.to}"></kor-entity> <a if="{relationship.media_relations > 0}" onclick="{toggle}" class="toggle"> <i show="{!expanded}" class="triangle_up"></i> <i show="{expanded}" class="triangle_down"></i> </a> <virtual if="{relationship.properties.length > 0}"> <hr> <div each="{property in relationship.properties}">{property}</div> </virtual> <virtual if="{relationship.datings.length > 0}"> <hr> <div each="{dating in relationship.datings}"> {dating.label}: <strong>{dating.dating_string}</strong> </div> </virtual> <div class="clearfix"></div> <virtual if="{expanded && data}"> <kor-pagination page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="clearfix"></div> </virtual> </virtual> </div> <table class="media-relations" if="{expanded && data && !editorActive}"> <tbody> <tr each="{row in wApp.utils.inGroupsOf(3, data.records)}"> <td each="{relationship in row}"> <a href="#/entities/{relationship.to.id}"> <img riot-src="{relationship.to.medium.url.thumbnail}"> </a> </td> </tr> </tbody> </table>', "", "", function(opts) {
+    var fetchPage, tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.info);
+    tag.on("mount", function() {
+        var base;
+        tag.relationship = tag.opts.relationship;
+        return (base = tag.opts).query || (base.query = {});
+    });
+    tag.to = function() {
+        return tag.relationship.to;
+    };
+    tag.toggle = function(event) {
+        event.preventDefault();
+        return tag.trigger("toggle");
+    };
+    tag.on("toggle", function(value) {
+        tag.expanded = value === void 0 ? !tag.expanded : value;
+        if (tag.expanded && !tag.data) {
+            fetchPage();
+        }
+        return tag.update();
+    });
+    tag.allowedToEdit = function() {
+        return tag.allowedTo("edit", tag.opts.entity.collection_id) || tag.allowedTo("edit", tag.to().collection_id);
+    };
+    tag.edit = function(event) {
+        event.preventDefault();
+        return wApp.bus.trigger("modal", "kor-relationship-editor", {
+            directedRelationship: tag.relationship
+        });
+    };
+    tag["delete"] = function() {
+        if (confirm(tag.t("confirm.sure"))) {
+            return Zepto.ajax({
+                type: "DELETE",
+                url: "/relationships/" + tag.relationship.relationship_id,
+                success: function(data) {
+                    return wApp.bus.trigger("relationship-deleted");
+                }
+            });
+        }
+    };
+    tag.pageUpdate = function(newPage) {
+        tag.opts.query.page = newPage;
+        return fetchPage();
+    };
+    fetchPage = function() {
+        return Zepto.ajax({
+            url: "/entities/" + tag.to().id + "/relationships",
+            data: {
+                page: tag.opts.query.page,
+                per_page: 9,
+                relation_name: tag.opts.name,
+                to_kind_id: tag.info().medium_kind_id
+            },
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-relationship-editor", '<div class="kor-content-box" if="{relationship}"> <h1 if="{relationship.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.relationship\'}})} </h1> <h1 if="{!relationship.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.relationship\'}})} </h1> <form onsubmit="{save}" onreset="{cancel}" if="{relationship}"> <kor-relation-selector source-kind-id="{sourceKindId}" target-kind-id="{targetKindId}" riot-value="{relationship.relation_name}" errors="{errors.relation_id}" ref="relationName" onchange="{relationChanged}"></kor-relation-selector> <hr> <kor-entity-selector relation-name="{relationship.relation_name}" riot-value="{relationship.to_id}" errors="{errors.to_id}" ref="targetId" onchange="{targetChanged}"></kor-entity-selector> <hr> <kor-properties-editor properties="{relationship.properties}" ref="properties"></kor-properties-editor> <hr> <kor-datings-editor riot-value="{relationship.datings}" ref="datings" errors="{errors.datings}" for="relationship"></kor-datings-editor> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> <kor-input type="reset" riot-value="{tcap(\'cancel\')}"></kor-input> </form> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.editor);
+    tag.resource = {
+        singular: "relationship",
+        plural: "relationships"
+    };
+    tag.resourceId = function() {
+        return tag.relationship.relationship_id;
+    };
+    tag.on("mount", function() {
+        tag.relationship = tag.opts.directedRelationship;
+        tag.errors = {};
+        if (tag.relationship.from_id) {
+            fetchSource();
+        }
+        if (tag.relationship.to_id) {
+            fetchTarget();
+        }
+    });
+    tag.cancel = function() {
+        tag.opts.modal.trigger("close");
+    };
+    tag.relationChanged = function() {
+        tag.relationship.relation_name = tag.refs.relationName.value();
+        tag.update();
+        tag.refs.targetId.trigger("reload");
+    };
+    tag.targetChanged = function() {
+        tag.relationship.to_id = tag.refs.targetId.value();
+        fetchTarget();
+    };
+    tag.onSuccess = function() {
+        tag.errors = {};
+        tag.update();
+        if (tag.relationship.id) {
+            wApp.bus.trigger("relationship-updated");
+            h = tag.opts.onUpdated;
+        } else {
+            wApp.bus.trigger("relationship-created");
+        }
+        tag.opts.modal.trigger("close");
+    };
+    tag.formValues = function() {
+        return {
+            from_id: tag.relationship.from_id,
+            relation_name: tag.refs.relationName.value(),
+            to_id: tag.refs.targetId.value(),
+            properties: tag.refs.properties.value(),
+            datings_attributes: tag.refs.datings.value()
+        };
+    };
+    var fetchSource = function() {
+        Zepto.ajax({
+            url: "/entities/" + tag.relationship.from_id,
+            success: function(data) {
+                tag.sourceKindId = data.kind_id;
+                tag.update();
+                tag.refs.relationName.trigger("reload");
+            }
+        });
+    };
+    var fetchTarget = function() {
+        if (tag.relationship.to_id) {
+            Zepto.ajax({
+                url: "/entities/" + tag.relationship.to_id,
+                success: function(data) {
+                    tag.targetKindId = data.kind_id;
+                    tag.update();
+                    tag.refs.relationName.trigger("reload");
+                }
+            });
+        } else {
+            tag.targetKindId = null;
+            tag.update();
+            tag.refs.relationName.trigger("reload");
+        }
+    };
+});
+
+riot.tag2("kor-search-result", '<a href="#/entities/{opts.entity.id}" class="to-entity"> <kor-clipboard-control entity="{opts.entity}"></kor-clipboard-control> <div class="labels"> <div class="name">{opts.entity.display_name}</div> <div class="kind">{opts.entity.kind_name}</div> </div> <div class="media" if="{opts.entity.related.length > 0}"> <kor-entity each="{rel in opts.entity.related}" entity="{rel.to}" no-content-type="{true}"></kor-entity> <div class="clearfix"></div> </div> </a>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+});
+
+riot.tag2("kor-sa-entity", '<div class="auth" if="{!authorized}"> <strong>Info</strong> <p> It seems you are not allowed to see this content. Please <a href="{login_url()}">login</a> to the kor installation first. </p> </div> <a href="{url()}" if="{authorized}" target="_blank"> <img if="{data.medium}" riot-src="{image_url()}"> <div if="{!data.medium}"> <h3>{data.display_name}</h3> <em if="{include(\'kind\')}"> {data.kind_name} <span show="{data.subtype}">({data.subtype})</span> </em> </div> </a>', "", "class=\"{'kor-style': opts.korStyle, 'kor': opts.korStyle}\"", function(opts) {
+    var tag;
+    tag = this;
+    tag.authorized = true;
+    tag.on("mount", function() {
+        var base;
+        if (tag.opts.id) {
+            base = $("script[kor-url]").attr("kor-url") || "";
+            return Zepto.ajax({
+                url: base + "/entities/" + tag.opts.id,
+                data: {
+                    include: "all"
+                },
+                dataType: "json",
+                beforeSend: function(xhr) {
+                    return xhr.withCredentials = true;
+                },
+                success: function(data) {
+                    tag.data = data;
+                    return tag.update();
+                },
+                error: function(request) {
+                    tag.data = {};
+                    if (request.status === 403) {
+                        tag.authorized = false;
+                        return tag.update();
+                    }
+                }
+            });
+        } else {
+            return raise("this widget requires an id");
+        }
+    });
+    tag.login_url = function() {
+        var base, return_to;
+        base = $("script[kor-url]").attr("kor-url") || "";
+        return_to = document.location.href;
+        return base + "/login?return_to=" + return_to;
+    };
+    tag.image_size = function() {
+        return tag.opts.korImageSize || "preview";
+    };
+    tag.image_url = function() {
+        var base, size;
+        base = $("script[kor-url]").attr("kor-url") || "";
+        size = tag.image_size();
+        return "" + base + tag.data.medium.url[size];
+    };
+    tag.include = function(what) {
+        var includes;
+        includes = (tag.opts.korInclude || "").split(/\s+/);
+        return includes.indexOf(what) !== -1;
+    };
+    tag.url = function() {
+        var base;
+        base = $("[kor-url]").attr("kor-url") || "";
+        return base + "/blaze#/entities/" + tag.data.id;
+    };
+    tag.human_size = function() {
+        var size;
+        size = tag.data.medium.file_size / 1024 / 1024;
+        return Math.floor(size * 100) / 100;
+    };
+});
+
+riot.tag2("kor-submit", '<input type="submit" riot-value="{label()}">', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.label = function() {
+        var base;
+        (base = tag.opts).labelKey || (base.labelKey = "verbs.save");
+        return tag.t(tag.opts.labelKey, {
+            capitalize: true
+        });
+    };
+});
+
+riot.tag2("kor-synonyms-editor", '<kor-input label="{opts.label}" type="textarea" riot-value="{valueFromParent()}"></kor-input>', "", "", function(opts) {
+    var tag;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.valueFromParent = function() {
+        if (opts.riotValue) {
+            return opts.riotValue.join("\n");
+        } else {
+            return "";
+        }
+    };
+    tag.name = function() {
+        return tag.opts.name;
+    };
+    tag.value = function() {
+        var i, len, ref, results, s, text;
+        text = tag.tags["kor-input"].value();
+        if (text.match(/^\s*$/)) {
+            return [];
+        }
+        ref = text.split(/\n/);
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            s = ref[i];
+            if (s) {
+                results.push(s);
+            }
+        }
+        return results;
+    };
+});
+
+riot.tag2("kor-user-group-selector", '<kor-input label="{tcap(\'activerecord.models.user_group\')}" name="{opts.name}" type="text" ref="input" riot-value="{opts.riotValue}"></kor-input>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    var ac = null;
+    tag.on("mount", function() {
+        ac = new autoComplete({
+            selector: Zepto(tag.root).find("input")[0],
+            source: function(term, response) {
+                Zepto.ajax({
+                    url: "/user_groups",
+                    data: {
+                        terms: term
+                    },
+                    success: function(data) {
+                        var strings = [];
+                        for (var i = 0; i < data.records.length; i++) strings.push(data.records[i].name);
+                        response(strings);
+                    }
+                });
+            }
+        });
+    });
+    tag.value = function() {
+        return tag.refs["input"].value();
+    };
+});
+
+riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div class="w-content"></div> </div> <w-modal ref="modal"></w-modal> <w-messaging></w-messaging>', "", "", function(opts) {
     var redirectTo, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -7952,8 +13486,8 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                 }
                 break;
 
-              case "/stats":
-                return "kor-stats";
+              case "/statistics":
+                return "kor-statistics";
 
               case "/legal":
                 return "kor-legal";
@@ -7972,20 +13506,46 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                         } else if (m = path.match(/^\/entities\/([0-9]+)$/)) {
                             opts["id"] = parseInt(m[1]);
                             return "kor-entity-page";
+                        } else if (m = path.match(/^\/kinds\/([0-9]+)\/edit\/fields\/new$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            opts["newField"] = true;
+                            return "kor-kind-editor";
+                        } else if (m = path.match(/^\/kinds\/([0-9]+)\/edit\/fields\/([0-9]+)\/edit$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            opts["fieldId"] = parseInt(m[2]);
+                            return "kor-kind-editor";
+                        } else if (m = path.match(/^\/kinds\/([0-9]+)\/edit\/generators\/new$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            opts["newGenerator"] = true;
+                            return "kor-kind-editor";
+                        } else if (m = path.match(/^\/kinds\/([0-9]+)\/edit\/generators\/([0-9]+)\/edit$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            opts["generatorId"] = parseInt(m[2]);
+                            return "kor-kind-editor";
+                        } else if (m = path.match(/^\/kinds\/([0-9]+)\/edit$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-kind-editor";
+                        } else if (m = path.match(/^\/entities\/new$/)) {
+                            opts["kindId"] = parts["hash_query"]["kind_id"];
+                            return "kor-entity-editor";
+                        } else if (m = path.match(/^\/entities\/([0-9]+)\/edit$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-entity-editor";
+                        } else if (m = path.match(/^\/collections\/([0-9]+)\/edit$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-collection-editor";
+                        } else if (m = path.match(/^\/groups\/user\/([0-9]+)\/edit$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-user-group-editor";
+                        } else if (m = path.match(/^\/relations\/([0-9]+)\/edit$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-relation-editor";
+                        } else if (m = path.match(/^\/media\/([0-9]+)$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-medium-page";
                         } else {
                             switch (path) {
                               case "/clipboard":
-                                opts.handlers.reset = function() {
-                                    wApp.clipboard.reset();
-                                    tag.mountedTag.opts.entityIds = wApp.clipboard.ids();
-                                    return Zepto.Deferred().resolve();
-                                };
-                                opts.handlers.remove = function(id) {
-                                    wApp.clipboard.remove(id);
-                                    tag.mountedTag.opts.entityIds = wApp.clipboard.ids();
-                                    return Zepto.Deferred().resolve();
-                                };
-                                opts.entityIds = wApp.clipboard.ids();
                                 return "kor-clipboard";
 
                               case "/profile":
@@ -8012,6 +13572,39 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                               case "/search":
                                 return "kor-search";
 
+                              case "/kinds":
+                                return "kor-kinds";
+
+                              case "/kinds/new":
+                                return "kor-kind-editor";
+
+                              case "/collections":
+                                return "kor-collections";
+
+                              case "/collections/new":
+                                return "kor-collection-editor";
+
+                              case "/upload":
+                                return "kor-upload";
+
+                              case "/groups/user/new":
+                                return "kor-user-group-editor";
+
+                              case "/groups/user":
+                                return "kor-user-groups";
+
+                              case "/relations/new":
+                                return "kor-relation-editor";
+
+                              case "/relations":
+                                return "kor-relations";
+
+                              case "/settings":
+                                return "kor-settings-editor";
+
+                              case "/password-recovery":
+                                return "kor-password-recovery";
+
                               default:
                                 return "kor-search";
                             }
@@ -8022,6 +13615,7 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                 }
             }
         }();
+        tag.closeModal();
         return tag.mountTagAndAnimate(tagName, opts);
     };
     tag.queryHandler = function(parts) {
@@ -8030,13 +13624,16 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
             return tag.mountedTag.trigger("routing:query");
         }
     };
+    tag.closeModal = function() {
+        return tag.refs.modal.trigger("close");
+    };
     tag.mountTagAndAnimate = function(tagName, opts) {
         var element, mountIt;
         if (opts == null) {
             opts = {};
         }
         if (tagName) {
-            element = Zepto(".w-content");
+            element = Zepto(tag.root).find(".w-content");
             mountIt = function() {
                 tag.mountedTag = riot.mount(element[0], tagName, opts)[0];
                 element.animate({
@@ -8076,28 +13673,30 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
     };
 });
 
-riot.tag2("w-app-loader", '<div class="app"></div>', "", "", function(opts) {
-    var reloadApp, tag;
-    tag = this;
-    reloadApp = function() {
-        var preloaders;
+riot.tag2("w-app-loader", '<div class="app" ref="target"> <div class="kor-loading-screen"> <img src="/images/loading.gif"><br> <strong>… loading …</strong> </div> </div>', "", "", function(opts) {
+    var tag = this;
+    var reloadApp = function() {
+        unmount();
+        var preloaders = wApp.setup();
+        $.when.apply(null, preloaders).then(function() {
+            mountApp();
+        });
+    };
+    var unmount = function() {
         if (tag.mountedApp) {
             tag.mountedApp.unmount(true);
         }
-        preloaders = wApp.setup();
-        return $.when.apply($, preloaders).then(function() {
-            var element, opts;
-            element = Zepto(tag.root).find(".app")[0];
-            opts = {
-                routing: true
-            };
-            tag.mountedApp = riot.mount(element, "w-app", opts)[0];
-            return console.log("application (re)loaded");
-        });
+    };
+    var mountApp = function() {
+        var opts = {
+            routing: true
+        };
+        tag.mountedApp = riot.mount(tag.refs.target, "w-app", opts)[0];
+        console.log("application (re)loaded");
     };
     wApp.bus.on("reload-app", reloadApp);
     tag.on("mount", function() {
-        return wApp.bus.trigger("reload-app");
+        wApp.bus.trigger("reload-app");
     });
 });
 
@@ -8141,29 +13740,26 @@ riot.tag2("w-bar-chart", '<svg riot-width="{width()}" riot-height="{height()}"> 
     };
 });
 
-riot.tag2("kor-header", '<a href="#/" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <span if="{currentUser()}"> <img src="images/vertical_dots.gif"> {t(\'logged_in_as\')}: <strong>{currentUser().display_name}</strong> <span if="{!isGuest()}"> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </span> </span> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var tag;
-    tag = this;
+riot.tag2("kor-header", '<a href="#/" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <kor-loading></kor-loading> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <span if="{currentUser()}"> <img src="images/vertical_dots.gif"> {t(\'logged_in_as\')}: <strong>{currentUser().display_name}</strong> <span if="{!isGuest()}"> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </span> </span> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
     tag.mixin(wApp.mixins.info);
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 });
 
-riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/profile">{tcap(\'edit_self\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#/new-media">{tcap(\'pages.new_media\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.simple_search\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.expert_search\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#" onclick="{toggleGroups}"> {tcap(\'nouns.group\', {count: \'other\'})} </a> <ul show="{showGroups}" class="submenu"> <li> <a href="#/groups/authority"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> </ul> </li> </ul> <ul show="{isLoggedIn() && allowedTo(\'create\')}"> <li> <kor-input if="{kinds}" type="select" onchange="{newEntity}" options="{kinds.records}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'nouns.entity\'}})}" ref="kind_id"></kor-input> </li> <li show="{isLoggedIn()}"> <a href="#/upload">{tcap(\'nouns.mass_upload\')}</a> </li> </ul> <ul show="{isLoggedIn()}"> <li show="{allowedTo(\'delete\')}"> <a href="#/entities/invalid">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/entities/recent">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/entities/isolated">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> <ul show="{hasAnyRole()}"> <li> <a href="#" onclick="{toggleConfig}"> {tcap(\'nouns.config\', {count: \'other\'})} </a> <ul show="{showConfig}" class="submenu"> <li show="{hasRole(\'admin\')}"> <a href="#/config/general"> {tcap(\'general\')} </a> </li> <li show="{hasRole(\'relation_admin\')}"> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li show="{hasRole(\'kind_admin\')}"> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> </li> </ul> <ul> <li> <a href="#/stats">{tcap(\'nouns.statistics\')}</a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/dev">{tcap(\'activerecord.models.exception_log.other\')}</a> </li> </ul> <ul> <li> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li show="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer.mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
-    var tag;
+riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/profile">{tcap(\'edit_self\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#/new-media">{tcap(\'pages.new_media\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.search\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#" onclick="{toggleGroups}"> {tcap(\'nouns.group\', {count: \'other\'})} </a> <ul show="{showGroups}" class="submenu"> <li> <a href="#/groups/authority"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> </ul> </li> </ul> <ul show="{isLoggedIn() && allowedTo(\'create\')}"> <li> <kor-input if="{kinds}" type="select" onchange="{newEntity}" options="{kinds.records}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.entity.one\'}})}" ref="kind_id"></kor-input> </li> <li show="{isLoggedIn()}"> <a href="#/upload">{tcap(\'nouns.mass_upload\')}</a> </li> </ul> <ul show="{isLoggedIn()}"> <li show="{allowedTo(\'delete\')}"> <a href="#/entities/invalid">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/entities/recent">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/entities/isolated">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> <ul show="{hasAnyRole()}"> <li> <a href="#" onclick="{toggleConfig}"> {tcap(\'nouns.config\', {count: \'other\'})} </a> <ul show="{showConfig}" class="submenu"> <li show="{hasRole(\'admin\')}"> <a href="#/settings"> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </a> </li> <li show="{hasRole(\'relation_admin\')}"> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li show="{hasRole(\'kind_admin\')}"> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> </li> </ul> <ul> <li> <a href="#/statistics">{tcap(\'nouns.statistics\')}</a> </li> <li> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li show="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer_mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
+    var fetchKinds, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
     tag.mixin(wApp.mixins.config);
     tag.on("mount", function() {
-        return $.ajax({
-            url: "/kinds",
-            success: function(data) {
-                tag.kinds = data;
-                return tag.update();
-            }
-        });
+        wApp.bus.on("reload-kinds", fetchKinds);
+        return fetchKinds();
+    });
+    tag.on("umount", function() {
+        return wApp.bus.off("reload-kinds", fetchKinds);
     });
     tag.toggleGroups = function(event) {
         event.preventDefault();
@@ -8182,6 +13778,15 @@ riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(
         wApp.routing.path("/entities/new?kind_id=" + kind_id);
         return tag.refs.kind_id.set(0);
     };
+    fetchKinds = function() {
+        return $.ajax({
+            url: "/kinds",
+            success: function(data) {
+                tag.kinds = data;
+                return tag.update();
+            }
+        });
+    };
 });
 
 riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'error\': error(message), \'notice\': notice(message)}"> <i show="{notice(message)}" class="fa fa-warning"></i> <i show="{error(message)}" class="fa fa-info-circle"></i> {message.content} </div>', "", "", function(opts) {
@@ -8199,27 +13804,22 @@ riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'er
             type: type,
             content: message
         });
-        window.setTimeout(self.drop, self.opts.duration || 5e3);
+        window.setTimeout(self.drop, self.opts.duration || 3e3);
         return self.update();
     });
     ajaxCompleteHandler = function(event, request, options) {
-        var contentType, data, e, i, len, message, ref, results, type;
+        var contentType, data, e, type;
         contentType = request.getResponseHeader("content-type");
         if (contentType && contentType.match(/^application\/json/) && request.response) {
             try {
                 data = JSON.parse(request.response);
-                if (data.messages.length) {
+                if (data.message) {
                     type = request.status >= 200 && request.status < 300 ? "notice" : "error";
-                    ref = data.messages;
-                    results = [];
-                    for (i = 0, len = ref.length; i < len; i++) {
-                        message = ref[i];
-                        results.push(wApp.bus.trigger("message", type, message));
-                    }
-                    return results;
+                    return wApp.bus.trigger("message", type, data.message);
                 }
             } catch (error) {
                 e = error;
+                return console.log(e, request);
             }
         }
     };
@@ -8244,7 +13844,7 @@ riot.tag2("w-modal", '<div class="receiver" ref="receiver"></div>', "", 'show="{
         if (opts == null) {
             opts = {};
         }
-        opts.modal = tagName;
+        opts.modal = tag;
         tag.mountedTag = riot.mount(tag.refs.receiver, tagName, opts)[0];
         tag.active = true;
         return tag.update();
@@ -8268,42 +13868,6 @@ riot.tag2("w-modal", '<div class="receiver" ref="receiver"></div>', "", 'show="{
             return tag.update();
         }
     });
-});
-
-riot.tag2("w-pagination", '<div class="w-text-right" show="{total_pages() > 1}"> <a show="{!is_first()}" onclick="{page_to_first}"><i class="fa fa-angle-double-left"></i></a> <a show="{!is_first()}" onclick="{page_down}"><i class="fa fa-angle-left"></i></a> {opts.page}/{total_pages()} <a show="{!is_last()}" onclick="{page_up}"><i class="fa fa-angle-right"></i></a> <a show="{!is_last()}" onclick="{page_to_last}"><i class="fa fa-angle-double-right"></i></a> </div>', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.current_page = function() {
-        return parseInt(wApp.routing.query()["page"] || 1);
-    };
-    tag.page_to_first = function() {
-        return tag.page_to(1);
-    };
-    tag.page_down = function() {
-        return tag.page_to(tag.current_page() - 1);
-    };
-    tag.page_up = function() {
-        return tag.page_to(tag.current_page() + 1);
-    };
-    tag.page_to_last = function() {
-        return tag.page_to(tag.total_pages());
-    };
-    tag.is_first = function() {
-        return tag.current_page() === 1;
-    };
-    tag.is_last = function() {
-        return tag.current_page() === tag.total_pages();
-    };
-    tag.page_to = function(new_page) {
-        if (new_page !== tag.current_page() && new_page >= 1 && new_page <= tag.total_pages()) {
-            return wApp.routing.query({
-                page: new_page
-            });
-        }
-    };
-    tag.total_pages = function() {
-        return Math.ceil(tag.opts.total / tag.opts.per_page);
-    };
 });
 
 riot.tag2("w-timestamp", "<span>{formatted()}</span>", "", "", function(opts) {
