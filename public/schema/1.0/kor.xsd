@@ -234,11 +234,12 @@
 
     <xs:group name="mediumgroup">
         <xs:sequence>
-            <xs:element name="image-path">
+            <xs:element name="image-path" minOccurs="6" maxOccurs="6">
                 <xs:complexType>
                     <xs:simpleContent>
                         <xs:extension base="xs:string">
                             <xs:attribute name="style" type="xs:string" use="required"/>
+                            <xs:attribute name="dimensions" type="xs:string"/>
                         </xs:extension>
                     </xs:simpleContent>
                 </xs:complexType>
