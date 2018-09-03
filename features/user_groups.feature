@@ -124,3 +124,10 @@ Feature: usergroups
     Then I should see "Mona Lisa"
     And I should see "Leonardo"
     
+  @javascript
+  Scenario: show a user group without permissions
+    Given the user "mrossi"
+    And "mrossi" has a user group "My selection"
+    And I am logged in as "jdoe"
+    When I go to the user group page for "My selection"
+    Then I should see "Access denied"
