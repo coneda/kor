@@ -36,10 +36,6 @@ class KindsController < ApplicationController
   def update
     @kind = Kind.find(params[:id])
 
-    params[:kind] ||= {}
-    params[:kind][:settings] ||= {}
-    params[:kind][:settings][:tagging] ||= false
-
     if @kind.update_attributes(kind_params)
       @messages << I18n.t('objects.update_success', o: Kind.model_name.human)
       render action: 'save'

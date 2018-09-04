@@ -366,8 +366,7 @@ end
 
 Then(/^"([^"]*)" should not have option "([^"]*)"$/) do |name, value|
   field = page.find_field(name)
-  options = field.all('option').map{|o| o.text}
-  expect(options).not_to include(value)
+  expect(field).not_to have_css('option', text: value)
 end
 
 When(/^I click icon "([^"]*)"$/) do |name|
