@@ -25,6 +25,7 @@ commit history on GitHub.
 * added new field type for multi-line text
 * added new search documentation, generously provided by the excellent [Maya
   Image Archive](https://classicmayan.kor.de.dariah.eu)
+* the piwik/matomo integration now uses cookie-free tracking
 
 ### Internal
 

@@ -1,8 +1,8 @@
 <% cache record do %>
 <kor:kind
-  xmlns:kor="https://coneda.net/XMLSchema/1.0/"
-  xsi:schemaLocation="https://coneda.net/XMLSchema/1.0/ 
-                      https://coneda.net/XMLSchema/1.0/kor.xsd"
+  xmlns:kor="https://coneda.net/XMLSchema/1.1/"
+  xsi:schemaLocation="https://coneda.net/XMLSchema/1.1/
+                      <%= root_url + 'schema/1.1/kor.xsd' %>"
 >
   <kor:id><%= record.uuid %></kor:id>
   <kor:created-at><%= timestamp record.created_at %></kor:created-at>

@@ -302,7 +302,7 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
     admin = User.admin
     ns = {
       'oai' => 'http://www.openarchives.org/OAI/2.0/',
-      'kor' => 'https://coneda.net/XMLSchema/1.0/'
+      'kor' => 'https://coneda.net/XMLSchema/1.1/'
     }
 
     zero = Time.now
