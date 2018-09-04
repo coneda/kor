@@ -2191,6 +2191,10 @@
         }
         return el;
     }
+    var EVENT_ATTR_RE = /^on/;
+    function isEventAttribute(attribute) {
+        return EVENT_ATTR_RE.test(attribute);
+    }
     function getImmediateCustomParent(tag) {
         var ptag = tag;
         while (ptag.__.isAnonymous) {
@@ -2431,11 +2435,18 @@
             }
             return;
         }
-        if (isFunction(value)) {
-            setEventHandler(attrName, value, dom, this);
-        } else if (isToggle) {
+        switch (true) {
+          case isFunction(value):
+            if (isEventAttribute(attrName)) {
+                setEventHandler(attrName, value, dom, this);
+            }
+            break;
+
+          case isToggle:
             toggleVisibility(dom, attrName === HIDE_DIRECTIVE ? !value : value);
-        } else {
+            break;
+
+          default:
             if (expr.bool) {
                 dom[attrName] = value;
             }
@@ -2624,7 +2635,7 @@
         styleManager.remove(name);
         return delete __TAG_IMPL[name];
     }
-    var version = "v3.9.4";
+    var version = "v3.11.1";
     var core = Object.freeze({
         Tag: Tag,
         tag: tag,
@@ -2769,7 +2780,6 @@
         var isAnonymous = !__TAG_IMPL[tagName];
         var isVirtual = dom.tagName === "VIRTUAL";
         var oldItems = [];
-        var hasKeys;
         removeAttribute(dom, LOOP_DIRECTIVE);
         removeAttribute(dom, KEY_DIRECTIVE);
         expr = tmpl.loopKeys(expr);
@@ -2786,33 +2796,31 @@
             var isObject = !isArray(items) && !isString(items);
             var root = placeholder.parentNode;
             var tmpItems = [];
+            var hasKeys = isObject && !!items;
             if (!root) {
                 return;
             }
             if (isObject) {
-                hasKeys = items || false;
-                items = hasKeys ? Object.keys(items).map(function(key) {
+                items = items ? Object.keys(items).map(function(key) {
                     return mkitem(expr, items[key], key);
                 }) : [];
-            } else {
-                hasKeys = false;
             }
             var filteredItemsCount = 0;
-            each(items, function(_item, i) {
-                i -= filteredItemsCount;
-                var item = !hasKeys && expr.key ? mkitem(expr, _item, i) : _item;
+            each(items, function(_item, index) {
+                var i = index - filteredItemsCount;
+                var item = !hasKeys && expr.key ? mkitem(expr, _item, index) : _item;
                 if (ifExpr && !tmpl(ifExpr, extend(create(parent), item))) {
                     filteredItemsCount++;
                     return;
                 }
                 var itemId = getItemId(keyAttr, _item, item, hasKeyAttrExpr);
-                var doReorder = mustReorder && typeof _item === T_OBJECT && !hasKeys;
+                var doReorder = !isObject && mustReorder && typeof _item === T_OBJECT || keyAttr;
                 var oldPos = oldItems.indexOf(itemId);
                 var isNew = oldPos === -1;
                 var pos = !isNew && doReorder ? oldPos : i;
                 var tag = tags[pos];
                 var mustAppend = i >= oldItems.length;
-                var mustCreate = doReorder && isNew || !doReorder && !tag;
+                var mustCreate = doReorder && isNew || !doReorder && !tag || !tags[i];
                 if (mustCreate) {
                     tag = createTag(impl, {
                         parent: parent,
@@ -2939,17 +2947,15 @@
         },
         update: function update$$1() {
             this.value = tmpl(this.expr, this.tag);
+            if (!this.stub.parentNode) {
+                return;
+            }
             if (this.value && !this.current) {
                 this.current = this.pristine.cloneNode(true);
                 this.stub.parentNode.insertBefore(this.current, this.stub);
                 this.expressions = parseExpressions.apply(this.tag, [ this.current, true ]);
             } else if (!this.value && this.current) {
-                unmountAll(this.expressions);
-                if (this.current._tag) {
-                    this.current._tag.unmount();
-                } else if (this.current.parentNode) {
-                    this.current.parentNode.removeChild(this.current);
-                }
+                this.unmount();
                 this.current = null;
                 this.expressions = [];
             }
@@ -2958,6 +2964,13 @@
             }
         },
         unmount: function unmount() {
+            if (this.current) {
+                if (this.current._tag) {
+                    this.current._tag.unmount();
+                } else if (this.current.parentNode) {
+                    this.current.parentNode.removeChild(this.current);
+                }
+            }
             unmountAll(this.expressions || []);
         }
     };
@@ -3206,7 +3219,7 @@
         if (impl === void 0) impl = {};
         if (conf === void 0) conf = {};
         var tag = conf.context || {};
-        var opts = extend({}, conf.opts);
+        var opts = conf.opts || {};
         var parent = conf.parent;
         var isLoop = conf.isLoop;
         var isAnonymous = !!conf.isAnonymous;
@@ -3215,19 +3228,27 @@
         var index = conf.index;
         var instAttrs = [];
         var implAttrs = [];
+        var tmpl = impl.tmpl;
         var expressions = [];
         var root = conf.root;
         var tagName = conf.tagName || getName(root);
         var isVirtual = tagName === "virtual";
-        var isInline = !isVirtual && !impl.tmpl;
+        var isInline = !isVirtual && !tmpl;
         var dom;
+        if (isInline || isLoop && isAnonymous) {
+            dom = root;
+        } else {
+            if (!isVirtual) {
+                root.innerHTML = "";
+            }
+            dom = mkdom(tmpl, innerHTML, isSvg(root));
+        }
         if (!skipAnonymous) {
             observable(tag);
         }
         if (impl.name && root._tag) {
             root._tag.unmount(true);
         }
-        define(tag, "isMounted", false);
         define(tag, "__", {
             impl: impl,
             root: root,
@@ -3248,37 +3269,26 @@
             tail: null,
             head: null
         });
-        define(tag, "_riot_id", uid());
-        define(tag, "root", root);
-        extend(tag, {
-            opts: opts
-        }, item);
-        define(tag, "parent", parent || null);
-        define(tag, "tags", {});
-        define(tag, "refs", {});
-        if (isInline || isLoop && isAnonymous) {
-            dom = root;
-        } else {
-            if (!isVirtual) {
-                root.innerHTML = "";
-            }
-            dom = mkdom(impl.tmpl, innerHTML, isSvg(root));
-        }
-        define(tag, "update", function(data) {
+        return [ [ "isMounted", false ], [ "_riot_id", uid() ], [ "root", root ], [ "opts", opts, {
+            writable: true,
+            enumerable: true
+        } ], [ "parent", parent || null ], [ "tags", {} ], [ "refs", {} ], [ "update", function(data) {
             return componentUpdate(tag, data, expressions);
-        });
-        define(tag, "mixin", function() {
+        } ], [ "mixin", function() {
             var mixins = [], len = arguments.length;
             while (len--) mixins[len] = arguments[len];
             return componentMixin.apply(void 0, [ tag ].concat(mixins));
-        });
-        define(tag, "mount", function() {
+        } ], [ "mount", function() {
             return componentMount(tag, dom, expressions, opts);
-        });
-        define(tag, "unmount", function(mustKeepRoot) {
+        } ], [ "unmount", function(mustKeepRoot) {
             return tagUnmount(tag, mustKeepRoot, expressions);
-        });
-        return tag;
+        } ] ].reduce(function(acc, ref) {
+            var key = ref[0];
+            var value = ref[1];
+            var opts = ref[2];
+            define(tag, key, value, opts);
+            return acc;
+        }, extend(tag, item));
     }
     function mount$1(root, tagName, opts, ctx) {
         var impl = __TAG_IMPL[tagName];
@@ -3530,14 +3540,22 @@ window.wApp = {
     mixins: {}
 };
 
-Zepto.ajax({
-    url: "/api/1.0/info",
-    success: function(data) {
+if (window.wAppNoSessionLoad) {
+    window.korSessionPromise.success(function(data) {
         window.wApp.data = data;
         wApp.bus.trigger("auth-data");
         return riot.update();
-    }
-});
+    });
+} else {
+    Zepto.ajax({
+        url: "/api/1.0/info",
+        success: function(data) {
+            window.wApp.data = data;
+            wApp.bus.trigger("auth-data");
+            return riot.update();
+        }
+    });
+}
 
 wApp.bubbling_events = [];
 
@@ -3780,7 +3798,7 @@ riot.tag2("kor-entity-editor", '<h1>Entity Editor</h1> <div class="hr"></div> <f
     tag = this;
 });
 
-riot.tag2("kor-field-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.field\', {count: \'other\'})}}}" show="{opts.kind.id}"></kor-t> </h2> <form if="{showForm && types}" onsubmit="{submit}"> <kor-field field-id="type" label-key="field.type" type="select" options="{types_for_select}" allow-no-selection="{false}" model="{field}" onchange="{updateSpecialFields}" is-disabled="{field.id}"></kor-field> <virtual each="{f in specialFields}"> <kor-field field-id="{f.name}" label="{f.label}" model="{field}" errors="{errors[f.name]}"></kor-field> </virtual> <kor-field field-id="name" label-key="field.name" model="{field}" errors="{errors.name}"></kor-field> <kor-field field-id="show_label" label-key="field.show_label" model="{field}" errors="{errors.show_label}"></kor-field> <kor-field field-id="form_label" label-key="field.form_label" model="{field}" errors="{errors.form_label}"></kor-field> <kor-field field-id="search_label" label-key="field.search_label" model="{field}" errors="{errors.search_label}"></kor-field> <kor-field field-id="show_on_entity" type="checkbox" label-key="field.show_on_entity" model="{field}"></kor-field> <kor-field field-id="is_identifier" type="checkbox" label-key="field.is_identifier" model="{field}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
+riot.tag2("kor-field-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.field\', {count: \'other\'})}}}" show="{opts.kind.id}"></kor-t> </h2> <form if="{showForm && types}" onsubmit="{submit}"> <kor-field field-id="type" label-key="field.type" type="select" options="{types_for_select}" allow-no-selection="{false}" riot-value="{field.type}" is-disabled="{field.id}"></kor-field> <virtual each="{f in specialFields}"> <kor-field field-id="{f.name}" label="{f.label}" model="{field}" errors="{errors[f.name]}"></kor-field> </virtual> <kor-field field-id="name" label-key="field.name" model="{field}" errors="{errors.name}"></kor-field> <kor-field field-id="show_label" label-key="field.show_label" model="{field}" errors="{errors.show_label}"></kor-field> <kor-field field-id="form_label" label-key="field.form_label" model="{field}" errors="{errors.form_label}"></kor-field> <kor-field field-id="search_label" label-key="field.search_label" model="{field}" errors="{errors.search_label}"></kor-field> <kor-field field-id="show_on_entity" type="checkbox" label-key="field.show_on_entity" model="{field}"></kor-field> <kor-field field-id="is_identifier" type="checkbox" label-key="field.is_identifier" model="{field}"></kor-field> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
     var create, params, tag, update;
     tag = this;
     tag.errors = {};
@@ -3789,29 +3807,30 @@ riot.tag2("kor-field-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpol
             type: "Fields::String"
         };
         tag.showForm = true;
-        return tag.updateSpecialFields();
+        return tag.update();
     });
     tag.opts.notify.on("edit-field", function(field) {
         tag.field = field;
         tag.showForm = true;
-        return tag.updateSpecialFields();
+        return tag.update();
     });
     tag.on("mount", function() {
         return Zepto.ajax({
             url: "/kinds/" + tag.opts.kind.id + "/fields/types",
             success: function(data) {
-                var i, len, t;
+                var i, len, results1, t;
                 tag.types = {};
                 tag.types_for_select = [];
+                results1 = [];
                 for (i = 0, len = data.length; i < len; i++) {
                     t = data[i];
                     tag.types_for_select.push({
                         value: t.name,
                         label: t.label
                     });
-                    tag.types[t.name] = t;
+                    results1.push(tag.types[t.name] = t);
                 }
-                return tag.updateSpecialFields();
+                return results1;
             }
         });
     });
@@ -3869,7 +3888,6 @@ riot.tag2("kor-field-editor", '<h2> <kor-t key="objects.edit" with="{{\'interpol
         });
     };
     update = function() {
-        console.log("updating");
         return Zepto.ajax({
             type: "PATCH",
             url: "/kinds/" + tag.opts.kind.id + "/fields/" + tag.field.id,
@@ -4068,7 +4086,7 @@ riot.tag2("kor-kind-editor", '<kor-menu-fix></kor-menu-fix> <kor-layout-panel cl
             return Zepto.ajax({
                 url: "/kinds/" + tag.opts.id,
                 data: {
-                    include: "fields,generators,inheritance"
+                    include: "settings,fields,generators,inheritance"
                 },
                 success: function(data) {
                     tag.opts.kind = data;
@@ -4099,7 +4117,7 @@ riot.tag2("kor-kind-editor", '<kor-menu-fix></kor-menu-fix> <kor-layout-panel cl
     };
 });
 
-riot.tag2("kor-kind-general-editor", '<h2> <kor-t key="general" with="{{capitalize: true}}" show="{opts.kind.id}"></kor-t> <kor-t show="{!opts.kind.id}" key="objects.create" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.kind\')}}}"></kor-t> </h2> <form onsubmit="{submit}" if="{possible_parents}"> <kor-field field-id="schema" label-key="kind.schema" model="{opts.kind}"></kor-field> <kor-field field-id="name" label-key="kind.name" model="{opts.kind}" errors="{errors.name}"></kor-field> <kor-field field-id="plural_name" label-key="kind.plural_name" model="{opts.kind}" errors="{errors.plural_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="kind.description" model="{opts.kind}"></kor-field> <kor-field field-id="url" label-key="kind.url" model="{opts.kind}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="kind.parent" model="{opts.kind}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="kind.abstract" model="{opts.kind}"></kor-field> <kor-field field-id="tagging" type="checkbox" label-key="kind.tagging" model="{opts.kind}"></kor-field> <div if="{!is_media()}"> <kor-field field-id="dating_label" label-key="kind.dating_label" model="{opts.kind}"></kor-field> <kor-field field-id="name_label" label-key="kind.name_label" model="{opts.kind}"></kor-field> <kor-field field-id="distinct_name_label" label-key="kind.distinct_name_label" model="{opts.kind}"></kor-field> </div> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
+riot.tag2("kor-kind-general-editor", '<h2 if="{opts.kind}"> <kor-t key="general" with="{{capitalize: true}}" show="{opts.kind.id}"></kor-t> <kor-t show="{!opts.kind.id}" key="objects.create" with="{{\'interpolations\': {\'o\': wApp.i18n.translate(\'activerecord.models.kind\')}}}"></kor-t> </h2> <form onsubmit="{submit}" if="{possible_parents}"> <kor-field field-id="schema" label-key="kind.schema" model="{opts.kind}"></kor-field> <kor-field field-id="name" label-key="kind.name" model="{opts.kind}" errors="{errors.name}"></kor-field> <kor-field field-id="plural_name" label-key="kind.plural_name" model="{opts.kind}" errors="{errors.plural_name}"></kor-field> <kor-field field-id="description" type="textarea" label-key="kind.description" model="{opts.kind}"></kor-field> <kor-field field-id="url" label-key="kind.url" model="{opts.kind}"></kor-field> <kor-field field-id="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label-key="kind.parent" model="{opts.kind}" errors="{errors.parent_ids}"></kor-field> <kor-field field-id="abstract" type="checkbox" label-key="kind.abstract" model="{opts.kind}"></kor-field> <kor-field field-id="tagging" type="checkbox" label-key="kind.tagging" model="{opts.kind}"></kor-field> <div if="{!is_media()}"> <kor-field field-id="dating_label" label-key="kind.dating_label" model="{opts.kind}"></kor-field> <kor-field field-id="name_label" label-key="kind.name_label" model="{opts.kind}"></kor-field> <kor-field field-id="distinct_name_label" label-key="kind.distinct_name_label" model="{opts.kind}"></kor-field> </div> <div class="hr"></div> <kor-submit></kor-submit> </form>', "", "", function(opts) {
     var error, success, tag;
     tag = this;
     tag.on("mount", function() {
@@ -4236,7 +4254,7 @@ riot.tag2("kor-t", "", "", "", function(opts) {
     });
 });
 
-riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{inputType()}" name="{opts.fieldId}" riot-value="{value()}" checked="{checked()}"> <textarea if="{has_textarea()}" name="{opts.fieldId}">{value()}</textarea> <select if="{has_select()}" name="{opts.fieldId}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.allowNoSelection}" riot-value="{undefined}" selected="{!!value()}">{noSelectionLabel()}</option> <option each="{o in opts.options}" riot-value="{o.value}" selected="{parent.selected(o.value)}">{o.label}</option> </select> <ul if="{has_errors()}" class="errors"> <li each="{error in errors()}">{error}</li> </ul> </label>', "", "class=\"{'errors': has_errors()}\"", function(opts) {
+riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{inputType()}" name="{opts.fieldId}" riot-value="{value()}" checked="{checked()}"> <textarea if="{has_textarea()}" name="{opts.fieldId}">{value()}</textarea> <select if="{has_select()}" name="{opts.fieldId}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.allowNoSelection}" riot-value="{undefined}" selected="{!!value()}">{noSelectionLabel()}</option> <option each="{o in opts.options}" riot-value="{o.value}" selected="{selected(o.value)}">{o.label}</option> </select> <ul if="{has_errors()}" class="errors"> <li each="{error in errors()}">{error}</li> </ul> </label>', "", "class=\"{'errors': has_errors()}\"", function(opts) {
     var tag;
     tag = this;
     tag.on("mount", function() {
@@ -4302,12 +4320,12 @@ riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{input
         }
     };
     tag.selected = function(key) {
-        if (tag.value()) {
-            if (tag.opts.multiple) {
-                return tag.value().indexOf(key) > -1;
-            } else {
-                return tag.value() === key;
-            }
+        var v;
+        v = tag.opts.model ? tag.opts.model[tag.opts.fieldId] : tag.opts.riotValue;
+        if (v && tag.opts.multiple) {
+            return v.indexOf(key) > -1;
+        } else {
+            return v === key;
         }
     };
     tag.value = function() {
@@ -4627,7 +4645,84 @@ riot.tag2("kor-relation-editor", '<kor-layout-panel class="left large"> <kor-pan
     };
 });
 
-riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <div class="hr"></div> </form> <div class="text-right"> <a href="#/relations/new"> <i class="fa fa-plus-square"></i> </a> </div> <div if="{filteredRecords && !filteredRecords.length}"> {wApp.i18n.t(\'objects.none_found\', {       interpolations: {o: \'activerecord.models.relation.other\'},       capitalize: true     })} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th> {wApp.i18n.t(\'activerecord.attributes.relation.name\', {capitalize: true})} <span if="{schema == \'null\' || !schema}"> ({wApp.i18n.t(\'no_schema\')}) </span> <span if="{schema && schema != \'null\'}"> ({wApp.i18n.t(\'activerecord.attributes.relation.schema\')}: {schema}) </span> </th> <th> {wApp.i18n.t(\'activerecord.attributes.relation.from_kind_id\', {capitalize: true})}<br> {wApp.i18n.t(\'activerecord.attributes.relation.to_kind_id\', {capitalize: true})} </th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.from_id\', {capitalize: true})}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.to_id\', {capitalize: true})}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="text-right buttons"> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table>', "", "", function(opts) {
+riot.tag2("kor-relation-merger", '{wApp.i18n.t(\'messages.relation_merger_prompt\')} <ul if="{ids(true).length > 0}"> <li each="{relation, id in relations}"> <a href="#" onclick="{setAsTarget}">{relation.name} / {relation.reverse_name}</a> ({relation.id}) <i if="{relation.id == target}" class="fa fa-star"></i> <a title="{wApp.i18n.t(\'verbs.remove\')}" href="#" onclick="{removeRelation}"><i class="fa fa-times"></i></a> </li> </ul> <div class="text-right" if="{valid()}"> <button onclick="{check}">{wApp.i18n.t(\'verbs.check\')}</button> <button onclick="{merge}">{wApp.i18n.t(\'verbs.merge\')}</button> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.relations = {};
+    tag.target = null;
+    tag.reset = function() {
+        tag.relations = {};
+        tag.target = null;
+    };
+    tag.addRelation = function(relation) {
+        tag.relations[relation.id] = relation;
+        tag.update();
+    };
+    tag.removeRelation = function(event) {
+        event.preventDefault();
+        var id = event.item.relation.id;
+        delete tag.relations[id];
+        if (tag.target == id) {
+            tag.target = null;
+        }
+        tag.update();
+    };
+    tag.setAsTarget = function(event) {
+        event.preventDefault();
+        var id = event.item.relation.id;
+        tag.target = id;
+        tag.update();
+    };
+    tag.ids = function(includeTarget) {
+        var results = [];
+        Zepto.each(tag.relations, function(k, v) {
+            k = parseInt(k);
+            if (includeTarget || k != tag.target) {
+                results.push(k);
+            }
+        });
+        return results;
+    };
+    tag.valid = function() {
+        return tag.target && tag.ids().length > 0;
+    };
+    tag.check = function() {
+        submit(true);
+    };
+    tag.merge = function() {
+        if (window.confirm(wApp.i18n.t("confirm.long_time_warning"))) {
+            submit(false);
+        }
+    };
+    var done = function() {
+        var h = tag.opts.onDone;
+        if (h) {
+            h();
+        }
+    };
+    var submit = function(check_only) {
+        var params = {
+            other_id: tag.ids()
+        };
+        if (check_only != false) {
+            params["check_only"] = true;
+        }
+        Zepto.ajax({
+            type: "POST",
+            url: "/relations/" + tag.target + "/merge",
+            data: JSON.stringify(params),
+            success: function(data) {
+                if (check_only == false) {
+                    done();
+                }
+            },
+            error: function() {
+                console.log(arguments);
+            }
+        });
+    };
+});
+
+riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', {capitalize: true, count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-field label-key="search_term" field-id="terms" onkeyup="{delayedSubmit}"></kor-field> <div class="hr"></div> </form> <div class="text-right buttons"> <a href="#" title="{wApp.i18n.t(\'verbs.merge\')}" onclick="{toggleMerge}"> <i class="fa fa-compress" aria-hidden="true"></i> </a> <a href="#/relations/new" title="{wApp.i18n.t(\'objects.new\', {interpolations: {o: wApp.i18n.t(\'activerecord.models.relation\')}})}"> <i class="fa fa-plus-square"></i> </a> </div> <div show="{merge}"> <div class="hr"></div> <kor-relation-merger ref="merger" on-done="{mergeDone}"></kor-relation-merger> <div class="hr"></div> </div> <div if="{filteredRecords && !filteredRecords.length}"> {wApp.i18n.t(\'objects.none_found\', {       interpolations: {o: \'activerecord.models.relation.other\'},       capitalize: true     })} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th> {wApp.i18n.t(\'activerecord.attributes.relation.name\', {capitalize: true})} <span if="{schema == \'null\' || !schema}"> ({wApp.i18n.t(\'no_schema\')}) </span> <span if="{schema && schema != \'null\'}"> ({wApp.i18n.t(\'activerecord.attributes.relation.schema\')}: {schema}) </span> </th> <th> {wApp.i18n.t(\'activerecord.attributes.relation.from_kind_id\', {capitalize: true})}<br> {wApp.i18n.t(\'activerecord.attributes.relation.to_kind_id\', {capitalize: true})} </th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.from_id\', {capitalize: true})}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {wApp.i18n.t(\'activerecord.attributes.relationship.to_id\', {capitalize: true})}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="text-right buttons"> <a if="{merge}" href="#" onclick="{addToMerge}" title="{wApp.i18n.t(\'add_to_merge\')}"><i class="fa fa-compress"></i></a> <a href="#" onclick="{invert}" title="{wApp.i18n.t(\'verbs.invert\')}"><i class="fa fa-exchange"></i></a> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table>', "", "", function(opts) {
     var fetch, fetchKinds, filter_records, groupAndSortRecords, tag, typeCompare;
     tag = this;
     tag.requireRoles = [ "relation_admin" ];
@@ -4665,6 +4760,32 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
         }
         tag.delayedTimeout = window.setTimeout(tag.submit, 300);
         return true;
+    };
+    tag.toggleMerge = function(event) {
+        event.preventDefault();
+        return tag.merge = !tag.merge;
+    };
+    tag.addToMerge = function(event) {
+        event.preventDefault();
+        return tag.refs.merger.addRelation(event.item.relation);
+    };
+    tag.mergeDone = function() {
+        tag.merge = false;
+        return fetch();
+    };
+    tag.invert = function(event) {
+        var relation;
+        event.preventDefault();
+        relation = event.item.relation;
+        if (window.confirm(wApp.i18n.t("confirm.long_time_warning"))) {
+            return Zepto.ajax({
+                type: "PUT",
+                url: "/relations/" + relation.id + "/invert",
+                success: function(data) {
+                    return fetch();
+                }
+            });
+        }
     };
     filter_records = function() {
         var re, relation, results;
@@ -4733,6 +4854,7 @@ riot.tag2("kor-relations", '<h1> {wApp.i18n.t(\'activerecord.models.relation\', 
                 tag.data = data;
                 filter_records();
                 groupAndSortRecords();
+                tag.refs.merger.reset();
                 return tag.update();
             }
         });
