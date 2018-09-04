@@ -11,12 +11,117 @@ more entities and many more relationships forming a large network.
 While ConedaKOR gives you many additional features to deal with those networks,
 its function is to let you manage those four different objects: entities, entity
 types, relationships and relations. This documentation aims to guide you through
-the user interface. We split the items according to the user role who is
-typically using them.
+the user interface.
 
-<!-- ## Searching, reading, exploring -->
+## Searching, Reading, Exploring
+
+Every entity has its own page which gives details about the object or person
+such as the name, datings, synonyms and other more specific attributes, for
+example ISBN for literature. Also, it lists all relationships to other entity
+pages grouped by the type of relationship. Clicking on a particular relationship
+lets you navigate to the related entity's page. This provides an explorative
+view on your data.
+
+### General Search Behavior
+
+**Character Folding**
+
+The search function does not distinguish between lower and upper case.
+Diacritics on vowels or consonants, or diareses are either ignored in the
+search, or attributed to their associated vowel or consonant. Thus, after
+entering e.g. "Hecelchakán" or "Hecelchakän" or "Hecelchakan", the search always
+retrieves "Hecelchakan". More specific searches are possible via the advanced
+Expert Search. Click:-> Expert Search
+
+**Results List**
+
+Search results are listed on the right of the results page. The entity type is
+listed in italics below its title. If more than 10 entities have been found,
+they can be paginated by clicking the arrow symbol on the upper right. Further,
+a specific page number can be entered into the field next to "go to page". The
+search results are listed as entities in alphabetical order with a maximum of 10
+results to be shown on a single page. Each result shows an entity together with
+a selection of its associated media. Clicking on the retrieved entity leads to
+the entity's page.
+
+### Simple Search
+
+Via the navigation menu on the left, you can reach the Simple Search. It allows
+search in a one-field manner across all values of values of the available
+entities. Searches can be conducted within either all entity types ("All"), or
+within a single entity type by choosing the respective entity type from a
+dropdown menu in the field "Entity Type".
+
+**Search Terms**
+
+The Simple Search is automatically right-truncated (e.g. "leo" finds
+"leonardo"). Entering an operator such as the asterisk is not necessary.
+Multiple search terms (keywords) can be entered into the field "Search Term".
+These search terms are automatically linked via the relation AND. This means
+that, if conducting a search by entering a search term, e.g. "museum", this term
+is retained and appears below the field "Search Term". If entering another
+search term, e.g. "Edzna", both terms are linked by the relation AND. Thus, only
+contents that contain both terms "museum" and "Edzna" are retrievable by this
+search. The apposition of multiple AND relations further limits the number of
+search results.
+
+Note: Media cannot be searched by title or properties or relationships. However,
+they can be searched in the expert search via their UUID (their database
+identifier). The UUID of each medium can be found under the listed metadata in
+their "master data" section. It can be downloaded by clicking on "meta data", in
+the download area of each medium.
+
+### Expert Search
+
+The Expert Search allows fine-grained search for specific Entity values such as
+datings, title or relationships.
+
+**Filter by Collection**
+
+If more than one collection is searchable by the current user, either all
+collections can be searched at once, or specific ones can be searched
+individually. Individual collections can be selected for a search by clicking
+the Pencil Button, and checking the box of the desired collection.
+
+**Filter by Entity Type**
+
+In addition to a Simple Search (search within all ("All") entity types or only a
+single entity type selected from a dropdown menu), the Expert Search offers
+further search options: If a specific entity type has been selected, further
+search fields appear. Each one of these search fields can be searched. Such a
+search is more specified specified and thus further limits the search results.
+
+Note: If the entity type "all" is selected, only fields that all entities have
+in common can be searched. These are: "Name / Title / UUID", "Dating",
+"Additional Criteria", Tags.
+
+**Filter by Relationships**
+
+A special feature offered by the Expert Search is the search for relations via
+the search field "Relationships". This type of search puts an entity type in
+relation to other entity types. This means, that, if a specific entity type is
+chosen, all its possible relations to other entities can be searched. If an
+entity type, e.g. "Person", is chosen, criteria such as "created medium". can be
+searched.
+
+**Search Terms**
+
+The Expert Search is automatically right-truncated. Entering an operator such as
+the asterisk is not necessary.
 
 <!-- ## Editing and relating -->
+
+<!-- Using the clipboard (Only for logged in Users): For logged in users
+Entities can be copied to the clipboard using the button to the left of the
+titles. From the Clipboard you have several possibilities to edit the data. The
+clipboard is a means to create own private user collections within the database.
+-->
+
+<!-- Here you can see what is in your Clipboard. From the Clipboard you have several
+possibilities to edit the data. (Only for logged in Users, Editors and Admins.)
+Entities can be copied to the clipboard using the button to the left of the
+titles. The clipboard is a means to create own private user collections within
+the database. From here you can collect, connect and edit selected entites. -->
 
 <!-- ## General features -->
 
