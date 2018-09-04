@@ -5,42 +5,45 @@ documents and interconnect them with relationships. You can build huge semantic
 networks for an unlimited amount of domains. This integrates a sophisticated
 ontology management tool with an easy to use media database.
 
-## Table Of Contents
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
 
-- [ConedaKOR](#conedakor)
-  - [Table Of Contents](#table-of-contents)
-  - [Changelog](#changelog)
-  - [User documentation](#user-documentation)
-  - [License](#license)
-  - [Features](#features)
-  - [System admistrator's documentation](#system-admistrators-documentation)
-    - [Requirements](#requirements)
-    - [Scripted installation](#scripted-installation)
-    - [Logging](#logging)
-    - [Database and elasticsearch](#database-and-elasticsearch)
-    - [Configuration & customizations](#configuration--customizations)
-      - [Specific configuration options](#specific-configuration-options)
-    - [Backups](#backups)
-      - [Restore](#restore)
-    - [Authentication](#authentication)
-      - [Unauthenticated access](#unauthenticated-access)
-      - [Permission inheritance](#permission-inheritance)
-      - [External authentication](#external-authentication)
-      - [Authentication via request env](#authentication-via-request-env)
-    - [OAI-PMH Interface](#oai-pmh-interface)
-    - [Widgets](#widgets)
-      - [`<kor-entity>`](#kor-entity)
-    - [JSON API](#json-api)
-    - [Generating a virtual appliance](#generating-a-virtual-appliance)
-    - [Generating docker images](#generating-docker-images)
-    - [Command line tool](#command-line-tool)
-      - [Excel import and export](#excel-import-and-export)
-      - [Rebuilding elastic index](#rebuilding-elastic-index)
-    - [Development](#development)
-      - [Running the test suites](#running-the-test-suites)
-      - [Coverage reports](#coverage-reports)
-      - [Profiling](#profiling)
-      - [Showing media in development](#showing-media-in-development)
+- [Changelog](#changelog)
+- [User documentation](#user-documentation)
+- [License](#license)
+- [Features](#features)
+- [System admistrator's documentation](#system-admistrators-documentation)
+  - [Requirements](#requirements)
+  - [Scripted installation](#scripted-installation)
+  - [Logging](#logging)
+  - [Database and elasticsearch](#database-and-elasticsearch)
+  - [Configuration & customizations](#configuration--customizations)
+    - [Specific configuration options](#specific-configuration-options)
+  - [Backups](#backups)
+    - [Restore](#restore)
+  - [Authentication](#authentication)
+    - [Unauthenticated access](#unauthenticated-access)
+    - [Permission inheritance](#permission-inheritance)
+    - [External authentication](#external-authentication)
+    - [Authentication via request env](#authentication-via-request-env)
+  - [Interfaces](#interfaces)
+    - [OAI-PMH](#oai-pmh)
+    - [REST (JSON)](#rest-json)
+  - [Widgets](#widgets)
+  - [Generating a virtual appliance](#generating-a-virtual-appliance)
+  - [Generating docker images](#generating-docker-images)
+  - [Command line tool](#command-line-tool)
+    - [Excel import and export](#excel-import-and-export)
+    - [Importing Erlangen CRM classes](#importing-erlangen-crm-classes)
+    - [Rebuilding elastic index](#rebuilding-elastic-index)
+  - [Development](#development)
+    - [Running the test suites](#running-the-test-suites)
+    - [Coverage reports](#coverage-reports)
+    - [Profiling](#profiling)
+    - [Showing media in development](#showing-media-in-development)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Changelog
 
@@ -433,7 +436,9 @@ to notify users of that possibility. If they choose to use it, they are
 redirected to `/env_auth` where the magic happens. The label for the button can
 be configured with the `auth.env_auth_button_label` option.
 
-### OAI-PMH Interface
+### Interfaces
+
+#### OAI-PMH
 
 ConedaKOR spawns four OAI-PMH endpoints for entities, kinds, relations and
 relationships:
@@ -454,7 +459,7 @@ Please check out [Authentication](#authentication) for how to use an api key.
 Two formats are available: `oai_dc` and `kor`. While the former is only
 maintained to fulfill the OAI-PMH specification, the latter gives full access to
 all content within the ConedaKOR installation. According to specification, you
-must choose the format like so `metadataPrefix=kor` as a request parameter. The
+must choose the format as a request parameter `metadataPrefix=kor`. The
 kor format adheres to a schema that is included in ConedaKOR. It can be found at
 
 https://kor.example.com/schema/1.0/kor.xsd
@@ -462,63 +467,7 @@ https://kor.example.com/schema/1.0/kor.xsd
 as part of every installation (version 2.0.0 and above). We will add new
 versions, should the need arise.
 
-### Widgets
-
-ATTENTION: This feature is experimental and subject to future change.
-
-We are working on creating a complete widget library so that the entire frontend
-is just a composition of widgets. Since that requires extensive refactoring of
-most of the code base, this process is going to take some time. However, some
-components are usable already. We will list those below and describe how they
-work and extend the list continuously.
-
-In general, widgets have the form of custom html tags. They are all prefixed
-with `kor-`. There are two types: application-widgets and standalone-widgets.
-The former are additionally prefixed with `app-`, the latter are not. An example
-for an application-widget would thus be `<kor-app-router>` and `<kor-entity>` is
-a standalone widget. The main difference is that  standalone-widgets try to be
-usable outside of the ConedaKOR context, within other web applications.
-
-To use any of the widgets, the library has to be added to the integrating page.
-The best position for this is directly below the closing body tag, so for
-example:
-
-    <html>
-      ...
-      <body>
-        ...
-        <script
-          src="https://kor.example.com/app.js"
-          kor-url="https://kor.example.com"
-        ></script>
-      </body>
-    </html>
-
-In addition, you will have to list the origin in the configuration parameter
-`allowed_origins` so that the CORS header is set accordingly, e.g.
-
-    ...
-      allowed_origins: ['https://kor.example.com']
-    ...
-
-The following widgets can then be used on the integrating page:
-
-#### `<kor-entity>`
-
-    <kor-entity
-      id="<id or uuid>"
-      kor-style="true"
-    ></kor-entity>
-
-This shows the entity (also supports media entities) referenced by `id`. If you
-add the `kor-style` attribute, the widget will apply some basic styling.
-However, the styles will always mix with the existing styles on the page so some
-CSS adjustments might be necessary. with `kor-include` you may supply a space
-separated list of information to include (currently supports `kind`). The
-attribute `kor-image-size` allows you to specify witch image resultion should
-be loaded (icon, thumbnail, preview, screen, normal) for media.
-
-### JSON API
+#### REST (JSON)
 
 This API is undergoing a lot of change. This is why we are not showing all of
 the possible requests here. Instead, we'll just listing the ones that we hope
@@ -536,14 +485,16 @@ In general, there are three types of responses:
 Requests that **retrieve a single record** will always answered with a
 simple object containing just that record, e.g.
 
-    GET /kinds/1.json
+```
+GET /kinds/1.json
 
-    {
-      "id": 123,
-      "name": "person",
-      "plural_name": "people",
-      ...
-    }
+{
+  "id": 123,
+  "name": "person",
+  "plural_name": "people",
+  ...
+}
+```
 
 Requests that **retrieve a series of records** (resultsets) will always be
 answered with the objects themselves but also the total number of records, the
@@ -551,14 +502,16 @@ current page and the amount of records per page. Sometimes not full records are
 returned but only their ids in which case the `records` array will be empty and
 there will be an `ids` array instead, e.g.
 
-    GET /kinds.json
-    
-    {
-      "records": [...],
-      "total": 120,
-      "per_page": 10,
-      "page": 7
-    }
+```
+GET /kinds.json
+
+{
+  "records": [...],
+  "total": 120,
+  "per_page": 10,
+  "page": 7
+}
+```
 
 Requests that **modify a record** will always be answered with the modified
 record as well as a message indicating the modification applied. Also the
@@ -566,18 +519,20 @@ response code will reflect a successful change (200) or incorrect new data
 (406). This applies to create (POST), update (PATCH) and destroy (DELETE)
 requests, e.g.
 
-    POST /kinds.json
-    with JSON {"kind": {"name": "person", "plural_name": "people"}}
+```
+POST /kinds.json
+with JSON {"kind": {"name": "person", "plural_name": "people"}}
 
-    {
-      "message": "the kind 'person' has been created",
-      "record": {
-        "id": 123,
-        "name": "person",
-        "plural_name": "people",
-        ...
-      }
-    }
+{
+  "message": "the kind 'person' has been created",
+  "record": {
+    "id": 123,
+    "name": "person",
+    "plural_name": "people",
+    ...
+  }
+}
+```
 
 
 * `GET /kinds.json`: returns array of all kinds
@@ -620,6 +575,70 @@ requests, e.g.
 Be aware that, if you are requesting related entities to be embedded within
 other entities, those are embedded as a list of directed relationships which
 in turn contain the entity itself.
+
+### Widgets
+
+ATTENTION: This feature is experimental and subject to future change.
+
+We are working on creating a complete widget library so that the entire frontend
+is just a composition of widgets. Since that requires extensive refactoring of
+most of the code base, this process is going to take some time. However, some
+components are usable already. We will list those below and describe how they
+work and extend the list continuously.
+
+The widgets use KOR's REST API.
+
+In general, widgets have the form of custom html tags. They are all prefixed
+with `kor-`. There are two types: application-widgets and standalone-widgets.
+The former are additionally prefixed with `app-`, the latter are not. An example
+for an application-widget would thus be `<kor-app-router>` and `<kor-entity>` is
+a standalone widget. The main difference is that  standalone-widgets try to be
+usable outside of the ConedaKOR context, within other web applications.
+
+To use any of the widgets, the library has to be added to the integrating page.
+The best position for this is directly below the closing body tag, so for
+example:
+
+``` html
+<html>
+  ...
+  <body>
+    ...
+    <script
+      src="https://kor.example.com/app.js"
+      kor-url="https://kor.example.com"
+    ></script>
+  </body>
+</html>
+```
+
+In addition, you will have to list the origin in the configuration parameter
+`allowed_origins` so that the CORS header is set accordingly, e.g.
+
+```
+...
+  allowed_origins: ['https://kor.example.com']
+...
+```
+
+The following widgets can then be used on the integrating page:
+
+**kor-entity:**
+
+``` html
+<kor-entity
+  id="<id or uuid>"
+  kor-style="true"
+></kor-entity>
+```
+
+This shows the entity (also supports media entities) referenced by `id`. If you
+add the `kor-style` attribute, the widget will apply some basic styling.
+However, the styles will always mix with the existing styles on the page so some
+CSS adjustments might be necessary. with `kor-include` you may supply a space
+separated list of information to include (currently supports `kind`). The
+attribute `kor-image-size` allows you to specify witch image resultion should
+be loaded (icon, thumbnail, preview, screen, normal) for media.
 
 ### Generating a virtual appliance
 
