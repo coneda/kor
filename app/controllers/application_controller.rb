@@ -3,7 +3,7 @@ class ApplicationController < BaseController
   helper :all
   helper_method :back, :back_save, :home_page, :kor_graph
   
-  before_filter :locale, :authentication, :authorization, :legal
+  before_filter :authentication, :authorization, :legal
 
   before_filter do
     @messages = []
@@ -106,14 +106,6 @@ class ApplicationController < BaseController
     
     
   protected
-
-    def locale
-      if current_user && current_user.locale
-        I18n.locale = current_user.locale
-      else
-        I18n.locale = Kor.config['locale'] || I18n.default_locale
-      end
-    end
 
     def param_to_array(value, options = {})
       options.reverse_merge! ids: true

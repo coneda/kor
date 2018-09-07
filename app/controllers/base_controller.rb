@@ -12,6 +12,8 @@ class BaseController < ActionController::Base
     :authorized_for_relationship?
   )
 
+  before_action :update_locale
+
 
   protected
 
@@ -79,22 +81,30 @@ class BaseController < ActionController::Base
       current_user && current_user.name != 'guest'
     end
 
-  def session_expiry
-    if session_expired?
-      session[:user_id] = nil
-      @current_user = nil
+    def session_expiry
+      if session_expired?
+        session[:user_id] = nil
+        @current_user = nil
+      end
     end
-  end
 
-  def session_expired?
-    if current_user && !current_user.guest? && !api_auth?
-      !!(session[:expires_at] && (session[:expires_at] < Time.now))
+    def session_expired?
+      if current_user && !current_user.guest? && !api_auth?
+        !!(session[:expires_at] && (session[:expires_at] < Time.now))
+      end
     end
-  end
 
-  def api_auth?
-    key = params[:api_key] || request.headers['api_key']
-    key && User.exists?(api_key: key)
-  end
+    def api_auth?
+      key = params[:api_key] || request.headers['api_key']
+      key && User.exists?(api_key: key)
+    end
+
+    def update_locale
+      if current_user && current_user.locale
+        I18n.locale = current_user.locale
+      else
+        I18n.locale = Kor.config['locale'] || I18n.default_locale
+      end
+    end
 
 end
