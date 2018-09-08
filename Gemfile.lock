@@ -43,6 +43,8 @@ GEM
       tzinfo (~> 1.1)
     acts-as-taggable-on (3.5.0)
       activerecord (>= 3.2, < 5)
+    acts_as_list (0.9.16)
+      activerecord (>= 3.0)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     angularjs-rails (1.5.6)
@@ -321,6 +323,7 @@ PLATFORMS
 DEPENDENCIES
   RedCloth
   acts-as-taggable-on (~> 3.5)
+  acts_as_list
   angularjs-rails (~> 1.5.2)
   awesome_nested_set (~> 3.1.1)
   brakeman

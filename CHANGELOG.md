@@ -5,6 +5,12 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+## Version 3.1.0
+
+### Internal
+
+* added position to fields table to prepare for sorting UI in v4.0
+
 ## Version 3.0.0
 
 ### User

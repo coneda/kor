@@ -16,6 +16,7 @@ gem 'haml'
 gem 'sass'
 gem 'httpclient'
 gem 'acts-as-taggable-on', '~> 3.5'
+gem 'acts_as_list'
 gem 'semantic', '~> 1.5'
 gem 'hirb'
 
