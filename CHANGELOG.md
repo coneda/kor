@@ -10,6 +10,7 @@ commit history on GitHub.
 ### Internal
 
 * added position to fields table to prepare for sorting UI in v4.0
+* added position to generators table to prepare for sorting UI in v4.0
 
 ## Version 3.0.0
 
