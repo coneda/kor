@@ -26,7 +26,7 @@
     tag.mixin(wApp.mixins.i18n);
 
     tag.on('before-mount', function() {
-      console.log(tag.opts);
+      // console.log(tag.opts);
       fromOpts();
     })
 

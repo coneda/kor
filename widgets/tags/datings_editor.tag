@@ -41,6 +41,7 @@
     tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', ->
+      console.log(tag.opts);
       tag.data = tag.opts.riotValue || []
       tag.update()
 

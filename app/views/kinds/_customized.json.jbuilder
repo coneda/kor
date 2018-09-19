@@ -19,17 +19,6 @@ if additions.request?('settings')
   end
 end
 
-if additions.request?('fields')
-  json.fields kind.fields do |field|
-    json.partial! 'fields/customized', field: field
-  end
-end
-
-if additions.request?('generators')
-  json.fields kind.generators do |generator|
-    json.partial! 'generators/customized', generator: generator
-  end
-end
 
 if additions.request?('technical')
   json.uuid kind.uuid

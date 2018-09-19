@@ -1,10 +1,10 @@
 <kor-clipboard-control>
 
-  <a onclick={toggle} if={!isGuest()}>
+  <a onclick={toggle} if={!isGuest()} class="to-clipboard">
     <i class="target_hit" show={isIncluded()}></i>
     <i class="target" show={!isIncluded()}></i>
   </a>
-  <a onclick={toggleSelection} if={!isGuest()}>
+  <a onclick={toggleSelection} if={!isGuest()} class="make-current">
     <i class="select_hit" show={isSelected()}></i>
     <i class="select" show={!isSelected()}></i>
   </a>

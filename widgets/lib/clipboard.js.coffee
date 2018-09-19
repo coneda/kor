@@ -40,4 +40,14 @@ wApp.clipboard = {
   subSelectAll: ->
     for id in wApp.clipboard.ids()
       wApp.clipboard.subSelect(id)
+  checkEntityExistence: ->
+    ids = wApp.clipboard.ids().concat(wApp.clipboard.subSelection())
+    Zepto.ajax(
+      type: 'POST'
+      url: '/entities/existence'
+      data: JSON.stringify(ids: ids)
+      success: (data) ->
+        for id, existence of data
+          wApp.clipboard.remove(parseInt(id)) unless existence
+    )
 }

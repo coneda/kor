@@ -74,6 +74,7 @@
 
     tag.on('mount', function() {
       wApp.bus.on('routing:query', fetch);
+      wApp.bus.on('clipboard-subselection-changed', tag.update);
 
       if (tag.currentUser() && !tag.isGuest()) {
         fetch()
@@ -86,6 +87,7 @@
 
     tag.on('umount', function() {
       wApp.bus.off('routing:query', fetch);
+      wApp.bus.off('clipboard-subselection-changed', tag.update);
     });
 
     tag.reload = function() {
@@ -134,21 +136,23 @@
     }
 
     var fetch = function() {
-      var params = urlParams();
+      wApp.clipboard.checkEntityExistence().then(function() {
+        var params = urlParams();
 
-      if (params['id'].length) {
-        Zepto.ajax({
-          url: '/entities',
-          data: urlParams(),
-          success: function(data) {
-            tag.data = data;
-            tag.update();
-          }
-        })
-      } else {
-        tag.data = null;
-        tag.update();
-      }
+        if (params['id'].length) {
+          Zepto.ajax({
+            url: '/entities',
+            data: urlParams(),
+            success: function(data) {
+              tag.data = data;
+              tag.update();
+            }
+          })
+        } else {
+          tag.data = null;
+          tag.update();
+        }
+      })
     }
   </script>
 

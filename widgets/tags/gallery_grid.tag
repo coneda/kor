@@ -2,9 +2,9 @@
 
   <table>
     <tbody>
-      <tr each={row in inGroupsOf(4, opts.entities)}>
+      <tr each={row in inGroupsOf(4, opts.entities, false)}>
         <td each={entity in row}>
-          <virtual if={entity.medium}>
+          <virtual if={entity && entity.medium}>
             <kor-entity entity={entity} />
             
             <div class="meta" if={entity.primary_entities}>
@@ -23,7 +23,7 @@
               </div>
             </div>
           </virtual>
-          <div class="meta" if={!entity.medium}>
+          <div class="meta" if={entity && !entity.medium}>
             <div class="name">
               <a href="#/entities/{entity.id}">{entity.display_name}</a>
             </div>

@@ -9,19 +9,19 @@ Feature: Merge
     Given I am logged in as "admin"
     And kind "Institution" has field "bossa_id" of type "Fields::String"
     And kind "Institution" has field "knd" of type "Fields::String"
-    And the entity "Louvre" of kind "Institution/Institutionen"
     And the entity "Louvre (Paris)" of kind "Institution/Institutionen"
+    And the entity "Louvre" of kind "Institution/Institutionen"
     And the entity "Louvre" has dataset value "12345" for "knd"
     And the entity "Louvre (Paris)" has dataset value "67890" for "knd"
     And the entity "Louvre" has dataset value "123" for "bossa_id"
     And the entity "Louvre (Paris)" has dataset value "456" for "bossa_id"
     And all entities of kind "Institution/Institutionen" are in the clipboard
     When I go to the clipboard page
-    And I select "merge" from "clipboard_action"
-    And I press "Send"
+    And I follow "all"
+    And I follow "Merge"
     Then I should see "Knd"
     And I should see "BossaId"
-    When I press "Create"
+    When I press "Save"
     Then entity "Louvre" should have dataset value "12345" for "knd"
     And entity "Louvre" should have dataset value "123" for "bossa_id"
 
@@ -36,6 +36,6 @@ Feature: Merge
     And I select "merge" from "clipboard_action"
     And I press "Send"
     And I click on element "input#entity_id_2"
-    And I press "Create"
+    And I press "Save"
     Then I should be on the entity page for the last medium
     

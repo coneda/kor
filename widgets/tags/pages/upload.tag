@@ -117,7 +117,7 @@
       event.preventDefault();
       var params = {
         "entity[kind_id]": wApp.info.data.medium_kind_id,
-        "entity[collection_id]": tag.refs['cs'].val(),
+        "entity[collection_id]": tag.refs['cs'].value(),
         "user_group_name": tag.refs['user-group-name'].value(),
         "target_entity_id": wApp.clipboard.selection()
       };

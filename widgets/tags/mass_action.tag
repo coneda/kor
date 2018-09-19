@@ -8,20 +8,21 @@
 
   <hr />
 
-  <a class="action" onclick={merge}>{tcap('clipboard_actions.merge')}</a>
-  <a class="action" onclick={massRelate}>{tcap('clipboard_actions.mass_relate')}</a>
-  <a class="action" onclick={massDelete}>{tcap('clipboard_actions.mass_delete')}</a>
-  <a class="action" onclick={addToAuthorityGroup}>{tcap('clipboard_actions.add_to_authority_group')}</a>
-  <a class="action" onclick={addToUserGroup}>{tcap('clipboard_actions.add_to_user_group')}</a>
-  <a class="action" onclick={moveToCollection}>{tcap('clipboard_actions.move_to_collection')}</a>
+  <a class="action" href="#" onclick={merge}>{tcap('clipboard_actions.merge')}</a>
+  <a class="action" href="#" onclick={massRelate}>{tcap('clipboard_actions.mass_relate')}</a>
+  <a class="action" href="#" onclick={massDelete}>{tcap('clipboard_actions.mass_delete')}</a>
+  <a class="action" href="#" onclick={addToAuthorityGroup}>{tcap('clipboard_actions.add_to_authority_group')}</a>
+  <a class="action" href="#" onclick={addToUserGroup}>{tcap('clipboard_actions.add_to_user_group')}</a>
+  <a class="action" href="#" onclick={moveToCollection}>{tcap('clipboard_actions.move_to_collection')}</a>
 
   <script type="text/javascript">
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 
-    tag.merge = function() {
-      
+    tag.merge = function(event) {
+      event.preventDefault();
+      wApp.bus.trigger('modal', 'kor-entity-merger', {ids: tag.opts.ids});
     }
 
     tag.massRelate = function() {

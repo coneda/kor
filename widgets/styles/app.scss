@@ -783,3 +783,19 @@ kor-properties-editor, kor-datings-editor {
     }
   }
 }
+
+[data-is=kor-entity-merger] {
+  width: 600px;
+
+  kor-input[name=medium_id] {
+    label.radio {
+      // display: table-cell;
+      margin: 2rem;
+
+      img {
+        vertical-align: middle;
+        margin-left: 0.5rem;
+      }
+    }
+  }
+}

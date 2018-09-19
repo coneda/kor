@@ -357,10 +357,51 @@ class EntitiesController < JsonController
     end
   end
 
+  def merge
+    entities = Entity.find(params[:entity_ids])
+    collections = entities.map{|e| e.collection}.uniq
+    
+    allowed_to_create = authorized?(:create)
+    allowed_to_delete_requested_entities = authorized?(:delete, collections, :required => :all)
+  
+    if allowed_to_create and allowed_to_delete_requested_entities
+      if entities.map{|e| e.kind.id}.uniq.size != 1
+        render_406 nil, I18n.t('errors.only_same_kind')
+      end
+
+      @entity = Kor::EntityMerger.new.run(
+        :old_ids => params[:entity_ids], 
+        :attributes => entity_params.merge(
+          :id => params[:entity][:id],
+          :creator_id => current_user.id
+        )
+      )
+      
+      if @entity.valid?
+        render_200 I18n.t('notices.merge_success')
+      else
+        render_406 @entity.errors, I18n.t('errors.merge_failure')
+      end
+    else
+      render_403 I18n.t("errors.merge_access_denied_on_entities")
+    end
+  end
+
+  def existence
+    ids = params[:ids]
+    found_ids = viewable_entities.where(id: ids).map{|e| e.id}
+    existence = found_ids.zip(Array.new(found_ids.size, true)).to_h
+    ids = ids.zip(Array.new(ids.size, false)).to_h
+
+    render json: ids.merge(existence)
+  end
+
   protected
 
     def entity_params
       params.require(:entity).permit(
+        :id, # TODO: smart?
+        :uuid, # TODO: smart?
         :lock_version,
         :kind_id,
         :collection_id,

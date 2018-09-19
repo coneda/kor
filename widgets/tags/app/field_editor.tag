@@ -174,7 +174,8 @@
           for t in data
             tag.types_for_select.push(value: t.name, label: t.label)
             tag.types[t.name] = t
-          tag.updateSpecialFields()
+          tag.update()
+          #tag.updateSpecialFields()
       )
 
   </script>

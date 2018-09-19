@@ -26,6 +26,7 @@ class Kor::EntityMerger
     end
   
     # delete the entities but keep their datings and relationships
+    # TODO: this should use the soft-delete interface
     old_entities = Entity.where(id: options[:old_ids]).map do |e|
       e.delete
       e

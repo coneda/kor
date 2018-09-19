@@ -195,6 +195,9 @@ Rails.application.routes.draw do
         get 'random'
         get 'recently_created'
         get 'recently_visited'
+
+        post 'merge'
+        post 'existence'
       end
       
       member do

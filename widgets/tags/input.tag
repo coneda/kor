@@ -43,7 +43,8 @@
         value={item.id || item.value || item}
         checked={valueFromParent() == (item.id || item.value || item)}
       />
-      {item.name || item.label || item}
+      <virtual if={!item.image_url}>{item.name || item.label || item}</virtual>
+      <img if={item.image_url} src={item.image_url} />
     </label>
   </virtual>
   <div class="errors" if={opts.errors}>

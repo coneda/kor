@@ -7,7 +7,7 @@ json.extract!(entity,
   :comment, :subtype
 )
 
-json.tags entity.tags.map{|t| t.to_s}.join(', ')
+json.tags entity.tags.map{|t| t.to_s}
 
 if entity.is_medium?
   json.medium_id entity.medium_id
@@ -39,6 +39,8 @@ if entity.is_medium?
   end
 end
 
+# TODO: this should also be possible with edit rights and delete/create rights,
+# e.g. for merging
 if authorized?(:view_meta, entity.collection)
   if additions.request?('technical')
     json.uuid entity.uuid

@@ -4,7 +4,7 @@
     <span class="field">
       {tcap('activerecord.models.tag', {count: 'other'})}:
     </span>
-    <span class="value">{opts.entity.tags}</span>
+    <span class="value">{opts.entity.tags.join(', ')}</span>
   </virtual>
 
   <virtual if={opts.enableEditor}>

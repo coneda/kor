@@ -269,21 +269,22 @@ class ToolsController < JsonController
       end
     end
 
-    def prepare_merge
-      @entities = Entity.allowed(current_user, [:edit, :delete]).where(:id => params[:entity_ids])
+    # TODO: remove once entity merger is rewritten
+    # def prepare_merge
+    #   @entities = Entity.allowed(current_user, [:edit, :delete]).where(:id => params[:entity_ids])
       
-      if @entities.blank?
-        flash[:error] = I18n.t("errors.merge_access_denied_on_entities")
-        render_403
-      elsif @entities.collect{|e| e.kind.id}.uniq.size != 1
-        flash[:error] = I18n.t("errors.only_same_kind")
-        redirect_to :controller => 'tools', :action => 'clipboard', :entity_ids => params[:entity_ids]
-      else
-        kind = @entities.first.kind
-        @entity = Entity.new(:kind => kind)
-        render :action => 'merge'
-      end
-    end
+    #   if @entities.blank?
+    #     flash[:error] = I18n.t("errors.merge_access_denied_on_entities")
+    #     render_403
+    #   elsif @entities.collect{|e| e.kind.id}.uniq.size != 1
+    #     flash[:error] = I18n.t("errors.only_same_kind")
+    #     redirect_to :controller => 'tools', :action => 'clipboard', :entity_ids => params[:entity_ids]
+    #   else
+    #     kind = @entities.first.kind
+    #     @entity = Entity.new(:kind => kind)
+    #     render :action => 'merge'
+    #   end
+    # end
 
     def mass_relate
       if session[:current_entity].blank?
@@ -311,33 +312,4 @@ class ToolsController < JsonController
         redirect_to web_path(:anchor => entity_path(@target))
       end
     end
-  
-    def merge
-      entities = Entity.find(params[:entity_ids])
-      collections = entities.map{|e| e.collection}.uniq
-      
-      allowed_to_create = authorized?(:create)
-      allowed_to_delete_requested_entities = authorized?(:delete, collections, :required => :all)
-    
-      if allowed_to_create and allowed_to_delete_requested_entities
-        @entity = Kor::EntityMerger.new.run(
-          :old_ids => params[:entity_ids], 
-          :attributes => entity_params.merge(
-            :id => params[:entity][:id],
-            :creator_id => current_user.id
-          )
-        )
-        
-        if @entity.valid?
-          flash[:notice] = I18n.t('notices.merge_success')
-          redirect_to web_path(:anchor => "/entities/#{@entity.id}")
-        else
-          flash[:error] = I18n.t('errors.merge_failure')
-          redirect_to :action => 'clipboard'
-        end
-      else
-        render_403
-      end
-    end
-
 end

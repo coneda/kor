@@ -64,6 +64,14 @@
           errors={errors.subtype}
         />
 
+        <kor-input
+          label={tcap('activerecord.attributes.entity.tag_list')}
+          name="tag_list"
+          ref="fields"
+          value={data.tags.join(', ')}
+          errors={errors.tag_list}
+        />
+
         <kor-dataset-fields
           if={kind}
           name="dataset"
@@ -224,7 +232,8 @@
 
     values = ->
       results = {}
-      results.no_name_statement = tag.refs['fields.no_name_statement'].value()
+      if !tag.isMedium()
+        results.no_name_statement = tag.refs['fields.no_name_statement'].value()
       results.kind_id = tag.data.kind_id || tag.opts.kindId
       for f in tag.refs.fields
         results[f.name()] = f.value()

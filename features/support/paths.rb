@@ -54,7 +54,7 @@ module NavigationHelpers
       entity = Entity.find($1)
       web_path(:anchor => entity_path(entity))
     when /the kinds page/ then kinds_path
-    when /the clipboard/ then '/tools/clipboard'
+    when /the clipboard/ then '/#/clipboard'
     when /the new "([^\"]*)-Entity" page/
       new_entity_path(:kind_id => Kind.find_by_name($1).id)
     when /the login page/ then '/#/login'

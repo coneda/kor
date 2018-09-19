@@ -87,8 +87,8 @@ Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
     end
     step "I should see \"#{entity.name}\""
     sleep 2
-    find("a[kor-to-clipboard]").click
-    step "I should see a message containing \"has been copied to the clipboard\""
+    find('a.to-clipboard').click
+    expect(page).to have_content('has been added to the clipboard')
   end
 end
 
