@@ -48,10 +48,8 @@ Given /^the relation "([^\"]*)" inheriting from "([^\"]*)"?$/ do |names, parents
   relation.save!
 end
 
-Given /^the medium "([^"]*)"$/ do |path|
-  step "I go to the new \"Medium-Entity\" page"
-  step "I attach the file \"#{path}\" to \"entity[medium_attributes][document]\""
-  step "I press \"Create\""
+Given /^the medium "([^"]*)"$/ do |name|
+  FactoryGirl.create name.to_sym
 end
 
 Given /^the medium "(.*?)" inside collection "(.*?)"$/ do |file, collection|

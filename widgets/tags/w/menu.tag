@@ -57,7 +57,7 @@
   <ul show={isLoggedIn() && allowedTo('create')}>
     <li>
       <kor-input
-        if={kinds}
+        if="{kinds && kinds.records.length > 0}"
         type="select"
         onchange={newEntity}
         options={kinds.records}
@@ -66,7 +66,7 @@
       />
     </li>
     <li show={isLoggedIn()}>
-      <a href="#/upload">{tcap('nouns.mass_upload')}</a>
+      <a href="#/upload">{tcap('verbs.upload')}</a>
     </li>
   </ul>
 
@@ -186,6 +186,7 @@
     fetchKinds = ->
       $.ajax(
         url: '/kinds'
+        data: {no_media: true}
         success: (data) ->
           tag.kinds = data
           tag.update()

@@ -15,7 +15,7 @@ module NavigationHelpers
     when /the home\s?page/ then '/'
     when /the expert search/ then '/entities'
     when /the global groups page/ then '/authority_group_categories'
-    when /^the gallery( page)?$/ then web_path(:anchor => "/entities/gallery")
+    when /^the gallery( page)?$/ then '/#/new-media'
     when /^page "(\d+)" of the gallery$/
       page = $1
       web_path(:anchor => "/entities/gallery?page=#{page}")
@@ -44,15 +44,15 @@ module NavigationHelpers
     when /the entity page for the (first|last) medium/
       media = Kind.medium_kind.entities
       entity = ($1 == 'first' ? media.first : media.last)
-      web_path(:anchor => entity_path(entity))
+      "/#/entities/#{entity.id}"
     when /the (first|last) entity's page/
       media = Kind.medium_kind.entities
       entity = ($1 == 'first' ? media.first : media.last)
-      web_path(:anchor => entity_path(entity))
+      "/#/entities/#{entity.id}"
     when /the legacy upload page/ then "/entities/new?kind_id=#{Kind.medium_kind.id}"
     when /the entity page for medium "([0-9]+)"/
       entity = Entity.find($1)
-      web_path(:anchor => entity_path(entity))
+      "/#/entities/#{entity.id}"
     when /the kinds page/ then kinds_path
     when /the clipboard/ then '/#/clipboard'
     when /the new "([^\"]*)-Entity" page/
@@ -80,7 +80,7 @@ module NavigationHelpers
     when /the new relationship page with target "([^\"]+)"/
       entity = Entity.find_by_name($1)
       new_relationship_path(:relationship => {:from_id => entity.id})
-    when /the multi upload page/ then web_path(:anchor => '/entities/multi_upload')
+    when /the upload page/ then '/#/upload'
     when /the exception logs page/ then exception_logs_path
     when /welcome page/ then "/"
     when /404/ then "/404.html"

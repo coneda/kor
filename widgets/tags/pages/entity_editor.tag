@@ -55,7 +55,6 @@
           <hr />
         </virtual>
 
-
         <kor-input
           label={tcap('activerecord.attributes.entity.subtype')}
           name="subtype"
@@ -195,7 +194,8 @@
       else
         tag.data = {
           kind_id: kind_id,
-          no_name_statement: 'enter_name'
+          no_name_statement: 'enter_name',
+          tags: []
         }
         fetchKind()
 

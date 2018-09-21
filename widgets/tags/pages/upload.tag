@@ -2,7 +2,7 @@
 
   <div class="kor-layout-left kor-layout-small">
     <div class="kor-content-box">
-      <h1>{tcap('nouns.mass_upload')}</h1>
+      <h1>{tcap('verbs.upload')}</h1>
 
       <form onsubmit={submit}>
         <kor-collection-selector

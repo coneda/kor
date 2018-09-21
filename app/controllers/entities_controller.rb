@@ -369,18 +369,17 @@ class EntitiesController < JsonController
         render_406 nil, I18n.t('errors.only_same_kind')
       end
 
-      @entity = Kor::EntityMerger.new.run(
+      @record = Kor::EntityMerger.new.run(
         :old_ids => params[:entity_ids], 
         :attributes => entity_params.merge(
-          :id => params[:entity][:id],
           :creator_id => current_user.id
         )
       )
       
-      if @entity.valid?
+      if @record.valid?
         render_200 I18n.t('notices.merge_success')
       else
-        render_406 @entity.errors, I18n.t('errors.merge_failure')
+        render_406 @record.errors, I18n.t('errors.merge_failure')
       end
     else
       render_403 I18n.t("errors.merge_access_denied_on_entities")
@@ -411,10 +410,10 @@ class EntitiesController < JsonController
         :datings_attributes => [
           :id, :_destroy, :label, :dating_string, :lock_version
         ],
-        :dataset => params[:entity][:dataset].try(:permit!),
         :properties => [:label, :value],
         :medium_attributes => [:id, :image, :document]
       ).tap do |e|
+        e[:dataset] = params[:entity][:dataset].try(:permit!)
         e[:properties] ||= []
         e[:synonyms] ||= []
       end

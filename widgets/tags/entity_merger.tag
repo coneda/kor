@@ -49,18 +49,18 @@
         ref="fields"
       />
 
-      <virtual if="combined.medium_id.length > 0">
-        <kor-input
-          label={tcap('activerecord.models.medium')}
-          name="id"
-          type="radio"
-          options={media}
-          value={combined.medium_id[0]}
-          ref="fields"
-        />
-      </virtual>
+      <kor-input
+        if="combined.medium_id.length > 0"
+        label={tcap('activerecord.models.medium')}
+        name="medium_id"
+        type="radio"
+        options={media}
+        value={combined.medium_id[0]}
+        ref="fields"
+      />
 
       <kor-input
+        if="{combined.comment.length > 0}"
         name="comment"
         label={tcap('activerecord.attributes.entity.comment')}
         type="radio"
@@ -90,7 +90,7 @@
         name={key}
         type="select"
         options={values}
-        ref={dataset}
+        ref="dataset"
       />
 
       <hr />
@@ -128,6 +128,8 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 
+    window.t = tag;
+
     tag.noNameStatements = [
       {label: tag.t('values.no_name_statements.unknown'), value: 'unknown'},
       {label: tag.t('values.no_name_statements.not_available'), value: 'not_available'},
@@ -151,6 +153,7 @@
         }),
         success: function(data) {
           tag.opts.modal.trigger('close');
+          wApp.routing.path('/entities/' + data.id);
         }
       });
     }
@@ -295,9 +298,13 @@
         var korInput = tag.refs.fields[i];
         results[korInput.name()] = korInput.value();
       }
-      for (var i = 0; i < tag.refs.dataset.length; i++) {
-        var korInput = tag.refs.dataset[i];
-        results.dataset[korInput.name()] = korInput.value();
+      var df = tag.refs.dataset;
+      if (df) {
+        if (!Zepto.isArray(df)) {df = [df];}
+        for (var i = 0; i < df.length; i++) {
+          var korInput = df[i];
+          results.dataset[korInput.name()] = korInput.value();
+        }
       }
       return results;
     }

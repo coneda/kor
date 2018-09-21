@@ -1,7 +1,7 @@
 <kor-datings-editor>
 
   <div class="header">
-    <button onclick={add} class="pull-right">
+    <button onclick={add} class="pull-right" type="button">
       {t('verbs.add', {capitalize: true})}
     </button>
     <label>{opts.label || tcap('activerecord.models.entity_dating', {count: 'other'})}</label>
@@ -41,7 +41,7 @@
     tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', ->
-      console.log(tag.opts);
+      # console.log(tag.opts);
       tag.data = tag.opts.riotValue || []
       tag.update()
 
@@ -59,6 +59,8 @@
 
     tag.add = (event) ->
       event.preventDefault()
+      # TODO: refactor so that the parent specifies the default label instead
+      # of this messy retrieval
       dl = ''
       if tag.opts.for == 'relationship'
         dl = wApp.config.data.values.relationship_dating_label

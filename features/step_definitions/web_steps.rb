@@ -79,8 +79,8 @@ When /^(?:|I )uncheck "([^"]*)"$/ do |field|
   uncheck(field)
 end
 
-When /^(?:|I )choose "([^"]*)"$/ do |field|
-  choose(field)
+Given("I choose {string} for {string}") do |value, field|
+  choose field, option: value
 end
 
 When /^(?:|I )attach the file "([^"]*)" to "([^"]*)"$/ do |path, field|

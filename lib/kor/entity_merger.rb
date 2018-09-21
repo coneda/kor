@@ -15,18 +15,11 @@ class Kor::EntityMerger
   def process(options = {})
     @entity = nil
 
-    if Entity.find(options[:old_ids].first).is_medium?
-      options[:old_ids].reject!{|id| id == options[:attributes][:id]}
-      @entity = Entity.find(options[:attributes][:id])
-      merge_groups(options[:old_ids], @entity.id)
-    else
-      @entity = Entity.new(Entity.find(options[:old_ids]).first.attributes)
-      @entity.id = nil
-      @entity.assign_attributes options[:attributes]
-    end
+    @entity = Entity.new(Entity.find(options[:old_ids]).first.attributes)
+    @entity.id = nil
+    @entity.assign_attributes options[:attributes]
   
     # delete the entities but keep their datings and relationships
-    # TODO: this should use the soft-delete interface
     old_entities = Entity.where(id: options[:old_ids]).map do |e|
       e.delete
       e
