@@ -1,9 +1,15 @@
 <kor-entity-group>
 
   <div class="kor-content-box">
+    <a
+      if={opts.type == 'user'}
+      href="#"
+      class="pull-right"
+      title={t('add_to_clipboard')}
+      onclick={onMarkClicked}
+    ><i class="target"></i></a>
     <h1>
       {tcap('activerecord.models.' + opts.type + '_group')}
-      <virtual if={}>{data.name}</virtual>
     </h1>
 
     <kor-pagination
@@ -47,6 +53,27 @@
     tag.on('unmount', function() {
       tag.off('routing:query', fetch)
     })
+
+    tag.onMarkClicked = function(event, page) {
+      event.preventDefault();
+
+      Zepto.ajax({
+        url: '/entities',
+        data: {
+          user_group_id: tag.opts.id,
+          page: page || 1
+        },
+        success: function(data) {
+          if (data.total > data.page * data.per_page) {
+            tag.onMarkClicked(event, page + 1);
+          }
+
+          for (var i = 0; i < data.records.length; i++) {
+            wApp.clipboard.add(data.records[i].id);
+          }
+        }
+      })
+    }
 
     var fetchGroup = function() {
       return Zepto.ajax({

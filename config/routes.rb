@@ -69,29 +69,29 @@ Rails.application.routes.draw do
   # match 'config/general', :to => "config#general", :via => :get, :as => "config"
   # match 'config/save_general', :to => "config#save_general", :via => :post
   
-  match '/mark', :to => 'tools#mark', :as => :put_in_clipboard, :via => [:get, :delete]
-  match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current, :via => [:get, :delete]
+  # match '/mark', :to => 'tools#mark', :as => :put_in_clipboard, :via => [:get, :delete]
+  # match '/mark_as_current/:id', :to => 'tools#mark_as_current', :as => :mark_as_current, :via => [:get, :delete]
   
-  scope '/tools', :controller => 'tools' do
-    match 'clipboard', :action => 'clipboard', :via => :get
-    match 'statistics', :action => 'statistics', :via => :get
+  # scope '/tools', :controller => 'tools' do
+    # match 'clipboard', :action => 'clipboard', :via => :get
+    # match 'statistics', :action => 'statistics', :via => :get
     # match 'credits', :action => 'credits', :via => :get
     # match 'credits/:id', :action => 'credits', :via => :get
-    match 'groups_menu', :action => 'groups_menu', :via => :get
-    match 'input_menu', :action => 'input_menu', :via => :get
-    match 'relational_form_fields', :action => 'relational_form_fields', :via => :get
-    match 'dataset_fields', :action => 'dataset_fields', :via => :get
-    match 'clipboard_action', :action => 'clipboard_action', :via => :post
-    match 'new_clipboard_action', :action => 'new_clipboard_action', :via => [:get, :post]
-    match 'history', :action => 'history', :via => "post"
+    # match 'groups_menu', :action => 'groups_menu', :via => :get
+    # match 'input_menu', :action => 'input_menu', :via => :get
+    # match 'relational_form_fields', :action => 'relational_form_fields', :via => :get
+    # match 'dataset_fields', :action => 'dataset_fields', :via => :get
+    # match 'clipboard_action', :action => 'clipboard_action', :via => :post
+    # match 'new_clipboard_action', :action => 'new_clipboard_action', :via => [:get, :post]
+    # match 'history', :action => 'history', :via => "post"
     
-    match 'add_media/:id', :action => 'add_media', :via => :get
-  end
+    # match 'add_media/:id', :action => 'add_media', :via => :get
+  # end
   
 
   defaults format: 'json' do
     match 'profile', :to => 'users#update_self', :via => 'patch'
-    match 'clipboard', :to => 'tools#clipboard', :via => :get
+    # match 'clipboard', :to => 'tools#clipboard', :via => :get
 
     controller 'session' do
       match 'session', action: 'show', via: 'get'

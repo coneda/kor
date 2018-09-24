@@ -11,10 +11,10 @@ class ToolsController < JsonController
   # layout 'normal_small'
 
 
-  def history
-    history_store params[:url]
-    render :nothing => true
-  end
+  # def history
+  #   history_store params[:url]
+  #   render :nothing => true
+  # end
 
   # TODO: handle the whole clipboard functionality with localstorage, e.g.
   # https://github.com/tsironis/lockr
@@ -61,73 +61,73 @@ class ToolsController < JsonController
     redirect_to "/blaze#/entities/multi_upload"
   end
 
-  def mark
-    if params[:mark] == 'reset'
-      flash[:notice] = I18n.t("notices.reset_clipboard_success")
-      current_user.clipboard_reset
-    else
-      entity = viewable_entities.find(params[:id])
-      entity_name = (entity.is_medium? ? entity.id : "'#{entity.display_name}'")
+  # def mark
+  #   if params[:mark] == 'reset'
+  #     flash[:notice] = I18n.t("notices.reset_clipboard_success")
+  #     current_user.clipboard_reset
+  #   else
+  #     entity = viewable_entities.find(params[:id])
+  #     entity_name = (entity.is_medium? ? entity.id : "'#{entity.display_name}'")
     
-      if current_user && !current_user.guest?
-        if params[:mark] == 'mark'
-          current_user.clipboard_add(params[:id])
-          flash[:notice] = I18n.t("objects.marked_entity_success", :o => entity_name)
-        elsif params[:mark] == 'unmark'
-          flash[:notice] = I18n.t("objects.unmarked_entity_success", :o => entity_name)
-          current_user.clipboard_remove(params[:id])
-        else
-          raise "invalid mark operation: #{params[:mark]}"
-        end
-      else
-        raise 'no user logged in, clipboard unavailable'
-      end
-    end
+  #     if current_user && !current_user.guest?
+  #       if params[:mark] == 'mark'
+  #         current_user.clipboard_add(params[:id])
+  #         flash[:notice] = I18n.t("objects.marked_entity_success", :o => entity_name)
+  #       elsif params[:mark] == 'unmark'
+  #         flash[:notice] = I18n.t("objects.unmarked_entity_success", :o => entity_name)
+  #         current_user.clipboard_remove(params[:id])
+  #       else
+  #         raise "invalid mark operation: #{params[:mark]}"
+  #       end
+  #     else
+  #       raise 'no user logged in, clipboard unavailable'
+  #     end
+  #   end
 
-    respond_to do |format|
-      format.html do 
-        if request.referer && request.referer.match(/\/blaze/)
-          redirect_to back_save
-        elsif request.referer && request.referer.match(/\/authority_group/)
-          redirect_to :back
-        else
-          redirect_to :controller => 'tools', :action => 'clipboard'
-        end
-      end
-      format.json do
-        message = flash[:notice]
-        render :json => {:message => message, :clipboard => current_user.clipboard}
-        flash.discard
-      end
-    end
-  end
+  #   respond_to do |format|
+  #     format.html do 
+  #       if request.referer && request.referer.match(/\/blaze/)
+  #         redirect_to back_save
+  #       elsif request.referer && request.referer.match(/\/authority_group/)
+  #         redirect_to :back
+  #       else
+  #         redirect_to :controller => 'tools', :action => 'clipboard'
+  #       end
+  #     end
+  #     format.json do
+  #       message = flash[:notice]
+  #       render :json => {:message => message, :clipboard => current_user.clipboard}
+  #       flash.discard
+  #     end
+  #   end
+  # end
 
-  def session_info
-    session[:show_session_info] = (params[:show] == 'show')
-    render :nothing => true
-  end
+  # def session_info
+  #   session[:show_session_info] = (params[:show] == 'show')
+  #   render :nothing => true
+  # end
   
-  def groups_menu
-    session[:expand_group_menu] = (params[:folding] == 'expand')
-    render :nothing => true
-  end
+  # def groups_menu
+  #   session[:expand_group_menu] = (params[:folding] == 'expand')
+  #   render :nothing => true
+  # end
 
-  def dataset_fields
-    begin
-      @kind = Kind.find(params[:kind_id])
-      render :partial => 'fields/search/all', :locals => {
-        :search => kor_graph.search(:attribute, :criteria => {:kind_id => params[:kind_id]})
-      }
-    rescue ActiveRecord::RecordNotFound => e
-      render :nothing => true
-    end
-  end
+  # def dataset_fields
+  #   begin
+  #     @kind = Kind.find(params[:kind_id])
+  #     render :partial => 'fields/search/all', :locals => {
+  #       :search => kor_graph.search(:attribute, :criteria => {:kind_id => params[:kind_id]})
+  #     }
+  #   rescue ActiveRecord::RecordNotFound => e
+  #     render :nothing => true
+  #   end
+  # end
   
-  def relational_form_fields
-    @kind_id = params[:kind_id]
+  # def relational_form_fields
+  #   @kind_id = params[:kind_id]
     
-    render :layout => false
-  end
+  #   render :layout => false
+  # end
   
   
   ####################### clipboard action handling ############################

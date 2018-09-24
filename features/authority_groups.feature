@@ -1,5 +1,6 @@
 Feature: authority groups
 
+  @javascript
   Scenario: Authority Groups (no groups, not categories, list)
     Given I am logged in as "admin"
     When I go to the authority groups page
@@ -7,7 +8,7 @@ Feature: authority groups
     And I should see "Global groups"
     And I should see no categories nor groups
 
-
+  @javascript
   Scenario: create authority group
     Given I am logged in as "admin"
     When I go to the authority group categories page
@@ -17,7 +18,7 @@ Feature: authority groups
     Then I should see "Brot has been created"
     And I should see "Brot" within ".layout_panel.right.normal_panel_size"
 
-
+  @javascript
   Scenario: edit authority group
     Given I am logged in as "admin"
     And the authority group "Brot"
@@ -27,7 +28,6 @@ Feature: authority groups
     And I press "Save"
     Then I should see "Wurst has been changed"
     And I should see "Wurst" within ".layout_panel.right.normal_panel_size"
-
 
   @javascript
   Scenario: delete authority group
@@ -39,7 +39,7 @@ Feature: authority groups
     Then I should be on the authority group categories page
     Then I should not see "Brot" within ".layout_panel.right.normal_panel_size"
 
-
+  @javascript
   Scenario: create authority group category
     Given I am logged in as "admin"
     When I go to the authority group categories page
@@ -49,7 +49,7 @@ Feature: authority groups
     Then I should see "Frühstück has been created"
     And I should see "Frühstück" within ".layout_panel.left.small_panel_size"
 
-
+  @javascript
   Scenario: edit authority group category
     Given I am logged in as "admin"
     And the authority group category "Frühstück"
@@ -59,7 +59,6 @@ Feature: authority groups
     And I press "Save"
     Then I should see "Mittachmahl has been changed"
     And I should see "Mittachmahl" within ".layout_panel.left.small_panel_size"
-
 
   @javascript
   Scenario: delete authority group category
@@ -71,7 +70,7 @@ Feature: authority groups
     Then I should not see "Frühstück" within ".layout_panel.left.small_panel_size"
     And I should be on the authority group categories page
 
-
+  @javascript
   Scenario: create deep authority group category
     Given I am logged in as "admin"
     When I go to the authority group categories page
@@ -86,7 +85,6 @@ Feature: authority groups
     And I follow "Level 2" within ".layout_panel.left .kor_table"
     Then I should see "top level » Level 1 » Level 2" within ".type.subtitle"
 
-
   @javascript
   Scenario: delete deep authority group category
     Given I am logged in as "admin"
@@ -96,7 +94,6 @@ Feature: authority groups
     And I follow "X" within the row for "authority_group_category" "top level"
     Then I should not see "Level 1" within ".layout_panel.left"
     And I should not see "Level 2" within ".layout_panel.left"
-
 
   @javascript
   Scenario: delete authority group category with deep authority group
@@ -108,7 +105,6 @@ Feature: authority groups
     And I follow "X" within the row for "authority_group_category" "level 1"
     Then I should not see "level 1" within ".layout_panel.left.small_panel_size"
     And I should not see "level 1 Group" within ".layout_panel.right.normal_panel_size"
-
 
   @javascript
   Scenario: move authority group
@@ -125,7 +121,7 @@ Feature: authority groups
     And I should see "Brot" within ".layout_panel.right.normal_panel_size"
     And I should see "top level » Mittachmahl" within ".type.subtitle"
 
-    
+  @javascript
   Scenario: download zip file
     Given I am logged in as "admin"
     And the authority group "Natur"
@@ -135,7 +131,7 @@ Feature: authority groups
     When I go to the authority group page for "Natur"
     Then I should be on the authority group page for "Natur"
     
-    
+  @javascript
   Scenario: Authority Groups (no, groups, no categories, create both)
     Given I am logged in as "admin"
     Given I am on the authority groups page
@@ -152,4 +148,18 @@ Feature: authority groups
     Then I should be on the authority group category page for "Test Category"
     And I should see "Test Authority Group"
     
-  
+  @javascript
+  Scenario: Add an authority group's entities to the clipboard as a normal user
+    Given user "jdoe" is allowed to "view" collection "default" through credential "users"
+    And I am logged in as "jdoe"
+    And the entity "Mona Lisa" of kind "artwork/artworks"
+    And the entity "Leonardo" of kind "person/people"
+    And the authority group "some"
+    And the entity "Leonardo" is in authority group "some"
+    And the entity "Mona Lisa" is in authority group "some"
+    When I go to the authority group page for "some"
+    And I click element "[data-name=target]" within ".section_panel .header"
+    Then I should see "entities have been copied to the clipboard"
+    When I go to the clipboard
+    Then I should see "Mona Lisa"
+    And I should see "Leonardo"

@@ -171,18 +171,6 @@ class EntitiesController < JsonController
 
     @records = search.records
     @total = search.total
-
-    # @results = kor_graph.search(:attribute,
-    #   criteria: {
-    #     entity_id: params[:ids],
-    #     name: params[:terms],
-    #     relation_name: params[:relation_name],
-    #     kind_id: params[:kind_id]
-    #   },
-    #   media: params[:include_media],
-    #   per_page: params[:per_page],
-    #   page: params[:page]
-    # )
   end
 
   def show

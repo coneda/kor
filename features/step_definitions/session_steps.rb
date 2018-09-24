@@ -43,7 +43,7 @@ Given /^I re\-login as "([^"]*)"$/ do |user|
 end
 
 Given /^I log out$/ do
-  step "I click element \"a[href='/logout']\""
+  step "I follow \"logout\""
 end
 
 When /^I mark "([^\"]*)" as current entity$/ do |name|

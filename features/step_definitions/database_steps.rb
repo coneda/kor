@@ -334,7 +334,7 @@ end
 Given /^Mona Lisa and a medium as correctly related entities$/ do
   step "the relation \"is shown by/shows\" between \"work/works\" and \"medium/media\""
   step "the entity \"Mona Lisa\" of kind \"work/works\""
-  step "the medium \"spec/fixtures/image_a.jpg\""
+  step "the medium \"picture_a\""
   
   medium = Kind.medium_kind.entities.first
   mona_lisa = Entity.find_by_name('Mona Lisa')

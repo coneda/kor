@@ -68,6 +68,7 @@ en:
   add_to_merge: add to merge
   no_results: nothing found
   results_per_page: results / page
+  add_to_clipboard: add to clipboard
 
   search_term:
     one: search term
@@ -123,6 +124,7 @@ en:
     check: check
     invert: invert
     extend: extend
+    mark: mark
 
   title_verbs:
     pen: "edit"

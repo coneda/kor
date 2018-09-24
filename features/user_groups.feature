@@ -98,24 +98,6 @@ Feature: usergroups
     And I am on the shared user groups page
     When I follow "MyStuff"
     Then I should see "Leonardo da Vinci"
-    When I follow "Target"
+    When I follow "add to clipboard"
     And I go to the clipboard
-    Then I should see element "img" within ".canvas"
-    
-
-  @javascript
-  Scenario: Add an authority group's entities to the clipboard as a normal user
-    Given user "jdoe" is allowed to "view" collection "default" through credential "users"
-    And I am logged in as "jdoe"
-    And the entity "Mona Lisa" of kind "artwork/artworks"
-    And the entity "Leonardo" of kind "person/people"
-    And the authority group "some"
-    And the entity "Leonardo" is in authority group "some"
-    And the entity "Mona Lisa" is in authority group "some"
-    When I go to the authority group page for "some"
-    And I click element "[data-name=target]" within ".section_panel .header"
-    Then I should see "entities have been copied to the clipboard"
-    When I go to the clipboard
-    Then I should see "Mona Lisa"
-    And I should see "Leonardo"
-    
+    Then I should see element "img" within "[data-is=kor-clipboard]"

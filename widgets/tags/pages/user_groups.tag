@@ -3,6 +3,7 @@
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">
       <a
+        if={!opts.type}
         href="#/groups/user/new"
         class="pull-right"
         title={t('objects.new', {interpolations: {o: t('activerecord.models.user_group')}})}
@@ -12,7 +13,9 @@
         <virtual if={opts.type == 'shared'}>{tcap('nouns.shared_user_group')}</virtual>
       </h1>
       
-      <table>
+      <kor-nothing-found data={data} />
+
+      <table if={data && data.total > 0}>
         <thead>
           <th>{tcap('activerecord.attributes.user_group.name')}</th>
           <th if={opts.type == 'shared'}>{tcap('activerecord.attributes.user_group.owner')}</th>

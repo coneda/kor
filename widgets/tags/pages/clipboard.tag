@@ -21,6 +21,8 @@
         per-page-control={true}
       />
 
+      <div class="clearfix"></div>
+
       <hr />
 
       <span show={data && data.total == 0}>
