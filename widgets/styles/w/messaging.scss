@@ -3,6 +3,7 @@ w-messaging, [data-is=w-messaging] {
   top: 0px;
   left: 50%;
   margin-left: -20em;
+  z-index: 2000;
 
   .message {
     width: 40em;

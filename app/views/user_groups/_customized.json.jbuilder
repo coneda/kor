@@ -5,10 +5,10 @@ json.name user_group.name
 json.shared !!user_group.shared
 json.user_id user_group.user_id
 
-if additions.request?('user')
-  json.user do
+if additions.request?('owner')
+  json.owner do
     json.partial! 'users/customized', {
-      user: user_group.user, additions: additions
+      user: user_group.owner, additions: additions
     }
   end
 end

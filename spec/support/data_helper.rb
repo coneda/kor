@@ -113,6 +113,8 @@ module DataHelper
     
     Kor::Auth.grant default, :view, :to => students
     Kor::Auth.grant priv, :all, :to => admins
+
+    FactoryGirl.create :authority_group
   end
 
   def current_user(user)

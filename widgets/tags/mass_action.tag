@@ -8,12 +8,43 @@
 
   <hr />
 
-  <a class="action" href="#" onclick={merge}>{tcap('clipboard_actions.merge')}</a>
-  <a class="action" href="#" onclick={massRelate}>{tcap('clipboard_actions.mass_relate')}</a>
-  <a class="action" href="#" onclick={massDelete}>{tcap('clipboard_actions.mass_delete')}</a>
-  <a class="action" href="#" onclick={addToAuthorityGroup}>{tcap('clipboard_actions.add_to_authority_group')}</a>
-  <a class="action" href="#" onclick={addToUserGroup}>{tcap('clipboard_actions.add_to_user_group')}</a>
-  <a class="action" href="#" onclick={moveToCollection}>{tcap('clipboard_actions.move_to_collection')}</a>
+  <a 
+    class="action"
+    href="#"
+    onclick={merge}
+  >{tcap('clipboard_actions.merge')}</a>
+
+  <a 
+    class="action"
+    href="#"
+    onclick={massRelate}
+  >{tcap('clipboard_actions.mass_relate')}</a>
+
+  <a 
+    class="action"
+    href="#"
+    onclick={massDelete}
+  >{tcap('clipboard_actions.mass_delete')}</a>
+
+  <a 
+    if={session().user.authority_group_admin}
+    class="action"
+    href="#"
+    onclick={addToAuthorityGroup}
+  >{tcap('clipboard_actions.add_to_authority_group')}</a>
+
+  <a 
+    class="action"
+    href="#"
+    onclick={addToUserGroup}
+  >{tcap('clipboard_actions.add_to_user_group')}</a>
+
+  <a 
+    class="action"
+    href="#"
+    onclick={moveToCollection}
+  >{tcap('clipboard_actions.move_to_collection')}</a>
+
 
   <script type="text/javascript">
     var tag = this;
@@ -29,7 +60,9 @@
       
     }
 
-    tag.massDelete = function() {
+    tag.massDelete = function(event) {
+      event.preventDefault();
+
       if (wApp.utils.confirm()) {
         var data = {ids: wApp.clipboard.subSelection()};
         Zepto.ajax({
@@ -47,19 +80,25 @@
       }
     }
 
-    tag.addToAuthorityGroup = function() {
-      
-    }
-
-    tag.addToUserGroup = function() {
-      var ids = wApp.clipboard.subSelection();
-      wApp.bus.trigger('modal', 'kor-add-to-user-group', {
-        id: ids
+    var addToEntityGroup = function(type) {
+      wApp.bus.trigger('modal', 'kor-to-entity-group', {
+        type: type,
+        entityIds: wApp.clipboard.subSelection()
       })
     }
 
-    tag.moveToCollection = function() {
-      
+    tag.addToAuthorityGroup = function(event) {
+      event.preventDefault();
+      addToEntityGroup('authority');
+    }
+
+    tag.addToUserGroup = function(event) {
+      event.preventDefault();
+      addToEntityGroup('user');
+    }
+
+    tag.moveToCollection = function(event) {
+      event.preventDefault();
     }
 
     var notify = function() {

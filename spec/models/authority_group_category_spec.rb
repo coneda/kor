@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe AuthorityGroupCategory do
+RSpec.describe AuthorityGroupCategory do
 
   it 'should be able to have a parent and children' do
     archive = FactoryGirl.create :archive

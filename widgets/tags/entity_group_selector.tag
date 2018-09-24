@@ -1,11 +1,13 @@
-<kor-user-group-selector>
+<kor-entity-group-selector>
 
   <kor-input
-    label={tcap('activerecord.models.user_group')}
+    label={tcap('activerecord.models.' + opts.type + '_group')}
     name={opts.name}
+    placeholder={t('prompts.autocomplete')}
     type="text"
     ref="input"
     riot-value={opts.riotValue}
+    errors={opts.errors}
   />
 
   <script type="text/javascript">
@@ -18,9 +20,10 @@
     tag.on('mount', function() {
       ac = new autoComplete({
         selector: Zepto(tag.root).find('input')[0],
+        minChars: 1,
         source: function(term, response) {
           Zepto.ajax({
-            url: '/user_groups',
+            url: '/' + tag.opts.type + '_groups',
             data: {terms: term},
             success: function(data) {
               var strings = [];
@@ -33,9 +36,13 @@
       })
     })
 
+    tag.name = function() {
+      return tag.opts.name;
+    }
+
     tag.value = function() {
       return tag.refs['input'].value();
     }
   </script>
 
-</kor-user-group-selector>
+</kor-entity-group-selector>

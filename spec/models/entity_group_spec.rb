@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe EntityGroup do
+RSpec.describe EntityGroup do
 
   include DataHelper
   

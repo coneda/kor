@@ -1,17 +1,25 @@
 Feature: credentials
 
+  @javascript
+  Scenario: User Groups (no groups, list)
+    Given I am logged in as "admin"
+    When I go to the credentials page
+    Then I should see "User groups"
+    And I should see no user groups
+
+  @javascript
   Scenario: see credentials without authorization
     Given I am logged in as "john"
     When I go to the credentials page
     Then I should see "Access denied"
-
     
+  @javascript
   Scenario: see credentials with authorization
     Given I am logged in as "admin"
     When I go to the credentials page
     Then I should see "User groups"
 
-
+  @javascript
   Scenario: create credential
     Given I am logged in as "admin"
     When I go to the credentials page
@@ -22,7 +30,7 @@ Feature: credentials
     Then I should see "Freaks"
     And I should see "The KOR-Freaks"
 
-
+  @javascript
   Scenario: edit credential
     Given I am logged in as "admin"
     And the credential "Freaks" described by "The KOR-Freaks"
@@ -47,7 +55,7 @@ Feature: credentials
     Then I should not see "Freaks"
     And I should not see "The KOR-Freaks"
 
-
+  @javascript
   Scenario: collections & credentials
     Given I am logged in as "admin"
     And the collection "Hauptsammlung"

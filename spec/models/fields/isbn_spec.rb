@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Fields::Isbn do
+RSpec.describe Fields::Isbn do
 
   it "should accept '3899427289'" do
     expect(subject).not_to receive :add_error

@@ -7,7 +7,7 @@
     />
     
     <a href="#/entities/{opts.entity.id}" class="to-medium">
-      <img riot-src={opts.entity.medium.url.thumbnail} />
+      <img riot-src={imageUrl()} />
     </a>
     <div if={!opts.noContentType}>
       {t('nouns.content_type')}:
@@ -31,6 +31,16 @@
 
     tag.isMedium = function() {
       return tag.opts.entity && !!tag.opts.entity.medium_id;
+    }
+
+    tag.imageUrl = function() {
+      var base = opts.entity.medium.url.thumbnail;
+
+      if (tag.opts.publishment) {
+        return base.replace(/\?([0-9]+)$/, '?uuid=' + tag.opts.publishment + '&$1');
+      } else {
+        return base;
+      }
     }
   </script>
 

@@ -54,6 +54,9 @@
   <script type="text/coffee">
     tag = this
 
+    tag.on 'mount', ->
+      Zepto(tag.root).find('input, textarea, select').focus() if tag.opts.autofocus
+
     tag.name = -> tag.opts.name
     tag.value = ->
       if tag.opts.type == 'checkbox'

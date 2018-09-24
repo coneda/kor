@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Kind do
+RSpec.describe Kind do
 
   it "should manage settings" do
     k = Kind.new name: 'Pflanze', plural_name: 'Pflanzen'

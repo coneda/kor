@@ -66,7 +66,7 @@ en:
   inherited_from: inherited from
   no_schema: no schema
   add_to_merge: add to merge
-  no_results: no results
+  no_results: nothing found
   results_per_page: results / page
 
   search_term:
@@ -81,6 +81,7 @@ en:
     placeholder: "click here to edit"
 
   prompts:
+    autocomplete: "... start typing ..."
     please_select: "please select"
     please_select_transit: "please select a transit area on the left"
 
@@ -100,6 +101,7 @@ en:
     upload: "upload"
     save: "save"
     share: "share"
+    unshare: unshare
     browse: "browse"
     show: "show"
     reset: "reset"
@@ -120,6 +122,7 @@ en:
     expires_after_days: "expires after %{days} days"
     check: check
     invert: invert
+    extend: extend
 
   title_verbs:
     pen: "edit"
@@ -634,6 +637,7 @@ en:
       
   messages:
     entities_moved_to_collection: "the entity has been moved to collection '%{o}'"
+    entities_added_to_group: "the entities have been added to the selected entity group"
     no_user_groups: "there are no personal groups available"
     no_authority_groups: "there are no global groups available"
     swfupload_success: "the upload was successful"
@@ -722,7 +726,7 @@ en:
     relations_merge_failure: you can only merge relations with matching endpoints
 
   labels:
-    relate_to_via: 'relate all files with "%{to}" via'
+    relate_to_via: relate all files with "%{to}" via
 
   meta:
     description: "Store and manage image data with complex metadata reasonably"
@@ -965,12 +969,15 @@ en:
       publishment:
         name: description
         group: group to be released
+        valid_until: valid until
+        link: link
       user_group:
         name: name
         owner: owner
         shared:
           one: shared
           other: shared
+        published: published
           
     errors:
       template:

@@ -40,6 +40,9 @@
       tag.on 'routing:query', fetch
       h(tag.t('pages.new_media')) if h = tag.opts.handlers.pageTitleUpdate
 
+    tag.on 'unmount', ->
+      tag.off 'routing:query', fetch
+
     fetch = ->
       Zepto.ajax(
         url: '/entities/gallery'

@@ -21,16 +21,16 @@ module NavigationHelpers
       web_path(:anchor => "/entities/gallery?page=#{page}")
     # when /the new relationship page for "(.*)"/
     #   new_relationship_path(:relationship => {:from_id => Entity.find_by_name($1).id })
-    when /the new publishment page/ then new_publishment_path
-    when /the publishments page/ then publishments_path
+    when /the new publishment page/ then '/#/groups/published/new'
+    when /the publishments page/ then '/#/groups/published'
     # when /the new relation page/ then new_relation_path
     when /the new entity page/ then new_entity_path
     when /the authority groups page/ then authority_group_categories_path
     when /the authority group categories page/ then authority_group_categories_path
     when /the user group page for "([^\"]*)"/
       user_group_path(UserGroup.find_by_name($1))
-    when /the user groups page/ then user_groups_path
-    when /the shared user groups page/ then shared_user_groups_path
+    when /the user groups page/ then '/#/groups/user'
+    when /the shared user groups page/ then '/#/groups/shared'
     when /the authority group page for "([^\"]*)"/
       authority_group_path(AuthorityGroup.find_by_name($1))
     when /the download authority group page for "([^\"]*)"/
@@ -58,8 +58,10 @@ module NavigationHelpers
     when /the new "([^\"]*)-Entity" page/
       new_entity_path(:kind_id => Kind.find_by_name($1).id)
     when /the login page/ then '/#/login'
-    when /the new user group page/ then new_user_group_path
-    when /the user group "([^\"]*)"/ then user_group_path(UserGroup.find_by_name($1))
+    when /the new user group page/ then '/#/groups/user/new'
+    when /the user group "([^\"]*)"/
+      id = UserGroup.find_by!(name: $1).id
+      "/#/groups/user/#{id}"
     when /the edit page for user group "([^\"]*)"/ then edit_user_group_path(UserGroup.find_by_name($1))
     when /the credentials page/ then credentials_path
     when /the collections page/ then collections_path

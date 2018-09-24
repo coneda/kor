@@ -198,22 +198,22 @@ end
 Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |shared, name, pub|
   unless UserGroup.find_by_name(name)
     step "I am on the user groups page"
-    step "I follow \"Plus\""
-    step "I fill in \"user_group[name]\" with \"#{name}\""
-    step "I press \"Create\""
+    step "I follow \"create personal group\""
+    step "I fill in \"Name\" with \"#{name}\""
+    step "I press \"Save\""
     
     if shared == 'shared '
-      step "I follow \"Private\""
+      step "I follow \"share\""
     end
     
     unless pub.blank?
       pub_name = pub.gsub(/.*\"([^\"]+)\".*/, "\\1")
     
       step "I go to the publishments page"
-      step "I follow \"Plus\""
-      step "I fill in \"publishment[name]\" with \"#{pub_name}\""
-      step "I select \"#{name}\" from \"publishment[user_group_id]\""
-      step "I press \"Create\""
+      step "I follow \"create published group\""
+      step "I fill in \"Description\" with \"#{pub_name}\""
+      step "I select \"#{name}\" from \"Personal group\""
+      step "I press \"Save\""
     end
   end
 end
@@ -462,3 +462,13 @@ Then(/^entity "([^"]*)" should (not )?have dating "([^"]*)"$/) do |name, negatio
     expect(result).to be_truthy
   end
 end
+
+# Then(/the group "([^"]*)" should (not )?be shared/) do |name, negation|
+#   group = UserGroup.find_by(name: name)
+
+#   if negation
+#     expect(group).not_to be_shared
+#   else
+#     expect(group).to be_shared
+#   end
+# end

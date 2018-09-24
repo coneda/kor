@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe Identifier do
+RSpec.describe Identifier do
 
   it "should require a type and a value" do
     id = described_class.new

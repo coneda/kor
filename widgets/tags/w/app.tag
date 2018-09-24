@@ -96,12 +96,20 @@
               else if m = path.match(/^\/groups\/user\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-user-group-editor'
+              else if m = path.match(/^\/groups\/user\/([0-9]+)$/)
+                opts['id'] = parseInt(m[1])
+                opts['type'] = 'user'
+                'kor-entity-group'
               else if m = path.match(/^\/relations\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-relation-editor'
               else if m = path.match(/^\/media\/([0-9]+)$/)
                 opts['id'] = parseInt(m[1])
                 'kor-medium-page'
+              else if m = path.match(/^\/pub\/([0-9]+)\/([0-9a-f]+)$/)
+                opts['userId'] = parseInt(m[1])
+                opts['uuid'] = m[2]
+                'kor-publishment'
               else
                 switch path
                   when '/clipboard' then 'kor-clipboard'
@@ -120,10 +128,15 @@
                   when '/upload' then 'kor-upload'
                   when '/groups/user/new' then 'kor-user-group-editor'
                   when '/groups/user' then 'kor-user-groups'
+                  when '/groups/shared'
+                    opts['type'] = 'shared'
+                    'kor-user-groups'
                   when '/relations/new' then 'kor-relation-editor'
                   when '/relations' then 'kor-relations'
                   when '/settings' then 'kor-settings-editor'
                   when '/password-recovery' then 'kor-password-recovery'
+                  when '/groups/published' then 'kor-publishments'
+                  when '/groups/published/new' then 'kor-publishment-editor'
                   else
                     'kor-search'
           else

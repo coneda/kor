@@ -10,14 +10,14 @@
           ref="cs"
         />
 
-        <kor-user-group-selector
-          type="personal"
+        <kor-entity-group-selector
+          type="user"
           riot-value={l(new Date())}
-          ref="user-group-name"
+          ref="group"
         />
 
         <virtual if={selection}>
-          {tcap('labels.relate_to_via', {interpolations: {to: selection.display_name}})}
+          {tcap('labels.relate_to_via', {interpolations: {to: selection.display_name}})}:
 
           <kor-relation-selector
             if={selection}
@@ -118,7 +118,7 @@
       var params = {
         "entity[kind_id]": wApp.info.data.medium_kind_id,
         "entity[collection_id]": tag.refs['cs'].value(),
-        "user_group_name": tag.refs['user-group-name'].value(),
+        "user_group_name": tag.refs['group'].value(),
         "target_entity_id": wApp.clipboard.selection()
       };
       var rs = tag.refs['relation-selector'];

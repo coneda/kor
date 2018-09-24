@@ -13,10 +13,10 @@
     onchange={onchange}
   />
 
-  <span
+  <em
     if={relationNames && relationNames.length == 0}
     class="error"
-  >{t('messages.no_relations_provided')}</span>
+  >{t('messages.no_relations_provided')}</em>
 
   <script type="text/javascript">
     var tag = this;
@@ -37,7 +37,11 @@
       if (h) {h();}
     }
 
-    tag.value = function() {return tag.refs.input.value()}
+    tag.value = function() {
+      var i = tag.refs.input;
+      console.log(i ? i.value() : null);
+      return i ? i.value() : null;
+    }
 
     var fetch = function() {
       Zepto.ajax({

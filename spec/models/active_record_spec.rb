@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe ActiveRecord do
+RSpec.describe ActiveRecord do
   include DataHelper
 
   it "should find or initialize with additional attributes" do

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Fields::Regex do
+RSpec.describe Fields::Regex do
   
   it "should serialize it's settings" do
     kind = FactoryGirl.create(:works)

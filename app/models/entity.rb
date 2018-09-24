@@ -552,6 +552,19 @@ class Entity < ActiveRecord::Base
     joins("LEFT JOIN directed_relationships rels ON entities.id = rels.from_id").
     where("rels.id IS NULL")
   }
+  scope :within_authority_groups, lambda { |ids|
+    return all unless ids.present?
+
+    joins('LEFT JOIN authority_groups_entities ae ON ae.entity_id = id').
+    where('ae.authority_group_id IN (?)', ids)
+  }
+  scope :within_user_groups, lambda { |ids|
+    return all unless ids.present?
+    
+    joins('LEFT JOIN entities_user_groups eu ON eu.entity_id = id').
+    where('eu.user_group_id IN (?)', ids)
+  }
+
   scope :pageit, lambda { |page, per_page|
     page = [(page || 1).to_i, 1].max
     per_page = [(per_page || 20).to_i, Kor.settings['max_results_per_request']].min

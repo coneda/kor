@@ -323,6 +323,16 @@ kor-media-relation, [data-is=kor-media-relation] {
   }
 }
 
+kor-relation-selector {
+  display: inline-block;
+  margin-bottom: 1em;
+
+  em {
+    display: inline-block;
+    margin-top: 0.5em;
+  }
+}
+
 kor-relationship, [data-is=kor-relationship] {
   display: block;
   margin-bottom: 0.2rem;
@@ -798,4 +808,8 @@ kor-properties-editor, kor-datings-editor {
       }
     }
   }
+}
+
+[data-is=kor-to-entity-group] {
+  width: 350px;
 }

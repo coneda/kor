@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Grant do
+RSpec.describe Grant do
 
   include DataHelper
 

@@ -1,6 +1,5 @@
 class DirectedRelationshipsController < JsonController
 
-  before_filter :pagination, only: [:index]
   skip_before_action :legal, :authentication, :authorization, :only => [:index]
 
   def index
@@ -26,7 +25,7 @@ class DirectedRelationshipsController < JsonController
         allowed(user, :view)
 
       @total = @records.count
-      @records = @records.pageit(@page, @per_page)
+      @records = @records.pageit(page, per_page)
     else
       render_403
     end

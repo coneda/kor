@@ -41,23 +41,8 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :authority_group_categories
   resources :system_groups
-  resources :authority_groups, :except => [ :index ] do
-    member do
-      get 'download_images'
-      get 'edit_move'
-      get 'add_to'
-      get 'remove_from'
-      get 'mark'
-    end
-  end
-  resources :publishments do
-    member do
-      get 'extend'
-    end
-  end
-  match '/pub/:user_id/:uuid', :to => 'publishments#show', :as => :show_publishment, :via => :get
+  
   # match '/edit_self', :to => 'users#edit_self', :via => :get
 
   match '/downloads/:uuid', :to => 'downloads#show', :via => :get
@@ -147,22 +132,45 @@ Rails.application.routes.draw do
 
     resources :relationships, only: [:index, :show], controller: 'directed_relationships'
     resources :relationships, only: [:create, :update, :destroy]
+
+    resources :authority_group_categories
+    resources :authority_groups do
+      member do
+        get 'download_images'
+        get 'edit_move'
+        # get 'mark'
+      end
+
+      collection do
+        post 'add', action: 'add_to'
+        post 'remove_from', action: 'remove_from'
+      end
+    end
     
     resources :user_groups do
       member do
         get 'download_images'
-        get 'share'
-        get 'unshare'
         get 'show_shared'
-        get 'add_to'
-        get 'remove_from'
-        get 'mark'
+        # get 'mark'
+
+        patch 'share'
+        patch 'unshare'
       end
       
       collection do
         get 'shared'
+
+        post 'add', action: 'add_to'
+        post 'remove', action: 'remove_from'
       end
     end
+
+    resources :publishments, except: ['new', 'edit', 'show'] do
+      member do
+        patch 'extend'
+      end
+    end
+    get '/publishments/:user_id/:uuid', :to => 'publishments#show'
 
     resources :users, except: ['new', 'edit'] do
       member do

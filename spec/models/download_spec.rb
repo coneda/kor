@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Download do
+RSpec.describe Download do
   include DataHelper
 
   before :each do

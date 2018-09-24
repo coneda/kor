@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Relationship do
+RSpec.describe Relationship do
 
   it "should be creatable and updatable with a relation name" do
     mona_lisa = FactoryGirl.create :mona_lisa

@@ -17,5 +17,4 @@ class UserGroup < EntityGroup
     joins('JOIN entities_user_groups ge on user_groups.id = ge.user_group_id').
     where('ge.entity_id' => entity_ids)
   }
-  scope :search, lambda { |terms| terms.present? ? where('name LIKE ?', "%#{terms}%") : all }
 end

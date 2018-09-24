@@ -47,13 +47,11 @@ class UsersController < JsonController
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
 
-    @per_page = params[:per_page] || 10
-    @page = params[:page] || 1
     @records = User.
       search(params[:search_string]).
       order(params[:sort_by] => params[:sort_order])
     @total = @records.count
-    @records = @records.pageit(@page, @per_page)
+    @records = @records.pageit(page, per_page)
   end
 
   def show

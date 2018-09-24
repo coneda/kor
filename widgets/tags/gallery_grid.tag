@@ -5,7 +5,7 @@
       <tr each={row in inGroupsOf(4, opts.entities, false)}>
         <td each={entity in row}>
           <virtual if={entity && entity.medium}>
-            <kor-entity entity={entity} />
+            <kor-entity entity={entity} publishment={opts.publishment} />
             
             <div class="meta" if={entity.primary_entities}>
               <div class="hr"></div>
@@ -28,7 +28,7 @@
               <a href="#/entities/{entity.id}">{entity.display_name}</a>
             </div>
             <div class="desc">{entity.kind.name}</div>
-          </meta>
+          </div>
         </td>
       </tr>
     </tbody>

@@ -5,7 +5,7 @@ class JsonController < BaseController
 
   before_filter :auth, :legal
 
-  helper_method :inclusion
+  helper_method :inclusion, :page, :per_page
 
   layout false
 
@@ -127,9 +127,13 @@ class JsonController < BaseController
       end
     end
 
-    # TODO: handle this like inclusion, so that we don't need the before filter
-    def pagination
-      @page = [(params[:page] || 1).to_i, 1].max
+    def page
+      [(params[:page] || 1).to_i, 1].max
+    end
+
+    def per_page
+      return Kor.settings['max_results_per_request'] if params[:per_page] == 'max'
+      
       @per_page = [
         (params[:per_page] || 10).to_i,
         Kor.settings['max_results_per_request']

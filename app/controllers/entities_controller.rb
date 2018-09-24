@@ -4,8 +4,6 @@ class EntitiesController < JsonController
   layout false
   skip_before_filter :verify_authenticity_token
 
-  before_filter :pagination, only: ['index']
-
   respond_to :json, only: [:isolated]
 
   def metadata
@@ -41,7 +39,7 @@ class EntitiesController < JsonController
       group = SystemGroup.find_or_create_by(name: 'invalid')
       scope = group.entities.allowed(current_user, :delete)
       @total = scope.count
-      @records = scope.pageit(@page, @per_page)
+      @records = scope.pageit(page, per_page)
 
       render action: 'index'
     else
@@ -61,7 +59,7 @@ class EntitiesController < JsonController
         newest_first.
         within_collections(params[:collection_id])
       @total = scope.count
-      @records = scope.pageit(@page, @per_page)
+      @records = scope.pageit(page, per_page)
 
       render action: 'index'
     else
@@ -81,7 +79,7 @@ class EntitiesController < JsonController
         includes(:kind, :collection, :tags, :medium)
 
       @total = scope.count
-      @records = scope.pageit(@page, @per_page)
+      @records = scope.pageit(page, per_page)
 
       render action: 'index'
     else
@@ -96,7 +94,7 @@ class EntitiesController < JsonController
       newest_first.includes(:kind)
 
     @total = scope.count
-    @records = scope.pageit(@page, @per_page)
+    @records = scope.pageit(page, per_page)
 
     render action: 'index'
   end
@@ -118,7 +116,7 @@ class EntitiesController < JsonController
       newest_first
 
     @total = scope.count
-    @results = scope.pageit(@page, @per_page)
+    @results = scope.pageit(page, per_page)
 
     render action: 'index'
   end
@@ -157,13 +155,15 @@ class EntitiesController < JsonController
 
     search = Kor::Search.new(current_user,
       collection_id: params[:collection_id],
+      authority_group_id: params[:authority_group_id],
+      user_group_id: params[:user_group_id],
       kind_id: params[:kind_id],
       id: params[:id],
       terms: params[:terms],
       name: params[:name],
       dating: params[:dating],
-      page: @page,
-      per_page: @per_page,
+      page: page,
+      per_page: per_page,
       no_media: params[:no_media]
     )
 
@@ -260,7 +260,7 @@ class EntitiesController < JsonController
           transit.add_entities @entity if transit
         end
 
-        if params[:target_entity_id].present? && params[:relation_name]
+        if params[:target_entity_id].present? && params[:relation_name].present? && params[:relation_name] != 'false'
           relationship = Relationship.relate(@entity, params[:relation_name], params[:target_entity_id])
           if authorized_for_relationship?(relationship, :create)
             relationship.save!

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Field do
+RSpec.describe Field do
   
   it "should synchronize the value for is_identifier across all kinds" do
     people = FactoryGirl.create :people, fields: [

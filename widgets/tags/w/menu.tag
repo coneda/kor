@@ -47,7 +47,7 @@
         </li>
         <li show={isLoggedIn()}>
           <a href="#/groups/published">
-            {tcap('activerecord.attributes.user_group.shared')}
+            {tcap('activerecord.attributes.user_group.published')}
           </a>
         </li>
       </ul>

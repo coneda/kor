@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Relation do
+RSpec.describe Relation do
   include DataHelper
   
   before :each do

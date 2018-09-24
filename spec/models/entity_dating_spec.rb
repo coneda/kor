@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe EntityDating do
+RSpec.describe EntityDating do
   include DataHelper
 
   it 'should inherit from Dating' do

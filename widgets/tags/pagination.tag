@@ -52,6 +52,8 @@
       if new_page != tag.currentPage() && new_page >= 1 && new_page <= tag.totalPages()
         if Zepto.isFunction(tag.opts.onPaginate)
           tag.opts.onPaginate(new_page, tag.opts.perPage)
+        else
+          wApp.routing.query({page: new_page})
 
     tag.changePerPage = (new_per_page) ->
       if new_per_page != tag.opts.perPage

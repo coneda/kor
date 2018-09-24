@@ -5,7 +5,15 @@ class EntityGroup < ApplicationRecord
 
   validates :name,
     :presence => true,
-    :white_space => true  
+    :white_space => true
+
+  after_validation(:on => :create) do |model|
+    model.uuid = SecureRandom.uuid
+  end
+
+  def self.search(terms)
+    terms.present? ? where('name LIKE ?', "%#{terms}%") : all
+  end
 
   def add_entities(new_entities)
     new_entities = [new_entities] unless new_entities.is_a? Array
@@ -18,7 +26,4 @@ class EntityGroup < ApplicationRecord
     entities.delete(old_entities)
   end
   
-  after_validation(:on => :create) do |model|
-    model.uuid = SecureRandom.uuid
-  end
 end

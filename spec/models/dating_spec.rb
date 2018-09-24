@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Dating do
+RSpec.describe Dating do
 
   
   

@@ -1,8 +1,6 @@
 class UserGroupsController < JsonController
-  layout 'normal_small'
+  # layout 'normal_small'
 
-  before_filter :pagination, only: ['index']
-  
   def mark
     @user_group = UserGroup.owned_by(current_user).find_by_id(params[:id])
     @user_group ||= UserGroup.shared.find(params[:id])
@@ -29,12 +27,16 @@ class UserGroupsController < JsonController
   end
 
   def add_to
-    @user_group = UserGroup.owned_by(current_user).find(params[:id])
+    @user_group = UserGroup.owned_by(current_user).find_or_create_by!(
+      name: params[:group_name],
+      owner: current_user
+    )
     entity_ids = Kor.array_wrap(params[:entity_ids])
     entities = viewable_entities.find entity_ids
     @user_group.add_entities(entities)
-    
-    redirect_to @user_group
+
+    @record = @user_group
+    render_200 I18n.t('messages.entities_added_to_group')
   end
 
   def remove_from
@@ -55,8 +57,8 @@ class UserGroupsController < JsonController
 
     @user_group.shared = true
     @user_group.save
-    flash[:notice] = I18n.t('objects.shared_success', :o => @user_group.name)
-    redirect_to :back
+
+    render_200 I18n.t('objects.shared_success', :o => @user_group.name)
   end
   
   def unshare
@@ -68,43 +70,36 @@ class UserGroupsController < JsonController
 
     @user_group.shared = false
     @user_group.save
-    flash[:notice] = I18n.t('objects.unshared_success', :o => @user_group.name)
-    redirect_to :back
+
+    render_200 I18n.t('objects.unshared_success', :o => @user_group.name)
   end
   
   def shared
     @user_groups = UserGroup.shared
+
+    @total = @user_groups.count
+    @records = @user_groups.pageit(page, per_page)
+    render action: 'index'
   end
 
   def index
-    @records = UserGroup.owned_by(current_user).search(params[:terms])
+    @user_groups = UserGroup.owned_by(current_user).search(params[:terms])
     
-    if params[:term]
-      @records = @user_groups.named_like(params[:term])
-    end
-    
-    @total = @records.count
-    @records = @records.pageit(@page, @per_page)
+    @total = @user_groups.count
+    @records = @user_groups.pageit(page, per_page)
   end
 
   def show
     @user_group = UserGroup.find(params[:id])
     
-    if @user_group.owner == current_user or @user_group.shared
-      @entities = @user_group.
-        entities.allowed(current_user, :view).
-        order('created_at DESC').
-        paginate(:page => params[:page], :per_page => 16)
-      render :layout => 'wide'
-    else
-      flash[:error] = I18n.t('errors.access_denied')
+    unless @user_group.owner == current_user || @user_group.shared
       render_403
     end
   end
 
-  def new
-    @user_group = UserGroup.new
-  end
+  # def new
+  #   @user_group = UserGroup.new
+  # end
 
   # TODO: remove all edit actions from resources. They are not needed anymore
   # def edit

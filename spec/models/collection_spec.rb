@@ -1,5 +1,5 @@
 require 'rails_helper'
 
-describe Collection do
+RSpec.describe Collection do
 
 end

@@ -2,7 +2,6 @@
 class CollectionsController < JsonController
 
   skip_before_filter :role_auth, only: [:index]
-  before_filter :pagination, only: [:index]
 
   def index
     if current_user.admin?
@@ -12,7 +11,7 @@ class CollectionsController < JsonController
     end
     
     @total = @records.count
-    @records = @records.pageit(@page, @per_page)
+    @records = @records.pageit(page, per_page)
   end
 
   def show

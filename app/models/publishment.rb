@@ -1,12 +1,16 @@
 class Publishment < ActiveRecord::Base
-  belongs_to :user_group
-  belongs_to :user
+  belongs_to :user_group, required: true
+  belongs_to :user, required: true
 
   validates :name, presence: true
 
   after_validation(:on => :create) do |model|
     model.generate_uuid
     model.set_expiry
+  end
+
+  def user_group_name
+    user_group.name
   end
 
   def generate_uuid

@@ -1,8 +1,15 @@
-class AuthorityGroupsController < GroupsController
-  layout 'normal_small'
+class AuthorityGroupsController < JsonController
+  # layout 'normal_small'
   
   skip_before_filter :authorization, :only => [:download_images, :index, :show]
   
+  def index
+    @records = AuthorityGroup.search(params[:terms])
+    
+    @total = @records.count
+    @records = @records.pageit(page, per_page)
+  end
+
   def mark
     @authority_group = AuthorityGroup.find(params[:id])
     ids = @authority_group.entities.allowed(current_user, :view).map{|e| e.id}
@@ -22,12 +29,13 @@ class AuthorityGroupsController < GroupsController
   end
   
   def add_to
-    @authority_group = AuthorityGroup.find(params[:id])
+    @authority_group = AuthorityGroup.find_or_create_by!(name: params[:group_name])
     entity_ids = Kor.array_wrap(params[:entity_ids])
     entities = viewable_entities.find entity_ids
     @authority_group.add_entities(entities)
-    
-    redirect_to @authority_group
+
+    @record = @authority_group
+    render_200 I18n.t('messages.entities_added_to_group')
   end
 
   def remove_from
@@ -39,9 +47,6 @@ class AuthorityGroupsController < GroupsController
     redirect_to @authority_group
   end
   
-  def index
-  end
-
   def show
     @authority_group = AuthorityGroup.find(params[:id])
     @entities = @authority_group.
