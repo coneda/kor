@@ -31,7 +31,7 @@
 
       <ul show={showGroups} class="submenu">
         <li>
-          <a href="#/groups/authority">
+          <a href="#/groups/admin">
             {tcap('activerecord.models.authority_group.other')}
           </a>
         </li>

@@ -14,7 +14,7 @@ module NavigationHelpers
     when /the config page/ then '/config/general'
     when /the home\s?page/ then '/'
     when /the expert search/ then '/entities'
-    when /the global groups page/ then '/authority_group_categories'
+    when /the global groups page/ then '#/groups/admin'
     when /^the gallery( page)?$/ then '/#/new-media'
     when /^page "(\d+)" of the gallery$/
       page = $1
@@ -25,8 +25,8 @@ module NavigationHelpers
     when /the publishments page/ then '/#/groups/published'
     # when /the new relation page/ then new_relation_path
     when /the new entity page/ then new_entity_path
-    when /the authority groups page/ then authority_group_categories_path
-    when /the authority group categories page/ then authority_group_categories_path
+    when /the authority groups page/ then '#/groups/admin'
+    when /the authority group categories page/ then '#/groups/admin'
     when /the user group page for "([^\"]*)"/
       user_group_path(UserGroup.find_by_name($1))
     when /the user groups page/ then '/#/groups/user'

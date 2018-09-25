@@ -980,6 +980,10 @@ en:
           one: shared
           other: shared
         published: published
+      authority_group:
+        name: name
+      authority_group_category:
+        name: name
           
     errors:
       template:

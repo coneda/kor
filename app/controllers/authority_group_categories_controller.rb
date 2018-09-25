@@ -1,25 +1,32 @@
-class AuthorityGroupCategoriesController < ApplicationController
-  layout 'small_normal'
+class AuthorityGroupCategoriesController < JsonController
+  # layout 'small_normal'
   
-  skip_before_filter :authorization, :only => [:index, :show]
+  skip_before_filter :authorization, :only => [:index]
   
   def index
-    @authority_group_categories = AuthorityGroupCategory.roots
+    @records = if params[:root_id].present?
+      AuthorityGroupCategory.find(params[:root_id]).children
+    else
+      AuthorityGroupCategory.roots
+    end
+
+    @total = @records.count
+    render template: 'json/index'
   end
 
-  def show
-    @authority_group_category = AuthorityGroupCategory.find(params[:id])
-  end
+  # def show
+  #   @authority_group_category = AuthorityGroupCategory.find(params[:id])
+  # end
 
-  def new
-    @authority_group_category = AuthorityGroupCategory.new
-    render :layout => 'normal_small'
-  end
+  # def new
+  #   @authority_group_category = AuthorityGroupCategory.new
+  #   render :layout => 'normal_small'
+  # end
 
-  def edit
-    @authority_group_category = AuthorityGroupCategory.find(params[:id])
-    render :layout => 'normal_small'
-  end
+  # def edit
+  #   @authority_group_category = AuthorityGroupCategory.find(params[:id])
+  #   render :layout => 'normal_small'
+  # end
 
   def create
     @authority_group_category = AuthorityGroupCategory.new(authority_group_category_params)

@@ -126,6 +126,8 @@
                   when '/collections' then 'kor-collections'
                   when '/collections/new' then 'kor-collection-editor'
                   when '/upload' then 'kor-upload'
+                  when '/groups/admin/new' then 'kor-admin-group-editor'
+                  when '/groups/admin' then 'kor-admin-group-categories'
                   when '/groups/user/new' then 'kor-user-group-editor'
                   when '/groups/user' then 'kor-user-groups'
                   when '/groups/shared'
