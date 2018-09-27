@@ -3,6 +3,7 @@
   <a
     onclick={toggle}
     if={!isGuest()}
+    href="#/entities/{opts.entity.id}/to_clipboard"
     class="to-clipboard"
     title={t('add_to_clipboard')}
   >
@@ -12,6 +13,7 @@
   <a
     onclick={toggleSelection}
     if={!isGuest()}
+    href="#/entities/{opts.entity.id}/mark"
     class="make-current"
     title={t('verbs.mark')}
   >

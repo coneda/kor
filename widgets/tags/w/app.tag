@@ -15,6 +15,8 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.auth)
 
+    window.kor = tag
+
     tag.on 'mount', ->
       wApp.bus.on 'routing:path', tag.routeHandler
       wApp.bus.on 'routing:query', tag.queryHandler

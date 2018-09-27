@@ -164,7 +164,8 @@ class EntitiesController < JsonController
       dating: params[:dating],
       page: page,
       per_page: per_page,
-      no_media: params[:no_media]
+      no_media: params[:no_media],
+      relation_name: params[:relation_name]
     )
 
     search.run
@@ -371,6 +372,31 @@ class EntitiesController < JsonController
       end
     else
       render_403 I18n.t("errors.merge_access_denied_on_entities")
+    end
+  end
+
+  def mass_relate
+    if params[:id].blank?
+      render_406 I18n.t("errors.destination_not_given")
+    else
+      @target = Entity.allowed(current_user, :view).find(params[:id])
+      @entities = Entity.allowed(current_user, :edit).find(params[:entity_ids] || [])
+
+      relationships = @entities.collect do |e|
+        Relationship.relate(e, params[:relation_name], @target)
+      end
+
+      begin
+        Relationship.transaction do
+          relationships.each do |r|
+            r.save!
+          end
+        end
+      rescue ActiveRecord::Rollback => e
+        render_406 I18n.t('errors.relationships_not_saved')
+      end
+
+      render_200 I18n.t('notices.mass_relation_success')
     end
   end
 

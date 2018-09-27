@@ -1,11 +1,14 @@
 <kor-kinds>
 
   <div class="kor-content-box">
-    <a href="#/kinds/new" class="pull-right"><i class="plus"></i></a>
+    <a
+      if={isKindAdmin()}
+      href="#/kinds/new"
+      class="pull-right"
+    ><i class="plus"></i></a>
     <h1>{tcap('activerecord.models.kind', {count: 'other'})}</h1>
 
     <form class="inline">
-
       <kor-input
         label={tcap('search_term')}
         name="terms"
@@ -20,8 +23,8 @@
         onchange={submit}
         ref="hideAbstract"
       />
-
     </form>
+
     <div class="hr"></div>
 
   <virtual if={filteredRecords && filteredRecords.length}>
@@ -29,7 +32,7 @@
       <thead>
         <tr>
           <th>{schema == 'null' ? tcap('no_schema') : schema}</th>
-          <th></th>
+          <th if={isKindAdmin()}></th>
         </tr>
       </thead>
       <tbody>
@@ -51,7 +54,7 @@
               {generatorNamesFor(kind)}
             </div>
           </td>
-          <td class="buttons">
+          <td class="buttons" if={isKindAdmin()}>
             <a href="#/kinds/{kind.id}/edit"><i class="fa fa-edit"></i></a>
             <a
               if={kind.removable}
@@ -69,6 +72,7 @@
     tag.requireRoles = ['kind_admin']
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.auth)
 
     tag.on 'mount', -> fetch()
 

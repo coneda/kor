@@ -13,7 +13,8 @@ class Kor::Search
       within_authority_groups(@criteria[:authority_group_id]).
       only_kinds(@criteria[:kind_id]).
       named_like(@criteria[:name]).
-      by_id(@criteria[:id])
+      by_id(@criteria[:id]).
+      by_relation_name(@criteria[:relation_name])
 
     if id = @criteria[:user_group_id]
       ids = UserGroup.where(id: id).to_a.select{|g| g.owner == @user}.map{|g| g.id}

@@ -49,24 +49,23 @@ end
 When /^I mark "([^\"]*)" as current entity$/ do |name|
   step "I am on the entity page for \"#{name}\""
   step "I should see \"#{name}\""
-  find("a[kor-to-current]").click
+  step "I follow \"mark\""
   step "I should see a message containing \"has been marked as current entity\""
 end
 
 When(/^I put "(.*?)" into the clipboard$/) do |name|
   step "I am on the entity page for \"#{name}\""
   step "I should see \"#{name}\""
-  sleep 1
-  find("a[kor-to-clipboard]").click
-  step "I should see a message containing \"has been copied to the clipboard\""
+  step "I follow \"add to clipboard\""
+  step "I should see a message containing \"has been added to the clipboard\""
 end
 
 Given /^the session has expired$/ do
-  allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_return(true)
+  allow_any_instance_of(BaseController).to receive(:session_expired?).and_return(true)
 end
 
 Given /^the session is not forcibly expired anymore$/ do
-  allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_call_original
+  allow_any_instance_of(BaseController).to receive(:session_expired?).and_call_original
 end
 
 Given /^"([^\"]*)" is expanded$/ do |folded_menu_name|

@@ -89,12 +89,16 @@
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
 
+    tag.on 'before-mount', ->
+      if !tag.isAdmin()
+        tag.opts.handlers.accessDenied()
+
     tag.on 'mount', ->
-      if tag.hasRole('admin')
-        fetch()
-        tag.on 'routing:query', fetch
-      else
-        h() if h = tag.opts.handlers.accessDenied
+      fetch()
+      tag.on 'routing:query', fetch
+
+    tag.on 'unmount', ->
+      tag.off 'routing:query', fetch
 
     fetch = (newOpts) ->
       Zepto.ajax(

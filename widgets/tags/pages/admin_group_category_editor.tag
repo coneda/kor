@@ -46,11 +46,15 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.auth)
 
     tag.on 'before-mount', ->
       fetchCategories()
       tag.errors = {}
       tag.data = {}
+
+      if !tag.isAuthorityGroupAdmin()
+        tag.opts.handlers.accessDenied()
 
     tag.on 'mount', ->
       fetch() if tag.opts.id

@@ -95,6 +95,11 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.auth)
+
+    tag.on 'before-mount', ->
+      if !tag.isRelationAdmin()
+        tag.opts.handlers.accessDenied()
 
     tag.on 'mount', ->
       tag.errors = {}

@@ -20,6 +20,13 @@ Feature: credentials
     Then I should see "User groups"
 
   @javascript
+  Scenario: delete credential without authorization 
+    Given I am logged in as "john"
+    And the credential "Freaks" described by "The KOR-Freaks"
+    When I go to the edit page for "credential" "Freaks"
+    Then I should see "Access denied"
+
+  @javascript
   Scenario: create credential
     Given I am logged in as "admin"
     When I go to the credentials page

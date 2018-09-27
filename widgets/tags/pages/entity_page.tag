@@ -5,11 +5,16 @@
       <div class="kor-layout-commands">
         <virtual if={allowedTo('edit', data.collection_id)}>
           <kor-clipboard-control entity={data} />
-          <a href="#/entities/{data.id}/edit"><i class="pen"></i></a>
+          <a
+            href="#/entities/{data.id}/edit"
+            title={t('verbs.edit')}
+          ><i class="pen"></i></a>
         </virtual>
         <a
           if={allowedTo('edit', data.collection_id)}
+          href="#/entities/{data.id}"
           onclick={delete}
+          title={t('verbs.delete')}
         ><i class="x"></i></a>
       </div>
       <h1>

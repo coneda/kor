@@ -128,8 +128,6 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 
-    window.t = tag;
-
     tag.noNameStatements = [
       {label: tag.t('values.no_name_statements.unknown'), value: 'unknown'},
       {label: tag.t('values.no_name_statements.not_available'), value: 'not_available'},

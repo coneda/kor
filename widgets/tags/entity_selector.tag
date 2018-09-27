@@ -17,7 +17,7 @@
       onclick={gotoTab('created')}
       class="{'selected': currentTab == 'created'}"
     >{t('recently_created')}</a>
-    <virtual if={id}>
+    <virtual if={existing}>
       |
       <a
         href="#"
@@ -76,6 +76,9 @@
 
     tag.on 'before-mount', ->
       tag.id = tag.opts.riotValue
+      if tag.id
+        tag.existing = true
+
       tag.currentTab = if tag.id then 'current' else 'search'
       tag.trigger 'reload'
       tag.update()
@@ -154,7 +157,7 @@
           if tag.refs.terms
             Zepto.ajax(
               url: '/entities'
-              data: {terms: tag.refs.terms.value()}
+              data: {terms: tag.refs.terms.value(), relation_name: tag.opts.relationName}
               success: (data) ->
                 tag.data = data
                 group()

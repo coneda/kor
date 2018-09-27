@@ -3,13 +3,13 @@ require 'rails_helper'
 RSpec.describe Relation do
   include DataHelper
   
-  before :each do
-    Kor.config.update 'app' => {
-      'gallery' => {
-        'primary_relations' => ['shows'], 
-        'secondary_relations' => ['has been created by']
-    }}
-  end
+  # before :each do
+  #   Kor.config.update 'app' => {
+  #     'gallery' => {
+  #       'primary_relations' => ['shows'], 
+  #       'secondary_relations' => ['has been created by']
+  #   }}
+  # end
   
   it "should return the primary and secondary relation names" do
     test_data
@@ -39,7 +39,7 @@ RSpec.describe Relation do
 
     expect(Relation.available_relation_names.size).to eql(7)
   end
-  
+
   it "should only return relation names available for a given 'from-kind'" do
     test_data
 
@@ -97,7 +97,9 @@ RSpec.describe Relation do
   end
 
   it "should get a list of filtered relation names" do
-    default_setup
+    media = Kind.find_by!(name: 'medium')
+    people = Kind.find_by!(name: 'person')
+    works = Kind.find_by!(name: 'work')
 
     expect(Relation.available_relation_names).to(
       eq(["has been created by", "has created", "is shown by", "shows"])
@@ -114,14 +116,25 @@ RSpec.describe Relation do
     expect(Relation.available_relation_names(from_ids: nil, to_ids: nil)).to(
       eq(["has been created by", "has created", "is shown by", "shows"])
     )
-    expect(Relation.available_relation_names(from_ids: @media.id)).to(
+    expect(Relation.available_relation_names(from_ids: media.id)).to(
       eq(['shows'])
     )
-    expect(Relation.available_relation_names(from_ids: @works.id)).to(
+    expect(Relation.available_relation_names(from_ids: works.id)).to(
       eq(["has been created by", "is shown by"])
     )
-    expect(Relation.available_relation_names(to_ids: @works.id)).to(
+    expect(Relation.available_relation_names(to_ids: works.id)).to(
       eq(["has created", "shows"])
+    )
+
+    FactoryGirl.create :shows, from_kind_id: media.id, to_kind_id: people.id
+    expect(Relation.available_relation_names(to_ids: [people.id, works.id])).to(
+      eq(['shows'])
+    )
+    expect(Relation.available_relation_names(from_ids: '', to_ids: [people.id, works.id])).to(
+      eq(['shows'])
+    )
+    expect(Relation.available_relation_names(to_ids: [people.id, media.id])).to(
+      eq([])
     )
   end
 

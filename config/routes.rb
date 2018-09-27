@@ -214,6 +214,7 @@ Rails.application.routes.draw do
       member do
         get 'metadata'
         patch 'update_tags'
+        post 'mass_relate'
       end
 
       resources :relations, only: [:index]

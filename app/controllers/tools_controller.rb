@@ -285,31 +285,4 @@ class ToolsController < JsonController
     #     render :action => 'merge'
     #   end
     # end
-
-    def mass_relate
-      if session[:current_entity].blank?
-        flash[:error] = I18n.t("errors.destination_not_given")
-        redirect_to back_save
-      else
-        @entities = Entity.allowed(current_user, :edit).find(params[:entity_ids] || [])
-        @target = Entity.allowed(current_user, :view).find(session[:current_entity])
-
-        relationships = @entities.collect do |e|
-          Relationship.relate(e, params[:relation_name], @target)
-        end
-
-        begin
-          Relationship.transaction do
-            relationships.each do |r|
-              r.save!
-            end
-          end
-        rescue ActiveRecord::Rollback => e
-          flash[:error] = I18n.t('errors.relationships_not_saved')
-          redirect_to back_save
-        end
-
-        redirect_to web_path(:anchor => entity_path(@target))
-      end
-    end
 end

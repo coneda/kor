@@ -2,7 +2,7 @@
   <div class="kor-layout-left kor-layout-small">
     <div class="kor-content-box">
       <a
-        if={!opts.type}
+        if={!opts.type && isAuthorityGroupAdmin()}
         href={newCategoryUrl()}
         class="pull-right"
         title={t('objects.new', {interpolations: {o: t('activerecord.models.authority_group_category')}})}
@@ -23,7 +23,7 @@
         <thead>
           <tr>
             <th>{tcap('activerecord.attributes.authority_group_category.name')}</th>
-            <th></th>
+            <th if={isAuthorityGroupAdmin()}></th>
           </tr>
         </thead>
         <tbody>
@@ -32,7 +32,7 @@
               <a
                 href="#/groups/categories/{category.id}"
               >{category.name}</td>
-            <td class="right nowrap" if={isAdmin()}>
+            <td class="right nowrap" if={isAuthorityGroupAdmin()}>
               <a
                 href="#/groups/categories/{category.id}/edit"
                 title={t('verbs.edit')}
@@ -59,15 +59,12 @@
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
 
     tag.on('mount', function() {
       if (tag.opts.parentId) {fetchParent();}
       fetch();
     })
-
-    tag.isAdmin = function() {
-      return wApp.session.current.user.authority_group_admin;
-    }
 
     tag.newCategoryUrl = function() {
       if (tag.opts.parentId) {

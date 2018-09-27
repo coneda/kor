@@ -149,10 +149,34 @@ class Relation < ActiveRecord::Base
   default_scope lambda { order(:name) }
   
   def self.available_relation_names(options = {})
-    names = by_from(options[:from_ids]).by_to(options[:to_ids]).map{|r| r.name}
-    reverse_names = by_from(options[:to_ids]).by_to(options[:from_ids]).map{|r| r.reverse_name}
+    froms = options[:from_ids].presence || []
+    tos = options[:to_ids].presence || []
+    froms = Array.wrap(froms).map{|e| e.to_i}.uniq
+    tos = Array.wrap(tos).map{|e| e.to_i}.uniq
 
-    (names + reverse_names).sort.uniq
+    names = {}
+
+    Relation.all.each do |relation|
+      names[relation.name] ||= {froms: [], tos: []}
+      names[relation.name][:froms] << relation.from_kind_id
+      names[relation.name][:tos] << relation.to_kind_id
+
+      names[relation.reverse_name] ||= {froms: [], tos: []}
+      names[relation.reverse_name][:froms] << relation.to_kind_id
+      names[relation.reverse_name][:tos] << relation.from_kind_id
+    end
+
+    names.each do |k, v|
+      if froms.present? && (froms & v[:froms]).size < froms.size
+        names.delete k
+      end
+
+      if tos.present? && (tos & v[:tos]).size < tos.size
+        names.delete k
+      end
+    end
+
+    names.keys.sort.uniq
   end
 
   def self.primary_relation_names

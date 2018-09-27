@@ -1,4 +1,4 @@
-kor-input, [data-is=kor-input] {
+kor-input {
   label {
     font-weight: bold;
   }
@@ -48,7 +48,7 @@ kor-input, [data-is=kor-input] {
   }
 }
 
-kor-input[type=radio], [data-is=kor-input][type=radio] {
+kor-input[type=radio] {
   display: inline-block;
 
   label {
@@ -74,7 +74,7 @@ form {
   display: block;
   margin-bottom: 1rem;
   
-  kor-input, [data-is=kor-input] {
+  kor-input {
     display: block;
     margin-bottom: 1rem;
 
@@ -96,13 +96,17 @@ form {
       height: 15rem;
     }
   }
+
+  kor-input[type=submit], kor-input[type=reset] {
+    display: inline-block;
+  }
 }
 
 form.inline {
   display: inline-block;
   margin-bottom: 0rem;
 
-  kor-input, [data-is=kor-input] {
+  kor-input {
     display: inline;
     margin-right: 15px;
 

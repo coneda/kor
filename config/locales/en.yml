@@ -147,8 +147,8 @@ en:
     choose: "please make a choice"
     prepare_merge: "merge"
     merge: "merge"
-    mass_relate: "relate with"
-    mass_delete: "delete"
+    mass_relate: relate with
+    mass_delete: delete
     add_to_authority_group: "add to a global group"
     add_to_user_group: "add to one of your own groups"
     move_to_collection: "move to collection"
@@ -698,6 +698,7 @@ en:
     maintenance_done: "the maintenance work is completed"
     logged_out: "you have been logged out successfully"
     logged_in: "you have been logged in"
+    mass_relation_success: all entities have been related
 
   errors:
     too_many_entities_for_zip: "the group contains too many images"
@@ -717,7 +718,9 @@ en:
     account_expired: "this account has expired"
     only_same_kind: "please chose only entities of the same type"
     cant_merge_more_than_10_entities: "you can't merge more than 10 entities"
+    cant_mass_relate_more_than_10_entities: "you can't mass relate more than 10 entities"
     must_select_2_or_more_entities: "you can only merge two or more entities"
+    must_select_1_or_more_entities: "you must select at least one entity"
     missing_entities_to_merge: "some entities in your selection couldn't be found, please refresh the clipboard and try again"
     exception_ocurred: "an unexpected error has occurred"
     publishment_expired: "this link has expired"

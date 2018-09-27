@@ -56,8 +56,12 @@
       wApp.bus.trigger('modal', 'kor-entity-merger', {ids: tag.opts.ids});
     }
 
-    tag.massRelate = function() {
-      
+    tag.massRelate = function(event) {
+      event.preventDefault();
+
+      wApp.bus.trigger('modal', 'kor-mass-relate', {
+        ids: wApp.clipboard.subSelection()
+      })
     }
 
     tag.massDelete = function(event) {
@@ -99,6 +103,8 @@
 
     tag.moveToCollection = function(event) {
       event.preventDefault();
+
+      // TODO
     }
 
     var notify = function() {

@@ -1,5 +1,4 @@
 <kor-kind-editor>
-  <!-- <kor-menu-fix /> -->
 
   <div class="kor-layout-left kor-layout-small">
     <div class="kor-content-box">
@@ -73,6 +72,11 @@
     # tag.requireRoles = ['kind_admin']
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.auth)
+
+    tag.on 'before-mount', ->
+      if !tag.isKindAdmin()
+        tag.opts.handlers.accessDenied()
 
     tag.on 'mount', ->
       fetch() if tag.opts.id

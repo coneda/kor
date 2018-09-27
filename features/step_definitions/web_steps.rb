@@ -403,7 +403,7 @@ end
 # end
 
 And(/^I should see a message containing "([^"]*)"$/) do |pattern|
-  page.find("#message_area", text: /#{pattern}/)
+  page.find("w-messaging", text: /#{pattern}/)
 end
 
 Then(/^select "([^"]*)" should have selected "([^"]*)"$/) do |field, value|

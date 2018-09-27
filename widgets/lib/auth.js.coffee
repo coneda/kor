@@ -23,21 +23,23 @@ wApp.auth = {
 }
 
 wApp.mixins.auth = {
-  hasRole: (roles) ->
+  isAdmin: ->
     return false unless this.currentUser()
-    
-    roles = [roles] unless Zepto.isArray(roles)
-    for role in roles
-      return false unless this.currentUser().permissions.roles[role]
-    
-    true
+    !!this.currentUser().admin
+  isAuthorityGroupAdmin: ->
+    return false unless this.currentUser()
+    !!this.currentUser().authority_group_admin
+  isRelationAdmin: ->
+    return false unless this.currentUser()
+    !!this.currentUser().relation_admin
+  isKindAdmin: ->
+    return false unless this.currentUser()
+    !!this.currentUser().kind_admin
   hasAnyRole: ->
-    return false unless this.currentUser()
-
-    perms = this.currentUser().permissions.roles
-    for k, v of perms
-      return true if v
-    false
+    this.isAdmin() || 
+    this.isAuthorityGroupAdmin() || 
+    this.isRelationAdmin() || 
+    this.isKindAdmin()
   allowedTo: (policy, collections = [], requireAll = true) ->
     return false unless this.currentUser()
 

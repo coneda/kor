@@ -1,20 +1,20 @@
 <kor-menu>
 
   <ul>
-    <li show={!isLoggedIn()}>
+    <li if={!isLoggedIn()}>
       <a href="#/login">{tcap('nouns.login')}</a>
     </li>
 
-    <li show={isLoggedIn()}>
+    <li if={isLoggedIn()}>
       <a href="#/profile">{tcap('edit_self')}</a>
     </li>
 
-    <li show={isLoggedIn()}>
+    <li if={isLoggedIn()}>
       <a href="#/clipboard">{tcap('nouns.clipboard')}</a>
     </li>
   </ul>
 
-  <ul show={currentUser()}>
+  <ul if={currentUser()}>
     <li>
       <a href="#/new-media">{tcap('pages.new_media')}</a>
     </li>
@@ -23,38 +23,30 @@
     </li>
   </ul>
 
-  <ul show={currentUser()}>
+  <ul>
     <li>
-      <a href="#" onclick={toggleGroups}>
-        {tcap('nouns.group', {count: 'other'})}
+      <a href="#/groups/categories">
+        {tcap('activerecord.models.authority_group.other')}
       </a>
-
-      <ul show={showGroups} class="submenu">
-        <li>
-          <a href="#/groups/categories">
-            {tcap('activerecord.models.authority_group.other')}
-          </a>
-        </li>
-        <li show={isLoggedIn()}>
-          <a href="#/groups/user">
-            {tcap('activerecord.models.user_group.other')}
-          </a>
-        </li>
-        <li show={isLoggedIn()}>
-          <a href="#/groups/shared">
-            {tcap('activerecord.attributes.user_group.shared')}
-          </a>
-        </li>
-        <li show={isLoggedIn()}>
-          <a href="#/groups/published">
-            {tcap('activerecord.attributes.user_group.published')}
-          </a>
-        </li>
-      </ul>
+    </li>
+    <li if={isLoggedIn()}>
+      <a href="#/groups/user">
+        {tcap('activerecord.models.user_group.other')}
+      </a>
+    </li>
+    <li if={isLoggedIn()}>
+      <a href="#/groups/shared">
+        {tcap('activerecord.attributes.user_group.shared')}
+      </a>
+    </li>
+    <li if={isLoggedIn()}>
+      <a href="#/groups/published">
+        {tcap('activerecord.attributes.user_group.published')}
+      </a>
     </li>
   </ul>
 
-  <ul show={isLoggedIn() && allowedTo('create')}>
+  <ul if={isLoggedIn() && allowedTo('create')}>
     <li>
       <kor-input
         if="{kinds && kinds.records.length > 0}"
@@ -65,56 +57,59 @@
         ref="kind_id"
       />
     </li>
-    <li show={isLoggedIn()}>
+    <li if={isLoggedIn()}>
       <a href="#/upload">{tcap('verbs.upload')}</a>
     </li>
   </ul>
 
-  <ul show={isLoggedIn()}>
-    <li show={allowedTo('delete')}>
+  <ul if={isLoggedIn()}>
+    <li if={allowedTo('delete')}>
       <a href="#/entities/invalid">{tcap('nouns.invalid_entity', {count: 'other'})}</a>
     </li>
-    <li show={allowedTo('edit')}>
+    <li if={allowedTo('edit')}>
       <a href="#/entities/recent">{tcap('nouns.new_entity', {count: 'other'})}</a>
     </li>
-    <li show={allowedTo('edit')}>
+    <li if={allowedTo('edit')}>
       <a href="#/entities/isolated">{tcap('nouns.isolated_entity', {count: 'other'})}</a>
     </li>
   </ul>
 
-  <ul show={hasAnyRole()}>
+  <ul>
+    <li>
+      <a href="#/relations">
+        {tcap('activerecord.models.relation.other')}
+      </a>
+    </li>
+    <li>
+      <a href="#/kinds">
+        {tcap('activerecord.models.kind.other')}
+      </a>
+    </li>
+  </ul>
+
+  <ul if={isAdmin()}>
     <li>
       <a href="#" onclick={toggleConfig}>
         {tcap('nouns.config', {count: 'other'})}
       </a>
 
-      <ul show={showConfig} class="submenu">
-        <li show={hasRole('admin')}>
+      <ul if={showConfig} class="submenu">
+        <li>
           <a href="#/settings">
             {tcap('activerecord.models.setting', {count: 'other'})}
           </a>
         </li>
-        <li show={hasRole('relation_admin')}>
-          <a href="#/relations">
-            {tcap('activerecord.models.relation.other')}
-          </a>
-        </li>
-        <li show={hasRole('kind_admin')}>
-          <a href="#/kinds">
-            {tcap('activerecord.models.kind.other')}
-          </a>
-        </li>
-        <li show={hasRole('admin')}>
+        <li>
           <a href="#/collections">
             {tcap('activerecord.models.collection.other')}
           </a>
         </li>
-        <li show={hasRole('admin')}>
+        <li>
           <a href="#/credentials">
             {tcap('activerecord.models.credential.other')}
           </a>
         </li>
-        <li show={hasRole('admin')}>
+        <li>
           <a href="#/users">
             {tcap('activerecord.models.user.other')}
           </a>
@@ -139,7 +134,7 @@
   </ul>
 
   <ul>
-    <li show={hasAnyRole()}>
+    <li if={hasAnyRole()}>
       <a href="https://github.com/coneda/kor/issues">
         {tcap('report_a_problem')}
       </a>

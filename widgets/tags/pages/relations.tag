@@ -1,7 +1,7 @@
 <kor-relations>
 
   <div class="kor-content-box">
-    <div class="pull-right">
+    <div class="pull-right" if={isRelationAdmin()}>
       <a href="#" title={t('verbs.merge')} onclick={toggleMerge}>
         <i class="fa fa-compress" aria-hidden="true"></i>
       </a>
@@ -56,6 +56,7 @@
             {tcap('activerecord.attributes.relation.from_kind_id')}<br />
             {tcap('activerecord.attributes.relation.to_kind_id')}
           </th>
+          <th if={isRelationAdmin()}></th>
         </tr>
       </thead>
       <tbody>
@@ -79,7 +80,7 @@
               {kind(relation.to_kind_id)}
             </div>
           </td>
-          <td class="text-right buttons">
+          <td class="text-right buttons" if={isRelationAdmin()}>
             <a
               if={merge}
               href="#"
@@ -105,9 +106,9 @@
 
   <script type="text/coffee">
     tag = this
-    tag.requireRoles = ['relation_admin']
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.auth)
 
     tag.on 'mount', -> 
       fetch()
