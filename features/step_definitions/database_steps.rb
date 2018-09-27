@@ -14,6 +14,10 @@ Given /^the collection "([^\"]*)"$/ do |name|
   end
 end
 
+Given /^I destroy collection "([^\"]*)"$/ do |name|
+  Collection.where(name: name).destroy_all
+end
+
 Given /^the kind "([^\"]*)"(?: inheriting from "([^\"]*)")?$/ do |names, parents|
   components = names.split('/')
   singular = components[0..(components.size / 2 - 1)].join('/')

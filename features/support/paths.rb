@@ -15,7 +15,7 @@ module NavigationHelpers
     when /the isolated entities page/ then '/blaze#/entities/isolated'
     when /the config page/ then '/config/general'
     when /the home\s?page/ then '/'
-    when /the expert search/ then '/entities'
+    when /the search page/ then '/#/search'
     when /the global groups page/ then '#/groups/categories'
     when /^the gallery( page)?$/ then '/#/new-media'
     when /^page "(\d+)" of the gallery$/
@@ -81,7 +81,6 @@ module NavigationHelpers
         send("edit_#{klass}_path", object)
       end
     when /the relations page/ then '/blaze#/relations'
-    when /the simple search page/ then '/component_search'
     when /the edit relationship page for the first relationship/ then edit_relationship_path(Relationship.first)
     when /the new relationship page with target "([^\"]+)"/
       entity = Entity.find_by_name($1)

@@ -1,20 +1,31 @@
 <kor-collection-selector>
 
   <virtual if={collections}>
-    <kor-input
-      if={!opts.multiple}
-      label={tcap('activerecord.models.collection')}
-      name={opts.name}
-      type="select"
-      options={collections}
-      ref="input"
-    />
 
-    <virtual if={opts.multiple}>
-      <label>{tcap('activerecord.models.collection', {count: 'other'})}:</label>
-      <strong if={ids.length == 0}>{t('all')}</strong>
-      <strong if={ids.length > 0}>{selectedList()}</strong>
-      <a onclick={selectCollections}><i class="fa fa-edit"></i></a>
+    <virtual if={collections.length == 1}
+      <input 
+        ref="input"
+        type="hidden"
+        value={collections[0].id}
+      />
+    </virtual>
+
+    <virtual if={collections && collections.length > 1}>
+      <kor-input
+        if={!opts.multiple}
+        label={tcap('activerecord.models.collection')}
+        name={opts.name}
+        type="select"
+        options={collections}
+        ref="input"
+      />
+
+      <virtual if={opts.multiple}>
+        <label>{tcap('activerecord.models.collection', {count: 'other'})}:</label>
+        <strong if={ids.length == 0}>{t('all')}</strong>
+        <strong if={ids.length > 0}>{selectedList()}</strong>
+        <a onclick={selectCollections}><i class="fa fa-edit"></i></a>
+      </virtual>
     </virtual>
   </virtual>
 
@@ -36,10 +47,18 @@
     }
 
     tag.value = function() {
-      if (tag.opts.multiple) {
-        return tag.ids;
+      if (tag.collections.length == 1) {
+        var id = tag.collections[0].id;
+        if (tag.opts.multiple)
+          return [id];
+        else
+          return id;
       } else {
-        return tag.refs['input'].value();
+        if (tag.opts.multiple) {
+          return tag.ids;
+        } else {
+          return tag.refs['input'].value();
+        }
       }
     }
 

@@ -11,19 +11,20 @@ Feature: Collection selector
 
   @javascript
   Scenario: One collection available
-    Given I am logged in as "admin"
-    And I am on the expert search page
-    Then I should not see "Collections" within ".layout_panel.left form"
-    When I fill in "query[name]" with "Mona Lisa"
+    Given I destroy collection "Project"
+    And I am logged in as "admin"
+    And I am on the search page
+    Then I should not see "Collections: all"
+    When I fill in "Name" with "Mona Lisa"
     And I press "Search"
-    Then I should see "Mona Lisa" within ".search_result"
+    Then I should see "Mona Lisa" within "kor-search-result"
 
   
   @javascript
   Scenario: Three collections available
     Given user "admin" is allowed to "view" collection "Project" through credential "admins"
     And I am logged in as "admin"
-    When I am on the expert search page
+    When I am on the search page
     Then I should see /Collections/ within ".layout_panel.left form"
     And I should see /Default, Project/ within ".layout_panel.left form"
     When I press "Search"
@@ -35,7 +36,7 @@ Feature: Collection selector
   Scenario: Search only one collection
     Given user "admin" is allowed to "view" collection "Project" through credential "admins"
     And I am logged in as "admin"
-    When I am on the expert search page
+    When I am on the search page
     And I select "Project" from the collections selector
     And I press "Search"
     Then I should see "Der Schrei" within ".search_result"

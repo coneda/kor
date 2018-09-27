@@ -44,7 +44,7 @@ wApp.routing = {
         if hash_query_string = result.hash.split('?')[1]
           for pair in hash_query_string.split('&')
             kv = pair.split('=')
-            result.hash_query[kv[0]] = kv[1]
+            result.hash_query[kv[0]] = decodeURIComponent(kv[1])
       wApp.routing.parts_cache = result
     wApp.routing.parts_cache
   setup: ->
