@@ -8,7 +8,7 @@ i {
 
   @each $name in pager_left, pager_right, three_bars, pen, x, reset_password, 
     plus, target, target_hit, minus, flip, flop, rotate_cw, rotate_ccw,
-    rotate_180, select, select_hit, private, public, stop_watch {
+    rotate_180, select, select_hit, private, public, stop_watch, zip {
     &.#{$name} {background-image: url('/images/#{$name}.gif')}
     &.#{$name}:hover {background-image: url('/images/#{$name}_over.gif')}
   }

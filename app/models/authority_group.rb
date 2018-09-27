@@ -6,9 +6,16 @@ class AuthorityGroup < EntityGroup
     validates :name, uniqueness: {scope: :authority_group_category_id}
   end
   
-  default_scope lambda { order(:name => :asc) }
+  default_scope lambda{order(name: 'asc')}
   
-  scope :without_category, lambda { where(:authority_group_category_id => nil) }
+  # scope :without_category, lambda { where(:authority_group_category_id => nil) }
+  scope :within_category, lambda{|id|
+    if id == 'root'
+      where(authority_group_category_id: nil)
+    else
+      id.present? ? where(authority_group_category_id: id) : all
+    end
+  }
   scope :containing, lambda {|entity_ids|
     joins('JOIN authority_groups_entities ge on authority_groups.id = ge.authority_group_id').
     where('ge.entity_id' => entity_ids)

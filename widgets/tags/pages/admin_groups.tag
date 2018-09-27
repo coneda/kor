@@ -2,7 +2,7 @@
   <div class="kor-content-box">
     <a
       if={!opts.type}
-      href="#/groups/admin/new"
+      href="{baseUrl()}/new"
       class="pull-right"
       title={t('objects.new', {interpolations: {o: t('activerecord.models.authority_group')}})}
     ><i class="plus"></i></a>
@@ -22,15 +22,15 @@
           <td>
             <a
               href="#/groups/admin/{group.id}"
-            >group.name}</td>
+            >{group.name}</td>
           <td class="right nowrap" if={isAdmin()}>
             <a
-              href="#/groups/admin/{group.id}/edit"
+              href="{baseUrl()}/{group.id}/edit"
               title={t('verbs.edit')}
             ><i class="pen"></i></a>
             <a
-              href="#/groups/admin/{category.id}/edit"
-              title={t('verbs.edit')}
+              href="{baseUrl()}/{group.id}"
+              title={t('verbs.delete')}
               onclick={onDeleteClicked}
             ><i class="x"></i></a>
           </td>
@@ -43,6 +43,47 @@
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+
+    tag.on('mount', function() {
+      fetch();
+    })
+
+    tag.isAdmin = function() {
+      return wApp.session.current.user.authority_group_admin;
+    }
+
+    tag.baseUrl = function() {
+      if (tag.opts.categoryId) {
+        return '#/groups/categories/' + tag.opts.categoryId + '/admin';
+      }
+
+      return '#/groups/categories/admin';
+    }
+
+    tag.onDeleteClicked = function(event) {
+      event.preventDefault();
+      if (wApp.utils.confirm())
+        destroy(event.item.group.id);
+    }
+
+    var destroy = function(id) {
+      Zepto.ajax({
+        type: 'DELETE',
+        url: '/authority_groups/' + id,
+        success: fetch
+      })
+    }
+
+    var fetch = function() {
+      Zepto.ajax({
+        url: '/authority_groups',
+        data: {authority_group_category_id: tag.opts.categoryId},
+        success: function(data) {
+          tag.data = data;
+          tag.update();
+        }
+      })
+    }
   </script>
   
 </kor-admin-groups>

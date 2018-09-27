@@ -8,9 +8,16 @@ module HtmlSelectorsHelpers
   def selector_for(locator)
     case locator
 
-    when /the row for "([^\"]+)" "([^\"]+)"/
-      object = $1.classify.constantize.find_by_name($2)
-      [:css, "##{$1}_#{object.id}"]
+    when /the row for authority group category "([^\"]+)"/
+      [:css, '[data-is=kor-admin-group-categories] tr', {text: $1}]
+
+    when /the row for authority group "([^\"]+)"/
+      name = $1
+      [:css, 'kor-admin-groups tr', {text: $1}]
+
+    # when /the row for "([^\"]+)" "([^\"]+)"/
+    #   object = $1.classify.constantize.find_by_name($2)
+    #   [:css, "##{$1}_#{object.id}"]
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

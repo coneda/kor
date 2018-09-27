@@ -149,3 +149,4 @@ end
 # TODO: change piwik and custom css to a more generic html include possibility
 #       for the end of the header and the end of the body
 # TODO: drop all haml and erb views (most)
+# TODO: fix group (user, admin, authority, category) naming: urls, actions, api urls etc

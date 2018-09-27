@@ -813,3 +813,10 @@ kor-properties-editor, kor-datings-editor {
 [data-is=kor-to-entity-group] {
   width: 350px;
 }
+
+[data-is=kor-admin-group-categories] {
+  p.ancestry {
+    margin-top: -2rem;
+    // margin-bottom: 0px;
+  }
+}

@@ -10,6 +10,8 @@ class AuthorityGroupCategory < ActiveRecord::Base
     :uniqueness => {:scope => :parent_id},
     :white_space => true
 
+  # default_scope lambda{order(name: 'asc')}
+
   def serializable_hash(options = {})
     result = {:name => self.name}
     if parent

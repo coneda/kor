@@ -45,8 +45,6 @@ Rails.application.routes.draw do
   
   # match '/edit_self', :to => 'users#edit_self', :via => :get
 
-  match '/downloads/:uuid', :to => 'downloads#show', :via => :get
-  
   scope '/media', :controller => 'media' do
     match 'maximize/:id', :action => 'show', :style => 'normal', :as => :maximize_medium, :via => :get
     match 'transform/:id/:transformation', :action => 'transform', :as => :transform_medium, :via => :get
@@ -87,7 +85,8 @@ Rails.application.routes.draw do
     
     # match 'add_media/:id', :action => 'add_media', :via => :get
   # end
-  
+
+  get '/downloads/:uuid', :to => 'downloads#show'
 
   defaults format: 'json' do
     match 'profile', :to => 'users#update_self', :via => 'patch'
@@ -133,11 +132,15 @@ Rails.application.routes.draw do
     resources :relationships, only: [:index, :show], controller: 'directed_relationships'
     resources :relationships, only: [:create, :update, :destroy]
 
-    resources :authority_group_categories
+    resources :authority_group_categories do
+      collection do
+        get :flat
+      end
+    end
     resources :authority_groups do
       member do
         get 'download_images'
-        get 'edit_move'
+        # get 'edit_move'
         # get 'mark'
       end
 

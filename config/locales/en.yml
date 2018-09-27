@@ -525,6 +525,7 @@ en:
       one: "error"
       other: "errors"
     mirador: 'Mirador'
+    root: root
 
 
   objects:

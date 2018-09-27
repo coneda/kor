@@ -2,12 +2,19 @@ class AuthorityGroupsController < JsonController
   # layout 'normal_small'
   
   skip_before_filter :authorization, :only => [:download_images, :index, :show]
-  
+
   def index
-    @records = AuthorityGroup.search(params[:terms])
+    if params[:authority_group_category_id] == ''
+      params[:authority_group_category_id] = 'root'
+    end
+
+    @records = AuthorityGroup.
+      within_category(params[:authority_group_category_id]).
+      search(params[:terms])
     
     @total = @records.count
     @records = @records.pageit(page, per_page)
+    render 'json/index'
   end
 
   def mark
@@ -48,35 +55,34 @@ class AuthorityGroupsController < JsonController
   end
   
   def show
-    @authority_group = AuthorityGroup.find(params[:id])
-    @entities = @authority_group.
-      entities.
-      allowed(current_user, :view).
-      paginate(:page => params[:page], :per_page => 16).
-      order('created_at DESC')
-    render :layout => 'wide'
+    @record = AuthorityGroup.find(params[:id])
+    render template: 'json/show'
+    # @entities = @authority_group.
+    #   entities.
+    #   allowed(current_user, :view).
+    #   paginate(:page => params[:page], :per_page => 16).
+    #   order('created_at DESC')
   end
 
-  def new
-    @authority_group = AuthorityGroup.new(authority_group_params)
-  end
+  # def new
+  #   @authority_group = AuthorityGroup.new(authority_group_params)
+  # end
 
-  def edit
-    @authority_group = AuthorityGroup.find(params[:id])
-  end
+  # def edit
+  #   @authority_group = AuthorityGroup.find(params[:id])
+  # end
   
-  def edit_move
-    @authority_group = AuthorityGroup.find(params[:id])
-  end
+  # def edit_move
+  #   @authority_group = AuthorityGroup.find(params[:id])
+  # end
 
   def create
-    @authority_group = AuthorityGroup.new(authority_group_params)
+    @record = AuthorityGroup.new(authority_group_params)
 
-    if @authority_group.save
-      flash[:notice] = I18n.t( 'objects.create_success', :o => @authority_group.name )
-      redirect_to(@authority_group.authority_group_category || authority_group_categories_path)
+    if @record.save
+      render_200 I18n.t('objects.create_success', :o => @record.name)
     else
-      render :action => "new"
+      render_406 @record.errors
     end
   end
 
@@ -84,22 +90,17 @@ class AuthorityGroupsController < JsonController
     @authority_group = AuthorityGroup.find(params[:id])
 
     if @authority_group.update_attributes(authority_group_params)
-      flash[:notice] = I18n.t( 'objects.update_success', :o => @authority_group.name )
-      redirect_to(@authority_group.authority_group_category || authority_group_categories_path)
+      render_200 I18n.t('objects.update_success', :o => @authority_group.name)
     else
-      render :action => "edit"
+      render_406 @authority_group.errors
     end
   end
 
+  # make sure this destroys all member associations
   def destroy
     @authority_group = AuthorityGroup.find(params[:id])
     @authority_group.destroy
-    
-    if @authority_group.authority_group_category
-      redirect_to @authority_group.authority_group_category
-    else
-      redirect_to authority_group_categories_path
-    end
+    render_200 I18n.t('objects.destroy_success', :o => @authority_group.name)
   end
   
   protected

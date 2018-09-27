@@ -3,13 +3,21 @@
     <div class="kor-content-box">
       <a
         if={!opts.type}
-        href="#/groups/admin/category/new"
+        href={newCategoryUrl()}
         class="pull-right"
         title={t('objects.new', {interpolations: {o: t('activerecord.models.authority_group_category')}})}
       ><i class="plus"></i></a>
       <h1>
         {tcap('activerecord.models.authority_group_category', {count: 'other'})}
       </h1>
+
+      <p class="ancestry" if={parentCategory}>
+        <a href="#/groups/categories">{t('nouns.top_level')}</a>
+        <virtual each={a in parentCategory.ancestors}>
+          <span class="separator">»</span>
+          <a href="#/groups/categories/{a.id}">{a.name}</a>
+        </virtual>
+      </p>
 
       <table if={data && data.total > 0}>
         <thead>
@@ -22,16 +30,16 @@
           <tr each={category in data.records}>
             <td>
               <a
-                href="#/groups/admin?category={category.id}"
+                href="#/groups/categories/{category.id}"
               >{category.name}</td>
             <td class="right nowrap" if={isAdmin()}>
               <a
-                href="#/groups/admin/category/{category.id}/edit"
+                href="#/groups/categories/{category.id}/edit"
                 title={t('verbs.edit')}
               ><i class="pen"></i></a>
               <a
-                href="#/groups/admin/category/{category.id}"
-                title={t('verbs.edit')}
+                href="#/groups/categories/{category.id}"
+                title={t('verbs.delete')}
                 onclick={onDeleteClicked}
               ><i class="x"></i></a>
             </td>
@@ -42,7 +50,7 @@
   </div>
 
   <div class="kor-layout-left kor-layout-large">
-    <kor-admin-groups />
+    <kor-admin-groups category-id={opts.parentId} />
   </div>
 
   <div class="clearfix"></div>
@@ -53,24 +61,51 @@
     tag.mixin(wApp.mixins.i18n);
 
     tag.on('mount', function() {
+      if (tag.opts.parentId) {fetchParent();}
       fetch();
-      wApp.bus.on('routing:query', fetch);
-    })
-
-    tag.on('unmount', function() {
-      wApp.bus.off('routing:query', fetch);
     })
 
     tag.isAdmin = function() {
       return wApp.session.current.user.authority_group_admin;
     }
 
-    var fetch = function() {
-      var id = wApp.routing.query()['category'];
+    tag.newCategoryUrl = function() {
+      if (tag.opts.parentId) {
+        return '#/groups/categories/' + tag.opts.parentId + '/new'
+      }
 
+      return '#/groups/categories/new'
+    }
+
+    tag.onDeleteClicked = function(event) {
+      event.preventDefault();
+      if (wApp.utils.confirm())
+        destroy(event.item.category.id);
+    }
+
+    var destroy = function(id) {
+      Zepto.ajax({
+        type: 'DELETE',
+        url: '/authority_group_categories/' + id,
+        success: fetch
+      })
+    }
+
+    var fetchParent = function() {
+      Zepto.ajax({
+        url: '/authority_group_categories/' + tag.opts.parentId,
+        data: {include: 'ancestry'},
+        success: function(data) {
+          tag.parentCategory = data;
+          tag.update();
+        }
+      })
+    }
+
+    var fetch = function() {
       Zepto.ajax({
         url: '/authority_group_categories',
-        data: {root_id: id},
+        data: {parent_id: tag.opts.parentId},
         success: function(data) {
           tag.data = data;
           tag.update();

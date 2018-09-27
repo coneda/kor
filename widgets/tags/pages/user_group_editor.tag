@@ -77,10 +77,6 @@
       )
 
     values = ->
-      # results = {}
-      # for f in tag.refs.fields
-      #   results[f.name()] = f.value()
-      # results
       {name: tag.refs.fields.value()}
 
   </script>

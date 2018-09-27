@@ -93,6 +93,27 @@
               else if m = path.match(/^\/collections\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-collection-editor'
+              else if m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/new$/)
+                opts['parentId'] = parseInt(m[1])
+                'kor-admin-group-category-editor'
+              else if m = path.match(/^\/groups\/categories\/([0-9]+)\/edit$/)
+                opts['id'] = parseInt(m[1])
+                'kor-admin-group-category-editor'
+              else if m = path.match(/^\/groups\/categories(?:\/([0-9]+))?$/)
+                if m[1]
+                  opts['parentId'] = parseInt(m[1])
+                'kor-admin-group-categories'
+              else if m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/admin\/([0-9]+)\/edit$/)
+                opts['categoryId'] = parseInt(m[1])
+                opts['id'] = parseInt(m[2])
+                'kor-admin-group-editor'
+              else if m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/admin\/new$/)
+                opts['categoryId'] = parseInt(m[1])
+                'kor-admin-group-editor'
+              else if m = path.match(/^\/groups\/admin\/([0-9]+)$/)
+                opts['id'] = parseInt(m[1])
+                opts['type'] = 'authority'
+                'kor-entity-group'
               else if m = path.match(/^\/groups\/user\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-user-group-editor'
@@ -126,8 +147,6 @@
                   when '/collections' then 'kor-collections'
                   when '/collections/new' then 'kor-collection-editor'
                   when '/upload' then 'kor-upload'
-                  when '/groups/admin/new' then 'kor-admin-group-editor'
-                  when '/groups/admin' then 'kor-admin-group-categories'
                   when '/groups/user/new' then 'kor-user-group-editor'
                   when '/groups/user' then 'kor-user-groups'
                   when '/groups/shared'

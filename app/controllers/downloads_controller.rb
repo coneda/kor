@@ -1,4 +1,4 @@
-class DownloadsController < ApplicationController
+class DownloadsController < BaseController
   
   def show
     @download = Download.find_by_uuid(params[:uuid])

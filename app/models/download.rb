@@ -61,9 +61,9 @@ class Download < ActiveRecord::Base
   
   attr_accessor :notify_user
   
-  def link
-    "#{Kor.base_url}/downloads/#{uuid}"
-  end
+  # def link
+  #   "#{Kor.base_url}/downloads/#{uuid}"
+  # end
   
   def data=(value)
     @data = value

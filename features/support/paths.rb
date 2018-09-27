@@ -1,3 +1,5 @@
+# TODO: clean up this file!
+
 module NavigationHelpers
   # Maps a name to a path. Used by the
   #
@@ -14,7 +16,7 @@ module NavigationHelpers
     when /the config page/ then '/config/general'
     when /the home\s?page/ then '/'
     when /the expert search/ then '/entities'
-    when /the global groups page/ then '#/groups/admin'
+    when /the global groups page/ then '#/groups/categories'
     when /^the gallery( page)?$/ then '/#/new-media'
     when /^page "(\d+)" of the gallery$/
       page = $1
@@ -25,18 +27,20 @@ module NavigationHelpers
     when /the publishments page/ then '/#/groups/published'
     # when /the new relation page/ then new_relation_path
     when /the new entity page/ then new_entity_path
-    when /the authority groups page/ then '#/groups/admin'
-    when /the authority group categories page/ then '#/groups/admin'
+    when /the authority groups page/ then '#/groups/categories'
+    when /the authority group categories page/ then '#/groups/categories'
     when /the user group page for "([^\"]*)"/
       user_group_path(UserGroup.find_by_name($1))
     when /the user groups page/ then '/#/groups/user'
     when /the shared user groups page/ then '/#/groups/shared'
     when /the authority group page for "([^\"]*)"/
-      authority_group_path(AuthorityGroup.find_by_name($1))
+      id = AuthorityGroup.find_by!(name: $1).id
+      "/#/groups/admin/#{id}"
     when /the download authority group page for "([^\"]*)"/
       download_images_authority_group_path(AuthorityGroup.find_by_name($1))
     when /the authority group category page for "([^\"]*)"/
-      authority_group_category_path(AuthorityGroupCategory.find_by_name($1))
+      id = AuthorityGroupCategory.find_by!(name: $1).id
+      "/#/groups/categories/#{id}"
     when /the entity page for "([^\"]*)"/
       name = $1
       entity = Entity.find_by_name(name)

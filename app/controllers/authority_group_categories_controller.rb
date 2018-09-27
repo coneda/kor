@@ -1,11 +1,16 @@
 class AuthorityGroupCategoriesController < JsonController
   # layout 'small_normal'
   
-  skip_before_filter :authorization, :only => [:index]
+  skip_before_filter :authorization, :only => [:index, :show, :flat]
+
+  def flat
+    @records = AuthorityGroupCategory.all
+    render 'json/index'
+  end
   
   def index
-    @records = if params[:root_id].present?
-      AuthorityGroupCategory.find(params[:root_id]).children
+    @records = if params[:parent_id].present?
+      AuthorityGroupCategory.find(params[:parent_id]).children
     else
       AuthorityGroupCategory.roots
     end
@@ -14,9 +19,10 @@ class AuthorityGroupCategoriesController < JsonController
     render template: 'json/index'
   end
 
-  # def show
-  #   @authority_group_category = AuthorityGroupCategory.find(params[:id])
-  # end
+  def show
+    @record = AuthorityGroupCategory.find(params[:id])
+    render template: 'json/show'
+  end
 
   # def new
   #   @authority_group_category = AuthorityGroupCategory.new
@@ -32,16 +38,15 @@ class AuthorityGroupCategoriesController < JsonController
     @authority_group_category = AuthorityGroupCategory.new(authority_group_category_params)
 
     if @authority_group_category.save
-      flash[:notice] = I18n.t( 'objects.create_success', :o => @authority_group_category.name )
-      unless params[:parent_id].blank?
+      if params[:parent_id].present?
         @authority_group_category.move_to_child_of(AuthorityGroupCategory.find(params[:parent_id]))
         @authority_group_category.save
         redirect_to authority_group_category_path(params[:parent_id])
-      else
-        redirect_to :action => 'index'
       end
+
+      render_200 I18n.t('objects.create_success', :o => @authority_group_category.name)
     else
-      render :action => "new", :layout => 'normal_small'
+      render_406 @authority_group_category.errors
     end
   end
 
@@ -49,28 +54,17 @@ class AuthorityGroupCategoriesController < JsonController
     @authority_group_category = AuthorityGroupCategory.find(params[:id])
 
     if @authority_group_category.update_attributes(authority_group_category_params)
-      flash[:notice] = I18n.t( 'objects.update_success', :o => @authority_group_category.name )
-      unless @authority_group_category.parent_id.blank?
-        redirect_to authority_group_category_path(@authority_group_category.parent)
-      else
-        redirect_to :action => 'index'
-      end
+      render_200 I18n.t('objects.update_success', :o => @authority_group_category.name)
     else
-      render :action => "edit", :layout => 'normal_small'
+      render_406 @authority_group_category.errors
     end
   end
 
+  # make sure this destroys all authority groups and their member associations
   def destroy
     @authority_group_category = AuthorityGroupCategory.find(params[:id])
     @authority_group_category.destroy
-    
-    parent = if @authority_group_category.parent
-      authority_group_category_path(parent)
-    else
-      authority_group_categories_path
-    end
-
-    redirect_to parent
+    render_200 I18n.t('objects.destroy_success', :o => @authority_group_category.name)
   end
   
   protected
