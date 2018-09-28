@@ -13,7 +13,7 @@ module NavigationHelpers
     when /the new entries page/ then '/blaze#/entities/gallery'
     when /the new entities page/ then '/entities/recent'
     when /the isolated entities page/ then '/blaze#/entities/isolated'
-    when /the config page/ then '/config/general'
+    when /the config page/ then '#/settings'
     when /the home\s?page/ then '/'
     when /the search page/ then '/#/search'
     when /the global groups page/ then '#/groups/categories'
