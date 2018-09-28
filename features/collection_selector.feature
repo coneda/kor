@@ -25,11 +25,14 @@ Feature: Collection selector
     Given user "admin" is allowed to "view" collection "Project" through credential "admins"
     And I am logged in as "admin"
     When I am on the search page
-    Then I should see /Collections/ within ".layout_panel.left form"
-    And I should see /Default, Project/ within ".layout_panel.left form"
-    When I press "Search"
-    Then I should see "Mona Lisa" within ".entity_list"
-    And I should see "Der Schrei" within ".entity_list"
+    Then I should see "Collections: all"
+    When I follow "edit" within "kor-collection-selector"
+    Then checkbox "Default" should be checked
+    Then checkbox "Project" should be checked
+    When I press "ok"
+    And I press "Search"
+    Then I should see "Mona Lisa" within ".search-results"
+    And I should see "Der Schrei" within ".search-results"
     
     
   @javascript
@@ -39,5 +42,5 @@ Feature: Collection selector
     When I am on the search page
     And I select "Project" from the collections selector
     And I press "Search"
-    Then I should see "Der Schrei" within ".search_result"
+    Then I should see "Der Schrei"
     And I should not see "Mona Lisa"

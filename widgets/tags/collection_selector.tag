@@ -24,7 +24,11 @@
         <label>{tcap('activerecord.models.collection', {count: 'other'})}:</label>
         <strong if={ids.length == 0}>{t('all')}</strong>
         <strong if={ids.length > 0}>{selectedList()}</strong>
-        <a onclick={selectCollections}><i class="fa fa-edit"></i></a>
+        <a
+          href="#"
+          onclick={selectCollections}
+          title={t('verbs.edit')}
+        ><i class="fa fa-edit"></i></a>
       </virtual>
     </virtual>
   </virtual>
@@ -64,23 +68,39 @@
 
     tag.selectCollections = function(event) {
       event.preventDefault();
+
+      var cols = allowedCollections();
+      var ids = tag.ids;
+      if (tag.ids.length == 0) {
+        for (var i = 0; i < cols.length; i++) {
+          ids.push(cols[i].id);
+        }
+      }
+
       wApp.bus.trigger('modal', 'kor-ask-choices', {
         choices: allowedCollections(),
         multiple: true,
         notify: newSelection,
-        riotValue: tag.ids
+        riotValue: ids
       })
     }
 
     tag.selectedList = function() {
+      var all = true;
       var results = [];
       for (var i = 0; i < tag.collections.length; i++) {
         var c = tag.collections[i];
         if (tag.ids.indexOf(c.id) != -1) {
           results.push(c.name);
+        } else {
+          all = false;
         }
       }
-      return results.join(', ');
+      if (all) {
+        return tag.t('all');
+      } else {
+        return results.join(', ');
+      }
     }
 
     var newSelection = function(ids) {

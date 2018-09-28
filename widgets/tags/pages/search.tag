@@ -61,7 +61,7 @@
 
     <kor-nothing-found data={data} type="entity" />
 
-    <virtual if={data && data.total > 0}>
+    <div class="search-results" if={data && data.total > 0}>
       <kor-pagination
         page={data.page}
         per-page={data.per_page}
@@ -73,7 +73,7 @@
         each={entity in data.records}
         entity={entity}
       />
-    </virtual>
+    </div>
   </div>
 
   <div class="clearfix"></div>

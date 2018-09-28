@@ -1,6 +1,20 @@
 <kor-ask-choices>
 
   <div class="kor-content-box" if={ready()}>
+
+    <a
+      href="#"
+      onclick={all}
+      title={t('all')}
+    >{t('all')}</a> |
+    <a
+      href="#"
+      onclick={none}
+      title={t('none')}
+    >{t('none')}</a>
+
+    <hr />
+
     <virtual each={choice in opts.choices}>
       <kor-input
         label={choice.name || choice.label}
@@ -40,6 +54,22 @@
 
     tag.cancel = function(event) {
       tag.opts.modal.trigger('close');
+    }
+
+    tag.all = function(event) {
+      event.preventDefault();
+      tag.ids = [];
+      for (var i = 0; i < tag.opts.choices.length; i++) {
+        var c = tag.opts.choices[i];
+        tag.ids.push(c.id || c.value);
+      }
+      tag.update();
+    }
+
+    tag.none = function(event) {
+      event.preventDefault();
+      tag.ids = [];
+      tag.update();
     }
 
     tag.ready = function() {

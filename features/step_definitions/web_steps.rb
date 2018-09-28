@@ -165,13 +165,13 @@ Then /^I should (not )?really see element "([^\"]*)"$/ do |yesno, selector|
 end
 
 When /^I select "([^\"]*)" from the collections selector$/ do |collections|
-  collections = collections.split('/').map{|c| Collection.find_by_name(c).id}
-  page.find('form.kor_form a img[alt^=Pen]').click
-  dialog = page.all(:css, '.ui-dialog').last
-  dialog.all(:css, 'input[type=checkbox]').each do |input|
-    input.click unless collections.include?(input.value.to_i)
+  names = collections.split('/')
+  within('kor-collection-selector'){click_link('edit')}
+  click_link 'none'
+  names.each do |name|
+    check name
   end
-  dialog.all(:css, 'button').last.click
+  click_button 'ok'
 end
 
 Then /^I should see "([^"]*)" before "([^"]*)"$/ do |preceeding, following|
@@ -314,6 +314,10 @@ Then(/^the checkbox should (not )?be checked$/) do |yesno|
   else
     expect(find("input[type=checkbox]").checked?).to be(true)
   end
+end
+
+Then("checkbox {string} should be checked") do |locator|
+  expect(page).to have_checked_field(locator)
 end
 
 When(/^I click on entity "([^"]*)"$/) do |name|
