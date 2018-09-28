@@ -129,8 +129,8 @@ class UsersController < JsonController
       )
     end
     
-    def generally_authorized?
-      current_user.admin?
+    def auth
+      require_admin
     end
 
 end

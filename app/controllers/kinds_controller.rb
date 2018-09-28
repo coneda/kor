@@ -70,8 +70,8 @@ class KindsController < JsonController
     end
 
     # TODO: replace with new mechanism
-    def generally_authorized?
-      current_user.kind_admin?
+    def auth
+      require_kind_admin
     end
-
+    
 end

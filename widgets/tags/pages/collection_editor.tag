@@ -18,6 +18,21 @@
           errors={errors.name}
         />
 
+        <virtual if={credentials}>
+          <hr />
+
+          <kor-input
+            each={policy in policies}
+            label={tcap('activerecord.attributes.collection.' + policy)}
+            name={policy}
+            type="select"
+            multiple={true}
+            options={credentials.records}
+            value={data.permissions[policy]}
+            ref="permissions"
+          />
+        </virtual>
+
         <hr />
 
         <kor-input
@@ -34,6 +49,10 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.policies = [
+      'view', 'edit', 'create', 'delete', 'download_originals', 'tagging',
+      'view_meta'
+    ];
 
     tag.on 'before-mount', ->
       tag.errors = {}
@@ -57,6 +76,7 @@
     fetch = ->
       Zepto.ajax(
         url: "/collections/#{tag.opts.id}"
+        data: {include: 'permissions'}
         success: (data) ->
           tag.data = data
           tag.update()
@@ -78,11 +98,13 @@
       )
 
     values = ->
-      # results = {}
-      # for f in tag.refs.fields
-      #   results[f.name()] = f.value()
-      # results
-      {name: tag.refs.fields.value()}
+      results = {
+        name: tag.refs.fields.value()
+        permissions: {}
+      }
+      for f in tag.refs.permissions
+        results.permissions[f.name()] ||= f.value()
+      results
 
     fetchCredentials = ->
       Zepto.ajax(

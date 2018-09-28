@@ -78,6 +78,10 @@ class JsonController < BaseController
       render_401 unless current_user
     end
 
+    def require_non_guest
+      render_401 if !current_user || current_user.guest?
+    end
+
     def require_role(role)
       if current_user
         render_403 unless current_user.send("#{role}?".to_sym)

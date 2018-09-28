@@ -73,9 +73,8 @@ class AuthorityGroupCategoriesController < JsonController
       params.require(:authority_group_category).permit(:name, :parent_id)
     end
 
-    def generally_authorized?
-      current_user.authority_group_admin?
+    def auth
+      require_authority_group_admin
     end
 
-  
 end

@@ -11,9 +11,19 @@ module HtmlSelectorsHelpers
     when /the row for authority group category "([^\"]+)"/
       [:css, '[data-is=kor-admin-group-categories] tr', {text: $1}]
 
+    when /the row for credential "([^\"]+)"/
+      [:css, '[data-is=kor-credentials] tr', {text: $1}]
+
+    when /the row for collection "([^\"]+)"/
+      [:css, '[data-is=kor-collections] tr', {text: $1}]
+
     when /the row for authority group "([^\"]+)"/
       name = $1
       [:css, 'kor-admin-groups tr', {text: $1}]
+
+    when /widget "([^\"]+)"/
+      name = $1
+      [:css, "#{name}, [data-is=#{name}]"]
 
     # when /the row for "([^\"]+)" "([^\"]+)"/
     #   object = $1.classify.constantize.find_by_name($2)

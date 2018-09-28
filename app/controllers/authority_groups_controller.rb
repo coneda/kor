@@ -108,11 +108,11 @@ class AuthorityGroupsController < JsonController
       params.fetch(:authority_group, {}).permit(:name, :lock_version, :authority_group_category_id)
     end
 
-    def generally_authorized?
+    def auth
       if action_name == 'mark'
-        !current_user.guest?
+        require_non_guest
       else
-        current_user.authority_group_admin?
+        require_authority_group_admin
       end
     end
     

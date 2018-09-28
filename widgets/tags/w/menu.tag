@@ -87,34 +87,30 @@
     </li>
   </ul>
 
-  <ul if={isAdmin()}>
+  <virtual if={isAdmin()}>
+  <ul>
     <li>
-      <a href="#" onclick={toggleConfig}>
-        {tcap('nouns.config', {count: 'other'})}
+      {tcap('nouns.administration')}
+    </li>
+    <li>
+      <a href="#/settings">
+        {tcap('activerecord.models.setting', {count: 'other'})}
       </a>
-
-      <ul if={showConfig} class="submenu">
-        <li>
-          <a href="#/settings">
-            {tcap('activerecord.models.setting', {count: 'other'})}
-          </a>
-        </li>
-        <li>
-          <a href="#/collections">
-            {tcap('activerecord.models.collection.other')}
-          </a>
-        </li>
-        <li>
-          <a href="#/credentials">
-            {tcap('activerecord.models.credential.other')}
-          </a>
-        </li>
-        <li>
-          <a href="#/users">
-            {tcap('activerecord.models.user.other')}
-          </a>
-        </li>
-      </ul>
+    </li>
+    <li>
+      <a href="#/collections">
+        {tcap('activerecord.models.collection.other')}
+      </a>
+    </li>
+    <li>
+      <a href="#/credentials">
+        {tcap('activerecord.models.credential.other')}
+      </a>
+    </li>
+    <li>
+      <a href="#/users">
+        {tcap('activerecord.models.user.other')}
+      </a>
     </li>
   </ul>
 

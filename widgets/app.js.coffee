@@ -27,7 +27,7 @@ Zepto.extend Zepto.ajaxSettings, {
 window.wApp = {
   bus: riot.observable()
   # TODO: data still neded?
-  data: {}
+  # data: {}
   mixins: {}
   state: {
     requests: []

@@ -135,8 +135,9 @@ class UserGroupsController < JsonController
   end
   
   protected
-    def generally_authorized?
-      action_name == 'shared' || (current_user && current_user != User.guest)
+
+    def auth
+      action_name == 'shared' || require_non_guest
     end
 
     def user_group_params

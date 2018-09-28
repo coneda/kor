@@ -61,32 +61,51 @@ class Collection < ApplicationRecord
     name
   end
 
-  def grants_by_policy
-    grants.group_by do |grant|
-      grant.policy
+  def permissions
+    {}.tap do |results|
+      Kor::Auth.policies.each{|e| results[e] = []}
+      grants.each do |grant|
+        results[grant.policy] << grant.credential_id
+      end
     end
   end
-  
-  def grants_by_policy=(value)
-    @grants_by_policy_buffer = value
-  
-    Kor::Auth.policies.each do |policy|
-      if grants_by_policy[policy]
-        grants_by_policy[policy].each do |old_grant|
-          new_credentials = value[policy] || []
-          old_grant.destroy unless new_credentials.include?(old_grant.id.to_s)
-        end
+
+  def permissions=(values)
+    grants.destroy_all
+
+    values.each do |policy, credential_ids|
+      credential_ids.each do |id|
+        grants.find_or_create_by(policy: policy, credential_id: id)
       end
+    end
+  end
+
+  # def grants_by_policy
+  #   grants.group_by do |grant|
+  #     grant.policy
+  #   end
+  # end
+  
+  # def grants_by_policy=(value)
+  #   @grants_by_policy_buffer = value
+  
+  #   Kor::Auth.policies.each do |policy|
+  #     if grants_by_policy[policy]
+  #       grants_by_policy[policy].each do |old_grant|
+  #         new_credentials = value[policy] || []
+  #         old_grant.destroy unless new_credentials.include?(old_grant.id.to_s)
+  #       end
+  #     end
       
-      if value[policy]
-        value[policy].each do |new_id|
-          existing = grants_by_policy[policy] || []
-          unless existing.map{|g| g.id.to_s}.include? new_id
-            Grant.create(:collection => self, :policy => policy, :credential_id => new_id)
-          end
-        end
-      end
-    end
-  end
+  #     if value[policy]
+  #       value[policy].each do |new_id|
+  #         existing = grants_by_policy[policy] || []
+  #         unless existing.map{|g| g.id.to_s}.include? new_id
+  #           Grant.create(:collection => self, :policy => policy, :credential_id => new_id)
+  #         end
+  #       end
+  #     end
+  #   end
+  # end
 
 end

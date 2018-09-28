@@ -54,8 +54,8 @@ class PublishmentsController < JsonController
       params.fetch(:publishment, {}).permit(:user_group_id, :name)
     end
 
-    def generally_authorized?
-      current_user && current_user != User.guest
+    def auth
+      require_non_guest
     end
 
 end

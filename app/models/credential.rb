@@ -38,4 +38,8 @@ class Credential < ActiveRecord::Base
     (name).short(18)
   end
 
+  def user_count
+    users.count
+  end
+
 end

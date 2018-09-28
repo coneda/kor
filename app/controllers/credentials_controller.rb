@@ -1,5 +1,4 @@
 class CredentialsController < JsonController
-  # layout 'normal_small'
   
   def index
     params[:sort_by] ||= 'name'
@@ -8,30 +7,33 @@ class CredentialsController < JsonController
     @records = Credential.
       non_personal.
       order(params[:sort_by] => params[:sort_order])
-    @per_page = @records.count    
+    
+    params[:per_page] = @records.count
     @total = @records.count
+
+    render template: 'json/index'
   end
 
   def show
-    @credential = Credential.find(params[:id])
+    @record = Credential.find(params[:id])
+    render template: 'json/show'
   end
 
-  def new
-    @credential = Credential.new
-  end
+  # def new
+  #   @credential = Credential.new
+  # end
 
-  def edit
-    @credential = Credential.find(params[:id])
-  end
+  # def edit
+  #   @credential = Credential.find(params[:id])
+  # end
 
   def create
     @credential = Credential.new(credential_params)
 
     if @credential.save
-      flash[:notice] = I18n.t('objects.create_success', :o => @credential.name)
-      redirect_to credentials_path
+      render_200 I18n.t('objects.create_success', :o => @credential.name)
     else
-      render :action => "new"
+      render_406 @credential.errors
     end
   end
 
@@ -39,18 +41,16 @@ class CredentialsController < JsonController
     @credential = Credential.find(params[:id])
 
     if @credential.update_attributes(credential_params)
-      flash[:notice] = I18n.t('objects.update_success', :o => @credential.name)
-      redirect_to credentials_path
+      render_200 I18n.t('objects.update_success', :o => @credential.name)
     else
-      render :action => "edit"
+      render_406 @credential.errors
     end
   end
 
   def destroy
     @credential = Credential.find(params[:id])
     @credential.destroy
-    
-    redirect_to(credentials_path)
+    render_200 I18n.t('objects.destroy_success', :o => @credential.name)
   end
   
   protected
@@ -59,8 +59,8 @@ class CredentialsController < JsonController
       params.require(:credential).permit!
     end
 
-    def generally_authorized?
-      current_user.admin?
+    def auth
+      require_admin
     end
   
 end

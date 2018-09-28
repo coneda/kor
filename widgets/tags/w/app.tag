@@ -92,6 +92,9 @@
               else if m = path.match(/^\/entities\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-entity-editor'
+              else if m = path.match(/^\/credentials\/([0-9]+)\/edit$/)
+                opts['id'] = parseInt(m[1])
+                'kor-credential-editor'
               else if m = path.match(/^\/collections\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])
                 'kor-collection-editor'
@@ -146,6 +149,8 @@
                   when '/search' then 'kor-search'
                   when '/kinds' then 'kor-kinds'
                   when '/kinds/new' then 'kor-kind-editor'
+                  when '/credentials' then 'kor-credentials'
+                  when '/credentials/new' then 'kor-credential-editor'
                   when '/collections' then 'kor-collections'
                   when '/collections/new' then 'kor-collection-editor'
                   when '/upload' then 'kor-upload'

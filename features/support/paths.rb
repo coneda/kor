@@ -68,7 +68,7 @@ module NavigationHelpers
       "/#/groups/user/#{id}"
     when /the edit page for user group "([^\"]*)"/ then edit_user_group_path(UserGroup.find_by_name($1))
     when /the credentials page/ then '/#/credentials'
-    when /the collections page/ then collections_path
+    when /the collections page/ then '/#/collections'
     when /the profile page for user "([^\"]+)"/ then edit_self_user_path(User.find_by_name($1))
     when /the users page/ then users_path
     when /the edit page for "([^\"]+)" "([^\"]+)"/

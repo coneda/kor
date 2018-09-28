@@ -851,6 +851,7 @@ en:
       credential:
         name: name
         description: description
+        user_count: "user count"
       collection:
         personal: personal
         name: name
@@ -859,6 +860,8 @@ en:
         delete: allow these groups to delete
         create: allow these groups to create
         view_meta: allow these groups to display the master data
+        tagging: allow these groups to change the tags
+        download_originals: allow these groups to download original media
       user:
         parent_username: inherit permissions from
         personal: personal collection

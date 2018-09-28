@@ -1,7 +1,11 @@
 additions ||= []
 
-json.extract! credential, :id, :name, :description, :lock_version
+json.extract! record, :id, :name, :description
+
+if additions.request?('counts')
+  json.extract! record, :user_count
+end
 
 if additions.request?('technical')
-  json.extract! credential, :created_at, :updated_at
+  json.extract! record, :lock_version, :created_at, :updated_at
 end

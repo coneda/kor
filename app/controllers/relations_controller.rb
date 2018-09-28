@@ -87,11 +87,9 @@ class RelationsController < JsonController
       params.require(:relation).permit!
     end
 
-    def generally_authorized?
-      if ['names', 'index'].include?(params[:action])
-        true
-      else
-        current_user.relation_admin?
+    def kind
+      unless ['names', 'index'].include?(params[:action])
+        require_relation_admin
       end
     end
   

@@ -56,11 +56,9 @@ class FieldsController < JsonController
       )
     end
 
-    def generally_authorized?
+    def auth
       if ['update', 'create', 'destroy'].include?(action_name)
-        current_user.kind_admin?
-      else
-        true
+        require_kind_admin
       end
     end
 

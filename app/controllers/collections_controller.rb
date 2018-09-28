@@ -18,9 +18,9 @@ class CollectionsController < JsonController
     @collection = Collection.find(params[:id])
   end
 
-  def new
-    @collection = Collection.new
-  end
+  # def new
+  #   @collection = Collection.new
+  # end
   
   # TODO: check if this can actually work and if its save. Would be best to
   # ditch the feature
@@ -74,8 +74,8 @@ class CollectionsController < JsonController
   
   protected
 
-    def role_authorized?
-      current_user.admin?
+    def auth
+      require_admin
     end
 
     def collection_params
