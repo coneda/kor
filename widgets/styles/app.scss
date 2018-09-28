@@ -771,6 +771,8 @@ kor-entity-selector {
 }
 
 kor-properties-editor, kor-datings-editor {
+  display: block;
+
   .header {
     font-weight: bold;
   }

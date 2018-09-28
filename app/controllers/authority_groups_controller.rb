@@ -1,7 +1,7 @@
 class AuthorityGroupsController < JsonController
   # layout 'normal_small'
   
-  skip_before_filter :authorization, :only => [:download_images, :index, :show]
+  skip_before_filter :auth, :only => [:download_images, :index, :show]
 
   def index
     if params[:authority_group_category_id] == ''

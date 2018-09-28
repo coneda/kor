@@ -10,7 +10,7 @@ module NavigationHelpers
   def path_to(page_name)
     case page_name
 
-    when /the new entries page/ then '/blaze#/entities/gallery'
+    when /the new entries page/ then '#/new-media'
     when /the new entities page/ then '/entities/recent'
     when /the isolated entities page/ then '/blaze#/entities/isolated'
     when /the config page/ then '#/settings'
@@ -60,7 +60,8 @@ module NavigationHelpers
     when /the kinds page/ then kinds_path
     when /the clipboard/ then '/#/clipboard'
     when /the new "([^\"]*)-Entity" page/
-      new_entity_path(:kind_id => Kind.find_by_name($1).id)
+      kind_id = Kind.find_by_name($1).id
+      "#/entities/new?kind_id=#{kind_id}"
     when /the login page/ then '/#/login'
     when /the new user group page/ then '/#/groups/user/new'
     when /the user group "([^\"]*)"/

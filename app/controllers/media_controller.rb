@@ -1,6 +1,6 @@
 class MediaController < ApplicationController
 
-  skip_before_filter :authorization
+  skip_before_filter :auth
 
   def view
     @medium = Medium.find params[:id]

@@ -439,7 +439,6 @@ end
 
 Given(/^tagging is activated for kind "([^"]*)"$/) do |name|
   kind = Kind.find_by(name: name)
-  binding.pry
 end
 
 Given(/^the relationship has a dating "([^"]*)"$/) do |dating|

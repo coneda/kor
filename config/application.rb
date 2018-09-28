@@ -151,3 +151,4 @@ end
 # TODO: drop all haml and erb views (most)
 # TODO: fix group (user, admin, authority, category) naming: urls, actions, api urls etc
 # TODO: remove "sleep" from tests
+# TODO: do something useful when there was a 500

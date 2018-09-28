@@ -1,7 +1,7 @@
 # TODO: test this
 class CollectionsController < JsonController
 
-  skip_before_filter :role_auth, only: [:index]
+  skip_before_filter :auth, only: [:index]
 
   def index
     if current_user.admin?

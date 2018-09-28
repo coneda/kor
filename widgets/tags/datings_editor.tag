@@ -1,6 +1,6 @@
 <kor-datings-editor>
 
-  <div class="header">
+  <div class="header" if={add}>
     <button onclick={add} class="pull-right" type="button">
       {t('verbs.add', {capitalize: true})}
     </button>
@@ -28,7 +28,7 @@
       />
       <div class="kor-text-right">
         <button onclick={remove}>
-          {t('verbs.remove')}
+          {t('verbs.delete')}
         </button>
       </div>
       <div class="clearfix"></div>

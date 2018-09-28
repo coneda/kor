@@ -1,7 +1,7 @@
 class AuthorityGroupCategoriesController < JsonController
   # layout 'small_normal'
   
-  skip_before_filter :authorization, :only => [:index, :show, :flat]
+  skip_before_filter :auth, :only => [:index, :show, :flat]
 
   def flat
     @records = AuthorityGroupCategory.all

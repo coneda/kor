@@ -4,7 +4,7 @@ class SessionController < JsonController
 
   protect_from_forgery except: [:create, :destroy, :reset_password]
 
-  skip_before_filter :authentication, :role_auth, :legal
+  skip_before_filter :auth, :legal
 
   def show
 

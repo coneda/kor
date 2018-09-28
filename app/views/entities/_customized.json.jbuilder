@@ -139,7 +139,7 @@ end
 if additions.request?('groups')
   json.groups entity.authority_groups do |authority_group|
     json.partial! 'authority_groups/customized', {
-      authority_group: authority_group
+      record: authority_group
     }
   end
 end

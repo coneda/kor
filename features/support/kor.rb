@@ -59,6 +59,7 @@ end
 # end
 
 Capybara.default_max_wait_time = 5
+# Capybara.ignore_hidden_elements = true
 
 Capybara.javascript_driver = :selenium
 # Capybara.javascript_driver = :selenium_chrome

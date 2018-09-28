@@ -1,12 +1,12 @@
 class ToolsController < JsonController
   
-  skip_before_action :authentication, :only => 'history'
-  skip_before_action :verify_authenticity_token, only: ['history', :mark_as_current]
-  skip_before_filter :authorization, :except => [ 
-    'remove_from_invalid_entities', 
-    'add_to_authority_group', 
-    'remove_from_authority_group' 
-  ]
+  # skip_before_action :auth, :only => 'history'
+  # skip_before_action :verify_authenticity_token, only: ['history', :mark_as_current]
+  # skip_before_filter :authorization, :except => [ 
+  #   'remove_from_invalid_entities', 
+  #   'add_to_authority_group', 
+  #   'remove_from_authority_group' 
+  # ]
 
   # layout 'normal_small'
 
@@ -56,10 +56,10 @@ class ToolsController < JsonController
   # end
   
   # TODO: write integration test for this but implement it within angularjs
-  def add_media
-    session[:current_entity] = params[:id].to_i || nil
-    redirect_to "/blaze#/entities/multi_upload"
-  end
+  # def add_media
+  #   session[:current_entity] = params[:id].to_i || nil
+  #   redirect_to "/blaze#/entities/multi_upload"
+  # end
 
   # def mark
   #   if params[:mark] == 'reset'

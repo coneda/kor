@@ -46,19 +46,29 @@ When(/^I follow the link with text "([^"]*)"$/) do |text|
   click_link(text)
 end
 
-When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |locator, quoted, value|
-  value = "\"#{value}\"" if quoted == ' quoted'
+When("I scroll down") do
+  # sometimes, capybara doesn't correctly scroll to a button before clicking it
+  sleep 1
+  page.execute_script "window.scrollBy(0,10000)"
+end
 
-  timeout = 5.0
-  field = nil
-  while timeout > 0 && !field
-    field = page.first(:field, locator) || all(:css, locator).first
-    timeout -= 0.2
-    sleep 0.2
-  end
-  # field = all(:css, locator).first || find(:fillable_field, locator)
-  # binding.pry if locator.match /Label/
-  field.set value
+# When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |locator, quoted, value|
+#   value = "\"#{value}\"" if quoted == ' quoted'
+
+#   timeout = 5.0
+#   field = nil
+#   while timeout > 0 && !field
+#     field = page.first(:field, locator) || all(:css, locator).first
+#     timeout -= 0.2
+#     sleep 0.2
+#   end
+#   # field = all(:css, locator).first || find(:fillable_field, locator)
+#   # binding.pry if locator.match /Label/
+#   field.set value
+# end
+
+When("I fill in {string} with {string}") do |field, value|
+  fill_in field, with: value
 end
 
 When /^(?:|I )fill in the following:$/ do |fields|
@@ -420,9 +430,9 @@ end
 
 Then(/^I should see the prefilled dating "([^"]*)"$/) do |dating|
   label, value = dating.split(/: ?/)
-  within '#datings' do
-    find(:xpath, "//input[@value='created in']")
-    find(:xpath, "//input[@value='1503']")
+  within "kor-datings-editor" do
+    expect(page).to have_field('Type of dating', with: label)
+    expect(page).to have_field('Dating', with: value)
   end
 end
 

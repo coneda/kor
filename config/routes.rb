@@ -12,8 +12,6 @@ Rails.application.routes.draw do
 
   get '/blaze', :to => 'static#blaze', :as => :web
 
-  match 'resolve(/:kind)/:id', :to => 'identifiers#resolve', via: :get
-  
   root :to => 'main#welcome', as: 'root'
   match '/welcome', :to => 'main#welcome', :via => :get
   
@@ -87,6 +85,7 @@ Rails.application.routes.draw do
   # end
 
   get '/downloads/:uuid', :to => 'downloads#show'
+  get '/resolve(/:kind)/:id', :to => 'identifiers#resolve'
 
   defaults format: 'json' do
     match 'profile', :to => 'users#update_self', :via => 'patch'
@@ -236,7 +235,7 @@ Rails.application.routes.draw do
   
   namespace 'api' do
     scope ':version', version: /[0-9\.]+/, defaults: {version: '1.0'} do
-      match 'info', to: 'public#info', via: :get
+      # match 'info', to: 'public#info', via: :get
       match 'profile', to: '/users#edit_self', via: :get
     end
 

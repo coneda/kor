@@ -1,7 +1,7 @@
 # TODO: remove non-json responses
 class KindsController < JsonController
 
-  skip_before_filter :authentication, :authorization, only: [:index, :show]
+  skip_before_filter :auth, only: [:index, :show]
 
   def index
     params[:include] = param_to_array(params[:include], ids: false)
@@ -69,7 +69,6 @@ class KindsController < JsonController
       )
     end
 
-    # TODO: replace with new mechanism
     def auth
       require_kind_admin
     end

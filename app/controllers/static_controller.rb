@@ -1,5 +1,5 @@
 class StaticController < ApplicationController
-  skip_before_filter :authentication, :authorization, :maintenance, :except => :help
+  skip_before_filter :maintenance, :except => :help
   before_filter :session_expiry
   
   def under_maintenance

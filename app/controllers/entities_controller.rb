@@ -1,10 +1,10 @@
 class EntitiesController < JsonController
 
   # layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
-  layout false
-  skip_before_filter :verify_authenticity_token
+  # layout false
+  # skip_before_filter :verify_authenticity_token
 
-  respond_to :json, only: [:isolated]
+  # respond_to :json, only: [:isolated]
 
   def metadata
     @entity = viewable_entities.find(params[:id])
