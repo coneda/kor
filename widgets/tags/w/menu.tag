@@ -60,6 +60,16 @@
     <li if={isLoggedIn()}>
       <a href="#/upload">{tcap('verbs.upload')}</a>
     </li>
+    <li>
+      <a href="#/relations">
+        {tcap('activerecord.models.relation.other')}
+      </a>
+    </li>
+    <li>
+      <a href="#/kinds">
+        {tcap('activerecord.models.kind.other')}
+      </a>
+    </li>
   </ul>
 
   <ul if={isLoggedIn()}>
@@ -71,19 +81,6 @@
     </li>
     <li if={allowedTo('edit')}>
       <a href="#/entities/isolated">{tcap('nouns.isolated_entity', {count: 'other'})}</a>
-    </li>
-  </ul>
-
-  <ul>
-    <li>
-      <a href="#/relations">
-        {tcap('activerecord.models.relation.other')}
-      </a>
-    </li>
-    <li>
-      <a href="#/kinds">
-        {tcap('activerecord.models.kind.other')}
-      </a>
     </li>
   </ul>
 

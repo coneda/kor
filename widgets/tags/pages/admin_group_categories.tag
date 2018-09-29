@@ -51,7 +51,7 @@
     </div>
   </div>
 
-  <div class="kor-layout-left kor-layout-large">
+  <div class="kor-layout-right kor-layout-large">
     <kor-admin-groups category-id={opts.parentId} />
   </div>
 
