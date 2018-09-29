@@ -115,6 +115,9 @@
   </ul>
 
   <ul>
+    <li if={hasHelp()}>
+      <a href="#/help" onclick={showHelp}>{tcap('nouns.help')}</a>
+    </li>
     <li>
       <a href="#/statistics">{tcap('nouns.statistics')}</a>
     </li>
@@ -157,16 +160,22 @@
     tag.on 'umount', ->
       wApp.bus.off 'reload-kinds', fetchKinds
 
-    tag.toggleGroups = (event) ->
-      event.preventDefault()
-      tag.showGroups = !tag.showGroups
-      tag.update()
+    # tag.toggleGroups = (event) ->
+    #   event.preventDefault()
+    #   tag.showGroups = !tag.showGroups
+    #   tag.update()
 
-    tag.toggleConfig = (event) ->
-      # TODO: memorize this with local storage (Lockr)
+    # tag.toggleConfig = (event) ->
+    #   # TODO: memorize this with local storage (Lockr)
+    #   event.preventDefault()
+    #   tag.showConfig = !tag.showConfig
+    #   tag.update()
+
+    tag.showHelp = (event) ->
       event.preventDefault()
-      tag.showConfig = !tag.showConfig
-      tag.update()
+      wApp.config.showHelp('general')
+
+    tag.hasHelp = -> return wApp.config.hasHelp('general');
 
     tag.newEntity = (event) ->
       event.preventDefault()

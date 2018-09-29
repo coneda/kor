@@ -1,4 +1,5 @@
 <kor-search>
+  <kor-help-button key="search" />
 
   <div class="kor-layout-left kor-layout-small">
     <div class="kor-content-box">

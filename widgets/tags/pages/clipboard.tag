@@ -1,4 +1,5 @@
 <kor-clipboard>
+  <kor-help-button key="clipboard" />
   
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">

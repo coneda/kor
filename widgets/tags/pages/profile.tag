@@ -1,4 +1,5 @@
 <kor-profile>
+  <kor-help-button key="profile" />
 
   <div class="kor-layout-left kor-layout-large" show={loaded}>
     <div class="kor-content-box">

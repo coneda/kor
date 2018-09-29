@@ -161,37 +161,11 @@ en:
       one: biographical information
       other: biographical information
 
-  # config:
-  #   sections:
-  #     maintainer: site operator
-  #     host: server
-  #     mail: email
-  #     app: application
-  #     meta_entities: simple input form
-  #     help: help
-  #   help:
-  #     component_search:
-  #       component_search: simple search
-  #     entities:
-  #       index: expert search
-  #       gallery: new images
-  #       multi_upload: multiple upload
-  #     meta_entities:
-  #       new: simple input mask
-  #     authentication:
-  #       form: login
-  #     users:
-  #       edit_self: edit profile
-  #     authority_group_categories:
-  #       index: global groups
-  #     user_groups:
-  #       index: own search
-  #     tools:
-  #       clipboard: clipboard
   settings:
     branding_and_display: branding and display
     behavior: behavior
     other: other
+    help: help
     values:
       default_locale: default language
       default_home_page: default home page after login
@@ -200,7 +174,6 @@ en:
       edit_own_content: "Allow users to edit their own content"
       legal_text: text for terms of use
       about_text: text for imprint
-      help_text: general help text (#/help)
       current_history_length: number of recent entities
       max_file_upload_size: "maximum file size for uploads [MB]"
       max_foreground_group_download_size: "maximum download size for foreground groups [MB]"
@@ -227,12 +200,23 @@ en:
       kind_dating_label: "default dating label for new kinds"
       kind_name_label: "default name label for new kinds"
       kind_distinct_name_label: "default distinct name label for new kinds"
+      relationship_dating_label: "default dating label for new kinds"
       default_groups: "default user groups for new users"
       max_download_group_size: "maximum downloadable group size [MB]"
       search_entity_name: 'label for the entity name on the search page'
       primary_relations: 'primary relations'
       secondary_relations: 'secondary relations'
       repository_uuid: 'override the generated repository UUID'
+
+      help_general: general help text (menu)
+      help_search: search help text
+      help_upload: file upload help text
+      help_login: login help text
+      help_profile: profile help text
+      help_new_entries: new entries help text
+      help_authority_groups: admin groups help text
+      help_user_groups: user groups help text
+      help_clipboard: clipboard help text
 
 
   pages:

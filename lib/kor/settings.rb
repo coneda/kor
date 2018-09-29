@@ -109,7 +109,6 @@ module Kor
         @attributes['welcome_html'] = self.class.markdown(self['welcome_text'])
         @attributes['legal_html'] = self.class.markdown(self['legal_text'])
         @attributes['about_html'] = self.class.markdown(self['about_text'])
-        @attributes['help_html'] = self.class.markdown(self['help_text'])
 
         integers = [
           'current_history_length', 'max_foreground_group_download_size',
@@ -175,9 +174,7 @@ module Kor
           'primary_relations' => [],
           'secondary_relations' => [],
 
-          'repository_uuid' => nil,
-
-          'help_text' => ''
+          'repository_uuid' => nil
         }
       end
 

@@ -108,10 +108,24 @@ button:hover {
   padding: 2rem;
 
   .w-content {
+    position: relative;
     margin-left: 18rem;
     width: 72rem;
     box-shadow: 0px 0px 25px #000000;
+    margin-right: 0px;
+    margin-bottom: 5rem;
+
+    kor-help-button {
+      display: block;
+      position: absolute;
+      top: -4px;
+      right: -40px;
+    }
   }
+}
+
+[data-is=kor-help] {
+  min-width: 40rem;
 }
 
 kor-welcome, [data-is=kor-welcome] {

@@ -8,6 +8,7 @@
 
       <form onsubmit={submit} if={values && groups && relations}>
         <h2>{tcap('settings.branding_and_display')}</h2>
+        <hr />
 
         <kor-input
           name="maintainer_name"
@@ -51,14 +52,6 @@
           label={nameFor('about_text')}
           type="textarea"
           riot-value={valueWithDefaults('about_text')}
-          ref="fields"
-        />
-
-        <kor-input
-          name="help_text"
-          label={nameFor('help_text')}
-          type="textarea"
-          riot-value={valueWithDefaults('help_text')}
           ref="fields"
         />
 
@@ -132,6 +125,7 @@
         />
 
         <h2>{tcap('settings.behavior')}</h2>
+        <hr />
 
         <kor-input
           name="default_locale"
@@ -225,7 +219,83 @@
           ref="fields"
         />
 
+        <h2>{tcap('settings.help')}</h2>
+        <hr />
+
+        <kor-input
+          name="help_general"
+          label={nameFor('help_general')}
+          type="textarea"
+          riot-value={valueWithDefaults('help_general')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="help_search"
+          type="textarea"
+          label={nameFor('help_search')}
+          riot-value={valueWithDefaults('help_search')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="help_upload"
+          type="textarea"
+          label={nameFor('help_upload')}
+          riot-value={valueWithDefaults('help_upload')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="help_login"
+          type="textarea"
+          label={nameFor('help_login')}
+          riot-value={valueWithDefaults('help_login')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="help_profile"
+          type="textarea"
+          label={nameFor('help_profile')}
+          riot-value={valueWithDefaults('help_profile')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="help_new_entries"
+          type="textarea"
+          label={nameFor('help_new_entries')}
+          riot-value={valueWithDefaults('help_entries')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="help_authority_groups"
+          type="textarea"
+          label={nameFor('help_authority_groups')}
+          riot-value={valueWithDefaults('help_authority_groups')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="help_user_groups"
+          type="textarea"
+          label={nameFor('help_user_groups')}
+          riot-value={valueWithDefaults('help_user_groups')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="help_clipboard"
+          type="textarea"
+          label={nameFor('help_clipboard')}
+          riot-value={valueWithDefaults('help_clipboard')}
+          ref="fields"
+        />
+
         <h2>{tcap('settings.other')}</h2>
+        <hr />
 
         <kor-input
           name="sources_release"
@@ -254,8 +324,6 @@
           riot-value={valueWithDefaults('repository_uuid')}
           ref="fields"
         />
-
-        <div class="hr"></div>
 
         <kor-input
           type="submit"
@@ -302,6 +370,8 @@
           settings: values()
           mtime: tag.mtime
         )
+        success: (data) ->
+          wApp.bus.trigger('config-updated')
       )
 
     values = ->

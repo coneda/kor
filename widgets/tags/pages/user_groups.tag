@@ -1,4 +1,5 @@
 <kor-user-groups>
+  <kor-help-button key="user_groups" />
 
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">

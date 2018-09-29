@@ -1,4 +1,5 @@
 <kor-new-media>
+  <kor-help-button key="new_entries" />
 
   <div class="kor-content-box">
     <h1>{tcap('pages.new_media')}</h1>

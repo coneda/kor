@@ -1,4 +1,5 @@
 <kor-login>
+  <kor-help-button key="login" />
 
   <div class="kor-layout-left kor-layout-small">
     <div class="kor-content-box">

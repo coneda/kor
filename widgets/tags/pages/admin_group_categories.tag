@@ -1,4 +1,6 @@
 <kor-admin-group-categories>
+  <kor-help-button key="authority_groups" />
+
   <div class="kor-layout-left kor-layout-small">
     <div class="kor-content-box">
       <a

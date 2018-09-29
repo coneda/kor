@@ -1,4 +1,5 @@
 <kor-upload>
+  <kor-help-button key="upload" />
 
   <div class="kor-layout-left kor-layout-small">
     <div class="kor-content-box">
