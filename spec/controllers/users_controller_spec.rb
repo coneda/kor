@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe UsersController, :type => :controller do
+RSpec.describe UsersController, type: :controller do
   render_views
 
   it 'should not GET index' do
@@ -33,6 +33,23 @@ RSpec.describe UsersController, :type => :controller do
     expect(response).to be_forbidden
   end
 
+  it 'should not PATCH reset_password' do
+    user = User.find_by! name: 'jdoe'
+    patch :reset_password, id: user.id
+    expect(response).to be_forbidden
+  end
+
+  it 'should not PATCH reset_login_attempts' do
+    user = User.find_by! name: 'jdoe'
+    patch :reset_login_attempts, id: user.id
+    expect(response).to be_forbidden
+  end
+
+  it 'should not PATCH accept_terms' do
+    patch :accept_terms
+    expect(response).to be_client_error
+  end
+
   context 'as jdoe' do
     before :each do
       current_user User.find_by!(name: 'jdoe')
@@ -56,6 +73,23 @@ RSpec.describe UsersController, :type => :controller do
       user = User.find_by! name: 'jdoe'
       get :show, id: user.id
       expect(response).to be_forbidden
+    end
+
+    it 'should not PATCH reset_password' do
+      user = User.find_by! name: 'jdoe'
+      patch :reset_password, id: user.id
+      expect(response).to be_forbidden
+    end
+
+    it 'should not PATCH reset_login_attempts' do
+      user = User.find_by! name: 'jdoe'
+      patch :reset_login_attempts, id: user.id
+      expect(response).to be_forbidden
+    end
+
+    it 'should PATCH accept_terms' do
+      patch :accept_terms
+      expect(response).to be_success
     end
   end
 
@@ -105,6 +139,24 @@ RSpec.describe UsersController, :type => :controller do
       delete :destroy, id: user.id
       expect_deleted_response
       expect(User.find_by(id: user.id)).to be_nil
+    end
+
+    it 'should PATCH reset_password' do
+      user = User.find_by! name: 'jdoe'
+      pwd = user.password
+      patch :reset_password, id: user.id
+      expect(response).to be_success
+      expect(user.reload.password).not_to eq(pwd)
+      expect(ActionMailer::Base.deliveries.size).to eq(1)
+    end
+
+    it 'should PATCH reset_login_attempts' do
+      user = User.find_by! name: 'jdoe'
+      user.add_login_attempt
+      user.save
+      patch :reset_login_attempts, id: user.id
+      expect(response).to be_success
+      expect(user.reload.login_attempts).to be_empty
     end
   end
 

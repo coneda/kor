@@ -147,18 +147,18 @@ Rails.application.routes.draw do
     resources :user_groups do
       member do
         get 'download_images'
-        get 'show_shared'
+        # get 'show_shared'
         # get 'mark'
 
         patch 'share'
         patch 'unshare'
+        post 'remove', action: 'remove_from'
       end
       
       collection do
         get 'shared'
 
         post 'add', action: 'add_to'
-        post 'remove', action: 'remove_from'
       end
     end
 
@@ -173,9 +173,9 @@ Rails.application.routes.draw do
       member do
         patch 'reset_password'
         patch 'reset_login_attempts'
-        patch 'accept_terms'
       end
       collection do
+        patch 'accept_terms'
         patch 'me', action: 'update_me'
         get 'me'
       end
@@ -251,8 +251,8 @@ Rails.application.routes.draw do
     end
 
     scope 'wikidata', format: 'json', controller: 'wikidata' do
-      match 'preflight', action: 'preflight', via: 'POST'
-      match 'import', action: 'import', via: 'POST'
+      post 'preflight', action: 'preflight'
+      post 'import', action: 'import'
     end
   end
 

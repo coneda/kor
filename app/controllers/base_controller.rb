@@ -43,6 +43,10 @@ class BaseController < ActionController::Base
       end
     end
 
+    def api_auth?
+      !!user_by_api_key
+    end
+
     def authorized?(policy = :view, collections = nil, options = {})
       options.reverse_merge!(required: :any)
       Kor::Auth.allowed_to? current_user, policy, collections, options
@@ -107,10 +111,6 @@ class BaseController < ActionController::Base
         session[:expires_at] ||= Kor.session_expiry_time
         session[:expires_at] < Time.now
       end
-    end
-
-    def api_auth?
-      !!user_by_api_key
     end
 
     def locale

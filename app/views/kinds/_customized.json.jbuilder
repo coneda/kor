@@ -1,6 +1,4 @@
-additions ||= []
-
-json.extract!(kind,
+json.extract!(record,
   :schema,
   :id, :uuid, :url,
   :abstract,
@@ -8,37 +6,37 @@ json.extract!(kind,
   :description
 )
 
-if additions.request?('settings')
+if inclusion.request?('settings')
   json.settings do
-    json.name_label kind.name_label
-    json.tagging kind.tagging
-    json.dating_label kind.dating_label
-    json.distinct_name_label kind.distinct_name_label
-    json.requires_naming kind.requires_naming?
-    json.can_have_synonyms kind.can_have_synonyms?
+    json.name_label record.name_label
+    json.tagging record.tagging
+    json.dating_label record.dating_label
+    json.distinct_name_label record.distinct_name_label
+    json.requires_naming record.requires_naming?
+    json.can_have_synonyms record.can_have_synonyms?
   end
 end
 
 
-if additions.request?('technical')
-  json.uuid kind.uuid
-  json.created_at kind.created_at
-  json.updated_at kind.updated_at
-  json.lock_version kind.lock_version
+if inclusion.request?('technical')
+  json.uuid record.uuid
+  json.created_at record.created_at
+  json.updated_at record.updated_at
+  json.lock_version record.lock_version
 end
 
-if additions.request?('fields')
-  json.fields kind.fields do |field|
-    json.partial! 'fields/customized', additions: additions, field: field
+if inclusion.request?('fields')
+  json.fields record.fields do |field|
+    json.partial! 'fields/customized', field: field
   end
 end
 
-if additions.request?('generators')
-  json.generators kind.generators do |generator|
-    json.partial! 'generators/customized', additions: additions, generator: generator
+if inclusion.request?('generators')
+  json.generators record.generators do |generator|
+    json.partial! 'generators/customized', generator: generator
   end
 end
 
-if additions.request?('inheritance')
-  json.extract! kind, :parent_ids, :child_ids, :removable
+if inclusion.request?('inheritance')
+  json.extract! record, :parent_ids, :child_ids, :removable
 end

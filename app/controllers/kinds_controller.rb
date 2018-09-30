@@ -4,17 +4,16 @@ class KindsController < JsonController
   skip_before_filter :auth, only: [:index, :show]
 
   def index
-    params[:include] = param_to_array(params[:include], ids: false)
-
-    @kinds = Kind.all
-    @kinds = @kinds.active if params.has_key?(:only_active)
-    @kinds = @kinds.without_media if params.has_key?(:no_media)
+    @records = Kind.all
+    @records = @kinds.active if params.has_key?(:only_active)
+    @records = @kinds.without_media if params.has_key?(:no_media)
+    @total = @records.count
+    render template: 'json/index'
   end
 
   def show
-    params[:include] = param_to_array(params[:include], ids: false)
-    
-    @kind = Kind.find(params[:id])
+    @record = Kind.find(params[:id])
+    render template: 'json/show'
   end
 
   def create
@@ -46,12 +45,13 @@ class KindsController < JsonController
   def destroy
     @kind = Kind.find(params[:id])
     
+    # TODO: this has to deal with deleted entities
     if @kind.medium_kind?
-      render_406 I18n.t('errors.medium_kind_not_deletable')
+      render_406 nil, I18n.t('errors.medium_kind_not_deletable')
     elsif @kind.children.present?
-      render_406 I18n.t('errors.kind_has_children')
+      render_406 nil, I18n.t('errors.kind_has_children')
     elsif @kind.entities.count > 0
-      render_406 I18n.t('errors.kind_has_entities')
+      render_406 nil, I18n.t('errors.kind_has_entities')
     else
       @kind.destroy
       render_200 I18n.t('objects.destroy_success', o: Kind.model_name.human)

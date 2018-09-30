@@ -187,6 +187,9 @@ module DataHelper
     archive.authority_groups.create! name: 'seminar'
 
     lecture.add_entities picture_a
+
+    nice = UserGroup.create! user_id: jdoe.id, name: 'nice'
+    nice.add_entities picture_a
   end
 
   # TODO: make sure this is used instead of fake_authentication

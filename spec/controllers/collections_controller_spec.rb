@@ -8,7 +8,7 @@ RSpec.describe CollectionsController, type: :controller do
     expect_collection_response total: 0
   end
 
-  it 'should GET show' do
+  it 'should not GET show' do
     get :show, id: Collection.find_by!(name: 'private').id
     expect(response).to be_forbidden
   end

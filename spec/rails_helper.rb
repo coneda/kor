@@ -113,7 +113,7 @@ RSpec.configure do |config|
       request.headers["accept"] = 'application/json'
     end
 
-    # ActionMailer::Base.deliveries = []
+    ActionMailer::Base.deliveries.clear
     system "rm -rf #{Medium.media_data_dir}/*"
     system "rm -rf #{Rails.root}/tmp/export_spec"
     

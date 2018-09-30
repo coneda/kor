@@ -6,6 +6,7 @@ class Api::OaiPmh::BaseController < BaseController
 
   helper_method :timestamp, :base_url, :medium_url
 
+  skip_before_filter :verify_authenticity_token
   before_filter :ensure_metadata_prefix, only: [:get_record, :list_records]
   before_filter :handle_resumption_token, only: [:list_identifiers, :list_records]
 
@@ -170,10 +171,6 @@ class Api::OaiPmh::BaseController < BaseController
 
     def base_url
       api_oai_pmh_entities_url
-    end
-
-    def current_user
-      super || User.guest
     end
 
 end

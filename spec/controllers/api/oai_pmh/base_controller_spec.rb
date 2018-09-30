@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'rails_helper'
 
-RSpec.describe Api::OaiPmh::BaseController, type: :controller do
+RSpec.describe Api::OaiPmh::BaseController, type: :request do
 
   it 'should cleanup resumption tokens' do
     system("rm -rf #{subject.send(:base_dir)}")

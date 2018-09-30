@@ -153,3 +153,6 @@ end
 # TODO: remove "sleep" from tests
 # TODO: do something useful when there was a 500
 # TODO: find smart way to test pagination in controllers
+# TODO: change controller specs to request specs (like already done for oai controllers)
+# TODO: add ONE validation test to each controller/request suite
+# TODO: fix "can't" and "cannot" in all translations

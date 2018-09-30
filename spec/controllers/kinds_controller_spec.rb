@@ -1,121 +1,89 @@
 require 'rails_helper'
 
 RSpec.describe KindsController, type: :controller do
-
   render_views
 
-  def data
-    JSON.parse(response.body)
-  end
-
-  before :each do
-    request.headers['accept'] = 'application/json'
-
-    @media = FactoryGirl.create :media
-    @admin = FactoryGirl.create :admin
-  end
-
-  it 'should retrieve a single kind' do
-    get :show, id: @media.id
-    expect(response.status).to eq(200)
-    expect(data['name']).to eq('Medium')
-  end
-
-  it 'should retrieve all kinds' do
-    @people = FactoryGirl.create :people
-
+  it 'should GET index' do
     get :index
-    expect(data['records'].size).to eq(2)
+    expect_collection_response total: 5
+  end
+
+  it 'should GET show' do
+    get :show, id: Kind.medium_kind_id
+    expect(response).to be_success
+    expect(json['name']).to eq('medium')
+    expect(json['settings']).to be_nil
+  end
+
+  it 'should GET show with additions' do
+    get :show, id: Kind.medium_kind_id, include: 'settings'
+    expect(response).to be_success
+    expect(json['name']).to eq('medium')
+    expect(json['settings']).to be_a(Hash)
+  end
+
+  it 'should not POST create' do
+    post :create, kind: {name: 'literatur', plural_name: 'literature'}
+    expect(response).to be_forbidden
+  end
+
+  it 'should not PATCH update' do
+    person = Kind.find_by!(name: 'person')
+    patch :update, id: person.id, person: {plural_name: 'persons'}
+    expect(response).to be_forbidden
+  end
+
+  it 'should not DELETE destroy' do
+    kind = Kind.find_by! name: 'person'
+    delete :destroy, id: kind.id
+    expect(response).to be_forbidden
   end
 
   context 'as admin' do
-
     before :each do
-      request.headers['accept'] = 'application/json'
-      request.headers['api_key'] = @admin.api_key
+      current_user User.admin
     end
 
-    it 'should create a kind' do
-      post :create, kind: {
-        name: 'person',
-        plural_name: 'people'
-      }
-      expect(response.status).to eq(200)
-      expect(data['record']['id']).not_to be_nil
-      expect(data['messages'].first).to eq('entity type has been created')
+    it 'should POST create' do
+      post :create, kind: {name: 'city', plural_name: 'cities'}
+      expect_created_response
+      c = Kind.find_by!(name: 'city')
     end
 
-    it 'should create a sub kind' do
-      post :create, kind: {
-        name: 'person',
-        plural_name: 'people',
-        parent_ids: [@media.id]
-      }
-      expect(response.status).to eq(200)
-      expect(data['record']['parent_ids']).to eq([@media.id])
+    it 'should PATCH update' do
+      id = Kind.find_by!(name: 'person').id
+      patch :update, id: id, kind: {plural_name: 'persons'}
+      expect_updated_response
+      expect(Kind.find(id).plural_name).to eq('persons')
     end
 
-    it 'should update a kind' do
-      @people = FactoryGirl.create :people
-
-      patch :update, id: @people.id, kind: {
-        name: 'artists',
-        parent_ids: [@media.id]
-      }
-      expect(response.status).to eq(200)
-      expect(data['record']['name']).to eq('artists')
-      expect(data['record']['parent_ids']).to eq([@media.id])
+    it 'should not DELETE destroy (medium kind)' do
+      delete :destroy, id: Kind.medium_kind_id
+      expect(response).to be_client_error
+      expect(json['message']).to match(/medium kind cannot be removed/)
     end
 
-    it 'should move a kind' do
-      @people = FactoryGirl.create :people
-      @works = FactoryGirl.create :works, parent_ids: [@people.id]
-
-      patch :update, id: @works.id, kind: {
-        parent_ids: [@media.id]
-      }
-      expect(response.status).to eq(200)
-      expect(data['record']['parent_ids']).to eq([@media.id])
+    it 'should not DELETE destroy (kind with entities)' do
+      kind = Kind.find_by! name: 'location'
+      delete :destroy, id: kind.id
+      expect(response).to be_client_error
+      expect(json['message']).to match(/it still has entities/)
     end
 
-    it 'should render errors when the plural name is missing' do
-      post :create, kind: {
-        name: 'person'
-      }
-      expect(response.status).to eq(406)
-      expect(data['errors']['plural_name']).to include('has to be filled in')
+    it 'should not DELETE destroy (kind with children)' do
+      locations = Kind.find_by! name: 'location'
+      cities = Kind.create! name: 'city', plural_name: 'cities', parent_ids: [locations.id]
+      delete :destroy, id: locations.id
+      expect(response).to be_client_error
+      expect(json['message']).to match(/kinds with children can't be deleted/)
     end
 
-    it 'should ignore addition of non-existing parents' do
-      @people = FactoryGirl.create :people
-
-      patch :update, id: @people.id, kind: {parent_ids: 99}
-      expect(response.status).to eq(200)
-      expect(data['record']['parent_ids']).to be_empty
+    it 'should DELETE destroy' do
+      kind = Kind.find_by! name: 'location'
+      kind.entities.destroy_all
+      delete :destroy, id: kind.id
+      expect_deleted_response
+      expect(Kind.find_by(id: kind.id)).to be_nil
     end
-
-    it 'should not delete parents as long as they have chrildren' do
-      @people = FactoryGirl.create :people
-      @works = FactoryGirl.create :works, parent_ids: @people.id
-
-      delete :destroy, id: @people.id
-      expect(response.status).to eq(406)
-      expect(data['messages'].first).to eq("kinds with children can't be deleted")
-    end
-
-    it 'should deny deleting the medium kind' do
-      delete :destroy, id: @media.id
-      expect(response.status).to eq(406)
-    end
-
-    it 'should deny deleting a kind that has entities' do
-      @people = FactoryGirl.create :people
-      @leonardo = FactoryGirl.create :leonardo
-      
-      delete :destroy, id: @people.id
-      expect(response.status).to eq(406)
-    end
-
   end
-
 end
