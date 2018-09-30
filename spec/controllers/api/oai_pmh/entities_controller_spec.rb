@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Api::OaiPmh::EntitiesController, :type => :controller do
+RSpec.describe Api::OaiPmh::EntitiesController, :type => :controller do
 
   include XmlHelper
 

@@ -58,20 +58,18 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  config.before :all do
+  config.before :suite do
     DatabaseCleaner.clean_with :truncation
     DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.start
 
     system "cat /dev/null >| #{Rails.root}/log/test.log"
 
     XmlHelper.compile_validator
 
     # DatabaseCleaner.strategy = :transaction
-
-    Rails.application.load_seed
     
     Delayed::Worker.delay_jobs = false
+    Rails.application.load_seed
     default_setup relationships: true, pictures: true
   end
 
@@ -87,7 +85,9 @@ RSpec.configure do |config|
 
   config.around :each do |example|
     begin
+      DatabaseCleaner.start
       example.run
+      DatabaseCleaner.clean
     rescue ActiveRecord::RecordInvalid => e
       binding.pry
       p e.record.errors.full_messages
@@ -105,9 +105,9 @@ RSpec.configure do |config|
       Kor::Elastic.disable
     end
 
-    if example.metadata[:seed]
-      Rails.application.load_seed
-    end
+    # if example.metadata[:seed]
+    #   Rails.application.load_seed
+    # end
 
     if example.metadata[:type] == :controller
       request.headers["accept"] = 'application/json'

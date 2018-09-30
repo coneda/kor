@@ -3,10 +3,10 @@ require 'rails_helper'
 RSpec.describe UsersController, :type => :controller do
   render_views
 
-  include DataHelper
+  # include DataHelper
   
   before :each do
-    test_data
+    # test_data
   
     session[:user_id] = User.admin.id
     session[:expires_at] = Kor.session_expiry_time

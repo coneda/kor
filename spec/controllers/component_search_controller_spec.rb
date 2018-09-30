@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe ComponentSearchController, type: :controller do
+RSpec.describe ComponentSearchController, type: :controller do
 
   it "should pass through the per_page parameter" do
     FactoryGirl.create :guest

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Api::WikidataController, type: :controller do
+RSpec.describe Api::WikidataController, type: :controller do
 
   before :each do
     @default = FactoryGirl.create :default
