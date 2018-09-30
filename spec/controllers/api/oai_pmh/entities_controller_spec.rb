@@ -2,24 +2,28 @@ require 'rails_helper'
 
 RSpec.describe Api::OaiPmh::EntitiesController, :type => :controller do
 
-  include XmlHelper
-
   render_views
 
-  before :each do
-    default = FactoryGirl.create :default
-    priv = FactoryGirl.create :private
-    admins = FactoryGirl.create :admins
-    FactoryGirl.create :admin, :groups => [admins]
-    guests = FactoryGirl.create :guests
-    FactoryGirl.create :guest, :groups => [guests]
-    Grant.create :credential => guests, :collection => default, :policy => 'view'
+  # before :each do
+  #   default = FactoryGirl.create :default
+  #   priv = FactoryGirl.create :private
+  #   admins = FactoryGirl.create :admins
+  #   FactoryGirl.create :admin, :groups => [admins]
+  #   guests = FactoryGirl.create :guests
+  #   FactoryGirl.create :guest, :groups => [guests]
+  #   Grant.create :credential => guests, :collection => default, :policy => 'view'
 
-    Grant.create :credential => admins, :collection => default, :policy => 'view'
-    Grant.create :credential => admins, :collection => priv, :policy => 'view'
+  #   Grant.create :credential => admins, :collection => default, :policy => 'view'
+  #   Grant.create :credential => admins, :collection => priv, :policy => 'view'
 
-    FactoryGirl.create :mona_lisa
-    FactoryGirl.create :leonardo, :collection_id => priv.id
+  #   FactoryGirl.create :mona_lisa
+  #   FactoryGirl.create :leonardo, :collection_id => priv.id
+  # end
+
+  before :all do
+    guests = Credential.create! name: 'guests', users: [User.guest]
+    default = Collection.find_by! name: 'default'
+    Grant.create credential: guests, collection: default, policy: 'view'
   end
 
   it "should respond to 'Identify'" do
@@ -90,8 +94,8 @@ RSpec.describe Api::OaiPmh::EntitiesController, :type => :controller do
 
     items = parse_xml(response.body).xpath('//kor:entity')
 
-    expect(items.size).to eq(1)
-    expect(items.first.xpath("//kor:title").text).to eq("Mona Lisa")
+    expect(items.size).to eq(5)
+    expect(items.first.xpath("//kor:title")[0].text).to eq("Leonardo")
 
     admin = User.admin
     get(:list_records,
@@ -102,7 +106,7 @@ RSpec.describe Api::OaiPmh::EntitiesController, :type => :controller do
 
     items = parse_xml(response.body).xpath("//kor:entity")
 
-    expect(items.count).to eq(2)
+    expect(items.count).to eq(5)
   end
 
   it "should respond with 403 if the user is not authorized" do
@@ -174,7 +178,7 @@ RSpec.describe Api::OaiPmh::EntitiesController, :type => :controller do
       :metadataPrefix => "oai_dc"
     )
     doc = parse_xml(response.body)
-    expect(doc.xpath("//xmlns:metadata/oai_dc:dc").count).to eq(2)
+    expect(doc.xpath("//xmlns:metadata/oai_dc:dc").count).to eq(7)
 
     get(:list_records, 
       :format => :xml, 
@@ -182,7 +186,7 @@ RSpec.describe Api::OaiPmh::EntitiesController, :type => :controller do
       :metadataPrefix => "kor"
     )
     doc = parse_xml(response.body)
-    expect(doc.xpath("//xmlns:metadata/kor:entity").count).to eq(2)
+    expect(doc.xpath("//xmlns:metadata/kor:entity").count).to eq(7)
   end
 
   it "should return 'idDoesNotExist' if the identifier given does not exist" do
@@ -329,8 +333,8 @@ RSpec.describe Api::OaiPmh::EntitiesController, :type => :controller do
     )
     doc = parse_xml(response.body)
     expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
-    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(1)
-    expect(doc.xpath("//xmlns:metadata").count).to eq(1)
+    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(6)
+    expect(doc.xpath("//xmlns:metadata").count).to eq(6)
 
     get(:list_identifiers,
       format: :xml, 
@@ -338,7 +342,7 @@ RSpec.describe Api::OaiPmh::EntitiesController, :type => :controller do
     )
     doc = parse_xml(response.body)
     expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
-    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(1)
+    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(6)
     expect(doc.xpath("//xmlns:metadata").count).to eq(0)
 
     get(:get_record,
