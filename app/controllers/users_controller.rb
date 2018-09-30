@@ -48,89 +48,90 @@ class UsersController < JsonController
     params[:sort_order] ||= 'ASC'
 
     @records = User.
-      search(params[:search_string]).
+      search(params[:terms]).
       order(params[:sort_by] => params[:sort_order])
     @total = @records.count
     @records = @records.pageit(page, per_page)
+    render template: 'json/index'
   end
 
   def show
-    @user = User.find(params[:id])
+    @record = User.find(params[:id])
+    render template: 'json/show'
   end
 
-  def new
-    @user = User.new
-    @user.groups << Credential.where(:name => Kor.settings['default_groups']).to_a
-  end
+  # def new
+  #   @user = User.new
+  #   @user.groups << Credential.where(:name => Kor.settings['default_groups']).to_a
+  # end
   
-  def edit_self
-    if current_user.guest?
-      render_403
-    else
-      @user = User.find(current_user.id)
-    end
+  def me
+    @record = User.find(current_user.id)
+    render template: 'json/show'
   end
 
-  def update_self
-    @user = User.find(current_user.id)
+  def update_me
+    @record = User.find(current_user.id)
 
-    if @user.update_attributes(self_user_params)
-      render_200 I18n.t( 'objects.update_success', o: I18n.t('nouns.user'))
+    if @record.update_attributes(me_params)
+      render_200 I18n.t('objects.update_success', o: I18n.t('nouns.user'))
     else
-      render_406 @user.errors
+      render_406 @record.errors
     end
   end
 
   def update
-    params[:user][:make_personal] ||= false
-    @user = User.find(params[:id])
+    # params[:user][:make_personal] ||= false
+    @record = User.find(params[:id])
 
-    if @user.update_attributes(user_params)
+    if @record.update_attributes(user_params)
       render_200 I18n.t(
         'objects.update_success', o: I18n.t('nouns.user', count: 1)
       )
     else
-      render_406 @user.errors
+      render_406 @record.errors
     end
   end
 
   def create
-    @user = User.new(user_params)
+    @record = User.new(user_params)
     
-    if @user.save
-      UserMailer.account_created(@user).deliver_now
+    if @record.save
+      UserMailer.account_created(@record).deliver_now
       render_200 I18n.t('objects.create_success',
         o: I18n.t('nouns.user', count: 1)
       )
     else
-      render_406 @user.errors
+      render_406 @record.errors
     end
   end
 
   def destroy
-    @user = User.find(params[:id])
-    @user.destroy
-    render_200 I18n.t('objects.destroy_success',
-      o: I18n.t('nouns.user', count: 1)
-    )
+    @record = User.find(params[:id])
+    @record.destroy
+    render_200 I18n.t('objects.destroy_success', o: I18n.t('nouns.user'))
   end
   
 
   private
 
     def user_params
-      params.require(:user).permit!
+      params.fetch(:user, {}).permit!
     end
 
-    def self_user_params
-      params.require(:user).permit(
+    def me_params
+      params.fetch(:user, {}).permit(
         :full_name, :name, :email, :password, :plain_password_confirmation,
         :locale, :home_page, :default_collection_id, :api_key
       )
     end
     
     def auth
-      require_admin
+      if ['me', 'update_me'].include?(action_name)
+        require_non_guest
+      else
+        require_admin
+      end
     end
 
 end

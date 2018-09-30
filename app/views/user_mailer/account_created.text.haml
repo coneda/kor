@@ -1,8 +1,0 @@
-#{I18n.t("mailer.messages.hi", :username => h(@user.display_name) )},
-\
-= I18n.t("mailer.messages.account_created", :url => Kor.base_url )
-= I18n.t("mailer.messages.new_credentials", :username => h(@user.name), :password => @user.plain_password )
-\
-#{I18n.t("mailer.messages.best_regards")},
-#{Kor.config['maintainer.name']}
-\

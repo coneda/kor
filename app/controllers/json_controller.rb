@@ -34,7 +34,7 @@ class JsonController < BaseController
       render template: 'layouts/message', status: 400
     end 
 
-    def render_401(message)
+    def render_401(message = nil)
       @message = message || I18n.t('notices.not_logged_in')
       render template: 'layouts/message', status: 401
     end

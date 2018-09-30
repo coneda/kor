@@ -13,9 +13,9 @@ Rails.application.routes.draw do
   get '/blaze', :to => 'static#blaze', :as => :web
 
   root :to => 'main#welcome', as: 'root'
-  match '/welcome', :to => 'main#welcome', :via => :get
+  get '/welcome', :to => 'main#welcome'
   
-  match '/authentication/form' => redirect('/login'), :via => :get
+  get '/authentication/form' => redirect('/login')
   
   controller 'inplace' do
     match '/kor/inplace/tags', :action => 'tag_list', :via => :get
@@ -77,7 +77,7 @@ Rails.application.routes.draw do
   get '/resolve(/:kind)/:id', :to => 'identifiers#resolve'
 
   defaults format: 'json' do
-    patch 'profile', :to => 'users#update_self'
+    # patch 'profile', :to => 'users#update_profile'
     get 'fields/types', to: 'fields#types'
     # match 'clipboard', :to => 'tools#clipboard', :via => :get
 
@@ -174,8 +174,10 @@ Rails.application.routes.draw do
         patch 'reset_password'
         patch 'reset_login_attempts'
         patch 'accept_terms'
-        # get 'edit_self'
-        # get 'new_from_template'
+      end
+      collection do
+        patch 'me', action: 'update_me'
+        get 'me'
       end
     end
 
@@ -229,10 +231,10 @@ Rails.application.routes.draw do
   end
   
   namespace 'api' do
-    scope ':version', version: /[0-9\.]+/, defaults: {version: '1.0'} do
+    # scope ':version', version: /[0-9\.]+/, defaults: {version: '1.0'} do
       # match 'info', to: 'public#info', via: :get
-      match 'profile', to: '/users#edit_self', via: :get
-    end
+      # get 'profile', to: 'users#edit_self'
+    # end
 
     scope 'oai-pmh', :format => :xml, :as => 'oai_pmh', :via => [:get, :post] do
       ['entities', 'relationships', 'kinds', 'relations'].each do |res|
