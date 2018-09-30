@@ -1,16 +1,14 @@
-additions ||= []
-
-json.extract!(field,
+json.extract!(record,
   :type, :id, :name, :kind_id, :value, :is_identifier, :show_on_entity,
   :show_label, :form_label, :search_label, :errors
 )
 
-json.type field.class.name
+json.type record.class.name
 
-if additions.request?('technical')
-  json.extract! field, :uuid, :created_at, :updated_at, :settings
+if inclusion.request?('technical')
+  json.extract! record, :uuid, :created_at, :updated_at, :settings
 end
 
-if field.is_a?(Fields::Regex)
-  json.extract! field, :regex
+if record.is_a?(Fields::Regex)
+  json.extract! record, :regex
 end

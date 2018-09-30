@@ -1,151 +1,102 @@
 require 'rails_helper'
 
-describe DirectedRelationshipsController, type: :controller do
-
-  include DataHelper
-
+RSpec.describe DirectedRelationshipsController, type: :controller do
   render_views
 
-  before :each do
-    request.headers['accept'] = 'application/json'
-  end
-
-  it "should list all relationships" do
-    default = FactoryGirl.create :default
-    side = FactoryGirl.create :collection, :name => "Side"
-    media = FactoryGirl.create :media
-
-    works = FactoryGirl.create(:works)
-    people = FactoryGirl.create(:people)
-    FactoryGirl.create(:has_created,
-      from_kind: people,
-      to_kind: works
-    )
-    FactoryGirl.create(:shows,
-      from_kind: works,
-      to_kind: people
-    )
-
-    main_artist = FactoryGirl.create :jack, :collection => default
-    side_artist = FactoryGirl.create :tom, :collection => side
-    main_works = 10.times.map do |i|
-      FactoryGirl.create :artwork, name: "artwork #{i}", collection: default
-    end
-    side_works = 2.times.map do |i|
-      FactoryGirl.create :artwork, name: "side artwork #{i}", collection: side
-    end
-    (main_works + side_works[0..0]).each do |e|
-      Relationship.relate_and_save(main_artist, 'has created', e)
-    end
-    Relationship.relate_and_save(main_artist, 'is shown by', side_works[1])
-    Relationship.relate_and_save(side_artist, 'has created', side_works[1])
-    students = FactoryGirl.create :students
-    admins = FactoryGirl.create :admins
-    admin = FactoryGirl.create :admin, :groups => [admins]
-    jdoe = FactoryGirl.create :jdoe, :groups => [students]
-    Kor::Auth.grant default, :view, :to => [admins, students]
-    Kor::Auth.grant side, :view, :to => [admins]
-
+  it 'should GET index' do
     get :index
-    expect(response.status).to eq(403)
+    expect_collection_response total: 0
+  end
 
-    guest = FactoryGirl.create :guest
+  it 'should not GET show' do
+    get :show, id: DirectedRelationship.first.id
+    expect(response).to be_forbidden
+  end
 
-    get :index
-    expect(response.status).to eq(200)
-    expect(JSON.parse(response.body)['total']).to eq(0)
-
-    current_user = jdoe
-    allow_any_instance_of(described_class).to receive(:current_user) do
-      current_user
+  context 'as jdoe' do
+    before :each do
+      current_user User.find_by!(name: 'jdoe')
     end
 
-    get :index
-    expect(JSON.parse(response.body)['records'].size).to eq(10)
-
-    get :index, :page => 1
-    expect(JSON.parse(response.body)['records'].size).to eq(10)
-
-    get :index, :page => 3
-    expect(JSON.parse(response.body)['records'].size).to eq(2)
-
-    get :index, :per_page => 30
-    expect(JSON.parse(response.body)['records'].size).to eq(22)
-
-    get :index, :per_page => 22
-    expect(JSON.parse(response.body)['records'].size).to eq(22)
-
-    current_user = admin
-
-    get :index, :per_page => 30
-    expect(JSON.parse(response.body)['records'].size).to eq(26)
-
-    get :index, :per_page => 20, :entity_id => side_artist.id
-    expect(JSON.parse(response.body)['records'].size).to eq(1)
-
-    get :index, per_page: 20, relation_name: 'shows'
-    expect(JSON.parse(response.body)['records'].size).to eq(1)
+    it 'should GET index' do
+      get :index
+      expect_collection_response total: 8
+    end
   end
 
-  it "should respond with a single directed relationship" do
-    default_setup relationships: true
-
-    directed_relationship = Relationship.first.normal
-    get :show, id: directed_relationship.id
-    expect(response.status).to eq(403)
-
-    get :show, id: directed_relationship.id, api_key: @admin.api_key
-    expect(response.status).to eq(200)
-    data = JSON.parse(response.body)
-    expect(data['id']).to eq(directed_relationship.id)
-  end
-
-  it 'should allow for multiple ids' do
-    default_setup relationships: true
-    paris = FactoryGirl.create :paris
-    FactoryGirl.create :relation, from_kind: @mona_lisa.kind, to_kind: @last_supper.kind
-    FactoryGirl.create :is_located_at, from_kind: @mona_lisa.kind, to_kind: paris.kind
-    Relationship.relate_and_save @mona_lisa, 'is related to', @last_supper
-    Relationship.relate_and_save @mona_lisa, 'is located at', paris
-
-    allow_any_instance_of(described_class).to receive(:current_user) do
-      User.admin
+  context 'as admin' do
+    before :each do
+      current_user User.admin
     end
 
-    get :index, from_kind_id: @people.id
-    expect(JSON.parse(response.body)['total']).to eq(2)
+    it 'should GET index' do
+      get :index
+      expect_collection_response total: 14
+    end
 
-    get :index, from_kind_id: @works.id
-    expect(JSON.parse(response.body)['total']).to eq(5)
+    it 'should GET show' do
+      get :show, id: DirectedRelationship.first.id
+      expect(response).to be_success
+      expect(json['relation_name']).to be_a(String)
+      expect(json['relationship']).to be_nil
+    end
 
-    get :index, from_kind_id: "#{@works.id},#{@people.id}"
-    expect(JSON.parse(response.body)['total']).to eq(7)
+    it 'should GET show' do
+      get :show, id: DirectedRelationship.first.id, include: 'relationship'
+      expect(response).to be_success
+      expect(json['relation_name']).to be_a(String)
+      expect(json['relationship']).to be_a(Hash)
+    end
 
-    get :index, to_kind_id: @people.id
-    expect(JSON.parse(response.body)['total']).to eq(2)
+    it 'should GET index with pagination & filters' do
+      louvre = Entity.find_by!(name: 'Louvre')
+      mona_lisa = Entity.find_by!(name: 'Mona Lisa')
+      works = Kind.find_by!(name: 'work')
 
-    get :index, to_kind_id: @works.id
-    expect(JSON.parse(response.body)['total']).to eq(5)
+      get :index, per_page: 3
+      expect_collection_response count: 3
 
-    get :index, to_kind_id: "#{@works.id},#{@people.id}"
-    expect(JSON.parse(response.body)['total']).to eq(7)
+      get :index, per_page: 5, page: 3
+      expect_collection_response count: 4
 
-    get :index, from_entity_id: "#{@last_supper.id},#{paris.id}"
-    expect(JSON.parse(response.body)['total']).to eq(3)
+      get :index, from_entity_id: louvre.id
+      expect_collection_response total: 2
 
-    get :index, to_entity_id: "#{@last_supper.id},#{paris.id}"
-    expect(JSON.parse(response.body)['total']).to eq(3)
+      get :index, relation_name: 'shows'
+      expect_collection_response total: 2
+
+      get :index, relation_name: 'is related to'
+      expect_collection_response total: 2
+
+      get :index, relation_name: 'is related to', from_entity_id: mona_lisa.id
+      expect_collection_response total: 1
+
+      get :index, from_kind_id: works.id
+      expect_collection_response total: 7
+
+      get :index, to_kind_id: Kind.medium_kind_id
+      expect_collection_response total: 2
+
+      get :index, except_to_kind_id: Kind.medium_kind_id
+      expect_collection_response total: 12
+
+      get :index, from_entity_id: "#{louvre.id},#{mona_lisa.id}"
+      expect_collection_response total: 6
+
+      get :index, to_entity_id: "#{louvre.id},#{mona_lisa.id}"
+      expect_collection_response total: 6
+
+      get :index, from_kind_id: "#{works.id},#{Kind.medium_kind_id}"
+      expect_collection_response total: 9
+
+      get :index, to_kind_id: "#{works.id},#{Kind.medium_kind_id}"
+      expect_collection_response total: 9
+
+      get :index, except_to_kind_id: "#{works.id},#{Kind.medium_kind_id}"
+      expect_collection_response total: 5
+
+      get :index, relation_name: "shows,is located in"
+      expect_collection_response total: 4
+    end
   end
-
-  it 'should include properties when requested' do
-    default_setup
-    Relationship.relate_and_save(@leonardo, 'has created', @mona_lisa, [
-      'perhaps'
-    ])
-
-    get :index, api_key: User.admin.api_key, include: 'properties'
-    rs_data = JSON.parse(response.body)['records'].first
-    expect(rs_data['properties']).to eq(['perhaps'])
-  end
-
 end

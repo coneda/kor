@@ -1,5 +1,4 @@
 class CredentialsController < JsonController
-  
   def index
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
@@ -28,12 +27,12 @@ class CredentialsController < JsonController
   # end
 
   def create
-    @credential = Credential.new(credential_params)
+    @record = Credential.new(credential_params)
 
-    if @credential.save
-      render_200 I18n.t('objects.create_success', :o => @credential.name)
+    if @record.save
+      render_200 I18n.t('objects.create_success', :o => @record.name)
     else
-      render_406 @credential.errors
+      render_406 @record.errors
     end
   end
 

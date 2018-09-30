@@ -12,10 +12,16 @@ class CollectionsController < JsonController
     
     @total = @records.count
     @records = @records.pageit(page, per_page)
+    render 'json/index'
   end
 
   def show
-    @collection = Collection.find(params[:id])
+    if current_user.admin?
+      @record = Collection.find(params[:id])
+    else
+      @record = Kor::Auth.authorized_collections(current_user).find(params[:id])
+    end
+    render 'json/show'
   end
 
   # def new
@@ -24,51 +30,50 @@ class CollectionsController < JsonController
   
   # TODO: check if this can actually work and if its save. Would be best to
   # ditch the feature
-  def edit_personal
-    @collection = Collection.joins(:owner).first
-  end
-  
-  # TODO: test this
-  def merge
-    @collection = Collection.find(params[:id])
-    target = Collection.find(params[:collection_id])
-    
-    if authorized?(:delete, @collection) && authorized?(:create, target)
-      Entity.where(collection_id: @collection.id).update_all collection_id: target.id
-      render_200 I18n.t('messages.entities_moved_to_collection', o: target.name)
-    else
-      render_403
-    end
-  end
+  # def edit_personal
+  #   @collection = Collection.joins(:owner).first
+  # end
   
   def create
-    @collection = Collection.new(collection_params)
+    @record = Collection.new(collection_params)
 
-    if @collection.save
-      render_200 I18n.t('objects.create_success', o: @collection.name)
+    if @record.save
+      render_200 I18n.t('objects.create_success', o: @record.name)
     else
-      render_406 @collection.errors
+      render_406 @record.errors
     end
   end
 
   def update
-    @collection = Collection.find(params[:id])
+    @record = Collection.find(params[:id])
 
-    if @collection.update_attributes(collection_params)
-      render_200 I18n.t('objects.update_success', o: @collection.name)
+    if @record.update_attributes(collection_params)
+      render_200 I18n.t('objects.update_success', o: @record.name)
     else
-      render_406 @collection.errors
+      render_406 @record.errors
     end
   end
 
   def destroy
-    @collection = Collection.find(params[:id])
+    @record = Collection.find(params[:id])
     
-    if @collection.entities.count == 0
-      @collection.destroy
-      render_200 I18n.t('objects.destroy_success', o: @collection.name)
+    if @record.entities.count == 0
+      @record.destroy
+      render_200 I18n.t('objects.destroy_success', o: @record.name)
     else
-      render_400 I18n.t('errors.collection_not_empty_on_delete', name: @collection.name)
+      render_400 I18n.t('errors.collection_not_empty_on_delete', name: @record.name)
+    end
+  end
+
+  def merge
+    @record = Collection.find(params[:id])
+    target = Collection.find(params[:collection_id])
+    
+    if authorized?(:delete, @record) && authorized?(:create, target)
+      Entity.where(collection_id: @record.id).update_all collection_id: target.id
+      render_200 I18n.t('messages.entities_moved_to_collection', o: target.name)
+    else
+      render_403
     end
   end
   

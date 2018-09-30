@@ -28,17 +28,6 @@ Rails.application.routes.draw do
     end
   end
 
-  defaults format: :json do
-    resources :kinds, except: ['edit', 'new'] do
-      resources :fields, except: ['edit', 'new', 'index'] do
-        collection do
-          get :types
-        end
-      end
-      resources :generators, except: ['edit', 'new', 'index']
-    end
-  end
-
   resources :system_groups
   
   # match '/edit_self', :to => 'users#edit_self', :via => :get
@@ -88,7 +77,8 @@ Rails.application.routes.draw do
   get '/resolve(/:kind)/:id', :to => 'identifiers#resolve'
 
   defaults format: 'json' do
-    match 'profile', :to => 'users#update_self', :via => 'patch'
+    patch 'profile', :to => 'users#update_self'
+    get 'fields/types', to: 'fields#types'
     # match 'clipboard', :to => 'tools#clipboard', :via => :get
 
     controller 'session' do
@@ -118,6 +108,11 @@ Rails.application.routes.draw do
     #   match 'help', :action => 'help', :via => :get
     # end
 
+    resources :kinds, except: ['edit', 'new'] do
+      resources :fields, except: ['edit', 'new', 'index']
+      resources :generators, except: ['edit', 'new', 'index']
+    end
+
     resources :relations, except: [:new, :edit] do
       collection do
         get 'names'
@@ -131,12 +126,12 @@ Rails.application.routes.draw do
     resources :relationships, only: [:index, :show], controller: 'directed_relationships'
     resources :relationships, only: [:create, :update, :destroy]
 
-    resources :authority_group_categories do
+    resources :authority_group_categories, except: ['new', 'edit'] do
       collection do
         get :flat
       end
     end
-    resources :authority_groups do
+    resources :authority_groups, except: ['new', 'edit'] do
       member do
         get 'download_images'
         # get 'edit_move'
@@ -145,7 +140,7 @@ Rails.application.routes.draw do
 
       collection do
         post 'add', action: 'add_to'
-        post 'remove_from', action: 'remove_from'
+        # post 'remove_from', action: 'remove_from'
       end
     end
     
@@ -185,11 +180,11 @@ Rails.application.routes.draw do
     end
 
     resources :collections, except: ['edit', 'new'] do
-      collection do
-        get 'edit_personal'
-      end
+      # collection do
+      #   get 'edit_personal'
+      # end
       member do
-        get 'edit_merge'
+        # get 'edit_merge'
         patch 'merge'
       end
     end

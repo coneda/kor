@@ -1,6 +1,6 @@
 json.extract! record, :id, :name
 
-if inclusion.include?('ancestry')
+if inclusion.include?('ancestors')
   json.ancestors record.self_and_ancestors do |ancestor|
     json.partial! 'customized', record: ancestor, inclusion: []
   end

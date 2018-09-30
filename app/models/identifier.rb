@@ -15,8 +15,8 @@ class Identifier < ActiveRecord::Base
       end
     else
       Entity.
-        joins(:identifiers).
-        find_by!('entities.id = :id OR uuid = :id OR identifiers.value = :id', id: id)
+        joins('LEFT JOIN identifiers i ON i.entity_id = entities.id').
+        find_by!('entities.id = :id OR uuid = :id OR i.value = :id', id: id)
     end
   end
 

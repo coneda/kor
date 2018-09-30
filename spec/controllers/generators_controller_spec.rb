@@ -1,75 +1,70 @@
 require 'rails_helper'
 
-describe GeneratorsController, type: :controller do
-
+RSpec.describe GeneratorsController, type: :controller do
   render_views
 
-  def data
-    JSON.parse(response.body)
+  it 'should GET show' do
+    generator = Generator.first
+    get :show, id: generator.id, kind_id: generator.kind_id
+    expect(response).to be_success
+    expect(json['directive']).to be_a(String)
+    expect(json['created_at']).to be_nil
   end
 
-  before :each do
-    request.headers['accept'] = 'application/json'
-    @people = FactoryGirl.create :people
-    @admin = FactoryGirl.create :admin
+  it 'should GET show with additions' do
+    generator = Generator.first
+    get :show, id: generator.id, kind_id: generator.kind_id, include: 'technical'
+    expect(response).to be_success
+    expect(Time.parse json['created_at']).to be < Time.now
   end
 
-
-  it 'should allow read access to everybody' do
-    get :index, kind_id: @people.id
-    expect(response.status).to eq(200)
+  it 'should not POST create' do
+    people = Kind.find_by! name: 'person'
+    post :create, kind_id: people.id, generator: {
+      name: 'viaf', directive: 'https://viaf.org/id/{{entity.dataset.viaf}}'
+    }
+    expect(response).to be_forbidden
   end
 
-  it 'should deny write access to non-kind-admins' do
-    @guest = FactoryGirl.create :guest
+  it 'should not PATCH update' do
+    generator = Generator.first
+    post :update, kind_id: generator.kind_id, id: generator.id, generator: {
+      directive: 'https://wendig.io/viaf/{{entity.dataset.viaf}}'
+    }
+    expect(response).to be_forbidden
+  end
 
-    post :create, kind_id: @people.id
-    expect(response.status).to eq(403)
+  it 'should not DELETE destroy' do
+    generator = Generator.first
+    delete :destroy, kind_id: generator.kind_id, id: generator.id
+    expect(response).to be_forbidden
   end
 
   context 'as admin' do
     before :each do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@admin)
+      current_user User.admin
     end
 
-    it 'should comply with response policy' do
-      post :create, kind_id: @people.id, generator: {
-        name: 'gnd_id', directive: '<span>something</span>'
+    it 'should POST create' do
+      people = Kind.find_by! name: 'person'
+      post :create, kind_id: people.id, generator: {
+        name: 'viaf', directive: 'https://viaf.org/id/{{entity.dataset.viaf}}'
       }
-      expect(response.status).to eq(200)
-      expect(data['messages'].first).to match(/^[^\s]+ has been created$/)
-      id = data['record']['id']
-      expect(id).to be_a(Integer)
-
-      patch :update, kind_id: @people.id, id: id, generator: {
-        directive: '<span>something</span>'
-      }
-      expect(response.status).to eq(200)
-      expect(data['messages'].first).to match(/^[^\s]+ has been changed$/)
-      expect(data['record']['id']).to be_a(Integer)
-
-      get :index, kind_id: @people.id
-      expect(response.status).to eq(200)
-      expect(data['records'].size).to eq(1)
-      expect(data['page']).to eq(1)
-      expect(data['total']).to eq(1)
-      expect(data['per_page']).to eq(1)
-
-      delete :destroy, kind_id: @people.id, id: id
-      expect(response.status).to eq(200)
-      expect(data['messages'].first).to match(/^[^\s]+ has been deleted$/)
-      expect(data['record']['id']).to be_a(Integer)      
+      expect_created_response
     end
 
-    it 'should allow to set attributes' do
-      post :create, kind_id: @people.id, klass: 'generators::String', generator: {
-        name: 'gnd_link', directive: '<span>something</span>'
+    it 'should PATCH update' do
+      generator = Generator.first
+      post :update, kind_id: generator.kind_id, id: generator.id, generator: {
+        directive: 'https://wendig.io/viaf/{{entity.dataset.viaf}}'
       }
-      expect(response.status).to eq(200)
-      expect(data['record']['name']).to eq('gnd_link')
-      expect(data['record']['directive']).to eq('<span>something</span>')
+      expect_updated_response
     end
 
+    it 'should DELETE destroy' do
+      generator = Generator.first
+      delete :destroy, kind_id: generator.kind_id, id: generator.id
+      expect_deleted_response
+    end
   end
-
 end

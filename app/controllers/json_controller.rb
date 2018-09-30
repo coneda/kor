@@ -148,6 +148,10 @@ class JsonController < BaseController
       param_to_array(params[:include], ids: false)
     end
 
+    def array_param(key, options = {})
+      param_to_array params[key], options
+    end
+
     def param_to_array(value, options = {})
       options.reverse_merge! ids: true
 
@@ -164,7 +168,7 @@ class JsonController < BaseController
     end
 
     def zip_download(group, entities)
-      unless entities.empty?
+      if !entities.empty?
         zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/download.zip", 
           :user_id => current_user.id,
           :file_name => "#{group.name}.zip"
@@ -182,8 +186,7 @@ class JsonController < BaseController
           redirect_to url_for(controller: 'downloads', action: 'show', uuid: download.uuid)
         end
       else
-        flash[:notice] = I18n.t('notices.no_entities_in_group')
-        redirect_to group
+        render_200 I18n.t('notices.no_entities_in_group')
       end
     end
 

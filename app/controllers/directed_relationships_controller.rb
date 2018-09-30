@@ -1,40 +1,33 @@
 class DirectedRelationshipsController < JsonController
 
-  skip_before_action :legal, :authentication, :authorization, :only => [:index]
+  skip_before_action :legal, :auth
 
   def index
-    params[:from_entity_id] ||= params[:entity_id]
-
-    params[:include] = param_to_array(params[:include], ids: false)
-    params[:from_entity_id] = param_to_array(params[:from_entity_id])
-    params[:to_entity_id] = param_to_array(params[:to_entity_id])
-    params[:relation_name] = param_to_array(params[:relation_name], ids: false)
-    params[:from_kind_id] = param_to_array(params[:from_kind_id])
-    params[:to_kind_id] = param_to_array(params[:to_kind_id])
-    params[:except_to_kind_id] = param_to_array(params[:except_to_kind_id])
-
     if user = (current_user || User.guest)
       @records = DirectedRelationship.
+        allowed(user, :view).
         order_by_name.
-        by_from_entity(params[:from_entity_id]).
-        by_to_entity(params[:to_entity_id]).
-        by_relation_name(params[:relation_name]).
-        by_from_kind(params[:from_kind_id]).
-        by_to_kind(params[:to_kind_id]).
-        except_to_kind(params[:except_to_kind_id]).
-        allowed(user, :view)
+        by_from_entity(array_param :from_entity_id).
+        by_to_entity(array_param :to_entity_id).
+        by_relation_name(array_param :relation_name, ids: false).
+        by_from_kind(array_param :from_kind_id).
+        by_to_kind(array_param :to_kind_id).
+        except_to_kind(array_param :except_to_kind_id)
 
       @total = @records.count
       @records = @records.pageit(page, per_page)
+      render template: 'json/index'
     else
       render_403
     end
   end
 
   def show
-    @directed_relationship = DirectedRelationship.find(params[:id])
+    @record = DirectedRelationship.find(params[:id])
 
-    unless authorized_for_relationship? @directed_relationship
+    if authorized_for_relationship? @record
+      render template: 'json/show'
+    else
       render_403
     end
   end

@@ -1,8 +1,6 @@
-additions ||= []
+json.extract! record, :id, :kind_id, :name, :directive
 
-json.extract! generator, :id, :kind_id, :name, :directive
-
-if additions.request?('technical')
-  json.created_at generator.created_at
-  json.updated_at generator.updated_at
+if inclusion.request?('technical')
+  json.created_at record.created_at
+  json.updated_at record.updated_at
 end

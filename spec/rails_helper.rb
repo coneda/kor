@@ -70,7 +70,9 @@ RSpec.configure do |config|
     # DatabaseCleaner.strategy = :transaction
 
     Rails.application.load_seed
-    default_setup relationships: true
+    
+    Delayed::Worker.delay_jobs = false
+    default_setup relationships: true, pictures: true
   end
 
   # config.before :each do

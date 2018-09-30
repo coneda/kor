@@ -2,6 +2,8 @@ class IdentifiersController < JsonController
 
   skip_before_filter :auth, :legal
 
+  # This should still use the auth system to see if the user is allowed to see
+  # the relevant entity
   def resolve
     entity = Identifier.resolve!(params[:id], params[:kind])
 

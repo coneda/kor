@@ -5,6 +5,7 @@ class AuthorityGroupCategoriesController < JsonController
 
   def flat
     @records = AuthorityGroupCategory.all
+    @total = @records.count
     render 'json/index'
   end
   
@@ -35,18 +36,17 @@ class AuthorityGroupCategoriesController < JsonController
   # end
 
   def create
-    @authority_group_category = AuthorityGroupCategory.new(authority_group_category_params)
+    @record = AuthorityGroupCategory.new(authority_group_category_params)
 
-    if @authority_group_category.save
+    if @record.save
       if params[:parent_id].present?
-        @authority_group_category.move_to_child_of(AuthorityGroupCategory.find(params[:parent_id]))
-        @authority_group_category.save
-        redirect_to authority_group_category_path(params[:parent_id])
+        @record.move_to_child_of(AuthorityGroupCategory.find(params[:parent_id]))
+        @record.save
       end
 
-      render_200 I18n.t('objects.create_success', :o => @authority_group_category.name)
+      render_200 I18n.t('objects.create_success', :o => @record.name)
     else
-      render_406 @authority_group_category.errors
+      render_406 @record.errors
     end
   end
 

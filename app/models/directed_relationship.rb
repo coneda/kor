@@ -13,6 +13,7 @@ class DirectedRelationship < ApplicationRecord
   }
   def self.allowed(user, policy = :view)
     collection_ids = Kor::Auth.authorized_collections(user, policy).map{|c| c.id}
+    with_from.where('froms.collection_id IN (?)', collection_ids).
     with_to.where('tos.collection_id IN (?)', collection_ids)
   end
   scope :by_from_entity, lambda { |entity_id| 

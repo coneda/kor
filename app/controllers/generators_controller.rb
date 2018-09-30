@@ -6,34 +6,35 @@ class GeneratorsController < JsonController
   end
   
   def show
-    @generator = @generators.find(params[:id])
+    @record = @generators.find(params[:id])
+    render template: 'json/show'
   end
 
   def create
-    @generator = @generators.build(generator_params)
-    @generator.kind_id = params[:kind_id]
+    @record = @generators.build(generator_params)
+    @record.kind_id = params[:kind_id]
 
-    if @generator.save
-      render_200 I18n.t('objects.create_success', o: @generator.name)
+    if @record.save
+      render_200 I18n.t('objects.create_success', o: @record.name)
     else
-      render_406 @generator.errors
+      render_406 @record.errors
     end
   end
 
   def update
-    @generator = @generators.find(params[:id])
+    @record = @generators.find(params[:id])
 
-    if @generator.update_attributes(generator_params)
-      render_200 I18n.t('objects.update_success', o: @generator.name)
+    if @record.update_attributes(generator_params)
+      render_200 I18n.t('objects.update_success', o: @record.name)
     else
-      render_406 @generator.errors
+      render_406 @record.errors
     end
   end
 
   def destroy
-    @generator = @generators.find(params[:id])
-    @generator.destroy
-    render_200 I18n.t('objects.destroy_success', o: @generator.name)
+    @record = @generators.find(params[:id])
+    @record.destroy
+    render_200 I18n.t('objects.destroy_success', o: @record.name)
   end
 
   protected

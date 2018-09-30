@@ -623,7 +623,7 @@ en:
         %{link}
       
   messages:
-    entities_moved_to_collection: "the entity has been moved to collection '%{o}'"
+    entities_moved_to_collection: "all entities have been moved to collection '%{o}'"
     entities_added_to_group: "the entities have been added to the selected entity group"
     no_user_groups: "there are no personal groups available"
     no_authority_groups: "there are no global groups available"
@@ -1031,7 +1031,6 @@ en:
         would_result_in_cycle: would result in a circular schema
         cannot_be_changed: can't be changed
         field_type_invalid: field type invalid
-        cannot_be_changed: can't be changed for medium type
         cannot_restrict_less_than_parent: cannot allow more endpoints than its ancestors
 
   # Mime types

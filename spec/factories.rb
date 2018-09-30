@@ -365,24 +365,24 @@ FactoryGirl.define do
   end
 
   factory :authority_group do
-    name "An authority group"
+    name "seminar"
   end
 
-  factory :user_group do
-    name "A user group"
-    user_id { User.first.id }
-  end
+  # factory :user_group do
+  #   name "A user group"
+  #   user_id { User.first.id }
+  # end
 
-  factory :system_group do
-    name "A system group"
+  # factory :system_group do
+  #   name "A system group"
 
-    factory :invalids do
-      name 'invalid'
-    end
-  end
+  #   factory :invalids do
+  #     name 'invalid'
+  #   end
+  # end
 
-  factory :exception_log do
+  # factory :exception_log do
 
-  end
+  # end
   
 end

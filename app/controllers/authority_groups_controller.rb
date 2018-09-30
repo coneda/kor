@@ -17,16 +17,16 @@ class AuthorityGroupsController < JsonController
     render 'json/index'
   end
 
-  def mark
-    @authority_group = AuthorityGroup.find(params[:id])
-    ids = @authority_group.entities.allowed(current_user, :view).map{|e| e.id}
+  # def mark
+  #   @authority_group = AuthorityGroup.find(params[:id])
+  #   ids = @authority_group.entities.allowed(current_user, :view).map{|e| e.id}
 
-    current_user.clipboard_add ids
+  #   current_user.clipboard_add ids
     
-    flash[:notice] = I18n.t("objects.marked_entities_success")
+  #   flash[:notice] = I18n.t("objects.marked_entities_success")
     
-    redirect_to :action => 'show'
-  end
+  #   redirect_to :action => 'show'
+  # end
   
   def download_images
     @authority_group = AuthorityGroup.find(params[:id])
@@ -45,14 +45,14 @@ class AuthorityGroupsController < JsonController
     render_200 I18n.t('messages.entities_added_to_group')
   end
 
-  def remove_from
-    @authority_group = AuthorityGroup.find(params[:id])
-    entity_ids = Kor.array_wrap(params[:entity_ids])
-    entities = viewable_entities.find entity_ids
-    @authority_group.remove_entities(entities)
+  # def remove_from
+  #   @authority_group = AuthorityGroup.find(params[:id])
+  #   entity_ids = Kor.array_wrap(params[:entity_ids])
+  #   entities = viewable_entities.find entity_ids
+  #   @authority_group.remove_entities(entities)
 
-    redirect_to @authority_group
-  end
+  #   redirect_to @authority_group
+  # end
   
   def show
     @record = AuthorityGroup.find(params[:id])

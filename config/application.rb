@@ -152,3 +152,4 @@ end
 # TODO: fix group (user, admin, authority, category) naming: urls, actions, api urls etc
 # TODO: remove "sleep" from tests
 # TODO: do something useful when there was a 500
+# TODO: find smart way to test pagination in controllers
