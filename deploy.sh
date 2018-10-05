@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # Copyright (c) 2014 Moritz Schepp <moritz.schepp@gmail.com>
 # Distributed under the GNU GPL v3. For full terms see
