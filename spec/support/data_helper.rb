@@ -178,6 +178,7 @@ module DataHelper
 
     admin = User.find_by(name: 'name')
     jdoe = FactoryGirl.create :jdoe, :groups => [students]
+    ldap = FactoryGirl.create :ldap_template
     
     Kor::Auth.grant default, :view, :to => students
     Kor::Auth.grant priv, :all, :to => admins

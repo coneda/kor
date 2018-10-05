@@ -9,9 +9,9 @@ class SettingsController < JsonController
   def update
     @settings = Kor::Settings.new
 
-    if params[:mtime]
-      @settings.mtime = Time.parse(params[:mtime])
-    end
+    # if params[:mtime]
+    #   @settings.mtime = Time.parse(params[:mtime])
+    # end
 
     if @settings.update settings_params
       human_name = I18n.t('activerecord.models.setting', count: :other)

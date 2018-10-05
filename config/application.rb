@@ -156,3 +156,4 @@ end
 # TODO: change controller specs to request specs (like already done for oai controllers)
 # TODO: add ONE validation test to each controller/request suite
 # TODO: fix "can't" and "cannot" in all translations
+# TODO: add more tests to settings_controller, session_controller

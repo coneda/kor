@@ -79,7 +79,7 @@ module Kor::Auth
                 mail = mail.split(Regexp.new(s)).first
                 full_name = full_name.split(Regexp.new(s)).first if full_name
               end
-              
+
               data = {
                 parent_username: source['map_to'],
                 email: mail,
@@ -101,14 +101,14 @@ module Kor::Auth
   end
 
   def self.script_sources
-    (config['sources'] || []).select do |key, source|
+    (sources || {}).select do |key, source|
       type = source['type'] || 'script'
       type == 'script'
     end
   end
 
   def self.env_sources
-    (config['sources'] || []).select do |key, source|
+    (sources || {}).select do |key, source|
       source['type'] == 'env'
     end
   end
@@ -129,7 +129,7 @@ module Kor::Auth
       else
         Rails.logger.info "user couldn't be updated: #{user.errors.full_messages.inspect}"
 
-        if config['fail_on_update_errors']
+        if Kor.settings['fail_on_update_errors']
           Rails.logger.info "authentication failed due to update errors"
           nil
         else
@@ -258,9 +258,16 @@ module Kor::Auth
     ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
   end
 
-  # TODO: fix this, since it has to read it from env vars now
-  def self.config
-    @config ||= Kor.config['auth']
+  def self.sources
+    @sources ||= begin
+      {}.tap do |results|
+        ENV.each do |key, value|
+          if m = key.match(/^AUTH_SOURCE_([A-Z]+)_([A-Z_]+)$/)
+            results[m[1].downcase] ||= {}
+            results[m[1].downcase][m[2].downcase] = value
+          end
+        end
+      end
+    end
   end
-
 end

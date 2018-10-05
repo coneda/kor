@@ -13,10 +13,9 @@ class SessionController < JsonController
   def env_auth
     if user = Kor::Auth.env_login(request.env)
       create_session(user)
-      render_200 I18n.t('notices.logged_in')
-    else
-      render_403
     end
+
+    redirect_to '/'
   end
   
   # TODO: make this more secure!

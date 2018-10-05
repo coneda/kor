@@ -20,7 +20,13 @@ module Kor
     end
 
     def [](key)
-      @attributes[key] || defaults[key]
+      @attributes.has_key?(key) ?
+      @attributes[key] :
+      defaults[key]
+    end
+
+    def []=(key, value)
+      update key => value
     end
 
     def fetch(key)
@@ -78,7 +84,7 @@ module Kor
       if File.exists?(filename)
         file_version = JSON.parse(File.read filename)['version']
         if file_version
-          file_version > self['version']
+          file_version > self['version'].to_i
         end
       end
     end

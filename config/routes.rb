@@ -13,9 +13,9 @@ Rails.application.routes.draw do
   get '/blaze', :to => 'static#blaze', :as => :web
 
   root :to => 'main#welcome', as: 'root'
-  get '/welcome', :to => 'main#welcome'
+  # get '/welcome', :to => 'main#welcome'
   
-  get '/authentication/form' => redirect('/login')
+  # get '/authentication/form' => redirect('/login')
   
   controller 'inplace' do
     match '/kor/inplace/tags', :action => 'tag_list', :via => :get
@@ -75,6 +75,7 @@ Rails.application.routes.draw do
 
   get '/downloads/:uuid', :to => 'downloads#show'
   get '/resolve(/:kind)/:id', :to => 'identifiers#resolve'
+  get '/env_auth', to: 'session#env_auth'
 
   defaults format: 'json' do
     # patch 'profile', :to => 'users#update_profile'
@@ -82,10 +83,10 @@ Rails.application.routes.draw do
     # match 'clipboard', :to => 'tools#clipboard', :via => :get
 
     controller 'session' do
-      match 'session', action: 'show', via: 'get'
-      match 'login', action: 'create', via: 'post'
-      match 'logout', action: 'destroy', via: 'delete'
-      match 'reset_password', action: 'reset_password', via: 'post'
+      get 'session', action: 'show'
+      post 'login', action: 'create'
+      delete 'logout', action: 'destroy'
+      post 'reset_password', action: 'reset_password'
     end
 
     controller 'main' do
@@ -218,10 +219,6 @@ Rails.application.routes.draw do
     end
   end
 
-  controller 'session' do
-    match '/env_auth', action: 'create', via: :get
-  end
-
   scope 'mirador', controller: 'api/iiif/media', format: :json do
     root action: 'index', as: 'mirador'
     match ':id', action: 'show', via: :get, as: :iiif_manifest
@@ -256,16 +253,16 @@ Rails.application.routes.draw do
     end
   end
 
-  scope "tpl", :module => "tpl", :via => :get do
-    resources :entities, :only => [:show] do
-      collection do
-        get :multi_upload
-        get :isolated
-        get :gallery
-      end
-    end
+  # scope "tpl", :module => "tpl", :via => :get do
+  #   resources :entities, :only => [:show] do
+  #     collection do
+  #       get :multi_upload
+  #       get :isolated
+  #       get :gallery
+  #     end
+  #   end
 
-    match "denied", :action => "denied"
-  end
+  #   match "denied", :action => "denied"
+  # end
 
 end
