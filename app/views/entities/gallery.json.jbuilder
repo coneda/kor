@@ -1,6 +1,6 @@
 json.total @total
-json.page @page
-json.per_page @per_page
+json.page page
+json.per_page per_page
 
 json.records @records do |record|
   json.partial! 'customized', entity: record

@@ -154,18 +154,19 @@ class EntitiesController < JsonController
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
 
     search = Kor::Search.new(current_user,
+      terms: params[:terms],
+      name: params[:name],
+      id: params[:id],
       collection_id: params[:collection_id],
       authority_group_id: params[:authority_group_id],
       user_group_id: params[:user_group_id],
       kind_id: params[:kind_id],
-      id: params[:id],
-      terms: params[:terms],
-      name: params[:name],
+      media: params[:media],
+      relation_name: params[:relation_name],
       dating: params[:dating],
+
       page: page,
       per_page: per_page,
-      no_media: params[:no_media],
-      relation_name: params[:relation_name]
     )
 
     search.run
@@ -208,32 +209,32 @@ class EntitiesController < JsonController
     format.json {render json: @relations}
   end
 
-  def new
-    if authorized? :create, Collection.all, :required => :any
-      @entity = Entity.new(:collection_id => current_user.default_collection_id)
-      kind = Kind.find(params[:kind_id])
-      @entity.kind = kind
-      @entity.no_name_statement = 'enter_name'
-      @entity.medium = Medium.new if @entity.kind_id == Kind.medium_kind.id
-    else
-      render_403
-    end
-  end
+  # def new
+  #   if authorized? :create, Collection.all, :required => :any
+  #     @entity = Entity.new(:collection_id => current_user.default_collection_id)
+  #     kind = Kind.find(params[:kind_id])
+  #     @entity.kind = kind
+  #     @entity.no_name_statement = 'enter_name'
+  #     @entity.medium = Medium.new if @entity.kind_id == Kind.medium_kind.id
+  #   else
+  #     render_403
+  #   end
+  # end
   
-  def multi_upload
-    render :layout => "blaze"
-  end
+  # def multi_upload
+  #   render :layout => "blaze"
+  # end
 
-  def edit
-    @entity = Entity.find(params[:id])
-    # @entity.datings.build label: @entity.kind.dating_label
+  # def edit
+  #   @entity = Entity.find(params[:id])
+  #   # @entity.datings.build label: @entity.kind.dating_label
 
-    if authorized? :edit, @entity.collection
-      render :action => 'edit'  
-    else
-      render_403
-    end
-  end
+  #   if authorized? :edit, @entity.collection
+  #     render :action => 'edit'  
+  #   else
+  #     render_403
+  #   end
+  # end
 
   def create
     @entity = Entity.new

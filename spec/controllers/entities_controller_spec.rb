@@ -2,11 +2,41 @@ require 'rails_helper'
 
 RSpec.describe EntitiesController, type: :controller do
   render_views
-  
-  include DataHelper
-  
+  # include DataHelper
+
+  it 'should GET index' do
+    # gallery, isolated, recent, random etc.
+    get 'index'
+    expect_collection_response count: 0
+
+    expect(Kor::Search).to receive(:new).with(User.guest, hash_including(gallery: true))
+    get 'index', {
+      include: 'gallery',
+      isolated: false, recent: true, random: false
+  end
+  it 'should GET existence'
+
+  it 'should GET show'
+  it 'should GET metadata'
+  it 'should GET relation_counts' # merge with show?
+
+  it 'should not POST create'
+  it 'should not PATCH update'
+  it 'should not PATCH update_tags'
+  it 'should not POST merge'
+  it 'should not POST mass_relate'
+  it 'should not DELETE destroy'
+
+  context 'as jdoe' do
+
+  end
+
+  context 'as admin' do
+
+  end
+
   it "should destroy an entity" do
-    default_setup
+    # default_setup
     current_user @admin
     
     post :destroy, :id => @mona_lisa.id

@@ -5,8 +5,8 @@ class KindsController < JsonController
 
   def index
     @records = Kind.all
-    @records = @kinds.active if params.has_key?(:only_active)
-    @records = @kinds.without_media if params.has_key?(:no_media)
+    @records = @records.active if params.has_key?(:only_active)
+    @records = @records.without_media if params.has_key?(:no_media)
     @total = @records.count
     render template: 'json/index'
   end

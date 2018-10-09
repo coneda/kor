@@ -9,7 +9,7 @@ json.session do
 
     json.user do
       json.partial! 'users/customized', {
-        user: current_user,
+        record: current_user,
         additions: ['auth', 'data', 'auth']
       }
     end
