@@ -77,40 +77,50 @@ class Kor::Elastic
         },
         'mappings' => {
           "entities" => {
+            "dynamic_templates": [
+              {
+                "dataset": {
+                  "path_match": "dataset.*",
+                  "mapping": {
+                    "type": "text"
+                  }
+                }
+              }
+            ],
             "properties" => {
               "name" => {
-                "type" => "string"
+                "type" => "text"
                 # 'index_options' => 'docs',
                 # 'norms' => {'enabled' => false}
               },
               "distinct_name" => {
-                "type" => "string"
+                "type" => "text"
                 # 'index_options' => 'docs',
                 # 'norms' => {'enabled' => false}
               },
-              "subtype" => {"type" => "string"},
-              "synonyms" => {"type" => "string"},
-              "comment" => {"type" => "string"},
-              "dataset" => {
-                "type" => "object",
-                "properties" => {
-                  "_default_" => {"type" => "string"}
-                }
-              },
+              "subtype" => {"type" => "text"},
+              "synonyms" => {"type" => "text"},
+              "comment" => {"type" => "text"},
+              # "dataset" => {
+              #   "type" => "object",
+              #   "properties" => {
+              #     "_default_" => {"type" => "text"}
+              #   }
+              # },
               "properties" => {
                 "type" => "object", 
                 "properties" => {
-                  "label" => {"type" => "string"},
-                  "value" => {"type" => "string"}
+                  "label" => {"type" => "text"},
+                  "value" => {"type" => "text"}
                 }
               },
-              "id" => {"type" => "string", "index" => "not_analyzed"},
-              "uuid" => {"type" => "string"},
-              "tags" => {"type" => "string", "analyzer" => "keyword"},
-              "related" => {"type" => "string"},
-              'degree' => {'type' => 'float'},
+              "id" => {"type" => "keyword"},
+              "uuid" => {"type" => "keyword"},
+              "tags" => {"type" => "text", "analyzer" => "keyword"},
+              "related" => {"type" => "text"},
+              'degree' => {'type' => 'long'},
 
-              "sort" => {"type" => "string", "index" => "not_analyzed"},
+              "sort" => {"type" => "keyword"},
             }
           }
         }
@@ -357,6 +367,7 @@ class Kor::Elastic
     )
 
     # puts JSON.pretty_generate(data)
+    # binding.pry
 
     data['explain'] = true unless Rails.env.production?
     response = self.class.request "post", "/entities/_search", nil, data
@@ -465,7 +476,7 @@ class Kor::Elastic
       Rails.logger.info "ELASTIC REQUEST: #{method} #{path}\n#{body.inspect}"
 
       query['token'] = config['token'] if config['token']
-      headers.reverse_merge 'content-type' => 'application/json', 'accept' => 'application/json'
+      headers.reverse_merge! 'content-type' => 'application/json', 'accept' => 'application/json'
       url = "http://#{config['host']}:#{config['port']}#{path}"
       client.request(method, url, query, body, headers)
     end
