@@ -219,5 +219,15 @@ describe Kor::Dating::Parser do
     expect(subject.transform("3. Drittel 16. Jh.")).to eql(:from => Date.new(1566, 1, 1), :to => Date.new(1599, 12, 31))
   end
 
+  it 'should deal with leap years' do
+    expect(subject).to parse('29.2.1996')
+
+    # parsing should work, but the transform should fail
+    expect(subject).to parse('29.2.1994')
+
+    expect(subject.transform('29.2.1994')).to eq(nil)
+    expect(subject.transform('29.2.1994 bis 1.2.2013')).to eq(nil)
+  end
+
 end
 

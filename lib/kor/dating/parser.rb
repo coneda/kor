@@ -64,6 +64,9 @@ class Kor::Dating::Parser < Parslet::Parser
   
   def transform(input)
     Kor::Dating::Transform.new.apply(self.class.new.parse(input))
+  rescue Kor::Exception => e
+    Rails.logger.info e
+    nil
   end
   
 end

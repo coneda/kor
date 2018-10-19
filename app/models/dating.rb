@@ -62,6 +62,8 @@ class Dating < ActiveRecord::Base
       end
     rescue Parslet::ParseFailed => e
       nil
+    rescue Kor::Exception => e
+      nil
     end
   end
   
