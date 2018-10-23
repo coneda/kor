@@ -20,7 +20,7 @@
     "node-sass": "^4.5.0",
     "node-static": "^0.7.8",
     "onchange": "^3.2.1",
-    "parallelshell": "^2.0.0",
+    "parallelshell": "^3.0.0",
     "riot": "^3.2.1",
     "riot-route": "^3.1.0",
     "strftime": "^0.10.0",
