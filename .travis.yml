@@ -22,7 +22,7 @@ services:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install libav-tools imagemagick
-  - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.12.deb && sudo dpkg -i --force-confnew elasticsearch-5.6.12.de && sudo service elasticsearch restart
+  - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.12.deb && sudo dpkg -i --force-confnew elasticsearch-5.6.12.deb && sudo service elasticsearch restart
   - wget -N https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz -O geckodriver.tar.gz
   - tar xzf geckodriver.tar.gz
   - rm geckodriver.tar.gz
