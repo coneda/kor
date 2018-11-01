@@ -7,143 +7,140 @@ class EntitiesController < JsonController
   # respond_to :json, only: [:isolated]
 
   def metadata
-    @entity = viewable_entities.find(params[:id])
-    
-    if @entity
+    @entity = Entity.find(params[:id])
+
+    if allowed_to?(:view, @entity.collection)
       send_data(Kor::Export::MetaData.new(current_user).render(@entity),
         type: 'text/plain',
         filename: "#{@entity.id}.txt"
       )
     else
-      flash[:error] = I18n.t('errors.not_found')
-      redirect_to back_save
+      render_403
     end
   end
 
-  def gallery
-    params[:include] = param_to_array(params[:include], ids: false)
+  # def gallery
+  #   params[:include] = param_to_array(params[:include], ids: false)
 
-    entities = viewable_entities.
-      includes(:kind, :collection, :medium, :tags).
-      media.
-      newest_first
+  #   entities = viewable_entities.
+  #     includes(:kind, :collection, :medium, :tags).
+  #     media.
+  #     newest_first
 
-    @total = entities.count
-    @per_page = 16
-    @records = entities.pageit(params[:page], 16)
-  end
+  #   @total = entities.count
+  #   @per_page = 16
+  #   @records = entities.pageit(params[:page], 16)
+  # end
   
-  def invalid
-    if authorized? :delete
-      @per_page = 30
-      group = SystemGroup.find_or_create_by(name: 'invalid')
-      scope = group.entities.allowed(current_user, :delete)
-      @total = scope.count
-      @records = scope.pageit(page, per_page)
+  # def invalid
+  #   if authorized? :delete
+  #     @per_page = 30
+  #     group = SystemGroup.find_or_create_by(name: 'invalid')
+  #     scope = group.entities.allowed(current_user, :delete)
+  #     @total = scope.count
+  #     @records = scope.pageit(page, per_page)
 
-      render action: 'index'
-    else
-      render_403
-    end
-  end
+  #     render action: 'index'
+  #   else
+  #     render_403
+  #   end
+  # end
   
-  def recent
-    params[:include] = param_to_array(params[:include], ids: false)
+  # def recent
+  #   params[:include] = param_to_array(params[:include], ids: false)
 
-    if authorized? :edit
-      @per_page = 30
-      scope = Entity.
-        includes(:creator, :updater, :collection, :kind, :tags).
-        allowed(current_user, :edit).
-        without_media.
-        newest_first.
-        within_collections(params[:collection_id])
-      @total = scope.count
-      @records = scope.pageit(page, per_page)
+  #   if authorized? :edit
+  #     @per_page = 30
+  #     scope = Entity.
+  #       includes(:creator, :updater, :collection, :kind, :tags).
+  #       allowed(current_user, :edit).
+  #       without_media.
+  #       newest_first.
+  #       within_collections(params[:collection_id])
+  #     @total = scope.count
+  #     @records = scope.pageit(page, per_page)
 
-      render action: 'index'
-    else
-      render_403
-    end
-  end
+  #     render action: 'index'
+  #   else
+  #     render_403
+  #   end
+  # end
 
-  def isolated
-    params[:include] = param_to_array(params[:include], ids: false)
+  # def isolated
+  #   params[:include] = param_to_array(params[:include], ids: false)
 
-    if authorized? :edit
-      @per_page = 16
-      scope = Entity.
-        allowed(current_user, :view).
-        isolated.
-        newest_first.
-        includes(:kind, :collection, :tags, :medium)
+  #   if authorized? :edit
+  #     @per_page = 16
+  #     scope = Entity.
+  #       allowed(current_user, :view).
+  #       isolated.
+  #       newest_first.
+  #       includes(:kind, :collection, :tags, :medium)
 
-      @total = scope.count
-      @records = scope.pageit(page, per_page)
+  #     @total = scope.count
+  #     @records = scope.pageit(page, per_page)
 
-      render action: 'index'
-    else
-      render_403
-    end
-  end
+  #     render action: 'index'
+  #   else
+  #     render_403
+  #   end
+  # end
 
-  def recently_created
-    scope = Entity.
-      allowed(current_user, :view).
-      by_relation_name(params[:relation_name]).
-      newest_first.includes(:kind)
+  # def recently_created
+  #   scope = Entity.
+  #     allowed(current_user, :view).
+  #     by_relation_name(params[:relation_name]).
+  #     newest_first.includes(:kind)
 
-    @total = scope.count
-    @records = scope.pageit(page, per_page)
+  #   @total = scope.count
+  #   @records = scope.pageit(page, per_page)
 
-    render action: 'index'
-  end
+  #   render action: 'index'
+  # end
 
-  def recently_visited
-    history_entity_ids = current_user.history.map do |url|
-      if m = url.match(/\/blaze\#\/entities\/(\d+)$/)
-        m[1].to_i
-      else
-        nil
-      end
-    end
+  # def recently_visited
+  #   history_entity_ids = current_user.history.map do |url|
+  #     if m = url.match(/\/blaze\#\/entities\/(\d+)$/)
+  #       m[1].to_i
+  #     else
+  #       nil
+  #     end
+  #   end
 
-    scope = Entity.
-      allowed(current_user, :view).
-      by_ordered_id_array(history_entity_ids.reverse).
-      by_relation_name(params[:relation_name]).
-      includes(:kind).
-      newest_first
+  #   scope = Entity.
+  #     allowed(current_user, :view).
+  #     by_ordered_id_array(history_entity_ids.reverse).
+  #     by_relation_name(params[:relation_name]).
+  #     includes(:kind).
+  #     newest_first
 
-    @total = scope.count
-    @results = scope.pageit(page, per_page)
+  #   @total = scope.count
+  #   @results = scope.pageit(page, per_page)
 
-    render action: 'index'
-  end
+  #   render action: 'index'
+  # end
 
-  def random
-    params[:include] = param_to_array(params[:include], ids: false)
+  # def random
+  #   params[:include] = param_to_array(params[:include], ids: false)
 
-    scope = Entity.allowed(current_user, :view).media
-    @total = scope.count
+  #   scope = Entity.allowed(current_user, :view).media
+  #   @total = scope.count
 
-    amount = 4
-    @records = if @total < amount
-      scope.to_a
-    else
-      o = 0
-      Array.new(amount).map do |i|
-        o += [(rand(@total) / amount).round, 1].max
-        scope.limit(1).offset(o).to_a.first
-      end
-    end
+  #   amount = 4
+  #   @records = if @total < amount
+  #     scope.to_a
+  #   else
+  #     o = 0
+  #     Array.new(amount).map do |i|
+  #       o += [(rand(@total) / amount).round, 1].max
+  #       scope.limit(1).offset(o).to_a.first
+  #     end
+  #   end
 
-    render action: 'index'
-  end
+  #   render action: 'index'
+  # end
 
   def index
-    params[:include] = param_to_array(params[:include], ids: false)
-
     params[:id] = param_to_array(params[:id])
     params[:kind_id] = param_to_array(params[:kind_id])
     params[:related_per_page] = [
@@ -164,6 +161,14 @@ class EntitiesController < JsonController
       media: params[:media],
       relation_name: params[:relation_name],
       dating: params[:dating],
+
+      isolated: params[:isolated],
+      recent: params[:recent],
+
+      sort: {
+        column: sort_column,
+        direction: sort_direction
+      },
 
       page: page,
       per_page: per_page,
@@ -204,10 +209,10 @@ class EntitiesController < JsonController
     end
   end
 
-  def relation_counts
-    @relations = Entity.find(params[:id]).relation_counts(current_user)
-    format.json {render json: @relations}
-  end
+  # def relation_counts
+  #   @relations = Entity.find(params[:id]).relation_counts(current_user)
+  #   format.json {render json: @relations}
+  # end
 
   # def new
   #   if authorized? :create, Collection.all, :required => :any
@@ -241,7 +246,7 @@ class EntitiesController < JsonController
     @entity.kind_id = params[:entity][:kind_id]
     @entity.assign_attributes entity_params
 
-    if authorized?(:create, @entity.collection)
+    if allowed_to?(:create, @entity.collection)
       @entity.creator_id = current_user.id
 
       if @entity.save
@@ -273,7 +278,7 @@ class EntitiesController < JsonController
             end
           end
         else
-          render_406 build_nested_errors(@entity)
+          render_422 build_nested_errors(@entity)
         end
       end
     else
@@ -285,27 +290,30 @@ class EntitiesController < JsonController
     params[:entity][:existing_datings_attributes] ||= []
 
     @entity = Entity.find(params[:id])
+    @entity.assign_attributes entity_params
 
-    authorized_to_edit = authorized?(:edit, @entity.collection)
-    
-    authorized_to_move = if @entity.collection_id == params[:entity][:collection_id].to_i
-      true
+    authorized = if @entity.collection_id_changed?
+      allowed_to?(:delete, Collection.find(@entity.collection_id_was)) && 
+      allowed_to?(:create, Collection.find(@entity.collection_id))
     else
-      authorized?(:delete, @entity.collection) && 
-      authorized?(:create, Collection.find(params[:entity][:collection_id]))
+      allowed_to?(:edit, @entity.collection)
     end
-
-    if authorized_to_edit && authorized_to_move
+    
+    if authorized
       @entity.updater_id = current_user.id
 
-      if @entity.update_attributes(entity_params)
+      if @entity.save
         SystemGroup.find_or_create_by(:name => 'invalid').remove_entities @entity
         render_updated @entity
       else
-        render_406 build_nested_errors(@entity)
+        render_422 build_nested_errors(@entity)
       end
     else
-      render_403
+      if @entity.collection_id_changed?
+        render_403 I18n.t('errors.move_denied')
+      else
+        render_403
+      end
     end
   rescue ActiveRecord::StaleObjectError
     flash[:error] = I18n.t('activerecord.errors.messages.stale_entity_update')
@@ -317,7 +325,7 @@ class EntitiesController < JsonController
     new_tags = new_tags.split(/,\s*/)
     @entity = Entity.find(params[:id])
     
-    if authorized? :tagging, @entity.collection
+    if allowed_to?(:tagging, @entity.collection)
       @entity.tag_list += new_tags
       
       if @entity.save
@@ -326,7 +334,7 @@ class EntitiesController < JsonController
         )
       else
         @errors = @entity.errors
-        render_406
+        render_422
       end
     else
       render_403
@@ -335,13 +343,15 @@ class EntitiesController < JsonController
 
   def destroy
     @entity = Entity.find(params[:id])
-    if authorized? :delete, @entity.collection
+    if allowed_to?(:delete, @entity.collection)
       @entity.destroy
       flash[:notice] = I18n.t( 'objects.destroy_success', :o => @entity.display_name )
       if session[:current_entity] == @entity.id
         session[:current_entity] = nil
       end
-      redirect_to back_save
+      render_200 I18n.t('objects.destroy_success',
+        o: I18n.t('activerecord.models.entity', count: 1)
+      ) 
     else
       render_403
     end
@@ -351,12 +361,12 @@ class EntitiesController < JsonController
     entities = Entity.find(params[:entity_ids])
     collections = entities.map{|e| e.collection}.uniq
     
-    allowed_to_create = authorized?(:create)
-    allowed_to_delete_requested_entities = authorized?(:delete, collections, :required => :all)
+    allowed_to_create = allowed_to?(:create)
+    allowed_to_delete_requested_entities = allowed_to?(:delete, collections, :required => :all)
   
     if allowed_to_create and allowed_to_delete_requested_entities
       if entities.map{|e| e.kind.id}.uniq.size != 1
-        render_406 nil, I18n.t('errors.only_same_kind')
+        render_422 nil, I18n.t('errors.only_same_kind')
       end
 
       @record = Kor::EntityMerger.new.run(
@@ -369,7 +379,7 @@ class EntitiesController < JsonController
       if @record.valid?
         render_200 I18n.t('notices.merge_success')
       else
-        render_406 @record.errors, I18n.t('errors.merge_failure')
+        render_422 @record.errors, I18n.t('errors.merge_failure')
       end
     else
       render_403 I18n.t("errors.merge_access_denied_on_entities")
@@ -378,32 +388,42 @@ class EntitiesController < JsonController
 
   def mass_relate
     if params[:id].blank?
-      render_406 I18n.t("errors.destination_not_given")
+      render_422 I18n.t("errors.destination_not_given")
     else
-      @target = Entity.allowed(current_user, :view).find(params[:id])
-      @entities = Entity.allowed(current_user, :edit).find(params[:entity_ids] || [])
+      @target = Entity.find(params[:id])
+      @entities = Entity.find(params[:entity_ids] || [])
 
-      relationships = @entities.collect do |e|
-        Relationship.relate(e, params[:relation_name], @target)
-      end
+      can_edit = 
+        allowed_to?(:edit, @target.collection_id) || 
+        allowed_to?(:edit, @entities.map{|e| e.collection_id})
+      collections = [@target.collection_id] + @entities.map{|e| e.collection_id}
+      can_view = allowed_to?(:view, collections, required: :all)
 
-      begin
-        Relationship.transaction do
-          relationships.each do |r|
-            r.save!
-          end
+      if can_edit & can_view
+        relationships = @entities.collect do |e|
+          Relationship.relate(e, params[:relation_name], @target)
         end
-      rescue ActiveRecord::Rollback => e
-        render_406 I18n.t('errors.relationships_not_saved')
-      end
 
-      render_200 I18n.t('notices.mass_relation_success')
+        begin
+          Relationship.transaction do
+            relationships.each do |r|
+              r.save!
+            end
+          end
+        rescue ActiveRecord::Rollback => e
+          render_422 I18n.t('errors.relationships_not_saved')
+        end
+
+        render_200 I18n.t('notices.mass_relation_success')
+      else
+        render_403 I18n.t('errors.source_or_target_not_editable')
+      end
     end
   end
 
   def existence
     ids = params[:ids]
-    found_ids = viewable_entities.where(id: ids).map{|e| e.id}
+    found_ids = Entity.allowed(current_user).where(id: ids).map{|e| e.id}
     existence = found_ids.zip(Array.new(found_ids.size, true)).to_h
     ids = ids.zip(Array.new(ids.size, false)).to_h
 
@@ -414,7 +434,7 @@ class EntitiesController < JsonController
 
     def entity_params
       params.require(:entity).permit(
-        :id, # TODO: smart?
+        # :id, # TODO: smart?
         :uuid, # TODO: smart?
         :lock_version,
         :kind_id,

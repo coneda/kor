@@ -5,7 +5,7 @@ class JsonController < BaseController
 
   before_filter :auth, :legal
 
-  helper_method :inclusion, :page, :per_page
+  helper_method :inclusion, :page, :per_page, :sort_column, :sort_direction
 
   layout false
 
@@ -22,6 +22,12 @@ class JsonController < BaseController
       @record = record
       object_name = @record.try(:display_name) || record.class.model_name.human
       render_200 I18n.t('objects.update_success', o: object_name)
+    end
+
+    def render_deleted(record)
+      @record = record
+      object_name = @record.try(:display_name) || record.class.model_name.human
+      render_200 I18n.t('objects.destroy_success', o: object_name)
     end
 
     def render_200(message)
@@ -53,10 +59,10 @@ class JsonController < BaseController
       render template: 'layouts/message', status: 404
     end
 
-    def render_406(errors, message = nil)
+    def render_422(errors, message = nil)
       @errors = errors
       @message = message || I18n.t('activemodel.errors.template.header')
-      render template: 'layouts/message', status: 406
+      render template: 'layouts/message', status: 422
     end
 
     def render_500(message = nil)
@@ -142,6 +148,14 @@ class JsonController < BaseController
         (params[:per_page] || 10).to_i,
         Kor.settings['max_results_per_request']
       ].min
+    end
+
+    def sort_column
+      params[:sort] || 'name'
+    end
+
+    def sort_direction
+      (params[:direction] || 'asc').downcase == 'asc' ? 'ASC' : 'DESC'
     end
 
     def inclusion

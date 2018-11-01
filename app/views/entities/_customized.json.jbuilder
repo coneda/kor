@@ -1,5 +1,3 @@
-additions ||= []
-
 json.extract!(entity,
   :id, :collection_id, :kind_id, :creator_id, :updater_id,
   :kind_name,
@@ -41,8 +39,8 @@ end
 
 # TODO: this should also be possible with edit rights and delete/create rights,
 # e.g. for merging
-if authorized?(:view_meta, entity.collection)
-  if additions.request?('technical')
+if allowed_to?(:view_meta, entity.collection)
+  if inclusion.request?('technical')
     json.uuid entity.uuid
     json.created_at entity.created_at
     json.updated_at entity.updated_at
@@ -50,33 +48,33 @@ if authorized?(:view_meta, entity.collection)
   end
 end
 
-if additions.request?('synonyms')
+if inclusion.request?('synonyms')
   json.synonyms entity.synonyms
 end
 
-if additions.request?('datings')
+if inclusion.request?('datings')
   json.datings entity.datings do |dating|
-    json.partial! 'datings/customized', dating: dating
+    json.partial! 'datings/customized', record: dating
   end
 end
 
-if additions.request?('dataset')
+if inclusion.request?('dataset')
   json.dataset entity.dataset
 end
 
-if additions.request?('properties')
+if inclusion.request?('properties')
   json.properties entity.properties  
 end
 
-if additions.request?('relations')
+if inclusion.request?('relations')
   json.relations entity.relation_counts(current_user)
 end
 
-if additions.request?('media_relations')
+if inclusion.request?('media_relations')
   json.media_relations entity.relation_counts(current_user, media: true)
 end
 
-if additions.request?('related')
+if inclusion.request?('related')
   directed_relationships = entity.outgoing_relationships.
     allowed(current_user).
     by_relation_name(related_relation_name).
@@ -86,57 +84,47 @@ if additions.request?('related')
 
   json.related directed_relationships do |dr|
     json.partial! 'directed_relationships/customized', {
-      directed_relationship: dr,
-      additions: ['to', 'properties']
+      record: dr,
+      inclusion: ['to', 'properties']
     }
   end
 end
 
-if additions.request?('gallery_data')
-  ors = entity.
-    outgoing_relationships.
-    allowed(current_user).
-    by_relation_name(Relation.primary_relation_names).
-    includes(to: [:tags, :collection, :kind, :medium])
+if inclusion.request?('gallery_data')
+  prs = entity.primary_relationships(current_user)
+  json.primary_entities prs do |pr|
+    json.partial! 'customized', entity: pr.to, inclusion: []
 
-  json.primary_entities ors do |pr|
-    json.partial! 'customized', entity: pr.to
-
-    ors = pr.to.
-      outgoing_relationships.
-      allowed(current_user).
-      by_relation_name(Relation.secondary_relation_names).
-      includes(to: [:tags, :collection, :kind, :medium])
-
-    json.secondary_entities ors do |sr|
-      json.partial! 'customized', entity: sr.to
+    srs = pr.to.secondary_relationships(current_user)
+    json.secondary_entities srs do |sr|
+      json.partial! 'customized', entity: sr.to, inclusion: []
     end
   end
 end
 
-if additions.request?('kind')
+if inclusion.request?('kind')
   json.kind do
-    json.partial! 'kinds/customized', kind: entity.kind, additions: ['settings']
+    json.partial! 'kinds/customized', record: entity.kind, inclusion: ['settings']
   end
 end
 
-if additions.request?('collection')
+if inclusion.request?('collection')
   json.collection do
     json.partial! 'collections/customized', locals: {
-      kor_collection: entity.collection
+      record: entity.collection
     }
   end
 end
 
-if additions.request?('user_groups')
+if inclusion.request?('user_groups')
   json.user_groups entity.user_groups.owned_by(current_user) do |user_group|
     json.partial! 'user_groups/customized', {
-      user_group: user_group
+      record: user_group
     }
   end
 end
 
-if additions.request?('groups')
+if inclusion.request?('groups')
   json.groups entity.authority_groups do |authority_group|
     json.partial! 'authority_groups/customized', {
       record: authority_group
@@ -144,32 +132,32 @@ if additions.request?('groups')
   end
 end
 
-if additions.request?('degree')
+if inclusion.request?('degree')
   json.degree entity.degree
 end
 
-if additions.request?('users')
+if inclusion.request?('users')
   if entity.creator_id && entity.creator
     json.creator do
-      json.partial! 'users/customized', user: entity.creator
+      json.partial! 'users/customized', record: entity.creator
     end
   end
 
   if entity.updater_id && entity.updater
     json.updater do
-      json.partial! 'users/customized', user: entity.updater
+      json.partial! 'users/customized', record: entity.updater
     end
   end
 end
 
-if additions.request?('fields')
+if inclusion.request?('fields')
   json.fields entity.kind.field_instances(entity) do |field|
-    json.partial! 'fields/customized', field: field
+    json.partial! 'fields/customized', record: field
   end
 end
 
-if additions.request?('generators')
+if inclusion.request?('generators')
   json.generators entity.kind.generators do |generator|
-    json.partial! 'generators/customized', generator: generator
+    json.partial! 'generators/customized', record: generator
   end
 end

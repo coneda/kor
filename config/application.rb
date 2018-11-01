@@ -13,6 +13,8 @@ require 'core_ext/array'
 require 'kor'
 require 'securerandom'
 
+Dir["lib/paperclip_processors/*.rb"].each{|f| require File.expand_path(f)}
+
 module Kor
   class Application < Rails::Application
     # SQLOrigin.append_to_log
@@ -39,7 +41,7 @@ module Kor
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
 
-    config.active_job.queue_adapter = :delayed_job
+    config.active_job.queue_adapter = :sucker_punch
 
     config.middleware.insert_before 0, "Rack::Cors" do
       allow do
@@ -157,3 +159,4 @@ end
 # TODO: add ONE validation test to each controller/request suite
 # TODO: fix "can't" and "cannot" in all translations
 # TODO: add more tests to settings_controller, session_controller
+# TODO: add tests for validation handling to controllers (one example per resource)

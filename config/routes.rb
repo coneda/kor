@@ -17,27 +17,32 @@ Rails.application.routes.draw do
   
   # get '/authentication/form' => redirect('/login')
   
-  controller 'inplace' do
-    match '/kor/inplace/tags', :action => 'tag_list', :via => :get
-    match '/kor/inplace/tags/entities/:entity_id/tags', :action => 'update_entity_tags', :via => :post
-  end
+  # controller 'inplace' do
+  #   match '/kor/inplace/tags', :action => 'tag_list', :via => :get
+  #   match '/kor/inplace/tags/entities/:entity_id/tags', :action => 'update_entity_tags', :via => :post
+  # end
   
-  resources :exception_logs, :only => :index do
-    collection do
-      get 'cleanup'
-    end
-  end
+  # resources :exception_logs, :only => :index do
+  #   collection do
+  #     get 'cleanup'
+  #   end
+  # end
 
-  resources :system_groups
+  # resources :system_groups
   
   # match '/edit_self', :to => 'users#edit_self', :via => :get
 
-  scope '/media', :controller => 'media' do
-    match 'maximize/:id', :action => 'show', :style => 'normal', :as => :maximize_medium, :via => :get
-    match 'transform/:id/:transformation', :action => 'transform', :as => :transform_medium, :via => :get
-    match ':id', :action => 'view', :as => :view_medium, :via => :get
-    match 'images/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension', :action => 'show', :as => :medium, :via => :get
-    match 'download/:style/:id', :action => 'download', :as => :download_medium, :via => :get
+  scope '/media', controller: 'media', defaults: {format: 'json'} do
+    # match 'maximize/:id', :action => 'show', :style => 'normal', :as => :maximize_medium, :via => :get
+    patch 'transform/:id/:transformation/:operation', action: 'transform'
+    # match ':id', :action => 'view', :as => :view_medium, :via => :get
+    get(
+      ':disposition/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension',
+      action: 'show',
+      constraints: {disposition: /images|download/}
+    )
+    # get 'download/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension', action: 'show'
+    # match 'download/:style/:id', :action => 'download', :as => :download_medium, :via => :get
   end
 
   # controller 'authentication' do
@@ -124,8 +129,8 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :relationships, only: [:index, :show], controller: 'directed_relationships'
-    resources :relationships, only: [:create, :update, :destroy]
+    resources :relationships, only: ['index', 'show'], controller: 'directed_relationships'
+    resources :relationships, only: ['create', 'update', 'destroy']
 
     resources :authority_group_categories, except: ['new', 'edit'] do
       collection do
@@ -141,7 +146,7 @@ Rails.application.routes.draw do
 
       collection do
         post 'add', action: 'add_to'
-        # post 'remove_from', action: 'remove_from'
+        post 'remove', action: 'remove_from'
       end
     end
     
@@ -153,22 +158,21 @@ Rails.application.routes.draw do
 
         patch 'share'
         patch 'unshare'
-        post 'remove', action: 'remove_from'
       end
       
       collection do
         get 'shared'
-
         post 'add', action: 'add_to'
+        post 'remove', action: 'remove_from'
       end
     end
 
     resources :publishments, except: ['new', 'edit', 'show'] do
       member do
-        patch 'extend'
+        patch 'extend', action: 'extend_publishment'
       end
     end
-    get '/publishments/:user_id/:uuid', :to => 'publishments#show'
+    get '/publishments/:user_id/:uuid', to: 'publishments#show'
 
     resources :users, except: ['new', 'edit'] do
       member do
@@ -215,16 +219,21 @@ Rails.application.routes.draw do
       end
 
       resources :relations, only: [:index]
-      resources :relationships, only: [:index, :show], controller: 'directed_relationships'
+      # resources :relationships, only: [:index, :show], controller: 'directed_relationships'
     end
   end
 
-  scope 'mirador', controller: 'api/iiif/media', format: :json do
+  scope 'mirador', controller: 'api/iiif/media' do
     root action: 'index', as: 'mirador'
-    match ':id', action: 'show', via: :get, as: :iiif_manifest
-    match ':id/sequence', action: 'sequence', via: :get, as: :iiif_sequence
-    match ':id/canvas', action: 'sequence', via: :get, as: :iiif_canvas
-    match ':id/image', action: 'sequence', via: :get, as: :iiif_image
+
+    defaults format: 'json' do
+      get ':id', action: 'show', as: 'iiif_manifest'
+
+      # TODO: why is this here? there are no actions for this
+      get ':id/sequence', action: 'sequence', as: 'iiif_sequence'
+      get ':id/canvas', action: 'sequence', as: 'iiif_canvas'
+      get ':id/image', action: 'sequence', as: 'iiif_image'
+    end
   end
   
   namespace 'api' do

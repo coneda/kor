@@ -1,9 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe UserGroup do
-
-  include DataHelper
-
   it "should not allow words longer than 30 characters for its name" do
     user_group = UserGroup.new(
       :owner => User.first,
@@ -15,5 +12,4 @@ RSpec.describe UserGroup do
       "name cannot contain words longer than 30 characters"
     )
   end
-
 end

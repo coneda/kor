@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-describe Kor::Settings do
+RSpec.describe Kor::Settings do
 
   it "should create the settings file if it doesn't exist" do
-    expect(File.exists?(described_class.filename)).to be_falsey
+    system "rm #{described_class.filename}"
     subject.save
     expect(File.exists?(described_class.filename)).to be_truthy
   end
@@ -65,17 +65,19 @@ describe Kor::Settings do
     expect(described_class.filename.to_s).to match(/\/settings\.test\.json$/)
   end
   
-  it 'should store nil, booleans, strings, integers and floats' do
+  it 'should store nil, booleans, strings, integers, floats and arrays' do
     subject.update(
       'nothing' => nil,
       'awesome' => true,
       'stale' => false,
       'some' => 'value',
       'size' => 12,
-      'average' => 10.5
+      'average' => 10.5,
+      'list' => [1, 'stuff']
     )
 
     expect(subject['nothing']).to eq(nil)
+    expect(subject['list']).to eq([1, 'stuff'])
   end
 
   it 'should return defaults when the value is missing' do

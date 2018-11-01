@@ -3,20 +3,6 @@ require 'rails_helper'
 RSpec.describe Api::OaiPmh::RelationsController, type: :request do
   include XmlHelper
 
-  # before :each do
-  #   FactoryGirl.create :admin
-
-  #   works = FactoryGirl.create(:works)
-  #   FactoryGirl.create(:has_created,
-  #     from_kind: FactoryGirl.create(:people),
-  #     to_kind: works
-  #   )
-  #   FactoryGirl.create(:is_equivalent_to,
-  #     from_kind: works,
-  #     to_kind: works
-  #   )
-  # end
-
   it "should respond to 'Identify'" do
     get '/api/oai-pmh/relations.xml', verb: 'Identify'
     expect(response).to be_success
@@ -38,7 +24,7 @@ RSpec.describe Api::OaiPmh::RelationsController, type: :request do
 
     identifiers = parse_xml(response.body).xpath("//xmlns:identifier")
 
-    expect(identifiers.count).to eq(5)
+    expect(identifiers.count).to eq(6)
   end
 
   it "should respond to 'ListRecords'" do
@@ -49,7 +35,7 @@ RSpec.describe Api::OaiPmh::RelationsController, type: :request do
 
     items = parse_xml(response.body).xpath("//kor:relation")
 
-    expect(items.count).to eq(5)
+    expect(items.count).to eq(6)
   end
 
 
@@ -113,14 +99,14 @@ RSpec.describe Api::OaiPmh::RelationsController, type: :request do
       metadataPrefix: 'oai_dc'
     }
     doc = parse_xml(response.body)
-    expect(doc.xpath("//xmlns:metadata/oai_dc:dc").count).to eq(5)
+    expect(doc.xpath("//xmlns:metadata/oai_dc:dc").count).to eq(6)
 
     get '/api/oai-pmh/relations.xml', {
       verb: 'ListRecords',
       metadataPrefix: 'kor'
     }
     doc = parse_xml(response.body)
-    expect(doc.xpath("//xmlns:metadata/kor:relation").count).to eq(5)
+    expect(doc.xpath("//xmlns:metadata/kor:relation").count).to eq(6)
   end
 
   it "should return 'idDoesNotExist' if the identifier given does not exist" do
@@ -159,8 +145,8 @@ RSpec.describe Api::OaiPmh::RelationsController, type: :request do
     }
     doc = parse_xml(response.body)
     expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
-    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(4)
-    expect(doc.xpath("//xmlns:metadata").count).to eq(4)
+    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(5)
+    expect(doc.xpath("//xmlns:metadata").count).to eq(5)
 
     get '/api/oai-pmh/relations.xml', {
       verb: 'ListIdentifiers',
@@ -168,7 +154,7 @@ RSpec.describe Api::OaiPmh::RelationsController, type: :request do
     }
     doc = parse_xml(response.body)
     expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
-    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(4)
+    expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(5)
     expect(doc.xpath("//xmlns:metadata").count).to eq(0)
 
     get '/api/oai-pmh/relations.xml', {

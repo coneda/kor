@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe ActiveRecord do
-  include DataHelper
-
   it "should find or initialize with additional attributes" do
     u = User.find_or_initialize_by(:name => "Gagamel")
     u.attributes = { :email => "gagamel@schloss.com" }
@@ -19,9 +17,6 @@ RSpec.describe ActiveRecord do
   end
   
   it "does insert duplicate links for many-to-many associations" do
-    test_data_for_auth
-    test_kinds
-    test_entities
     group = FactoryGirl.create :authority_group
     
     group.entities << Entity.first

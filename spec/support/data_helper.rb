@@ -42,6 +42,82 @@ module DataHelper
     expect(json['message']).to match(/has been deleted/)
   end
 
+  def admin
+    User.admin
+  end
+
+  def jdoe
+    User.find_by! name: 'jdoe'
+  end
+
+  def priv
+    Collection.find_by! name: 'private'
+  end
+
+  def default
+    Collection.find_by! name: 'default'
+  end
+
+  def students
+    Credential.find_by! name: 'students'
+  end
+
+  def admins
+    Credential.find_by! name: 'admins'
+  end
+
+  def media
+    Kind.medium_kind
+  end
+
+  def people
+    Kind.find_by! name: 'person'
+  end
+
+  def works
+    Kind.find_by! name: 'work'
+  end
+
+  def locations
+    Kind.find_by! name: 'location'
+  end
+
+  def mona_lisa
+    Entity.find_by! name: 'Mona Lisa'
+  end
+
+  def last_supper
+    Entity.find_by! name: 'The Last Supper'
+  end
+
+  def leonardo
+    Entity.find_by! name: 'Leonardo'
+  end
+
+  def paris
+    Entity.find_by! name: 'Paris'
+  end
+
+  def picture_a
+    Medium.find_by!(datahash: '233fcdfee7c55b3978967aacaefb9a08057607a0').entity
+  end
+
+  def picture_b
+    Medium.find_by!(datahash: '517686264a2ed1a66770470525e520dac4d692ea').entity
+  end
+
+  def lecture
+    AuthorityGroup.find_by! name: 'lecture'
+  end
+
+  def seminar
+    AuthorityGroup.find_by! name: 'seminar'
+  end
+
+  def archive
+    AuthorityGroupCategory.find_by! name: 'archive'
+  end
+
   # TODO: remove this and instead use current_user(...) from below
   # def fake_authentication(options = {})
   #   options.reverse_merge!(:persist => false)
@@ -110,15 +186,18 @@ module DataHelper
       relationships: false
     )
 
-    default = Collection.find_by!(name: 'default')
+    # default = Collection.find_by!(name: 'default')
     priv = Collection.create! name: 'private'
 
-    media = Kind.medium_kind
+    # media = Kind.medium_kind
     people = FactoryGirl.create :people,
       fields: [
         Fields::String.new(
           name: 'gnd_id', show_label: 'GND-ID', is_identifier: true,
           show_on_entity: true
+        ),
+        Field.new(
+          name: 'wikidata_id', show_label: 'Wikidata ID', is_identifier: true
         )
       ],
       generators: [
@@ -126,7 +205,11 @@ module DataHelper
           name: 'gnd', directive: 'http://d-nb.info/gnd/{{entity.dataset.p227}}'
         )
       ]
-    works = FactoryGirl.create :works
+    works = FactoryGirl.create :works, fields: [
+      Field.new(
+        name: 'wikidata_id', show_label: 'Wikidata ID', is_identifier: true
+      )
+    ]
     locations = Kind.create! name: 'location', plural_name: 'locations'
     institutions = Kind.create! name: 'institution', plural_name: 'institutions'
 
@@ -142,28 +225,53 @@ module DataHelper
       name: 'is related to', reverse_name: 'is related to',
       from_kind_id: works.id, to_kind_id: works.id
     )
+    Relation.create!(
+      name: 'is related to', reverse_name: 'is related to',
+      from_kind_id: works.id, to_kind_id: locations.id
+    )
     FactoryGirl.create :has_created, from_kind_id: people.id, to_kind_id: works.id
     FactoryGirl.create :shows, from_kind_id: media.id, to_kind_id: works.id
 
+    # admins = Credential.find_by! name: 'admins'
+    students = FactoryGirl.create :students
+    project = Credential.create! name: 'Project'
+
+    # admin = User.find_by! name: 'admin'
+    jdoe = FactoryGirl.create :jdoe, groups: [students]
+    mrossi = FactoryGirl.create :mrossi, groups: [project]
+    ldap = FactoryGirl.create :ldap_template
+    
+    Kor::Auth.grant default, :view, :to => students
+    Kor::Auth.grant priv, :all, :to => admins
+    Kor::Auth.grant default, :view, :to => project
+    Kor::Auth.grant priv, :all, :to => project
+
     leonardo = FactoryGirl.create(:leonardo,
+      creator_id: admin.id,
+      updater_id: admin.id,
       name: 'Leonardo',
+      synonyms: ['Leo'],
       datings: [
         EntityDating.new(label: 'Lebensdaten', dating_string: '1452 bis 1519')
       ],
       dataset: {
         'gnd_id' => '123456789'
-      }
+      },
+      properties: [{'label' => 'Epoche', 'value' => 'Renaissance'}],
+
     )
     mona_lisa = FactoryGirl.create(:mona_lisa,
+      creator_id: admin.id,
+      updater_id: admin.id,
       subtype: 'portrait',
       distinct_name: 'the real one',
       comment: 'most popular artwork in the world'
     )
-    last_supper = FactoryGirl.create :the_last_supper, collection: priv
-    louvre = institutions.entities.create!(collection: default, name: 'Louvre')
-    paris = locations.entities.create!(collection: default, name: 'Paris')
-    picture_a = FactoryGirl.create :picture_a
-    picture_b = FactoryGirl.create :picture_b, collection: priv
+    last_supper = FactoryGirl.create :the_last_supper, collection: priv, creator_id: admin.id, updater_id: admin.id
+    louvre = institutions.entities.create!(collection: default, name: 'Louvre', creator_id: admin.id, updater_id: admin.id)
+    paris = locations.entities.create!(collection: default, name: 'Paris', creator_id: admin.id, updater_id: admin.id)
+    picture_a = FactoryGirl.create :picture_a, creator_id: admin.id, updater_id: admin.id
+    picture_b = FactoryGirl.create :picture_b, collection: priv, creator_id: admin.id, updater_id: admin.id
 
     Relationship.relate_and_save mona_lisa, 'is related to', last_supper
     Relationship.relate_and_save mona_lisa, 'is located in', louvre
@@ -172,16 +280,6 @@ module DataHelper
     Relationship.relate_and_save leonardo, 'has created', last_supper
     Relationship.relate_and_save picture_a, 'shows', mona_lisa
     Relationship.relate_and_save picture_b, 'shows', last_supper
-
-    admins = Credential.find_by! name: 'admins'
-    students = FactoryGirl.create :students
-
-    admin = User.find_by(name: 'name')
-    jdoe = FactoryGirl.create :jdoe, :groups => [students]
-    ldap = FactoryGirl.create :ldap_template
-    
-    Kor::Auth.grant default, :view, :to => students
-    Kor::Auth.grant priv, :all, :to => admins
 
     lecture = AuthorityGroup.create! name: 'lecture'
     archive = AuthorityGroupCategory.create! name: 'archive'
@@ -210,4 +308,9 @@ module DataHelper
     end
   end
 
+  def self.default_setup(*args)
+    dummy = Class.new
+    dummy.include(self)
+    dummy.new.default_setup(*args)
+  end
 end

@@ -100,7 +100,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'should GET index' do
       get :index
-      expect_collection_response total: 3
+      expect_collection_response total: 5
     end
 
     it 'should GET show' do

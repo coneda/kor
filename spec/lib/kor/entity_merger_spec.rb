@@ -13,7 +13,7 @@ RSpec.describe Kor::EntityMerger do
       }
     )
     
-    expect(Entity.count).to eql(4)
+    expect(Entity.count).to eql(7)
     expect(merged.dataset['gnd']).to eql('12345')
     expect(merged.dataset['google_maps']).to eql('Am Dornbusch 13, 60315 Frankfurt')
   end
@@ -31,7 +31,7 @@ RSpec.describe Kor::EntityMerger do
       }
     )
     
-    expect(Entity.count).to eql(4)
+    expect(Entity.count).to eql(7)
     expect(merged.synonyms).to eq(["La Gioconda"])
   end
 
@@ -47,7 +47,7 @@ RSpec.describe Kor::EntityMerger do
       :attributes => {name: mona_lisa.name}
     )
     
-    expect(Entity.count).to eql(4)
+    expect(Entity.count).to eql(7)
     expect {
       Kor::Elastic.get merged
     }.not_to raise_error
@@ -69,41 +69,37 @@ RSpec.describe Kor::EntityMerger do
       }
     )
 
-    expect(Identifier.count).to eq(1)
-    expect(Identifier.first.entity_id).to eq(merged.id)
+    expect(Identifier.count).to eq(2)
+    expect(merged.identifiers.first.entity_id).to eq(merged.id)
   end
 
   it "should transfer relationships to the merged entity" do
-    Delayed::Worker.delay_jobs = false
+    # Delayed::Worker.delay_jobs = false
 
     admin = User.admin
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     last_supper = Entity.find_by!(name: 'The Last Supper')
-    leonardo = Entity.find_by!(name: 'Leonardo da Vinci')
+    leonardo = Entity.find_by!(name: 'Leonardo')
 
     merged = described_class.new.run(
       old_ids: [mona_lisa.id, last_supper.id],
       attributes: {name: 'Mona Lisa'}
     )
 
-    expect(Entity.count).to eq(3)
-    expect(DirectedRelationship.count).to eq(4)
-    expect(Relationship.count).to eq(2)
-    expect(merged.in_rels.count).to eq(2)
-    expect(merged.in_rels.first.from).to eq(leonardo)
-    expect(merged.in_rels.last.from).to eq(leonardo)
-    expect(merged.out_rels.count).to eq(0)
+    expect(Entity.count).to eq(6)
+    expect(DirectedRelationship.count).to eq(14)
+    expect(Relationship.count).to eq(7)
 
-    expect(merged.incoming_relationships.count).to eq(2)
-    expect(merged.outgoing_relationships.count).to eq(2)
-
-    expect(merged.relation_counts(admin)).to eq(
-      'has been created by' => 2,
-    )
+    rels = merged.outgoing_relationships
+    expect(rels.count).to eq(7)
+    expect(rels.by_relation_name('is related to').count).to eq(2) # one to itself
+    expect(rels.by_relation_name('has been created by').count).to eq(2)
+    expect(rels.by_relation_name('is located in').count).to eq(1)
+    expect(rels.by_relation_name('is shown by').count).to eq(2)
   end
 
   it "should fail the whole transaction when the merge result is invalid" do
-    Delayed::Worker.delay_jobs = false
+    # Delayed::Worker.delay_jobs = false
 
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     other_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Liza"
@@ -116,16 +112,16 @@ RSpec.describe Kor::EntityMerger do
     expect(merged).not_to be_valid
     expect(merged).to be_new_record
 
-    expect(Entity.count).to eq(5)
-    expect(DirectedRelationship.count).to eq(4)
-    expect(Relationship.count).to eq(2)
+    expect(Entity.count).to eq(8)
+    expect(DirectedRelationship.count).to eq(14)
+    expect(Relationship.count).to eq(7)
   end
 
   it 'should merge media' do
-    Delayed::Worker.delay_jobs = false
+    # Delayed::Worker.delay_jobs = false
 
-    a = FactoryGirl.create :picture_a
-    b = FactoryGirl.create :picture_b
+    a = Entity.media[0]
+    b = Entity.media[1]
 
     merged = described_class.new.run(
       :old_ids => [a.id, b.id],
@@ -134,10 +130,7 @@ RSpec.describe Kor::EntityMerger do
       }
     )
 
-    expect(Entity.count).to eql(5)
+    expect(Entity.count).to eql(6)
     expect(Entity.last.medium_id).to eq(b.medium_id)
   end
-
-  it 'should use soft-delete for merged entities'
-
 end

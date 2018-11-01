@@ -39,7 +39,7 @@ RSpec.describe SettingsController, type: :controller do
       Kor.settings.update 'some' => '567'
       put :update, settings: {'some' => '123', 'version' => 0}
       Kor.settings.ensure_fresh
-      expect(response.status).to eq(406)
+      expect(response.status).to eq(422)
     end
   end
 end

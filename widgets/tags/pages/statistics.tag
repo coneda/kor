@@ -9,7 +9,7 @@
       <table if={data}>
         <thead>
           <tr>
-            <th>{tcap('activerecord.models.user')}</th>
+            <th>{tcap('activerecord.models.user', {count: 'other'})}</th>
             <th>{data.user_count}</th>
           </tr>
         </thead>
@@ -32,7 +32,7 @@
       <table if={data}>
         <thead>
           <tr>
-            <th>{tcap('activerecord.models.entity')}</th>
+            <th>{tcap('activerecord.models.entity', {count: 'other'})}</th>
             <th>{data.entity_count}</th>
           </tr>
         </thead>

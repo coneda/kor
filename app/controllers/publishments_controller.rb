@@ -1,7 +1,7 @@
 class PublishmentsController < JsonController
-  skip_before_filter :auth, :only => :show
+  skip_before_filter :auth, only: 'show'
 
-  def extend
+  def extend_publishment
     @publishment = Publishment.owned_by(current_user).find(params[:id])
     @publishment.valid_until = Kor.publishment_expiry_time
 
@@ -11,7 +11,7 @@ class PublishmentsController < JsonController
         :until => I18n.l(@publishment.valid_until)
       )
     else
-      render_406 I18n.t('objects.extend_failure', :o => @publishment.name)
+      render_422 I18n.t('objects.extend_failure', :o => @publishment.name)
     end
   end
 
@@ -22,11 +22,14 @@ class PublishmentsController < JsonController
   end
 
   def show
-    @publishment = Publishment.find_by(user_id: params[:user_id], uuid: params[:uuid])
+    @publishment = Publishment.find_by!(
+      user_id: params[:user_id],
+      uuid: params[:uuid]
+    )
     @user_group = @publishment.user_group
 
     if @publishment.valid_until < Time.now
-      render_403 I18n.t('errors.publishment_expired')
+      render_404 I18n.t('errors.publishment_expired')
     end
   end
 
@@ -34,9 +37,9 @@ class PublishmentsController < JsonController
     @publishment = Publishment.owned_by(current_user).build(publishment_params)
 
     if @publishment.save
-      render_200 I18n.t('objects.create_success', :o => @publishment.name)
+      render_created @publishment
     else
-      render_406 @publishment.errors
+      render_422 @publishment.errors
     end
   end
 
@@ -44,7 +47,7 @@ class PublishmentsController < JsonController
     # TODO: ensure this can only be done be the owner
     @publishment = Publishment.find(params[:id])
     @publishment.destroy
-    render_200 I18n.t('objects.destroy_success', :o => @publishment.name)
+    render_deleted @publishment
   end
   
   protected

@@ -17,7 +17,7 @@ class GeneratorsController < JsonController
     if @record.save
       render_200 I18n.t('objects.create_success', o: @record.name)
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 
@@ -27,7 +27,7 @@ class GeneratorsController < JsonController
     if @record.update_attributes(generator_params)
       render_200 I18n.t('objects.update_success', o: @record.name)
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 

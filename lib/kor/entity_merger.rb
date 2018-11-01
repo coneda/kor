@@ -1,5 +1,4 @@
 class Kor::EntityMerger
-
   def run(options = {})
     Entity.transaction do
       Relationship.transaction do
@@ -57,5 +56,4 @@ class Kor::EntityMerger
       g.add_entities Entity.find(new_id)
     end
   end
-
 end

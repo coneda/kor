@@ -1,24 +1,22 @@
 require 'rails_helper'
 
-describe Kor::SearchResult do
+RSpec.describe Kor::SearchResult do
   
   it 'should retrieve items from uuids' do
-    FactoryGirl.create :media
-    @works = FactoryGirl.create :works
-    @mona_lisa = FactoryGirl.create :mona_lisa
-    @der_schrei = FactoryGirl.create :der_schrei
+    mona_lisa = Entity.find_by! name: 'Mona Lisa'
+    last_supper = Entity.find_by! name: 'The Last Supper'
 
     search_result = described_class.new(
-      uuids: [@mona_lisa.uuid, @der_schrei.uuid]
+      uuids: [mona_lisa.uuid, last_supper.uuid]
     )
-    expect(search_result.uuids).to eq([@mona_lisa.uuid, @der_schrei.uuid])
-    expect(search_result.records).to eq([@mona_lisa, @der_schrei])
+    expect(search_result.uuids).to eq([mona_lisa.uuid, last_supper.uuid])
+    expect(search_result.records).to eq([mona_lisa, last_supper])
 
     search_result = described_class.new(
-      uuids: [@der_schrei.uuid, @mona_lisa.uuid]
+      uuids: [last_supper.uuid, mona_lisa.uuid]
     )
-    expect(search_result.uuids).to eq([@der_schrei.uuid, @mona_lisa.uuid])
-    expect(search_result.records).to eq([@der_schrei, @mona_lisa])
+    expect(search_result.uuids).to eq([last_supper.uuid, mona_lisa.uuid])
+    expect(search_result.records).to eq([last_supper, mona_lisa])
   end
 
 end

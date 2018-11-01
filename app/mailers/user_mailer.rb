@@ -1,6 +1,5 @@
 class UserMailer < ActionMailer::Base
-
-  default :from => Kor.settings['maintainer_mail']
+  self.default from: Kor.settings['maintainer_mail']
 
   def reset_password(user)
     @user = user
@@ -22,5 +21,4 @@ class UserMailer < ActionMailer::Base
     @download = download
     mail(:to => @user.email, :subject => I18n.t("mailer.subjects.download_ready"))
   end
-  
 end

@@ -9,10 +9,10 @@ password = File.read(ENV["KOR_PASSWORD_FILE"])
 STDERR.puts username.inspect
 STDERR.puts password.inspect
 
-if username == "jdoe" && password == "123456"
+if username == "hmustermann" && password == "123456"
   puts '{
-    "email": "jdoe@coneda.net",
-    "full_name": "John Gustav Doe"
+    "email": "hmustermann@coneda.net",
+    "full_name": "Hans Mustermann"
   }'
 elsif username == "can.go.in" && password == "$0.\/@#"
   puts '{
@@ -21,8 +21,8 @@ elsif username == "can.go.in" && password == "$0.\/@#"
   }'
 elsif password == "$0.\/@#"
   puts '{
-    "email": "jdoe@coneda.net",
-    "full_name": "John Gustav Doe"
+    "email": "hmustermann@coneda.net",
+    "full_name": "Hans Mustermann"
   }'
 else
   exit 1

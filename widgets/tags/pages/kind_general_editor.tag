@@ -122,7 +122,7 @@
 
     success = (data) ->
       route("/kinds/#{data.id}/edit")
-      # tag.parent.trigger 'kind-changed'
+      wApp.bus.trigger 'reload-kinds'
       tag.errors = {}
       tag.update()
 

@@ -46,6 +46,7 @@ de:
   select_collections: Sammlungen wählen
   apply: anwenden
   cancel: abbrechen
+  ok: ok
   of: von %{amount}
   empty_list: "Liste leeren"
   results_for: Ergebnisse für
@@ -66,6 +67,9 @@ de:
   inherited_from: vererbt von
   no_schema: ohne Schema
   add_to_merge: zusammenführen
+  no_results: keine Resultate
+  results_per_page: Resultate pro Seite
+  add_to_clipboard: zur Zwischenablage hinzufügen
 
   search_term: 
     one: Suchbegriff
@@ -79,6 +83,7 @@ de:
     placeholder: "zum bearbeiten hier klicken"
 
   prompts:
+    autocomplete: "... geben Sie einen Teil des Gesuchten ein ..."
     please_select: "bitte auswählen"
     please_select_transit: "bitte wählen Sie links einen Transitbereich"
 
@@ -98,6 +103,7 @@ de:
     upload: "hochladen"
     save: "sichern"
     share: "freigeben"
+    unshare: "nicht mehr freigeben"
     browse: "blättern"
     show: "anzeigen"
     reset: "zurücksetzen"
@@ -118,6 +124,8 @@ de:
     expires_after_days: "läuft nach %{days} Tagen ab"
     check: überprüfen
     invert: invertieren
+    extend: verlängern
+    mark: in Zwischenablage aufnehmen
 
   title_verbs:
     pen: "bearbeiten"
@@ -141,7 +149,7 @@ de:
     prepare_merge: "verschmelzen"
     merge: "verschmelzen"
     mass_relate: "verknüpfen mit"
-    mass_destroy: "löschen"
+    mass_delete: löschen
     add_to_authority_group: "einer globalen Gruppe hinzufügen"
     add_to_user_group: "einer eigenen Gruppe hinzufügen"
     move_to_collection: "In Sammlung verschieben"
@@ -154,59 +162,71 @@ de:
       one: Lebensdaten
       other: Lebensdaten
 
-  config:
-    sections:
-      maintainer: Seitenbetreiber
-      host: Server
-      mail: Email
-      app: Anwendung
-      meta_entities: Vereinfachte Eingabeformulare
-      help: Hilfe
-    help:
-      component_search:
-        component_search: Einfache Suche
-      entities:
-        index: Expertensuche
-        gallery: Neue Abbildungen
-        multi_upload: Multiupload
-      meta_entities:
-        new: Vereinfachte Eingabemaske
-      authentication:
-        form: Login
-      users:
-        edit_self: Profil bearbeiten
-      authority_group_categories:
-        index: Globale Gruppen
-      user_groups:
-        index: Eigene Gruppen
-      tools:
-        clipboard: Zwischenablage
+  settings:
+    branding_and_display: Anzeige und Branding
+    behavior: Einstellungen von KOR
+    other: Weitere
+    help: Hilfe
     values:
-      default_locale: voreingestellte Sprache
-      default_home_page: Standardseite nach dem Login
-      entities: entities
-      relationships: relationship
-      edit_own_content: "Benutzern erlauben, ihre eigenen Inhalte zu bearbeiten"
+      default_locale: Standartsprache
+      default_home_page: Standartseite nach dem Login
+      entities: Entitäten
+      relationships: Verknüpfungen
+      edit_own_content: Benutzern erlauben, ihre eigenen Inhalte zu bearbeiten
       legal_text: Text für die Nutzungsbedingungen
       about_text: Text für das Impressum
-      help_text: Genereller Hilftetext (/static/help)
-      current_history_length: Anzahl der vorgehaltenen aktuellen Entitäten
-      max_file_upload_size: "Maximale Dateigröße für Uploads"
-      max_foreground_group_download_size: "Maximale Größe für Download von Gruppen im Vordergrund in MB"
-      address: Addresse
-      domain: Domain
-      mail: Mailadresse
-      name: Name
-      protocol: Protokoll
-      host: Server
-      port: Port
-      tls: TLS
-      primary_relationships: "primäre Verknüpfungen"
-      secondary_relationships: "sekundäre Verknüpfungen"
-      sender_name: Name des Absenders
-      sender_address: Absenderadresse
-      welcome_title: "Titel der Willkommensseite"
-      welcome_text: "Text der Willkommensseite"
+      current_history_length: Anzahl der "neuen Entitäten"
+      max_file_upload_size: maximale Dateigröße bei Uploads [MB]"
+      max_foreground_group_download_size: |
+        maximale Dateigröße für den Zip-Download von Gruppen im Vordergrund
+        [MB]. Darüber hinaus wird der Zip-Download im Hintegrund generiert und
+        bei Fertigstellung erhält der Nutzer eine Benachrichtigung per E-Mail.
+      max_results_per_request: maximale Anzahl von Resultaten pro Request
+      max_included_results_per_result: |
+        maximale Anzahl einbezogener Objekte per Request
+      sources_release: Source-Code Url der nächstgelegenen Release
+      sources_pre_release: Source-Code der nächstgelegenen Beta-Release
+      sources_default: standart Source-Code Url
+      maintainer_mail: E-Mail Address des Betreibers
+      maintainer_name: Betreiber-Organisation
+      primary_relationships: primäre Verkünfungen
+      secondary_relationships: sekundäre Verkünfungen
+      welcome_title: Titel der Willkommensseite
+      welcome_text: Text der Willkommensseite
+      session_lifetime: Frist für den Ablauf einer Nutzersitzung [in Sekunden]
+      publishment_lifetime: Lebensdauer von freigegeben Gruppen [in Tagen]
+      env_auth_button_label: |
+        Beschriftung für den Button zur Verbunds-Authentifierung
+      fail_on_update_errors: |
+        Benutzer, die durch externe Authentifierungs-Mechanismen angelegt
+        werden, müssen alle Validierungsregeln erfüllen
+      custom_css_file: Pfad zu eigener CSS-Datei
+      kind_dating_label: |
+        Standartbeschriftung von Datierungen für neue Entitätstypen
+      kind_name_label: |
+        Standartbeschriftung des Entitätsnamens für neue Entitätstypen
+      kind_distinct_name_label: |
+        Standartbeschriftung des Zusatzes von Entitätsnamen für neue
+        Entitätstypen
+      relationship_dating_label: |
+        Standartbeschriftung von Datierungen für neue Relationen
+      default_groups: für neue Benutzer automatisch diese Gruppen zuweisen
+      max_download_group_size: "maximum downloadable group size [MB]"
+      search_entity_name: |
+        Standartbeschriftung für den Entitätsnamen auf der Suchseite
+      primary_relations: primäre Relationen
+      secondary_relations: sekundäre Relationen
+      repository_uuid: die generierte UUID für diese Installation ändern
+
+      help_general: genereller Hilfetext (Menu)
+      help_search: Hilfetext zur Suche
+      help_upload: Hilfetext zum Datei-Upload
+      help_login: Hilfetext zur Anmeldung
+      help_profile: Hilfetext zum Profil
+      help_new_entries: Hilfetext zu 'neue Einträge'
+      help_authority_groups: Hilfetext zu globalen Gruppen
+      help_user_groups: Hilfetext zur benutzereigenen Gruppen
+      help_clipboard: Hilfetext zur Zwischenablage
 
   pages:
     new_media: neue Einträge
@@ -498,6 +518,7 @@ de:
       one: "Fehler"
       other: "Fehler"
     mirador: "Mirador"
+    root: obere Ebene
 
 
   objects:
@@ -526,6 +547,11 @@ de:
     marked_as_current_success: "Entität %{o} wurde als aktuelle Entität markiert"
     relate_all_to: "alle ausgewählten Entities werden mit %{o} verknüpft"
     merge_success: "%{o} wurden erfolgreich zusammengeführt"
+    create_failed_group_success: |
+      Die Entität %o wurde nicht angelegt, weil ein Medium mit denselben
+      Dateiinhalt bereits existiert. Die existierende Entität wurde in die
+      Gruppe %ug aufgenommen. Beachten Sie, dass die Entität dort nur sichtbar
+      wird, wenn Sie über die entsprechenden Rechte an der Entität verfügen.
     could_merge: "die ausgewählten %{o} können zusammengeführt werden"
     invert_success: "%{o} wurde invertiert"
 
@@ -606,6 +632,8 @@ de:
       
   messages:
     entities_moved_to_collection: "Die Entitäten wurden in Sammlung '%{o}' verschoben"
+    entities_added_to_group: |
+      Die Entitäten sind in die angegebene Gruppe übernommen worden
     no_user_groups: "Es sind keine eigenen Gruppen vorhanden"
     no_authority_groups: "Es sind keine globalen Gruppen vorhanden"
     swfupload_success: "Der Upload war erfolgreich"
@@ -625,6 +653,7 @@ de:
       Anwendung zuzugreifen. Möglicherweise ist auch Ihre Sitzung abgelaufen.
       Bitte melden Sie sich erneut an, um mehr Rechte zu erhalten oder um Ihre
       Sitzung zu erneuern.
+    not_logged_in: Sie sind nicht angemeldet
     maintenance: |
       Wir führen derzeit Wartungsarbeiten am System durch. Die Anwendung steht
       daher vorübergehend nicht zur Verfügung. Bitten versuchen Sie es später erneut
@@ -642,6 +671,9 @@ de:
       jeweiligen Reihe den Zusammenführen-Knopf klicken. Wenn Sie fertig sind,
       wählen Sie durch Anklicken eine der Relationen als Ziel aus. Das aktuell
       ausgewählte Ziel ist mit einem Stern gekennzeichnet.
+    statistics_validity: |
+      Diese Daten wurden um %{date} generiert und werden alle 24 Stunden
+      erneuert
 
   notices:
     creating_zip_file: "Zip-Datei wird erstellt, Sie erhalten eine Email, sobald der Download bereit steht"
@@ -661,6 +693,7 @@ de:
     maintenance_done: "die Wartungsarbeiten wurden abgeschlossen"
     logged_out: "Sie haben sich erfolgreich abgemeldet"
     logged_in: "Sie haben sich erfolgreich angemeldet"
+    mass_relation_success: alle Entitäten wurden verküpft
 
   errors:
     too_many_entities_for_zip: "Die Gruppe enthält zu viele Abbildungen"
@@ -668,6 +701,9 @@ de:
     too_many_login_attempts: "Der Benutzer wurde vorübergehend gesperrt, weil zu viele Anmeldeversuche unternommen wurden"
     date_parsing_failed: "Das angegebene Datum wurde nicht erkannt"
     personal_password_reset_mail_not_found: "Die angegebene Emailadresse konnte nicht gefunden werden"
+    personal_password_reset_no_admins: |
+      Diese Funktionalität steht für Administratoren nicht zur Verfügung, bitte
+      wenden Sie sich an Ihr Rechenzentrum
     search_string_too_short: "das Suchwort muss aus mindestens drei Zeichen bestehen"
     forbidden_clipboard_action: "Sie haben nicht die nötigen Rechte, um diese Aktion auszuführen"
     merge_failure: "die Verschmelzung der Entitäten konnte nicht durchgeführt werden"
@@ -678,6 +714,19 @@ de:
     account_inactive: "dieser Zugang wurde deaktiviert"
     account_expired: "dieser Zugang ist abgelaufen"
     only_same_kind: "bitte wählen Sie hierzu nur Entitäten vom selbem Typ"
+    cant_merge_more_than_10_entities: |
+      Das Zusammenführen von Entitäten ist nur für 10 oder weniger Entitäten
+      möglich
+    cant_mass_relate_more_than_10_entities: |
+      Das gleichzeitige Verknüpfen mehrere Entitäten ist nur für 10 oder
+      weniger Entitäten möglich
+    must_select_2_or_more_entities: |
+      Sie müssen mindestens zwei Entitäten auswählen
+    must_select_1_or_more_entities: Sie müssen mindestens eine Entität auswählen
+    missing_entities_to_merge: |
+      Einige Entitäten in Ihrer Auswahl wurden nicht gefunden. Bitte laden Sie
+      die Seite neu. Vermutlich sind die Entitäten in der Zwischenzeit gelöscht
+      worden
     exception_ocurred: "ein unerwarteter Fehler ist eingetreten"
     publishment_expired: "Dieser Link ist abgelaufen"
     file_too_big: "Die Datei '%{file}' ist zu groß (%{size}MB) und kann nicht hochgeladen werden. Die maximale Größe beträgt %{max}MB"
@@ -686,6 +735,12 @@ de:
     kind_has_entities: Entitätstypen mit abhängigen Entitäten können nicht gelöscht werden
     medium_kind_not_deletable: Der Entitätstype 'Medium' kann nicht gelöscht werden
     relations_merge_failure: Sie können nur Relation zusammenführen, deren erlaubte Entitätstypen übereinstimmen
+    source_or_target_not_editable: |
+      Sie benötigen entweder Schreibrechte für die Quelle oder für alle Ziele.
+      Zusätzlich benötigen Sie Leserechte für alle involvierten Entitäten
+    move_denied: |
+      Änderungen der Sammlung erfordern Löschrechte für die ehemalige Sammlung
+      und Erstellungsrechte für die neue Sammlung.
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
@@ -774,6 +829,9 @@ de:
       user:
         one: Benutzer
         other: Benutzer
+      setting:
+        one: Einstellung
+        other: Einstellungen
 
     attributes:
       field:
@@ -803,6 +861,7 @@ de:
       credential:
         name: Name
         description: Beschreibung
+        user_count: Anzahl der Benutzer
       collection:
         personal: benutzereigen
         name: Name
@@ -811,6 +870,8 @@ de:
         delete: Diesen Gruppen das Löschen erlauben
         create: Diesen Gruppen das Erstellen erlauben
         view_meta: Diesen Gruppen das Anzeigen der Stammdaten erlaubem
+        tagging: Diesen Gruppen das Verändern der Schlagworte erlauben
+        download_originals: Diesen Gruppen den Download der Originale erlauben
       user:
         parent_username: Berechtigungen erben von
         personal: eigene Sammlung
@@ -928,12 +989,19 @@ de:
       publishment:
         name: Bezeichnung
         group: zu veröffentlichende Gruppe
+        valid_until: gültig bis
+        link: Link
       user_group:
         name: Name
         owner: Besitzer
         shared:
           one: freigegeben
           other: freigegebene
+        published: öffentlich freigebene
+      authority_group:
+        name: Name
+      authority_group_category:
+        name: Name
           
     errors:
       template:
@@ -991,6 +1059,8 @@ de:
         would_result_in_cycle: would result in a circular schema
         field_type_invalid: Feldtyp ist ungültig
         cannot_restrict_less_than_parent: kann nicht mehr Entitätstypen erlauben als der Stammtyp
+        stale_config_update: |
+          Die Einstellungen sind in der Zwischenzeit geändert worden
 
   # Mime types
 
@@ -1035,6 +1105,7 @@ de:
   time:
     formats:
       default: "%d.%m.%Y %H:%M"
+      exact: "%d.%m.%Y %H:%M:%S"
       #default: "%A, %e. %B %Y, %H:%M Uhr"
       short: "%e. %B, %H:%M Uhr"
       long: "%A, %e. %B %Y, %H:%M Uhr"

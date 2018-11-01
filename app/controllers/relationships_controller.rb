@@ -8,9 +8,9 @@ class RelationshipsController < JsonController
 
     if authorized_for_relationship?(@relationship, :create)
       if @relationship.save
-        render_200 I18n.t('objects.create_success', o: Relationship.model_name.human)
+        render_created @relationship
       else
-        render_406 build_nested_errors(@relationship)
+        render_422 build_nested_errors(@relationship)
       end
     else
       render_403
@@ -24,7 +24,7 @@ class RelationshipsController < JsonController
       if @relationship.update_attributes(relationship_params)
         render_200 I18n.t('objects.update_success', o: Relationship.model_name.human)
       else
-        render_406 build_nested_errors(@relationship)
+        render_422 build_nested_errors(@relationship)
       end
     else
       render_403
@@ -50,12 +50,11 @@ class RelationshipsController < JsonController
   protected
 
     def relationship_params
-      params.require(:relationship).permit(
-        :from_id, :to_id, :relation_id, :relation_name, properties: [],
-        :datings_attributes => [:id, :_destroy, :label, :dating_string],
-      ).tap do |w|
-        w[:properties] = params[:relationship][:properties]
-      end
+      params.fetch(:relationship, {}).permit(
+        :from_id, :to_id, :relation_id, :relation_name,
+        properties: [],
+        datings_attributes: [:id, :_destroy, :label, :dating_string],
+      )
     end
 
     def build_nested_errors(relationship)

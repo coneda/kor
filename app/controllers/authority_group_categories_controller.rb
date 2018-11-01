@@ -46,7 +46,7 @@ class AuthorityGroupCategoriesController < JsonController
 
       render_200 I18n.t('objects.create_success', :o => @record.name)
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 
@@ -56,7 +56,7 @@ class AuthorityGroupCategoriesController < JsonController
     if @authority_group_category.update_attributes(authority_group_category_params)
       render_200 I18n.t('objects.update_success', :o => @authority_group_category.name)
     else
-      render_406 @authority_group_category.errors
+      render_422 @authority_group_category.errors
     end
   end
 

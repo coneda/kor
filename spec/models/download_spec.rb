@@ -1,12 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Download do
-  include DataHelper
-
   before :each do
+    ActionMailer::Base.default_url_options[:host] = 'example.com'
     system "rm -f #{Rails.root}/data/downloads/*"
-    test_data_for_auth
-    ActionMailer::Base.deliveries = []
   end
 
   it "should move the file to the download folder" do
@@ -19,5 +16,4 @@ RSpec.describe Download do
     expect(File.read(Download.last.path)).to eq("Hello")
     expect(ActionMailer::Base.deliveries.size).to eql(1)
   end
-
 end

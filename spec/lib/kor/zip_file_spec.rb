@@ -1,9 +1,6 @@
 require 'rails_helper'
 
-describe Kor::ZipFile do
-
-  include DataHelper
-
+RSpec.describe Kor::ZipFile do
   it "should add files with a given internal path" do
     filename = "#{Rails.root}/tmp/sample.zip"
     system "rm -f #{filename}"
@@ -15,8 +12,6 @@ describe Kor::ZipFile do
   end
 
   it "should be able to attach itself to a download" do
-    test_data_for_auth
-
     filename = "#{Rails.root}/tmp/sample.zip"
     system "rm -f #{filename}"
     zip = described_class.new(filename, :user_id => User.first.id, :file_name => "sample.zip")
@@ -25,5 +20,4 @@ describe Kor::ZipFile do
 
     expect(Download.count).to eq(1)
   end
-
 end

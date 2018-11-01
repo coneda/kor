@@ -285,8 +285,13 @@ class User < ActiveRecord::Base
   end
   
   def full_auth
+    group_ids = groups.pluck(:id)
+    u = self
+    while u = u.parent
+      group_ids += u.groups.pluck(:id)
+    end
     collections = {}
-    scope = Grant.where(credential_id: groups.pluck(:id))
+    scope = Grant.where(credential_id: group_ids)
     scope.group(:collection_id, :policy).count.each do |g, count|
       collections[g.last] ||= []
       collections[g.last] << g.first

@@ -1,7 +1,6 @@
 require "rails_helper"
 
-describe Kor::Import::WikiData, :vcr => true do
-
+RSpec.describe Kor::Import::WikiData, vcr: true do
   it "should find a record by GND (P227 = 118640445)" do
     skip 'api endpoint not available anymore'
     result = subject.find_by_attribute("227", "118640445")
@@ -82,27 +81,16 @@ describe Kor::Import::WikiData, :vcr => true do
   end
 
   context 'import' do
-
-    before :each do
-      @default = FactoryGirl.create :default
-      @admins = FactoryGirl.create :admins
-      @admin = FactoryGirl.create :admin, groups: [@admins]
-      Kor::Auth.grant @default, :create, to: @admins
-      @people = FactoryGirl.create :people, fields: [Field.new(name: 'wikidata_id', show_label: 'Wikidata ID', is_identifier: true)]
-      @works = FactoryGirl.create :works, fields: [Field.new(name: 'wikidata_id', show_label: 'Wikidata ID', is_identifier: true)]
-    end
-
-
     it 'should simulate the import of an item' do
       results = subject.preflight(User.admin, 'default', 'Q762', 'person')
       expect(results['success']).to eq(true)
       expect(results['entity']['name']).to eq('Leonardo da Vinci')
-      expect(results['entity']['kind_id']).to eq(@people.id)
+      expect(results['entity']['kind_id']).to eq(people.id)
       expect(results['entity']['dataset']['wikidata_id']).to eq('Q762')
 
-      expect(Entity.count).to eq(0)
-      expect(Relation.count).to eq(0)
-      expect(Relationship.count).to eq(0)
+      expect(Entity.count).to eq(7)
+      expect(Relation.count).to eq(6)
+      expect(Relationship.count).to eq(7)
     end
 
     it 'should import an item' do
@@ -114,28 +102,32 @@ describe Kor::Import::WikiData, :vcr => true do
       e = Entity.find_by!(name: 'Leonardo da Vinci')
       expect(e.dataset['wikidata_id']).to eq('Q762')
       expect(e.kind_name).to eq('person')
-      expect(e.collection.name).to eq('default')
+      expect(e.collection.name).to eq('Default')
       expect(e.id).to eq(results['entity']['id'])
       expect(e.uuid).to eq(results['entity']['uuid'])
     end
 
     it 'should import the associations between known items' do
+      # we delete some entities created by the test setup
+      leonardo.destroy
+      mona_lisa.destroy
+      last_supper.destroy
+
       results = subject.import(User.admin, 'default', 'Q762', 'person')
       expect(results['success']).to eq(true)
 
-      results = subject.import(User.admin, 'default', 'Q12418', 'Werk')
+      results = subject.import(User.admin, 'default', 'Q12418', 'work')
       expect(results['message']).to eq('item has been imported')
 
-      results = subject.import(User.admin, 'default', 'Q128910', 'Werk')
+      results = subject.import(User.admin, 'default', 'Q128910', 'work')
       expect(results['message']).to eq('item has been imported')
 
+      # he's imported as 'Leonardo da Vinci' from wikidata
       leonardo = Entity.find_by!(name: 'Leonardo da Vinci')
-      mona_lisa = Entity.find_by!(name: 'Mona Lisa')
-      last_supper = Entity.find_by!(name: 'The Last Supper')
       rel = Relation.find_by!(name: 'creator')
 
-      expect(Relation.count).to eq(1)
-      expect(Relationship.count).to eq(2)
+      expect(Relation.count).to eq(7)
+      expect(Relationship.count).to eq(3)
       expect(rel.relationships.first.from_id).to eq(mona_lisa.id)
       expect(rel.relationships.first.to_id).to eq(leonardo.id)
       expect(rel.relationships.last.from_id).to eq(last_supper.id)
@@ -144,5 +136,4 @@ describe Kor::Import::WikiData, :vcr => true do
 
     it 'should not touch existing entities'
   end
-
 end

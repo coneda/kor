@@ -45,6 +45,9 @@ RSpec.describe AuthorityGroupsController, type: :controller do
     expect(response).to be_forbidden
   end
 
+  it 'should not PATCH add_to'
+  it 'should not PATCH remove_from'
+
   context 'as admin' do
     before :each do
       current_user User.admin
@@ -87,6 +90,9 @@ RSpec.describe AuthorityGroupsController, type: :controller do
       expect_deleted_response
       expect(AuthorityGroup.find_by(id: id)).to be_nil
     end
+
+    it 'should PATCH add_to'
+    it 'should PATCH remove_from'
   end
 
   # it 'should put all entities within a group into the clipboard' do

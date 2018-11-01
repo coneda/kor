@@ -3,9 +3,10 @@ source 'https://rubygems.org'
 gem 'rails', '~> 4.2.6'
 gem 'responders', '~> 2.0'
 
+gem 'sucker_punch', '~> 2.0'
 gem 'delayed_paperclip'
 gem 'paperclip'
-gem 'cocaine'
+# gem 'cocaine'
 gem 'daemons'
 gem 'mysql2'
 gem 'RedCloth'
@@ -44,7 +45,7 @@ if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   gem 'factory_girl_rails'
 end
 
-gem 'kor_index', path: './plugins/kor_index'
+# gem 'kor_index', path: './plugins/kor_index'
 
 group :test do
   gem 'cucumber-rails', require: false

@@ -1,7 +1,6 @@
-class DownloadsController < BaseController
-  
+class DownloadsController < JsonController
   def show
-    @download = Download.find_by_uuid(params[:uuid])
+    @download = Download.find_by!(uuid: params[:uuid])
     
     send_data(@download.data,
       :type => @download.content_type,
@@ -9,5 +8,4 @@ class DownloadsController < BaseController
       :disposition => 'attachment'
     )
   end
-  
 end

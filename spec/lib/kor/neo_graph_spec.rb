@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe Kor::NeoGraph, skip: 'not integrated within the dependencies yet' do
+RSpec.describe Kor::NeoGraph, skip: 'not integrated within the dependencies yet' do
 
   it "should create nodes" do
 

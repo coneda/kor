@@ -204,8 +204,32 @@ module Kor::Auth
     m = (options[:required] == :all ? :all? : :any?)
     collection_ids.send(m) do |cid|
       policy.all? do |p|
-        options[:cache][:data][:collections][p.to_s].include?(cid)
+        ids = options[:cache][:data][:collections][p.to_s]
+        ids.nil? ? false : ids.include?(cid)
       end
+    end
+  end
+
+  def self.authorized_for_relationship?(user, relationship, policy = :view)
+    if relationship.to && relationship.from
+      case policy
+        when :view
+          view_from = allowed_to?(user, :view, relationship.from.collection)
+          view_to = allowed_to?(user, :view, relationship.to.collection)
+          
+          view_from and view_to
+        when :create, :delete, :edit
+          view_from = allowed_to?(user, :view, relationship.from.collection)
+          view_to = allowed_to?(user, :view, relationship.to.collection)
+          edit_from = allowed_to?(user, :edit, relationship.from.collection)
+          edit_to = allowed_to?(user, :edit, relationship.to.collection)
+          
+          (view_from and edit_to) or (edit_from and view_to)
+        else
+          false
+      end
+    else
+      true
     end
   end
 
@@ -258,7 +282,9 @@ module Kor::Auth
     ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
   end
 
-  def self.sources
+  def self.sources(refresh = false)
+    @sources = nil if refresh
+
     @sources ||= begin
       {}.tap do |results|
         ENV.each do |key, value|

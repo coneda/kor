@@ -10,11 +10,7 @@ class AuthorityGroup < EntityGroup
   
   # scope :without_category, lambda { where(:authority_group_category_id => nil) }
   scope :within_category, lambda{|id|
-    if id == 'root'
-      where(authority_group_category_id: nil)
-    else
-      id.present? ? where(authority_group_category_id: id) : all
-    end
+    id.present? ? where(authority_group_category_id: id) : all
   }
   scope :containing, lambda {|entity_ids|
     joins('JOIN authority_groups_entities ge on authority_groups.id = ge.authority_group_id').

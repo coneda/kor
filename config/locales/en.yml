@@ -200,7 +200,7 @@ en:
       kind_dating_label: "default dating label for new kinds"
       kind_name_label: "default name label for new kinds"
       kind_distinct_name_label: "default distinct name label for new kinds"
-      relationship_dating_label: "default dating label for new kinds"
+      relationship_dating_label: "default dating label for new relations"
       default_groups: "default user groups for new users"
       max_download_group_size: "maximum downloadable group size [MB]"
       search_entity_name: 'label for the entity name on the search page'
@@ -714,6 +714,13 @@ en:
     kind_has_entities: the kind can't be removed because it still has entities
     medium_kind_not_deletable: the medium kind cannot be removed
     relations_merge_failure: you can only merge relations with matching endpoints
+    source_or_target_not_editable: |
+      the source has to be editable or all targets have to be editable. In
+      addition, all entities have to be viewable
+    move_denied: |
+      moving an entity from one collection to another requires the 'delete'
+      permission in the source collection and the 'create' permission in the
+      target collection
 
   labels:
     relate_to_via: relate all files with "%{to}" via

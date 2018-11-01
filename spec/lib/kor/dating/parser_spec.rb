@@ -10,7 +10,7 @@ RSpec::Matchers.define :parse do |input|
   end
 end
 
-describe Kor::Dating::Parser do
+RSpec.describe Kor::Dating::Parser do
 
   it "should parse positive numbers including a zero" do
     expect(subject.positive_number).to parse("0")

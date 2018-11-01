@@ -1,108 +1,238 @@
 require 'rails_helper'
 
-RSpec.describe MediaController, :type => :controller do
-  include DataHelper
+RSpec.describe MediaController, type: :request do
+  it 'should not GET show' do
+    entity = Collection.find_by!(name: 'private').entities.media.first
 
-  before :each do
-    fake_authentication :persist => true
+    get entity.medium.url :icon
+    expect(response).to be_forbidden
 
-    test_kinds
+    get entity.medium.url :thumbnail
+    expect(response).to be_forbidden
+
+    get entity.medium.url :screen
+    expect(response).to be_forbidden
+
+    get entity.medium.url :normal
+    expect(response).to be_forbidden
+
+    get entity.medium.url :original
+    expect(response).to be_forbidden
   end
 
-  def side_collection
-    @side_collection ||= FactoryGirl.create :private
+  it 'should not GET download' do
+    entity = Collection.find_by!(name: 'private').entities.media.first
+
+    get entity.medium.url :icon, 'download'
+    expect(response).to be_forbidden
+
+    get entity.medium.url :thumbnail, 'download'
+    expect(response).to be_forbidden
+
+    get entity.medium.url :screen, 'download'
+    expect(response).to be_forbidden
+
+    get entity.medium.url :normal, 'download'
+    expect(response).to be_forbidden
+
+    get entity.medium.url :original, 'download'
+    expect(response).to be_forbidden
   end
 
-  def side_entity(attributes = {})
-    Delayed::Worker.delay_jobs = false
+  it 'should not PATCH transform' do
+    entity = Collection.find_by!(name: 'private').entities.media.first
 
-    @side_entity ||= begin
-      FactoryGirl.create :picture_a, :collection => side_collection
+    patch "/media/transform/#{entity.medium_id}/image/rotate_cw"
+    expect(response).to be_forbidden
+
+    patch "/media/transform/#{entity.medium_id}/image/flip"
+    expect(response).to be_forbidden
+  end
+
+  context 'as jdoe' do
+    before :each do
+      current_user User.find_by!(name: 'jdoe')
+    end
+
+    it 'should not GET show' do
+      entity = Collection.find_by!(name: 'private').entities.media.first
+
+      get entity.medium.url :icon
+      expect(response).to be_forbidden
+
+      get entity.medium.url :thumbnail
+      expect(response).to be_forbidden
+
+      get entity.medium.url :screen
+      expect(response).to be_forbidden
+
+      get entity.medium.url :normal
+      expect(response).to be_forbidden
+
+      get entity.medium.url :original
+      expect(response).to be_forbidden
+    end
+
+    it 'should not GET download' do
+      entity = Collection.find_by!(name: 'private').entities.media.first
+
+      get entity.medium.url :icon, 'download'
+      expect(response).to be_forbidden
+
+      get entity.medium.url :thumbnail, 'download'
+      expect(response).to be_forbidden
+
+      get entity.medium.url :screen, 'download'
+      expect(response).to be_forbidden
+
+      get entity.medium.url :normal, 'download'
+      expect(response).to be_forbidden
+
+      get entity.medium.url :original, 'download'
+      expect(response).to be_forbidden
+    end
+
+    it 'should not PATCH transform' do
+      entity = Collection.find_by!(name: 'private').entities.media.first
+
+      patch "/media/transform/#{entity.medium_id}/image/rotate_cw"
+      expect(response).to be_forbidden
+
+      patch "/media/transform/#{entity.medium_id}/image/flip"
+      expect(response).to be_forbidden
     end
   end
 
-  def set_side_collection_policies(policies = {})
-    policies.each do |p, c|
-      Kor::Auth.grant side_collection, p, :to => c
+  context 'as jdoe (with download originals permission)' do
+    before :each do
+      priv = Collection.find_by! name: 'private'
+      students = Credential.find_by! name: 'students'
+      Kor::Auth.grant priv, :download_originals, to: students
+      jdoe = User.find_by!(name: 'jdoe')
+
+      current_user jdoe
+    end
+
+    it 'should not GET show' do
+      entity = Collection.find_by!(name: 'private').entities.media.first
+
+      get entity.medium.url :icon
+      expect(response).to be_forbidden
+
+      get entity.medium.url :thumbnail
+      expect(response).to be_forbidden
+
+      get entity.medium.url :screen
+      expect(response).to be_forbidden
+
+      get entity.medium.url :normal
+      expect(response).to be_forbidden
+
+      get entity.medium.url :original
+      expect(response).to be_success
+      expect(response.body).to eq(File.read entity.medium.path)
+    end
+
+    it 'should not GET download' do
+      entity = Collection.find_by!(name: 'private').entities.media.first
+
+      get entity.medium.url :icon, 'download'
+      expect(response).to be_forbidden
+
+      get entity.medium.url :thumbnail, 'download'
+      expect(response).to be_forbidden
+
+      get entity.medium.url :screen, 'download'
+      expect(response).to be_forbidden
+
+      get entity.medium.url :normal, 'download'
+      expect(response).to be_forbidden
+
+      get entity.medium.url :original, 'download'
+      expect(response).to be_success
+      expect(response.headers['content-disposition']).to match(/^attachment/)
+      expect(response.body).to eq(File.read entity.medium.path)
+    end
+
+    it 'should not PATCH transform' do
+      entity = Collection.find_by!(name: 'private').entities.media.first
+
+      patch "/media/transform/#{entity.medium_id}/image/rotate_cw"
+      expect(response).to be_forbidden
+
+      patch "/media/transform/#{entity.medium_id}/image/flip"
+      expect(response).to be_forbidden
     end
   end
 
-  it "should not allow viewing to unauthorized users" do
-    get :view, :id => side_entity.medium_id
-    expect(response.status).to eq(403)
+  context 'as admin' do
+    before :each do
+      current_user User.admin
+    end
+
+    it 'should GET show' do
+      entity = Collection.find_by!(name: 'private').entities.media.first
+
+      get entity.medium.url :icon
+      expect(response).to be_success
+      expect(response.body).to eq(File.read entity.medium.path(:icon))
+
+      get entity.medium.url :thumbnail
+      expect(response).to be_success
+      expect(response.body).to eq(File.read entity.medium.path(:thumbnail))
+
+      get entity.medium.url :screen
+      expect(response).to be_success
+      expect(response.body).to eq(File.read entity.medium.path(:screen))
+
+      get entity.medium.url :normal
+      expect(response).to be_success
+      expect(response.body).to eq(File.read entity.medium.path(:normal))
+
+      get entity.medium.url :original
+      expect(response).to be_success
+      expect(response.body).to eq(File.read entity.medium.path)
+    end
+
+    it 'should GET download' do
+      entity = Collection.find_by!(name: 'private').entities.media.first
+
+      get entity.medium.url :icon, 'download'
+      expect(response).to be_success
+      expect(response.headers['content-disposition']).to match(/^attachment/)
+      expect(response.body).to eq(File.read entity.medium.path(:icon))
+
+      get entity.medium.url :thumbnail, 'download'
+      expect(response).to be_success
+      expect(response.headers['content-disposition']).to match(/^attachment/)
+      expect(response.body).to eq(File.read entity.medium.path(:thumbnail))
+
+      get entity.medium.url :screen, 'download'
+      expect(response).to be_success
+      expect(response.headers['content-disposition']).to match(/^attachment/)
+      expect(response.body).to eq(File.read entity.medium.path(:screen))
+
+      get entity.medium.url :normal, 'download'
+      expect(response).to be_success
+      expect(response.headers['content-disposition']).to match(/^attachment/)
+      expect(response.body).to eq(File.read entity.medium.path(:normal))
+
+      get entity.medium.url :original, 'download'
+      expect(response).to be_success
+      expect(response.headers['content-disposition']).to match(/^attachment/)
+      expect(response.body).to eq(File.read entity.medium.path(:original))
+    end
+
+    it 'should PATCH transform' do
+      entity = Collection.find_by!(name: 'private').entities.media.first
+
+      patch "/media/transform/#{entity.medium_id}/image/rotate_cw"
+      expect(response).to be_success
+      expect(json['message']).to eq('medium has been changed')
+
+      patch "/media/transform/#{entity.medium_id}/image/flip"
+      expect(response).to be_success
+      expect(json['message']).to eq('medium has been changed')
+    end
   end
-
-  it "should allow viewing to authorized users" do
-    set_side_collection_policies :view => [@admins]
-
-    get :view, :id => side_entity.medium_id
-    expect(response.status).not_to eq(403)
-  end
-
-  def params_for_medium(medium, style = :normal, attachment = :image, style_extension = :png)
-    ids = medium.ids.split '/'
-    return {
-      :style => style,
-      :id_part_01 => ids[0],
-      :id_part_02 => ids[1],
-      :id_part_03 => ids[2],
-      :attachment => attachment,
-      :style_extension => style_extension
-    }
-  end
-
-  it "should not show imgages to unauthorized users" do
-    get :show, params_for_medium(side_entity.medium)
-    expect(response.status).to eq(403)
-  end
-
-  it "should show images to authorized users" do
-    set_side_collection_policies :view => [@admins]
-
-    get :show, params_for_medium(side_entity.medium)
-    expect(response.status).not_to eq(403)
-  end
-
-  it "should not allow image download to unauthorized users" do
-    get :download, :id => side_entity.medium_id, :style => :normal
-    expect(response.status).to eq(403)
-  end
-
-  it "should allow image download to authorized users" do
-    set_side_collection_policies(
-      :view => [@admins], 
-      :download_originals => [@admins]
-    )
-
-    get :download, :id => side_entity.medium_id, :style => :normal
-    expect(response.status).not_to eq(403)
-  end
-
-  it "should allow original download only to authorized users" do
-    set_side_collection_policies(:view => [@admins])
-
-    get :download, :id => side_entity.medium_id, :style => :original
-    expect(response.status).to eq(403)
-  end
-
-  it "should not allow image transformations to unauthorized users" do
-    get(:transform,
-      id: side_entity.medium_id,
-      transformation: 'image',
-      operation: 'flip'
-    )
-    expect(response.status).to eq(403)
-  end
-
-  it "should allow image transformations to authorized users" do
-    set_side_collection_policies :edit => [@admins]
-
-    get(:transform,
-      id: side_entity.medium_id,
-      transformation: 'image',
-      operation: 'flip'
-    )
-    expect(response.status).not_to eq(403)
-  end
-
 end

@@ -11,9 +11,9 @@ class Kor::Elastic
     end
   end
 
-  # def initialize(user)
-  #   @user = user
-  # end
+  def initialize(user)
+    @user = user
+  end
 
   def self.config
     @config ||= {
@@ -37,11 +37,25 @@ class Kor::Elastic
   end
 
   def self.enable
-    @enabled = true
+    if block_given?
+      previous = @enabled
+      @enabled = true
+      yield
+      @enabled = previous
+    else
+      @enabled = true
+    end
   end
 
   def self.disable
-    @enabled = false
+    if block_given?
+      previous = @enabled
+      @enabled = false
+      yield
+      @enabled = previous
+    else
+      @enabled = false
+    end
   end
 
   def self.server_version
@@ -258,7 +272,7 @@ class Kor::Elastic
   def search(query = {})
     query[:analyzer] ||= 'folding'
 
-    return self.class.empty_result unless self.class.enabled?
+    return empty_result unless self.class.enabled?
 
     # puts JSON.pretty_generate(query)
 
@@ -333,26 +347,23 @@ class Kor::Elastic
       }
     end
 
-    # collection_ids = criteria[:collection_id]
-    # ::Kor::Auth.authorized_collections(@user).map(&:id)
-    # if collection_ids.present?
-    #   return self.class.empty_result
-    # end
+    filters = []
 
-    # if query[:collection_id].present?
-    #   collection_ids &= to_array(query[:collection_id])
-    # end
-
-    filters = [
-      {
+    requested_ids = to_array(query[:collection_id] || Collection.all.pluck(:id))
+    allowed_ids = ::Kor::Auth.authorized_collections(@user).pluck(:id)
+    ids = requested_ids & allowed_ids
+    if ids.size == 0
+      return self.class.empty_result
+    else
+      filters << {
         "terms" => {
-          "collection_id" => query[:collection_id],
+          "collection_id" => ids,
         }
       }
-    ]
+    end
 
     if query[:tags].present?
-      query[:tag].each do |tag|
+      query[:tags].each do |tag|
         filters << {
           "term" => {
             "tags" => tag
@@ -375,7 +386,7 @@ class Kor::Elastic
       sorting.unshift '_score'
     end
 
-    data = build_request(
+    data = self.class.build_request(
       page: page,
       per_page: per_page,
       queries: (query_component ? [query_component] : []),
@@ -400,8 +411,8 @@ class Kor::Elastic
     )
   end
 
-  def build_request(options = {})
-    if self.class.server_version < '5.0.0'
+  def self.build_request(options = {})
+    if server_version < '5.0.0'
       data = {
         'size' => options[:per_page],
         'from' => (options[:page] - 1) * options[:per_page],
@@ -431,8 +442,7 @@ class Kor::Elastic
         'sort' => options[:sorting],
         'query' => {
           'bool' => {
-            'filter' => options[:filters],
-            # 'must' => options[:queries]
+            'filter' => options[:filters]
             # 'should' => [
             #   # {
             #   #   'function_score' => {
@@ -456,13 +466,19 @@ class Kor::Elastic
           }
         }
       }
+
+      if options[:queries].present?
+        data['query']['bool']['must'] = options[:queries]
+      end
+
+      data
     end
   end
 
-  def count
-    return 0 unless self.class.enabled?
+  def self.count
+    return 0 unless enabled?
 
-    response = self.class.request('get', '/entities/_count')
+    response = request('get', '/entities/_count')
     response['count']
   end
 
@@ -492,7 +508,7 @@ class Kor::Elastic
       Rails.logger.info "ELASTIC REQUEST: #{method} #{path}\n#{body.inspect}"
 
       query['token'] = config['token'] if config['token']
-      headers.reverse_merge 'content-type' => 'application/json', 'accept' => 'application/json'
+      headers.reverse_merge! 'content-type' => 'application/json', 'accept' => 'application/json'
       url = "#{config['url']}#{path}"
       client.request(method, url, query, body, headers)
     end
@@ -522,6 +538,7 @@ class Kor::Elastic
     end
 
     def to_array(value)
+      return [] if value.nil?
       value.is_a?(Array) ? value : [value]
     end
 

@@ -24,7 +24,7 @@ Rails.application.configure do
   config.action_dispatch.show_exceptions = true
 
   # Disable request forgery protection in test environment.
-  config.action_controller.allow_forgery_protection = true
+  config.action_controller.allow_forgery_protection = false
 
   # This is instead set by the kor config files through config/application.rb
   # config.action_mailer.delivery_method = :test
@@ -39,4 +39,6 @@ Rails.application.configure do
   config.action_view.raise_on_missing_translations = true
 
   # config.action_controller.action_on_unpermitted_parameters = :raise
+
+  config.active_job.queue_adapter = :inline
 end

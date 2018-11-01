@@ -288,17 +288,24 @@ FactoryGirl.define do
       password 'jdoe'
     end
 
-    factory :admin do
-      email 'admin@coneda.net'
-      name 'admin'
-      full_name 'Administrator'
-      password 'admin'
-      
-      admin true
-      kind_admin true
-      relation_admin true
-      authority_group_admin true
+    factory :mrossi do
+      email 'mrossi@coneda.net'
+      name 'mrossi'
+      full_name 'Mario Rossi'
+      password 'mrossi'
     end
+
+    # factory :admin do
+    #   email 'admin@coneda.net'
+    #   name 'admin'
+    #   full_name 'Administrator'
+    #   password 'admin'
+      
+    #   admin true
+    #   kind_admin true
+    #   relation_admin true
+    #   authority_group_admin true
+    # end
 
     factory :guest do
       name 'guest'

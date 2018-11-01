@@ -165,7 +165,7 @@ class Medium < ActiveRecord::Base
   
   def data(style = :original)
     if style == :original
-      document.file? ? to_file(:document, style).read : to_file(:iamge, style).read
+      document.file? ? to_file(:document, style).read : to_file(:image, style).read
     elsif image_style?(style)
       File.read path(style)
     else
@@ -219,9 +219,9 @@ class Medium < ActiveRecord::Base
   def image_style?(style)
     image.styles.keys.include? style
   end
-  
-  def url(style = :original)
-    if Rails.env.development? && !ENV['SHOW_MEDIA']
+
+  def url(style = :original, attachment = 'inline')
+    r = if Rails.env.development? && !ENV['SHOW_MEDIA']
       dummy_url
     else
       result = if style == :original
@@ -234,8 +234,14 @@ class Medium < ActiveRecord::Base
 
       result.present? ? result.gsub(/%3F/, '?') : result
     end
+
+    if attachment == 'inline'
+      r
+    else
+      r.gsub /\/images\//, '/download/'
+    end
   end
-  
+
   def path(style = :original)
     if style == :original
       document.path(:original) || image.path(:original)
@@ -306,5 +312,4 @@ class Medium < ActiveRecord::Base
       self.document_content_type = ct.to_s if ct
     end
   end
-  
 end

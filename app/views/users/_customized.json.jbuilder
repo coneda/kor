@@ -13,7 +13,7 @@ if current_user.admin? || (current_user == record)
 
   if inclusion.request?('security')
     json.extract!(record,
-      :email, :last_login, :active, :expires_at, :parent_recordname, :api_key
+      :email, :last_login, :active, :expires_at, :parent_username, :api_key
     )
     json.personal record.personal?
     json.group_ids record.groups.pluck(:id)

@@ -1,4 +1,13 @@
-require 'simplecov'
+if ENV['COVERAGE'] == 'true'
+  require 'simplecov'
+  SimpleCov.start 'rails' do
+    merge_timeout 3600
+    coverage_dir 'tmp/coverage'
+    track_files '{app,lib,config}/**/*.{rb,rake}'
+  end
+  puts "performing coverage analysis"
+end
+
 require 'vcr'
 
 RSpec.configure do |config|

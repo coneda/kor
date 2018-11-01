@@ -4,9 +4,9 @@ class AuthorityGroupsController < JsonController
   skip_before_filter :auth, :only => [:download_images, :index, :show]
 
   def index
-    if params[:authority_group_category_id] == ''
-      params[:authority_group_category_id] = 'root'
-    end
+    # if params[:authority_group_category_id] == ''
+    #   params[:authority_group_category_id] = 'root'
+    # end
 
     @records = AuthorityGroup.
       within_category(params[:authority_group_category_id]).
@@ -38,7 +38,7 @@ class AuthorityGroupsController < JsonController
   def add_to
     @authority_group = AuthorityGroup.find_or_create_by!(name: params[:group_name])
     entity_ids = Kor.array_wrap(params[:entity_ids])
-    entities = viewable_entities.find entity_ids
+    entities = Entity.allowed(current_user).find entity_ids
     @authority_group.add_entities(entities)
 
     @record = @authority_group
@@ -82,7 +82,7 @@ class AuthorityGroupsController < JsonController
     if @record.save
       render_200 I18n.t('objects.create_success', :o => @record.name)
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 
@@ -92,7 +92,7 @@ class AuthorityGroupsController < JsonController
     if @authority_group.update_attributes(authority_group_params)
       render_200 I18n.t('objects.update_success', :o => @authority_group.name)
     else
-      render_406 @authority_group.errors
+      render_422 @authority_group.errors
     end
   end
 

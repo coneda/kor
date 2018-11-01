@@ -19,7 +19,7 @@ Paperclip.interpolates :style_timestamp do |attachment, style|
 end
 
 module Paperclip::Interpolations
-  def id_partition attachment, style_name
+  def id_partition(attachment, style_name)
     case id = attachment.instance.id
     when Integer
       ("%09d" % id).scan(/\d{3}/).join("/")

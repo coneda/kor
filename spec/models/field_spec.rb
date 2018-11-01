@@ -3,10 +3,10 @@ require 'rails_helper'
 RSpec.describe Field do
   
   it "should synchronize the value for is_identifier across all kinds" do
-    people = FactoryGirl.create :people, fields: [
+    people.update fields: [
       Field.new(name: 'viaf_id', show_label: 'stack')
     ]
-    works = FactoryGirl.create :works, fields: [
+    works.update fields: [
       Field.new(name: 'viaf_id', show_label: 'stack', is_identifier: true)
     ]
     expect(people.reload.fields.first.is_identifier).to be_truthy
@@ -19,23 +19,21 @@ RSpec.describe Field do
   end
 
   it "should synchronize storage on entities with the field name attribute" do
-    Delayed::Worker.delay_jobs = false
-
-    works = FactoryGirl.create :works, fields: [
+    works.update fields: [
       Field.new(name: 'viaf_id', show_label: 'stack', is_identifier: true)
     ]
-    mona_lisa = FactoryGirl.create :mona_lisa, :dataset => {'viaf_id' => '1234'}
-    der_schrei = FactoryGirl.create :der_schrei, :dataset => {'viaf_id' => '5678'}
+    mona_lisa.update dataset: {'viaf_id' => '1234'}
+    last_supper.update dataset: {'viaf_id' => '5678'}
 
-    works.fields.first.update_attributes name: 'viaf'
+    works.fields.first.update name: 'viaf'
 
     expect(mona_lisa.reload.dataset['viaf']).to eq('1234')
-    expect(der_schrei.reload.dataset['viaf']).to eq('5678')
+    expect(last_supper.reload.dataset['viaf']).to eq('5678')
 
     works.fields.first.destroy
 
     expect(mona_lisa.reload.dataset['viaf']).to be_nil
-    expect(der_schrei.reload.dataset['viaf']).to be_nil
+    expect(last_supper.reload.dataset['viaf']).to be_nil
   end
 
   it 'should fall back to the show label for other labels'

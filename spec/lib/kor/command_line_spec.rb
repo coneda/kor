@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Kor::CommandLine do
+RSpec.describe Kor::CommandLine do
 
   def run(args)
     cmd = described_class.new(args.split ' ')

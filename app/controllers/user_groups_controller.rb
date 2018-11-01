@@ -31,7 +31,7 @@ class UserGroupsController < JsonController
       owner: current_user
     )
     entity_ids = Kor.array_wrap(params[:entity_ids])
-    entities = viewable_entities.find entity_ids
+    entities = Entity.allowed(current_user).find(entity_ids)
     @user_group.add_entities(entities)
 
     @record = @user_group
@@ -42,7 +42,7 @@ class UserGroupsController < JsonController
     @user_group = UserGroup.owned_by(current_user).find(params[:id])
     
     entity_ids = Kor.array_wrap(params[:entity_ids])
-    entities = viewable_entities.find entity_ids
+    entities = Entity.allowed(current_user).find entity_ids
     @user_group.remove_entities(entities)
 
     render_200 I18n.t('messages.entities_removed_from_group')
@@ -116,7 +116,7 @@ class UserGroupsController < JsonController
     if @record.save
       render_200 I18n.t('objects.create_success', o: @record.name)
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 
@@ -126,7 +126,7 @@ class UserGroupsController < JsonController
     if @record.update_attributes(user_group_params)
       render_200 I18n.t('objects.update_success', o: @record.name)
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 

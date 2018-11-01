@@ -85,5 +85,25 @@ RSpec.describe KindsController, type: :controller do
       expect_deleted_response
       expect(Kind.find_by(id: kind.id)).to be_nil
     end
+
+    it 'should create a sub kind' do
+      post 'create', kind: {
+        name: 'artist',
+        plural_name: 'artists',
+        parent_ids: [people.id]
+      }
+      expect_created_response
+      expect(Kind.find_by!(name: 'artist').parent_ids).to eq([people.id])
+    end
+
+    it 'should move a kind' do
+      works.update parent_ids: [people.id]
+
+      patch 'update', id: works.id, kind: {
+        parent_ids: [media.id]
+      }
+      expect(response.status).to eq(200)
+      expect(works.reload.parent_ids).to eq([media.id])
+    end
   end
 end

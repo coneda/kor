@@ -10,7 +10,7 @@
 
   <% if record.is_medium? %>
     <dc:type><%= record.medium.content_type %></dc:type>
-    <dc:relation><%= download_medium_url record.medium, :style => 'original' %></dc:relation>
+    <dc:relation><%= medium_url(record.medium, root: true, download: true) %></dc:relation>
   <% else %>
     <dc:title><%= record.name %></dc:title>
   <% end %>

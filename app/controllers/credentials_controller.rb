@@ -32,7 +32,7 @@ class CredentialsController < JsonController
     if @record.save
       render_200 I18n.t('objects.create_success', :o => @record.name)
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 
@@ -42,7 +42,7 @@ class CredentialsController < JsonController
     if @credential.update_attributes(credential_params)
       render_200 I18n.t('objects.update_success', :o => @credential.name)
     else
-      render_406 @credential.errors
+      render_422 @credential.errors
     end
   end
 

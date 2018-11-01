@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe SessionController, type: :controller do
-  include DataHelper
   render_views
   
   it "should logout in any case and display a message" do
@@ -54,6 +53,8 @@ RSpec.describe SessionController, type: :controller do
     expect(response).to be_success
     expect(User.admin.password.size).to eq(64)
   end
+
+  it 'should drop the session on expiry'
 
   # TODO: move this to auth_spec.rb
   context 'with environment variables' do

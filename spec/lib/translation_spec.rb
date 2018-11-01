@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "translations" do
+RSpec.describe "translations" do
 
   it "should have full translations for all supported locales" do
     base = YAML.load_file("#{Rails.root}/config/locales/en.yml")["en"]

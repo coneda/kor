@@ -37,7 +37,7 @@ RSpec.describe CredentialsController, type: :controller do
 
     it 'should GET index' do
       get :index
-      expect_collection_response total: 2
+      expect_collection_response total: 3
     end
 
     it 'should GET show' do

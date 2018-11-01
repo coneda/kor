@@ -106,7 +106,7 @@ class Kor::Import::WikiData
 
   def preflight(user, collection, id, kind)
     entity = Identifier.resolve(id, 'wikidata_id')
-    collection = user.authorized_collections(:create).find{|c| c.name == collection}
+    collection = user.authorized_collections(:create).find_by(name: collection)
     kind = Kind.find_by(name: kind)
 
     # unless kind

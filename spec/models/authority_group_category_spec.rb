@@ -1,10 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe AuthorityGroupCategory do
-
   it 'should be able to have a parent and children' do
-    archive = FactoryGirl.create :archive
-
     expect(archive.parent).to be_nil
     expect(archive.children).to be_empty
 
@@ -21,5 +18,4 @@ RSpec.describe AuthorityGroupCategory do
     expect(archive.children).to eq([shelf_1, shelf_2])
     expect(shelf_2.parent).to eq(archive)
   end
-
 end

@@ -5,7 +5,7 @@ json.extract!(record,
 
 if inclusion.request?('to')
   json.to do
-    json.partial! 'entities/customized', entity: record.to
+    json.partial! 'entities/customized', entity: record.to, inclusion: []
   end
 end
 

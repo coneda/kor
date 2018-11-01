@@ -4,11 +4,6 @@ GIT
   specs:
     semantic (1.5.0)
 
-PATH
-  remote: plugins/kor_index
-  specs:
-    kor_index (0.0.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -80,10 +75,7 @@ GEM
       xpath (~> 3.1)
     childprocess (0.9.0)
       ffi (~> 1.0, >= 1.0.11)
-    climate_control (0.0.3)
-      activesupport (>= 3.0)
-    cocaine (0.5.8)
-      climate_control (>= 0.0.3, < 1.0)
+    climate_control (0.2.0)
     coderay (1.1.2)
     coffee-rails (4.2.2)
       coffee-script (>= 2.2.0)
@@ -127,10 +119,11 @@ GEM
     delayed_job_active_record (4.1.0)
       activerecord (>= 3.0, < 5)
       delayed_job (>= 3.0, < 5)
-    delayed_paperclip (2.9.1)
+    delayed_paperclip (3.0.1)
+      activejob (>= 4.2)
       paperclip (>= 3.3)
     diff-lcs (1.3)
-    docile (1.1.5)
+    docile (1.3.1)
     dotenv (2.5.0)
     dotenv-rails (2.5.0)
       dotenv (= 2.5.0)
@@ -169,20 +162,20 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (5.0.5)
       railties (>= 3.2.16)
-    json (1.8.6)
+    json (2.1.0)
     libv8 (3.16.14.19)
     loofah (2.2.2)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    mail (2.7.0)
+    mail (2.7.1)
       mini_mime (>= 0.1.1)
     method_profiler (2.0.1)
       hirb (>= 0.6.0)
     method_source (0.9.0)
-    mime-types (3.1)
+    mime-types (3.2.2)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2016.0521)
-    mimemagic (0.3.0)
+    mime-types-data (3.2018.0812)
+    mimemagic (0.3.2)
     mini_mime (1.0.1)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
@@ -191,12 +184,12 @@ GEM
     mysql2 (0.4.5)
     nokogiri (1.8.4)
       mini_portile2 (~> 2.3.0)
-    paperclip (4.3.6)
-      activemodel (>= 3.2.0)
-      activesupport (>= 3.2.0)
-      cocaine (~> 0.5.5)
+    paperclip (6.1.0)
+      activemodel (>= 4.2.0)
+      activesupport (>= 4.2.0)
       mime-types
-      mimemagic (= 0.3.0)
+      mimemagic (~> 0.3.0)
+      terrapin (~> 0.6.0)
     paranoia (2.2.0)
       activerecord (>= 4.0, < 5.1)
     parser (2.3.0.7)
@@ -287,11 +280,11 @@ GEM
       childprocess (~> 0.5)
       rubyzip (~> 1.2)
     sexp_processor (4.7.0)
-    simplecov (0.11.2)
-      docile (~> 1.1.0)
-      json (~> 1.8)
+    simplecov (0.16.1)
+      docile (~> 1.1)
+      json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
-    simplecov-html (0.10.0)
+    simplecov-html (0.10.2)
     slim (3.0.6)
       temple (~> 0.7.3)
       tilt (>= 1.3.3, < 2.1)
@@ -306,8 +299,12 @@ GEM
       sprockets (>= 3.0.0)
     sql_origin (1.1.2)
       rails (>= 4.0)
+    sucker_punch (2.1.1)
+      concurrent-ruby (~> 1.0)
     temple (0.7.6)
     terminal-table (1.5.2)
+    terrapin (0.6.0)
+      climate_control (>= 0.0.3, < 1.0)
     test-unit (3.1.7)
       power_assert
     test_after_commit (1.1.0)
@@ -347,7 +344,6 @@ DEPENDENCIES
   brakeman
   byebug
   capybara
-  cocaine
   coffee-rails
   colorize
   cucumber-rails
@@ -365,7 +361,6 @@ DEPENDENCIES
   jbuilder
   jquery-rails
   jquery-ui-rails
-  kor_index!
   method_profiler
   mysql2
   paperclip
@@ -388,6 +383,7 @@ DEPENDENCIES
   spreadsheet
   sprockets-rails
   sql_origin
+  sucker_punch (~> 2.0)
   test-unit
   test_after_commit
   therubyracer

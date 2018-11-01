@@ -3,11 +3,11 @@ require 'rails_helper'
 RSpec.describe User do
 
   it "should not allow special characters within the name" do
-    user = User.new :name => "test 01"
+    user = User.new name: "test 01"
     user.valid?
     expect(user.errors[:name]).not_to be_empty
 
-    user = User.new :name => "test,01"
+    user = User.new name: "test,01"
     user.valid?
     expect(user.errors[:name]).not_to be_empty
 
@@ -33,17 +33,18 @@ RSpec.describe User do
   end
 
   it "should save the plain password in memory" do
-    expect(User.new(:password => 'secret').plain_password).to eql("secret")
+    expect(User.new(password: 'secret').plain_password).to eql("secret")
   end
   
   it "should generate a password on creation" do
-    user = User.create(:name => 'john', :email => 'john.doe@example.com')
+    user = User.create(name: 'john', email: 'john.doe@example.com')
     expect(user.password).not_to be_blank
   end
 
   it "should accept 'john.doe@example-dash.com' as email address" do
-    u = FactoryGirl.build :jdoe, :email => 'john.doe@example-dash.com'
-    expect(u.valid?).to be_truthy
+    u = User.new email: 'john.doe@example-dash.com'
+    u.valid?
+    expect(u.errors[:email]).to be_empty
   end
 
   it "should keep the three most recent login times" do
@@ -80,7 +81,7 @@ RSpec.describe User do
     ]
 
     allow(Kor).to receive(:now).and_return(times[3])
-    user = User.new :login_attempts => times[0..2]
+    user = User.new login_attempts: times[0..2]
     expect(user.too_many_login_attempts?).to be_truthy
 
     allow(Kor).to receive(:now).and_return(times[4])
@@ -88,12 +89,10 @@ RSpec.describe User do
   end
 
   it "should respect inherited global roles" do
-    jdoe = FactoryGirl.create :jdoe, :admin => true
-    hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe, :relation_admin => true
+    jdoe.update admin: true
+    hmustermann = FactoryGirl.create :hmustermann, parent: jdoe, relation_admin: true
 
-    hmustermann = User.last
-    expect(hmustermann.parent_username).to eq("jdoe")
-
+    expect(hmustermann.parent_username).to eq('jdoe')
     expect(hmustermann.admin?).to be_truthy
     expect(hmustermann.kind_admin?).to be_falsey
     expect(hmustermann.relation_admin?).to be_truthy
@@ -101,73 +100,28 @@ RSpec.describe User do
   end
 
   it "should respect inherited activation status" do
-    jdoe = FactoryGirl.create :jdoe, :active => true
-    hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe
+    hmustermann = FactoryGirl.create :hmustermann, parent: jdoe
     expect(hmustermann.reload.active).to be_truthy
 
-    jdoe.update_attributes :active => false
+    jdoe.update active: false
     expect(hmustermann.reload.active).to be_falsey
 
-    hmustermann.update_attributes :active => true
+    hmustermann.update active: true
     expect(hmustermann.reload.active).to be_truthy
   end
 
   it "should respect inherited expiry" do
     time = 2.weeks.from_now
-    time = time.change :usec => 0
-    jdoe = FactoryGirl.create :jdoe, :expires_at => time
-    hmustermann = FactoryGirl.create :hmustermann, :parent => jdoe
+    time = time.change usec: 0
+    jdoe.update expires_at: time
+    hmustermann = FactoryGirl.create :hmustermann, parent: jdoe
     expect(hmustermann.reload.expires_at).to eq(time)
 
     time = 3.weeks.from_now
-    time = time.change :usec => 0
-    hmustermann.update_attributes :expires_at => time
+    time = time.change usec: 0
+    hmustermann.update expires_at: time
     expect(hmustermann.reload.expires_at).to eq(time)
   end
 
-  it 'should have default values for storage' do
-    expect(User.new.storage).to eq(
-      'history' => [],
-      'clipboard' => []
-    )
-  end
-
-  it 'should save a new url to the history' do
-    admin = FactoryGirl.create :admin
-    admin.history_push 'https://coneda.net'
-    expect(admin.history).to eq(['https://coneda.net'])
-    admin.reload
-    expect(admin.history).to eq(['https://coneda.net'])
-  end
-
-  it 'should add ids to the clipboard if the entity exists' do
-    admin = FactoryGirl.create :admin
-    mona_lisa = FactoryGirl.create :mona_lisa
-
-    admin.clipboard_add(mona_lisa.id + 1)
-    expect(admin.clipboard).to be_empty
-
-    admin.clipboard_add mona_lisa.id
-    expect(admin.clipboard).to eq([mona_lisa.id])
-    admin.reload
-    expect(admin.clipboard).to eq([mona_lisa.id])
-  end
-
-  it 'should remove ids from the clipboard' do
-    admin = FactoryGirl.create :admin
-    mona_lisa = FactoryGirl.create :mona_lisa
-    leonardo = FactoryGirl.create :leonardo
-
-    admin.clipboard_add [mona_lisa.id, leonardo.id]
-    expect(admin.clipboard).to eq([mona_lisa.id, leonardo.id])
-
-    admin.clipboard_remove leonardo.id
-    expect(admin.clipboard).to eq([mona_lisa.id])
-    admin.reload
-    expect(admin.clipboard).to eq([mona_lisa.id])
-  end
-
-  it 'should empty the clipboard'
   it 'can have an empty api key or one that has 32 or more chars'
-
 end

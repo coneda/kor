@@ -22,7 +22,7 @@ class KindsController < JsonController
     if @kind.save
       render_created @kind
     else
-      render_406 @kind.errors
+      render_422 @kind.errors
     end
   end
 
@@ -36,22 +36,23 @@ class KindsController < JsonController
     if @kind.update_attributes(kind_params)
       render_updated @kind
     else
-      render_406 @kind.errors
+      render_422 @kind.errors
     end
   rescue ActiveRecord::StaleObjectError => e
-    render_406 I18n.t('activerecord.errors.messages.stale_kind_update')
+    render_422 I18n.t('activerecord.errors.messages.stale_kind_update')
   end
 
   def destroy
     @kind = Kind.find(params[:id])
     
     # TODO: this has to deal with deleted entities
+    # TODO: this should be moved to the model somehow
     if @kind.medium_kind?
-      render_406 nil, I18n.t('errors.medium_kind_not_deletable')
+      render_422 nil, I18n.t('errors.medium_kind_not_deletable')
     elsif @kind.children.present?
-      render_406 nil, I18n.t('errors.kind_has_children')
+      render_422 nil, I18n.t('errors.kind_has_children')
     elsif @kind.entities.count > 0
-      render_406 nil, I18n.t('errors.kind_has_entities')
+      render_422 nil, I18n.t('errors.kind_has_entities')
     else
       @kind.destroy
       render_200 I18n.t('objects.destroy_success', o: Kind.model_name.human)

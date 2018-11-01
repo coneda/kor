@@ -16,9 +16,10 @@ class BaseController < ActionController::Base
 
   # TODO: refactor authorized objects stuff to somewhere else?
   helper_method(
-    :current_user, :logged_in?,
-    :authorized?, :allowed_to?, :authorized_collections,
-    :authorized_for_relationship?
+    :current_user,
+    :allowed_to?,
+    :authorized_for_relationship?,
+    :medium_url
   )
 
 
@@ -47,53 +48,34 @@ class BaseController < ActionController::Base
       !!user_by_api_key
     end
 
-    def authorized?(policy = :view, collections = nil, options = {})
-      options.reverse_merge!(required: :any)
-      Kor::Auth.allowed_to? current_user, policy, collections, options
-    end
+    # def authorized?(policy = :view, collections = nil, options = {})
+    #   options.reverse_merge!(required: :any)
+    #   Kor::Auth.allowed_to? current_user, policy, collections, options
+    # end
 
-    def authorized_collections(policy = :view)
-      Kor::Auth.authorized_collections current_user, policy
-    end
+    # def authorized_collections(policy = :view)
+    #   Kor::Auth.authorized_collections current_user, policy
+    # end
     
-    def viewable_entities
-      Entity.allowed current_user, :view
-    end
+    # def viewable_entities
+    #   Entity.allowed current_user, :view
+    # end
     
-    def editable_entities
-      Entity.allowed current_user, :edit
-    end
+    # def editable_entities
+    #   Entity.allowed current_user, :edit
+    # end
     
     def authorized_for_relationship?(relationship, policy = :view)
-      if relationship.to && relationship.from
-        case policy
-          when :view
-            view_from = authorized?(:view, relationship.from.collection)
-            view_to = authorized?(:view, relationship.to.collection)
-            
-            view_from and view_to
-          when :create, :delete, :edit
-            view_from = authorized?(:view, relationship.from.collection)
-            view_to = authorized?(:view, relationship.to.collection)
-            edit_from = authorized?(:edit, relationship.from.collection)
-            edit_to = authorized?(:edit, relationship.to.collection)
-            
-            (view_from and edit_to) or (edit_from and view_to)
-          else
-            false
-        end
-      else
-        true
-      end
+      Kor::Auth.authorized_for_relationship?(current_user, relationship, policy)
     end
 
     def allowed_to?(policy = :view, collections = Collection.all, options = {})
-      authorized?(policy, collections, options)
+      Kor::Auth.allowed_to? current_user, policy, collections, options
     end
     
-    def logged_in?
-      current_user && !current_user.guest?
-    end
+    # def logged_in?
+    #   current_user && !current_user.guest?
+    # end
 
     # TODO: test this
     def session_expiry
@@ -136,6 +118,36 @@ class BaseController < ActionController::Base
 
     def reload_settings
       Kor.settings.ensure_fresh
+    end
+
+    def medium_url(medium, options = {})
+      options.reverse_merge!(
+        root: false,
+        style: :original,
+        download: false
+      )
+
+      if Rails.env.development? && !ENV['SHOW_MEDIA']
+        return medium.dummy_url
+      end
+
+      result = if options[:style] == :original
+        medium.document.url(:original)
+      elsif image_style?(options[:style])
+        medium.image.url(options[:style])
+      else
+        medium.custom_style_url(options[:style])
+      end
+
+      if options[:download]
+        result = result.gsub /\/images\//, '/download/'
+      end
+
+      if options[:root]
+        root_url.gsub(/\/$/, '') + result
+      else
+        result
+      end
     end
 
 end

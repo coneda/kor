@@ -32,11 +32,13 @@ class Field < ActiveRecord::Base
   after_update do |f|
     f.synchronize_identifiers :update
     if name_changed?
-      f.class.delay.synchronize_storage(f.kind_id, f.name_was, f.name)
+      # f.class.delay.synchronize_storage(f.kind_id, f.name_was, f.name)
+      GenericJob.perform_later 'constant', f.class.name, 'synchronize_storage', f.kind_id, f.name_was, f.name
     end
   end
   after_destroy do |f|
-    f.class.delay.synchronize_storage(f.kind_id, f.name_was, nil)
+    # f.class.delay.synchronize_storage(f.kind_id, f.name_was, nil)
+    GenericJob.perform_later 'constant', f.class.name, 'synchronize_storage', f.kind_id, f.name_was, nil
     f.destroy_identifiers
   end
 
@@ -56,7 +58,8 @@ class Field < ActiveRecord::Base
 
         if is_identifier?
           if (mode == :update || others_changed)
-            f.delay.create_identifiers
+            # f.delay.create_identifiers
+            GenericJob.perform_later 'object', self.class.name, f.id, 'create_identifiers'
           end
         else
           Identifier.where(:kind => name).delete_all
@@ -142,9 +145,9 @@ class Field < ActiveRecord::Base
   
   # Utility
   
-  def h
-    ApplicationController.helpers
-  end
+  # def h
+  #   ApplicationController.helpers
+  # end
   
   
   # Accessors

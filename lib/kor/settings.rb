@@ -117,17 +117,24 @@ module Kor
         @attributes['about_html'] = self.class.markdown(self['about_text'])
 
         integers = [
-          'current_history_length', 'max_foreground_group_download_size',
-          'max_file_upload_size', 'max_results_per_request',
+          'current_history_length', 'max_results_per_request',
           'max_included_results_per_result', 'session_lifetime',
-          'publishment_lifetime', 'max_download_group_size'
+          'publishment_lifetime'
         ]
         integers.each do |i|
           @attributes[i] = self[i].to_i
         end
 
+        floats = [
+          'max_download_group_size', 'max_foreground_group_download_size',
+          'max_file_upload_size',
+        ]
+        floats.each do |i|
+          @attributes[i] = self[i].to_f
+        end
+
         integer_arrays = [
-          'default_groups', 'primary_relations', 'secondary_relations'
+          'default_groups'
         ]
         integer_arrays.each do |ia|
           @attributes[ia] = self[ia].map{|i| i.to_i}

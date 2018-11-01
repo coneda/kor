@@ -12,7 +12,7 @@
   <kor:type id="<%= record.kind.uuid %>"><%= record.kind.name %></kor:type>
 
   <% if record.is_medium? %>
-    <kor:image-path style="original" ><%= download_medium_url record.medium, :style => 'original' %></kor:image-path>
+    <kor:image-path style="original" ><%= medium_url(record.medium, root: true, download: true) %></kor:image-path>
   <% else %>
     <kor:title><%= record.name %></kor:title>
     <kor:sub-type><%= record.subtype %></kor:sub-type>

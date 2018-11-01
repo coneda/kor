@@ -266,13 +266,12 @@ class Entity < ActiveRecord::Base
   def last_updated_by
     updater || creator
   end
-  
-  scope :allowed, lambda { |user, policy|
+
+  def self.allowed(user, policy = :view)
     collections = Kor::Auth.authorized_collections(user, policy)
     where("entities.collection_id IN (?)", collections.map{|c| c.id})
-  }
+  end
   
-
   ############################ comment related #################################
 
   def html_comment
@@ -288,20 +287,38 @@ class Entity < ActiveRecord::Base
     Relationship.where("from_id = ? OR to_id = ?", self.id, self.id).count
   end
 
-  def primary_entities(user)
+  def primary_relationships(user)
+    # relation_names = Relation.primary_relation_names
+    # outgoing.
+    #   allowed(user, :view).
+    #   where('directed_relationships.relation_name' => relation_names).
+    #   without_media
     relation_names = Relation.primary_relation_names
-    outgoing.
-      allowed(user, :view).
-      where('directed_relationships.relation_name' => relation_names).
-      without_media
+    if relation_names.empty?
+      outgoing_relationships.none
+    else
+      outgoing_relationships.
+        allowed(user).
+        by_relation_name(relation_names).
+        includes(to: [:tags, :collection, :kind, :medium])
+    end
   end
 
-  def secondary_entities(user)
+  def secondary_relationships(user)
+    # relation_names = Relation.secondary_relation_names
+    # outgoing.
+    #   allowed(user, :view).
+    #   where('directed_relationships.relation_name' => relation_names).
+    #   without_media
     relation_names = Relation.secondary_relation_names
-    outgoing.
-      allowed(user, :view).
-      where('directed_relationships.relation_name' => relation_names).
-      without_media
+    if relation_names.empty?
+      outgoing_relationships.none
+    else
+      outgoing_relationships.
+        allowed(user).
+        by_relation_name(relation_names).
+        includes(to: [:tags, :collection, :kind, :medium])
+    end
   end
   
   def relation_counts(user, options = {})
@@ -409,7 +426,7 @@ class Entity < ActiveRecord::Base
   end
   
   def is_medium?
-    !!medium_id || !!medium
+    !!medium_id || !!medium || kind_id == Kind.medium_kind_id
   end
 
   def self.filtered_tag_counts(term, options = {})

@@ -52,9 +52,8 @@ module Kor
     end
   end
  
-  # TODO: shouldn't be needed anymore
   # def self.base_url
-  #   "#{config['host']['protocol']}://#{config['host']['host']}" +
+  #   "#{settings['host']['protocol']}://#{config['host']['host']}" +
   #     (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
   # end
 
@@ -135,8 +134,7 @@ module Kor
 
       options
     else
-      Json.parse(File.read(filename))
+      JSON.parse(File.read(filename)).symbolize_keys
     end
   end
-
 end

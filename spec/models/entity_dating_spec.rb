@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe EntityDating do
-  include DataHelper
-
   it 'should inherit from Dating' do
     expect(subject).to be_a(Dating)
   end
@@ -44,24 +42,20 @@ RSpec.describe EntityDating do
     expect(dating.save).to be_falsey
   end
 
-  def test_datings
+  it "should find datings by criteria" do
+    EntityDating.destroy_all
+
     FactoryGirl.create(:entity_dating, :dating_string => "15. Jahrhundert")
     FactoryGirl.create(:entity_dating, :dating_string => "18. Jahrhundert")
     FactoryGirl.create(:entity_dating, :dating_string => "20. Jahrhundert")
-  end
-  
-  it "should find datings after a given date" do
-    test_datings
+
+    # after a given date
     expect(described_class.after("1480").count).to eql(3)
-  end
-  
-  it "should find datings before a given date" do
-    test_datings
+
+    # before a given date
     expect(EntityDating.before("1480").count).to eql(1)
-  end
-  
-  it "should find datings between two given dates" do
-    test_datings
+    
+    # between given dates
     expect(EntityDating.between("1750 bis 1950").count).to eql(2)
   end
 
@@ -73,5 +67,4 @@ RSpec.describe EntityDating do
     expect(dating.from_day).to eq(2435840)
     expect(dating.to_day).to eq(2438030)
   end
-
 end

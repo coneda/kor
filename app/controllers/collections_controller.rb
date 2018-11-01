@@ -40,7 +40,7 @@ class CollectionsController < JsonController
     if @record.save
       render_200 I18n.t('objects.create_success', o: @record.name)
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 
@@ -50,7 +50,7 @@ class CollectionsController < JsonController
     if @record.update_attributes(collection_params)
       render_200 I18n.t('objects.update_success', o: @record.name)
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 
@@ -69,7 +69,7 @@ class CollectionsController < JsonController
     @record = Collection.find(params[:id])
     target = Collection.find(params[:collection_id])
     
-    if authorized?(:delete, @record) && authorized?(:create, target)
+    if allowed_to?(:delete, @record) && allowed_to?(:create, target)
       Entity.where(collection_id: @record.id).update_all collection_id: target.id
       render_200 I18n.t('messages.entities_moved_to_collection', o: target.name)
     else

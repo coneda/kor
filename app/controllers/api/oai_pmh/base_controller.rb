@@ -4,7 +4,7 @@ class Api::OaiPmh::BaseController < BaseController
 
   respond_to :xml
 
-  helper_method :timestamp, :base_url, :medium_url
+  helper_method :timestamp, :base_url#, :medium_url
 
   skip_before_filter :verify_authenticity_token
   before_filter :ensure_metadata_prefix, only: [:get_record, :list_records]
@@ -90,9 +90,9 @@ class Api::OaiPmh::BaseController < BaseController
       end
     end
 
-    def medium_url(medium, style = :preview)
-      (root_url + medium.url(style)).gsub '//', '/'
-    end
+    # def medium_url(medium, style = :preview)
+    #   (root_url + medium.url(style)).gsub '//', '/'
+    # end
 
     def query(params = {})
       params['per_page'] ||= 50

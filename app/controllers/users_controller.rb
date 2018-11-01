@@ -11,7 +11,7 @@ class UsersController < JsonController
       render_200 I18n.t('notices.terms_accepted')
     else
       @errors = @user.errors
-      render_406
+      render_422
     end
   end
 
@@ -24,7 +24,7 @@ class UsersController < JsonController
       render_200 I18n.t("messages.password_reset", username: @user.display_name)
     else
       @errors = @user.errors
-      render_406 I18n.t('errors.password_reset_failure')
+      render_422 I18n.t('errors.password_reset_failure')
     end
   end
   
@@ -38,7 +38,7 @@ class UsersController < JsonController
       )
     else
       @errors = @user.errors
-      render_406 I18n.t('errors.login_attempts_reset_failure')
+      render_422 I18n.t('errors.login_attempts_reset_failure')
     end
   end
 
@@ -75,7 +75,7 @@ class UsersController < JsonController
     if @record.update_attributes(me_params)
       render_200 I18n.t('objects.update_success', o: I18n.t('nouns.user'))
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 
@@ -88,7 +88,7 @@ class UsersController < JsonController
         'objects.update_success', o: I18n.t('nouns.user', count: 1)
       )
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 
@@ -101,7 +101,7 @@ class UsersController < JsonController
         o: I18n.t('nouns.user', count: 1)
       )
     else
-      render_406 @record.errors
+      render_422 @record.errors
     end
   end
 

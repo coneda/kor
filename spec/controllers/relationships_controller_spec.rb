@@ -1,9 +1,134 @@
 require 'rails_helper'
 
-RSpec.describe RelationshipsController, :type => :controller do
+RSpec.describe RelationshipsController, type: :controller do
   render_views
-  
-  include DataHelper
+
+  it 'should not POST create' do
+    last_supper = Entity.find_by! name: 'The Last Supper'
+    paris = Entity.find_by! name: 'Paris'
+    params = {
+      from_id: last_supper.id,
+      relation_name: 'is related to',
+      to_id: paris.id
+    }
+    post 'create', relationship: params
+    expect(response).to be_forbidden
+  end
+
+  it 'should not PATCH update' do
+    mona_lisa = Entity.find_by! name: 'Mona Lisa'
+    last_supper = Entity.find_by! name: 'The Last Supper'
+    relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
+    patch 'update', id: relationship.id, relationship: {properties: ['perhaps']}
+    expect(response).to be_forbidden
+  end
+
+  it 'should not DELETE destroy' do
+    mona_lisa = Entity.find_by! name: 'Mona Lisa'
+    last_supper = Entity.find_by! name: 'The Last Supper'
+    relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
+    delete 'destroy', id: relationship.id
+    expect(response).to be_forbidden
+  end
+
+  context 'as jdoe' do
+    before :each do
+      current_user User.find_by!(name: 'jdoe')
+    end
+
+    it 'should not POST create' do
+      last_supper = Entity.find_by! name: 'The Last Supper'
+      paris = Entity.find_by! name: 'Paris'
+      params = {
+        from_id: last_supper.id,
+        relation_name: 'is related to',
+        to_id: paris.id
+      }
+      post 'create', relationship: params
+      expect(response).to be_forbidden
+    end
+
+    it 'should not PATCH update' do
+      mona_lisa = Entity.find_by! name: 'Mona Lisa'
+      last_supper = Entity.find_by! name: 'The Last Supper'
+      relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
+      patch 'update', id: relationship.id, relationship: {properties: ['perhaps']}
+      expect(response).to be_forbidden
+    end
+
+    it 'should not DELETE destroy' do
+      mona_lisa = Entity.find_by! name: 'Mona Lisa'
+      last_supper = Entity.find_by! name: 'The Last Supper'
+      relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
+      delete 'destroy', id: relationship.id
+      expect(response).to be_forbidden
+    end
+  end
+
+  context 'as mrossi' do
+    before :each do
+      current_user User.find_by!(name: 'mrossi')
+    end
+
+    it 'should POST create' do
+      last_supper = Entity.find_by! name: 'The Last Supper'
+      paris = Entity.find_by! name: 'Paris'
+      params = {
+        from_id: last_supper.id,
+        relation_name: 'is related to',
+        to_id: paris.id,
+        properties: ['perhaps'],
+        datings_attributes: [{label: 'time', dating_string: '1833'}]
+      }
+
+      post 'create', relationship: {}
+      expect(response.status).to eq(422)
+
+      post 'create', relationship: params
+      expect_created_response
+      relationship = Relationship.find(json['id'])
+      expect(relationship.from.name).to eq('The Last Supper')
+      expect(relationship.relation.name).to eq('is related to')
+      expect(relationship.to.name).to eq('Paris')
+      expect(relationship.properties.first).to eq('perhaps')
+      expect(relationship.datings.first.dating_string).to eq('1833')
+    end
+
+    it 'should POST create (reverse direction)' do
+      last_supper = Entity.find_by! name: 'The Last Supper'
+      louvre = Entity.find_by! name: 'Louvre'
+      params = {
+        from_id: louvre.id,
+        relation_name: 'is location of',
+        to_id: last_supper.id
+      }
+
+      post 'create', relationship: params
+      expect_created_response
+      relationship = Relationship.find(json['id'])
+      expect(relationship.from.name).to eq('The Last Supper')
+      expect(relationship.relation.name).to eq('is located in')
+      expect(relationship.to.name).to eq('Louvre')
+    end
+
+    it 'should PATCH update' do
+      mona_lisa = Entity.find_by! name: 'Mona Lisa'
+      last_supper = Entity.find_by! name: 'The Last Supper'
+      relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
+      patch 'update', id: relationship.id, relationship: {properties: ['perhaps']}
+      expect_updated_response
+      expect(relationship.reload.properties.first).to eq('perhaps')
+    end
+
+    it 'should DELETE destroy' do
+      mona_lisa = Entity.find_by! name: 'Mona Lisa'
+      last_supper = Entity.find_by! name: 'The Last Supper'
+      relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
+      delete 'destroy', id: relationship.id
+      expect_deleted_response
+      expect(Relationship.find_by(id: relationship.id)).to be_nil
+    end
+  end
 
   before :each do
     request.headers['accept'] = 'application/json'
@@ -34,255 +159,4 @@ RSpec.describe RelationshipsController, :type => :controller do
       Kor::Auth.grant @main, p, :to => c
     end
   end
-
-  it "should not allow to create relationships when not one entity is editable and the other is viewable" do
-    test_data_for_auth
-    test_kinds
-    test_relations
-    fake_authentication :user => @admin
-
-    set_side_collection_policies :view => [@admins]
-    set_main_collection_policies :edit => []
-  
-    session[:current_entity] = side_entity.id
-        
-    post :create, :relationship => {
-      :from_id => main_entity.id,
-      :to_id => side_entity.id,
-      :relation_name => 'has created'
-    }
-    expect(response.status).to eq(403)
-  end
-  
-  it "should allow to create relationships when one entity is editable and the other is viewable" do
-    test_data_for_auth
-    test_kinds
-    test_relations
-    fake_authentication :user => @admin
-
-    set_side_collection_policies :view => [@admins]
-  
-    session[:current_entity] = side_entity.id
-        
-    post :create, :relationship => {
-      :from_id => side_entity.id,
-      :to_id => main_entity.id,
-      :relation_name => 'has created'
-    }
-    expect(response.status).to eq(200)
-  end
-  
-  it "should not allow to edit relationships when not one entity is editable and the other is viewable" do
-    test_data_for_auth
-    test_kinds
-    test_relations
-    fake_authentication :user => @admin
-
-    set_side_collection_policies :view => [@admins]
-    set_main_collection_policies :edit => []
-
-    FactoryGirl.create :has_created, from_kind: main_entity.kind, to_kind: side_entity.kind
-  
-    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
-        
-    patch :update, :id => relationship.id, :relationship => {
-      :relation_name => 'shows'
-    }
-    expect(response.status).to eq(403)
-    
-    patch :update, :id => relationship_reverse.id, :relationship => {
-      :relation_name => 'is shown by'
-    }
-    expect(response.status).to eq(403)
-  end
-  
-  it "should allow to delete relationships when one entity is editable and the other is viewable" do
-    test_data_for_auth
-    test_kinds
-    test_relations
-    fake_authentication :user => @admin
-
-    set_side_collection_policies :view => [@admins]
-
-    FactoryGirl.create :has_created, from_kind: main_entity.kind, to_kind: side_entity.kind
-
-    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
-
-    delete :destroy, :id => relationship.id
-    expect(response.status).to eq(200)
-    
-    delete :destroy, :id => relationship_reverse.id
-    expect(response.status).to eq(200)
-  end
-
-  it "should not allow to delete relationships when not one entity is editable and the other is viewable" do
-    test_data_for_auth
-    test_kinds
-    test_relations
-
-    set_side_collection_policies :view => [@admins]
-    set_main_collection_policies :edit => []
-
-    FactoryGirl.create :has_created, from_kind: main_entity.kind, to_kind: side_entity.kind
-  
-    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
-        
-    delete :destroy, id: relationship.id, api_key: @admin.api_key
-    expect(response.status).to eq(403)
-    
-    delete :destroy, :id => relationship_reverse.id
-    expect(response.status).to eq(403)
-  end
-
-  # TODO: write this in a smarter way
-  it "should allow to edit relationships when one entity is editable and the other is viewable" do
-    test_data_for_auth
-    test_kinds
-    test_relations
-
-    set_side_collection_policies :view => [@admins]
-    set_main_collection_policies :edit => [@admins]
-
-    FactoryGirl.create :has_created, from_kind: main_entity.kind, to_kind: side_entity.kind
-    FactoryGirl.create :shows, from_kind: main_entity.kind, to_kind: side_entity.kind
-    FactoryGirl.create :shows, from_kind: side_entity.kind, to_kind: main_entity.kind
-  
-    relationship = Relationship.relate_and_save(main_entity, 'has created', side_entity)
-    relationship_reverse = Relationship.relate_and_save(side_entity, 'has created', main_entity)
-        
-    patch :update, :id => relationship.id, api_key: @admin.api_key, :relationship => {
-      :relation_name => 'shows'
-    }
-    expect(response).to be_success
-    
-    patch :update, :id => relationship_reverse.id, api_key: @admin.api_key, :relationship => {
-      :relation_name => 'is shown by'
-    }
-    expect(response).to be_success
-  end
-
-  it "should create a relationship by relation name" do
-    default_setup
-    Kor::Auth.grant @default, :edit, to: [@admins]
-    Kor::Auth.grant @priv, :edit, to: [@admins]
-
-    post(:create, 
-      api_key: @admin.api_key,
-      relationship: {
-        from_id: @leonardo.id,
-        relation_name: 'has created',
-        to_id: @mona_lisa.id
-      }
-    )
-    expect(response.status).to eq(200)
-
-    expect(Relationship.count).to eq(1)
-    expect(Relationship.first.from_id).to eq(@leonardo.id)
-    expect(Relationship.first.relation_id).to eq(
-      Relation.where(name: 'has created').first.id
-    )
-    expect(Relationship.first.to_id).to eq(@mona_lisa.id)
-  end
-
-  it "should create a relationship by reverse relation name" do
-    default_setup
-    Kor::Auth.grant @default, :edit, to: [@admins]
-    Kor::Auth.grant @priv, :edit, to: [@admins]
-
-    post(:create, 
-      api_key: @admin.api_key,
-      relationship: {
-        from_id: @mona_lisa.id,
-        relation_name: 'has been created by',
-        to_id: @leonardo.id
-      }
-    )
-    expect(response.status).to eq(200)
-
-    expect(Relationship.count).to eq(1)
-    expect(Relationship.first.from_id).to eq(@leonardo.id)
-    expect(Relationship.first.relation_id).to eq(
-      Relation.where(name: 'has created').first.id
-    )
-    expect(Relationship.first.to_id).to eq(@mona_lisa.id)
-  end
-
-  it "should update a relationship" do
-    default_setup
-    Kor::Auth.grant @default, :edit, to: [@admins]
-    Kor::Auth.grant @priv, :edit, to: [@admins]
-    relationship = Relationship.relate_and_save(
-      @leonardo, 'has created', @mona_lisa
-    )
-
-    patch(:update,
-      id: relationship.id,
-      api_key: @admin.api_key,
-      relationship: {
-        from_id: @last_supper.id,
-        relation_name: 'has been created by',
-        to_id: @leonardo.id
-      }
-    )
-
-    expect(Relationship.count).to eq(1)
-    expect(Relationship.first.from_id).to eq(@leonardo.id)
-    expect(Relationship.first.relation_id).to eq(
-      Relation.where(name: 'has created').first.id
-    )
-    expect(Relationship.first.to_id).to eq(@last_supper.id)
-  end
-
-  it "should destroy a relationship" do
-    default_setup
-    Kor::Auth.grant @default, :edit, to: [@admins]
-    Kor::Auth.grant @priv, :edit, to: [@admins]
-    relationship = Relationship.relate_and_save(
-      @leonardo, 'has created', @mona_lisa
-    )
-
-    expect {
-      delete :destroy, api_key: @admin.api_key, id: relationship.id
-    }.to change{DirectedRelationship.count}.by(-2)
-    expect(response.status).to eq(200)
-
-    expect(Relationship.count).to eq(0)
-  end
-
-  it 'should allow to set dating attributes' do
-    admins = FactoryGirl.create :admins
-    admin = FactoryGirl.create :admin, groups: [admins]
-    default = FactoryGirl.create :default
-    leonardo = FactoryGirl.create :leonardo
-    mona_lisa = FactoryGirl.create :mona_lisa
-    has_created = FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
-
-    Kor::Auth.grant default, [:view, :edit], to: admins
-
-    current_user admin
-
-    post :create, relationship: {
-      relation_id: has_created.id,
-      from_id: leonardo.id,
-      to_id: mona_lisa.id,
-      datings_attributes: [
-        {label: 'Zeitspanne', dating_string: '15. Jahrhundert'},
-        {label: 'zweite Phase', dating_string: '16. Jahrhundert'}
-      ]
-    }
-    expect(Relationship.count).to eq(1)
-    expect(Relationship.first.datings.count).to eq(2)
-
-    patch :update, id: Relationship.first.id, relationship: {
-      datings_attributes: [
-        {id: Relationship.first.datings.first.id, _destroy: true}
-      ]
-    }
-    expect(Relationship.count).to eq(1)
-    expect(Relationship.first.datings.count).to eq(1)
-  end
-  
 end

@@ -12,7 +12,7 @@ class Download < ActiveRecord::Base
   
   # Callbacks
 
-  before_validation(:on => :create) do |model|
+  before_validation(on: :create) do |model|
     model.generate_uuid
     model.copy_file
     model.guess_content_type

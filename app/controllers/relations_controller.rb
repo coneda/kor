@@ -1,9 +1,11 @@
 class RelationsController < JsonController
-  skip_before_action :authentication, :only => [:names, :index]
+  skip_before_action :auth, :only => ['index', 'names', 'show']
 
   def index
     params[:include] = param_to_array(params[:include], ids: false)
+    @total = Relation.count
     @records = Relation.all
+    render template: 'json/index'
   end
 
   def names
@@ -12,33 +14,32 @@ class RelationsController < JsonController
       to_ids: params[:to_kind_ids]
     )
 
-    respond_to do |format|
-      format.json {render :json => @names}
-    end
+    render :json => @names
   end
 
   def show
     params[:include] = param_to_array(params[:include], ids: false)
-    @relation = Relation.find(params[:id])
+    @record = Relation.find(params[:id])
+    render template: 'json/show'
   end
 
   def create
-    @relation = Relation.new(relation_params)
+    @record = Relation.new(relation_params)
 
-    if @relation.save
-      render_200 I18n.t('objects.create_success', o: @relation.name)
+    if @record.save
+      render_200 I18n.t('objects.create_success', o: @record.name)
     else
-      render_406 @relation.errors
+      render_422 @record.errors
     end
   end
 
   def update
-    @relation = Relation.find(params[:id])
+    @record = Relation.find(params[:id])
 
-    if @relation.update_attributes(relation_params)
-      render_200 I18n.t('objects.update_success', o: @relation.name)
+    if @record.update_attributes(relation_params)
+      render_200 I18n.t('objects.update_success', o: @record.name)
     else
-      render_406 @relation.errors
+      render_422 @record.errors
     end
   rescue ActiveRecord::StaleObjectError => e
     # TODO
@@ -47,29 +48,29 @@ class RelationsController < JsonController
   end
 
   def destroy
-    @relation = Relation.find(params[:id])
-    @relation.destroy
+    @record = Relation.find(params[:id])
+    @record.destroy
 
-    render_200 I18n.t('objects.destroy_success', o: @relation.name)
+    render_200 I18n.t('objects.destroy_success', o: @record.name)
   end
 
   def invert
-    @relation = Relation.find(params[:id])
+    @record = Relation.find(params[:id])
 
-    @relation.invert!
+    @record.invert!
     @messages << I18n.t('objects.invert_success', o: Relation.model_name.human)
     render action: 'save'
   end
 
   def merge
-    @relation = Relation.find(params[:id])
+    @record = Relation.find(params[:id])
     @others = Relation.find_by!(id: params[:other_id])
 
-    if @relation.can_merge?(@others)
+    if @record.can_merge?(@others)
       if params[:check_only]
         @messages << I18n.t('objects.could_merge', o: Relation.model_name.human(count: :other))
       else
-        @relation.merge!(@others)
+        @record.merge!(@others)
         @messages << I18n.t('objects.merge_success', o: Relation.model_name.human(count: :other))
       end
 
@@ -87,10 +88,8 @@ class RelationsController < JsonController
       params.require(:relation).permit!
     end
 
-    def kind
-      unless ['names', 'index'].include?(params[:action])
-        require_relation_admin
-      end
+    def auth
+      require_relation_admin
     end
   
 end
