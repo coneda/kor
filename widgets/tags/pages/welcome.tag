@@ -22,8 +22,8 @@
       Zepto(tag.root).find('.target').html tag.config().welcome_html
 
       Zepto.ajax(
-        url: '/entities/random'
-        data: {include: 'gallery_data'}
+        url: '/entities'
+        data: {include: 'gallery_data', sort: 'random', per_page: 4}
         success: (data) ->
           tag.data = data
           tag.update()

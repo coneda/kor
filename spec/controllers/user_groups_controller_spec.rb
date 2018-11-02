@@ -62,17 +62,13 @@ RSpec.describe UserGroupsController, type: :controller do
   end
 
   it 'should not POST add_to' do
-    mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    group = UserGroup.find_by! name: 'nice'
-    post :add_to, id: group.id, entity_ids: [mona_lisa.id]
+    post 'add_to', id: nice.id, entity_ids: [mona_lisa.id]
     expect(response).to be_client_error
   end
 
   it 'should not POST remove_from' do
-    mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    group = UserGroup.find_by! name: 'nice'
-    group.add_entities mona_lisa
-    post :remove_from, id: group.id, entity_ids: [mona_lisa.id]
+    nice.add_entities mona_lisa
+    post 'remove_from', id: nice.id, entity_ids: [mona_lisa.id]
     expect(response).to be_client_error
   end
 
@@ -164,19 +160,15 @@ RSpec.describe UserGroupsController, type: :controller do
     end
 
     it 'should not POST add_to (foreign group)' do
-      mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      group = UserGroup.find_by! name: 'nice'
-      group.update owner: User.admin
-      post :add_to, group_name: group.name, entity_ids: [mona_lisa.id]
-      expect(response).to be_success
+      nice.update owner: User.admin
+      post 'add_to', id: nice.id, entity_ids: [mona_lisa.id]
+      expect(response).to be_client_error
     end
 
     it 'should not POST remove_from (foreign group)' do
-      mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      group = UserGroup.find_by! name: 'nice'
-      group.add_entities mona_lisa
-      group.update owner: User.admin
-      post :remove_from, id: group.id, entity_ids: [mona_lisa.id]
+      nice.add_entities mona_lisa
+      nice.update owner: User.admin
+      post 'remove_from', id: nice.id, entity_ids: [mona_lisa.id]
       expect(response).to be_client_error
     end
 
@@ -194,18 +186,15 @@ RSpec.describe UserGroupsController, type: :controller do
     end
 
     it 'should POST add_to (own group)' do
-      mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      group = UserGroup.find_by! name: 'nice'
-      post :add_to, group_name: group.name, entity_ids: [mona_lisa.id]
+      post :add_to, id: nice.id, entity_ids: [mona_lisa.id]
       expect(response).to be_success
+      expect(nice.entities).to include(mona_lisa)
     end
 
     it 'should POST remove_from (own group)' do
-      mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      group = UserGroup.find_by! name: 'nice'
-      group.add_entities mona_lisa
-      post :remove_from, id: group.id, entity_ids: [mona_lisa.id]
+      post :remove_from, id: nice.id, entity_ids: [picture_a.id]
       expect(response).to be_success
+      expect(nice.entities).not_to include(picture_a)
     end
   end
 

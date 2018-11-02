@@ -165,10 +165,7 @@ class EntitiesController < JsonController
       isolated: params[:isolated],
       recent: params[:recent],
 
-      sort: {
-        column: sort_column,
-        direction: sort_direction
-      },
+      sort: sort,
 
       page: page,
       per_page: per_page,

@@ -22,7 +22,7 @@ RSpec.describe AuthorityGroupsController, type: :controller do
   end
 
   it 'should GET download_images' do
-    get :download_images, id: AuthorityGroup.find_by!(name: 'lecture').id
+    get :download_images, id: lecture.id
     expect(response).to be_success
     # guest is not allowed to see the particular entity
     expect(json['message']).to match(/no entities to download/)
@@ -34,19 +34,24 @@ RSpec.describe AuthorityGroupsController, type: :controller do
   end
 
   it 'should not PATCH update' do
-    id = AuthorityGroup.find_by!(name: 'seminar').id
-    patch :update, id: id, authority_group: {name: 'seminar 2018'}
+    patch :update, id: seminar.id, authority_group: {name: 'seminar 2018'}
     expect(response).to be_forbidden
   end
 
   it 'should not DELETE destroy' do
-    id = AuthorityGroup.find_by!(name: 'seminar').id
-    delete :destroy, id: id
+    delete :destroy, id: seminar.id
     expect(response).to be_forbidden
   end
 
-  it 'should not PATCH add_to'
-  it 'should not PATCH remove_from'
+  it 'should not PATCH add_to' do
+    patch 'add_to', id: seminar.id, entity_ids: [mona_lisa.id]
+    expect(response).to be_forbidden
+  end
+
+  it 'should not PATCH remove_from' do
+    patch 'remove_from', id: lecture.id, entity_ids: [picture_a.id]
+    expect(response).to be_forbidden
+  end
 
   context 'as admin' do
     before :each do
@@ -54,16 +59,15 @@ RSpec.describe AuthorityGroupsController, type: :controller do
     end
 
     it 'should GET download_images' do
-      get :download_images, id: AuthorityGroup.find_by!(name: 'lecture').id
+      get :download_images, id: lecture.id
       uuid = Download.first.uuid
       expect(response).to redirect_to("/downloads/#{uuid}")
     end
 
     it 'should POST create' do
-      agc = AuthorityGroupCategory.find_by!(name: 'archive')
       post :create, authority_group: {
         name: 'seminar 2018',
-        authority_group_category_id: agc.id
+        authority_group_category_id: archive.id
       }
       expect_created_response
       ag = AuthorityGroup.find_by!(name: 'seminar 2018')
@@ -72,27 +76,33 @@ RSpec.describe AuthorityGroupsController, type: :controller do
     end
 
     it 'should PATCH update' do
-      id = AuthorityGroup.find_by!(name: 'seminar').id
-      agc = AuthorityGroupCategory.find_by!(name: 'archive')
-      patch :update, id: id, authority_group: {
+      patch :update, id: seminar.id, authority_group: {
         name: 'seminar 2018',
-        authority_group_category_id: agc.id
+        authority_group_category_id: archive.id
       }
       expect_updated_response
-      ag = AuthorityGroup.find(id)
-      expect(ag.name).to eq('seminar 2018')
-      expect(ag.authority_group_category.name).to eq('archive')
+      seminar = AuthorityGroup.find_by! name: 'seminar 2018'
+      expect(seminar.name).to eq('seminar 2018')
+      expect(seminar.authority_group_category.name).to eq('archive')
     end
 
     it 'should DELETE destroy' do
-      id = AuthorityGroup.find_by!(name: 'seminar').id
-      delete :destroy, id: id
+      delete :destroy, id: seminar.id
       expect_deleted_response
-      expect(AuthorityGroup.find_by(id: id)).to be_nil
+      expect(AuthorityGroup.find_by(id: json['id'])).to be_nil
     end
 
-    it 'should PATCH add_to'
-    it 'should PATCH remove_from'
+    it 'should not POST add_to' do
+      post 'add_to', id: seminar.id, entity_ids: [mona_lisa.id]
+      expect(response).to be_success
+      expect(seminar.entities).to include(mona_lisa)
+    end
+
+    it 'should not POST remove_from' do
+      post 'remove_from', id: lecture.id, entity_ids: [picture_a.id]
+      expect(response).to be_success
+      expect(lecture.entities).not_to include(picture_a)
+    end
   end
 
   # it 'should put all entities within a group into the clipboard' do

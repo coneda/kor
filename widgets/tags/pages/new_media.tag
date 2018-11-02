@@ -46,10 +46,12 @@
 
     fetch = ->
       Zepto.ajax(
-        url: '/entities/gallery'
+        url: '/entities'
         data: {
           include: 'kind,gallery_data',
-          page: tag.opts.query.page
+          page: tag.opts.query.page,
+          sort: 'created_at',
+          direction: 'desc'
         }
         success: (data) ->
           tag.data = data

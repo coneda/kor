@@ -1,5 +1,6 @@
-module DataHelper
+require 'factory_girl_rails'
 
+module DataHelper
   def json
     JSON.parse response.body
   end
@@ -116,6 +117,10 @@ module DataHelper
 
   def archive
     AuthorityGroupCategory.find_by! name: 'archive'
+  end
+
+  def nice
+    UserGroup.find_by! name: 'nice'
   end
 
   # TODO: remove this and instead use current_user(...) from below

@@ -26,52 +26,48 @@ class UserGroupsController < JsonController
   end
 
   def add_to
-    @user_group = UserGroup.owned_by(current_user).find_or_create_by!(
-      name: params[:group_name],
-      owner: current_user
-    )
+    @records = UserGroup.owned_by(current_user).find(params[:id])
     entity_ids = Kor.array_wrap(params[:entity_ids])
     entities = Entity.allowed(current_user).find(entity_ids)
-    @user_group.add_entities(entities)
+    @records.add_entities(entities)
 
-    @record = @user_group
     render_200 I18n.t('messages.entities_added_to_group')
   end
 
   def remove_from
-    @user_group = UserGroup.owned_by(current_user).find(params[:id])
+    @records = UserGroup.owned_by(current_user).find(params[:id])
     
     entity_ids = Kor.array_wrap(params[:entity_ids])
     entities = Entity.allowed(current_user).find entity_ids
-    @user_group.remove_entities(entities)
+    @records.remove_entities(entities)
 
     render_200 I18n.t('messages.entities_removed_from_group')
   end
   
   def share
-    @user_group = if current_user.admin?
+    @records = if current_user.admin?
       UserGroup.find(params[:id])
     else
       UserGroup.owned_by(current_user).find(params[:id])
     end
 
-    @user_group.shared = true
-    @user_group.save
+    @records.shared = true
+    @records.save
 
-    render_200 I18n.t('objects.shared_success', :o => @user_group.name)
+    render_200 I18n.t('objects.shared_success', :o => @records.name)
   end
   
   def unshare
-    @user_group = if current_user.admin?
+    @records = if current_user.admin?
       UserGroup.find(params[:id])
     else
       UserGroup.owned_by(current_user).find(params[:id])
     end
 
-    @user_group.shared = false
-    @user_group.save
+    @records.shared = false
+    @records.save
 
-    render_200 I18n.t('objects.unshared_success', :o => @user_group.name)
+    render_200 I18n.t('objects.unshared_success', :o => @records.name)
   end
   
   def shared
@@ -114,7 +110,7 @@ class UserGroupsController < JsonController
     @record.user_id = current_user.id
 
     if @record.save
-      render_200 I18n.t('objects.create_success', o: @record.name)
+      render_created @record
     else
       render_422 @record.errors
     end
@@ -124,7 +120,7 @@ class UserGroupsController < JsonController
     @record = UserGroup.owned_by(current_user).find(params[:id])
 
     if @record.update_attributes(user_group_params)
-      render_200 I18n.t('objects.update_success', o: @record.name)
+      render_updated @record
     else
       render_422 @record.errors
     end
@@ -133,8 +129,7 @@ class UserGroupsController < JsonController
   def destroy
     @record = UserGroup.owned_by(current_user).find(params[:id])
     @record.destroy
-
-    render_200 I18n.t('objects.destroy_success', o: @record.name)
+    render_deleted @record
   end
   
   protected

@@ -7,8 +7,6 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
-require 'factory_girl_rails'
-
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -59,72 +57,14 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.before :suite do
-    DatabaseCleaner.clean_with :truncation
-    DatabaseCleaner.strategy = :transaction
-
-    system "cat /dev/null >| #{Rails.root}/log/test.log"
-
-    XmlHelper.compile_validator
-
-    # DatabaseCleaner.strategy = :transaction
-
-    Kor::Settings.purge_files!
-    Kor::Settings.instance.ensure_fresh
-    Kor.settings.update(
-      'primary_relations' => ['shows'],
-      'secondary_relations' => ['has been created by']
-    )
-    
-    Delayed::Worker.delay_jobs = false
-    Rails.application.load_seed
-    DataHelper.default_setup relationships: true, pictures: true
-
-    system "rm -rf #{Rails.root}/tmp/test.media.clone"
-    system "mv #{Medium.media_data_dir} #{Rails.root}/tmp/test.media.clone"
+    TestHelper.before_suite
   end
 
-  # config.before :each do
-  #   DatabaseCleaner.clean
-  # end
-
   config.around :each do |example|
-    begin
-      DatabaseCleaner.start
-      example.run
-      DatabaseCleaner.clean
-    rescue ActiveRecord::RecordInvalid => e
-      binding.pry
-      p e.record.errors.full_messages
-    end
+    TestHelper.around_each(example)
   end
 
   config.before :each do |example|
-    system "rm -rf #{Medium.media_data_dir}/"
-    system "cp -a #{Rails.root}/tmp/test.media.clone #{Medium.media_data_dir}"
-      
-    FactoryGirl.reload
-    Kor::Auth.sources(true)
-
-    if example.metadata[:elastic]
-      Kor::Elastic.enable
-      Kor::Elastic.reset_index
-      Kor::Elastic.index_all full: true
-    else
-      Kor::Elastic.disable
-    end
-
-    if example.metadata[:type].to_s == 'controller'
-      request.headers["accept"] = 'application/json'
-    end
-
-    ActionMailer::Base.deliveries.clear
-    system "rm -rf #{Rails.root}/tmp/export_spec"
-    
-    Kor::Settings.purge_files!
-    Kor::Settings.instance.ensure_fresh
-    Kor.settings.update(
-      'primary_relations' => ['shows'],
-      'secondary_relations' => ['has been created by']
-    )
+    TestHelper.before_each(self, example)
   end
 end

@@ -120,7 +120,8 @@
         "entity[kind_id]": wApp.info.data.medium_kind_id,
         "entity[collection_id]": tag.refs['cs'].value(),
         "user_group_name": tag.refs['group'].value(),
-        "target_entity_id": wApp.clipboard.selection()
+        "target_entity_id": wApp.clipboard.selection(),
+        'authenticity_token': wApp.session.csrfToken()
       };
       var rs = tag.refs['relation-selector'];
       if (rs) {
@@ -194,7 +195,7 @@
           });
           window.alert(message);
         } else {
-          console.log(error);
+          // console.log(error);
           error.parsed_response = JSON.parse(error.response);
           error.file.error = error;
           tag.update();

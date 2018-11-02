@@ -1,7 +1,5 @@
 class AuthorityGroupsController < JsonController
-  # layout 'normal_small'
-  
-  skip_before_filter :auth, :only => [:download_images, :index, :show]
+  skip_before_filter :auth, only: ['download_images', 'index', 'show']
 
   def index
     # if params[:authority_group_category_id] == ''
@@ -29,30 +27,29 @@ class AuthorityGroupsController < JsonController
   # end
   
   def download_images
-    @authority_group = AuthorityGroup.find(params[:id])
-    @entities = @authority_group.entities.allowed(current_user, :view).media
+    @record = AuthorityGroup.find(params[:id])
+    @entities = @record.entities.allowed(current_user, :view).media
     
-    zip_download @authority_group, @entities
+    zip_download @record, @entities
   end
   
   def add_to
-    @authority_group = AuthorityGroup.find_or_create_by!(name: params[:group_name])
+    @record = AuthorityGroup.find(params[:id])
     entity_ids = Kor.array_wrap(params[:entity_ids])
-    entities = Entity.allowed(current_user).find entity_ids
-    @authority_group.add_entities(entities)
+    entities = Entity.allowed(current_user).find(entity_ids)
+    @record.add_entities(entities)
 
-    @record = @authority_group
     render_200 I18n.t('messages.entities_added_to_group')
   end
 
-  # def remove_from
-  #   @authority_group = AuthorityGroup.find(params[:id])
-  #   entity_ids = Kor.array_wrap(params[:entity_ids])
-  #   entities = viewable_entities.find entity_ids
-  #   @authority_group.remove_entities(entities)
+  def remove_from
+    @record = AuthorityGroup.find(params[:id])
+    entity_ids = Kor.array_wrap(params[:entity_ids])
+    entities = Entity.allowed(current_user).find(entity_ids)
+    @record.remove_entities(entities)
 
-  #   redirect_to @authority_group
-  # end
+    render_200 I18n.t('messages.entities_added_to_group')
+  end
   
   def show
     @record = AuthorityGroup.find(params[:id])
@@ -80,27 +77,27 @@ class AuthorityGroupsController < JsonController
     @record = AuthorityGroup.new(authority_group_params)
 
     if @record.save
-      render_200 I18n.t('objects.create_success', :o => @record.name)
+      render_created @record
     else
       render_422 @record.errors
     end
   end
 
   def update
-    @authority_group = AuthorityGroup.find(params[:id])
+    @record = AuthorityGroup.find(params[:id])
 
-    if @authority_group.update_attributes(authority_group_params)
-      render_200 I18n.t('objects.update_success', :o => @authority_group.name)
+    if @record.update_attributes(authority_group_params)
+      render_updated @record
     else
-      render_422 @authority_group.errors
+      render_422 @record.errors
     end
   end
 
   # make sure this destroys all member associations
   def destroy
-    @authority_group = AuthorityGroup.find(params[:id])
-    @authority_group.destroy
-    render_200 I18n.t('objects.destroy_success', :o => @authority_group.name)
+    @record = AuthorityGroup.find(params[:id])
+    @record.destroy
+    render_deleted @record
   end
   
   protected

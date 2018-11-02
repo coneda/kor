@@ -4,11 +4,10 @@ RSpec.describe PublishmentsController, type: 'controller' do
   render_views
 
   before :each do
-    @user_group = jdoe.user_groups.create! name: 'for meeting'
     @publishment = Publishment.create!(
       name: 'for meeting',
       user: jdoe,
-      user_group: @user_group
+      user_group: nice
     )
   end
 
@@ -47,7 +46,7 @@ RSpec.describe PublishmentsController, type: 'controller' do
   it 'should not POST create' do
     post 'create', publishment: {
       name: 'for tomorrow',
-      user_group_id: @user_group.id
+      user_group_id: nice.id
     }
     expect(response).to be_unauthorized
   end
@@ -82,7 +81,7 @@ RSpec.describe PublishmentsController, type: 'controller' do
     it 'should POST create' do
       post 'create', publishment: {
         name: 'for tomorrow',
-        user_group_id: @user_group.id
+        user_group_id: nice.id
       }
       expect_created_response
       expect(Publishment.find(json['id']).name).to eq('for tomorrow')

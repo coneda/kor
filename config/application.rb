@@ -9,9 +9,9 @@ Bundler.require(*Rails.groups)
 $: << File.expand_path('../../lib', __FILE__)
 
 require 'core_ext/array'
-
 require 'kor'
 require 'securerandom'
+require 'sucker_punch/async_syntax'
 
 Dir["lib/paperclip_processors/*.rb"].each{|f| require File.expand_path(f)}
 

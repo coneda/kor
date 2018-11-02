@@ -10,7 +10,7 @@ RSpec.describe EntitiesController, type: :controller do
     expect(Kor::Search).to receive(:new).with(User.guest, hash_including(
       isolated: false,
       recent: true,
-      sort: {column: 'random', direction: 'ASC'}
+      sort: {column: 'random', direction: 'asc'}
     )).and_call_original
     get 'index', {
       isolated: false,

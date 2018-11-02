@@ -5,7 +5,7 @@ class JsonController < BaseController
 
   before_filter :auth, :legal
 
-  helper_method :inclusion, :page, :per_page, :sort_column, :sort_direction
+  helper_method :inclusion, :page, :per_page, :sort
 
   layout false
 
@@ -150,12 +150,11 @@ class JsonController < BaseController
       ].min
     end
 
-    def sort_column
-      params[:sort] || 'name'
-    end
-
-    def sort_direction
-      (params[:direction] || 'asc').downcase == 'asc' ? 'ASC' : 'DESC'
+    def sort
+      return {
+        column: params[:sort] || 'default',
+        direction: params[:direction] || 'asc'
+      }
     end
 
     def inclusion
