@@ -170,16 +170,18 @@ Given /^"([^\"]*)" has a shared user group "([^\"]*)"$/ do |user_name, group_nam
 end
 
 Given /^the authority group "([^"]*)"(?: inside "([^"]+)")?$/ do |name, category_name|
-  group = AuthorityGroup.create :name => name
-  if category_name
-    AuthorityGroupCategory.find_by_name(category_name).authority_groups << group
-  end
+  AuthorityGroup.create!(
+    name: name,
+    authority_group_category_id: (
+      category_name ? AuthorityGroupCategory.find_by!(name: category_name).id : nil
+    )
+  )
 end
 
 Given /^the authority group "([^"]*)" contains a medium$/ do |name|
-  step "Mona Lisa and a medium as correctly related entities"
+  # step "Mona Lisa and a medium as correctly related entities"
   
-  AuthorityGroup.find_by_name(name).add_entities Medium.first.entity
+  AuthorityGroup.find_by!(name: name).add_entities picture_a
 end
 
 Given /^the authority group category "([^"]*)"$/ do |name|

@@ -19,6 +19,8 @@
           <span class="separator">»</span>
           <a href="#/groups/categories/{a.id}">{a.name}</a>
         </virtual>
+        <span class="separator">»</span>
+        <span>{parentCategory.name}</span>
       </p>
 
       <table if={data && data.total > 0}>
@@ -93,7 +95,7 @@
     var fetchParent = function() {
       Zepto.ajax({
         url: '/authority_group_categories/' + tag.opts.parentId,
-        data: {include: 'ancestry'},
+        data: {include: 'ancestors'},
         success: function(data) {
           tag.parentCategory = data;
           tag.update();

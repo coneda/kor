@@ -143,11 +143,13 @@
           )
         when 'created'
           Zepto.ajax(
-            url: '/entities/recently_created'
+            url: '/entities'
             data: {
               relation_name: tag.opts.relationName
               page: tag.page
-              per_page: 9
+              per_page: 9,
+              sort: 'created_at',
+              direction: 'desc'
             }
             success: (data) ->
               tag.data = data

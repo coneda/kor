@@ -57,6 +57,7 @@ group :test do
   gem 'webmock'
   gem 'simplecov', require: false
   gem 'test_after_commit'
+  gem 'connection_pool'
 end
 
 group :development do

@@ -445,3 +445,13 @@ Then(/^select "([^"]*)" should have( no)? option "([^"]*)"$/) do |name, negation
     options.any?{|o| o.text == option}
   end
 end
+
+Then /^I should see no categories nor groups$/ do
+  binding.pry
+  expect(page).not_to have_css('.authority_group_category')
+  expect(page).not_to have_css('.authority_group')
+end
+
+Then /^I should see no user groups$/ do
+  expect(page).not_to have_css('.user_group')
+end

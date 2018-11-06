@@ -56,7 +56,7 @@ end
 When(/^I put "(.*?)" into the clipboard$/) do |name|
   step "I am on the entity page for \"#{name}\""
   step "I should see \"#{name}\""
-  step "I follow \"add to clipboard\""
+  step "I follow \"add to clipboard\" within \".kor-layout-left\""
   step "I should see a message containing \"has been added to the clipboard\""
 end
 

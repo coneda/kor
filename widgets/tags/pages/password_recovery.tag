@@ -45,7 +45,7 @@
       var params = {email: tag.refs.fields.value()};
       var promise = Zepto.ajax({
         type: 'POST',
-        url: '/reset_password',
+        url: '/account-recovery',
         data: JSON.stringify(params),
         success: function(data) {
           wApp.routing.path('/login');

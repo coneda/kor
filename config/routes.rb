@@ -91,7 +91,7 @@ Rails.application.routes.draw do
       get 'session', action: 'show'
       post 'login', action: 'create'
       delete 'logout', action: 'destroy'
-      post 'reset_password', action: 'reset_password'
+      post 'account-recovery', action: 'recovery'
     end
 
     controller 'kor' do
@@ -173,8 +173,8 @@ Rails.application.routes.draw do
 
     resources :users, except: ['new', 'edit'] do
       member do
-        patch 'reset_password'
         patch 'reset_login_attempts'
+        patch 'reset_password'
       end
       collection do
         patch 'accept_terms'

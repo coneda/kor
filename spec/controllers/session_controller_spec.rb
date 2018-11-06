@@ -132,5 +132,17 @@ RSpec.describe SessionController, type: :controller do
       expect(session[:user_id]).to eq(user.id)
       expect(user.reload.full_name).to eq('John Doe')
     end
+
+    it 'should not POST recovery (wrong email)' do
+      post :recovery, email: 'info@does.not.exist'
+      expect(response).to be_not_found
+    end
+
+    it 'should POST recovery (correct email)' do
+      old = jdoe.password
+      post :recovery, email: jdoe.email
+      expect(response).to be_success
+      expect(jdoe.reload.password).not_to eq(old)
+    end
   end
 end

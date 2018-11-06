@@ -3,38 +3,37 @@ Feature: Clipboard
   In order to easily handle multiple entities
   I want to have mass actions from within a clipboard
 
-  @javascript
   Scenario: Mass relate
     Given I am logged in as "admin"
-    And the entity "Mona Lisa" of kind "Werk/Werke"
-    And the medium "picture_a"
     And all entities of kind "Medium/Media" are in the clipboard
-    And the relation "stellt dar/wird dargestellt von" between "Medium/Media" and "Werk/Werke"
     When I go to the clipboard
     And I follow "all"
     And I follow "Relate with"
     Then I should see "Relate with"
-    When I select "stellt dar" from "Relation"
+    When I select "shows" from "Relation"
     When I follow "recently created"
     And I follow "Mona Lisa"
     And I press "Save"
     When I go to the entity page for "Mona Lisa"
-    Then I should see "wird dargestellt von"
+    Then I should see "is shown by"
   
-  @javascript
   Scenario: Create user groups on the fly
     Given I am logged in as "admin"
-    And the entity "Mona Lisa" of kind "work/works"
     And the user group "Alte Gruppe"
     And I put "Mona Lisa" into the clipboard
     When I go to the clipboard
     And I follow "all"
     And I follow "Add to a global group"
-    And I fill in "Global group" with "Neue Gruppe"
+    And I follow "create new"
+    And I fill in "Name" with "Neue Gruppe"
+    And I press "Save"
+    When I go to the clipboard
+    And I follow "all"
+    And I follow "Add to a global group"
+    And I select "Neue Gruppe" from "Global group"
     And I press "Save"
     Then I should see "entities have been added to the selected entity group"
 
-  @javascript
   Scenario: Mass relate entities
     Given I am logged in as "admin"
     And the entity "Leonardo" of kind "Person/People" 
@@ -50,7 +49,6 @@ Feature: Clipboard
     And I press "Save"
     Then "Leonardo" should have "created" "Mona Lisa"
 
-  @javascript
   Scenario: Mass relate entities reversely
     Given I am logged in as "admin"
     And the entity "Leonardo" of kind "Person/People" 

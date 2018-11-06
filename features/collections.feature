@@ -2,7 +2,6 @@ Feature: collections page
 
   Scenario: Merge one collection into another
 
-  @javascript
   Scenario: create collection
     Given I am logged in as "admin"
     When I go to the collections page
@@ -12,7 +11,6 @@ Feature: collections page
     Then I should see "Socks" within widget "kor-collections"
     And there should be the collection named "Socks" in the database
 
-  @javascript
   Scenario: edit collection
     Given I am logged in as "admin"
     And the collection "Socks"
@@ -25,7 +23,6 @@ Feature: collections page
     And there should be the collection named "Pants" in the database
     And there should not be the collection named "Socks" in the database
 
-  @javascript
   Scenario: delete an empty collection
     Given I am logged in as "admin"
     And the collection "Socks"
@@ -35,7 +32,6 @@ Feature: collections page
     Then I should not see "Socks" within widget "kor-collections"
     And there should not be the collection named "Socks" in the database
     
-  @javascript  
   Scenario: Delete a non-empty collection
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "Werk/Werke" inside collection "Default"
@@ -46,7 +42,6 @@ Feature: collections page
     And I should see "cannot be deleted"
     And I should see "Default" within widget "kor-collections"
     
-  @javascript
   Scenario: Have a right for viewing meta data
     Given I am logged in as "admin"
     And I am on the collections page

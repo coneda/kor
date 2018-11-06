@@ -84,16 +84,17 @@
     fetchCategories = ->
       Zepto.ajax(
         url: '/authority_group_categories/flat'
-        data: {include: 'ancestry'}
+        data: {include: 'ancestors'}
         success: (data) ->
           results = [{value: '0', label: tag.t('none')}]
           for r in data.records
             if r.id != tag.opts.id
+              names = (a.name for a in r.ancestors)
+              names.push(r.name)
               results.push(
                 value: r.id,
-                label: (a.name for a in r.ancestors).join(' » ')
+                label: names.join(' » ')
               )
-
           tag.categories = results
           tag.update()
       )
@@ -114,7 +115,7 @@
 
     values = ->
       results = {}
-      for f in tag.refs.fields
+      for f in wApp.utils.toArray(tag.refs.fields)
         results[f.name()] = f.value()
       results
 

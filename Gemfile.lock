@@ -86,6 +86,7 @@ GEM
     coffee-script-source (1.12.2)
     colorize (0.7.7)
     concurrent-ruby (1.0.5)
+    connection_pool (2.2.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     crass (1.0.4)
@@ -346,6 +347,7 @@ DEPENDENCIES
   capybara
   coffee-rails
   colorize
+  connection_pool
   cucumber-rails
   daemons
   database_cleaner

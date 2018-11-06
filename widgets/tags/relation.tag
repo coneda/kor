@@ -57,11 +57,13 @@
 
     fetch = ->
       Zepto.ajax(
-        url: "/entities/#{tag.opts.entity.id}/relationships"
+        url: "/relationships"
         data: {
+          from_entity_id: tag.opts.entity.id
           page: tag.opts.query.page
           relation_name: tag.opts.name
-          except_to_kind_id: tag.info().medium_kind_id
+          except_to_kind_id: tag.info().medium_kind_id,
+          include: 'all'
         }
         success: (data) ->
           tag.data = data

@@ -13,6 +13,11 @@
         value={tcap('verbs.save')}
       />
     </form>
+
+    <a
+      href="#/groups/categories/admin/new"
+      onclick={add}
+    >{t('create_new')}</a>
   </div>
 
   <script type="text/javascript">
@@ -28,10 +33,9 @@
       event.preventDefault();
       Zepto.ajax({
         type: 'POST',
-        url: '/' + tag.opts.type + '_groups/add',
+        url: '/' + tag.opts.type + '_groups/' + tag.refs.group.value() + '/add',
         data: JSON.stringify({
-          entity_ids: tag.opts.entityIds,
-          group_name: tag.refs.group.value()
+          entity_ids: tag.opts.entityIds
         }),
         success: function(data) {
           tag.opts.modal.trigger('close');

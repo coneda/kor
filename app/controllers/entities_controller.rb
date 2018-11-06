@@ -161,6 +161,7 @@ class EntitiesController < JsonController
       media: params[:media],
       relation_name: params[:relation_name],
       dating: params[:dating],
+      created_after: params[:created_after],
 
       isolated: params[:isolated],
       recent: params[:recent],

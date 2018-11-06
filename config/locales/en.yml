@@ -69,6 +69,7 @@ en:
   no_results: nothing found
   results_per_page: results / page
   add_to_clipboard: add to clipboard
+  create_new: create new
 
   search_term:
     one: search term
@@ -668,7 +669,7 @@ en:
     creating_zip_file: "Zip file will be created. You will receive an email as soon as the download is ready."
     no_entities_in_group: "There are no entities to download in this group"
     personal_password_reset_success: |
-      A new passowrd has been created and sent to the entered email address.
+      A new password has been created and sent to the entered email address.
     terms_accepted: "you have accepted the terms of use"
     entities_destroyed: "the entity has been deleted"
     no_entities_in_usergroup: "there is no entity in this group"

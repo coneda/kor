@@ -84,8 +84,7 @@
     </li>
   </ul>
 
-  <virtual if={isAdmin()}>
-  <ul>
+  <ul if={isAdmin()}>
     <li>
       {tcap('nouns.administration')}
     </li>

@@ -6,9 +6,10 @@ class AuthorityGroupsController < JsonController
     #   params[:authority_group_category_id] = 'root'
     # end
 
-    @records = AuthorityGroup.
-      within_category(params[:authority_group_category_id]).
-      search(params[:terms])
+    @records = AuthorityGroup.search(params[:terms])
+    if params.has_key?(:authority_group_category_id)
+      @records = @records.within_category(params[:authority_group_category_id])
+    end
     
     @total = @records.count
     @records = @records.pageit(page, per_page)
