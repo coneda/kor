@@ -6,10 +6,12 @@
         <virtual if={allowedToEdit()}>
           <kor-clipboard-control entity={to()} if={to().medium_id} />
           <a
+            href="#"
             onclick={edit}
             title={t('objects.edit', {interpolations: {o: 'activerecord.models.relationship'}})}
           ><i class="pen"></i></a>
           <a
+            href="#"
             onclick={delete}
             title={t('objects.delete', {interpolations: {o: 'activerecord.models.relationship'}})}
           ><i class="x"></i></a>
@@ -22,9 +24,11 @@
       />
       
       <a
-        if={relationship.media_relations > 0}
+        title={expanded ? t('verbs.collapse') : t('verbs.expand')}
+        if="{relationship.media_relations > 0}"
         onclick={toggle}
         class="toggle"
+        href="#"
       >
         <i show={!expanded} class="triangle_up"></i>
         <i show={expanded} class="triangle_down"></i>
@@ -58,11 +62,16 @@
 
   <table class="media-relations" if={expanded && data && !editorActive}>
     <tbody>
-      <tr each={row in wApp.utils.inGroupsOf(3, data.records)}>
+      <tr each={row in wApp.utils.inGroupsOf(3, data.records, null)}>
         <td each={relationship in row}>
-          <a href="#/entities/{relationship.to.id}">
-            <img src={relationship.to.medium.url.thumbnail} />
-          </a>
+          <virtual if={relationship}>
+            <div class="kor-text-right">
+              <kor-clipboard-control entity={relationship.to} />
+            </div>
+            <a href="#/entities/{relationship.to.id}">
+              <img class="medium" src={relationship.to.medium.url.thumbnail} />
+            </a>
+          </virtual>
         </td>
       </tr>
     </tbody>      
@@ -116,12 +125,14 @@
 
     fetchPage = ->
       Zepto.ajax(
-        url: "/entities/#{tag.to().id}/relationships"
+        url: "/relationships"
         data: {
           page: tag.opts.query.page
           per_page: 9
           relation_name: tag.opts.name
           to_kind_id: tag.info().medium_kind_id
+          from_entity_id: tag.to().id,
+          include: 'to,properties,datings'
         }
         success: (data) ->
           tag.data = data

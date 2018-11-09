@@ -13,7 +13,8 @@ class Kor::Search
       only_kinds(@criteria[:kind_id]).
       named_like(@criteria[:name]).
       by_id(@criteria[:id]).
-      by_relation_name(@criteria[:relation_name])
+      by_relation_name(@criteria[:relation_name]).
+      invalid(@criteria[:invalid])
 
     @scope = case @criteria[:sort][:column]
       when 'default' then @scope.alphabetically

@@ -477,3 +477,9 @@ end
 #     expect(group).to be_shared
 #   end
 # end
+
+Given("mona lisa has many relationships") do
+  10.times do |i|
+    Relationship.relate_and_save last_supper, 'is related to', mona_lisa
+  end
+end

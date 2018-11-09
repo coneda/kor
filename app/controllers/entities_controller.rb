@@ -165,6 +165,7 @@ class EntitiesController < JsonController
 
       isolated: params[:isolated],
       recent: params[:recent],
+      invalid: params[:invalid],
 
       sort: sort,
 
@@ -453,9 +454,32 @@ class EntitiesController < JsonController
     end
 
     def build_nested_errors(entity)
-      entity.errors.as_json.reject{|k, v| k.match(/^datings/)}.merge(
-        'datings' => entity.datings.map{|d| d.errors.as_json}
+      result = entity.errors.as_json
+
+      de = {}
+      result.each do |k, v|
+        if k.to_s.match(/^dataset\./)
+          n = k.to_s.split(/\./).last
+          de[n] ||= []
+          de[n] << v
+        end
+      end
+
+      result.reject! do |k, v|
+        k.match(/^datings/) || k.match(/^dataset\./)
+      end
+
+      result.merge!(
+        'datings' => entity.datings.map{|d| d.errors.as_json},
+        'dataset' => de
       )
+
+      result
+
+      # entity.errors.as_json.reject{|k, v| k.match(/^datings/)}.merge(
+      #   'datings' => ,
+      #   'dataset' => dataset_errors
+      # )
     end
 
 end

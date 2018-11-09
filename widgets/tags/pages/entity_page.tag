@@ -2,9 +2,9 @@
 
   <div class="kor-layout-left kor-layout-large" if={data}>
     <div class="kor-content-box">
-      <div class="kor-layout-commands">
+      <div class="kor-layout-commands page-commands">
+        <kor-clipboard-control entity={data} />
         <virtual if={allowedTo('edit', data.collection_id)}>
-          <kor-clipboard-control entity={data} />
           <a
             href="#/entities/{data.id}/edit"
             title={t('verbs.edit')}
@@ -86,9 +86,10 @@
     </div>
 
     <div class="kor-layout-bottom">
-      <div class="kor-content-box">
+      <div class="kor-content-box relations">
         <div class="kor-layout-commands" if={allowedTo('edit')}>
           <a
+            href="#"
             onclick={addRelationship}
             title={t('objects.add', {interpolations: {o: 'activerecord.models.relationship'}})}
           ><i class="plus"></i></a>
@@ -107,7 +108,7 @@
     </div>
 
     <div
-      class="kor-layout-bottom"
+      class="kor-layout-bottom .meta"
       if={allowedTo('view_meta', data.collection_id)}
     >
       <div class="kor-content-box">
@@ -120,22 +121,22 @@
           <span class="value">{data.uuid}</span>
         </div>
 
-        <div if={data.creator}>
+        <div if={data.created_at}>
           <span class="field">{t('activerecord.attributes.entity.created_at')}:</span>
           <span class="value">
             {l(data.created_at)}
-            <span show={data.creator}>
+            <span if={data.creator}>
               {t('by')}
               {data.creator.full_name || data.creator.name}
             </span>
           </span>
         </div>
 
-        <div if={data.updater}>
+        <div if={data.updated_at}>
           <span class="field">{t('activerecord.attributes.entity.updated_at')}:</span>
           <span class="value">
             {l(data.updated_at)}
-            <span show={data.updater}>
+            <span if={data.updater}>
               {t('by')}
               {data.updater.full_name || data.updater.name}
             </span>
@@ -167,7 +168,7 @@
       <div class="viewer">
         <h1>{t('activerecord.models.medium', {capitalize: true})}</h1>
 
-        <a href="#/media/{data.id}">
+        <a href="#/media/{data.id}" title={t('larger')}>
           <img src="{data.medium.url.preview}">
         </a>
 
@@ -255,7 +256,11 @@
         interpolations: {o: 'activerecord.models.entity'}
       )
       if confirm(message)
-        console.log 'deleting'
+        Zepto.ajax(
+          type: 'DELETE'
+          url: "/entities/#{tag.opts.id}"
+          success: -> window.history.go(-1)
+        )
 
     tag.visibleFields = ->
       f for f in tag.data.fields when f.value && f.show_on_entity

@@ -108,7 +108,7 @@ RSpec.describe Entity do
 
     entity = FactoryGirl.build :jack, dataset: {'isbn' => 'invalid ISBN'}
     expect(entity.save).to be_falsey
-    expect(entity.errors.full_messages).to include("ISBN is invalid")
+    expect(entity.errors.full_messages).to include("Dataset isbn is invalid")
   end
 
   it "should validate against needless spaces" do

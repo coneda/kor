@@ -50,6 +50,7 @@
     <li>
       <kor-input
         if="{kinds && kinds.records.length > 0}"
+        name="new_entity_type"
         type="select"
         onchange={newEntity}
         options={kinds.records}

@@ -127,20 +127,24 @@ class Field < ActiveRecord::Base
   # Dataset validation
   
   def validate_value
-    
+    true
   end
   
-  def add_error(error)
-    message = "#{show_label} "
-    message += case error
-      when Symbol then I18n.t("activerecord.errors.messages.#{error}")
-      when Strnig then error
-      else
-        raise "unknown dataset field error class '#{error.class.to_s}'"
-    end
-    
-    entity.errors[:base] << message
-  end
+  # def add_error(error)
+  #   @errors ||= ActiveModel::Errors.new(self)
+  #   @errors.add 
+  #   # message = "#{show_label} "
+  #   # message += case error
+  #   #   when Symbol then I18n.t("activerecord.errors.messages.#{error}")
+  #   #   when Strnig then error
+  #   #   else
+  #   #     raise "unknown dataset field error class '#{error.class.to_s}'"
+  #   # end
+
+  #   binding.pry
+  #   entity.errors.add :dataset, error
+  #   # entity.errors[:dataset] << message
+  # end
   
   
   # Utility

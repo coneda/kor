@@ -11,7 +11,12 @@
 
     {opts.name}
 
-    <a onclick={toggle} class="toggle">
+    <a
+      title={expanded ? t('verbs.collapse') : t('verbs.expand')}
+      onclick={toggle}
+      class="toggle"
+      href="#"
+    >
       <i show={!expanded} class="triangle_up"></i>
       <i show={expanded} class="triangle_down"></i>
     </a>
@@ -35,6 +40,7 @@
     tag.mixin(wApp.mixins.info)
 
     tag.on 'mount', ->
+      wApp.bus.on 'relationship-created', fetch
       wApp.bus.on 'relationship-updated', fetch
       wApp.bus.on 'relationship-deleted', fetch
       tag.opts.query ||= {}
@@ -43,6 +49,7 @@
     tag.on 'unmount', ->
       wApp.bus.off 'relationship-deleted', fetch
       wApp.bus.off 'relationship-updated', fetch
+      wApp.bus.off 'relationship-created', fetch
 
     tag.toggle = (event) ->
       event.preventDefault()

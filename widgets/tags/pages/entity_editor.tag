@@ -37,6 +37,7 @@
 
           <kor-input
             if={hasName()}
+            label={nameLabel()}
             name="name"
             ref="fields"
             value={data.name}
@@ -77,6 +78,7 @@
           fields={kind.fields}
           values={data.dataset}
           ref="fields"
+          errors={errors.dataset}
         />
 
         <kor-input
@@ -152,6 +154,8 @@
       ]
 
     tag.on 'mount', ->
+      checkPermissions()
+
       fetchCollections()
       wApp.bus.on 'routing:query', queryHandler
       fetch tag.opts.kind_id
@@ -176,8 +180,21 @@
       kindId == wApp.info.data.medium_kind_id
 
     tag.hasName = ->
-      tag.refs['fields.no_name_statement'] &&
+      !!tag.refs['fields.no_name_statement'] ||
       tag.refs['fields.no_name_statement'].value() == 'enter_name'
+
+    tag.nameLabel = ->
+      return '' unless tag.kind
+      console.log tag.kind
+      wApp.utils.capitalize tag.kind.settings['name_label']
+
+    checkPermissions = ->
+      policy = if tag.opts.id then 'edit' else 'create'
+      console.log tag.currentUser()
+      console.log tag.currentUser().permissions.collections
+      console.log policy
+      if tag.currentUser().permissions.collections[policy].length == 0
+        tag.opts.handlers.accessDenied()
 
     queryHandler = (parts = {}) ->
       fetch parts['hash_query']['kind_id']

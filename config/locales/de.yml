@@ -70,6 +70,11 @@ de:
   no_results: keine Resultate
   results_per_page: Resultate pro Seite
   add_to_clipboard: zur Zwischenablage hinzufügen
+  create_new: neu erstellen
+  next: forwärts
+  previous: zurück
+  smaller: verkleinern
+  larger: vergrößern
 
   search_term: 
     one: Suchbegriff
@@ -126,6 +131,8 @@ de:
     invert: invertieren
     extend: verlängern
     mark: in Zwischenablage aufnehmen
+    expand: ausklappen
+    collapse: einklappen
 
   title_verbs:
     pen: "bearbeiten"

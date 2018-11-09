@@ -26,7 +26,6 @@ Given /^the setup "([^"]*)"$/ do |name|
       Kor::Auth.grant frankfurt, :edit, :to => [admin_frankfurt]
       Kor::Auth.grant frankfurt, :create, :to => [admin_frankfurt]
       Kor::Auth.grant frankfurt, :delete, :to => [admin_frankfurt]
-      Kor::Auth.grant frankfurt, :approve, :to => [admin_frankfurt]
       Kor::Auth.grant frankfurt, :download_originals, :to => [admin_frankfurt]
       
       berlin = Collection.find_by_name('Berlin')
@@ -34,7 +33,6 @@ Given /^the setup "([^"]*)"$/ do |name|
       Kor::Auth.grant berlin, :edit, :to => [user_berlin, admin_berlin]
       Kor::Auth.grant berlin, :create, :to => [user_berlin, admin_berlin]
       Kor::Auth.grant berlin, :delete, :to => [admin_berlin]
-      Kor::Auth.grant berlin, :approve, :to => [admin_berlin]
       Kor::Auth.grant berlin, :download_originals, :to => [admin_frankfurt]
       
       step "the entity \"Frankfurter Dom\" of kind \"Werk/Werke\" inside collection \"Frankfurt\""

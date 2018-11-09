@@ -1,49 +1,38 @@
 Feature: Datasets
-  As a user
-  In order to attach variable data to entities
-  I want to be able to attach customizable datasets to entities
-  
-  
   Scenario: Show the form for an entity with a customized dataset
     Given I am logged in as "admin"
-    And kind "Werk/Werke" has field "material" of type "Fields::String"
-    When I go to the new "Werk-Entity" page
-    Then I should see "Material"
-    And I should see element "input[name='entity[dataset][material]']"
+    When I go to the new "Person-Entity" page
+    Then I should see field "GND-ID"
+    Then I should see field "Wikidata ID"
     
-    
-  @javascript
   Scenario: Create an entity with a customized dataset
     Given I am logged in as "admin"
-    And kind "Werk/Werke" has field "material" of type "Fields::String"
-    When I go to the new "Werk-Entity" page
-    And I fill in "entity[name]" with "Mona Lisa"
-    And I fill in "entity[dataset][material]" with "Öl auf Leinwand"
-    And I press "Create"
-    Then I should be on the entity page for "Mona Lisa"
-    And I should see "Material"
-    And I should see "Öl auf Leinwand"
-    
+    When I go to the new "Person-Entity" page
+    And I fill in "Name" with "Van Gogh"
+    And I fill in "GND-ID" with "6789"
+    And I fill in "Wikidata ID" with "1223"
+    And I press "Save"
+    Then I should be on the entity page for "Van Gogh"
+    And I should see "GND-ID: 6789"
+    And I should not see "Wikidata ID: 1223"
     
   Scenario: Try to create an invalid entity with a customized dataset which has to be validated
     Given I am logged in as "admin"
-    And kind "Literatur/Literaturen" has field "isbn" of type "Fields::Isbn"
+    And kind "Literatur/Literatur" has field "isbn" of type "Fields::Isbn"
     When I go to the new "Literatur-Entity" page
-    And I fill in "entity[name]" with "Fräulein Smillas Gespür für Schnee"
-    And I fill in "entity[dataset][isbn]" with "wrong isbn format"
-    And I press "Create"
-    Then I should not see "Translation missing"
-    Then I should see "Isbn is invalid"
+    And I fill in "Name" with "Fräulein Smillas Gespür für Schnee"
+    And I fill in "Isbn" with "wrong isbn format"
+    And I press "Save"
+    Then I should see "the input contains errors"
+    And I should see error "is invalid" on field "Isbn"
     
-  
-  @javascript
   Scenario: Try to create an valid entity with a customized dataset which has to be validated
     Given I am logged in as "admin"
-    And kind "Literatur/Literaturen" has field "isbn" of type "Fields::Isbn"
+    And kind "Literatur/Literatur" has field "isbn" of type "Fields::Isbn"
     When I go to the new "Literatur-Entity" page
-    And I fill in "entity[name]" with "Fräulein Smillas Gespür für Schnee"
-    And I fill in "entity[dataset][isbn]" with "3499237016"
-    And I press "Create"
+    And I fill in "Name" with "Fräulein Smillas Gespür für Schnee"
+    And I fill in "Isbn" with "3499237016"
+    And I press "Save"
     Then I should be on the entity page for "Fräulein Smillas Gespür für Schnee"
     Then I should not see "Translation missing"
     And I should see "3499237016"

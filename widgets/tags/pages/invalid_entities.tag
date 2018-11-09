@@ -64,10 +64,12 @@
 
     fetch = ->
       Zepto.ajax(
-        url: '/entities/invalid'
+        url: '/entities'
         data: {
+          invalid: true
           include: 'kind'
           page: tag.opts.query.page
+          per_page: 20
         }
         success: (data) ->
           tag.data = data

@@ -2,7 +2,12 @@
 
   <virtual if={isActive()}>
     <span>{t('nouns.page')}</span>
-    <a show={!isFirst()} onclick={toPrevious}><i class="icon pager_left"></i></a>
+    <a
+      title={t('previous')}
+      show={!isFirst()}
+      onclick={toPrevious}
+      href="#"
+    ><i class="icon pager_left"></i></a>
     <kor-input
       type="number"
       value={currentPage()}
@@ -10,7 +15,12 @@
       ref="manual"
     />
     {t('of', {interpolations: {amount: totalPages()}})}
-    <a show={!isLast()} onclick={toNext}><i class="icon pager_right"></i></a>
+    <a
+      title={t('next')}
+      show={!isLast()}
+      onclick={toNext}
+      href="#"
+    ><i class="icon pager_right"></i></a>
   </virtual>
 
   <virtual if={opts.perPageControl}>

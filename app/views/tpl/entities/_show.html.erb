@@ -6,7 +6,6 @@
         <div class="header">
           <div class="title" ng-bind="entity.display_name"></div>
           <div class="commands">
-            <div kor-current-button="entity" />
             <div kor-to-clipboard="entity" />
 
             <a href="/entities/{{entity.id}}/edit" ng-show="allowed_to('edit')">

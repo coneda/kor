@@ -1,9 +1,13 @@
 class Fields::Isbn < Field
 
   def validate_value
-    unless value.blank?
-      add_error :invalid unless value.gsub('-', '').match /^(978|979)?[0-9]{9}[0-9x]?$/
+    if value.present?
+      if !value.gsub('-', '').match(/^(978|979)?[0-9]{9}[0-9x]?$/)
+        return :invalid
+      end
     end
+
+    true
   end
   
   def self.label

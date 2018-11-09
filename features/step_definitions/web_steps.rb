@@ -291,18 +291,22 @@ Then(/^I should see a link "(.*?)" leading to "(.*?)"$/) do |text, href|
   expect(page.find_link(text)['href']).to match(href)
 end
 
-Then(/^I should not see link "(.*?)"$/) do |text|
-  expect(page).not_to have_link(text)
+Then(/^I should (not )?see link "([^\"]+)"$/) do |negate, text|
+  if negate.present?
+    expect(page).not_to have_link(text)
+  else
+    expect(page).to have_link(text)
+  end
 end
 
-When(/^I click on the upper triangle for relation "(.*?)"$/) do |relation_name|
-  title = page.find(".relation .subtitle", :text => relation_name)
-  relation = title.find(:xpath, "..")
-  relation.find(".relation_switch a").click
-end
+# When(/^I click on the upper triangle for relation "(.*?)"$/) do |relation_name|
+#   title = page.find(".relation .subtitle", :text => relation_name)
+#   relation = title.find(:xpath, "..")
+#   relation.find(".relation_switch a").click
+# end
 
 Then(/^I should see "(\d+)" kor images$/) do |amount|
-  expect(page).to have_selector("img.kor_medium", :count => 2)
+  expect(page).to have_selector("img.medium", count: amount.to_i)
 end
 
 Then(/^I should see "(.*?)"'s API Key$/) do |username|
@@ -370,13 +374,13 @@ Then(/^I should (not )?see an image$/) do |negation|
   end
 end
 
-When(/^I paginate right in the relations$/) do
-  within '.relation' do
-    page.find("img[data-name='pager_right']").click
-    # puts page.find("input[type=number]").value
-    # expect(page).to have_content('ENDE')
-  end
-end
+# When(/^I paginate right in the relations$/) do
+#   within '.relation' do
+#     page.find("img[data-name='pager_right']").click
+#     # puts page.find("input[type=number]").value
+#     # expect(page).to have_content('ENDE')
+#   end
+# end
 
 Then(/^the select "([^"]*)" should have value "([^"]*)"$/) do |name, value|
   field = page.find_field(name)
@@ -447,11 +451,23 @@ Then(/^select "([^"]*)" should have( no)? option "([^"]*)"$/) do |name, negation
 end
 
 Then /^I should see no categories nor groups$/ do
-  binding.pry
   expect(page).not_to have_css('.authority_group_category')
   expect(page).not_to have_css('.authority_group')
 end
 
 Then /^I should see no user groups$/ do
   expect(page).not_to have_css('.user_group')
+end
+
+Then("I should see field {string}") do |string|
+  expect(page).to have_field(string)
+end
+
+Then("I should see error {string} on field {string}") do |error, field|
+  input = find("kor-input[label='#{field}']")
+  expect(input).to have_css('.errors', text: error)
+end
+
+When("I fill in synonyms with {string}") do |string|
+  fill_in 'Synonyms', with: string.split('|').join("\n")
 end

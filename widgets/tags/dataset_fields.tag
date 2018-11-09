@@ -6,10 +6,21 @@
     label={field.form_label}
     riot-value={values()[field.name]}
     ref="fields"
+    errors={errorsFor(field)}
   />
 
   <script type="text/javascript">
     var tag = this;
+
+    tag.on('updated', function() {
+      console.log(tag.opts);
+    })
+
+    tag.errorsFor = function(field) {
+      if (tag.opts.errors) {
+        return tag.opts.errors[field.name];
+      }
+    }
 
     tag.values = function() {
       return opts.values || {};

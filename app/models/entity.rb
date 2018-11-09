@@ -91,6 +91,14 @@ class Entity < ActiveRecord::Base
   
   # Attachment
 
+  def read_attribute_for_validation(attr)
+    if attr.match(/^dataset\./)
+      self.dataset[attr.split('\.')[1]]
+    else
+      super
+    end
+  end
+
   def attachment
     unless self[:attachment]
       self[:attachment] = {}
@@ -142,7 +150,10 @@ class Entity < ActiveRecord::Base
 
   def validate_dataset
     schema.each do |field|
-      field.validate_value
+      result = field.validate_value
+      if result != true
+        errors.add "dataset.#{field.name}", result
+      end
     end
   end
 
@@ -581,6 +592,12 @@ class Entity < ActiveRecord::Base
     joins('LEFT JOIN entities_user_groups eu ON eu.entity_id = id').
     where('eu.user_group_id IN (?)', ids)
   }
+  scope :within_system_groups, lambda {|ids|
+    return all unless ids.present?
+    
+    joins('LEFT JOIN entities_system_groups es ON es.entity_id = id').
+    where('es.system_group_id IN (?)', ids)
+  }
 
   scope :pageit, lambda { |page, per_page|
     page = [(page || 1).to_i, 1].max
@@ -590,6 +607,13 @@ class Entity < ActiveRecord::Base
   }
   def self.tagged_with(tags = [])
     tags.present? ? tagged_with(tags) : all
+  end
+
+  def self.invalid(invalid)
+    return all unless invalid.present?
+
+    group = SystemGroup.find_or_create_by(name: 'invalid')
+    within_system_groups(group.id)
   end
   
 end

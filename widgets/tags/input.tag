@@ -48,7 +48,9 @@
     </label>
   </virtual>
   <div class="errors" if={opts.errors}>
-    <div each={e in opts.errors}>{e}</div>
+    <div each={e in opts.errors}>
+      {e}
+    </div>
   </div>
 
   <script type="text/coffee">

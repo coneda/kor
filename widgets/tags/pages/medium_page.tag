@@ -1,7 +1,7 @@
 <kor-medium-page>
 
   <div class="kor-content-box">
-    <a if={data} href="#/entities/{data.id}">
+    <a if={data} href="#/entities/{data.id}" title={t('smaller')}>
       <img if={!data.medium.video &&! data.medium.audio} src="{data.medium.url.screen}" />
       <video if={data.medium.video} controls mute autoplay>
         <source riot-src={data.medium.url['video/mp4']} type="video/mp4">

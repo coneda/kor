@@ -27,13 +27,13 @@ end
 
 if inclusion.request?('fields')
   json.fields record.fields do |field|
-    json.partial! 'fields/customized', field: field
+    json.partial! 'fields/customized', record: field
   end
 end
 
 if inclusion.request?('generators')
   json.generators record.generators do |generator|
-    json.partial! 'generators/customized', generator: generator
+    json.partial! 'generators/customized', record: generator
   end
 end
 

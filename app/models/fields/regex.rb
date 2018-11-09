@@ -1,9 +1,13 @@
 class Fields::Regex < Field
 
   def validate_value
-    unless value.blank?
-      add_error :invalid unless value.match(matcher)
+    if value.present?
+      if !value.match(matcher)
+        return :invalid
+      end
     end
+
+    true
   end
   
   def self.label

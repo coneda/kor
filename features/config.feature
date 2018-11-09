@@ -1,9 +1,4 @@
 Feature: Config
-  As a admin
-  In order to change the KOR configuration online
-  I want to use a configuration editor
-  
-  @javascript
   Scenario: Show the configuration sections
     Given I am logged in as "admin"
     And I am on the config page
@@ -12,7 +7,6 @@ Feature: Config
     And I should see "Other"
     And I should see "Maintainer organization"
     
-  @javascript
   Scenario: Change a configuration option
     Given I am logged in as "admin"
     And I am on the config page
