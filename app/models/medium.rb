@@ -173,7 +173,12 @@ class Medium < ActiveRecord::Base
   end
   
   def original_extension
-    File.extname(original.original_filename).gsub('.', '').downcase
+    if original.original_filename
+      File.extname(original.original_filename).gsub('.', '').downcase
+    else
+      # dummy
+      'tif'
+    end
   end
   
   def style_extension(style = :original)
