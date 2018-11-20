@@ -250,4 +250,12 @@ Feature: Entities
     Then I should see "Multiple upload"
 
 
-
+  @javascript
+  Scenario: Edit an entity with editing rights but without tagging rights
+    Given the user "jdoe"
+    And user "jdoe" is allowed to "view/edit" collection "default" via "users"
+    And the entity "Mona Lisa" of kind "work/works"
+    And I am logged in as "jdoe"
+    When I go to the entity page for "Mona Lisa"
+    And I follow "Pen"
+    Then I should see "Tags" within ".canvas"

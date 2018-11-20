@@ -32,7 +32,7 @@
       
   = (form_fields_for_entity_dataset(@entity) || "").html_safe
   
-  - if @entity.kind.tagging && authorized?(:tagging, @entity.collection)
+  - if @entity.kind.tagging
     = f.kor_input :tag_list, :control => f.text_field(:tag_list, 'kor-tagger' => true, value: @entity.tag_list.to_s)
     
   = f.kor_input :comment, :control => f.text_area(:comment)
