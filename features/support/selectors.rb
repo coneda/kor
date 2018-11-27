@@ -18,8 +18,10 @@ module HtmlSelectorsHelpers
       [:css, '[data-is=kor-collections] tr', {text: $1}]
 
     when /the row for authority group "([^\"]+)"/
-      name = $1
       [:css, 'kor-admin-groups tr', {text: $1}]
+
+    when /the row for user "([^\"]+)"/
+      [:css, '[data-is=kor-users] tr', {text: $1}]
 
     when /widget "([^\"]+)"/
       name = $1

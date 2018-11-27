@@ -2,7 +2,10 @@
 
   <div class="kor-content-box">
     <div class="kor-layout-commands">
-      <a href="#/users/new"><i class="plus"></i></a>
+      <a
+        href="#/users/new"
+        title={t('verbs.add')}
+      ><i class="plus"></i></a>
     </div>
     <h1>{tcap('activerecord.models.user', {count: 'other'})}</h1>
 
@@ -59,14 +62,22 @@
           <td class="right">{l(user.last_login)}</td>
           <td class="right">{l(user.expires_at)}</td>
           <td class="right nobreak">
-            <a onclick={resetLoginAttempts(user.id)}>
-              <i class="three_bars"></i>
-            </a>
-            <a onclick={resetPassword(user.id)}>
-              <i class="reset_password"></i>
-            </a>
-            <a href="#/users/{user.id}/edit"><i class="pen"></i></a>
-            <a onclick={destroy(user.id)}><i class="x"></i></a>
+            <a
+              onclick={resetLoginAttempts(user.id)}
+              title={t('reset_login_attempts')}
+            ><i class="three_bars"></i></a>
+            <a
+              onclick={resetPassword(user.id)}
+              title={t('reset_password')}
+            ><i class="reset_password"></i></a>
+            <a
+              href="#/users/{user.id}/edit"
+              title={t('verbs.edit')}
+            ><i class="pen"></i></a>
+            <a
+              onclick={destroy(user.id)}
+              title={t('verbs.delete')}
+            ><i class="x"></i></a>
           </td>
         </tr>
       </tbody>

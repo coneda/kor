@@ -24,8 +24,8 @@
       />
       
       <a
-        title={expanded ? t('verbs.collapse') : t('verbs.expand')}
         if="{relationship.media_relations > 0}"
+        title={expanded ? t('verbs.collapse') : t('verbs.expand')}
         onclick={toggle}
         class="toggle"
         href="#"

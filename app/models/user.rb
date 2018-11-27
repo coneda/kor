@@ -426,6 +426,16 @@ class User < ActiveRecord::Base
     end
   end
 
+  def expires_at=(value)
+    if parent.present?
+      if parent.expires_at.nil? || parent.expires_at.to_date.to_s == value
+        self[:expires_at] = nil
+      end
+    else
+      super
+    end
+  end
+
   def serializable_hash(options = {})
     super options.merge(:except => [:password, :activation_hash, :api_key])
   end

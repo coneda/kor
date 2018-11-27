@@ -379,8 +379,8 @@ Given(/^kind "(.*?)" has web service "(.*?)"$/) do |kind_name, web_service_name|
   kind.save
 end
 
-Then(/^user "(.*?)" should (not )?be active$/) do |email, n|
-  user = User.where(:email => email).first
+Then(/^user "(.*?)" should (not )?be active$/) do |name, n|
+  user = User.find_by!(name: name)
   if n == "not "
     expect(user.active).to be_falsey
   else
@@ -388,8 +388,8 @@ Then(/^user "(.*?)" should (not )?be active$/) do |email, n|
   end
 end
 
-Then(/^user "(.*?)" should (not )?have the role "(.*?)"$/) do |email, n, role|
-  user = User.where(:email => email).first
+Then(/^user "(.*?)" should (not )?have the role "(.*?)"$/) do |name, n, role|
+  user = User.find_by!(name: name)
   if n == "not "
     expect(user.send role.to_sym).to be_falsey
   else
@@ -397,14 +397,15 @@ Then(/^user "(.*?)" should (not )?have the role "(.*?)"$/) do |email, n, role|
   end
 end
 
-Then(/^user "(.*?)" should expire at "(.*?)"$/) do |email, time_str|
-  user = User.where(:email => email).first
-  time = eval(time_str, binding)
-  expect(user.expires_at).to be_within(1.minute).of(time)
+Then(/^user "(.*?)" should expire at "(.*?)"$/) do |name, time_str|
+  user = User.find_by!(name: name)
+  date = eval(time_str, binding).to_date
+  expect(user.expires_at.to_date).to eq(date)
 end
 
-Then(/^user "(.*?)" should not expire$/) do |email|
-  expect(User.where(:email => email).first.expires_at).to be_nil
+Then(/^user "(.*?)" should not expire$/) do |name|
+  user = User.find_by!(name: name)
+  expect(user.expires_at).to be_nil
 end
 
 Given(/^the last entity has the tags "(.*?)"$/) do |tag_list|
@@ -482,4 +483,14 @@ Given("mona lisa has many relationships") do
   10.times do |i|
     Relationship.relate_and_save last_supper, 'is related to', mona_lisa
   end
+end
+
+Given("entity {string} is in collection {string}") do |entity, collection|
+  entity = Entity.find_by(name: entity)
+  collection = Collection.find_by!(name: collection)
+  entity.update collection_id: collection.id
+end
+
+Given("user {string} is a relation admin") do |name|
+  User.find_by!(name: name).update relation_admin: true
 end

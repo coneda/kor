@@ -12,6 +12,7 @@ module NavigationHelpers
 
     when /the new entries page/ then '#/new-media'
     when /the new entities page/ then '/entities/recent'
+    when /the invalid entities page/ then '/#/entities/invalid'
     when /the isolated entities page/ then '/blaze#/entities/isolated'
     when /the config page/ then '#/settings'
     when /the home\s?page/ then '/'
@@ -43,7 +44,7 @@ module NavigationHelpers
       "/#/groups/categories/#{id}"
     when /the entity page for "([^\"]*)"/
       name = $1
-      entity = Entity.find_by_name(name)
+      entity = Entity.find_by!(name: name)
       "/#/entities/#{entity.id}"
     when /the entity page for the (first|last) medium/
       media = Kind.medium_kind.entities
@@ -70,8 +71,8 @@ module NavigationHelpers
     when /the edit page for user group "([^\"]*)"/ then edit_user_group_path(UserGroup.find_by_name($1))
     when /the credentials page/ then '/#/credentials'
     when /the collections page/ then '/#/collections'
-    when /the profile page for user "([^\"]+)"/ then edit_self_user_path(User.find_by_name($1))
-    when /the users page/ then users_path
+    when /the profile page/ then '/#/profile'
+    when /the users page/ then '/#/users'
     when /the edit page for "([^\"]+)" "([^\"]+)"/
       klass = $1
       name = $2.split('/').first
@@ -81,7 +82,7 @@ module NavigationHelpers
       else
         send("edit_#{klass}_path", object)
       end
-    when /the relations page/ then '/blaze#/relations'
+    when /the relations page/ then '/#/relations'
     when /the edit relationship page for the first relationship/ then edit_relationship_path(Relationship.first)
     when /the new relationship page with target "([^\"]+)"/
       entity = Entity.find_by_name($1)

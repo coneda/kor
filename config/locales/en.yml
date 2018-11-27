@@ -74,6 +74,8 @@ en:
   previous: previous
   smaller: smaller
   larger: larger
+  reset_login_attempts: reset login attempts
+  reset_password: reset password
 
   search_term:
     one: search term
@@ -868,7 +870,7 @@ en:
         plain_password_confirmation: repeat password
         email: e-mail
         activation: activation
-        active: aktiv
+        active: active
         groups: group membership
         created_at: created at
         expires_at: expires at

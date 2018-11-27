@@ -293,9 +293,9 @@ end
 
 Then(/^I should (not )?see link "([^\"]+)"$/) do |negate, text|
   if negate.present?
-    expect(page).not_to have_link(text)
+    expect(page).not_to have_link(text, exact: true)
   else
-    expect(page).to have_link(text)
+    expect(page).to have_link(text, exact: true)
   end
 end
 

@@ -12,6 +12,7 @@
     {opts.name}
 
     <a
+      if={expandable()}
       title={expanded ? t('verbs.collapse') : t('verbs.expand')}
       onclick={toggle}
       class="toggle"
@@ -50,6 +51,12 @@
       wApp.bus.off 'relationship-deleted', fetch
       wApp.bus.off 'relationship-updated', fetch
       wApp.bus.off 'relationship-created', fetch
+
+    tag.expandable = ->
+      return false unless tag.data
+      for r in tag.data.records
+        return true if r.media_relations > 0
+      false
 
     tag.toggle = (event) ->
       event.preventDefault()

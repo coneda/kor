@@ -353,6 +353,7 @@ class Entity < ActiveRecord::Base
   def media_count(user)
     outgoing_relationships
       .with_to
+      .allowed(user, :view)
       .where('tos.kind_id = ?', Kind.medium_kind_id)
       .count
   end

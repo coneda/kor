@@ -90,6 +90,17 @@
         <div class="hr"></div>
 
         <kor-input
+          label={tcap('activerecord.attributes.user.parent_username')}
+          name="parent_username"
+          type="text"
+          ref="fields"
+          value={data.parent_username}
+          errors={errors.parent_username}
+        />
+
+        <div class="hr"></div>
+
+        <kor-input
           if={credentials}
           label={tcap('activerecord.attributes.user.groups')}
           name="group_ids"
@@ -156,7 +167,7 @@
     tag.on 'mount', ->
       tag.errors = {}
 
-      if tag.hasRole('admin')
+      if tag.isAdmin()
         Zepto.when(fetchCredentials(), fetchUser()).then ->
           tag.loaded = true
           tag.update()
@@ -171,15 +182,22 @@
         tag.errors = JSON.parse(xhr.responseText).errors
         wApp.utils.scrollToTop()
       p.always -> tag.update()
-      
+
+    # TODO: this needs to be done entirely on the server. The client should
+    # just tranfer the amount of days to add      
     tag.expiresIn = (days) ->
       (event) ->
         event.preventDefault()
 
         if days
           date = new Date()
-          date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
-          expiresAtTag().set(strftime '%Y-%m-%d', date)
+          date = new Date(date.getTime() + days * 24 * 60 * 60 * 1000)
+          console.log(date, date.getUTCDate())
+          expiresAtTag().set([
+            date.getUTCFullYear(),
+            ('00' + (date.getUTCMonth() + 1)).substr(-2, 2),
+            ('00' + date.getUTCDate()).substr(-2, 2)
+          ].join('-'))
         else
           expiresAtTag().set undefined
 

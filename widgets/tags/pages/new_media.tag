@@ -51,7 +51,8 @@
           include: 'kind,gallery_data',
           page: tag.opts.query.page,
           sort: 'created_at',
-          direction: 'desc'
+          direction: 'desc',
+          kind_id: wApp.info.data.medium_kind_id
         }
         success: (data) ->
           tag.data = data

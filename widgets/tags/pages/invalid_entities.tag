@@ -42,6 +42,7 @@
         per-page={data.per_page}
         total={data.total}
         page-update-handler={pageUpdate}
+        class="top"
       />
     </div>
   </div>
@@ -69,7 +70,8 @@
           invalid: true
           include: 'kind'
           page: tag.opts.query.page
-          per_page: 20
+          per_page: 20,
+          sort: 'id'
         }
         success: (data) ->
           tag.data = data

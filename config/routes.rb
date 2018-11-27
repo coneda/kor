@@ -197,13 +197,13 @@ Rails.application.routes.draw do
     resources :entities do
       collection do
         get 'multi_upload'
-        get 'gallery'
-        get 'recent'
-        get 'invalid'
-        get 'isolated'
-        get 'random'
-        get 'recently_created'
-        get 'recently_visited'
+        # get 'gallery'
+        # get 'recent'
+        # get 'invalid'
+        # get 'isolated'
+        # get 'random'
+        # get 'recently_created'
+        # get 'recently_visited'
 
         post 'merge'
         post 'existence'
