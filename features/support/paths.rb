@@ -11,9 +11,9 @@ module NavigationHelpers
     case page_name
 
     when /the new entries page/ then '#/new-media'
-    when /the new entities page/ then '/entities/recent'
+    when /the new entities page/ then '/#/entities/recent'
     when /the invalid entities page/ then '/#/entities/invalid'
-    when /the isolated entities page/ then '/blaze#/entities/isolated'
+    when /the isolated entities page/ then '/#/entities/isolated'
     when /the config page/ then '#/settings'
     when /the home\s?page/ then '/'
     when /the search page/ then '/#/search'
@@ -21,7 +21,7 @@ module NavigationHelpers
     when /^the gallery( page)?$/ then '/#/new-media'
     when /^page "(\d+)" of the gallery$/
       page = $1
-      web_path(:anchor => "/entities/gallery?page=#{page}")
+      "/#/new-media?page=#{page}"
     # when /the new relationship page for "(.*)"/
     #   new_relationship_path(:relationship => {:from_id => Entity.find_by_name($1).id })
     when /the new publishment page/ then '/#/groups/published/new'
@@ -44,20 +44,27 @@ module NavigationHelpers
       "/#/groups/categories/#{id}"
     when /the entity page for "([^\"]*)"/
       name = $1
-      entity = Entity.find_by!(name: name)
+      entity = if name.size == 36
+        Entity.find_by!(uuid: name)
+      else
+        Entity.find_by!(name: name)
+      end
       "/#/entities/#{entity.id}"
     when /the entity page for the (first|last) medium/
       media = Kind.medium_kind.entities
       entity = ($1 == 'first' ? media.first : media.last)
+      "/#/entities/#{entity.id}"
+    when /the entity page for medium "([^\"]*)"/
+      entity = send($1.to_sym)
       "/#/entities/#{entity.id}"
     when /the (first|last) entity's page/
       media = Kind.medium_kind.entities
       entity = ($1 == 'first' ? media.first : media.last)
       "/#/entities/#{entity.id}"
     when /the legacy upload page/ then "/entities/new?kind_id=#{Kind.medium_kind.id}"
-    when /the entity page for medium "([0-9]+)"/
-      entity = Entity.find($1)
-      "/#/entities/#{entity.id}"
+    # when /the entity page for medium "([0-9]+)"/
+    #   entity = Entity.find($1)
+    #   "/#/entities/#{entity.id}"
     when /the kinds page/ then kinds_path
     when /the clipboard/ then '/#/clipboard'
     when /the new "([^\"]*)-Entity" page/
@@ -92,6 +99,7 @@ module NavigationHelpers
     when /welcome page/ then "/"
     when /404/ then "/404.html"
     when /the path "([^\"]+)"/ then $1
+    when /the upload page/ then '/#/upload'
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

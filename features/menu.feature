@@ -1,68 +1,39 @@
 Feature: Navigation Menu
-
-  @javascript
   Scenario: User Menu
-    Given I am logged in as "john"
-    And "Groups" is expanded
-    Then I should see "Simple search" within "#menu"
-    And I should see "Expert search" within "#menu"
-    And I should see "New entries" within "#menu"
-    And I should see "Clipboard" within "#menu"
-    And I should see "Groups" within "#menu"
-    And I should see "Global" within "#menu"
-    And I should see "Personal" within "#menu"
-    And I should see "Shared" within "#menu"
-    And I should see "Published" within "#menu"
-    And I should see "Edit profile" within "#menu"
-    And I should see "Statistics" within "#menu"
-    And I should not see "Administration" within "#menu"
-    And I should not see option "Create entity" within "#menu"
-    And I should not see "Invalid entities" within "#menu"
-    And I should not see "New entities" within "#menu"
-    
+    Given I am logged in as "jdoe"
+    Then I should see "Search" within widget "kor-menu"
+    And I should see "New entries" within widget "kor-menu"
+    And I should see "Clipboard" within widget "kor-menu"
+    And I should see "Global groups" within widget "kor-menu"
+    And I should see "Personal groups" within widget "kor-menu"
+    And I should see "Shared groups" within widget "kor-menu"
+    And I should see "Published groups" within widget "kor-menu"
+    And I should see "Edit profile" within widget "kor-menu"
+    And I should see "Statistics" within widget "kor-menu"
+    And I should not see "Administration" within widget "kor-menu"
+    And I should not see option "Create entity" within widget "kor-menu"
+    And I should not see "Invalid entities" within widget "kor-menu"
+    And I should not see "New entities" within widget "kor-menu"
+    And I should not see "Admin" within widget "kor-menu"
 
-  @javascript
   Scenario: Admin Menu
     Given I am logged in as "admin"
-    And "Groups" is expanded
-    And "Administration" is expanded
-    Then I should see "Simple search" within "#menu"
-    And I should see "Expert search" within "#menu"
-    And I should see "New entries" within "#menu"
-    And I should see "Clipboard" within "#menu"
-    And I should see "Groups" within "#menu"
-    And I should see "Global" within "#menu"
-    And I should see "Personal" within "#menu"
-    And I should see "Shared" within "#menu"
-    And I should see "Published" within "#menu"
-    And I should see "Edit profile" within "#menu"
-    And I should see "Statistics" within "#menu"
-    And I should see "Administration" within "#menu"
-    And I should see option "Create entity" within "#menu"
-    And I should see "Invalid entities" within "#menu"
-    And I should see "New entities" within "#menu"
-    And I should see "General" within "#menu"
-    And I should see "Relations" within "#menu"
-    And I should see "Entity types" within "#menu"
-    And I should see "Collections" within "#menu"
-    And I should see "User groups" within "#menu"
-    And I should see "User administration" within "#menu"
-
-    
-  @javascript
-  Scenario: Toggle groups menu as a admin
-    Given I am logged in as "admin"
-    When I go to the home page
-    And I follow "Groups"
-    Then I should really see element "#group_links"
-    When I follow "Groups"
-    Then I should not really see element "#group_links"
-    
-    
-  @javascript
-  Scenario: No admin rights => no config menu
-    Given the user "john"
-    And I am logged in as "john"
-    When I go to the root page
-    Then I should not see "Administration"
+    Then I should see "Search" within widget "kor-menu"
+    And I should see "New entries" within widget "kor-menu"
+    And I should see "Clipboard" within widget "kor-menu"
+    And I should see "Global groups" within widget "kor-menu"
+    And I should see "Personal groups" within widget "kor-menu"
+    And I should see "Shared groups" within widget "kor-menu"
+    And I should see "Published groups" within widget "kor-menu"
+    And I should see "Edit profile" within widget "kor-menu"
+    And I should see "Statistics" within widget "kor-menu"
+    And I should see option "Create entity" within widget "kor-menu"
+    And I should see "Invalid entities" within widget "kor-menu"
+    And I should see "New entities" within widget "kor-menu"
+    And I should see "Settings" within widget "kor-menu"
+    And I should see "Relations" within widget "kor-menu"
+    And I should see "Entity types" within widget "kor-menu"
+    And I should see "Collections" within widget "kor-menu"
+    And I should see "User groups" within widget "kor-menu"
+    And I should see "Users" within widget "kor-menu"
     

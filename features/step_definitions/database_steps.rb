@@ -165,8 +165,11 @@ Given /^the entity "([^"]*)" has the synonyms "([^"]*)"$/ do |entity, synonyms|
   Entity.find_by_name(entity).update_attributes :synonyms => synonyms.split('/')
 end
 
-Given /^"([^\"]*)" has a shared user group "([^\"]*)"$/ do |user_name, group_name|
-  User.find_by_name(user_name).user_groups.create(:name => group_name, :shared => true)
+Given /^"([^\"]*)" has a (shared )?user group "([^\"]*)"$/ do |user_name, shared, group_name|
+  User.find_by!(name: user_name).user_groups.create!(
+    name: group_name,
+    shared: shared == 'shared '
+  )
 end
 
 Given /^the authority group "([^"]*)"(?: inside "([^"]+)")?$/ do |name, category_name|
@@ -332,7 +335,7 @@ Given /^there are "([^"]*)" entities named "([^"]*)" of kind "([^"]*)"$/ do |num
   num.to_i.times do |i|
     kind.entities.create(
       :collection => Collection.first,
-      :name => name_pattern.gsub("X", i.to_s)
+      :name => name_pattern % i
     )
   end
 end
@@ -493,4 +496,9 @@ end
 
 Given("user {string} is a relation admin") do |name|
   User.find_by!(name: name).update relation_admin: true
+end
+
+Then("medium {string} should be in collection {string}") do |medium, collection|
+  medium = send(medium.to_sym)
+  expect(medium.collection.name).to eq(collection)
 end

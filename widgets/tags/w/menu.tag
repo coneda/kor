@@ -36,12 +36,12 @@
     </li>
     <li if={isLoggedIn()}>
       <a href="#/groups/shared">
-        {tcap('activerecord.attributes.user_group.shared')}
+        {tcap('activerecord.attributes.user_group.shared', {count: 'other'})}
       </a>
     </li>
     <li if={isLoggedIn()}>
       <a href="#/groups/published">
-        {tcap('activerecord.attributes.user_group.published')}
+        {tcap('activerecord.attributes.user_group.published', {count: 'other'})}
       </a>
     </li>
   </ul>

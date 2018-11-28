@@ -177,6 +177,7 @@
             each={op in ['flip', 'flop', 'rotate_cw', 'rotate_ccw', 'rotate_180']}
             href="#/media/{data.medium_id}/{op}"
             onclick={transform(op)}
+            title={t('image_transformations.' + op)}
           ><i class="{op}"></i></a>
         </div>
 
@@ -278,6 +279,14 @@
     tag.transform = (op) ->
       (event) ->
         event.preventDefault()
+
+        Zepto.ajax(
+          type: 'PATCH'
+          url: "/media/transform/#{tag.data.medium_id}/image/#{op}"
+          success: ->
+            tag.data.medium.url.preview += '?cb=' + (new Date()).getTime()
+            tag.update()
+        )
 
     tag.addRelationship = (event) ->
       event.preventDefault()

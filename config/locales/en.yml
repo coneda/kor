@@ -536,6 +536,7 @@ en:
     update_success: "%{o} has been changed"
     delete: "delete %{o}"
     destroy_success: "%{o} has been deleted"
+    transform_success: "%{o} has been transformed"
     for: "for %{o}"
     no_exist: "%{o} does not exist"
     none_available: "%{o} is not available"
@@ -980,9 +981,11 @@ en:
         name: name
         owner: owner
         shared:
-          one: shared
-          other: shared
-        published: published
+          one: shared group
+          other: shared groups
+        published: 
+          one: published group
+          other: published groups
       authority_group:
         name: name
       authority_group_category:

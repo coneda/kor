@@ -10,7 +10,7 @@
       <img riot-src={imageUrl()} />
     </a>
     <div if={!opts.noContentType}>
-      {t('nouns.content_type')}:
+      {tcap('nouns.content_type')}:
       <span class="content-type">{opts.entity.medium.content_type}</span>
     </div>
   </virtual>

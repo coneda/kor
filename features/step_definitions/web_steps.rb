@@ -271,10 +271,6 @@ When /^I wait for "([^"]*)" seconds?$/ do |num|
   sleep num.to_f
 end
 
-When /^I click on the player link$/ do
-  page.find('.viewer .kor_medium_frame a').click
-end
-
 Then /^I should see the video player$/ do
   expect(page).to have_selector('video')
 end
@@ -339,7 +335,7 @@ When(/^I click on entity "([^"]*)"$/) do |name|
 end
 
 Then(/^I should see "([^"]*)" gallery items?$/) do |amount|
-  all('.gallery_item > div', count: amount.to_i, visible: true)
+  all('kor-gallery-grid kor-entity', count: amount.to_i, visible: true)
 end
 
 Then(/^the current js page should be "([^"]*)"$/) do |expected|
@@ -355,7 +351,7 @@ Then(/^the current js page should be "([^"]*)"$/) do |expected|
 end
 
 When(/^I click the first gallery item$/) do
-  first('.gallery_item .kor_medium_frame > a').click
+  first('kor-gallery-grid kor-entity > a').click
 end
 
 When(/^I go back$/) do
@@ -470,4 +466,21 @@ end
 
 When("I fill in synonyms with {string}") do |string|
   fill_in 'Synonyms', with: string.split('|').join("\n")
+end
+
+Then /^image "([^"]*)" should have (portrait|landscape) orientation$/ do |locator, orientation|
+  img = find(locator)
+
+  capybara_wait do
+    width = img.native.css_value('width').to_i
+    height = img.native.css_value('height').to_i
+
+    if orientation == 'landscape'
+      expect(width).to be > height
+    end
+
+    if orientation == 'portrait'
+      expect(width).to be < height
+    end
+  end
 end

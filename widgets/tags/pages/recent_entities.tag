@@ -87,11 +87,12 @@
 
     fetch = ->
       Zepto.ajax(
-        url: '/entities/recent'
+        url: '/entities'
         data: {
           include: 'kind,users,collection'
           page: tag.opts.query.page
           collection_id: tag.opts.query.collection_id
+          recent: true
         }
         success: (data) ->
           tag.data = data

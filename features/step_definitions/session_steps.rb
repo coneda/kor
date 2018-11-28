@@ -79,13 +79,10 @@ Given /^"([^\"]*)" is expanded$/ do |folded_menu_name|
 end
 
 Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
-  Kind.find_by_name(kind.split("/").first).entities.each do |entity|
-    if entity.is_medium?
-      step "I go to the entity page for medium \"#{entity.id}\""
-    else
-      step "I go to the entity page for \"#{entity.name}\""
-    end
+  Kind.find_by!(name: kind.split("/").first).entities.each do |entity|
+    step "I go to the entity page for \"#{entity.uuid}\""
     step "I should see \"#{entity.name}\""
+    # TODO: why?
     sleep 2
     find('a.to-clipboard').click
     expect(page).to have_content('has been added to the clipboard')

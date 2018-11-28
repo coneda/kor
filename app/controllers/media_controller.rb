@@ -73,7 +73,7 @@ class MediaController < JsonController
         :operation => param_to_operation(params[:operation])
       )
 
-      render_200 I18n.t('objects.update_success', o: I18n.t('activerecord.models.medium', count: 1))
+      render_200 I18n.t('objects.transform_success', o: I18n.t('activerecord.models.medium', count: 1))
     else
       render_403
     end

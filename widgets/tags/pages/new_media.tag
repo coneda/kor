@@ -10,6 +10,7 @@
       per-page={data.per_page}
       total={data.total}
       page-update-handler={pageUpdate}
+      class="top"
     />
 
     <div class="hr"></div>
@@ -50,6 +51,7 @@
         data: {
           include: 'kind,gallery_data',
           page: tag.opts.query.page,
+          per_page: 16,
           sort: 'created_at',
           direction: 'desc',
           kind_id: wApp.info.data.medium_kind_id
