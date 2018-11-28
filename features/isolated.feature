@@ -1,13 +1,10 @@
 Feature: Isolated entities
-  
-  @javascript
   Scenario: show isolated entities
-    Given the entity "Mona Lisa" of kind "work/works"
-    And the entity "Leonardo" of kind "person/people"
-    And the entity "Le Louvre" of kind "institution/institutions"
-    And the relationship "Leonardo" "has created" "Mona Lisa"
+    And the entity "Van Gogh" of kind "person/people"
     And I am logged in as "admin"
     When I follow "Isolated entities"
-    Then I should see "Le Louvre"
+    Then I should see "Van Gogh"
     And I should not see "Mona Lisa"
     And I should not see "Leonardo"
+    And I should not see "Louvre"
+    And I should not see "Paris"

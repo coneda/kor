@@ -1,5 +1,6 @@
 Given /^I am logged in as "([^\"]*)"/ do |user|
-  step "the user \"#{user}\""
+  visit '/'
+  Capybara.reset_sessions!
   
   step "I go to the login page"
   fill_in 'Username', with: user

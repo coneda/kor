@@ -58,7 +58,7 @@ end
 
 pattern = /^kind "([^"]*)" should( not)? have generator "([^"]*)"$/
 Then(pattern) do |kind, negation, generator|
-  kind = Kind.find_by(name: kind)
+  kind = Kind.find_by!(name: kind)
 
   if negation
     expect(kind.generators.map{|f| f.name}).not_to include(generator)

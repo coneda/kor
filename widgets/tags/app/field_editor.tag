@@ -79,7 +79,10 @@
 
     <div class="hr"></div>
 
-    <kor-input type="submit" />
+    <kor-input
+      type="submit"
+      value={tcap('verbs.save')}
+    />
   </form>
 
   <script type="text/coffee">
@@ -167,7 +170,7 @@
 
     fetchTypes = ->
       Zepto.ajax(
-        url: "/kinds/#{tag.opts.kindId}/fields/types"
+        url: "/fields/types"
         success: (data) ->
           tag.types = {}
           tag.types_for_select = []

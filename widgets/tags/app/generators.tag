@@ -1,7 +1,10 @@
 <kor-generators>
 
   <div class="pull-right kor-text-right">
-    <a href="#/kinds/{opts.kind.id}/edit/generators/new">
+    <a
+      href="#/kinds/{opts.kind.id}/edit/generators/new"
+      title={t('verbs.add')}
+    >
       <i class="fa fa-plus-square"></i>
     </a>
   </div>
@@ -15,8 +18,15 @@
   <ul if={opts.kind}>
     <li each={generator in opts.kind.generators}>
       <div class="pull-right kor-text-right">
-        <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit"><i class="fa fa-edit"></i></a>
-        <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}" onclick={remove(generator)}><i class="fa fa-remove"></i></a>
+        <a
+          href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit"
+          title={t('verbs.edit')}
+        ><i class="fa fa-edit"></i></a>
+        <a
+          href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}"
+          onclick={remove(generator)}
+          title={t('verbs.delete')}
+        ><i class="fa fa-remove"></i></a>
       </div>
       <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit">{generator.name}</a>
       <div class="clearfix"></div>

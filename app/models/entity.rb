@@ -577,7 +577,9 @@ class Entity < ActiveRecord::Base
     dataset.values.all?{|v| v.blank?} ? all : where("entities.id IN (?)", ids.uniq)
   }
   scope :load_fully, lambda { joins(:kind, :collection).includes(:medium) }
-  scope :isolated, lambda {
+  scope :isolated, lambda { |activate|
+    return all unless activate.present?
+
     joins("LEFT JOIN directed_relationships rels ON entities.id = rels.from_id").
     where("rels.id IS NULL")
   }

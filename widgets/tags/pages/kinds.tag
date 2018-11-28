@@ -5,6 +5,7 @@
       if={isKindAdmin()}
       href="#/kinds/new"
       class="pull-right"
+      title={t('verbs.add')}
     ><i class="plus"></i></a>
     <h1>{tcap('activerecord.models.kind', {count: 'other'})}</h1>
 
@@ -60,6 +61,7 @@
               if={kind.removable}
               href="#/kinds/{kind.id}"
               onclick={delete(kind)}
+              title={t('verbs.delete')}
             ><i class="fa fa-remove"></i></a>
           </td>
         </tr>

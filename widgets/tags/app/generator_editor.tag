@@ -27,7 +27,10 @@
 
     <hr />
 
-    <kor-input type="submit" />
+    <kor-input
+      type="submit"
+      value={tcap('verbs.save')}
+    />
   </form>
 
 

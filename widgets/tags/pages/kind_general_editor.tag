@@ -1,10 +1,8 @@
 <kor-kind-general-editor>
-
   <h2>{tcap('general')}</h2>
 
   <div><!-- TODO: figure out why this has to be here -->
     <form if={data && possibleParents} onsubmit={submit}>
-
       <kor-input
         name="schema"
         label={tcap('activerecord.attributes.kind.schema')}
@@ -95,8 +93,10 @@
 
       <div class="hr"></div>
 
-      <kor-input type="submit" />
-
+      <kor-input
+        type="submit"
+        value={tcap('verbs.save')}
+      />
     </form>
   </div>
 
@@ -156,6 +156,7 @@
       if tag.opts.id
         Zepto.ajax(
           url: "/kinds/#{tag.opts.id}"
+          data: {include: 'all'}
           success: (data) ->
             tag.data = data
             tag.update()

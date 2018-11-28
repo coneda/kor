@@ -14,7 +14,8 @@ class Kor::Search
       named_like(@criteria[:name]).
       by_id(@criteria[:id]).
       by_relation_name(@criteria[:relation_name]).
-      invalid(@criteria[:invalid])
+      invalid(@criteria[:invalid]).
+      isolated(@criteria[:isolated])
 
     @scope = case @criteria[:sort][:column]
       when 'default' then @scope.alphabetically

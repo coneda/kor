@@ -23,6 +23,15 @@ module HtmlSelectorsHelpers
     when /the row for user "([^\"]+)"/
       [:css, '[data-is=kor-users] tr', {text: $1}]
 
+    when /the row for kind "([^\"]+)"/
+      [:css, '[data-is=kor-kinds] tr', {text: $1}]
+
+    when /the row for field "([^\"]+)"/
+      [:css, 'kor-fields li', {text: $1}]
+
+    when /the row for generator "([^\"]+)"/
+      [:css, 'kor-generators li', {text: $1}]
+
     when /widget "([^\"]+)"/
       name = $1
       [:css, "#{name}, [data-is=#{name}]"]

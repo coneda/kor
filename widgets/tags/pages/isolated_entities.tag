@@ -46,9 +46,10 @@
 
     fetch = ->
       Zepto.ajax(
-        url: '/entities/isolated'
+        url: '/entities'
         data: {
-          include: 'kind',
+          include: 'kind'
+          isolated: true
           page: tag.opts.query.page
         }
         success: (data) ->
