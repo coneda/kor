@@ -32,6 +32,12 @@ module HtmlSelectorsHelpers
     when /the row for generator "([^\"]+)"/
       [:css, 'kor-generators li', {text: $1}]
 
+    when /the row for relation "([^\"]+)"/
+      [:css, '[data-is=kor-relations] tr', {text: $1}]
+
+    when /relation merger row for relation "([^\"]+)"/
+      [:css, 'kor-relation-merger li', {text: $1}]
+
     when /widget "([^\"]+)"/
       name = $1
       [:css, "#{name}, [data-is=#{name}]"]

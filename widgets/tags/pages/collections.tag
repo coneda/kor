@@ -16,7 +16,13 @@
       </thead>
       <tbody if={data}>
         <tr each={collection in data.records}>
-          <td>{collection.name}</td>
+          <td>
+            {collection.name}
+            <span if={collection.owner}>
+              ({t('activerecord.models.user')}:
+              <a href="#/users/{collection.owner.id}/edit">{collection.owner.full_name}</a>)
+            </span>
+          </td>
           <td class="right">{collection.entity_count}</td>
           <td class="right">
             <a
@@ -64,7 +70,7 @@
     fetch = function() {
       Zepto.ajax({
         url: '/collections',
-        data: {include: 'counts'},
+        data: {include: 'counts,owner'},
         success: function(data) {
           tag.data = data;
           tag.update();
@@ -72,5 +78,6 @@
       })
     }
 
+    tag.fetch = fetch
   </script>
 </kor-collections>

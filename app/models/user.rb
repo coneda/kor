@@ -44,7 +44,7 @@ class User < ActiveRecord::Base
   def validate_empty_personal_collection
     unless make_personal
       if personal_collection
-        errors.add :base, :personal_collection_not_empty unless personal_collection.empty?
+        errors.add :make_personal, :personal_collection_not_empty unless personal_collection.entities.empty?
       end
     end
   end
@@ -211,7 +211,7 @@ class User < ActiveRecord::Base
   end
   
   def personal?
-    !!self.personal_group && !!self.personal_collection
+    self.personal_group.present? && self.personal_collection.present?
   end
   
   def list_name

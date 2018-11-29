@@ -49,10 +49,6 @@ class Collection < ApplicationRecord
     @propagate = (@propagate == false ? false : true)
   end
   
-  def empty?
-    entities.empty?
-  end
-  
   def personal?
     !!owner
   end

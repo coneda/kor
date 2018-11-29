@@ -484,3 +484,7 @@ Then /^image "([^"]*)" should have (portrait|landscape) orientation$/ do |locato
     end
   end
 end
+
+Then("I should see a check mark") do
+  expect(page).to have_css('i.fa.fa-check')
+end

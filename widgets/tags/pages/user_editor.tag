@@ -14,7 +14,9 @@
           label={tcap('activerecord.attributes.user.personal')}
           name="make_personal"
           type="checkbox"
+          ref="fields"
           value={data.personal}
+          errors={errors.make_personal}
         />
 
         <kor-input

@@ -5,7 +5,7 @@ class CollectionsController < JsonController
 
   def index
     if current_user.admin?
-      @records = Collection.non_personal
+      @records = Collection.all
     else
       @records = Kor::Auth.authorized_collections(current_user)
     end

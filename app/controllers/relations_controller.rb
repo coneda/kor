@@ -58,8 +58,7 @@ class RelationsController < JsonController
     @record = Relation.find(params[:id])
 
     @record.invert!
-    @messages << I18n.t('objects.invert_success', o: Relation.model_name.human)
-    render action: 'save'
+    render_200 I18n.t('objects.invert_success', o: Relation.model_name.human)
   end
 
   def merge
@@ -68,16 +67,13 @@ class RelationsController < JsonController
 
     if @record.can_merge?(@others)
       if params[:check_only]
-        @messages << I18n.t('objects.could_merge', o: Relation.model_name.human(count: :other))
+        render_200 I18n.t('objects.could_merge', o: Relation.model_name.human(count: :other))
       else
         @record.merge!(@others)
-        @messages << I18n.t('objects.merge_success', o: Relation.model_name.human(count: :other))
+        render_200 I18n.t('objects.merge_success', o: Relation.model_name.human(count: :other))
       end
-
-      render action: 'save'
     else
-      @messages << I18n.t('errors.relations_merge_failure')
-      render action: 'save', status: 406
+      render_422 nil, I18n.t('errors.relations_merge_failure')
     end
   end
 

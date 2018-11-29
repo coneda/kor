@@ -1,5 +1,4 @@
 <kor-entity-editor>
-
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">
       <h1 if={opts.id}>
@@ -127,9 +126,7 @@
           type="submit"
           value={tcap('verbs.save')}
         />
-
       </form>
-
     </div>
   </div>
 

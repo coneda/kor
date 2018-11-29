@@ -92,6 +92,10 @@
     tag.selected = (item) ->
       v = item.id || item.value || item
       if tag.opts.multiple
+        console.log(
+          (tag.valueFromParent() || []),
+          v
+        )
         (tag.valueFromParent() || []).indexOf(v) > -1
       else
         "#{v}" == "#{tag.valueFromParent()}"

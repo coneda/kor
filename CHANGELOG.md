@@ -5,6 +5,20 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+## Version 4.0.0
+
+### User
+
+* changing permissions for all personal collections has been dropped in favor
+  of more fine grained control
+* the JSON api is finished
+* deployment configuration is now handled entirely by environment variables
+  (or .env files) while behavior can now be changed with the web interface
+
+## Internal
+
+* the web frontend is now fully migrated to riot.js.
+
 ## Version 3.0.0
 
 ### User

@@ -2,15 +2,15 @@
 
   <div class="kor-content-box">
     <div class="pull-right" if={isRelationAdmin()}>
-      <a href="#" title={t('verbs.merge')} onclick={toggleMerge}>
-        <i class="fa fa-compress" aria-hidden="true"></i>
-      </a>
+      <a
+        href="#"
+        title={t('verbs.merge')}
+        onclick={toggleMerge}
+      ><i class="fa fa-compress" aria-hidden="true"></i></a>
       <a
         href="#/relations/new"
-        title={t('objects.new', {interpolations: {o: t('activerecord.models.relation')}})}
-      >
-        <i class="fa fa-plus-square"></i>
-      </a>
+        title={t('verbs.add')}
+      ><i class="fa fa-plus-square"></i></a>
     </div>
 
     <h1>
@@ -62,7 +62,7 @@
       <tbody>
         <tr each={relation in records}>
           <td>
-            <a href="#/relations/{relation.id}">
+            <a href="#/relations/{relation.id}/edit">
               {relation.name} / {relation.reverse_name}
             </a>
           </td>
@@ -82,6 +82,10 @@
           </td>
           <td class="text-right buttons" if={isRelationAdmin()}>
             <a
+              href="#/relations/{relation.id}/edit"
+              title={t('verbs.edit')}
+            ><i class="pen"></i></a>
+            <a
               if={merge}
               href="#"
               onclick={addToMerge}
@@ -97,6 +101,7 @@
               if={relation.removable}
               href="#/relations/{relation.id}"
               onclick={delete(relation)}
+              title={t('verbs.delete')}
             ><i class="fa fa-remove"></i></a>
           </td>
         </tr>

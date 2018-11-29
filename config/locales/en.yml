@@ -973,7 +973,7 @@ en:
           other: datings
         wikidata_id: Wikidata ID
       publishment:
-        name: description
+        name: name
         group: group to be released
         valid_until: valid until
         link: link

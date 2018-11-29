@@ -502,3 +502,18 @@ Then("medium {string} should be in collection {string}") do |medium, collection|
   medium = send(medium.to_sym)
   expect(medium.collection.name).to eq(collection)
 end
+
+Then("user {string} should have a personal collection") do |name|
+  user = User.find_by!(name: name)
+  expect(user.personal_group).to be_present
+  expect(user.personal_collection).to be_present
+end
+
+Given("user {string} has a personal collection") do |name|
+  user = User.find_by!(name: name)
+  user.update make_personal: true
+end
+
+Given("there are no relations") do
+  Relation.destroy_all
+end
