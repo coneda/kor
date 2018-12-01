@@ -5,12 +5,22 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+## Version 2.1.2
+
+### User
+
+* video playback now works with the Safari desktop browser and on iOS devices
+
+### Internal
+
+* implemented Range header handling for media retrieval
+
 ## Version 2.1.1
 
 ### User
 
 * for authentication with an api key via request headers, header name has to be
-  dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`.
+  dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`
 * most parts of OAI-PMH responses are now cached which should enhance
   performance greatly
 * added reference implementation for OAI-PMH client
@@ -25,7 +35,7 @@ commit history on GitHub.
   `<deletedRecord>persistent</deletedRecord>`
 * relationships may now have one or more date ranges
 * environment authentication now allows to specify a `mail` attribute and
-  a `domain` attribute, the latter overriding the former.
+  a `domain` attribute, the latter overriding the former
 * resumptionToken within OAI-PMH responses now behaves according to the specs
 
 ## Version 2.0.1
