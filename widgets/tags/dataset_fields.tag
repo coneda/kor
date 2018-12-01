@@ -1,5 +1,4 @@
 <kor-dataset-fields>
-
   <kor-input
     each={field in opts.fields}
     name={field.name}
@@ -11,10 +10,6 @@
 
   <script type="text/javascript">
     var tag = this;
-
-    tag.on('updated', function() {
-      console.log(tag.opts);
-    })
 
     tag.errorsFor = function(field) {
       if (tag.opts.errors) {

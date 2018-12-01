@@ -143,6 +143,7 @@ class EntitiesController < JsonController
   def index
     params[:id] = param_to_array(params[:id])
     params[:kind_id] = param_to_array(params[:kind_id])
+    params[:except_kind_id] = param_to_array(params[:except_kind_id])
     params[:related_per_page] = [
       (params[:related_per_page] || 1).to_i,
       Kor.settings['max_included_results_per_result']
@@ -158,10 +159,11 @@ class EntitiesController < JsonController
       authority_group_id: params[:authority_group_id],
       user_group_id: params[:user_group_id],
       kind_id: params[:kind_id],
-      media: params[:media],
+      except_kind_id: params[:except_kind_id],
       relation_name: params[:relation_name],
       dating: params[:dating],
       created_after: params[:created_after],
+      dataset: dataset_params,
 
       isolated: params[:isolated],
       recent: params[:recent],
@@ -480,6 +482,16 @@ class EntitiesController < JsonController
       #   'datings' => ,
       #   'dataset' => dataset_errors
       # )
+    end
+
+    def dataset_params
+      results = {}
+      params.each do |k, v|
+        if m = k.match(/^dataset_(.+)$/)
+          results[m[1]] = v
+        end
+      end
+      results
     end
 
 end

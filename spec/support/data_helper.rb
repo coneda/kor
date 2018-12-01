@@ -213,6 +213,10 @@ module DataHelper
     works = FactoryGirl.create :works, fields: [
       Field.new(
         name: 'wikidata_id', show_label: 'Wikidata ID', is_identifier: true
+      ),
+      Field.new(
+        type: 'Fields::Text', name: 'description', show_label: 'Description',
+        show_on_entity: true
       )
     ]
     locations = Kind.create! name: 'location', plural_name: 'locations'

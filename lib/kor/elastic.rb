@@ -23,6 +23,10 @@ class Kor::Elastic
     }
   end
 
+  def self.available?
+    !!@config['url']
+  end
+
   def self.current_index
     config['index']
   end

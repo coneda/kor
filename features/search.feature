@@ -1,10 +1,74 @@
 Feature: search
-  In order to efficiently find entities
-  Users should be able to
-  use a search
-  
+  Scenario: set criteria from url
+    Given I am logged in as "admin"
+    And I go to the path "/#/search?name=leonardo&kind_id=2&dataset_gnd_id=123456789"
+    Then I should see field "Name" with value "leonardo"
+    And I should see field "GND-ID" with value "123456789"
+    And I should see "Leonardo" within ".search-results"
+    And I should not see "Mona Lisa" within ".search-results"
 
-  @javascript @wip
+  Scenario: search by name
+    Given I am logged in as "admin"
+    And I go to the search page
+    Then I should see "Search"
+    When I fill in "Name" with "mona"
+    And I press "Search"
+    Then I should see "Mona Lisa" within ".search-results"
+    Then I should not see "Leonardo" within ".search-results"
+
+  Scenario: Transmit search criteria
+    Given I am logged in as "admin"
+    And I am on the search page
+    Then I should see "Search"
+    And I should see "Mona Lisa" within ".search-results"
+    When I select "person" from "Entity type"
+    Given the search api expects to receive the params
+      | name           | value    |
+      | terms          | leonardo |
+      | name           | mona     |
+      | dataset_gnd_id | 12345    |
+    When I fill in "Terms" with "leonardo"
+    And I fill in "Name" with "mona"
+    And I fill in "GND-ID" with "12345"
+    And I press "Search"
+
+  # TODO: continue here
+
+
+  Scenario: search (elasticsearch available)
+    Given I am logged in as "admin"
+    And I am on the search page
+    Then I should see "Search"
+    And I should see field "Dating"
+    When I select "person" from "Entity type"
+    Then I should see field "GND-ID"
+    And I should see field "Wikidata ID"
+
+    When I fill in "GND-ID" with "123456789"
+    And I press "Search"
+    Then I should see "Leonardo" within ".search-results"
+    And I should not see "Mona Lisa" within ".search-results"
+
+  Scenario: no elasticsearch available
+    Given elasticsearch is not available
+    And I am logged in as "admin"
+    And I am on the search page
+    Then I should see "Search"
+    When I select "person" from "Entity type"
+    Then I should not see field "Terms"
+    And I should not see field "Dating"
+    And I should not see field "GND-ID"
+
+  # Scenario: 
+  #   # Given elasticsearch is available
+  #   # And I reload the page
+  #   # Then I should see field "Dating"
+
+  Scenario: show and hide dataset fields when elasticsearch is available
+    Given I am logged in as "admin"
+    And I go to the search page
+    And I debug
+
   Scenario: do simple search based on title
     Given I am logged in as "admin"
     Given the entity "Bamberg" of kind "Ort/Orte"

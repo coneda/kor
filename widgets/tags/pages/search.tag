@@ -18,6 +18,7 @@
           name="kind_id"
           value={criteria.kind_id}
           ref="fields"
+          onchange={selectKind}
         />
 
         <kor-input
@@ -47,6 +48,18 @@
           value={criteria.dating}
           ref="fields"
         />
+
+        <virtual if={kind && kind.fields.length}>
+          <hr />
+
+          <kor-input
+            each={field in kind.fields}
+            label={field.search_label}
+            name="dataset_{field.name}"
+            value={criteria['dataset_' + field.name]}
+            ref="fields"
+          />
+        </virtual>
 
         <div class="kor-text-right">
           <kor-input type="submit" value={tcap('verbs.search')} />
@@ -106,6 +119,16 @@
       wApp.routing.query({page: newPage});
     }
 
+    tag.selectKind = function(event) {
+      var id = Zepto(event.target).val();
+      if (id && id != '0') {
+        fetchKind(id);
+      } else {
+        tag.kind = null;
+        tag.update();
+      }
+    }
+
     var params = function() {
       var results = {page: 1};
       for (var i = 0; i < tag.refs.fields.length; i++) {
@@ -126,13 +149,27 @@
       var results = wApp.routing.query();
       results['collection_id'] = wApp.utils.toIdArray(results['collection_id']);
       return results;
-    } 
+    }
+
+    var fetchKind = function(id) {
+      Zepto.ajax({
+        url: '/kinds/' + id,
+        data: {include: 'fields'},
+        success: function(data) {
+          tag.kind = data;
+          tag.update();
+        }
+      })
+    }
 
     var fetch = function() {
       tag.criteria = urlParams();
+      if (tag.criteria['kind_id']) {
+        fetchKind(2);
+      }
 
       var params = Zepto.extend({}, tag.criteria, {
-        no_media: true,
+        except_kind_id: wApp.info.data.medium_kind_id,
         include: 'related',
         related_kind_id: wApp.info.data.medium_kind_id,
         related_per_page: 4

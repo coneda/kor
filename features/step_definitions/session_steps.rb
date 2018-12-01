@@ -96,3 +96,7 @@ end
 When(/^I call the inspector$/) do
   page.driver.debug
 end
+
+Given /^elasticsearch is (not )?available$/ do |negation|
+  allow(Kor::Elastic).to receive(:available?).and_return(!negation)
+end

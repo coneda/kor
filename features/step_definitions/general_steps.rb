@@ -42,3 +42,20 @@ end
 Given /^everything is processed$/ do
   Delayed::Worker.new.work_off
 end
+
+Given 'the search api expects to receive the params' do |table|
+  values = table.raw.to_h
+  values['dataset'] = {}
+  values.each do |k, v|
+    if m = k.match(/^dataset_(.+)$/)
+      values['dataset'][m[1]] = v
+      values.delete k
+    end
+  end
+  values.symbolize_keys!
+
+  expect(Kor::Search).to receive(:new).with(
+    instance_of(User),
+    hash_including(values)
+  ).and_call_original
+end

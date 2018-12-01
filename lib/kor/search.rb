@@ -11,6 +11,7 @@ class Kor::Search
       within_collections(@criteria[:collection_id]).
       within_authority_groups(@criteria[:authority_group_id]).
       only_kinds(@criteria[:kind_id]).
+      except_kinds(@criteria[:except_kind_id]).
       named_like(@criteria[:name]).
       by_id(@criteria[:id]).
       by_relation_name(@criteria[:relation_name]).

@@ -455,8 +455,13 @@ Then /^I should see no user groups$/ do
   expect(page).not_to have_css('.user_group')
 end
 
-Then("I should see field {string}") do |string|
-  expect(page).to have_field(string)
+Then /^I should (not )?see field "([^"]*)"(?: with value "([^"]*)")?$/ do |negation, string, value|
+  opts = (value ? {with: value} : {})
+  if negation
+    expect(page).not_to have_field(string, opts)
+  else
+    expect(page).to have_field(string, opts)
+  end
 end
 
 Then("I should see error {string} on field {string}") do |error, field|

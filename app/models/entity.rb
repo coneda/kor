@@ -471,7 +471,7 @@ class Entity < ActiveRecord::Base
   scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
   scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
-  scope :without_kinds, lambda {|ids| ids.present? ? where("entities.kind_id NOT IN (?)", ids) : all}
+  scope :except_kinds, lambda {|ids| ids.present? ? where("entities.kind_id NOT IN (?)", ids) : all}
   scope :alphabetically, lambda { order("name asc, distinct_name asc") }
   scope :newest_first, lambda { order("created_at DESC") }
   scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }

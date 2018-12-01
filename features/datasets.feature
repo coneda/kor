@@ -15,6 +15,11 @@ Feature: Datasets
     Then I should be on the entity page for "Van Gogh"
     And I should see "GND-ID: 6789"
     And I should not see "Wikidata ID: 1223"
+
+  Scenario: Create en entity with a multi-line field
+    Given I am logged in as "admin"
+    And I select "work" from "new_entity_type"
+    And I debug # verify it renders a textarea
     
   Scenario: Try to create an invalid entity with a customized dataset which has to be validated
     Given I am logged in as "admin"
