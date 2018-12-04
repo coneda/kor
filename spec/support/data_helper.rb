@@ -99,6 +99,10 @@ module DataHelper
     Entity.find_by! name: 'Paris'
   end
 
+  def louvre
+    Entity.find_by! name: 'Louvre'
+  end
+
   def picture_a
     Medium.find_by!(datahash: '233fcdfee7c55b3978967aacaefb9a08057607a0').entity
   end
@@ -123,68 +127,6 @@ module DataHelper
     UserGroup.find_by! name: 'nice'
   end
 
-  # TODO: remove this and instead use current_user(...) from below
-  # def fake_authentication(options = {})
-  #   options.reverse_merge!(:persist => false)
-    
-  #   if options[:persist]
-  #     test_data_for_auth
-  #     options[:user] ||= User.admin
-  #   end
-    
-  #   session[:user_id] = options[:user].id
-  #   session[:expires_at] = Kor.session_expiry_time
-  # end
-
-  # def test_data(options = {})
-  #   options.reverse_merge!(
-  #     :groups => false,
-  #     :config => false
-  #   )
-    
-  #   test_data_for_auth
-  #   test_kinds
-  #   test_relations
-  #   test_entities
-    
-  #   if options[:groups]
-  #     FactoryGirl.create :authority_group
-  #   end
-  # end
-
-  # def test_data_for_auth
-  #   @admins = FactoryGirl.create :admins
-  #   @main = FactoryGirl.create :default
-  #   Kor::Auth.policies.each do |policy|
-  #     Grant.create!(:collection => @main, :credential => @admins, :policy => policy)
-  #   end
-  #   @admin = FactoryGirl.create :admin, :groups => Credential.all
-  # end
-  
-  # def test_relations
-  #   FactoryGirl.create :has_created,
-  #     :from_kind_id => @person_kind.id, :to_kind_id => @artwork_kind.id
-  #   FactoryGirl.create :is_equivalent_to,
-  #     :from_kind_id => @artwork_kind.id, :to_kind_id => @artwork_kind.id
-  #   FactoryGirl.create :is_located_at,
-  #     :from_kind_id => @artwork_kind.id, :to_kind_id => @location_kind.id
-  #   FactoryGirl.create :shows,
-  #     :from_kind_id => @medium_kind.id, :to_kind_id => @artwork_kind.id
-  # end
-  
-  # def test_kinds
-  #   @medium_kind = FactoryGirl.create :media
-  #   @person_kind = FactoryGirl.create :people
-  #   @artwork_kind = FactoryGirl.create :works
-  #   @institution_kind = FactoryGirl.create :institutions
-  #   @location_kind = FactoryGirl.create :locations
-  #   @literature_kind = FactoryGirl.create :literatures
-  # end
-
-  # def test_entities  
-  #   @mona_lisa = FactoryGirl.create :mona_lisa, :datings => [FactoryGirl.build(:d1533)]
-  # end
-  
   def default_setup(options = {})
     options.reverse_merge!(
       pictures: false,
@@ -256,12 +198,14 @@ module DataHelper
     Kor::Auth.grant priv, :all, :to => project
 
     leonardo = FactoryGirl.create(:leonardo,
+      created_at: Time.mktime(2016, 10, 17, 13),
+      updated_at: Time.mktime(2017, 10, 17, 13),
       creator_id: admin.id,
       updater_id: admin.id,
       name: 'Leonardo',
       synonyms: ['Leo'],
       datings: [
-        EntityDating.new(label: 'Lebensdaten', dating_string: '1452 bis 1519')
+        EntityDating.new(label: 'Lifespan', dating_string: '1452 bis 1519')
       ],
       dataset: {
         'gnd_id' => '123456789'
@@ -269,17 +213,56 @@ module DataHelper
       properties: [{'label' => 'Epoche', 'value' => 'Renaissance'}]
     )
     mona_lisa = FactoryGirl.create(:mona_lisa,
+      created_at: Time.mktime(2016, 10, 19, 17),
+      updated_at: Time.mktime(2017, 10, 19, 17),
       creator_id: admin.id,
       updater_id: admin.id,
+      synonyms: ['Lisa del Giocondo'],
       subtype: 'portrait',
       distinct_name: 'the real one',
-      comment: 'most popular artwork in the world'
+      comment: 'most popular artwork in the world',
+      tag_list: ['art', 'late'],
+      datings: [
+        EntityDating.new(label: 'Dating', dating_string: '1503 bis 1506')
+      ]
     )
-    last_supper = FactoryGirl.create :the_last_supper, collection: priv, creator_id: admin.id, updater_id: admin.id
-    louvre = institutions.entities.create!(collection: default, name: 'Louvre', creator_id: admin.id, updater_id: admin.id)
-    paris = locations.entities.create!(collection: default, name: 'Paris', creator_id: admin.id, updater_id: admin.id)
-    picture_a = FactoryGirl.create :picture_a, creator_id: admin.id, updater_id: admin.id
-    picture_b = FactoryGirl.create :picture_b, collection: priv, creator_id: admin.id, updater_id: admin.id
+    last_supper = FactoryGirl.create :the_last_supper, {
+      created_at: Time.mktime(2016, 10, 21, 11),
+      updated_at: Time.mktime(2017, 10, 21, 11),
+      collection: priv, 
+      creator_id: admin.id, 
+      updater_id: admin.id,
+      tag_list: ['art', 'early']
+    }
+    louvre = institutions.entities.create!(
+      created_at: Time.mktime(2016, 10, 21, 11, 30),
+      updated_at: Time.mktime(2017, 10, 21, 11, 30),
+      collection: default,
+      name: 'Louvre',
+      creator_id: admin.id,
+      updater_id: admin.id
+    )
+    paris = locations.entities.create!(
+      created_at: Time.mktime(2016, 10, 21, 11, 45),
+      updated_at: Time.mktime(2017, 10, 21, 11, 45),
+      collection: default,
+      name: 'Paris',
+      creator_id: admin.id,
+      updater_id: admin.id
+    )
+    picture_a = FactoryGirl.create :picture_a, {
+      created_at: Time.mktime(2016, 10, 21, 12, 22),
+      updated_at: Time.mktime(2017, 10, 21, 12, 22),
+      creator_id: admin.id,
+      updater_id: admin.id
+    }
+    picture_b = FactoryGirl.create :picture_b, {
+      created_at: Time.mktime(2016, 10, 21, 18, 9),
+      updated_at: Time.mktime(2017, 10, 21, 18, 9),
+      collection: priv,
+      creator_id: admin.id,
+      updater_id: admin.id
+    }
 
     Relationship.relate_and_save mona_lisa, 'is related to', last_supper
     Relationship.relate_and_save mona_lisa, 'is located in', louvre
@@ -299,7 +282,6 @@ module DataHelper
     nice.add_entities picture_a
   end
 
-  # TODO: make sure this is used instead of fake_authentication
   def current_user(user)
     @current_user = user
 

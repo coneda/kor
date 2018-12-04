@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 4.2.6'
+gem 'rails', '~> 4.2.11'
 gem 'responders', '~> 2.0'
 
 gem 'sucker_punch', '~> 2.0'

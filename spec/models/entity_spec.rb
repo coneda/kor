@@ -41,7 +41,7 @@ RSpec.describe Entity do
     expect(entity.kind_name).to eql("location (village)")
   end
   
-  it "should fire elastic updates" do
+  it "should fire elastic updates", elastic: true do
     expect(Kor::Elastic).to receive(:index).exactly(2).times
     expect(Kor::Elastic).to receive(:drop)
 

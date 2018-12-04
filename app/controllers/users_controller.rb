@@ -73,7 +73,7 @@ class UsersController < JsonController
     @record = User.find(current_user.id)
 
     if @record.update_attributes(me_params)
-      render_200 I18n.t('objects.update_success', o: I18n.t('nouns.user'))
+      render_200 I18n.t('objects.update_success', o: I18n.t('nouns.user.one'))
     else
       render_422 @record.errors
     end
@@ -94,7 +94,7 @@ class UsersController < JsonController
 
   def create
     @record = User.new(user_params)
-    
+
     if @record.save
       UserMailer.account_created(@record).deliver_now
       render_200 I18n.t('objects.create_success',
@@ -121,7 +121,7 @@ class UsersController < JsonController
     def me_params
       params.fetch(:user, {}).permit(
         :full_name, :name, :email, :password, :plain_password_confirmation,
-        :locale, :home_page, :default_collection_id, :api_key
+        :locale, :home_page, :default_collection_id, :api_key, :lock_version
       )
     end
     

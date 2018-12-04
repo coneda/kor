@@ -135,7 +135,7 @@
 
     fetchUser = ->
       Zepto.ajax(
-        url: "/users/#{tag.currentUser().id}"
+        url: "/users/me"
         data: {include: 'security'}
         success: (data) ->
           tag.data = data
@@ -153,7 +153,7 @@
     update = ->
       Zepto.ajax(
         type: 'PATCH'
-        url: "/profile"
+        url: "/users/me"
         data: JSON.stringify(
           id: tag.currentUser().id
           user: values()

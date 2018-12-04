@@ -306,8 +306,8 @@ Then(/^I should see "(\d+)" kor images$/) do |amount|
 end
 
 Then(/^I should see "(.*?)"'s API Key$/) do |username|
-  user = User.where(:name => username).first
-  expect(find_field("user[api_key]").value).to eq(user.api_key)
+  user = User.find_by!(name: username)
+  expect(find_field("API key").value).to eq(user.api_key)
 end
 
 When(/^I trigger the blur event for "(.*?)"$/) do |selector|
@@ -492,4 +492,8 @@ end
 
 Then("I should see a check mark") do
   expect(page).to have_css('i.fa.fa-check')
+end
+
+Then("field {string} should be a textarea") do |string|
+  expect(find_field(string).tag_name).to eq('textarea')
 end

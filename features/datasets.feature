@@ -19,7 +19,7 @@ Feature: Datasets
   Scenario: Create en entity with a multi-line field
     Given I am logged in as "admin"
     And I select "work" from "new_entity_type"
-    And I debug # verify it renders a textarea
+    Then field "Description" should be a textarea
     
   Scenario: Try to create an invalid entity with a customized dataset which has to be validated
     Given I am logged in as "admin"

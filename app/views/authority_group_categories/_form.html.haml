@@ -1,9 +1,0 @@
-- content_for :form_errors, error_box(:object => @authority_group_category)
-
-= form_for @authority_group_category, :html => { :class => 'kor_form' }, :builder => Kor::FormBuilder do |f|
-  = f.hidden_field :lock_version
-  = hidden_field_tag :parent_id, params[:parent_id]
-  
-  = f.kor_input :name
-  
-  = f.kor_submit

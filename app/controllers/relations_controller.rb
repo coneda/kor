@@ -41,10 +41,6 @@ class RelationsController < JsonController
     else
       render_422 @record.errors
     end
-  rescue ActiveRecord::StaleObjectError => e
-    # TODO
-    # @messages << I18n.t('activerecord.errors.messages.stale_relation_update')
-    # render action: 'save', status: 406
   end
 
   def destroy

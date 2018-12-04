@@ -9,11 +9,14 @@ commit history on GitHub.
 
 ### User
 
+* the elasticsearch query_string syntax is now available to users via the
+  "Terms" field
 * changing permissions for all personal collections has been dropped in favor
   of more fine grained control
 * the JSON api is finished
 * deployment configuration is now handled entirely by environment variables
   (or .env files) while behavior can now be changed with the web interface
+* users can't specify their start page anymore
 
 ## Internal
 

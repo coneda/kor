@@ -15,7 +15,12 @@ class User < ActiveRecord::Base
   has_many :user_groups, :dependent => :destroy
   has_many :publishments, :dependent => :destroy
   
-  belongs_to :parent, :class_name => "User", :foreign_key => :parent_username, :primary_key => :name
+  belongs_to :parent, {
+    class_name: 'User',
+    foreign_key: :parent_username,
+    primary_key: :name,
+    autosave: false
+  }
   belongs_to :personal_group, :class_name => 'Credential', :foreign_key => :credential_id
   belongs_to :personal_collection, :class_name => 'Collection', :foreign_key => :collection_id
 
@@ -430,9 +435,11 @@ class User < ActiveRecord::Base
     if parent.present?
       if parent.expires_at.nil? || parent.expires_at.to_date.to_s == value
         self[:expires_at] = nil
+      else
+        self[:expires_at] = value
       end
     else
-      super
+      self[:expires_at] = value
     end
   end
 

@@ -1,9 +1,0 @@
-- content_for :small_title, AuthorityGroupCategory.model_name.human(:count => :other)
-- content_for :small_content, render(:partial => 'categories', :object => kor_sort(AuthorityGroupCategory.roots))
-
-- content_for :normal_title, AuthorityGroup.model_name.human(:count => :other)
-- content_for :normal_content, render(:partial => 'groups', :object => AuthorityGroup.without_category)
-
-- if current_user.authority_group_admin?
-  - content_for :small_commands, link_to(kor_command_image('plus'), new_authority_group_category_path, :title => 'new_category')
-  - content_for :normal_commands, link_to(kor_command_image('plus'), new_authority_group_path, :title => 'new_group')

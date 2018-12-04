@@ -160,3 +160,4 @@ end
 # TODO: fix "can't" and "cannot" in all translations
 # TODO: add more tests to settings_controller, session_controller
 # TODO: add tests for validation handling to controllers (one example per resource)
+# TODO: reintegrate matomo

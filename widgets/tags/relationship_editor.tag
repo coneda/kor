@@ -9,6 +9,13 @@
     </h1>
 
     <form onsubmit={save} onreset={cancel} if={relationship}>
+      <kor-input
+        name="lock_version"
+        value={relationship.lock_version || 0}
+        ref="fields"
+        type="hidden"
+      />
+
       <kor-relation-selector
         source-kind-id={sourceKindId}
         target-kind-id={targetKindId}

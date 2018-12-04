@@ -11,6 +11,13 @@
 
       <form onsubmit={submit} if={relation && possible_parents}>
         <kor-input
+          name="lock_version"
+          value={relation.lock_version || 0}
+          ref="fields"
+          type="hidden"
+        />
+
+        <kor-input
           name="schema"
           label={tcap('activerecord.attributes.relation.schema')}
           ref="fields"
@@ -141,7 +148,7 @@
 
     values = ->
       # TODO: add lock version functionality to all forms
-      result = {lock_version: tag.relation.lock_version}
+      result = {}
       for field in tag.refs['fields']
         result[field.name()] = field.value()
       result

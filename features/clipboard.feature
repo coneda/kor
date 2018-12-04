@@ -16,23 +16,25 @@ Feature: Clipboard
     And I press "Save"
     When I go to the entity page for "Mona Lisa"
     Then I should see "is shown by"
+
+  Scenario: add to user group
   
-  Scenario: Create user groups on the fly
-    Given I am logged in as "admin"
-    And the user group "Alte Gruppe"
-    And I put "Mona Lisa" into the clipboard
-    When I go to the clipboard
-    And I follow "all"
-    And I follow "Add to a global group"
-    And I follow "create new"
-    And I fill in "Name" with "Neue Gruppe"
-    And I press "Save"
-    When I go to the clipboard
-    And I follow "all"
-    And I follow "Add to a global group"
-    And I select "Neue Gruppe" from "Global group"
-    And I press "Save"
-    Then I should see "entities have been added to the selected entity group"
+  # Scenario: Create user groups on the fly
+  #   Given I am logged in as "admin"
+  #   And the user group "Alte Gruppe"
+  #   And I put "Mona Lisa" into the clipboard
+  #   When I go to the clipboard
+  #   And I follow "all"
+  #   And I follow "Add to a global group"
+  #   And I follow "create new"
+  #   And I fill in "Name" with "Neue Gruppe"
+  #   And I press "Save"
+  #   When I go to the clipboard
+  #   And I follow "all"
+  #   And I follow "Add to a global group"
+  #   And I select "Neue Gruppe" from "Global group"
+  #   And I press "Save"
+  #   Then I should see "entities have been added to the selected entity group"
 
   Scenario: Mass relate entities
     Given I am logged in as "admin"

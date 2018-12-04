@@ -1,8 +1,10 @@
 json.extract!(record,
-  :id, :name, :full_name, :display_name, :locale, :admin, :kind_admin,
+  :id, :name, :full_name, :display_name, :admin, :kind_admin,
   :authority_group_admin, :relation_admin, :default_collection_id,
   :terms_accepted
 )
+
+json.locale record.locale || I18n.default_locale.to_s
 
 if inclusion.request?('technical')
   json.extract! record, :lock_version, :created_at, :updated_at

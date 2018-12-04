@@ -9,12 +9,11 @@ RSpec.describe EntitiesController, type: :controller do
 
     expect(Kor::Search).to receive(:new).with(User.guest, hash_including(
       isolated: false,
-      recent: true,
       sort: {column: 'random', direction: 'asc'}
     )).and_call_original
+
     get 'index', {
       isolated: false,
-      recent: true,
       sort: 'random'
     }
     expect_collection_response count: 0
@@ -228,10 +227,9 @@ RSpec.describe EntitiesController, type: :controller do
     end
 
     it 'should PATCH update_tags' do
-      mona_lisa = Entity.find_by! name: 'Mona Lisa'
       patch 'update_tags', id: mona_lisa.id, entity: {tags: 'pretty,smile'}
       expect(response).to be_success
-      expect(mona_lisa.reload.tag_list).to eq(['pretty', 'smile'])
+      expect(mona_lisa.reload.tag_list).to eq(['art', 'late', 'pretty', 'smile'])
     end
   end
 
@@ -411,7 +409,7 @@ RSpec.describe EntitiesController, type: :controller do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       patch 'update_tags', id: mona_lisa.id, entity: {tags: 'pretty,smile'}
       expect(response).to be_success
-      expect(mona_lisa.reload.tag_list).to eq(['pretty', 'smile'])
+      expect(mona_lisa.reload.tag_list).to eq(['art', 'late', 'pretty', 'smile'])
     end
 
     it 'should POST merge' do

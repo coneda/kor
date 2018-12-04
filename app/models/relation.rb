@@ -206,6 +206,12 @@ class Relation < ActiveRecord::Base
     return (result[name] = relation.name) if relation
   end
 
+  def self.to_entity_kind_ids(relation_name)
+    kind_ids = where(name: relation_name).map{|r| r.to_kind_id}
+    kind_ids << where(reverse_name: relation_name).map{|r| r.from_kind_id}
+    kind_ids.flatten.uniq
+  end
+
   def invert!
     self.class.transaction do
       self.update_columns(

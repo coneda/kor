@@ -75,6 +75,31 @@ de:
   previous: zurück
   smaller: verkleinern
   larger: vergrößern
+  reset_login_attempts: Loginversuche zurücksetzen
+  reset_password: Passwort zurücksetzen
+  by_related_entities: in verknüpften entitäten suchen
+  edit_tags: tags bearbeiten
+
+  help:
+    terms_query: |
+      Um nach Teilbegriffen zu seuchen, verwenden Sie * am Anfang oder Ende
+      (oder beides) des jeweiligen Begriffs:
+      <code>*zone</code> oder <code>quali*</code> oder <code>*vita*</code>
+      Begriffe werden standardmäßig per AND verknüpft, es sei denn, Sie geben
+      explizit OR an. Um nach einem zusammenhängenden Ausdruck zu suchen,
+      verwenden Sie Anführungszeichen:
+      <code>"Leonardo da Vinci"</code>
+      Um Begriffe auszuschließen, verwenden Sie NOT:
+      <code>mona AND NOT lisa</code>
+      AND, OR and NOT müssen in Großbuchstaben angegeben werden. Begriffe
+      können durch Klammerung auch gruppiert werden:
+      <code>(mona AND lisa) OR giocondo</code>
+      Es steht die
+      <a 
+        href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax"
+        target="_blank"
+        rel="noopener"
+      >elasticsearch query string syntax</a> zur Verfügung.
 
   search_term: 
     one: Suchbegriff
@@ -543,6 +568,7 @@ de:
     update_success: "%{o} wurde abgeändert"
     delete: "%{o} löschen"
     destroy_success: "%{o} gelöscht"
+    transform_success: "%{o} wurde transformiert"
     for: "für %{o}"
     no_exist: "%{o} existiert nicht"
     none_available: "es sind keine %{o} vorhanden"
@@ -748,6 +774,10 @@ de:
     move_denied: |
       Änderungen der Sammlung erfordern Löschrechte für die ehemalige Sammlung
       und Erstellungsrechte für die neue Sammlung.
+    stale_update: |
+      Der Eintrag konnte nicht abgeändert werden, weil er in der Zwischenzeit
+      geändert wurde. Dies ist ein relativ seltener Fall, der sich normalerweise
+      durch das Neuladen des Bearbeitenformulars lösen lässt.
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
@@ -1002,9 +1032,11 @@ de:
         name: Name
         owner: Besitzer
         shared:
-          one: freigegeben
-          other: freigegebene
-        published: öffentlich freigebene
+          one: freigegeben Gruppe
+          other: freigegebene Gruppen
+        published:
+          one: öffentlich freigeben Gruppe
+          other: öffentlich freigebene Gruppen
       authority_group:
         name: Name
       authority_group_category:

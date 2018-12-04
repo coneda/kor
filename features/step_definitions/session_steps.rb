@@ -24,9 +24,13 @@ Given /^the user "([^\"]*)" is a "([^\"]*)"$/ do |user, role|
   user.save
 end
 
-Given /^the user "([^\"]*)" has password "([^\"]*)"$/ do |user, password|
-  user = User.find_by_name(user)
-  user.update_attributes :password => password, :make_personal => user.personal?, :terms_accepted => true
+Given /^the user "([^\"]*)" has password "([^\"]*)"$/ do |username, password|
+  user = User.find_by!(name: username)
+  user.update_attributes(
+    password: password,
+    make_personal: user.personal?,
+    terms_accepted: true
+  )
 end
 
 Given /^the user "([^\"]*)" with credential "([^\"]*)"$/ do |user, credential|

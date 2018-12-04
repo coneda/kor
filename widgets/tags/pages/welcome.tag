@@ -5,8 +5,8 @@
 
     <div class="target"></div>
 
-    <div class="teaser" if={currentUser()}>
-      <span>{t('pages.random_entities')}</span>
+    <div class="teaser" if={currentUser() && !isGuest()}>
+      <span>{tcap('pages.random_entities')}</span>
       <div class="hr"></div>
       <kor-gallery-grid entities={entities()} />
     </div>

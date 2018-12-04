@@ -1,18 +1,18 @@
 <kor-entity-group>
 
   <div class="kor-content-box">
-    <a
-      href="/authority_groups/{opts.id}/download_images"
-      class="pull-right"
-      title={t('title_verbs.zip')}
-    ><i class="zip"></i></a>
-    <a
-      if={opts.type == 'user' || opts.type == 'authority'}
-      href="#"
-      class="pull-right"
-      title={t('add_to_clipboard')}
-      onclick={onMarkClicked}
-    ><i class="target"></i></a>
+    <div class="pull-right group-commands">
+      <a
+        if={opts.type == 'user' || opts.type == 'authority'}
+        href="#"
+        title={t('add_to_clipboard')}
+        onclick={onMarkClicked}
+      ><i class="target"></i></a>
+      <a
+        href="/authority_groups/{opts.id}/download_images"
+        title={t('title_verbs.zip')}
+      ><i class="zip"></i></a>
+    </div>
     <h1>
       {tcap('activerecord.models.' + opts.type + '_group')}
     </h1>

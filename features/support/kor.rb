@@ -20,7 +20,10 @@ Capybara.default_driver = :selenium
 # Capybara.default_driver = :selenium_chrome
 
 Capybara.register_driver :headless_chrome do |app|
-  Capybara::Selenium::Driver.new(app, browser: :chrome, args: [
+  profile = Selenium::WebDriver::Chrome::Profile.new
+  profile["download.default_directory"] = Rails.root.join('tmp')
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, profile: profile, args: [
     'headless',
     'window-size=1280x960'
   ])

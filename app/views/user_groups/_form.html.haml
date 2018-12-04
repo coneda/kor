@@ -1,8 +1,0 @@
-- content_for :form_errors, error_box(:object => @user_group)
-
-= form_for @user_group, :html => { :class => 'kor_form' }, :builder => Kor::FormBuilder  do |f|
-  = f.hidden_field :lock_version
-
-  = f.kor_input :name
-
-  = f.kor_submit

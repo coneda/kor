@@ -67,6 +67,7 @@
               title={t('reset_login_attempts')}
             ><i class="three_bars"></i></a>
             <a
+              href="#"
               onclick={resetPassword(user.id)}
               title={t('reset_password')}
             ><i class="reset_password"></i></a>
@@ -75,6 +76,7 @@
               title={t('verbs.edit')}
             ><i class="pen"></i></a>
             <a
+              href="#"
               onclick={destroy(user.id)}
               title={t('verbs.delete')}
             ><i class="x"></i></a>

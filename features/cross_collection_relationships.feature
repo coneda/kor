@@ -41,7 +41,7 @@ Feature: Cross collection relationships & permissions
     And I should <seepenf> link "edit" within ".page-commands"
     And I should <seexf> link "delete" within ".page-commands"
     And I should <seeplusf> link "add relationship"
-    And I should <seerelpenf> link "edit" within ".kor-layout-left .relations"
+    And I should <seerelpenf> link "edit relationship" within ".kor-layout-left .relations"
 
     Examples:
       | username | credential      | seeb       | seeselectb | seetargetb | seepenb | seexb   | seeplusb | seerelb | seef | seeselectf | seetargetf | seepenf | seexf   | seeplusf | seerelf | seerelpenf |
@@ -65,7 +65,7 @@ Feature: Cross collection relationships & permissions
     And I should <seepenf> link "edit" within ".page-commands"
     And I should <seexf> link "delete" within ".page-commands"
     And I should <seeplusf> link "add relationship"
-    And I should <seerelpenf> link "edit" within ".kor-layout-left .relations"
+    And I should <seerelpenf> link "edit relationship" within ".kor-layout-left .relations"
 
     Examples:
       | username | credential      | seeb       | seeselectb | seetargetb | seepenb | seexb   | seeplusb | seerelb | seef | seeselectf | seetargetf | seepenf | seexf   | seeplusf | seerelf | seerelpenf |

@@ -11,10 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180724044142) do
+ActiveRecord::Schema.define(version: 20181204034411) do
 
   create_table "authority_group_categories", force: :cascade do |t|
-    t.integer  "lock_version", limit: 4
+    t.integer  "lock_version", limit: 4,   default: 0
     t.integer  "parent_id",    limit: 4
     t.integer  "lft",          limit: 4
     t.integer  "rgt",          limit: 4
@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20180724044142) do
   add_index "authority_group_categories", ["lft", "rgt", "parent_id"], name: "agc_hierarchy_index", using: :btree
 
   create_table "authority_groups", force: :cascade do |t|
-    t.integer  "lock_version",                limit: 4
+    t.integer  "lock_version",                limit: 4,   default: 0
     t.string   "name",                        limit: 255
     t.string   "uuid",                        limit: 255
     t.datetime "created_at"
@@ -45,7 +45,7 @@ ActiveRecord::Schema.define(version: 20180724044142) do
   add_index "authority_groups_entities", ["entity_id"], name: "index_authority_groups_entities_on_entity_id", using: :btree
 
   create_table "collections", force: :cascade do |t|
-    t.integer  "lock_version", limit: 4
+    t.integer  "lock_version", limit: 4,   default: 0
     t.string   "name",         limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -172,7 +172,7 @@ ActiveRecord::Schema.define(version: 20180724044142) do
   add_index "entities_user_groups", ["user_group_id"], name: "index_entities_user_groups_on_user_group_id", using: :btree
 
   create_table "entity_datings", force: :cascade do |t|
-    t.integer "lock_version",  limit: 4
+    t.integer "lock_version",  limit: 4,   default: 0
     t.integer "entity_id",     limit: 4
     t.string  "label",         limit: 255
     t.string  "dating_string", limit: 255
@@ -240,7 +240,7 @@ ActiveRecord::Schema.define(version: 20180724044142) do
   add_index "kinds", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
 
   create_table "media", force: :cascade do |t|
-    t.integer "lock_version",          limit: 4
+    t.integer "lock_version",          limit: 4,   default: 0
     t.string  "image_file_name",       limit: 255
     t.string  "image_content_type",    limit: 255
     t.integer "image_file_size",       limit: 4
@@ -300,7 +300,7 @@ ActiveRecord::Schema.define(version: 20180724044142) do
     t.string  "dating_string",   limit: 255
     t.integer "from_day",        limit: 4
     t.integer "to_day",          limit: 4
-    t.integer "lock_version",    limit: 4
+    t.integer "lock_version",    limit: 4,   default: 0
   end
 
   add_index "relationship_datings", ["from_day", "to_day"], name: "timely", using: :btree
@@ -330,7 +330,7 @@ ActiveRecord::Schema.define(version: 20180724044142) do
   add_index "relationships", ["uuid"], name: "index_relationships_on_uuid", using: :btree
 
   create_table "system_groups", force: :cascade do |t|
-    t.integer  "lock_version", limit: 4
+    t.integer  "lock_version", limit: 4,   default: 0
     t.string   "name",         limit: 255
     t.string   "uuid",         limit: 255
     t.datetime "created_at"
@@ -358,7 +358,7 @@ ActiveRecord::Schema.define(version: 20180724044142) do
   add_index "tags", ["name"], name: "index_tags_on_name", unique: true, using: :btree
 
   create_table "user_groups", force: :cascade do |t|
-    t.integer  "lock_version", limit: 4
+    t.integer  "lock_version", limit: 4,   default: 0
     t.integer  "user_id",      limit: 4
     t.string   "name",         limit: 255
     t.string   "uuid",         limit: 255

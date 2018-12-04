@@ -1,11 +1,24 @@
 class Kor::Search
   def initialize(user, criteria = {})
     @user = user
-    @criteria = criteria
+    @criteria = criteria.reverse_merge(
+      page: 1,
+      per_page: 10,
+      sort: {column: 'name', direction: 'ASC'}
+    )
+    validate!
     run
   end
 
   def run
+    if engine == :elastic
+      elastic
+    else
+      active_record
+    end
+  end
+
+  def active_record
     @scope = Entity.
       allowed(@user, @criteria[:policy] || :view).
       within_collections(@criteria[:collection_id]).
@@ -14,12 +27,19 @@ class Kor::Search
       except_kinds(@criteria[:except_kind_id]).
       named_like(@criteria[:name]).
       by_id(@criteria[:id]).
+      by_uuid(@criteria[:uuid]).
       by_relation_name(@criteria[:relation_name]).
       invalid(@criteria[:invalid]).
-      isolated(@criteria[:isolated])
+      isolated(@criteria[:isolated]).
+      tagged_with(@criteria[:tags]).
+      dated_in(@criteria[:dating]).
+      created_after(@criteria[:created_after]).
+      created_before(@criteria[:created_before]).
+      updated_after(@criteria[:updated_after]).
+      updated_before(@criteria[:updated_before])
 
     @scope = case @criteria[:sort][:column]
-      when 'default' then @scope.alphabetically
+      when 'default' then @scope.order('name')
       when 'random' then @scope.order('rand()')
       else
         @scope.order(
@@ -37,11 +57,73 @@ class Kor::Search
     end
   end
 
+  def elastic
+    @search_result = Kor::Elastic.new(@user).search(@criteria)
+  end
+
   def records
-    @scope.pageit(@criteria[:page], @criteria[:per_page])
+    if engine == :elastic
+      @search_result.records
+    else
+      @scope.pageit(@criteria[:page], @criteria[:per_page])
+    end
   end
 
   def total
-    @scope.count
+    if engine == :elastic
+      @search_result.total
+    else
+      @scope.count
+    end
+  end
+
+  def keys
+    @criteria.keys
+  end
+
+  def compat_keys
+    return [
+      :name, :id, :uuid, :collection_id, :kind_id, :except_kind_id, :dating, 
+      :created_after, :tags, :relation_name, :sort, :page, :per_page, 
+      :created_before, :updated_before, :updated_after
+    ]
+  end
+
+  def elastic_keys
+    [:terms, :property, :dataset, :related, :degree, :max_degree, :min_degree]
+  end
+
+  def active_record_keys
+    [:isolated, :invalid, :user_group_id, :authority_group_id]
+  end
+
+  def surplus_keys
+    keys - compat_keys - elastic_keys - active_record_keys
+  end
+
+  def validate!
+    if surplus_keys.size > 0
+      raise Kor::Exception, "#{surplus_keys.inspect} are not known search keys"
+    end
+
+    if Kor::Elastic.available?
+      if (keys & active_record_keys).size > 0 && (keys & elastic_keys).size > 0
+        raise Kor::Exception, "any from #{elastic_keys.inspect} can't be combined with any from #{active_record_keys.inspect}. Received these keys: #{keys.inspect}"
+      end
+    else
+      elastic_keys.each do |k|
+        if @criteria[k].present?
+          raise Kor::Exception, "#{k} is only supported with elasticsearch"
+        end
+      end
+    end
+  end
+
+  def engine
+    if !Kor::Elastic.enabled? || (keys & active_record_keys).size > 0
+      :active_record
+    else
+      :elastic
+    end
   end
 end

@@ -24,14 +24,14 @@ RSpec.describe Kind do
 
   it 'should destroy dependent records' do
     expect(Generator.count).to eq(1)
-    expect(Field.count).to eq(3)
+    expect(Field.count).to eq(4)
     expect(Entity.count).to eq(7)
 
     people.destroy
 
     expect(Kind.count).to eq(4)
     expect(Generator.count).to eq(0)
-    expect(Field.count).to eq(1)
+    expect(Field.count).to eq(2)
     expect(Entity.count).to eq(6)
   end
 

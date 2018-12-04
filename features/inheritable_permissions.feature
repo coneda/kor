@@ -15,6 +15,7 @@ Feature: Inheritable permissions
     Then I should see "the user doesn't exist"
     And I fill in "Inherit permissions from" with "jdoe"
     And I press "Save"
+    Then I should see "has been created"
     Then I should not see "the user doesn't exist"
 
     Then user "hmustermann" should expire at "7.days.from_now"
@@ -22,7 +23,7 @@ Feature: Inheritable permissions
     Given the user "hmustermann" has password "hmustermann"
     And I re-login as "hmustermann"
     When I go to the relations page
-    Then I should see link "create relation"
+    Then I should see link "add"
 
 
   Scenario: Inherit permissions, save the user and continue inheriting the value

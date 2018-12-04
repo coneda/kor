@@ -22,7 +22,7 @@ Feature: Entities
   #   And I should see "Medium"
 
   Scenario: Create an entity as an unauthorized user
-    Given I am logged in as "john"
+    Given I am logged in as "jdoe"
     When I go to the new "work-Entity" page
     Then I should see "Access denied"
   
@@ -121,7 +121,7 @@ Feature: Entities
     When I follow "logout"
     And I am logged in as "admin"
     When I go to the entity page for "Paris"
-    Then I should see link "edit" within "kor-relationship"
+    Then I should see link "edit relationship" within "kor-relationship"
 
   Scenario: Click the big image on media to return to the entity screen
     Given I am logged in as "admin"

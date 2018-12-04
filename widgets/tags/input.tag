@@ -2,6 +2,11 @@
 
   <label if={opts.type != 'radio'}>
     {opts.label}
+    <a
+      if={opts.help}
+      href="#"
+      onclick={toggleHelp}
+    ><i class="fa fa-question-circle"></i></a>
     <input
       if={opts.type != 'select' && opts.type != 'textarea'}
       type={opts.type || 'text'}
@@ -52,6 +57,7 @@
       {e}
     </div>
   </div>
+  <div if={opts.help && showHelp} class="help" ref="help"></div>
 
   <script type="text/coffee">
     tag = this
@@ -99,6 +105,12 @@
         (tag.valueFromParent() || []).indexOf(v) > -1
       else
         "#{v}" == "#{tag.valueFromParent()}"
+
+    tag.toggleHelp = (event) ->
+      event.preventDefault()
+      tag.showHelp = !tag.showHelp
+      tag.update()
+      Zepto(tag.refs.help).html(tag.opts.help) if tag.showHelp
 
   </script>
 

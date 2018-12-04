@@ -10,6 +10,13 @@
 
       <form onsubmit={submit} if={data}>
         <kor-input
+          name="lock_version"
+          value={data.lock_version || 0}
+          ref="fields"
+          type="hidden"
+        />
+
+        <kor-input
           if={collections}
           label={tcap('activerecord.attributes.entity.collection_id')}
           name="collection_id"

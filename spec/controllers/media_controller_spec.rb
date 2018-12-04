@@ -228,11 +228,11 @@ RSpec.describe MediaController, type: :request do
 
       patch "/media/transform/#{entity.medium_id}/image/rotate_cw"
       expect(response).to be_success
-      expect(json['message']).to eq('medium has been changed')
+      expect(json['message']).to eq('medium has been transformed')
 
       patch "/media/transform/#{entity.medium_id}/image/flip"
       expect(response).to be_success
-      expect(json['message']).to eq('medium has been changed')
+      expect(json['message']).to eq('medium has been transformed')
     end
   end
 end

@@ -110,7 +110,8 @@
         directedRelationship: tag.relationship,
       }
 
-    tag.delete = ->
+    tag.delete = (event) ->
+      event.preventDefault()
       if confirm(tag.t('confirm.sure'))
         Zepto.ajax(
           type: 'DELETE'

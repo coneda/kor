@@ -151,31 +151,38 @@ class EntitiesController < JsonController
     params[:related_relation_name] = param_to_array(params[:related_relation_name], ids: false)
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
 
-    search = Kor::Search.new(current_user,
-      terms: params[:terms],
+    criteria = {
       name: params[:name],
       id: params[:id],
       collection_id: params[:collection_id],
-      authority_group_id: params[:authority_group_id],
-      user_group_id: params[:user_group_id],
       kind_id: params[:kind_id],
       except_kind_id: params[:except_kind_id],
-      relation_name: params[:relation_name],
       dating: params[:dating],
       created_after: params[:created_after],
-      dataset: dataset_params,
+      tags: param_to_array(params[:tags]),
+      relation_name: params[:relation_name],
 
       isolated: params[:isolated],
-      recent: params[:recent],
       invalid: params[:invalid],
+      user_group_id: params[:user_group_id],
+      authority_group_id: params[:authority_group_id],
+
+      terms: params[:terms],
+      dataset: dataset_params,
+      property: params[:property],
+      related: params[:related],
 
       sort: sort,
 
       page: page,
       per_page: per_page,
-    )
+    }
 
-    search.run
+    criteria = criteria.delete_if do |k, v|
+      ['', nil, -1, [], {}].include?(v)
+    end
+
+    search = Kor::Search.new(current_user, criteria)
 
     @records = search.records
     @total = search.total
@@ -316,9 +323,6 @@ class EntitiesController < JsonController
         render_403
       end
     end
-  rescue ActiveRecord::StaleObjectError
-    flash[:error] = I18n.t('activerecord.errors.messages.stale_entity_update')
-    render action: 'edit'
   end
 
   def update_tags

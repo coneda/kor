@@ -4,6 +4,13 @@
   <div><!-- TODO: figure out why this has to be here -->
     <form if={data && possibleParents} onsubmit={submit}>
       <kor-input
+        name="lock_version"
+        value={data.lock_version || 0}
+        ref="fields"
+        type="hidden"
+      />
+
+      <kor-input
         name="schema"
         label={tcap('activerecord.attributes.kind.schema')}
         riot-value={data.schema}

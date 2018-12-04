@@ -842,3 +842,18 @@ kor-properties-editor, kor-datings-editor {
 [data-is=kor-mass-relate] {
   width: 450px;
 }
+
+kor-input {
+  .help {
+    border: 1px solid $kor-input-border;
+    padding: 0.5rem;
+    margin-top: -1px;
+    margin-bottom: 2rem;
+
+    code {
+      display: block;
+      color: white;
+      margin-bottom: 1rem;
+    }
+  }
+}

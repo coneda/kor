@@ -1,5 +1,0 @@
-- if dataset
-  = fields_for "entity[dataset]", dataset, :builder => Kor::FormBuilder do |d|
-    = d.hidden_field :lock_version
-    - dataset.kind.form_attributes.each do |config|
-      = d.form_field_for_dataset config

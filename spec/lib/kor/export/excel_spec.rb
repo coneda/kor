@@ -1,12 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Kor::Export::Excel do
-
   it "should export 3 entities" do
-    leonardo = Entity.find_by! name: 'Leonardo'
-    mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    last_supper = Entity.find_by! name: 'The Last Supper'
-
     Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec").run
     book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
     sheet = book.worksheet 0
@@ -18,7 +13,6 @@ RSpec.describe Kor::Export::Excel do
   end
 
   it "should only export the given collections" do
-    priv = Collection.find_by! name: 'private'
     Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec", :collection_id => [priv.id]).run
     book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
     sheet = book.worksheet 0
@@ -27,8 +21,6 @@ RSpec.describe Kor::Export::Excel do
   end
 
   it "should only export the given kinds" do
-    leonardo = Entity.find_by! name: 'Leonardo'
-
     Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec", :kind_id => leonardo.kind_id).run
     book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
     sheet = book.worksheet 0
@@ -37,8 +29,7 @@ RSpec.describe Kor::Export::Excel do
   end
 
   it "should export only utc" do
-    mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    ts = mona_lisa.created_at
+    ts = leonardo.created_at
 
     Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec").run
     book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
@@ -47,5 +38,4 @@ RSpec.describe Kor::Export::Excel do
     expect(sheet.rows[1][10]).to be_utc
     expect(sheet.rows[1][10].to_f).to be_within(1.5).of(ts.to_f)
   end
-
 end

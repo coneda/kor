@@ -76,6 +76,28 @@ en:
   larger: larger
   reset_login_attempts: reset login attempts
   reset_password: reset password
+  by_related_entities: search in related entities
+  edit_tags: edit tags
+
+  help:
+    terms_query: |
+      To search for parts of a word, add * to the beginning or end of the term:
+      <code>*zone</code> or <code>quali*</code> or <code>*vita*</code>
+      Terms are combined with AND unless you combine them with OR. To search for
+      a phrase, use quotes like this:
+      <code>"the gray fox jumps"</code>
+      To exclude terms, use NOT:
+      <code>mona AND NOT lisa</code>
+      AND, OR and NOT are case sensitive. You can also group
+      terms and expressions with parentheses:
+      <code>(mona AND lisa) OR giocondo</code>
+      If you'd like to know more, have a look at the
+      <a 
+        href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax"
+        target="_blank"
+        rel="noopener"
+      >elasticsearch
+      query string syntax</a>
 
   search_term:
     one: search term
@@ -727,6 +749,10 @@ en:
       moving an entity from one collection to another requires the 'delete'
       permission in the source collection and the 'create' permission in the
       target collection
+    stale_update: |
+      The record could not be updated because it has been updated in the
+      meantime. This is a rare case which can normally be fixed by reloading the
+      page and trying again.
 
   labels:
     relate_to_via: relate all files with "%{to}" via
@@ -983,7 +1009,7 @@ en:
         shared:
           one: shared group
           other: shared groups
-        published: 
+        published:
           one: published group
           other: published groups
       authority_group:
@@ -1027,10 +1053,6 @@ en:
         even: "has to be even"
         no_two_images: "you cannot attach two images"
         defines_non_existent_kind: "defines a non existent entity type"
-        stale_entity_update: "The entity has been edited meanwhile. Please reload the page"
-        stale_user_update: "The user has been edited meanwhile. Please reload the page"
-        stale_relation_update: "The relation has been edited meanwhile. Please reload the page"
-        stale_relationship_update: "The link has been edited meanwhile. Please reload the page"
         stale_config_update: "The configuration has been changed in the meantime"
         defines_non_existent_relation: "defines a relationship for a non existent relation"
         needs_medium: "Without a relevant file the entity cannot be created as a medium"
@@ -1120,3 +1142,4 @@ en:
           rotate_cw: rotate clockwise
           rotate_ccw: rotate counter-clockwise
           rotate_180: rotate 180°
+

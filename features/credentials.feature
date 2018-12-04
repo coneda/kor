@@ -6,7 +6,7 @@ Feature: credentials
     And I should see no user groups
 
   Scenario: see credentials without authorization
-    Given I am logged in as "john"
+    Given I am logged in as "jdoe"
     When I go to the credentials page
     Then I should see "Access denied"
     

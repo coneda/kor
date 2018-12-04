@@ -22,10 +22,12 @@
         />
 
         <kor-input
+          if={elastic()}
           name="terms"
           label={tcap('nouns.term', {count: 'other'})}
           value={criteria.terms}
           ref="fields"
+          help={tcap('help.terms_query')}
         />
 
         <kor-input
@@ -49,14 +51,32 @@
           ref="fields"
         />
 
-        <virtual if={kind && kind.fields.length}>
+        <virtual if={elastic()}>
+          <virtual if={kind && kind.fields.length}>
+            <hr />
+
+            <kor-input
+              each={field in kind.fields}
+              label={field.search_label}
+              name="dataset_{field.name}"
+              value={criteria['dataset_' + field.name]}
+              ref="fields"
+            />
+          </virtual>
+
           <hr />
 
           <kor-input
-            each={field in kind.fields}
-            label={field.search_label}
-            name="dataset_{field.name}"
-            value={criteria['dataset_' + field.name]}
+            name="property"
+            label={tcap('activerecord.attributes.entity.properties')}
+            value={criteria.property}
+            ref="fields"
+          />
+
+          <kor-input
+            name="related"
+            label={tcap('by_related_entities')}
+            value={criteria.related}
             ref="fields"
           />
         </virtual>
@@ -127,6 +147,10 @@
         tag.kind = null;
         tag.update();
       }
+    }
+
+    tag.elastic = function() {
+      return wApp.info.data.elastic
     }
 
     var params = function() {

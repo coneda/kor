@@ -1,6 +1,0 @@
-= kor_input_tag I18n.t('nouns.relation', :count => 1), 
-  :control => relation_selector_tag(:relation_name, 
-    :from_id => @selected_entities.first.try(:id), 
-    :to_id => session[:current_entity]).html_safe
-  
-= I18n.t('objects.relate_all_to', :o => h(Entity.find(session[:current_entity]).display_name))

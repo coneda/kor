@@ -4,7 +4,7 @@ Feature: Relation merger
     And I follow "Relations"
     Then I should see "has created / has been created by"
 
-    When I follow "create relation"
+    When I follow "add"
     And I fill in "Name" with "has been created by"
     And I fill in "Inversion" with "has created"
     And I select "person" from "Permitted type (to)"

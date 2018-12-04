@@ -29,10 +29,6 @@ class RelationshipsController < JsonController
     else
       render_403
     end
-  rescue ActiveRecord::StaleObjectError
-    # TODO: stale
-    # flash[:error] = I18n.t('activerecord.errors.messages.stale_relationship_update')
-    # render :action => 'edit'
   end
 
   def destroy

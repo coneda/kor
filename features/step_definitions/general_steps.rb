@@ -52,6 +52,15 @@ Given 'the search api expects to receive the params' do |table|
       values.delete k
     end
   end
+  if values['kind_id']
+    values['kind_id'] = values['kind_id'].split(',').map{|e| e.to_i}
+  end
+  if values['except_kind_id']
+    values['except_kind_id'] = values['except_kind_id'].split(',').map{|e| e.to_i}
+  end
+  if values['tags']
+    values['tags'] = values['tags'].split(',').map{|e| e.to_i}
+  end
   values.symbolize_keys!
 
   expect(Kor::Search).to receive(:new).with(

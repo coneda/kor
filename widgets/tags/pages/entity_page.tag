@@ -270,11 +270,8 @@
       (g.name for g in tag.data.groups).join(', ')
 
     tag.showTagging = ->
-      tag.data.kind.settings.tagging == '1' && 
-      (
-        tag.data.tags.length > 0 ||
+      tag.data.kind.settings.tagging && 
         tag.allowedTo('tagging', tag.data.collection_id)
-      )
 
     tag.transform = (op) ->
       (event) ->

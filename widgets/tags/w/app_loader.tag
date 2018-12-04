@@ -26,9 +26,31 @@
     }
 
     var mountApp = function() {
+      updateLayout();
       var opts = {routing: true};
       tag.mountedApp = riot.mount(tag.refs.target, 'w-app', opts)[0]
       console.log('application (re)loaded');
+    }
+
+    var updateLayout = function() {
+      var meta = Zepto('meta[http-equiv=content-language]');
+      var locale = wApp.session.current.locale
+      meta.attr('content', locale);
+
+      var m = Zepto('<meta>').
+        attr('name', 'description').
+        attr('content', wApp.i18n.t(locale, 'meta.description'));
+      meta.after(m);
+
+      m = Zepto('<meta>').
+        attr('name', 'author').
+        attr('content', wApp.i18n.t(locale, 'meta.author'));
+      meta.after(m);
+
+      m = Zepto('<meta>').
+        attr('name', 'description').
+        attr('keywords', wApp.i18n.t(locale, 'meta.keywords'));
+      meta.after(m);
     }
 
     wApp.bus.on('reload-app', reloadApp);

@@ -11,7 +11,9 @@
     <a
       show={!editorActive}
       onclick={toggleEditor}
-    ><i class="plus"></i></a>
+      href="#"
+      title={t('edit_tags')}
+    ><i class="fa fa-plus-circle"></i></a>
 
     <virtual if={editorActive}>
       <kor-input
@@ -27,6 +29,9 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+
+    tag.on 'mount', ->
+      console.log(tag.opts.enableEditor)
 
     tag.toggleEditor = (event) ->
       event.preventDefault() if event

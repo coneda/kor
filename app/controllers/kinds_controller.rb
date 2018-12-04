@@ -38,8 +38,6 @@ class KindsController < JsonController
     else
       render_422 @kind.errors
     end
-  rescue ActiveRecord::StaleObjectError => e
-    render_422 I18n.t('activerecord.errors.messages.stale_kind_update')
   end
 
   def destroy

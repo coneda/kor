@@ -220,7 +220,7 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
     
       step "I go to the publishments page"
       step "I follow \"create published group\""
-      step "I fill in \"Description\" with \"#{pub_name}\""
+      step "I fill in \"Name\" with \"#{pub_name}\""
       step "I select \"#{name}\" from \"Personal group\""
       step "I press \"Save\""
     end

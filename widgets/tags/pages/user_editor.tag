@@ -11,6 +11,13 @@
 
       <form onsubmit={submit} if={data}>
         <kor-input
+          name="lock_version"
+          value={data.lock_version || 0}
+          ref="fields"
+          type="hidden"
+        />
+
+        <kor-input
           label={tcap('activerecord.attributes.user.personal')}
           name="make_personal"
           type="checkbox"
@@ -194,7 +201,6 @@
         if days
           date = new Date()
           date = new Date(date.getTime() + days * 24 * 60 * 60 * 1000)
-          console.log(date, date.getUTCDate())
           expiresAtTag().set([
             date.getUTCFullYear(),
             ('00' + (date.getUTCMonth() + 1)).substr(-2, 2),
@@ -218,7 +224,7 @@
       if tag.opts.id
         Zepto.ajax(
           url: "/users/#{tag.opts.id}"
-          data: {include: 'security'}
+          data: {include: 'all'}
           success: (data) ->
             tag.data = data
             tag.update()

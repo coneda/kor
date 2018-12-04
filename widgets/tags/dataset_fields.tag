@@ -6,6 +6,7 @@
     riot-value={values()[field.name]}
     ref="fields"
     errors={errorsFor(field)}
+    type={type(field)}
   />
 
   <script type="text/javascript">
@@ -31,6 +32,11 @@
         result[field.name()] = field.value();
       }
       return result;
+    }
+
+    tag.type = function(field) {
+      if (field.type == 'Fields::Text') {return 'textarea'}
+      return 'text';
     }
   </script>
 </kor-dataset-fields>

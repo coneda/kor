@@ -11,10 +11,6 @@ class Kor::Elastic
     end
   end
 
-  def initialize(user)
-    @user = user
-  end
-
   def self.config
     @config ||= {
       'url' => ENV['ELASTIC_URL'],
@@ -24,43 +20,45 @@ class Kor::Elastic
   end
 
   def self.available?
-    !!@config['url']
+    @available ||= begin
+      response = raw_request('get', '/')
+      response.status == 200
+    end
   end
 
   def self.current_index
     config['index']
   end
 
+  def self.enabled=(value)
+    @enabled = value
+  end
+
   def self.enabled?
-    case @enabled
-      when true then true
-      when false then false
-      else
-        config['ELASTIC_URL'] && !Rails.env.test?
-    end
+    available? && (@enabled != false)
   end
 
-  def self.enable
-    if block_given?
-      previous = @enabled
-      @enabled = true
-      yield
-      @enabled = previous
-    else
-      @enabled = true
-    end
-  end
+  # def self.enable
+  #   if block_given?
+  #     previous = @enabled
+  #     @enabled = true
+  #     yield
+  #     @enabled = previous
+  #   else
+  #     @enabled = true
+  #   end
+  # end
 
-  def self.disable
-    if block_given?
-      previous = @enabled
-      @enabled = false
-      yield
-      @enabled = previous
-    else
-      @enabled = false
-    end
-  end
+  # def self.disable
+  #   if block_given?
+  #     previous = @enabled
+  #     @enabled = false
+  #     yield
+  #     @enabled = previous
+  #   else
+  #     @enabled = false
+  #   end
+  # end
 
   def self.server_version
     response = raw_request('get', '/')
@@ -77,14 +75,24 @@ class Kor::Elastic
             "analysis" => {
               "analyzer" => {
                 "default" => {
-                  'type' => 'custom',
-                  "tokenizer" => 'gram',
-                  "filter" => ['asciifolding', 'lowercase']
+                  "tokenizer" => 'standard',
+                  "filter" => ['lowercase', 'my_ascii_folding']
                 },
-                'default_search' => {
-                  'type' => 'custom',
-                  'tokenizer' => 'gram',
-                  'filter' => ['asciifolding', 'lowercase']
+                # "default" => {
+                #   'type' => 'custom',
+                #   "tokenizer" => 'gram',
+                #   "filter" => ['asciifolding', 'lowercase']
+                # },
+                # 'default_search' => {
+                #   'type' => 'standard',
+                #   'tokenizer' => 'gram',
+                #   "filter" => ['asciifolding', 'lowercase']
+                # }
+              },
+              'filter' => {
+                'my_ascii_folding' => {
+                  'type' => 'asciifolding',
+                  'preserve_original' => true
                 }
               },
               'tokenizer' => {
@@ -121,6 +129,14 @@ class Kor::Elastic
               "subtype" => {"type" => "string"},
               "synonyms" => {"type" => "string"},
               "comment" => {"type" => "string"},
+              'datings' => {
+                'type' => 'object',
+                'properties' => {
+                  'label' => {'type' => 'string'},
+                  'from' => {'type' => 'integer'},
+                  'to' => {'type' => 'integer'}
+                }
+              },
               "dataset" => {
                 "type" => "object",
                 "properties" => {
@@ -138,13 +154,16 @@ class Kor::Elastic
               "uuid" => {"type" => "string"},
               "tags" => {"type" => "string", "analyzer" => "keyword"},
               "related" => {
-                "type" => "object",
+                "type" => "nested",
                 "properties" => {
                   "relation_name" => {"type" => "string"},
-                  "entity_name" => {"type" => "string"}
+                  "entity_name" => {"type" => "string"},
+                  "entity_collection_id" => {'type' => 'integer'}
                 }
               },
               'degree' => {'type' => 'float'},
+              'created_at' => {'type' => 'integer'},
+              'updated_at' => {'type' => 'integer'},
 
               "sort" => {"type" => "string", "index" => "not_analyzed"},
             }
@@ -170,6 +189,10 @@ class Kor::Elastic
     create_index
   end
 
+  def self.ensure_index
+    create_index unless index_exists?
+  end
+
   def self.flush
     request "post", "/_flush"
   end
@@ -179,7 +202,7 @@ class Kor::Elastic
   end
 
   def self.index_all(options = {})
-    return unless enabled?
+    # return unless enabled?
 
     # TODO: shouldn't :full be true by default?
     options.reverse_merge! :full => false, :progress => false
@@ -190,9 +213,9 @@ class Kor::Elastic
       Kor.progress_bar('indexing entities', Entity.without_media.count)
     end
     scope = if options[:full]
-      Entity.includes(:tags, outgoing_relationships: :to).without_media
+      Entity.includes(:datings, :tags, outgoing_relationships: :to)
     else
-      Entity.includes(:tags).without_media
+      Entity.includes(:datings, :tags)
     end
     scope.find_in_batches do |batch|
       data = []
@@ -227,16 +250,18 @@ class Kor::Elastic
       "comment" => entity.comment,
       "properties" => entity.properties,
       "dataset" => entity.dataset,
-
+      'created_at' => entity.created_at.to_i,
+      'updated_at' => entity.updated_at.to_i,
+      'datings' => entity.datings.map{|d| 
+        {'label' => d.dating_string, 'from' => d.from_day, 'to' => d.to_day}
+      },
       'degree' => entity.degree,
       "sort" => entity.display_name
     }
 
     if options[:full]
       scope = entity.
-        outgoing_relationships.
-        except_to_kind(Kind.medium_kind_id)
-        # without_media.
+        outgoing_relationships
         # select([:id, :name, :kind_id, :attachment])
 
       data["related"] = scope.map do |dr|
@@ -273,60 +298,271 @@ class Kor::Elastic
     require_ok(response)
   end
 
-  def search(query = {})
-    query[:analyzer] ||= 'folding'
+  def initialize(user)
+    self.class.ensure_index
+    
+    @user = user
+    @query = {
+      'must' => [],
+      'filter' => [],
+      'must_not' => []
+    }
+  end
 
-    return empty_result unless self.class.enabled?
+  def search(criteria = {})
+    raise Kor::Exception unless self.class.enabled?
+    criteria.reverse_merge!(
+      analyzer: 'folding',
+      page: 1,
+      per_page: 10,
+      sort: {column: '_score', direction: 'desc'}
+    )
 
-    # puts JSON.pretty_generate(query)
+    criteria[:terms] = by_name(criteria[:terms], criteria[:name])
+    criteria[:terms] = by_property(criteria[:terms], criteria[:property])
 
-    # TODO: limit this according to configuration
-    page = [(query[:page] || 0).to_i, 1].max
-    per_page = [(query[:per_page] || 10).to_i, 500].min
+    by_user(@user)
+    by_id(criteria[:id])
+    by_uuid(criteria[:uuid])
+    by_kind(criteria[:kind_id])
+    by_kind_except(criteria[:except_kind_id])
+    by_collection(criteria[:collection_id])
+    by_terms(criteria[:terms])
+    by_relation_name(criteria[:relation_name])
+    by_created_after(criteria[:created_after])
+    by_created_before(criteria[:created_before])
+    by_updated_after(criteria[:updated_after])
+    by_updated_before(criteria[:updated_before])
+    by_dating(criteria[:dating])
+    by_tag(criteria[:tags])
+    by_dataset(criteria[:dataset])
+    by_related(criteria[:related])
+    by_degree(criteria[:degree])
+    by_max_degree(criteria[:max_degree])
+    by_min_degree(criteria[:min_degree])
 
-    # data = {}
-    query_component = nil
+    data = {
+      'query' => {'bool' => @query},
+      'size' => criteria[:per_page],
+      'from' => (criteria[:page] - 1) * criteria[:per_page],
+      'sort' => sorting(criteria[:sort]),
+      'explain' => !Rails.env.production?
+    }
+    data['function_score'] = @function_score if @function_score
+    data['query']['nested'] = @nested if @nested
 
-    q = []
+    # puts JSON.pretty_generate(data)
 
-    if query[:term].present?
-      q += if query[:raw]
-        [query[:term]]
+    response = self.class.request "post", "/entities/_search", nil, data
+    # puts JSON.pretty_generate(response)
+    # binding.pry
+
+    ::Kor::SearchResult.new(
+      total: response['hits']['total'],
+      uuids: response['hits']['hits'].map{|hit| hit['_id']},
+      ids: response['hits']['hits'].map{|hit| hit['_source']['id']},
+      raw_records: response['hits']['hits'],
+      page: criteria[:page],
+      per_page: criteria[:per_page]
+    )
+  end
+
+  def sorting(sort)
+    case sort[:column]
+      when 'name' then [{'sort' => sort[:direction]}]
+      when 'default' then [{'sort' => 'asc'}]
+      when 'score' then ['_score']
+      when 'random'
+        @query['must'] << {
+          'function_score' => {
+            'random_score' => {'seed' => Time.now.to_i}
+          }
+        }
+
+        ['_score']
       else
-        result = if Kor.is_uuid?(query[:term])
-          [query[:term]]
-        else
-          escape tokenize(query[:term])
+        [{sort[:column] => sort[:direction]}]
+    end
+  end
+
+  def by_user(user)
+    ids = ::Kor::Auth.authorized_collections(@user).pluck(:id)
+    by_collection(ids)
+  end
+
+  def by_id(ids)
+    if ids.present?
+      @query['filter'] << {
+        'terms' => {'id' => to_array(ids)}
+      }
+    end
+  end
+
+  def by_uuid(ids)
+    if ids.present?
+      @query['filter'] << {
+        'terms' => {'_id' => to_array(ids)}
+      }
+    end
+  end
+
+  def by_collection(ids)
+    if ids.present?
+      @query['filter'] << {
+        'terms' => {'collection_id' => to_array(ids)}
+      }
+    end
+  end
+
+  def by_kind(ids)
+    if ids.present?
+      @query['filter'] << {
+        'terms' => {'kind_id' => to_array(ids)}
+      }
+    end
+  end
+
+  def by_kind_except(ids)
+    if ids.present?
+      @query['must_not'] << {
+        'terms' => {'kind_id' => to_array(ids)}
+      }
+    end
+  end
+
+  def by_created_after(time)
+    if time.present?
+      @query['filter'] << {
+        'range' => {'created_at' => {'gt' => time.to_i}}
+      }
+    end
+  end
+
+  def by_created_before(time)
+    if time.present?
+      @query['filter'] << {
+        'range' => {'created_at' => {'lt' => time.to_i}}
+      }
+    end
+  end
+
+  def by_updated_after(time)
+    if time.present?
+      @query['filter'] << {
+        'range' => {'updated_at' => {'gt' => time.to_i}}
+      }
+    end
+  end
+
+  def by_updated_before(time)
+    if time.present?
+      @query['filter'] << {
+        'range' => {'updated_at' => {'lt' => time.to_i}}
+      }
+    end
+  end
+
+  def by_dating(dating)
+    if dating.present?
+      to_array(dating).each do |dating|
+        if parsed = Dating.parse(dating)
+          from = EntityDating.julian_date_for(parsed[:from])
+          to = EntityDating.julian_date_for(parsed[:to])
+          @query['filter'] << {
+            'range' => {'datings.to' => {'gt' => from}}
+          }
+          @query['filter'] << {
+            'range' => {'datings.from' => {'lt' => to}}
+          }
         end
-        result.empty? ? [] : [result.join(' ')]
       end
     end
+  end
 
-    if query[:property]
-      v = query[:property]
-      q << "properties.label:\"#{v}\" OR properties.value:\"#{v}\""
-    end
-
-    if query[:dataset].present?
-      query[:analyzer] = nil
-      query[:dataset].each do |k, v|
-        if v.present?
-          q << "dataset.#{k}:\"#{v}\""
-        end
+  def by_tag(tags)
+    if tags.present?
+      to_array(tags).each do |tag|
+        @query['filter'] << {
+          'term' => {'tags' => tag}
+        }
       end
     end
+  end
 
-    if query[:synonym].present?
-      v = escape(tokenize(query[:synonym])).join(' ')
-      q << "synonyms:(#{v})" unless v.blank?
+  def by_dataset(dataset)
+    if dataset.present?
+      dataset.each do |field, value|
+        @query['filter'] << {
+          'term' => {"dataset.#{field}" => value}
+        }
+      end
     end
+  end
 
-    if q.present?
-      q = "(#{q.join ') AND ('})"
+  def by_related(related)
+    if related.present?
+      ids = ::Kor::Auth.authorized_collections(@user).pluck(:id)
+      @query['must'] << {
+        'nested' => {
+          'path' => 'related',
+          'score_mode' => 'avg',
+          'query' => {
+            'bool' => {
+              'must' => [
+                {'match' => {'related.entity_name' => related}},
+              ],
+              'filter' => [
+                {'terms' => {'related.entity_collection_id' => ids}}
+              ]
+            }
+          }
+        }
+      }
+    end
+  end
 
-      query_component = {
+  def by_degree(degree)
+    if degree.present?
+      @query['filter'] << {
+        'term' => {'degree' => degree}
+      }
+    end
+  end
+
+  def by_min_degree(degree)
+    if degree.present?
+      @query['filter'] << {
+        'range' => {'degree' => {'gte' => degree}}
+      }
+    end
+  end
+
+  def by_max_degree(degree)
+    if degree.present?
+      @query['filter'] << {
+        'range' => {'degree' => {'lte' => degree}}
+      }
+    end
+  end
+
+  def by_name(old_terms, name)
+    name.present? ? (old_terms || '') + " name:(#{name})" : old_terms
+  end
+
+  def by_property(old_terms, property)
+    if property.present?
+      (old_terms || '') + 
+        " properties.label:(#{property}) OR properties.value:(#{property})"
+    else
+      old_terms
+    end
+  end
+
+  def by_terms(terms)
+    if terms.present?
+      @query['must'] << {
         "query_string" => {
-          "query" => q,
+          "query" => terms,
           "default_operator" => "AND",
           # "analyzer" => query[:analyzer],
           "analyze_wildcard" => true,
@@ -334,6 +570,7 @@ class Kor::Elastic
           # 'lowercase_expanded_terms' => false,
           # 'auto_generate_phrase_queries' => true,
           'use_dis_max' => true,
+          'fuzziness' => 0,
           "fields" => [
             'uuid^20',
             'name^10',
@@ -350,138 +587,18 @@ class Kor::Elastic
         }
       }
     end
-
-    filters = []
-
-    requested_ids = to_array(query[:collection_id] || Collection.all.pluck(:id))
-    allowed_ids = ::Kor::Auth.authorized_collections(@user).pluck(:id)
-    ids = requested_ids & allowed_ids
-    if ids.size == 0
-      return self.class.empty_result
-    else
-      filters << {
-        "terms" => {
-          "collection_id" => ids,
-        }
-      }
-    end
-
-    if query[:tags].present?
-      query[:tags].each do |tag|
-        filters << {
-          "term" => {
-            "tags" => tag
-          }
-        }
-      end
-    end
-
-    if query[:kind_id].present?
-      filters << {
-        "terms" => {
-          "kind_id" => to_array(query[:kind_id])
-        }
-      }
-    end
-
-    sorting = [{'sort' => 'asc'}]
-    if query[:term].present? || query[:tag].present?
-      sorting.unshift 'degree' => 'desc'
-      sorting.unshift '_score'
-    end
-
-    data = self.class.build_request(
-      page: page,
-      per_page: per_page,
-      queries: (query_component ? [query_component] : []),
-      filters: filters,
-      sorting: sorting
-    )
-
-    # puts JSON.pretty_generate(data)
-
-    data['explain'] = true unless Rails.env.production?
-    response = self.class.request "post", "/entities/_search", nil, data
-
-    # puts JSON.pretty_generate(response)
-    # binding.pry
-
-    ::Kor::SearchResult.new(
-      :total => response['hits']['total'],
-      :uuids => response['hits']['hits'].map{|hit| hit['_id']},
-      :ids => response['hits']['hits'].map{|hit| hit['_source']['id']},
-      :raw_records => response['hits']['hits'],
-      :page => page
-    )
   end
 
-  def self.build_request(options = {})
-    if server_version < '5.0.0'
-      data = {
-        'size' => options[:per_page],
-        'from' => (options[:page] - 1) * options[:per_page],
-        'query' => {
-          'filtered' => {
-            'filter' => {
-              'bool' => {
-                'must' => options[:filters]
-              }
-            }
-          }
-        }
+  def by_relation_name(relation_name)
+    if relation_name.present?
+      ids = Relation.to_entity_kind_ids(relation_name)
+      @query['filter'] << {
+        'terms' => {'kind_id' => ids}
       }
-
-      unless options[:queries].blank?
-        data["query"]["filtered"]["query"] = options[:queries].first
-      end
-
-      unless options[:sorting].blank?
-        data['sort'] = options[:sorting]
-      end
-      data
-    else
-      data = {
-        'size' => options[:per_page],
-        'from' => (options[:page] - 1) * options[:per_page],
-        'sort' => options[:sorting],
-        'query' => {
-          'bool' => {
-            'filter' => options[:filters]
-            # 'should' => [
-            #   # {
-            #   #   'function_score' => {
-            #   #     'query' => {'match_all' => {}},
-            #   #     'functions' => [
-            #   #       # {
-            #   #       #   'script_score' => {
-            #   #       #     'script' => "doc['name'] ? doc['name'].length : 0.0"
-            #   #       #   }
-            #   #       # }
-            #   #       # {
-            #   #       #   'field_value_factor' => {
-            #   #       #     'field' => 'degree',
-            #   #       #     'factor' => 0.01
-            #   #       #   }
-            #   #       # }
-            #   #     ]
-            #   #   }
-            #   # }
-            # ]
-          }
-        }
-      }
-
-      if options[:queries].present?
-        data['query']['bool']['must'] = options[:queries]
-      end
-
-      data
     end
   end
 
   def self.count
-    return 0 unless enabled?
-
     response = request('get', '/entities/_count')
     response['count']
   end
@@ -494,7 +611,9 @@ class Kor::Elastic
     end
 
     def self.request(method, path, query = {}, body = nil, headers = {})
-      return :disabled if !enabled?
+      raise Kor::Exception, "elasticsearch is not available" if !available?
+      raise Kor::Exception, "elasticsearch functionality has been disabled" if !enabled?
+
       query ||= {}
       path = "/#{current_index}#{path}"
       body = (body ? JSON.dump(body) : nil)
@@ -507,8 +626,6 @@ class Kor::Elastic
     end
 
     def self.raw_request(method, path, query = {}, body = nil, headers = {})
-      return :disabled if !enabled?
-
       Rails.logger.info "ELASTIC REQUEST: #{method} #{path}\n#{body.inspect}"
 
       query['token'] = config['token'] if config['token']
@@ -523,23 +640,23 @@ class Kor::Elastic
       end
     end
 
-    def tokenize(query_string)
-      query_string = "" if query_string.blank?
-      query_string = query_string.join(' ') if query_string.is_a?(Array)
+    # def tokenize(query_string)
+    #   query_string = "" if query_string.blank?
+    #   query_string = query_string.join(' ') if query_string.is_a?(Array)
 
-      query_string.scan(/\"[^\"]*\"|[^\"\s]+/).select do |term|
-        term.size >= 3
-      end
-    end
+    #   query_string.scan(/\"[^\"]*\"|[^\"\s]+/).select do |term|
+    #     term.size >= 3
+    #   end
+    # end
 
-    def escape(terms)
-      terms.map do |term|
-        term.gsub /[\-]/ do |m|
-          '\\' + m
-        end
-        # + - && || ! ( ) { } [ ] ^ ~ * ? : \ /
-      end
-    end
+    # def escape(terms)
+    #   terms.map do |term|
+    #     term.gsub /[\-]/ do |m|
+    #       '\\' + m
+    #     end
+    #     # + - && || ! ( ) { } [ ] ^ ~ * ? : \ /
+    #   end
+    # end
 
     def to_array(value)
       return [] if value.nil?

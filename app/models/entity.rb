@@ -1,4 +1,4 @@
-class Entity < ActiveRecord::Base
+class Entity < ApplicationRecord
 
   # Settings
   
@@ -198,7 +198,7 @@ class Entity < ActiveRecord::Base
   end
   
   def update_elastic
-    unless is_medium?
+    if Kor::Elastic.enabled?
       if deleted?
         Kor::Elastic.drop self
       else
@@ -458,27 +458,24 @@ class Entity < ActiveRecord::Base
     end
   }
   scope :by_relation_name, lambda {|relation_name|
-    if relation_name.present?
-      kind_ids = Relation.where(name: relation_name).map{|r| r.to_kind_id}
-      kind_ids << Relation.where(reverse_name: relation_name).map{|r| r.from_kind_id}
-      where(kind_id: kind_ids.flatten.uniq)
-    else
-      all
-    end
+    return all if relation_name.blank?
+    where(kind_id: Relation.to_entity_kind_ids(relation_name))
   }  
   scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
   scope :by_uuid, lambda {|uuid| uuid.present? ? where(uuid: uuid) : all}
-  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
-  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
+  scope :created_after, lambda {|time| time.present? ? where("created_at > ?", time) : all}
+  scope :created_before, lambda {|time| time.present? ? where("created_at < ?", time) : all}
+  scope :updated_after, lambda {|time| time.present? ? where("updated_at > ?", time) : all}
+  scope :updated_before, lambda {|time| time.present? ? where("updated_at < ?", time) : all}
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
   scope :except_kinds, lambda {|ids| ids.present? ? where("entities.kind_id NOT IN (?)", ids) : all}
-  scope :alphabetically, lambda { order("name asc, distinct_name asc") }
-  scope :newest_first, lambda { order("created_at DESC") }
-  scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
+  # scope :alphabetically, lambda { order("name asc, distinct_name asc") }
+  # scope :newest_first, lambda { order("created_at DESC") }
+  # scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
   scope :media, lambda { only_kinds(Kind.medium_kind_id) }
-  scope :without_media, lambda { without_kinds(Kind.medium_kind_id) }
+  scope :without_media, lambda { except_kinds(Kind.medium_kind_id) }
   scope :by_subtype, lambda { |subtype| subtype.present? ? where(subtype: subtype) : all }
   scope :by_comment, lambda { |comment| comment.present? ? where('comment LIKE ?', "%#{comment}%") : all}
   scope :named_like, lambda { |terms|
@@ -602,14 +599,14 @@ class Entity < ActiveRecord::Base
     where('es.system_group_id IN (?)', ids)
   }
 
-  scope :pageit, lambda { |page, per_page|
-    page = [(page || 1).to_i, 1].max
-    per_page = [(per_page || 20).to_i, Kor.settings['max_results_per_request']].min
+  # scope :pageit, lambda { |page, per_page|
+  #   page = [(page || 1).to_i, 1].max
+  #   per_page = [(per_page || 20).to_i, Kor.settings['max_results_per_request']].min
 
-    offset((page - 1) * per_page).limit(per_page)
-  }
+  #   offset((page - 1) * per_page).limit(per_page)
+  # }
   def self.tagged_with(tags = [])
-    tags.present? ? tagged_with(tags) : all
+    tags.present? ? super : all
   end
 
   def self.invalid(invalid)

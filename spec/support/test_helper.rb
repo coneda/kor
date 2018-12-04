@@ -49,11 +49,11 @@ module TestHelper
     )
 
     if use_elastic
-      Kor::Elastic.enable
+      Kor::Elastic.enabled = true
       Kor::Elastic.reset_index
       Kor::Elastic.index_all full: true
     else
-      Kor::Elastic.disable
+      Kor::Elastic.enabled = false
     end
 
     if framework == :rspec && test.metadata[:type].to_s == 'controller'

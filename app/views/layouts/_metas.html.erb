@@ -1,9 +1,0 @@
-<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-<meta name="robots" content="nofollow" />
-<meta http-equiv="content-language" content="<%= I18n.locale %>" />
-
-<% I18n.available_locales.each do |l| %>
-  <meta lang="<%= l %>" name="description" content="<%= I18n.t 'meta.description', :locale => l %>">
-  <meta lang="<%= l %>" name="author" content="<%= I18n.t 'meta.author', :locale => l %>">
-  <meta lang="<%= l %>" name="keywords" content="<%= I18n.t 'meta.keywords', :locale => l %>">
-<% end %>

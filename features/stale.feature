@@ -1,36 +1,26 @@
 Feature: Stale update protection
-  As an editor
-  In order not to overwrite changes made by others
-  I want to receive errors on stale updates
-  
-
-  @javascript  
   Scenario: Update a stale entity
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "Werk/Werke"
     When I go to the edit page for "entity" "Mona Lisa"
     And the "entity" "Mona Lisa" is updated behind the scenes
     And I press "Save"
-    Then I should see "The entity has been edited meanwhile. Please reload the page"
+    Then I should see "has been updated in the meantime"
   
-  
-  @javascript
   Scenario: Update a stale user
     Given I am logged in as "admin"
     And the user "joe"
     When I go to the edit page for "user" "joe"
+    Then I should see "Edit user"
     And the "user" "joe" is updated behind the scenes
     And I press "Save"
-    Then I should see "The user has been edited meanwhile. Please reload the page"
-    
+    Then I should see "has been updated in the meantime"
   
-  @javascript
   Scenario: Update a stale relation
     Given I am logged in as "admin"
-    And the relation "wurde geschaffen von/hat geschaffen" between "person/people" and "work/works"
-    When I go to the edit page for "relation" "wurde geschaffen von/hat geschaffen"
-    Then I should see "wurde geschaffen von"
-    When the "relation" "wurde geschaffen von/hat geschaffen" is updated behind the scenes
+    When I go to the edit page for "relation" "has created"
+    Then I should see "Edit relation"
+    When the "relation" "has created" is updated behind the scenes
     And I press "Save"
-    Then I should see "The relation has been edited meanwhile. Please reload the page"
+    Then I should see "has been updated in the meantime"
     

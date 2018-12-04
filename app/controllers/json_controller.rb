@@ -2,6 +2,7 @@
 class JsonController < BaseController
 
   rescue_from ActiveRecord::RecordNotFound, with: :render_record_not_found
+  rescue_from ActiveRecord::StaleObjectError, with: :render_stale
 
   before_filter :auth, :legal
 
@@ -52,6 +53,11 @@ class JsonController < BaseController
 
     def render_record_not_found(exception)
       render_404 exception.message
+    end
+
+    def render_stale(exception)
+      @message = I18n.t('errors.stale_update')
+      render template: 'layouts/message', status: 422
     end
 
     def render_404(message = nil)
@@ -151,6 +157,12 @@ class JsonController < BaseController
     end
 
     def sort
+      if params[:sort] == 'random'
+        return {
+          column: 'random', direction: 'asc'
+        }
+      end
+
       return {
         column: params[:sort] || 'default',
         direction: params[:direction] || 'asc'
