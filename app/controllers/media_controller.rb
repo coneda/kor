@@ -1,17 +1,5 @@
 class MediaController < JsonController
-
   skip_before_filter :auth
-
-  # def view
-  #   @medium = Medium.find params[:id]
-
-  #   if authorized?(:view, @medium.entity.collection)
-  #     render :layout => 'wide'
-  #   else
-  #     # TODO: should be handled with riot
-  #     render_403
-  #   end
-  # end
 
   def show
     id = params[:id] || (params[:id_part_01] + params[:id_part_02] + params[:id_part_03]).to_i
@@ -39,30 +27,6 @@ class MediaController < JsonController
       render_403
     end
   end
-
-  # def download
-  #   id = params[:id] || (params[:id_part_01] + params[:id_part_02] + params[:id_part_03]).to_i
-  #   @medium = Medium.includes(:entity => :collection).find(id)
-
-  #   style = param_to_style(params[:style])
-  #   auth = if style == :original
-  #     authorized?(:download_originals, @medium.entity.collection) || (
-  #       !@medium.content_type.match(/\image/) && 
-  #       authorized?(:view, @medium.entity.collection)
-  #     )
-  #   else
-  #     authorized? :view, @medium.entity.collection
-  #   end
-
-  #   if auth
-  #     send_data @medium.data(style),
-  #       :type => @medium.content_type(style),
-  #       :disposition => 'attachment',
-  #       :filename => @medium.download_filename(style)
-  #   else
-  #     render_403
-  #   end
-  # end
 
   def transform
     @medium = Medium.find params[:id]

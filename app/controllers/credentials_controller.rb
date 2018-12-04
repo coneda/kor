@@ -1,5 +1,6 @@
 class CredentialsController < JsonController
   def index
+    # TODO: unify this
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
 
@@ -17,14 +18,6 @@ class CredentialsController < JsonController
     @record = Credential.find(params[:id])
     render template: 'json/show'
   end
-
-  # def new
-  #   @credential = Credential.new
-  # end
-
-  # def edit
-  #   @credential = Credential.find(params[:id])
-  # end
 
   def create
     @record = Credential.new(credential_params)
@@ -61,5 +54,5 @@ class CredentialsController < JsonController
     def auth
       require_admin
     end
-  
+    
 end

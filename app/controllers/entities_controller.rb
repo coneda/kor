@@ -1,11 +1,5 @@
 class EntitiesController < JsonController
 
-  # layout 'normal_small', :only => [ :edit, :new, :update, :create, :recent, :invalid ]
-  # layout false
-  # skip_before_filter :verify_authenticity_token
-
-  # respond_to :json, only: [:isolated]
-
   def metadata
     @entity = Entity.find(params[:id])
 
@@ -18,127 +12,6 @@ class EntitiesController < JsonController
       render_403
     end
   end
-
-  # def gallery
-  #   params[:include] = param_to_array(params[:include], ids: false)
-
-  #   entities = viewable_entities.
-  #     includes(:kind, :collection, :medium, :tags).
-  #     media.
-  #     newest_first
-
-  #   @total = entities.count
-  #   @per_page = 16
-  #   @records = entities.pageit(params[:page], 16)
-  # end
-  
-  # def invalid
-  #   if authorized? :delete
-  #     @per_page = 30
-  #     group = SystemGroup.find_or_create_by(name: 'invalid')
-  #     scope = group.entities.allowed(current_user, :delete)
-  #     @total = scope.count
-  #     @records = scope.pageit(page, per_page)
-
-  #     render action: 'index'
-  #   else
-  #     render_403
-  #   end
-  # end
-  
-  # def recent
-  #   params[:include] = param_to_array(params[:include], ids: false)
-
-  #   if authorized? :edit
-  #     @per_page = 30
-  #     scope = Entity.
-  #       includes(:creator, :updater, :collection, :kind, :tags).
-  #       allowed(current_user, :edit).
-  #       without_media.
-  #       newest_first.
-  #       within_collections(params[:collection_id])
-  #     @total = scope.count
-  #     @records = scope.pageit(page, per_page)
-
-  #     render action: 'index'
-  #   else
-  #     render_403
-  #   end
-  # end
-
-  # def isolated
-  #   params[:include] = param_to_array(params[:include], ids: false)
-
-  #   if authorized? :edit
-  #     @per_page = 16
-  #     scope = Entity.
-  #       allowed(current_user, :view).
-  #       isolated.
-  #       newest_first.
-  #       includes(:kind, :collection, :tags, :medium)
-
-  #     @total = scope.count
-  #     @records = scope.pageit(page, per_page)
-
-  #     render action: 'index'
-  #   else
-  #     render_403
-  #   end
-  # end
-
-  # def recently_created
-  #   scope = Entity.
-  #     allowed(current_user, :view).
-  #     by_relation_name(params[:relation_name]).
-  #     newest_first.includes(:kind)
-
-  #   @total = scope.count
-  #   @records = scope.pageit(page, per_page)
-
-  #   render action: 'index'
-  # end
-
-  # def recently_visited
-  #   history_entity_ids = current_user.history.map do |url|
-  #     if m = url.match(/\/blaze\#\/entities\/(\d+)$/)
-  #       m[1].to_i
-  #     else
-  #       nil
-  #     end
-  #   end
-
-  #   scope = Entity.
-  #     allowed(current_user, :view).
-  #     by_ordered_id_array(history_entity_ids.reverse).
-  #     by_relation_name(params[:relation_name]).
-  #     includes(:kind).
-  #     newest_first
-
-  #   @total = scope.count
-  #   @results = scope.pageit(page, per_page)
-
-  #   render action: 'index'
-  # end
-
-  # def random
-  #   params[:include] = param_to_array(params[:include], ids: false)
-
-  #   scope = Entity.allowed(current_user, :view).media
-  #   @total = scope.count
-
-  #   amount = 4
-  #   @records = if @total < amount
-  #     scope.to_a
-  #   else
-  #     o = 0
-  #     Array.new(amount).map do |i|
-  #       o += [(rand(@total) / amount).round, 1].max
-  #       scope.limit(1).offset(o).to_a.first
-  #     end
-  #   end
-
-  #   render action: 'index'
-  # end
 
   def index
     params[:id] = param_to_array(params[:id])
@@ -216,38 +89,6 @@ class EntitiesController < JsonController
       end
     end
   end
-
-  # def relation_counts
-  #   @relations = Entity.find(params[:id]).relation_counts(current_user)
-  #   format.json {render json: @relations}
-  # end
-
-  # def new
-  #   if authorized? :create, Collection.all, :required => :any
-  #     @entity = Entity.new(:collection_id => current_user.default_collection_id)
-  #     kind = Kind.find(params[:kind_id])
-  #     @entity.kind = kind
-  #     @entity.no_name_statement = 'enter_name'
-  #     @entity.medium = Medium.new if @entity.kind_id == Kind.medium_kind.id
-  #   else
-  #     render_403
-  #   end
-  # end
-  
-  # def multi_upload
-  #   render :layout => "blaze"
-  # end
-
-  # def edit
-  #   @entity = Entity.find(params[:id])
-  #   # @entity.datings.build label: @entity.kind.dating_label
-
-  #   if authorized? :edit, @entity.collection
-  #     render :action => 'edit'  
-  #   else
-  #     render_403
-  #   end
-  # end
 
   def create
     @entity = Entity.new
@@ -481,11 +322,6 @@ class EntitiesController < JsonController
       )
 
       result
-
-      # entity.errors.as_json.reject{|k, v| k.match(/^datings/)}.merge(
-      #   'datings' => ,
-      #   'dataset' => dataset_errors
-      # )
     end
 
     def dataset_params

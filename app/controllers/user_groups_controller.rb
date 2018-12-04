@@ -1,18 +1,4 @@
 class UserGroupsController < JsonController
-  # layout 'normal_small'
-
-  # def mark
-  #   @user_group = UserGroup.owned_by(current_user).find_by_id(params[:id])
-  #   @user_group ||= UserGroup.shared.find(params[:id])
-  #   ids = @user_group.entities.allowed(current_user, :view).map{|e| e.id}
-
-  #   current_user.clipboard_add ids
-    
-  #   flash[:notice] = I18n.t("objects.marked_entities_success")
-    
-  #   redirect_to :action => 'show'
-  # end
-  
   def download_images
     @user_group = UserGroup.find(params[:id])
 
@@ -95,15 +81,6 @@ class UserGroupsController < JsonController
       render_403
     end
   end
-
-  # def new
-  #   @user_group = UserGroup.new
-  # end
-
-  # TODO: remove all edit actions from resources. They are not needed anymore
-  # def edit
-  #   @user_group = UserGroup.find(params[:id])
-  # end
 
   def create
     @record = UserGroup.new(user_group_params)

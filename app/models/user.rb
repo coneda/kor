@@ -1,14 +1,11 @@
 require 'digest/sha2'
 
 class User < ActiveRecord::Base
-
   include ActiveModel::ForbiddenAttributesProtection
-
 
   serialize :login_attempts
   serialize :storage, JSON
 
-  # ----------------------------------------------------------- associations ---
   has_and_belongs_to_many :groups, :class_name => "Credential"
   has_many :created_entities, :class_name => 'Entity', :foreign_key => :creator_id
   has_many :updated_entities, :class_name => 'Entity', :foreign_key => :updater_id
@@ -24,7 +21,6 @@ class User < ActiveRecord::Base
   belongs_to :personal_group, :class_name => 'Credential', :foreign_key => :credential_id
   belongs_to :personal_collection, :class_name => 'Collection', :foreign_key => :collection_id
 
-  # ------------------------------------------------------------- validation ---
   validates :name,
     :presence => true,
     :uniqueness => {:allow_blank => false},
@@ -62,8 +58,6 @@ class User < ActiveRecord::Base
     end
   end
   
-  
-  # -------------------------------------------------------------- callbacks ---
   before_validation(:on => :create) do |model|
     model.generate_secrets
   end
@@ -121,8 +115,6 @@ class User < ActiveRecord::Base
     end
   end
   
-  
-  # ----------------------------------------------------- virtual attributes ---
   attr_accessor :extension
   attr_accessor :custom_extension
   attr_accessor :plain_password
@@ -314,7 +306,6 @@ class User < ActiveRecord::Base
     }
   end
 
-  # ----------------------------------------------------------------- search ---
   scope :without_predefined, lambda { where("name NOT IN (?)", ["admin", "guest"]) }
   scope :without_admin, lambda { where("name NOT LIKE ?", "admin") }
   scope :search, lambda { |search_string|
@@ -360,8 +351,6 @@ class User < ActiveRecord::Base
     id ? includes(:groups).find(id) : nil
   end
 
-
-  # ---------------------------------------------------------- miscellaneous ---
   def credential_ids
     groups.map{|c| c.id}
   end
@@ -450,5 +439,4 @@ class User < ActiveRecord::Base
   def allowed_to?(policy = :view, collections = nil, options = {})
     Kor::Auth.allowed_to?(self, policy, collections, options)
   end
-  
 end

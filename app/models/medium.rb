@@ -1,8 +1,6 @@
 class Medium < ActiveRecord::Base
-
   has_one :entity
 
-  # -------------------------------------------------------------- paperclip ---
   def self.media_data_dir
     if Rails.env == 'production'
       "#{Rails.root}/data/media"
@@ -77,7 +75,6 @@ class Medium < ActiveRecord::Base
     ct && !!document.content_type.match(/^audio\//)
   end
 
-  
   # TODO: fix for audio case or remove if not used
   def presentable?
     self.content_type.match /^(image|video|application\/x-shockwave-flash|application\/mp4)/
@@ -103,9 +100,6 @@ class Medium < ActiveRecord::Base
     end
   end
   
-  
-  # Validation
-
   validates_attachment :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{|medium| medium.image.file?}}
   validates_attachment :document, presence: {unless: Proc.new{|medium| medium.image.file?}, message: :file_must_be_set} 
   validates :datahash, uniqueness: {:message => :file_exists}
@@ -133,9 +127,6 @@ class Medium < ActiveRecord::Base
       errors.add :document_file_size, :file_size_less_than, :value => max_mb
     end
   end
-  
-  
-  # Paperclip
   
   def to_file(attachment = :document, style = :original)
     path = if attachment == :document

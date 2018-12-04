@@ -1,5 +1,4 @@
 class DirectedRelationshipsController < JsonController
-
   skip_before_action :legal, :auth
 
   def index
@@ -31,5 +30,4 @@ class DirectedRelationshipsController < JsonController
       render_403
     end
   end
-
 end

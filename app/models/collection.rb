@@ -1,5 +1,4 @@
 class Collection < ApplicationRecord
-
   has_many :entities
   has_many :grants, :dependent => :destroy
   has_many :credentials, :through => :grants
@@ -75,33 +74,4 @@ class Collection < ApplicationRecord
       end
     end
   end
-
-  # def grants_by_policy
-  #   grants.group_by do |grant|
-  #     grant.policy
-  #   end
-  # end
-  
-  # def grants_by_policy=(value)
-  #   @grants_by_policy_buffer = value
-  
-  #   Kor::Auth.policies.each do |policy|
-  #     if grants_by_policy[policy]
-  #       grants_by_policy[policy].each do |old_grant|
-  #         new_credentials = value[policy] || []
-  #         old_grant.destroy unless new_credentials.include?(old_grant.id.to_s)
-  #       end
-  #     end
-      
-  #     if value[policy]
-  #       value[policy].each do |new_id|
-  #         existing = grants_by_policy[policy] || []
-  #         unless existing.map{|g| g.id.to_s}.include? new_id
-  #           Grant.create(:collection => self, :policy => policy, :credential_id => new_id)
-  #         end
-  #       end
-  #     end
-  #   end
-  # end
-
 end

@@ -1,5 +1,4 @@
 class Identifier < ActiveRecord::Base
-
   belongs_to :entity
 
   validates :kind, :value, :presence => true
@@ -25,5 +24,4 @@ class Identifier < ActiveRecord::Base
   rescue ActiveRecord::RecordNotFound => e
     nil
   end
-
 end

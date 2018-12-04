@@ -1,5 +1,4 @@
 class Generator < ActiveRecord::Base
-  
   belongs_to :kind, touch: true
   
   validates :name,
@@ -7,7 +6,5 @@ class Generator < ActiveRecord::Base
     :format => {:with => /\A[a-z0-9_]+\z/},
     :white_space => true
 
-  validates :directive,
-    :presence => true
-  
+  validates :directive, :presence => true
 end

@@ -1,8 +1,4 @@
 class RelationshipsController < JsonController
-
-  # layout 'normal_small'
-  # skip_before_filter :legal, :authentication, :authorization, :only => [:index]
-
   def create
     @relationship = Relationship.new(relationship_params)
 

@@ -1,16 +1,7 @@
 class Download < ActiveRecord::Base
-  
-  # Associations
-  
   belongs_to :user
-  
-  
-  # Validations
 
   validates :user, :uuid, :content_type, :file_name, :new_data, presence: true
-  
-  
-  # Callbacks
 
   before_validation(on: :create) do |model|
     model.generate_uuid
@@ -19,8 +10,6 @@ class Download < ActiveRecord::Base
   end
   after_create :notify_ready
   after_destroy :delete_files
-  
-  # handling
   
   def copy_file
     unless File.exists?(dir)
@@ -56,14 +45,7 @@ class Download < ActiveRecord::Base
     FileUtils.rm_f(path)
   end
   
-  
-  # Accessors
-  
   attr_accessor :notify_user
-  
-  # def link
-  #   "#{Kor.base_url}/downloads/#{uuid}"
-  # end
   
   def data=(value)
     @data = value
@@ -84,5 +66,4 @@ class Download < ActiveRecord::Base
   def dir
     "#{Rails.root}/data/downloads"
   end
-
 end

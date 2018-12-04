@@ -1,7 +1,4 @@
 class Field < ActiveRecord::Base
-  
-  # ActiveRecord settings
-  
   serialize :settings, Hash
   
   belongs_to :kind, touch: true
@@ -32,12 +29,10 @@ class Field < ActiveRecord::Base
   after_update do |f|
     f.synchronize_identifiers :update
     if name_changed?
-      # f.class.delay.synchronize_storage(f.kind_id, f.name_was, f.name)
       GenericJob.perform_later 'constant', f.class.name, 'synchronize_storage', f.kind_id, f.name_was, f.name
     end
   end
   after_destroy do |f|
-    # f.class.delay.synchronize_storage(f.kind_id, f.name_was, nil)
     GenericJob.perform_later 'constant', f.class.name, 'synchronize_storage', f.kind_id, f.name_was, nil
     f.destroy_identifiers
   end
@@ -58,7 +53,6 @@ class Field < ActiveRecord::Base
 
         if is_identifier?
           if (mode == :update || others_changed)
-            # f.delay.create_identifiers
             GenericJob.perform_later 'object', self.class.name, f.id, 'create_identifiers'
           end
         else
@@ -123,66 +117,12 @@ class Field < ActiveRecord::Base
     show_label.presence || name
   end
   
-  
-  # Dataset validation
-  
   def validate_value
     true
   end
   
-  # def add_error(error)
-  #   @errors ||= ActiveModel::Errors.new(self)
-  #   @errors.add 
-  #   # message = "#{show_label} "
-  #   # message += case error
-  #   #   when Symbol then I18n.t("activerecord.errors.messages.#{error}")
-  #   #   when Strnig then error
-  #   #   else
-  #   #     raise "unknown dataset field error class '#{error.class.to_s}'"
-  #   # end
-
-  #   binding.pry
-  #   entity.errors.add :dataset, error
-  #   # entity.errors[:dataset] << message
-  # end
-  
-  
-  # Utility
-  
-  # def h
-  #   ApplicationController.helpers
-  # end
-  
-  
-  # Accessors
-
   def self.fields
     []
-  end
-  
-  # TODO remove all of those once the kind/field/generator editor is complete
-  def self.partial_name
-    to_s.split('::').last.underscore
-  end
-  
-  def self.show_partial_name
-    "fields/show/#{partial_name}"
-  end
-  
-  def self.form_partial_name
-    "fields/form/#{partial_name}"
-  end
-  
-  def self.search_partial_name
-    "fields/search/#{partial_name}"
-  end
-  
-  def self.merge_partial_name
-    "fields/merge/#{partial_name}"
-  end
-  
-  def self.config_form_partial_name
-    "fields/config_form/#{partial_name}"
   end
   
   def self.label
@@ -202,9 +142,6 @@ class Field < ActiveRecord::Base
       entity.dataset[name]
     end
   end
-  
-  
-  # Formats
   
   def serializable_hash(*args)
     super(methods: [:value, :show_on_entity]).stringify_keys

@@ -118,24 +118,6 @@ class JsonController < BaseController
       require_role 'kind_admin'
     end
 
-    # deny service if there is no guest and when we are unauthenticated
-    # def authentication
-    #   if !current_user
-    #     render_403
-    #   end
-    # end
-
-    # # TODO: make this a whitelist?
-    # def role_authorized?
-    #   true
-    # end
-
-    # def role_auth
-    #   if current_user
-    #     render_403 unless role_authorized?
-    #   end
-    # end
-
     # redirects to the legal page if terms have not been accepted
     def legal
       if current_user && !current_user.guest? && !current_user.terms_accepted

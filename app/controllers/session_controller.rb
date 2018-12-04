@@ -1,13 +1,10 @@
-# TOTO: test this
-# TODO: diff with json authentication_controller
 class SessionController < JsonController
-
   protect_from_forgery except: [:create, :destroy, :reset_password]
 
   skip_before_filter :auth, :legal
 
   def show
-
+    
   end
 
   def env_auth
@@ -62,8 +59,6 @@ class SessionController < JsonController
           account_without_password.save
         end
 
-        # TODO: check this:
-        # reset_session cant be done here because of http://railsforum.com/viewtopic.php?id=1611 (dead link)
         reset_session
         render_403 I18n.t("errors.user_or_pass_refused")
       end
@@ -84,21 +79,4 @@ class SessionController < JsonController
       session[:expires_at] = Kor.session_expiry_time
       user.update_attributes(last_login: Time.now)
     end
-
-    # TODO: probably not needed anymore
-    # def redirect_after_login
-    #   r_to = 
-    #     params[:return_to].presence ||
-    #     (back || current_user.home_page) ||
-    #     Kor.config['app.default_home_page'] ||
-    #     root_path
-
-    #   if params[:fragment].present?
-    #     params[:fragment] = nil if params[:fragment].match('{{')
-    #     r_to += "##{params[:fragment]}" if params[:fragment].present?
-    #   end
-
-    #   redirect_to r_to
-    # end
-
 end

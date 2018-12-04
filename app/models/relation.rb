@@ -280,5 +280,4 @@ class Relation < ActiveRecord::Base
 
     self
   end
-
 end

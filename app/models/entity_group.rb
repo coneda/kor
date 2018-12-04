@@ -25,5 +25,4 @@ class EntityGroup < ApplicationRecord
   def remove_entities(old_entities)
     entities.delete(old_entities)
   end
-  
 end

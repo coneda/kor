@@ -1,13 +1,8 @@
 class Entity < ApplicationRecord
-
-  # Settings
-  
   serialize :attachment, JSON
   
   acts_as_taggable_on :tags
   acts_as_paranoid
-
-  # Associations
 
   belongs_to :kind
   belongs_to :collection
@@ -33,8 +28,6 @@ class Entity < ApplicationRecord
   has_many :incoming, through: :incoming_relationships, source: :from
 
   accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
-
-  # validates_associated :datings
 
   validates :name, 
     :presence => {:if => :needs_name?},
@@ -88,9 +81,6 @@ class Entity < ApplicationRecord
     result
   end
   
-  
-  # Attachment
-
   def read_attribute_for_validation(attr)
     if attr.match(/^dataset\./)
       self.dataset[attr.split('\.')[1]]
@@ -182,9 +172,6 @@ class Entity < ApplicationRecord
     end
   end
 
-
-  # Callbacks
-  
   before_validation :generate_uuid, :sanitize_distinct_name
   before_save :generate_uuid, :add_to_user_group
   after_commit :update_elastic, :update_identifiers
@@ -241,8 +228,6 @@ class Entity < ApplicationRecord
 
     "#{model_name.cache_key}/#{id}-#{timestamp}"
   end
-
-  # Attributes
   
   def recent?
     @recent
@@ -252,8 +237,6 @@ class Entity < ApplicationRecord
     @recent = true
   end
   
-  
-  # ---------------------------------------------------------- miscellaneous ---
   attr_accessor :user_group_id
   def add_to_user_group
     if user_group_id
@@ -270,9 +253,6 @@ class Entity < ApplicationRecord
   def mark_valid
     SystemGroup.find_or_create_by(:name => 'invalid').remove_entities self
   end
-  
-  
-  ############################ user related ####################################
 
   def last_updated_by
     updater || creator
@@ -283,27 +263,17 @@ class Entity < ApplicationRecord
     where("entities.collection_id IN (?)", collections.map{|c| c.id})
   end
   
-  ############################ comment related #################################
-
   def html_comment
     red_cloth = RedCloth.new(self.comment || "")
     red_cloth.sanitize_html = true
     red_cloth.to_html
   end
   
-  
-  ############################ relationships ###################################
-  
   def degree
     Relationship.where("from_id = ? OR to_id = ?", self.id, self.id).count
   end
 
   def primary_relationships(user)
-    # relation_names = Relation.primary_relation_names
-    # outgoing.
-    #   allowed(user, :view).
-    #   where('directed_relationships.relation_name' => relation_names).
-    #   without_media
     relation_names = Relation.primary_relation_names
     if relation_names.empty?
       outgoing_relationships.none
@@ -316,11 +286,6 @@ class Entity < ApplicationRecord
   end
 
   def secondary_relationships(user)
-    # relation_names = Relation.secondary_relation_names
-    # outgoing.
-    #   allowed(user, :view).
-    #   where('directed_relationships.relation_name' => relation_names).
-    #   without_media
     relation_names = Relation.secondary_relation_names
     if relation_names.empty?
       outgoing_relationships.none
@@ -377,9 +342,6 @@ class Entity < ApplicationRecord
     sn.join(', ') + ': ' + pn.join(', ')
   end
 
-  
-  ############################ naming ##########################################
-  
   def medium_hash
     self.medium ? self.medium.datahash : nil
   end
@@ -469,9 +431,6 @@ class Entity < ApplicationRecord
   scope :updated_before, lambda {|time| time.present? ? where("updated_at < ?", time) : all}
   scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
   scope :except_kinds, lambda {|ids| ids.present? ? where("entities.kind_id NOT IN (?)", ids) : all}
-  # scope :alphabetically, lambda { order("name asc, distinct_name asc") }
-  # scope :newest_first, lambda { order("created_at DESC") }
-  # scope :recently_updated, lambda {|*args| where("updated_at > ?", (args.first || 2.weeks).ago) }
   scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
   scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
   scope :media, lambda { only_kinds(Kind.medium_kind_id) }
@@ -489,25 +448,6 @@ class Entity < ApplicationRecord
       all
     end
   }
-  # TODO the scopes are not combinable e.g. id-conditions overwrite each other
-  # TODO: rewrite this not to collect singular entity ids
-  # scope :named_like, lambda { |user, pattern|
-  #   if pattern.blank?
-  #     all
-  #   else
-  #     pattern_query = pattern.tokenize.map{ |token| "entities.name LIKE ?"}.join(" AND ")
-  #     pattern_values = pattern.tokenize.map{ |token| "%" + token + "%" }
-
-  #     entity_ids = Kor::Elastic.new(user).search(:synonyms => pattern, :size => Entity.count).ids
-  #     entity_ids += Entity.where([pattern_query.gsub('name','distinct_name')] + pattern_values ).collect{|e| e.id}
-
-  #     id_query = entity_ids.blank? ? "" : "OR entities.id IN (?)"
-  #     entity_id_bind_variables = entity_ids.blank? ? [] : [ entity_ids ]
-
-  #     query = ["(#{pattern_query}) #{id_query}"] + pattern_values + entity_id_bind_variables
-  #     where(query)
-  #   end
-  # }
   scope :has_property, lambda { |user, properties|
     if properties.blank?
       all
@@ -599,12 +539,6 @@ class Entity < ApplicationRecord
     where('es.system_group_id IN (?)', ids)
   }
 
-  # scope :pageit, lambda { |page, per_page|
-  #   page = [(page || 1).to_i, 1].max
-  #   per_page = [(per_page || 20).to_i, Kor.settings['max_results_per_request']].min
-
-  #   offset((page - 1) * per_page).limit(per_page)
-  # }
   def self.tagged_with(tags = [])
     tags.present? ? super : all
   end

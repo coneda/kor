@@ -2,10 +2,6 @@ class AuthorityGroupsController < JsonController
   skip_before_filter :auth, only: ['download_images', 'index', 'show']
 
   def index
-    # if params[:authority_group_category_id] == ''
-    #   params[:authority_group_category_id] = 'root'
-    # end
-
     @records = AuthorityGroup.search(params[:terms])
     if params.has_key?(:authority_group_category_id)
       @records = @records.within_category(params[:authority_group_category_id])
@@ -16,17 +12,6 @@ class AuthorityGroupsController < JsonController
     render 'json/index'
   end
 
-  # def mark
-  #   @authority_group = AuthorityGroup.find(params[:id])
-  #   ids = @authority_group.entities.allowed(current_user, :view).map{|e| e.id}
-
-  #   current_user.clipboard_add ids
-    
-  #   flash[:notice] = I18n.t("objects.marked_entities_success")
-    
-  #   redirect_to :action => 'show'
-  # end
-  
   def download_images
     @record = AuthorityGroup.find(params[:id])
     @entities = @record.entities.allowed(current_user, :view).media
@@ -55,24 +40,7 @@ class AuthorityGroupsController < JsonController
   def show
     @record = AuthorityGroup.find(params[:id])
     render template: 'json/show'
-    # @entities = @authority_group.
-    #   entities.
-    #   allowed(current_user, :view).
-    #   paginate(:page => params[:page], :per_page => 16).
-    #   order('created_at DESC')
   end
-
-  # def new
-  #   @authority_group = AuthorityGroup.new(authority_group_params)
-  # end
-
-  # def edit
-  #   @authority_group = AuthorityGroup.find(params[:id])
-  # end
-  
-  # def edit_move
-  #   @authority_group = AuthorityGroup.find(params[:id])
-  # end
 
   def create
     @record = AuthorityGroup.new(authority_group_params)

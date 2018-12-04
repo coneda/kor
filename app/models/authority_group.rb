@@ -8,7 +8,6 @@ class AuthorityGroup < EntityGroup
   
   default_scope lambda{order(name: 'asc')}
   
-  # scope :without_category, lambda { where(:authority_group_category_id => nil) }
   scope :within_category, lambda{|id|
     id.present? ? 
       where(authority_group_category_id: id) :

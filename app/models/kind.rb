@@ -1,5 +1,4 @@
 class Kind < ActiveRecord::Base
-
   MEDIA_UUID = '93a03d5c-e439-4294-a8d4-d4921c4d0dbc'
 
   serialize :settings
@@ -108,8 +107,6 @@ class Kind < ActiveRecord::Base
     uuid == MEDIA_UUID
   end
   
-  # Other
-
   def medium_kind?
     uuid == MEDIA_UUID
   end
@@ -137,9 +134,6 @@ class Kind < ActiveRecord::Base
       x.first <=> y.first
     end
   end
-  
-  
-  # Settings
   
   def settings
     if destroyed?
@@ -202,5 +196,4 @@ class Kind < ActiveRecord::Base
   def serializable_hash(*args)
     super :methods => [:defines_schema?, :tagging]
   end
-
 end

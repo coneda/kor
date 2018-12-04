@@ -1,5 +1,4 @@
 class Grant < ActiveRecord::Base
-  
   self.table_name = 'collections_credentials'
   
   belongs_to :collection
@@ -15,5 +14,4 @@ class Grant < ActiveRecord::Base
   def personal?
     !!credential.owner
   end
-
 end  

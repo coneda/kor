@@ -1,4 +1,3 @@
-# TODO: test this
 class CollectionsController < JsonController
 
   skip_before_filter :auth, only: [:index]
@@ -24,16 +23,6 @@ class CollectionsController < JsonController
     render 'json/show'
   end
 
-  # def new
-  #   @collection = Collection.new
-  # end
-  
-  # TODO: check if this can actually work and if its save. Would be best to
-  # ditch the feature
-  # def edit_personal
-  #   @collection = Collection.joins(:owner).first
-  # end
-  
   def create
     @record = Collection.new(collection_params)
 

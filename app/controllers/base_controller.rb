@@ -48,23 +48,6 @@ class BaseController < ActionController::Base
       !!user_by_api_key
     end
 
-    # def authorized?(policy = :view, collections = nil, options = {})
-    #   options.reverse_merge!(required: :any)
-    #   Kor::Auth.allowed_to? current_user, policy, collections, options
-    # end
-
-    # def authorized_collections(policy = :view)
-    #   Kor::Auth.authorized_collections current_user, policy
-    # end
-    
-    # def viewable_entities
-    #   Entity.allowed current_user, :view
-    # end
-    
-    # def editable_entities
-    #   Entity.allowed current_user, :edit
-    # end
-    
     def authorized_for_relationship?(relationship, policy = :view)
       Kor::Auth.authorized_for_relationship?(current_user, relationship, policy)
     end
@@ -73,10 +56,6 @@ class BaseController < ActionController::Base
       Kor::Auth.allowed_to? current_user, policy, collections, options
     end
     
-    # def logged_in?
-    #   current_user && !current_user.guest?
-    # end
-
     # TODO: test this
     def session_expiry
       if session_expired?

@@ -1,5 +1,4 @@
 class Dating < ActiveRecord::Base
-
   self.abstract_class = true
 
   validates :label, :dating_string, presence: true
@@ -33,8 +32,6 @@ class Dating < ActiveRecord::Base
     self.class.parse(dating_string) ? true : false
   end
   
-  
-  # ----------------------------------------------------- virtual attributes ---
   def dating_string=(value)
     self[:dating_string] = value
     parsed = self.class.parse(value)
@@ -68,5 +65,4 @@ class Dating < ActiveRecord::Base
   def self.julian_date_for(date)
     Date.civil(date.year, date.month, date.day).jd
   end
-
 end

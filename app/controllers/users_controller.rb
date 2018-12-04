@@ -59,11 +59,6 @@ class UsersController < JsonController
     render template: 'json/show'
   end
 
-  # def new
-  #   @user = User.new
-  #   @user.groups << Credential.where(:name => Kor.settings['default_groups']).to_a
-  # end
-  
   def me
     @record = User.find(current_user.id)
     render template: 'json/show'

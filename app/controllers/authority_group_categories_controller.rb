@@ -25,16 +25,6 @@ class AuthorityGroupCategoriesController < JsonController
     render template: 'json/show'
   end
 
-  # def new
-  #   @authority_group_category = AuthorityGroupCategory.new
-  #   render :layout => 'normal_small'
-  # end
-
-  # def edit
-  #   @authority_group_category = AuthorityGroupCategory.find(params[:id])
-  #   render :layout => 'normal_small'
-  # end
-
   def create
     @record = AuthorityGroupCategory.new(authority_group_category_params)
 

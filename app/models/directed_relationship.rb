@@ -1,5 +1,4 @@
 class DirectedRelationship < ApplicationRecord
-
   belongs_to :relationship
   belongs_to :relation
   belongs_to :from, class_name: 'Entity'
@@ -40,5 +39,4 @@ class DirectedRelationship < ApplicationRecord
   scope :order_by_name, lambda {
     with_to.order('tos.name ASC, directed_relationships.relationship_id ASC')
   }
-
 end
