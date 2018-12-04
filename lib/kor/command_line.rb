@@ -39,13 +39,13 @@ class Kor::CommandLine
     end
 
     case @command
-      when "export"
+    when "export"
         @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") {|v| @config[:format] = v }
         @parser.on("-u USERAME", "the user to act as, default: admin") {|v| @config[:username] = v }
         @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids") {|v| @config[:collection_id] = v.split(",").map{|v| v.to_i} }
         @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids") {|v| @config[:kind_id] = v.split(",").map{|v| v.to_i} }
         @required += [:format]
-      when "import"
+    when "import"
         @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") {|v| @config[:format] = v }
         @parser.on("-u USERAME", "the user to act as, default: admin") {|v| @config[:username] = v }
         @parser.on("-i", "write objects even if they are stale, default: false") { @config[:ignore_stale] = true }
@@ -53,15 +53,15 @@ class Kor::CommandLine
         @parser.on("-s", "for imports: don't make any changes, default: false, implies verbose") { @config[:simulate] = true }
         @parser.on("-o", "ignore all validations") { @config[:ignore_validations] = true }
         @required += [:format]
-      when "group-to-zip"
+    when "group-to-zip"
         @parser.on("--group-id=ID", "select the group to package") {|v| @config[:group_id] = v.to_i }
         @parser.on("--class-name=NAME", "select the group klass to package") {|v| @config[:class_name] = v }
         @required += [:group_id, :class_name]
-      when "exif-stats"
+    when "exif-stats"
         @parser.on("-f DATE", "the lower bound for the time period to consider (YYYY-MM-DD)") {|v| @config[:from] = v }
         @parser.on("-t DATE", "the upper bound for the time period to consider (YYYY-MM-DD)") {|v| @config[:to] = v }
         @required += [:from, :to]
-      when 'list-permissions'
+    when 'list-permissions'
         @parser.on('-e ENTITY', 'the id of an entity to limit the result list to') {|v| @config[:entity_id] = v}
         @parser.on('-u USER', 'the id of a user to limit the result list to') {|v| @config[:user_id] = v}
     end
@@ -101,42 +101,42 @@ class Kor::CommandLine
       end
 
       case @command
-        when 'version' then version
-        when 'export'
+      when 'version' then version
+      when 'export'
           if @config[:format] == 'excel'
             dir = @args.shift
             Kor::Export::Excel.new(dir, @config).run
           end
-        when 'import'
+      when 'import'
           if @config[:format] == 'excel'
             dir = @args.shift
             Kor::Import::Excel.new(dir, @config).run
           end
-        when 'reprocess-all' then task :reprocess_all
-        when 'index-all' then task :index_all
-        when 'group-to-zip' then task :group_to_zip
-        when 'notify-expiring-users' then task :notify_expiring_users
-        when 'recheck-invalid-entities' then task :recheck_invalid_entities
-        when 'delete-expired-downloads' then task :delete_expired_downloads
-        when 'editor-stats' then task :editor_stats
-        when 'exif-stats' then task :exif_stats
-        when 'reset-admin-account'
+      when 'reprocess-all' then task :reprocess_all
+      when 'index-all' then task :index_all
+      when 'group-to-zip' then task :group_to_zip
+      when 'notify-expiring-users' then task :notify_expiring_users
+      when 'recheck-invalid-entities' then task :recheck_invalid_entities
+      when 'delete-expired-downloads' then task :delete_expired_downloads
+      when 'editor-stats' then task :editor_stats
+      when 'exif-stats' then task :exif_stats
+      when 'reset-admin-account'
           log(
             "setting password of account 'admin' to 'admin' and " +
             "granting all rights"
           )
           task :reset_admin_account
-        when 'reset-guest-account'
+      when 'reset-guest-account'
           log "creating guest account unless it already exists"
           task :reset_guest_account
-        when 'to-neo' then task :to_neo
-        when 'connect-random' then task :connect_random
-        when 'cleanup-sessions' then task :cleanup_sessions
-        when 'list-permissions' then task :list_permissions
-        when 'cleanup-exception-logs' then task :cleanup_exception_logs
-        when 'secrets' then task :secrets
-        when 'consistency-check' then task :consistency_check
-        when 'import-erlangen-crm' then task :import_erlangen_crm
+      when 'to-neo' then task :to_neo
+      when 'connect-random' then task :connect_random
+      when 'cleanup-sessions' then task :cleanup_sessions
+      when 'list-permissions' then task :list_permissions
+      when 'cleanup-exception-logs' then task :cleanup_exception_logs
+      when 'secrets' then task :secrets
+      when 'consistency-check' then task :consistency_check
+      when 'import-erlangen-crm' then task :import_erlangen_crm
         else
           STDERR.puts "command '#{@command}' is not known"
           usage
@@ -151,7 +151,6 @@ class Kor::CommandLine
   def version
     puts Kor.version
   end
-
 
   protected
 

@@ -62,8 +62,8 @@ class Kor::ZipFile
         run "mkdir -p #{File.dirname file}"
 
         case external
-          when String then run "ln -s #{external} #{file}"
-          when Hash
+        when String then run "ln -s #{external} #{file}"
+        when Hash
             File.open "#{file}", "w" do |f|
               f.write external[:data]
             end
@@ -81,8 +81,8 @@ class Kor::ZipFile
   def package_size
     @files.values.map do |f|
       case f
-        when String then File.size(f)
-        when Hash then f[:data].size
+      when String then File.size(f)
+      when Hash then f[:data].size
       end
     end.sum
   end

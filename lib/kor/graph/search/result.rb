@@ -12,7 +12,7 @@ class Kor::Graph::Search::Result
   
   def self.from(object)
     case object
-      when WillPaginate::Collection, ActiveRecord::Relation
+    when WillPaginate::Collection, ActiveRecord::Relation
         new(nil,
           :items => object,
           :ids => object.map{|o| o.id},

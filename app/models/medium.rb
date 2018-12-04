@@ -279,7 +279,7 @@ class Medium < ActiveRecord::Base
     
     u = URI.parse value
     case u
-      when URI::Generic
+    when URI::Generic
         if u.scheme == 'file'
           self.document = File.open(u.path)
         else

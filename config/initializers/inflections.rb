@@ -4,7 +4,6 @@
 #       return false
 #     end
 
-
 #     begin
 #       masked_token = Base64.strict_decode64(encoded_masked_token)
 #     rescue ArgumentError # encoded_masked_token is invalid Base64
@@ -38,7 +37,6 @@
 #   end
 
 # end
-
 
 # Be sure to restart your server when you modify this file.
 

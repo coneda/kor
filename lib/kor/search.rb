@@ -39,8 +39,8 @@ class Kor::Search
       updated_before(@criteria[:updated_before])
 
     @scope = case @criteria[:sort][:column]
-      when 'default' then @scope.order('name')
-      when 'random' then @scope.order('rand()')
+    when 'default' then @scope.order('name')
+    when 'random' then @scope.order('rand()')
       else
         @scope.order(
           @criteria[:sort][:column] => @criteria[:sort][:direction]

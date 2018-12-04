@@ -60,15 +60,15 @@ class RefactorGroups < ActiveRecord::Migration
       }
       
       group = case tag['style']
-        when "systemgroup"
+      when "systemgroup"
           AuthorityGroup.create(attributes)
-        when 'usergroup', "transit"
+      when 'usergroup', "transit"
           attributes[:user_id] = tag['user_id']
           UserGroup.create(attributes)
-        when "technical"
+      when "technical"
           SystemGroup.create(attributes)
-        else
-          raise "unknown tag/group style #{tag['style'].inspect}"
+      else
+        raise "unknown tag/group style #{tag['style'].inspect}"
       end
       
       values = Kor.db.select_all("SELECT entity_id FROM entities_tags WHERE tag_id = #{tag['id']}").map do |m|
@@ -77,11 +77,11 @@ class RefactorGroups < ActiveRecord::Migration
       
       unless values.blank?
         case group
-          when AuthorityGroup
+        when AuthorityGroup
             Kor.db.execute("INSERT INTO authority_groups_entities (entity_id, authority_group_id) VALUES #{values}")
-          when UserGroup
+        when UserGroup
             Kor.db.execute("INSERT INTO entities_user_groups (entity_id, user_group_id) VALUES #{values}")
-          when SystemGroup
+        when SystemGroup
             Kor.db.execute("INSERT INTO entities_system_groups (entity_id, system_group_id) VALUES #{values}")
         end
       end

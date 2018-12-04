@@ -192,8 +192,8 @@ class Kor::NeoGraph
 
   def cypher(statements = [])
     data = case statements
-      when String then [{'statement' => statements}]
-      when Hash then [statements]
+    when String then [{'statement' => statements}]
+    when Hash then [statements]
       else
         statements
     end
@@ -243,7 +243,7 @@ class Kor::NeoGraph
       )
 
       base_url = "http://#{@options['host']}:#{@options['port']}"
-        # p [method, "#{base_url}#{path}", params, body, headers]
+      # p [method, "#{base_url}#{path}", params, body, headers]
       client.request(method, "#{base_url}#{path}", params, body, headers)
     end
 

@@ -17,7 +17,6 @@ class SettingsController < JsonController
     end
   end
 
-
   protected
 
     def auth

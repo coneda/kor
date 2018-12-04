@@ -104,7 +104,6 @@ RSpec.describe Kor::Dating::Parser do
     )
   end
 
-
   it "should parse 'ca. 1400 bis 1480'" do
     expect(subject.transform("ca. 1400 bis 1480")).to eql(
       :from => Date.new(1395, 1, 1),

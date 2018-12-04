@@ -70,7 +70,6 @@ class SessionController < JsonController
     render_200 I18n.t("notices.logged_out")
   end
 
-
   protected
 
     def create_session(user)

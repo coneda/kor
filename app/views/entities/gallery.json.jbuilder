@@ -8,10 +8,10 @@ json.records @records do |record|
   ors = if Relation.primary_relation_names.empty?
     []
   else
-    record
-      .outgoing_relationships
-      .by_relation_name(Relation.primary_relation_names)
-      .includes(:to)
+    record.
+      outgoing_relationships.
+      by_relation_name(Relation.primary_relation_names).
+      includes(:to)
   end
 
   json.primary_entities ors do |pr|
@@ -20,11 +20,11 @@ json.records @records do |record|
     ors = if Relation.secondary_relation_names.empty?
       []
     else
-      pr
-        .to
-        .outgoing_relationships
-        .by_relation_name(Relation.secondary_relation_names)
-        .includes(:to)
+      pr.
+        to.
+        outgoing_relationships.
+        by_relation_name(Relation.secondary_relation_names).
+        includes(:to)
     end
 
     json.secondary_entities ors do |sr|

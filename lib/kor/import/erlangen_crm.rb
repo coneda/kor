@@ -54,7 +54,6 @@ class Kor::Import::ErlangenCrm
 
     @lookup = {}
     properties.each do |property|
-
       begin
         url = property['rdf:about']
         @lookup[url] = {
@@ -127,7 +126,6 @@ class Kor::Import::ErlangenCrm
     end
   end
 
-
   protected
 
     def properties(base = nil)
@@ -160,11 +158,13 @@ class Kor::Import::ErlangenCrm
 
     def from_urls_for(r)
       return [] unless r
+
       [r[:from_urls]] + r[:parent_urls].map{|pu| from_urls_for(@lookup[pu])}.flatten
     end
 
     def to_urls_for(r)
       return [] unless r
+      
       [r[:to_urls]] + r[:parent_urls].map{|pu| to_urls_for(@lookup[pu])}.flatten
     end
 

@@ -40,7 +40,6 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     expect{Hash.from_xml response.body}.not_to raise_error
   end
 
-
   it "should respond to 'GetRecord'" do
     mona_lisa = Entity.first
 
@@ -184,7 +183,6 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     }
     verify_oaipmh_error 'noRecordsMatch'
   end
-
 
   # The following tests actually test Api::OaiPmh::BaseController behavior. Therefore
   # they have no respective counterparts for other OAI-PMH controllers.

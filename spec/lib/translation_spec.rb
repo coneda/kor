@@ -8,8 +8,8 @@ RSpec.describe "translations" do
 
     comparator = Proc.new do |base, locale, test|
       case base
-        when String then expect(test).to be_a(String), "expected #{stack.inspect} to be a string"
-        when Hash
+      when String then expect(test).to be_a(String), "expected #{stack.inspect} to be a string"
+      when Hash
           # binding.pry unless test.is_a?(Hash)
           expect(test).to be_a(Hash), "#{locale}: expected #{stack.inspect} to be a Hash, but its not"
           base.each do |k, v| 

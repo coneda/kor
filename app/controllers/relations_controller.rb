@@ -73,7 +73,6 @@ class RelationsController < JsonController
     end
   end
 
-
   protected
 
     def relation_params

@@ -22,7 +22,6 @@ class BaseController < ActionController::Base
     :medium_url
   )
 
-
   protected
 
     def current_user

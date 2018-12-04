@@ -211,7 +211,6 @@ class Kor::Tasks
     Kor::Import::ErlangenCrm.new.run
   end
 
-
   protected
 
     def self.print_table(data)

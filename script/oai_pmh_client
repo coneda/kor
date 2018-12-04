@@ -98,6 +98,7 @@ module Kor
           end
 
           break unless resumptionToken
+          
           sleep @options[:delay]
           pg.increment
         rescue => e

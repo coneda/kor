@@ -22,8 +22,6 @@ class MoveSchemaSettingsToKindsTable < ActiveRecord::Migration
         t.remove :attachment_class
         t.remove :schema_name
       end
-      
-#      system "rm #{old_config_file}"
     end
   end
 

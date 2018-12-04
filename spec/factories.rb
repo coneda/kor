@@ -188,7 +188,6 @@ FactoryGirl.define do
       kind { Kind.find_or_create_by name: 'Institution', plural_name: 'Institutionen' }
     end
 
-
     factory :medium_entity do
       kind { Kind.medium_kind }
 

@@ -38,7 +38,6 @@ RSpec.describe OaiPmh::KindsController, type: :request do
     expect(items.count).to eq(5)
   end
 
-
   it "should respond to 'GetRecord'" do
     people = Kind.where(:name => "Person").first
 

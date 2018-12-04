@@ -57,9 +57,7 @@ class OaiPmh::BaseController < BaseController
     render_error 'badVerb'
   end
 
-
   protected
-
 
     def ensure_metadata_prefix
       available = ["kor", "oai_dc"]

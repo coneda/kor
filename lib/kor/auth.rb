@@ -179,9 +179,9 @@ module Kor::Auth
 
   def self.to_ids(objects)
     case objects
-      when ActiveRecord::Base then [objects.id]
-      when Integer then [objects]
-      when Array, ActiveRecord::Relation
+    when ActiveRecord::Base then [objects.id]
+    when Integer then [objects]
+    when Array, ActiveRecord::Relation
         objects.map do |o|
           o.respond_to?(:id) ? o.id : o
         end
@@ -213,12 +213,12 @@ module Kor::Auth
   def self.authorized_for_relationship?(user, relationship, policy = :view)
     if relationship.to && relationship.from
       case policy
-        when :view
+      when :view
           view_from = allowed_to?(user, :view, relationship.from.collection)
           view_to = allowed_to?(user, :view, relationship.to.collection)
           
           view_from and view_to
-        when :create, :delete, :edit
+      when :create, :delete, :edit
           view_from = allowed_to?(user, :view, relationship.from.collection)
           view_to = allowed_to?(user, :view, relationship.to.collection)
           edit_from = allowed_to?(user, :edit, relationship.from.collection)
@@ -235,16 +235,16 @@ module Kor::Auth
 
   def self.grant(collection, policies, options = {})
     policies = case policies
-      when :all then self.policies
-      when Symbol then [policies]
-      when String then [policies]
+    when :all then self.policies
+    when Symbol then [policies]
+    when String then [policies]
       else
         policies
     end
 
     options[:to] = case options[:to]
-      when nil then []
-      when Credential then [options[:to]]
+    when nil then []
+    when Credential then [options[:to]]
       else
         options[:to]
     end
@@ -258,16 +258,16 @@ module Kor::Auth
 
   def self.revoke(collection, policies, options = {})
     policies = case policies
-      when :all then self.policies
-      when Symbol then [policies]
-      when String then [policies]
+    when :all then self.policies
+    when Symbol then [policies]
+    when String then [policies]
       else
         policies
     end
 
     options[:from] = case options[:from]
-      when nil then []
-      when Credential then [options[:from]]
+    when nil then []
+    when Credential then [options[:from]]
       else
         options[:from]
     end

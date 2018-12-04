@@ -123,8 +123,8 @@ class Entity < ApplicationRecord
 
   def synonyms=(value)
     attachment['synonyms'] = case value
-      when String then value.split("\n")
-      when Array then value
+    when String then value.split("\n")
+    when Array then value
       else
         raise "value '#{value.inspect} can't be assigned as synonyms"
     end
@@ -316,11 +316,11 @@ class Entity < ApplicationRecord
   end
 
   def media_count(user)
-    outgoing_relationships
-      .with_to
-      .allowed(user, :view)
-      .where('tos.kind_id = ?', Kind.medium_kind_id)
-      .count
+    outgoing_relationships.
+      with_to.
+      allowed(user, :view).
+      where('tos.kind_id = ?', Kind.medium_kind_id).
+      count
   end
 
   def media(user)
@@ -421,6 +421,7 @@ class Entity < ApplicationRecord
   }
   scope :by_relation_name, lambda {|relation_name|
     return all if relation_name.blank?
+    
     where(kind_id: Relation.to_entity_kind_ids(relation_name))
   }  
   scope :by_id, lambda {|id| id.present? ? where(id: id) : all}

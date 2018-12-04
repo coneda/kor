@@ -7,8 +7,8 @@ class Identifier < ActiveRecord::Base
   def self.resolve!(id, kind)
     id = if kind.present?
       case kind
-        when "id" then Entity.find_by!(id: id)
-        when "uuid" then Entity.find_by!(uuid: id)
+      when "id" then Entity.find_by!(id: id)
+      when "uuid" then Entity.find_by!(uuid: id)
         else
           find_by!(kind: kind, value: id).entity
       end

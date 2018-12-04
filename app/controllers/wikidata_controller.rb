@@ -1,5 +1,4 @@
 class WikidataController < BaseController
-
   before_action :authorization
 
   def preflight
@@ -31,7 +30,6 @@ class WikidataController < BaseController
       render json: results, status: 406
     end
   end
-
 
   protected
 

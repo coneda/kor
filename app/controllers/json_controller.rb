@@ -10,7 +10,6 @@ class JsonController < BaseController
 
   layout false
 
-
   protected
 
     def render_created(record)
@@ -163,14 +162,14 @@ class JsonController < BaseController
       options.reverse_merge! ids: true
 
       case value
-        when String
-          results = value.split(',')
-          options[:ids] ? results.map{|v| v.to_i} : results
-        when Integer then [value]
-        when Array then value.map{|v| param_to_array(v, options)}.flatten
-        when nil then []
-        else
-          raise "unknown param format to convert to array: #{value}"
+      when String
+        results = value.split(',')
+        options[:ids] ? results.map{|v| v.to_i} : results
+      when Integer then [value]
+      when Array then value.map{|v| param_to_array(v, options)}.flatten
+      when nil then []
+      else
+        raise "unknown param format to convert to array: #{value}"
       end
     end
 

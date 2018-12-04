@@ -43,7 +43,6 @@ class MediaController < JsonController
     end
   end
 
-
   protected
 
     def param_to_style(param)

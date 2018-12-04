@@ -101,24 +101,13 @@ class Init < ActiveRecord::Migration
     
     create_table :relationships, :options => Kor.config['global_database_options'] do |t|
       t.string :uuid
-
       t.integer :reference_id
-
       t.integer :owner_id
       t.boolean :reverse
-#      t.boolean :owner_read,      :null => false, :default => true
-#      t.boolean :owner_write,     :null => false, :default => true
-#      t.boolean :group_write,     :null => false, :default => true
-#      t.boolean :group_read,      :null => false, :default => true
-#      t.boolean :other_write,       :null => false, :default => true
-#      t.boolean :other_read,        :null => false, :default => true
-      
       t.integer :relation_id
       t.integer :from_id
       t.integer :to_id
-      
       t.text :properties
-      
       t.timestamps
     end
     add_index :relationships, [ :relation_id, :from_id, :to_id ]
@@ -163,7 +152,6 @@ class Init < ActiveRecord::Migration
 
       t.timestamp :valid_until
     end
-
 
     ####################################### media ##############################
 

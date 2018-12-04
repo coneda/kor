@@ -56,9 +56,6 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
         medium = Medium.create(:document => File.open(image_path))
         if medium.id
           Entity.connection.update("UPDATE entities SET medium_id = #{medium.id} WHERE id = #{id}")
-#          cmd = "rm #{image_path}"
-#          puts cmd
-#          system cmd
         else
           puts "medium #{image_id} is invalid: #{medium.errors.full_messages.inspect}"
         end
@@ -73,11 +70,11 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
       synonyms = Kor.db.select_all("SELECT entity_id, name FROM synonyms WHERE entity_id = #{entity.id}")
       dataset = if !entity.dataset_type.blank? && entity.dataset_type != 'KorImage'
         table = case entity.dataset_type
-          when 'Literature' then 'dataset_literatures'
-          when 'Artwork' then 'dataset_artworks'
-          when 'Textual' then 'dataset_textuals'
-          else
-            raise "unknown dataset class #{entity.dataset_type.inspect}"
+        when 'Literature' then 'dataset_literatures'
+        when 'Artwork' then 'dataset_artworks'
+        when 'Textual' then 'dataset_textuals'
+        else
+          raise "unknown dataset class #{entity.dataset_type.inspect}"
         end
         
         d = Kor.db.select_all("SELECT * FROM #{table} WHERE id = #{entity.dataset_id}").first

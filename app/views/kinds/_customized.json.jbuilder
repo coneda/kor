@@ -17,7 +17,6 @@ if inclusion.request?('settings')
   end
 end
 
-
 if inclusion.request?('technical')
   json.uuid record.uuid
   json.created_at record.created_at

@@ -72,8 +72,8 @@ class AddCollectionBasedSecurityToKor < ActiveRecord::Migration
       t.remove :view_groups
       t.remove :edit_groups
       t.remove :maintain_groups
-   end
+    end
 
-   remove_column :entities, :approved
+    remove_column :entities, :approved
   end
 end

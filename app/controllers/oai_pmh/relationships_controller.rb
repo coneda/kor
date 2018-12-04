@@ -20,13 +20,6 @@ class OaiPmh::RelationshipsController < OaiPmh::BaseController
       Relationship.
         with_deleted.
         joins('LEFT JOIN relations rels ON rels.id = relationships.relation_id')
-        # joins('LEFT JOIN entities froms ON froms.id = relationships.from_id').
-        # joins('LEFT JOIN entities tos ON tos.id = relationships.to_id')
-        # joins(
-        #   :from_including_deleted,
-        #   :to_including_deleted,
-        #   :relation_including_deleted
-        # )
     end
 
     def base_url

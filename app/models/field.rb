@@ -106,8 +106,8 @@ class Field < ActiveRecord::Base
 
   def show_on_entity=(value)
     settings['show_on_entity'] = case value
-      when "1" then true
-      when "0" then false
+    when "1" then true
+    when "0" then false
       else
         !!value
     end

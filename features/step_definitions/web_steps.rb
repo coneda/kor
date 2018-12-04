@@ -6,7 +6,6 @@ Then("I should not see icon link {string}") do |string|
   expect(page).not_to have_css("a[title='#{string}']")
 end
 
-
 # old?
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
@@ -391,7 +390,6 @@ end
 Then(/^options? "([^"]*)" from "([^"]*)" should be selected$/) do |value, field|
   step "the select \"#{field}\" should have value \"#{value}\""
 end
-
 
 Then(/^"([^"]*)" should not have option "([^"]*)"$/) do |name, value|
   field = page.find_field(name)

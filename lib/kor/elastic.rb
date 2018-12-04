@@ -311,6 +311,7 @@ class Kor::Elastic
 
   def search(criteria = {})
     raise Kor::Exception unless self.class.enabled?
+
     criteria.reverse_merge!(
       analyzer: 'folding',
       page: 1,
@@ -369,10 +370,10 @@ class Kor::Elastic
 
   def sorting(sort)
     case sort[:column]
-      when 'name' then [{'sort' => sort[:direction]}]
-      when 'default' then [{'sort' => 'asc'}]
-      when 'score' then ['_score']
-      when 'random'
+    when 'name' then [{'sort' => sort[:direction]}]
+    when 'default' then [{'sort' => 'asc'}]
+    when 'score' then ['_score']
+    when 'random'
         @query['must'] << {
           'function_score' => {
             'random_score' => {'seed' => Time.now.to_i}
@@ -603,7 +604,6 @@ class Kor::Elastic
     response['count']
   end
 
-
   protected
 
     def self.client
@@ -660,6 +660,7 @@ class Kor::Elastic
 
     def to_array(value)
       return [] if value.nil?
+    
       value.is_a?(Array) ? value : [value]
     end
 

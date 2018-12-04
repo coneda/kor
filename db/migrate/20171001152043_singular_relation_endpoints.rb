@@ -51,15 +51,15 @@ class SingularRelationEndpoints < ActiveRecord::Migration
       r.destroy unless r.relationships.count > 0
     end
 
-    DirectedRelationship
-      .joins('LEFT JOIN relationships rels ON rels.id = directed_relationships.relationship_id')
-      .update_all('directed_relationships.relation_id = rels.relation_id')
+    DirectedRelationship.
+      joins('LEFT JOIN relationships rels ON rels.id = directed_relationships.relationship_id').
+      update_all('directed_relationships.relation_id = rels.relation_id')
 
-    DirectedRelationship
-      .from('directed_relationships dr')
-      .joins('LEFT JOIN relationships rels ON rels.id = dr.relationship_id')
-      .joins('LEFT JOIN relations r ON r.id = dr.relation_id')
-      .update_all("
+    DirectedRelationship.
+      from('directed_relationships dr').
+      joins('LEFT JOIN relationships rels ON rels.id = dr.relationship_id').
+      joins('LEFT JOIN relations r ON r.id = dr.relation_id').
+      update_all("
         dr.relation_name = if (dr.is_reverse, r.reverse_name, r.name),
         dr.from_id = if (dr.is_reverse, rels.to_id, rels.from_id),
         dr.to_id = if (dr.is_reverse, rels.from_id, rels.to_id)

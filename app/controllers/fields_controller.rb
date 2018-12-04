@@ -43,7 +43,6 @@ class FieldsController < JsonController
     render_200 I18n.t('objects.destroy_success', o: @record.name)
   end
 
-
   protected
 
     def field_params

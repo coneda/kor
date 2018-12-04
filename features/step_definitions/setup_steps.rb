@@ -2,13 +2,13 @@
 
 Given /^the setup "([^"]*)"$/ do |name|
   case name
-    when 'Bamberg'
+  when 'Bamberg'
       step 'the entity "Bamberg" of kind "Ort/Orte"'
       step 'the entity "Bamberger Apokalypse" of kind "Werk/Werke"'
       step 'the entity "Sankt Stephan" of kind "Institution/Institutionen"'
       step 'the relation "befindet sich in/Aufbewahrungsort von" between "Werk/Werke" and "Institution/Institutionen"'
       step 'the relation "Institution in Ort/Ort der Institution" between "Institution/Institutionen" and "Ort/Orte"'
-    when 'Frankfurt-Berlin'
+  when 'Frankfurt-Berlin'
       step "the credential \"User Frankfurt\""
       step "the credential \"Admin Frankfurt\""
       step "the credential \"User Berlin\""
@@ -40,7 +40,7 @@ Given /^the setup "([^"]*)"$/ do |name|
       step "the entity \"Neukölln\" of kind \"Ort/Orte\" inside collection \"Berlin\""
       step "the entity \"Rathaus\" of kind \"Werk/Werke\" inside collection \"Frankfurt\""
       step "the relation \"Standort in/Standort von\" between \"Werk/Werke\" and \"Ort/Orte\""
-    when "Many relationships with images"
+  when "Many relationships with images"
       step "the entity \"Mona Lisa\" of kind \"Werk/Werke\""
       step "the kind \"Ort/Orte\""
       step "the medium \"spec/fixtures/image_a.jpg\""
@@ -60,8 +60,3 @@ Given /^the setup "([^"]*)"$/ do |name|
       raise "unknown setup #{name}"
   end
 end
-
-# Given(/^the default test data$/) do
-#   require "#{Rails.root}/spec/support/data_helper"
-#   Class.new.extend(DataHelper).default_setup relationships: true
-# end

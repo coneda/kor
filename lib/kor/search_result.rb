@@ -50,16 +50,13 @@ class Kor::SearchResult
 
   # attr_writer :uuids, :ids, :records, :total, :page, :per_page, :raw_records
 
-
   # def total_pages
   #   @total_pages ||= (total / per_page) + 1
   # end
 
-
   # def raw_records
   #   @raw_records || []
   # end
-
 
   # def assign_attributes(attrs)
   #   attrs.each do |key, value|

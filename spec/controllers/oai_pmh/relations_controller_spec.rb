@@ -38,7 +38,6 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
     expect(items.count).to eq(6)
   end
 
-
   it "should respond to 'GetRecord'" do
     has_created = Relation.where(:name => "has created").first
 

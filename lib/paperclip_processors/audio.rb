@@ -2,8 +2,8 @@ class Paperclip::Audio < Paperclip::Processor
 
   def self.make(file, options = {}, attachment = nil)
     case options[:style]
-      when :mp3 then make_mp3(file, attachment)
-      when :ogg then make_ogg(file, attachment)
+    when :mp3 then make_mp3(file, attachment)
+    when :ogg then make_ogg(file, attachment)
       else
         file
     end

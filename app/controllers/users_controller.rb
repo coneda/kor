@@ -33,7 +33,8 @@ class UsersController < JsonController
     @user.login_attempts = []
 
     if @user.save
-      render_200 I18n.t("messages.login_attempts_reset", 
+      render_200 I18n.t(
+        "messages.login_attempts_reset", 
         username: @user.display_name
       )
     else

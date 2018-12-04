@@ -2,9 +2,9 @@ class Paperclip::Video < Paperclip::Processor
 
   def self.make(file, options = {}, attachment = nil)
     case options[:style]
-      when :mp4 then make_mp4(file, attachment)
-      when :ogg then make_ogg(file, attachment)
-      when :webm then make_webm(file, attachment)
+    when :mp4 then make_mp4(file, attachment)
+    when :ogg then make_ogg(file, attachment)
+    when :webm then make_webm(file, attachment)
       else
         file
     end
