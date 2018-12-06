@@ -1,5 +1,4 @@
 class Fields::Regex < Field
-
   def validate_value
     if value.present?
       if !value.match(matcher)
@@ -31,7 +30,7 @@ class Fields::Regex < Field
   end
 
   def self.fields
-    [{'name' => 'regex'}]
+    [{ 'name' => 'regex' }]
   end
   
 end

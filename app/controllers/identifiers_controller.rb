@@ -1,5 +1,4 @@
 class IdentifiersController < JsonController
-
   skip_before_filter :auth, :legal
 
   # This should still use the auth system to see if the user is allowed to see
@@ -16,5 +15,4 @@ class IdentifiersController < JsonController
       end
     end
   end
-
 end

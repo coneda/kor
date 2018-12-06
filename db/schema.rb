@@ -1,7 +1,6 @@
 # encoding: UTF-8
 
 ActiveRecord::Schema.define(version: 20181204034411) do
-
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4,   default: 0
     t.integer  "parent_id",    limit: 4
@@ -389,5 +388,4 @@ ActiveRecord::Schema.define(version: 20181204034411) do
 
   add_index "users", ["name"], name: "index_users_on_name", unique: true, using: :btree
   add_index "users", ["parent_username"], name: "index_users_on_parent_username", using: :btree
-
 end

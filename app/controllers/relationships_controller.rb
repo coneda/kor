@@ -18,7 +18,7 @@ class RelationshipsController < JsonController
     
     if authorized_for_relationship?(@relationship, :edit)
       if @relationship.update_attributes(relationship_params)
-        render_200 I18n.t('objects.update_success', o: Relationship.model_name.human)
+        render_updated @relationship
       else
         render_422 build_nested_errors(@relationship)
       end
@@ -32,7 +32,7 @@ class RelationshipsController < JsonController
 
     if authorized_for_relationship?(@relationship, :delete)
       @relationship.destroy
-      render_200 I18n.t('objects.destroy_success', o: I18n.t('nouns.relationship', count: 1))
+      render_deleted @relationship
     else
       render_403
     end
@@ -49,9 +49,8 @@ class RelationshipsController < JsonController
     end
 
     def build_nested_errors(relationship)
-      relationship.errors.as_json.reject{|k, v| k.match(/^datings/)}.merge(
-        'datings' => relationship.datings.map{|d| d.errors.as_json}
+      relationship.errors.as_json.reject { |k, v| k.match(/^datings/) }.merge(
+        'datings' => relationship.datings.map { |d| d.errors.as_json }
       )
     end
-
 end

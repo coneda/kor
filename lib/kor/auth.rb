@@ -1,7 +1,6 @@
 require "tmpdir"
 
 module Kor::Auth
-
   def self.authenticate(username, password)
     user = User.authenticate username, password
     return true if user
@@ -58,10 +57,10 @@ module Kor::Auth
 
           mail_candidates = 
             var_to_array(source['mail']).
-              map{|km| env[km]}.
-              select{|e| e.present?} +
+              map { |km| env[km] }.
+              select { |e| e.present? } +
             var_to_array(source['domain']).
-              map{|d| "#{username}@#{d}"}
+              map { |d| "#{username}@#{d}" }
 
           if mail_candidates.empty?
             Rails.logger.info "no valid mail address found"
@@ -182,11 +181,11 @@ module Kor::Auth
     when ActiveRecord::Base then [objects.id]
     when Integer then [objects]
     when Array, ActiveRecord::Relation
-        objects.map do |o|
-          o.respond_to?(:id) ? o.id : o
-        end
-      else
-        raise "can't handle #{objects.inspect}"
+      objects.map do |o|
+        o.respond_to?(:id) ? o.id : o
+      end
+    else
+      raise "can't handle #{objects.inspect}"
     end
   end
   
@@ -214,19 +213,19 @@ module Kor::Auth
     if relationship.to && relationship.from
       case policy
       when :view
-          view_from = allowed_to?(user, :view, relationship.from.collection)
-          view_to = allowed_to?(user, :view, relationship.to.collection)
-          
-          view_from and view_to
+        view_from = allowed_to?(user, :view, relationship.from.collection)
+        view_to = allowed_to?(user, :view, relationship.to.collection)
+        
+        view_from and view_to
       when :create, :delete, :edit
-          view_from = allowed_to?(user, :view, relationship.from.collection)
-          view_to = allowed_to?(user, :view, relationship.to.collection)
-          edit_from = allowed_to?(user, :edit, relationship.from.collection)
-          edit_to = allowed_to?(user, :edit, relationship.to.collection)
-          
-          (view_from and edit_to) or (edit_from and view_to)
-        else
-          false
+        view_from = allowed_to?(user, :view, relationship.from.collection)
+        view_to = allowed_to?(user, :view, relationship.to.collection)
+        edit_from = allowed_to?(user, :edit, relationship.from.collection)
+        edit_to = allowed_to?(user, :edit, relationship.to.collection)
+        
+        (view_from and edit_to) or (edit_from and view_to)
+      else
+        false
       end
     else
       true
@@ -238,15 +237,15 @@ module Kor::Auth
     when :all then self.policies
     when Symbol then [policies]
     when String then [policies]
-      else
-        policies
+    else
+      policies
     end
 
     options[:to] = case options[:to]
     when nil then []
     when Credential then [options[:to]]
-      else
-        options[:to]
+    else
+      options[:to]
     end
   
     policies.each do |policy|
@@ -261,15 +260,15 @@ module Kor::Auth
     when :all then self.policies
     when Symbol then [policies]
     when String then [policies]
-      else
-        policies
+    else
+      policies
     end
 
     options[:from] = case options[:from]
     when nil then []
     when Credential then [options[:from]]
-      else
-        options[:from]
+    else
+      options[:from]
     end
 
     collection.grants.

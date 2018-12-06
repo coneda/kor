@@ -1,4 +1,4 @@
-class Relation < ActiveRecord::Base
+class Relation < ApplicationRecord
   acts_as_paranoid
 
   has_many :relationships, :dependent => :destroy
@@ -122,46 +122,41 @@ class Relation < ActiveRecord::Base
     self[:uuid] ||= SecureRandom.uuid
   end
 
-  scope :updated_after, lambda {|time| time.present? ? where("updated_at >= ?", time) : all}
-  scope :updated_before, lambda {|time| time.present? ? where("updated_at <= ?", time) : all}
-  scope :allowed, lambda {|user, policies| all}
-  scope :by_from, lambda {|ids|
+  scope :updated_after, lambda { |time| time.present? ? where("updated_at >= ?", time) : all }
+  scope :updated_before, lambda { |time| time.present? ? where("updated_at <= ?", time) : all }
+  scope :allowed, lambda { |user, policies| all }
+  scope :by_from, lambda { |ids|
     if ids.blank?
       all
     else
       ids = [ids] unless ids.is_a?(Array)
-      where(from_kind_id: ids.map{|i| i.to_i})
+      where(from_kind_id: ids.map { |i| i.to_i })
     end
   }
-  scope :by_to, lambda {|ids|
+  scope :by_to, lambda { |ids|
     if ids.blank?
       all
     else
       ids = [ids] unless ids.is_a?(Array)
-      where(to_kind_id: ids.map{|i| i.to_i})
+      where(to_kind_id: ids.map { |i| i.to_i })
     end
-  }
-  scope :pageit, lambda { |page, per_page|
-    page = (page || 1) - 1
-    per_page = [(per_page || 30).to_i, Kor.settings['max_results_per_request']].min
-    limit(per_page).offset(per_page * page)
   }
   default_scope lambda { order(:name) }
   
   def self.available_relation_names(options = {})
     froms = options[:from_ids].presence || []
     tos = options[:to_ids].presence || []
-    froms = Array.wrap(froms).map{|e| e.to_i}.uniq
-    tos = Array.wrap(tos).map{|e| e.to_i}.uniq
+    froms = Array.wrap(froms).map { |e| e.to_i }.uniq
+    tos = Array.wrap(tos).map { |e| e.to_i }.uniq
 
     names = {}
 
     Relation.all.each do |relation|
-      names[relation.name] ||= {froms: [], tos: []}
+      names[relation.name] ||= { froms: [], tos: [] }
       names[relation.name][:froms] << relation.from_kind_id
       names[relation.name][:tos] << relation.to_kind_id
 
-      names[relation.reverse_name] ||= {froms: [], tos: []}
+      names[relation.reverse_name] ||= { froms: [], tos: [] }
       names[relation.reverse_name][:froms] << relation.to_kind_id
       names[relation.reverse_name][:tos] << relation.from_kind_id
     end
@@ -188,11 +183,11 @@ class Relation < ActiveRecord::Base
   end
 
   def self.reverse_primary_relation_names
-    primary_relation_names.map{|rn| reverse_name_for_name(rn)}
+    primary_relation_names.map { |rn| reverse_name_for_name(rn) }
   end
   
   def self.reverse_secondary_relation_names
-    secondary_relation_names.map{|rn| reverse_name_for_name(rn)}
+    secondary_relation_names.map { |rn| reverse_name_for_name(rn) }
   end 
 
   def self.reverse_name_for_name(name)
@@ -207,8 +202,8 @@ class Relation < ActiveRecord::Base
   end
 
   def self.to_entity_kind_ids(relation_name)
-    kind_ids = where(name: relation_name).map{|r| r.to_kind_id}
-    kind_ids << where(reverse_name: relation_name).map{|r| r.from_kind_id}
+    kind_ids = where(name: relation_name).map { |r| r.to_kind_id }
+    kind_ids << where(reverse_name: relation_name).map { |r| r.from_kind_id }
     kind_ids.flatten.uniq
   end
 
@@ -220,23 +215,27 @@ class Relation < ActiveRecord::Base
         from_kind_id: self.to_kind_id,
         to_kind_id: self.from_kind_id
       )
-      self.class.connection.execute([
-        'UPDATE relationships r1, relationships r2',
-        'SET' ,
-          'r1.from_id = r2.to_id,',
-          'r1.to_id = r2.from_id,',
-          'r1.normal_id = r2.reversal_id,',
-          'r1.reversal_id = r2.normal_id',
-        "WHERE r1.id = r2.id AND r2.relation_id = #{self.id}"
-      ].join(' '))
+      self.class.connection.execute(
+        [
+          'UPDATE relationships r1, relationships r2',
+          'SET',
+            'r1.from_id = r2.to_id,',
+            'r1.to_id = r2.from_id,',
+            'r1.normal_id = r2.reversal_id,',
+            'r1.reversal_id = r2.normal_id',
+          "WHERE r1.id = r2.id AND r2.relation_id = #{self.id}"
+        ].join(' ')
+      )
       # we don't need to swap to_id and from_id on directed relationships
       # because that would be reverting swapping normal and reverse on the
       # relationship
-      self.class.connection.execute([
-        'UPDATE directed_relationships r1, directed_relationships r2',
-        'SET r1.is_reverse = NOT r2.is_reverse',
-        "WHERE r1.id = r2.id AND r1.relation_id = #{self.id}"
-      ].join(' '))
+      self.class.connection.execute(
+        [
+          'UPDATE directed_relationships r1, directed_relationships r2',
+          'SET r1.is_reverse = NOT r2.is_reverse',
+          "WHERE r1.id = r2.id AND r1.relation_id = #{self.id}"
+        ].join(' ')
+      )
     end
   end
 

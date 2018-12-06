@@ -1,5 +1,4 @@
 class GeneratorsController < JsonController
-
   before_filter do
     @kind = Kind.find(params[:kind_id])
     @generators = @kind.generators
@@ -15,7 +14,7 @@ class GeneratorsController < JsonController
     @record.kind_id = params[:kind_id]
 
     if @record.save
-      render_200 I18n.t('objects.create_success', o: @record.name)
+      render_created @record
     else
       render_422 @record.errors
     end
@@ -25,7 +24,7 @@ class GeneratorsController < JsonController
     @record = @generators.find(params[:id])
 
     if @record.update_attributes(generator_params)
-      render_200 I18n.t('objects.update_success', o: @record.name)
+      render_updated @record
     else
       render_422 @record.errors
     end
@@ -34,10 +33,11 @@ class GeneratorsController < JsonController
   def destroy
     @record = @generators.find(params[:id])
     @record.destroy
-    render_200 I18n.t('objects.destroy_success', o: @record.name)
+    render_deleted @record
   end
 
   protected
+
     def generator_params
       params.fetch(:generator, {}).permit(:name, :directive)
     end

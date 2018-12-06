@@ -111,6 +111,10 @@ module DataHelper
     Medium.find_by!(datahash: '517686264a2ed1a66770470525e520dac4d692ea').entity
   end
 
+  def picture_c
+    Medium.find_by!(datahash: 'faf7e17cdeb3d4ce08bcb60e4d6dea8f6aa9eb73').entity
+  end
+
   def lecture
     AuthorityGroup.find_by! name: 'lecture'
   end
@@ -210,7 +214,7 @@ module DataHelper
       dataset: {
         'gnd_id' => '123456789'
       },
-      properties: [{'label' => 'Epoche', 'value' => 'Renaissance'}]
+      properties: [{ 'label' => 'Epoche', 'value' => 'Renaissance' }]
     )
     mona_lisa = FactoryGirl.create(:mona_lisa,
       created_at: Time.mktime(2016, 10, 19, 17),

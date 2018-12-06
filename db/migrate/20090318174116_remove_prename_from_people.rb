@@ -1,5 +1,4 @@
 class RemovePrenameFromPeople < ActiveRecord::Migration
-
   def self.up
     people = Kind.find_by_name('Person')
     if people

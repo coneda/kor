@@ -11,7 +11,6 @@ RSpec::Matchers.define :parse do |input|
 end
 
 RSpec.describe Kor::Dating::Parser do
-
   it "should parse positive numbers including a zero" do
     expect(subject.positive_number).to parse("0")
     expect(subject.positive_number).to parse("1")
@@ -21,12 +20,12 @@ RSpec.describe Kor::Dating::Parser do
   end
   
   it "should parse whole numbers" do
-   expect(subject.whole_number).to parse("0")
-   expect(subject.whole_number).to parse("-10")
-   expect(subject.whole_number).to parse("-1")
+    expect(subject.whole_number).to parse("0")
+    expect(subject.whole_number).to parse("-10")
+    expect(subject.whole_number).to parse("-1")
    
-   expect(subject.whole_number).not_to parse("-0")
-   expect(subject.whole_number).not_to parse("+0")
+    expect(subject.whole_number).not_to parse("-0")
+    expect(subject.whole_number).not_to parse("+0")
   end
   
   it "should parse correctly with it's utility parsers" do
@@ -196,6 +195,5 @@ RSpec.describe Kor::Dating::Parser do
     expect(subject.transform("2. Drittel 16. Jh.")).to eql(:from => Date.new(1533, 1, 1), :to => Date.new(1566, 12, 31))
     expect(subject.transform("3. Drittel 16. Jh.")).to eql(:from => Date.new(1566, 1, 1), :to => Date.new(1599, 12, 31))
   end
-
 end
 

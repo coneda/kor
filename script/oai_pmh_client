@@ -45,7 +45,7 @@ module Kor
 
       loop do
         begin
-          params = {'verb' => 'ListRecords'}
+          params = { 'verb' => 'ListRecords' }
           params['from'] = from if @options[:continue]
           params['resumptionToken'] = resumptionToken if resumptionToken
           doc = oaipmh("/api/oai-pmh/#{type}.xml", params)
@@ -67,7 +67,7 @@ module Kor
             resumptionToken = nil
           end
 
-          new_ids = doc.xpath("//kor:#{stype}/kor:id").map{|i| i.text}
+          new_ids = doc.xpath("//kor:#{stype}/kor:id").map { |i| i.text }
           if new_ids.size > 0
             ids += new_ids
           else
@@ -133,7 +133,7 @@ module Kor
       end
 
       def oaipmh(path, params)
-        defaults = {'metadataPrefix' => 'kor', 'api_key' => @options[:api_key]}
+        defaults = { 'metadataPrefix' => 'kor', 'api_key' => @options[:api_key] }
         params = defaults.merge params
         response = request 'get', path, params
         if response.status < 200 || response.status > 499

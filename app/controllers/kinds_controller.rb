@@ -1,6 +1,5 @@
 # TODO: remove non-json responses
 class KindsController < JsonController
-
   skip_before_filter :auth, only: [:index, :show]
 
   def index

@@ -2,7 +2,6 @@ require 'fileutils'
 require 'rails_helper'
 
 RSpec.describe OaiPmh::BaseController, type: :request do
-
   it 'should cleanup resumption tokens' do
     system("rm -rf #{subject.send(:base_dir)}")
     system("mkdir -p #{subject.send(:base_dir)}")
@@ -17,5 +16,4 @@ RSpec.describe OaiPmh::BaseController, type: :request do
     expect(File.exists?(old_sample)).to be_falsey
     expect(File.exists?(recent_sample)).to be_truthy
   end
-
 end

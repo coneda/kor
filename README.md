@@ -62,9 +62,73 @@ software for their users.
 
 * ruby (>= 2.1.0)
 * mysql server (>= 5.5)
-* elasticsearch (>= 1.7.2, < 5.0.0)
+* elasticsearch (>= 5.0.0, < 6.0.0)
 * web server (optional but highly recommended)
 * neo4j (optional)
+
+### Installation
+
+The easiest way to install ConedaKOR is with on Debian 9 stretch. While we will
+not go into installing mysql and elasticsearch, we will show how to use rbenv
+to have several ruby versions available easily. Also, we will use
+phusion-passenger to host ConedaKOR with apache:
+
+#### Prepare the OS
+
+Make sure the OS has all updates installed. Also install the following packages,
+we will need them to install ruby versions and some of the ruby gems:
+
+~~~bash
+apt-get install git-core build-essential libmysqlclient-dev \
+  libcurl4-openssl-dev ruby-dev libxml2-dev libxslt-dev imagemagick \
+  libav-tools zip libapache2-mod-passenger
+~~~
+
+#### Create a User
+
+Create a user to run the ConedaKor with. We will assume a user `app`. Also make
+sure the user has all permissions on a app directory. We will assume `/var/kor`:
+
+~~~bash
+useradd -m app
+mkdir -p /var/kor
+chown -R app. /var/kor
+~~~
+
+#### rbenv
+
+Now install rbenv a plugin ruby-build (loosely following the [Basic Github
+Checkout](https://github.com/rbenv/rbenv#basic-github-checkout)):
+
+~~~bash
+su app
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+~~~
+
+Then add rbenv to your shell. In the defailt debian 9 case, you could
+
+~~~bash
+su app
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+source ~/.bash_profile
+~~~
+
+Now you should be ready to use rbenv:
+
+~~~bash
+su app
+rbenv versions
+~~~
+
+Now install the ruby version for this ConedaKOR version (find it in
+.ruby-version):
+
+~~~bash
+rbenv install 2.4.3
+~~~
+
+#### Configure apache
 
 ### Scripted installation
 

@@ -1,10 +1,9 @@
 class OaiPmh::BaseController < BaseController
-
   layout "../oai_pmh/base"
 
   respond_to :xml
 
-  helper_method :timestamp, :base_url#, :medium_url
+  helper_method :timestamp, :base_url # , :medium_url
 
   skip_before_filter :verify_authenticity_token
   before_filter :ensure_metadata_prefix, only: [:get_record, :list_records]
@@ -170,5 +169,4 @@ class OaiPmh::BaseController < BaseController
     def base_url
       oai_pmh_entities_url
     end
-
 end

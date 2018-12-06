@@ -1,5 +1,4 @@
 class AddHistoryOfArtTables < ActiveRecord::Migration
-
   def self.up
     create_table :dataset_artworks, :options => Kor.config['global_database_options'] do |t|
       t.string :subtype
@@ -35,5 +34,4 @@ class AddHistoryOfArtTables < ActiveRecord::Migration
     drop_table :dataset_people
     drop_table :dataset_literatures
   end
-
 end

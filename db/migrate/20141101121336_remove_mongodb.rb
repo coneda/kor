@@ -24,8 +24,10 @@ class RemoveMongodb < ActiveRecord::Migration
       counter += 1
       puts "#{counter}/#{data.size}" if counter % 100 == 0
 
-      entity = Entity.where(:id => doc["entity_id"]).first || 
+      entity = (
+        Entity.where(:id => doc["entity_id"]).first || 
         Entity.where(:attachment_id => doc['_id']['$oid']).first
+      )
 
       if entity
         doc.delete "_id"

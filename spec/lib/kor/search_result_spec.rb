@@ -18,5 +18,4 @@ RSpec.describe Kor::SearchResult do
     expect(search_result.uuids).to eq([last_supper.uuid, mona_lisa.uuid])
     expect(search_result.records).to eq([last_supper, mona_lisa])
   end
-
 end

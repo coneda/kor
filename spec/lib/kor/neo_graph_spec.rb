@@ -1,9 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Kor::NeoGraph, skip: 'not integrated within the dependencies yet' do
-
   it "should create nodes" do
-
     admin = FactoryGirl.create :admin
     graph = described_class.new(admin)
 
@@ -24,13 +22,12 @@ RSpec.describe Kor::NeoGraph, skip: 'not integrated within the dependencies yet'
     mona_lisa = FactoryGirl.create :mona_lisa
     graph = described_class.new(admin)
 
-    expect{
+    expect {
       graph.transaction do
-        expect{
+        expect {
           graph.store_entity mona_lisa
-        }.to change{graph.node_count}.by(1)
+        }.to change { graph.node_count }.by(1)
       end
-    }.not_to change{graph.node_count}
+    }.not_to change { graph.node_count }
   end
-
 end

@@ -59,5 +59,4 @@ class PublishmentsController < JsonController
     def auth
       require_non_guest
     end
-
 end

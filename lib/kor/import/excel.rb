@@ -1,7 +1,6 @@
 Bundler.require :import_export
 
 class Kor::Import::Excel < Kor::Export::Excel
-
   def initialize(source_dir, options = {})
     @source_dir = source_dir
     @options = options.reverse_merge(
@@ -92,7 +91,7 @@ class Kor::Import::Excel < Kor::Export::Excel
 
             # binding.pry
 
-            if entity.changed? || serialized_changes || entity.datings.any?{|d| d.changed?}
+            if entity.changed? || serialized_changes || entity.datings.any? { |d| d.changed? }
               if entity.valid?
                 if @options[:obey_permissions]
                   if entity.new_record?
@@ -172,7 +171,7 @@ class Kor::Import::Excel < Kor::Export::Excel
 
     dating_attributes.each do |da|
       if da["id"]
-        if existing = results.to_a.find{|d| d.id == da["id"]}
+        if existing = results.to_a.find { |d| d.id == da["id"] }
           existing.assign_attributes(da)
           log "EntityDating id #{da['id']} found ... updating to: #{existing.inspect}"
         else
@@ -184,10 +183,9 @@ class Kor::Import::Excel < Kor::Export::Excel
     end
 
     results = results.select do |dating|
-      dating_attributes.find{|da| da['id'] == dating.id}
+      dating_attributes.find { |da| da['id'] == dating.id }
     end
 
     results
   end
-
 end

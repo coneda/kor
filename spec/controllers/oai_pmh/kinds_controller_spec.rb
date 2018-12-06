@@ -6,11 +6,11 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   it "should respond to 'Identify'" do
     get '/oai-pmh/kinds.xml', verb: 'Identify'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
 
     post '/oai-pmh/kinds.xml', verb: 'Identify'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
 
     doc = parse_xml(response.body)
     expect(doc.xpath("//xmlns:deletedRecord").first.text).to eq('persistent')
@@ -19,7 +19,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   it "should respond to 'ListMetadataFormats'" do
     get '/oai-pmh/kinds.xml', verb: 'ListMetadataFormats'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListIdentifiers'" do
@@ -70,7 +70,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
       metadataPrefix: 'kor'
     }
     doc = parse_xml(response.body)
-    
+
     expect(xsd.validate(doc)).to be_empty
   end
 
@@ -121,7 +121,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   end
 
   it "should return 'noRecordsMatch' if the criteria do not yield any records" do
-    Kind.all.each{|r| r.really_destroy!}
+    Kind.all.each { |r| r.really_destroy! }
     admin = User.admin
 
     get '/oai-pmh/kinds.xml', verb: 'ListIdentifiers'
@@ -168,5 +168,4 @@ RSpec.describe OaiPmh::KindsController, type: :request do
     expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
     expect(doc.xpath("//xmlns:metadata").count).to eq(0)
   end
-
 end

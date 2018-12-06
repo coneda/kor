@@ -30,15 +30,15 @@ class Entity < ApplicationRecord
   accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
 
   validates :name, 
-    :presence => {:if => :needs_name?},
-    :uniqueness => {:scope => [:kind_id, :distinct_name], :allow_blank => true},
+    :presence => { :if => :needs_name? },
+    :uniqueness => { :scope => [:kind_id, :distinct_name], :allow_blank => true },
     :white_space => true
   validates :distinct_name,
-    :uniqueness => {:scope => [ :kind_id, :name ], :allow_blank => true},
+    :uniqueness => { :scope => [:kind_id, :name], :allow_blank => true },
     :white_space => true
   validates :kind, :uuid, :collection_id, presence: true
   validates :no_name_statement, inclusion: {
-    :allow_blank => true, :in => [ 'unknown', 'not_available', 'empty_name', 'enter_name' ]
+    :allow_blank => true, :in => ['unknown', 'not_available', 'empty_name', 'enter_name']
   }
 
   validate(
@@ -73,13 +73,13 @@ class Entity < ApplicationRecord
   end
   
   # TODO: still needed?
-  def simple_errors
-    result = []
-    errors.each do |a, m|
-      result << [I18n.t(a, :scope => [:activerecord, :attributes]), m] unless a == 'medium'
-    end
-    result
-  end
+  # def simple_errors
+  #   result = []
+  #   errors.each do |a, m|
+  #     result << [I18n.t(a, :scope => [:activerecord, :attributes]), m] unless a == 'medium'
+  #   end
+  #   result
+  # end
   
   def read_attribute_for_validation(attr)
     if attr.match(/^dataset\./)
@@ -114,7 +114,7 @@ class Entity < ApplicationRecord
   end
 
   def field_hashes
-    fields.map{|field| field.serializable_hash}
+    fields.map { |field| field.serializable_hash }
   end
 
   def synonyms
@@ -125,8 +125,8 @@ class Entity < ApplicationRecord
     attachment['synonyms'] = case value
     when String then value.split("\n")
     when Array then value
-      else
-        raise "value '#{value.inspect} can't be assigned as synonyms"
+    else
+      raise "value '#{value.inspect} can't be assigned as synonyms"
     end
   end
 
@@ -155,22 +155,22 @@ class Entity < ApplicationRecord
   end
 
   # TODO: can this method be removed?
-  def new_datings_attributes=(values)
-    values.each do |v|
-      datings.build v
-    end
-  end
+  # def new_datings_attributes=(values)
+  #   values.each do |v|
+  #     datings.build v
+  #   end
+  # end
 
   # TODO: can this method be removed?
-  def existing_datings_attributes=(values)
-    datings.reject(&:new_record?).each do |d|
-      if a = values.find{|e| e['id'].to_i == d.id}
-        d.assign_attributes a
-      else
-        d.mark_for_destruction
-      end
-    end
-  end
+  # def existing_datings_attributes=(values)
+  #   datings.reject(&:new_record?).each do |d|
+  #     if a = values.find { |e| e['id'].to_i == d.id }
+  #       d.assign_attributes a
+  #     else
+  #       d.mark_for_destruction
+  #     end
+  #   end
+  # end
 
   before_validation :generate_uuid, :sanitize_distinct_name
   before_save :generate_uuid, :add_to_user_group
@@ -204,17 +204,17 @@ class Entity < ApplicationRecord
           id = identifiers.find_or_create_by(kind: field.name)
           id.update_attributes :value => field.value
         else
-          id = identifiers.where(:kind =>  field.name).first
+          id = identifiers.where(:kind => field.name).first
           id.destroy if id
         end
       end
     end
   end
 
-  def after_merge
-    update_elastic
-    update_identifiers
-  end
+  # def after_merge
+  #   update_elastic
+  #   update_identifiers
+  # end
 
   def cache_key(*timestamp_names)
     timestamp = [
@@ -229,13 +229,13 @@ class Entity < ApplicationRecord
     "#{model_name.cache_key}/#{id}-#{timestamp}"
   end
   
-  def recent?
-    @recent
-  end
+  # def recent?
+  #   @recent
+  # end
   
-  def remember_recent!
-    @recent = true
-  end
+  # def remember_recent!
+  #   @recent = true
+  # end
   
   attr_accessor :user_group_id
   def add_to_user_group
@@ -260,9 +260,10 @@ class Entity < ApplicationRecord
 
   def self.allowed(user, policy = :view)
     collections = Kor::Auth.authorized_collections(user, policy)
-    where("entities.collection_id IN (?)", collections.map{|c| c.id})
+    where("entities.collection_id IN (?)", collections.map { |c| c.id })
   end
   
+  # re-enable this for display
   def html_comment
     red_cloth = RedCloth.new(self.comment || "")
     red_cloth.sanitize_html = true
@@ -327,25 +328,9 @@ class Entity < ApplicationRecord
     @media ||= outgoing_relationships.
       by_to_kind(Kind.medium_kind_id).
       allowed(user).
-      map{|dr| dr.to}
+      map { |dr| dr.to }
   end
 
-  def context_name(user)
-    pn = []
-    sn = []
-    primary_entities(user).select(:id, :name).each do |pe|
-      pe << pe.name
-      pe.secondary_entities(user).select(:id, :name).each do |se|
-        sn << se.name
-      end
-    end
-    sn.join(', ') + ': ' + pn.join(', ')
-  end
-
-  def medium_hash
-    self.medium ? self.medium.datahash : nil
-  end
-  
   # TODO: this used to grab the content type for media, removed because its
   # probably not needed anymore
   def kind_name(options = {})
@@ -381,10 +366,6 @@ class Entity < ApplicationRecord
     !is_medium? && no_name_statement == 'enter_name'
   end
 
-  def has_distinct_name?
-    distinct_name.blank? ? false : true
-  end
-
   def display_name
     if is_medium?
       "#{Medium.model_name.human} #{id}"
@@ -403,14 +384,6 @@ class Entity < ApplicationRecord
     !!medium_id || !!medium || kind_id == Kind.medium_kind_id
   end
 
-  def self.filtered_tag_counts(term, options = {})
-    options.reverse_merge!(:limit => 10)
-    
-    Entity.
-      tag_counts(:order => 'count DESC', :limit => options[:limit]).
-      where('tags.name LIKE ?', "%#{term}%")
-  end
-  
   scope :by_ordered_id_array, lambda { |*ids|
     if ids.present? && ids.flatten.compact.present?
       ids = ids.flatten.compact
@@ -419,70 +392,70 @@ class Entity < ApplicationRecord
       none
     end
   }
-  scope :by_relation_name, lambda {|relation_name|
+  scope :by_relation_name, lambda { |relation_name|
     return all if relation_name.blank?
     
     where(kind_id: Relation.to_entity_kind_ids(relation_name))
   }  
-  scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
-  scope :by_uuid, lambda {|uuid| uuid.present? ? where(uuid: uuid) : all}
-  scope :created_after, lambda {|time| time.present? ? where("created_at > ?", time) : all}
-  scope :created_before, lambda {|time| time.present? ? where("created_at < ?", time) : all}
-  scope :updated_after, lambda {|time| time.present? ? where("updated_at > ?", time) : all}
-  scope :updated_before, lambda {|time| time.present? ? where("updated_at < ?", time) : all}
-  scope :only_kinds, lambda {|ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
-  scope :except_kinds, lambda {|ids| ids.present? ? where("entities.kind_id NOT IN (?)", ids) : all}
-  scope :latest, lambda {|*args| where("created_at > ?", (args.first || 2.weeks).ago) }
-  scope :within_collections, lambda {|ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
+  scope :by_id, lambda { |id| id.present? ? where(id: id) : all }
+  scope :by_uuid, lambda { |uuid| uuid.present? ? where(uuid: uuid) : all }
+  scope :created_after, lambda { |time| time.present? ? where("created_at > ?", time) : all }
+  scope :created_before, lambda { |time| time.present? ? where("created_at < ?", time) : all }
+  scope :updated_after, lambda { |time| time.present? ? where("updated_at > ?", time) : all }
+  scope :updated_before, lambda { |time| time.present? ? where("updated_at < ?", time) : all }
+  scope :only_kinds, lambda { |ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
+  scope :except_kinds, lambda { |ids| ids.present? ? where("entities.kind_id NOT IN (?)", ids) : all }
+  scope :latest, lambda { |*args| where("created_at > ?", (args.first || 2.weeks).ago) }
+  scope :within_collections, lambda { |ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
   scope :media, lambda { only_kinds(Kind.medium_kind_id) }
   scope :without_media, lambda { except_kinds(Kind.medium_kind_id) }
   scope :by_subtype, lambda { |subtype| subtype.present? ? where(subtype: subtype) : all }
-  scope :by_comment, lambda { |comment| comment.present? ? where('comment LIKE ?', "%#{comment}%") : all}
+  scope :by_comment, lambda { |comment| comment.present? ? where('comment LIKE ?', "%#{comment}%") : all }
   scope :named_like, lambda { |terms|
     if terms.present?
       terms = terms.split(/\s+/)
-      sql = terms.map{|t| 'name LIKE ? OR distinct_name LIKE ?'}.join(' OR ')
-      values = terms.map{|t| "%#{t}%"}
+      sql = terms.map { |t| 'name LIKE ? OR distinct_name LIKE ?' }.join(' OR ')
+      values = terms.map { |t| "%#{t}%" }
       values = values + values
       where("(#{sql})", *values)
     else
       all
     end
   }
-  scope :has_property, lambda { |user, properties|
-    if properties.blank?
-      all
-    else
-      ids = Kor::Elastic.new(user).search(
-        :properties => properties,
-        :size => Entity.count,
-      ).ids
-      where("entities.id IN (?)", ids.uniq)
-    end
-  }
-  scope :related_to, lambda { |user, spec|
-    entity_ids = nil
-    spec ||= []
+  # scope :has_property, lambda { |user, properties|
+  #   if properties.blank?
+  #     all
+  #   else
+  #     ids = Kor::Elastic.new(user).search(
+  #       :properties => properties,
+  #       :size => Entity.count,
+  #     ).ids
+  #     where("entities.id IN (?)", ids.uniq)
+  #   end
+  # }
+  # scope :related_to, lambda { |user, spec|
+  #   entity_ids = nil
+  #   spec ||= []
 
-    relation_names = spec.map{|s| s["relation_name"]}.select{|e| e.present?}
-    entity_names = spec.map{|s| s["entity_name"]}.select{|e| e.present?}
+  #   relation_names = spec.map { |s| s["relation_name"] }.select { |e| e.present? }
+  #   entity_names = spec.map { |s| s["entity_name"] }.select { |e| e.present? }
 
-    scope = all
-    if relation_names.present?
-      scope = scope.joins(:outgoing).where(
-        'directed_relationships.relation_name' => relation_names
-      )
-    end
-    if entity_names.present?
-      query = entity_names.map{|n| 'outgoings_entities.name LIKE ?'}
-      query = "(#{query.join ') OR ('})"
-      names = entity_names.map{|n| "%#{n}%" }
-      scope = scope.joins(:outgoing).where(query, names)
-    end
+  #   scope = all
+  #   if relation_names.present?
+  #     scope = scope.joins(:outgoing).where(
+  #       'directed_relationships.relation_name' => relation_names
+  #     )
+  #   end
+  #   if entity_names.present?
+  #     query = entity_names.map { |n| 'outgoings_entities.name LIKE ?' }
+  #     query = "(#{query.join ') OR ('})"
+  #     names = entity_names.map { |n| "%#{n}%" }
+  #     scope = scope.joins(:outgoing).where(query, names)
+  #   end
 
-    scope
-  }
-  scope :dated_in, lambda {|datings|
+  #   scope
+  # }
+  scope :dated_in, lambda { |datings|
     datings = [datings] unless datings.is_a?(Array)
 
     results = all
@@ -505,39 +478,39 @@ class Entity < ApplicationRecord
     end
     results
   }
-  scope :dataset_attributes, lambda { |user, dataset|
-    dataset ||= {}
-    ids = Kor::Elastic.new(user).search(
-      :dataset => dataset,
-      :size => Entity.count
-    ).ids
+  # scope :dataset_attributes, lambda { |user, dataset|
+  #   dataset ||= {}
+  #   ids = Kor::Elastic.new(user).search(
+  #     :dataset => dataset,
+  #     :size => Entity.count
+  #   ).ids
 
-    dataset.values.all?{|v| v.blank?} ? all : where("entities.id IN (?)", ids.uniq)
-  }
+  #   dataset.values.all? { |v| v.blank? } ? all : where("entities.id IN (?)", ids.uniq)
+  # }
   scope :load_fully, lambda { joins(:kind, :collection).includes(:medium) }
   scope :isolated, lambda { |activate|
     return all unless activate.present?
 
     joins("LEFT JOIN directed_relationships rels ON entities.id = rels.from_id").
-    where("rels.id IS NULL")
+      where("rels.id IS NULL")
   }
   scope :within_authority_groups, lambda { |ids|
     return all unless ids.present?
 
     joins('LEFT JOIN authority_groups_entities ae ON ae.entity_id = id').
-    where('ae.authority_group_id IN (?)', ids)
+      where('ae.authority_group_id IN (?)', ids)
   }
   scope :within_user_groups, lambda { |ids|
     return all unless ids.present?
     
     joins('LEFT JOIN entities_user_groups eu ON eu.entity_id = id').
-    where('eu.user_group_id IN (?)', ids)
+      where('eu.user_group_id IN (?)', ids)
   }
-  scope :within_system_groups, lambda {|ids|
+  scope :within_system_groups, lambda { |ids|
     return all unless ids.present?
     
     joins('LEFT JOIN entities_system_groups es ON es.entity_id = id').
-    where('es.system_group_id IN (?)', ids)
+      where('es.system_group_id IN (?)', ids)
   }
 
   def self.tagged_with(tags = [])

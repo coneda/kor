@@ -13,7 +13,7 @@ class MediaController < JsonController
       )
     else
       allowed_to?(:view, @medium.entity.collection) ||
-      Publishment.exists?(uuid: params[:uuid])
+        Publishment.exists?(uuid: params[:uuid])
     end
 
     disposition = (params[:disposition] == 'download' ? 'attachment' : 'images')
@@ -54,5 +54,4 @@ class MediaController < JsonController
       allowed = ["rotate_cw", "rotate_ccw", "rotate_180"]
       allowed.include?(param) ? param.to_sym : param
     end
-
 end

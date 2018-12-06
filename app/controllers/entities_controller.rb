@@ -1,5 +1,4 @@
 class EntitiesController < JsonController
-
   def metadata
     @entity = Entity.find(params[:id])
 
@@ -32,7 +31,7 @@ class EntitiesController < JsonController
       except_kind_id: params[:except_kind_id],
       dating: params[:dating],
       created_after: params[:created_after],
-      tags: param_to_array(params[:tags]),
+      tags: param_to_array(params[:tags], ids: false),
       relation_name: params[:relation_name],
 
       isolated: params[:isolated],
@@ -121,14 +120,12 @@ class EntitiesController < JsonController
             if transit
               @entity = Medium.where(datahash: @entity.medium.datahash).first.entity
               transit.add_entities @entity
-
-              # TODO: make sure this is tested
-              render_200 I18n.t('objects.create_success', o: @entity.display_name, ug: transit.name)
+              render_created @entity and return
             end
           end
-        else
-          render_422 build_nested_errors(@entity)
         end
+        
+        render_422 build_nested_errors(@entity)
       end
     else
       render_403
@@ -143,7 +140,7 @@ class EntitiesController < JsonController
 
     authorized = if @entity.collection_id_changed?
       allowed_to?(:delete, Collection.find(@entity.collection_id_was)) && 
-      allowed_to?(:create, Collection.find(@entity.collection_id))
+        allowed_to?(:create, Collection.find(@entity.collection_id))
     else
       allowed_to?(:edit, @entity.collection)
     end
@@ -195,9 +192,7 @@ class EntitiesController < JsonController
       if session[:current_entity] == @entity.id
         session[:current_entity] = nil
       end
-      render_200 I18n.t('objects.destroy_success',
-        o: I18n.t('activerecord.models.entity', count: 1)
-      ) 
+      render_deleted @entity
     else
       render_403
     end
@@ -205,13 +200,13 @@ class EntitiesController < JsonController
 
   def merge
     entities = Entity.find(params[:entity_ids])
-    collections = entities.map{|e| e.collection}.uniq
+    collections = entities.map { |e| e.collection }.uniq
     
     allowed_to_create = allowed_to?(:create)
     allowed_to_delete_requested_entities = allowed_to?(:delete, collections, :required => :all)
   
     if allowed_to_create and allowed_to_delete_requested_entities
-      if entities.map{|e| e.kind.id}.uniq.size != 1
+      if entities.map { |e| e.kind.id }.uniq.size != 1
         render_422 nil, I18n.t('errors.only_same_kind')
       end
 
@@ -241,8 +236,8 @@ class EntitiesController < JsonController
 
       can_edit = 
         allowed_to?(:edit, @target.collection_id) || 
-        allowed_to?(:edit, @entities.map{|e| e.collection_id})
-      collections = [@target.collection_id] + @entities.map{|e| e.collection_id}
+        allowed_to?(:edit, @entities.map { |e| e.collection_id })
+      collections = [@target.collection_id] + @entities.map { |e| e.collection_id }
       can_view = allowed_to?(:view, collections, required: :all)
 
       if can_edit & can_view
@@ -257,7 +252,7 @@ class EntitiesController < JsonController
             end
           end
         rescue ActiveRecord::Rollback => e
-          render_422 I18n.t('errors.relationships_not_saved')
+          render_422 I18n.t('errors.relationships_not_saved') and return
         end
 
         render_200 I18n.t('notices.mass_relation_success')
@@ -269,7 +264,7 @@ class EntitiesController < JsonController
 
   def existence
     ids = params[:ids]
-    found_ids = Entity.allowed(current_user).where(id: ids).map{|e| e.id}
+    found_ids = Entity.allowed(current_user).where(id: ids).map { |e| e.id }
     existence = found_ids.zip(Array.new(found_ids.size, true)).to_h
     ids = ids.zip(Array.new(ids.size, false)).to_h
 
@@ -317,7 +312,7 @@ class EntitiesController < JsonController
       end
 
       result.merge!(
-        'datings' => entity.datings.map{|d| d.errors.as_json},
+        'datings' => entity.datings.map { |d| d.errors.as_json },
         'dataset' => de
       )
 
@@ -333,5 +328,4 @@ class EntitiesController < JsonController
       end
       results
     end
-
 end

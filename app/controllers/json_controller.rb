@@ -1,6 +1,5 @@
 # TODO: test this
 class JsonController < BaseController
-
   rescue_from ActiveRecord::RecordNotFound, with: :render_record_not_found
   rescue_from ActiveRecord::StaleObjectError, with: :render_stale
 
@@ -12,71 +11,77 @@ class JsonController < BaseController
 
   protected
 
+    def name_for(record)
+      case record
+      when String then record
+      when ApplicationRecord
+        @record = record
+        record.try(:display_name) ||
+          record.try(:name) ||
+          record.class.model_name.human
+      else
+        raise "don't know how to get name for #{record.inspect}"
+      end
+    end
+
     def render_created(record)
-      @record = record
-      object_name = @record.try(:display_name) || record.class.model_name.human
-      render_200 I18n.t('objects.create_success', o: object_name)
+      render_200 I18n.t('objects.create_success', o: name_for(record))
     end
 
     def render_updated(record)
-      @record = record
-      object_name = @record.try(:display_name) || record.class.model_name.human
-      render_200 I18n.t('objects.update_success', o: object_name)
+      render_200 I18n.t('objects.update_success', o: name_for(record))
     end
 
     def render_deleted(record)
-      @record = record
-      object_name = @record.try(:display_name) || record.class.model_name.human
-      render_200 I18n.t('objects.destroy_success', o: object_name)
+      render_200 I18n.t('objects.destroy_success', o: name_for(record))
     end
 
     def render_200(message)
       @message = message
-      render template: 'layouts/message', status: 200
+      render template: 'json/message', status: 200
     end
 
     def render_400(message)
       @message = message
-      render template: 'layouts/message', status: 400
+      render template: 'json/message', status: 400
     end 
 
     def render_401(message = nil)
       @message = message || I18n.t('notices.not_logged_in')
-      render template: 'layouts/message', status: 401
+      render template: 'json/message', status: 401
     end
 
     def render_403(message = nil)
       @message = message || I18n.t('notices.access_denied')
-      render template: 'layouts/message', status: 403
+      render template: 'json/message', status: 403
     end
 
     def render_record_not_found(exception)
       render_404 exception.message
     end
 
-    def render_stale(exception)
-      @message = I18n.t('errors.stale_update')
-      render template: 'layouts/message', status: 422
-    end
-
     def render_404(message = nil)
       @message = message || I18n.t('messages.not_found')
-      render template: 'layouts/message', status: 404
+      render template: 'json/message', status: 404
+    end
+
+    def render_stale(exception)
+      @message = I18n.t('errors.stale_update')
+      render template: 'json/message', status: 422
     end
 
     def render_422(errors, message = nil)
       @errors = errors
       @message = message || I18n.t('activemodel.errors.template.header')
-      render template: 'layouts/message', status: 422
+      render template: 'json/message', status: 422
     end
 
     def render_500(message = nil)
       @message = message || I18n.t('errors.exception_ocurred')
-      render template: 'layouts/message', status: 500
+      render template: 'json/message', status: 500
     end
 
     def auth
-
     end
 
     def for_actions(*actions)
@@ -164,9 +169,9 @@ class JsonController < BaseController
       case value
       when String
         results = value.split(',')
-        options[:ids] ? results.map{|v| v.to_i} : results
+        options[:ids] ? results.map { |v| v.to_i } : results
       when Integer then [value]
-      when Array then value.map{|v| param_to_array(v, options)}.flatten
+      when Array then value.map { |v| param_to_array(v, options) }.flatten
       when nil then []
       else
         raise "unknown param format to convert to array: #{value}"
@@ -175,7 +180,7 @@ class JsonController < BaseController
 
     def zip_download(group, entities)
       if !entities.empty?
-        zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/download.zip", 
+        zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/download.zip",
           :user_id => current_user.id,
           :file_name => "#{group.name}.zip"
         )
@@ -195,5 +200,4 @@ class JsonController < BaseController
         render_200 I18n.t('notices.no_entities_in_group')
       end
     end
-
 end

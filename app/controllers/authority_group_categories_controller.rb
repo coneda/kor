@@ -34,27 +34,27 @@ class AuthorityGroupCategoriesController < JsonController
         @record.save
       end
 
-      render_200 I18n.t('objects.create_success', :o => @record.name)
+      render_created @record
     else
       render_422 @record.errors
     end
   end
 
   def update
-    @authority_group_category = AuthorityGroupCategory.find(params[:id])
+    @record = AuthorityGroupCategory.find(params[:id])
 
-    if @authority_group_category.update_attributes(authority_group_category_params)
-      render_200 I18n.t('objects.update_success', :o => @authority_group_category.name)
+    if @record.update_attributes(authority_group_category_params)
+      render_updated @record
     else
-      render_422 @authority_group_category.errors
+      render_422 @record.errors
     end
   end
 
   # make sure this destroys all authority groups and their member associations
   def destroy
-    @authority_group_category = AuthorityGroupCategory.find(params[:id])
-    @authority_group_category.destroy
-    render_200 I18n.t('objects.destroy_success', :o => @authority_group_category.name)
+    @record = AuthorityGroupCategory.find(params[:id])
+    @record.destroy
+    render_deleted @record
   end
   
   protected
@@ -66,5 +66,4 @@ class AuthorityGroupCategoriesController < JsonController
     def auth
       require_authority_group_admin
     end
-
 end

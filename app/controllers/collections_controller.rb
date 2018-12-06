@@ -1,5 +1,4 @@
 class CollectionsController < JsonController
-
   skip_before_filter :auth, only: [:index]
 
   def index
@@ -27,7 +26,7 @@ class CollectionsController < JsonController
     @record = Collection.new(collection_params)
 
     if @record.save
-      render_200 I18n.t('objects.create_success', o: @record.name)
+      render_created @record
     else
       render_422 @record.errors
     end
@@ -37,7 +36,7 @@ class CollectionsController < JsonController
     @record = Collection.find(params[:id])
 
     if @record.update_attributes(collection_params)
-      render_200 I18n.t('objects.update_success', o: @record.name)
+      render_updated @record
     else
       render_422 @record.errors
     end
@@ -48,7 +47,7 @@ class CollectionsController < JsonController
     
     if @record.entities.count == 0
       @record.destroy
-      render_200 I18n.t('objects.destroy_success', o: @record.name)
+      render_deleted @record
     else
       render_400 I18n.t('errors.collection_not_empty_on_delete', name: @record.name)
     end

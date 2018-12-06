@@ -23,13 +23,13 @@ RSpec.describe KindsController, type: :controller do
   end
 
   it 'should not POST create' do
-    post :create, kind: {name: 'literatur', plural_name: 'literature'}
+    post :create, kind: { name: 'literatur', plural_name: 'literature' }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
     person = Kind.find_by!(name: 'person')
-    patch :update, id: person.id, person: {plural_name: 'persons'}
+    patch :update, id: person.id, person: { plural_name: 'persons' }
     expect(response).to be_forbidden
   end
 
@@ -45,14 +45,14 @@ RSpec.describe KindsController, type: :controller do
     end
 
     it 'should POST create' do
-      post :create, kind: {name: 'city', plural_name: 'cities'}
+      post :create, kind: { name: 'city', plural_name: 'cities' }
       expect_created_response
       c = Kind.find_by!(name: 'city')
     end
 
     it 'should PATCH update' do
       id = Kind.find_by!(name: 'person').id
-      patch :update, id: id, kind: {plural_name: 'persons'}
+      patch :update, id: id, kind: { plural_name: 'persons' }
       expect_updated_response
       expect(Kind.find(id).plural_name).to eq('persons')
     end

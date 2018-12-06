@@ -1,5 +1,4 @@
 class ChangeMongoDbClassName < ActiveRecord::Migration
-
   def self.old_name
     "Kor::Mongo::Attachment::Config"
   end

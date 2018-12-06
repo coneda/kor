@@ -6,17 +6,17 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
   it "should respond to 'Identify'" do
     get '/oai-pmh/relations.xml', verb: 'Identify'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
 
     post '/oai-pmh/relations.xml', verb: 'Identify'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListMetadataFormats'" do
     get '/oai-pmh/relations.xml', verb: 'ListMetadataFormats'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListIdentifiers'" do
@@ -111,7 +111,7 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
   it "should return 'idDoesNotExist' if the identifier given does not exist" do
     get '/oai-pmh/relations.xml', {
       verb: 'GetRecord',
-      identifier: '1234' ,
+      identifier: '1234',
       metadataPrefix: 'kor'
     }
 
@@ -119,7 +119,7 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
   end
 
   it "should return 'noRecordsMatch' if the criteria do not yield any records" do
-    Relation.all.each{|r| r.really_destroy!}
+    Relation.all.each { |r| r.really_destroy! }
     admin = User.admin
 
     get '/oai-pmh/relations.xml', verb: 'ListIdentifiers'

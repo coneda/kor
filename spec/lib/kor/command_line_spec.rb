@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Kor::CommandLine do
-
   def run(args)
     cmd = described_class.new(args.split ' ')
     cmd.set :verbose, false
@@ -20,10 +19,12 @@ RSpec.describe Kor::CommandLine do
   end
 
   it 'should start zipping a group' do
-    expect(Kor::Tasks).to receive(:group_to_zip).with(hash_including(
-      group_id: 123,
-      class_name: 'UserGroup'
-    ))
+    expect(Kor::Tasks).to receive(:group_to_zip).with(
+      hash_including(
+        group_id: 123,
+        class_name: 'UserGroup'
+      )
+    )
     run 'group-to-zip --group-id=123 --class-name=UserGroup'
   end
 
@@ -48,10 +49,12 @@ RSpec.describe Kor::CommandLine do
   end
 
   it 'should start collecting exif stats' do
-    expect(Kor::Tasks).to receive(:exif_stats).with(hash_including(
-      from: '2016-12-01',
-      to: '2016-12-31'
-    ))
+    expect(Kor::Tasks).to receive(:exif_stats).with(
+      hash_including(
+        from: '2016-12-01',
+        to: '2016-12-31'
+      )
+    )
     run 'exif-stats -f 2016-12-01 -t 2016-12-31'
   end
 
@@ -76,10 +79,12 @@ RSpec.describe Kor::CommandLine do
   end
 
   it 'should start listing permissions' do
-    expect(Kor::Tasks).to receive(:list_permissions).with(hash_including(
-      entity_id: "123",
-      user_id: "456"
-    ))
+    expect(Kor::Tasks).to receive(:list_permissions).with(
+      hash_including(
+        entity_id: "123",
+        user_id: "456"
+      )
+    )
     run 'list-permissions -e 123 -u 456'
   end
 
@@ -124,5 +129,4 @@ RSpec.describe Kor::CommandLine do
     expect(import).to receive(:run)
     run 'import -f excel -u jdoe -i -p -s -o /some/dir'
   end
-
 end

@@ -16,6 +16,6 @@ class KorController < JsonController
 
   def translations
     I18n.backend.load_translations
-    render json: {'translations' => I18n.backend.send(:translations)}
+    render json: { 'translations' => I18n.backend.send(:translations) }
   end
 end

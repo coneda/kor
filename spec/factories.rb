@@ -1,7 +1,5 @@
 FactoryGirl.define do
-
   factory :kind do
-
     factory :works do
       name "work"
       plural_name "works"
@@ -11,7 +9,7 @@ FactoryGirl.define do
       name "Medium"
       plural_name "Media"
       uuid Kind::MEDIA_UUID
-      settings { {:naming => false} }
+      settings { { :naming => false } }
     end
 
     factory :locations do
@@ -48,7 +46,6 @@ FactoryGirl.define do
   end
   
   factory :medium do
-
     factory :medium_image_a do
       document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
     end
@@ -124,7 +121,7 @@ FactoryGirl.define do
         name "Mona Lisa"
 
         dataset do
-          {:gnd => '12345'}
+          { :gnd => '12345' }
         end
       end
 
@@ -227,7 +224,6 @@ FactoryGirl.define do
         medium { FactoryGirl.build :medium_text_a }
       end
     end
-
   end
 
   factory :relation do
@@ -318,7 +314,6 @@ FactoryGirl.define do
       full_name 'LDAP template user'
       password 'ldap'
     end
-
   end
 
   factory :credential do

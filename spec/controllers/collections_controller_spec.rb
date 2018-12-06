@@ -14,13 +14,13 @@ RSpec.describe CollectionsController, type: :controller do
   end
 
   it 'should not POST create' do
-    post :create, collection: {name: 'private'}
+    post :create, collection: { name: 'private' }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
     id = Collection.find_by!(name: 'private').id
-    patch :update, id: id, collection: {name: 'confidential'}
+    patch :update, id: id, collection: { name: 'confidential' }
     expect(response).to be_forbidden
   end
 
@@ -61,14 +61,14 @@ RSpec.describe CollectionsController, type: :controller do
     end
 
     it 'should POST create' do
-      post :create, collection: {name: 'confidential'}
+      post :create, collection: { name: 'confidential' }
       expect_created_response
       c = Collection.find_by!(name: 'confidential')
     end
 
     it 'should PATCH update' do
       id = Collection.find_by!(name: 'private').id
-      patch :update, id: id, collection: {name: 'old private'}
+      patch :update, id: id, collection: { name: 'old private' }
       expect_updated_response
       agc = Collection.find(id)
       expect(agc.name).to eq('old private')

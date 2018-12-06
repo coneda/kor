@@ -33,7 +33,7 @@ class AddCollectionBasedSecurityToKor < ActiveRecord::Migration
     execute "UPDATE entities SET approved=0"
     
     User.all.each do |user|
-      credentials = user.groups.map{|c| c.name}
+      credentials = user.groups.map { |c| c.name }
       
       if credentials.include? "admins"
         user.groups = [Credential.find_by_name('admins')]

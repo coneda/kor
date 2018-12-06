@@ -27,16 +27,12 @@
       multiple={opts.multiple}
       disabled={opts.isDisabled}
     >
-      <option if={opts.placeholder} value={0}>
-        {opts.placeholder}
-      </option>
+      <option if={opts.placeholder} value={0}>{opts.placeholder}</option>
       <option
         each={item in opts.options}
         value={item.id || item.value || item}
         selected={selected(item)}
-      >
-        {item.name || item.label || item}
-      </option>
+      >{item.name || item.label || item}</option>
     </select>
   </label>
   <virtual if={opts.type == 'radio'}>

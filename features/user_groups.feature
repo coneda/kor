@@ -4,7 +4,7 @@ Feature: usergroups
     When I go to the new user group page
     And I fill in "Name" with "Leonardo"
     And I press "Save"
-    Then I should see "personal group has been created"
+    Then I should see "has been created"
     And I should see "Leonardo"
     When I go to the user group "Leonardo"
     Then I should see "Leonardo"
@@ -15,6 +15,8 @@ Feature: usergroups
     Given I am logged in as "admin"
     And the user group "Leonardo"
     When I go to the user groups page
+    Then I should see "Personal groups"
+    And I save a screenshot
     And I follow "edit"
     And I fill in "Name" with "Raffael"
     And I press "Save"
@@ -25,6 +27,7 @@ Feature: usergroups
     Given I am logged in as "admin"
     And the user group "Leonardo"
     When I go to the user groups page
+    Then I should see "Personal groups"
     And I ignore the next confirmation box
     And I follow "delete" within ".w-content"
     Then I should be on the user groups page

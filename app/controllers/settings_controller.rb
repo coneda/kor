@@ -11,7 +11,7 @@ class SettingsController < JsonController
 
     if @settings.update settings_params
       human_name = I18n.t('activerecord.models.setting', count: :other)
-      render_200 I18n.t('objects.update_success', o: human_name)
+      render_updated human_name
     else
       render_422 @settings.errors
     end
@@ -28,5 +28,4 @@ class SettingsController < JsonController
     def settings_params
       params.fetch(:settings, {}).permit!
     end
-
 end

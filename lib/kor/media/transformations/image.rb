@@ -1,5 +1,4 @@
 class Kor::Media::Transformations::Image < Kor::Media::Transformations::Base
-
   def self.transforms(medium)
     medium.image.file?
   end
@@ -9,7 +8,7 @@ class Kor::Media::Transformations::Image < Kor::Media::Transformations::Base
   end
   
   def operation_to_command(operation)
-    map = {:rotate_cw => 'rotate 90', :rotate_ccw => 'rotate -90', :rotate_180 => 'rotate 180'}
+    map = { :rotate_cw => 'rotate 90', :rotate_ccw => 'rotate -90', :rotate_180 => 'rotate 180' }
     map[operation] || operation
   end
   

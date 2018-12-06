@@ -1,25 +1,17 @@
-class Medium < ActiveRecord::Base
+class Medium < ApplicationRecord
   has_one :entity
 
-  def self.media_data_dir
-    if Rails.env == 'production'
-      "#{Rails.root}/data/media"
-    else
-      "#{Rails.root}/data/media.#{Rails.env}"
-    end
-  end
-  
   has_attached_file :document, 
-    path: "#{media_data_dir}/:style/:id_partition/document.:style_extension",
+    path: "#{ENV['MEDIA_DIR']}/:style/:id_partition/document.:style_extension",
     url: "/media/images/:style/:id_partition/document.:style_extension",
     default_url: "/media/images/:style/:id_partition/image.:style_extension?:style_timestamp",
-    styles: lambda {|attachment| attachment.instance.custom_styles},
-    processors: lambda {|instance| instance.processors}
+    styles: lambda { |attachment| attachment.instance.custom_styles },
+    processors: lambda { |instance| instance.processors }
     
   has_attached_file :image,
-    :path => "#{media_data_dir}/:style/:id_partition/image.:style_extension",
+    :path => "#{ENV['MEDIA_DIR']}/:style/:id_partition/image.:style_extension",
     :url => "/media/images/:style/:id_partition/image.:style_extension",
-    :default_url => lambda {|attachment| attachment.instance.dummy_url},
+    :default_url => lambda { |attachment| attachment.instance.dummy_url },
     :styles => {
       :icon => ['80x80>', :jpg],
       :thumbnail => ['140x140>', :jpg],
@@ -39,15 +31,15 @@ class Medium < ActiveRecord::Base
       ct = document.content_type
       if ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
         result.merge!(
-          mp4: {format: :mp4, content_type: 'video/mp4'},
-          ogg: {format: :ogv, content_type: 'video/ogg'},
-          webm: {format: :webm, content_type: 'video/webm'}
+          mp4: { format: :mp4, content_type: 'video/mp4' },
+          ogg: { format: :ogv, content_type: 'video/ogg' },
+          webm: { format: :webm, content_type: 'video/webm' }
         )
       end
       if ct.match(/^audio\//)
         result.merge!(
-          mp3: {format: :mp3, content_type: 'audio/mp3'},
-          ogg: {format: :ogg, content_type: 'audio/ogg'}
+          mp3: { format: :mp3, content_type: 'audio/mp3' },
+          ogg: { format: :ogg, content_type: 'audio/ogg' }
         )
       end
     end
@@ -100,9 +92,9 @@ class Medium < ActiveRecord::Base
     end
   end
   
-  validates_attachment :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{|medium| medium.image.file?}}
-  validates_attachment :document, presence: {unless: Proc.new{|medium| medium.image.file?}, message: :file_must_be_set} 
-  validates :datahash, uniqueness: {:message => :file_exists}
+  validates_attachment :image, content_type: { content_type: /^image\/.+$/, if: Proc.new { |medium| medium.image.file? } }
+  validates_attachment :document, presence: { unless: Proc.new { |medium| medium.image.file? }, message: :file_must_be_set } 
+  validates :datahash, uniqueness: { :message => :file_exists }
   
   validate :validate_no_two_images
   validate :validate_file_size
@@ -260,7 +252,7 @@ class Medium < ActiveRecord::Base
   end
   
   def self.dummy_url(content_type)
-    group, type = content_type.split('/').map{|t| t.gsub /\//, '_'}
+    group, type = content_type.split('/').map { |t| t.gsub /\//, '_' }
   
     dir = "#{Rails.root}/public/content_types"
     group_dir = "#{dir}/#{group}"
@@ -280,13 +272,13 @@ class Medium < ActiveRecord::Base
     u = URI.parse value
     case u
     when URI::Generic
-        if u.scheme == 'file'
-          self.document = File.open(u.path)
-        else
-          raise "The file scheme is the only allowed generic scheme"
-        end
+      if u.scheme == 'file'
+        self.document = File.open(u.path)
       else
-        self.document = u
+        raise "The file scheme is the only allowed generic scheme"
+      end
+    else
+      self.document = u
     end
   end
 

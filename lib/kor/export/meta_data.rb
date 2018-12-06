@@ -6,7 +6,7 @@ class Kor::Export::MetaData
     Relation.primary_relation_names.each do |pr|
       @profile << {
         'name' => pr,
-        'relations' => Relation.secondary_relation_names.map{|sr| {'name' => sr}}
+        'relations' => Relation.secondary_relation_names.map { |sr| { 'name' => sr } }
       }
     end
   end

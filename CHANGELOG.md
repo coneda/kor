@@ -21,6 +21,8 @@ commit history on GitHub.
 ## Internal
 
 * the web frontend is now fully migrated to riot.js.
+* db sessions and exception logs have been removed along with their respective
+  command line maintenance tasks
 
 ## Version 3.0.0
 

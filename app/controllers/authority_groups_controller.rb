@@ -70,6 +70,7 @@ class AuthorityGroupsController < JsonController
   end
   
   protected
+  
     def authority_group_params
       params.fetch(:authority_group, {}).permit(:name, :lock_version, :authority_group_category_id)
     end

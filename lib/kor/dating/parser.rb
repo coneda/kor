@@ -1,12 +1,11 @@
 class Kor::Dating::Parser < Parslet::Parser
-
   # Numbers
   
   rule(:zero) { str '0' }
   rule(:natural_number) { match['1-9'] >> match['0-9'].repeat }
   rule(:positive_number) { zero | natural_number }
   rule(:minus) { match '-' }
-  rule(:whole_number) { positive_number | minus >> natural_number}
+  rule(:whole_number) { positive_number | minus >> natural_number }
   rule(:day) { match['1-2'] >> match['0-9'] | str('3') >> match['0-1'] | match['1-9'] }
   rule(:month) { str('1') >> match['0-2'] | match['1-9'] }
   
@@ -24,7 +23,7 @@ class Kor::Dating::Parser < Parslet::Parser
   rule(:before) { str('vor') >> space }
   rule(:after) { str('nach') >> space }
   rule(:negate) { str('nicht') >> space }
-  rule(:part) { str('Anfang') | str('Mitte') | str('Ende') | str('1. Hälfte') | str('2. Hälfte') | str('1. Drittel') | str('2. Drittel') | str('3. Drittel')}
+  rule(:part) { str('Anfang') | str('Mitte') | str('Ende') | str('1. Hälfte') | str('2. Hälfte') | str('1. Drittel') | str('2. Drittel') | str('3. Drittel') }
   
   
   # Dating
@@ -41,17 +40,17 @@ class Kor::Dating::Parser < Parslet::Parser
   rule(:year_interval) { year.as(:from) >> to >> (year | unknown).as(:to) | (year | unknown).as(:from) >> to >> year.as(:to) }
   rule(:interval) {
     before_year.as(:before_year) |
-    after_year.as(:after_year) |
-    date_interval.as(:date_interval) |
-    century_interval.as(:century_interval) |
-    year_interval.as(:year_interval)
+      after_year.as(:after_year) |
+      date_interval.as(:date_interval) |
+      century_interval.as(:century_interval) |
+      year_interval.as(:year_interval)
   }
   rule(:dating) {
     interval.as(:interval) | 
-    century_part.as(:century_part) | 
-    century.as(:century) | 
-    date.as(:date) | 
-    year.as(:year)
+      century_part.as(:century_part) | 
+      century.as(:century) | 
+      date.as(:date) | 
+      year.as(:year)
   }
   
   

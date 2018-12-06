@@ -1,3 +1,8 @@
+# * test group assignment during upload
+# * remove old config files
+# * test version task and erlangen import task
+# * write task specs
+
 class OaiPmhVerbConstraint
   def initialize(verb)
     @verb = verb
@@ -9,25 +14,23 @@ class OaiPmhVerbConstraint
 end
 
 Rails.application.routes.draw do
-
   root to: 'kor#index', as: 'root'
 
   get '/downloads/:uuid', to: 'downloads#show'
   get '/resolve(/:kind)/:id', to: 'identifiers#resolve'
   get '/env_auth', to: 'session#env_auth'
 
-  scope '/media', controller: 'media', defaults: {format: 'json'} do
+  scope '/media', controller: 'media', defaults: { format: 'json' } do
     patch 'transform/:id/:transformation/:operation', action: 'transform'
     get(
       ':disposition/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension',
       action: 'show',
-      constraints: {disposition: /images|download/}
+      constraints: { disposition: /images|download/ }
     )
   end
 
   defaults format: 'json' do
     get 'fields/types', to: 'fields#types'
-    # match 'clipboard', to: 'tools#clipboard', via: :get
 
     controller 'session' do
       get 'session', action: 'show'
@@ -74,8 +77,6 @@ Rails.application.routes.draw do
     resources :authority_groups, except: ['new', 'edit'] do
       member do
         get 'download_images'
-        # get 'edit_move'
-        # get 'mark'
         post 'add', action: 'add_to'
         post 'remove', action: 'remove_from'
       end
@@ -153,7 +154,7 @@ Rails.application.routes.draw do
   
   scope 'oai-pmh', format: 'xml', as: 'oai_pmh', via: [:get, :post] do
     ['entities', 'relationships', 'kinds', 'relations'].each do |res|
-      controller "oai_pmh/#{res}", defaults: {format: 'xml'} do
+      controller "oai_pmh/#{res}", defaults: { format: 'xml' } do
         match res, to: "oai_pmh/#{res}#identify", constraints: OaiPmhVerbConstraint.new('Identify')
         match res, to: "oai_pmh/#{res}#list_sets", constraints: OaiPmhVerbConstraint.new('ListSets')
         match res, to: "oai_pmh/#{res}#list_metadata_formats", constraints: OaiPmhVerbConstraint.new('ListMetadataFormats')

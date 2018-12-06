@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Kor::Settings do
-
   it "should create the settings file if it doesn't exist" do
     system "rm #{described_class.filename}"
     subject.save
@@ -10,7 +9,7 @@ RSpec.describe Kor::Settings do
 
   it 'should load existing configuration' do
     File.open described_class.filename, 'w' do |f|
-      data = {'some' => 'value'}.to_json
+      data = { 'some' => 'value' }.to_json
       f.write data
     end
     expect(subject['some']).to eq('value')
@@ -25,7 +24,7 @@ RSpec.describe Kor::Settings do
 
   it 'should overwrite only new configuration' do
     File.open described_class.filename, 'w' do |f|
-      data = {'some' => 'value'}.to_json
+      data = { 'some' => 'value' }.to_json
       f.write data
     end
 
@@ -83,5 +82,4 @@ RSpec.describe Kor::Settings do
   it 'should return defaults when the value is missing' do
     expect(subject['session_lifetime']).to eq(60 * 60 * 2)
   end
-
 end

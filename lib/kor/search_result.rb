@@ -1,5 +1,4 @@
 class Kor::SearchResult
-
   def initialize(attrs = {})
     assign attrs
   end
@@ -63,5 +62,4 @@ class Kor::SearchResult
   #     send "#{key}=", value
   #   end
   # end
-
 end

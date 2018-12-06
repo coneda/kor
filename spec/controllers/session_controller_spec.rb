@@ -32,7 +32,7 @@ RSpec.describe SessionController, type: :controller do
   end
   
   it "should reset the users login attempts when he authenticated successfully" do
-    User.admin.update login_attempts: [ Time.now, Time.now ]
+    User.admin.update login_attempts: [Time.now, Time.now]
     post :create, username: 'admin', password: 'admin'
     expect(response).to be_success
     expect(User.admin.login_attempts).to be_empty

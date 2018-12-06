@@ -10,8 +10,8 @@ json.cache! 'statistics', expires_in: 24.hours do
   by_kind = Entity.
     group("kind_id").
     count.
-    sort{|x, y| y.last - x.last}.
-    select{|stat| stat.last > 0}
+    sort { |x, y| y.last - x.last }.
+    select { |stat| stat.last > 0 }
   json.entities_by_kind by_kind do |stat|
     json.kind_name Kind.find(stat.first).name
     json.count stat.last
@@ -21,8 +21,8 @@ json.cache! 'statistics', expires_in: 24.hours do
   by_relation = Relationship.
     group("relation_id").
     count.
-    sort{|x, y| y.last - x.last}.
-    select{|stat| stat.last > 0}
+    sort { |x, y| y.last - x.last }.
+    select { |stat| stat.last > 0 }
   json.relationships_by_relation by_relation do |stat|
     json.relation_name Relation.find(stat.first).name
     json.count stat.last

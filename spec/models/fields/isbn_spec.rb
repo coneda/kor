@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Fields::Isbn do
-
   it "should accept '3899427289'" do
     allow(subject).to receive(:value).and_return '3899427289'
     expect(subject.validate_value).to be(true)

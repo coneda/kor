@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Relationship do
-
   it "should be creatable and updatable with a relation name" do
     relationship = Relationship.create(
       from: leonardo,
@@ -45,8 +44,8 @@ RSpec.describe Relationship do
       from: leonardo,
       to: mona_lisa,
       datings_attributes: [
-        {label: 'erste Phase', dating_string: '11. Jahrhundert'},
-        {label: 'zweite Phase', dating_string: '13. Jahrhundert'}
+        { label: 'erste Phase', dating_string: '11. Jahrhundert' },
+        { label: 'zweite Phase', dating_string: '13. Jahrhundert' }
       ]
     )
 
@@ -63,9 +62,9 @@ RSpec.describe Relationship do
       from: leonardo,
       to: mona_lisa,
       datings_attributes: [
-        {label: 'erste Phase', dating_string: '1888'},
-        {label: 'zweite Phase', dating_string: '1890'},
-        {label: 'dritte Phase', dating_string: '1912 bis 1915'},
+        { label: 'erste Phase', dating_string: '1888' },
+        { label: 'zweite Phase', dating_string: '1890' },
+        { label: 'dritte Phase', dating_string: '1912 bis 1915' },
       ]
     )
 
@@ -74,5 +73,4 @@ RSpec.describe Relationship do
     expect(Relationship.dated_in("1890").count).to eql(1)
     expect(Relationship.dated_in("1850 bis 1950").count).to eq(1)
   end
-
 end

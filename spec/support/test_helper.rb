@@ -22,7 +22,7 @@ module TestHelper
     DataHelper.default_setup relationships: true, pictures: true
 
     system "rm -rf #{Rails.root}/tmp/test.media.clone"
-    system "mv #{Medium.media_data_dir} #{Rails.root}/tmp/test.media.clone"
+    system "mv #{ENV['MEDIA_DIR']} #{Rails.root}/tmp/test.media.clone"
   end
 
   def self.around_each(&block)
@@ -37,15 +37,15 @@ module TestHelper
   end
 
   def self.before_each(framework, scope, test)
-    system "rm -rf #{Medium.media_data_dir}/"
-    system "cp -a #{Rails.root}/tmp/test.media.clone #{Medium.media_data_dir}"
+    system "rm -rf #{ENV['MEDIA_DIR']}/"
+    system "cp -a #{Rails.root}/tmp/test.media.clone #{ENV['MEDIA_DIR']}"
       
     FactoryGirl.reload
     Kor::Auth.sources(true)
 
     use_elastic = (
       framework == :rspec && test.metadata[:elastic] ||
-      framework == :cucumber && test.tags.any?{|st| st.name == '@elastic'}
+      framework == :cucumber && test.tags.any? { |st| st.name == '@elastic' }
     )
 
     if use_elastic
@@ -82,7 +82,7 @@ module TestHelper
         c.configure_rspec_metadata!
       end
 
-      c.default_cassette_options = {:record => :new_episodes}
+      c.default_cassette_options = { :record => :new_episodes }
       c.allow_http_connections_when_no_cassette = true
 
       c.ignore_request do |r|
@@ -104,7 +104,7 @@ module TestHelper
       SimpleCov.start 'rails' do
         merge_timeout 3600
         coverage_dir 'tmp/coverage'
-        track_files '{app,lib,config}/**/*.{rb,rake}'
+        track_files '{app,lib,config,features}/**/*.{rb,rake}'
       end
     
       puts "performing coverage analysis"

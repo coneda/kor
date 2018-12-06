@@ -1,4 +1,4 @@
-class Dating < ActiveRecord::Base
+class Dating < ApplicationRecord
   self.abstract_class = true
 
   validates :label, :dating_string, presence: true

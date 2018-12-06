@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Kor::EntityMerger do
   it "should merge entities while preserving the dataset" do
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
-    mona_lisa.update dataset: {'gnd' => '12345', 'google_maps' => 'Am Dornbusch 13, 60315 Frankfurt'}
+    mona_lisa.update dataset: { 'gnd' => '12345', 'google_maps' => 'Am Dornbusch 13, 60315 Frankfurt' }
     other_mona_lisa = FactoryGirl.create :mona_lisa, :name => "Mona Liza"
 
     merged = described_class.new.run(
@@ -44,7 +44,7 @@ RSpec.describe Kor::EntityMerger do
 
     merged = described_class.new.run(
       :old_ids => [mona_lisa.id, other_mona_lisa.id],
-      :attributes => {name: mona_lisa.name}
+      :attributes => { name: mona_lisa.name }
     )
     
     expect(Entity.count).to eql(7)
@@ -59,13 +59,13 @@ RSpec.describe Kor::EntityMerger do
       Field.new(name: 'gnd', show_label: 'GND-ID', is_identifier: true)
     ]
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
-    mona_lisa.update_attributes dataset: {'gnd' => '12345'}
+    mona_lisa.update_attributes dataset: { 'gnd' => '12345' }
     other_mona_lisa = FactoryGirl.create :mona_lisa, :name => "Mona Liza"
     merged = described_class.new.run(
       old_ids: [mona_lisa.id, other_mona_lisa.id],
       attributes: {
         name: mona_lisa.name,
-        dataset: {'gnd' => '12345'}
+        dataset: { 'gnd' => '12345' }
       }
     )
 
@@ -83,7 +83,7 @@ RSpec.describe Kor::EntityMerger do
 
     merged = described_class.new.run(
       old_ids: [mona_lisa.id, last_supper.id],
-      attributes: {name: 'Mona Lisa'}
+      attributes: { name: 'Mona Lisa' }
     )
 
     expect(Entity.count).to eq(6)
@@ -106,7 +106,7 @@ RSpec.describe Kor::EntityMerger do
 
     merged = described_class.new.run(
       old_ids: [mona_lisa.id, other_mona_lisa.id],
-      attributes: {name: ''} # produces error
+      attributes: { name: '' } # produces error
     )
 
     expect(merged).not_to be_valid

@@ -37,7 +37,7 @@ RSpec.describe RelationsController, type: :controller do
 
   it 'should not PATCH update' do
     relation = Relation.find_by! name: 'has created'
-    patch 'update', id: relation.id, relation: {reverse_name: 'was created by'}
+    patch 'update', id: relation.id, relation: { reverse_name: 'was created by' }
     expect(response).to be_forbidden
   end
 
@@ -68,7 +68,7 @@ RSpec.describe RelationsController, type: :controller do
 
     it 'should not PATCH update' do
       relation = Relation.find_by! name: 'has created'
-      patch 'update', id: relation.id, relation: {reverse_name: 'was created by'}
+      patch 'update', id: relation.id, relation: { reverse_name: 'was created by' }
       expect(response).to be_forbidden
     end
 
@@ -105,7 +105,7 @@ RSpec.describe RelationsController, type: :controller do
 
     it 'should PATCH update' do
       relation = Relation.find_by! name: 'has created'
-      patch 'update', id: relation.id, relation: {reverse_name: 'was created by'}
+      patch 'update', id: relation.id, relation: { reverse_name: 'was created by' }
       expect_updated_response
       expect(relation.reload.reverse_name).to eq('was created by')
     end

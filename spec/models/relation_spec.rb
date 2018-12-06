@@ -1,14 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Relation do
-  # before :each do
-  #   Kor.config.update 'app' => {
-  #     'gallery' => {
-  #       'primary_relations' => ['shows'], 
-  #       'secondary_relations' => ['has been created by']
-  #   }}
-  # end
-  
   it "should return the primary and secondary relation names" do
     expect(Relation.primary_relation_names).to eql(['shows'])
     expect(Relation.secondary_relation_names).to eql(['has been created by'])
@@ -89,27 +81,39 @@ RSpec.describe Relation do
     people = Kind.find_by!(name: 'person')
     works = Kind.find_by!(name: 'work')
 
-    expect(Relation.available_relation_names).to eq([
-      'has been created by', 'has created', 'is located in', 'is location of', 
-      'is related to', 'is shown by', 'shows'
-    ])
-    expect(Relation.available_relation_names(from_ids: [])).to eq([
-      'has been created by', 'has created', 'is located in', 'is location of', 
-      'is related to', 'is shown by', 'shows'
-    ])
-    expect(Relation.available_relation_names(from_ids: nil)).to eq([
-      'has been created by', 'has created', 'is located in', 'is location of', 
-      'is related to', 'is shown by', 'shows'
-    ])
-    expect(Relation.available_relation_names(from_ids: [], to_ids: [])).to eq([
-      'has been created by', 'has created', 'is located in', 'is location of', 
-      'is related to', 'is shown by', 'shows'
-    ])
-    expect(Relation.available_relation_names(from_ids: nil, to_ids: nil)).to eq([
-      'has been created by', 'has created', 'is located in', 'is location of', 
-      'is related to', 'is shown by', 'shows'
-    ])
-    expect(Relation.available_relation_names(from_ids: media.id)).to eq(['shows'])
+    expect(Relation.available_relation_names).to eq(
+      [
+        'has been created by', 'has created', 'is located in', 'is location of', 
+        'is related to', 'is shown by', 'shows'
+      ]
+    )
+    expect(Relation.available_relation_names(from_ids: [])).to eq(
+      [
+        'has been created by', 'has created', 'is located in', 'is location of', 
+        'is related to', 'is shown by', 'shows'
+      ]
+    )
+    expect(Relation.available_relation_names(from_ids: nil)).to eq(
+      [
+        'has been created by', 'has created', 'is located in', 'is location of', 
+        'is related to', 'is shown by', 'shows'
+      ]
+    )
+    expect(Relation.available_relation_names(from_ids: [], to_ids: [])).to eq(
+      [
+        'has been created by', 'has created', 'is located in', 'is location of', 
+        'is related to', 'is shown by', 'shows'
+      ]
+    )
+    expect(Relation.available_relation_names(from_ids: nil, to_ids: nil)).to eq(
+      [
+        'has been created by', 'has created', 'is located in', 'is location of', 
+        'is related to', 'is shown by', 'shows'
+      ]
+    )
+    expect(Relation.available_relation_names(from_ids: media.id)).to(
+      eq(['shows'])
+    )
     expect(Relation.available_relation_names(from_ids: works.id)).to eq(
       ['has been created by', 'is located in', 'is related to', 'is shown by']
     )
@@ -121,9 +125,12 @@ RSpec.describe Relation do
     expect(Relation.available_relation_names(to_ids: [people.id, works.id])).to(
       eq(['shows'])
     )
-    expect(Relation.available_relation_names(from_ids: '', to_ids: [people.id, works.id])).to(
-      eq(['shows'])
-    )
+    expect(
+      Relation.available_relation_names(
+        from_ids: '',
+        to_ids: [people.id, works.id]
+      )
+    ).to eq(['shows'])
     expect(Relation.available_relation_names(to_ids: [people.id, media.id])).to(
       eq([])
     )

@@ -1,5 +1,4 @@
 class Kor::Media::Transformations::Base
-
   attr_accessor :options
   attr_accessor :medium
 

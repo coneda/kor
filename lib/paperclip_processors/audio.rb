@@ -1,11 +1,10 @@
 class Paperclip::Audio < Paperclip::Processor
-
   def self.make(file, options = {}, attachment = nil)
     case options[:style]
     when :mp3 then make_mp3(file, attachment)
     when :ogg then make_ogg(file, attachment)
-      else
-        file
+    else
+      file
     end
   end
 
@@ -24,5 +23,4 @@ class Paperclip::Audio < Paperclip::Processor
     Paperclip.run(Kor.video_processor, args)
     File.open(outfile)
   end
-
 end

@@ -4,24 +4,6 @@ module Kor
     Kor::Settings.instance
   end
   
-  def self.help(controller, action)
-    # TODO: implement this via a model per page-tag (widgets)
-    # settings['help'][I18n.locale]['controller#action']
-    # @help ||= begin
-    #   file = "#{Rails.root}/config/help.yml"
-    #   if File.exists? file
-    #     YAML.load_file(file)['de']
-    #   else
-    #     {}
-    #   end
-    # end
-    
-    # @help['help'][controller][action]
-    ''
-  rescue => e
-    ''
-  end
-
   def self.version
     File.read("#{Rails.root}/config/version.txt").strip
   end
@@ -52,11 +34,6 @@ module Kor
     end
   end
  
-  # def self.base_url
-  #   "#{settings['host']['protocol']}://#{config['host']['host']}" +
-  #     (config['host']['port'] == 80 ? '' : ":#{config['host']['port']}" )
-  # end
-
   def self.session_expiry_time
     Time.now + Kor.settings['session_lifetime'].seconds
   end
@@ -79,7 +56,7 @@ module Kor
 
   def self.id_for_model(object)
     if object.is_a?(Array)
-      object.collect{|o| id_for_model(o) }
+      object.collect { |o| id_for_model(o) }
     else
       object.is_a?(ActiveRecord::Base) ? object.id : object
     end
@@ -104,7 +81,7 @@ module Kor
 
   def self.is_uuid?(value)
     value.is_a?(String) &&
-    !!value.match(/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/i)
+      !!value.match(/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/i)
   end
 
   def self.with_exclusive_lock(name, &block)

@@ -1,4 +1,4 @@
-class Download < ActiveRecord::Base
+class Download < ApplicationRecord
   belongs_to :user
 
   validates :user, :uuid, :content_type, :file_name, :new_data, presence: true
@@ -19,13 +19,13 @@ class Download < ActiveRecord::Base
     case new_data
     when File then FileUtils.copy(new_data.path, path)
     when String
-        if File.exists?(new_data)
-          system "cp", new_data, path
-        else
-          File.open path, "w" do |f|
-            f.write new_data
-          end
+      if File.exists?(new_data)
+        system "cp", new_data, path
+      else
+        File.open path, "w" do |f|
+          f.write new_data
         end
+      end
     end
   end
   
@@ -38,7 +38,7 @@ class Download < ActiveRecord::Base
   end
   
   def guess_content_type
-    self[:content_type] ||= `file -ib #{path}`.gsub(/\n/,"")
+    self[:content_type] ||= `file -ib #{path}`.gsub(/\n/, "")
   end
   
   def delete_files

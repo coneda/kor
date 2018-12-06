@@ -1,5 +1,4 @@
 class UsersController < JsonController
-
   skip_before_filter :legal, :only => [:accept_terms]
 
   def accept_terms
@@ -69,20 +68,17 @@ class UsersController < JsonController
     @record = User.find(current_user.id)
 
     if @record.update_attributes(me_params)
-      render_200 I18n.t('objects.update_success', o: I18n.t('nouns.user.one'))
+      render_updated @record
     else
       render_422 @record.errors
     end
   end
 
   def update
-    # params[:user][:make_personal] ||= false
     @record = User.find(params[:id])
 
     if @record.update_attributes(user_params)
-      render_200 I18n.t(
-        'objects.update_success', o: I18n.t('nouns.user', count: 1)
-      )
+      render_updated @record
     else
       render_422 @record.errors
     end
@@ -93,9 +89,7 @@ class UsersController < JsonController
 
     if @record.save
       UserMailer.account_created(@record).deliver_now
-      render_200 I18n.t('objects.create_success',
-        o: I18n.t('nouns.user', count: 1)
-      )
+      render_created @record
     else
       render_422 @record.errors
     end
@@ -104,7 +98,7 @@ class UsersController < JsonController
   def destroy
     @record = User.find(params[:id])
     @record.destroy
-    render_200 I18n.t('objects.destroy_success', o: I18n.t('nouns.user'))
+    render_deleted @record
   end
   
 
@@ -128,5 +122,4 @@ class UsersController < JsonController
         require_admin
       end
     end
-
 end

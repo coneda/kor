@@ -1,4 +1,4 @@
-class Publishment < ActiveRecord::Base
+class Publishment < ApplicationRecord
   belongs_to :user_group, required: true
   belongs_to :user, required: true
 

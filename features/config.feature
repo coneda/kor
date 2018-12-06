@@ -12,4 +12,5 @@ Feature: Config
     And I am on the config page
     And I fill in "Maintainer email address" with "me@example.com"
     And I press "Save"
-    Then the config value "maintainer_mail" should be "me@example.com"
+    Then I should see "has been changed"
+    And the config value "maintainer_mail" should be "me@example.com"

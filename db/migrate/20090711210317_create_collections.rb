@@ -8,11 +8,11 @@ class CreateCollections < ActiveRecord::Migration
     end
     
     # apparently, this column already exists from earlier migrations
-    #add_column :entities, :collection_id, :integer
+    # add_column :entities, :collection_id, :integer
   end
 
   def self.down
     drop_table :collections
-    #remove_column :entities, :collection_id
+    # remove_column :entities, :collection_id
   end
 end

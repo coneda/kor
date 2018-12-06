@@ -38,7 +38,8 @@ Feature: Entities
     And I fill in synonyms with "La Bella|La Gioconde"
     
     And I press "Save"
-    Then I should be on the entity page for "Der Schrei"
+    Then I should see "has been created"
+    And I should be on the entity page for "Der Schrei"
     And I should see "dating: 1688"
     And I should see "Alter: 12"
     And I should see "Synonyms: La Bella | La Gioconde"
@@ -46,6 +47,7 @@ Feature: Entities
     When I follow "edit"
     And I fill in synonyms with "La Gioconde"
     And I press "Save"
+    Then I should see "has been changed"
     Then I should be on the entity page for "Der Schrei"
     And I should see "dating: 1688"
     And I should see "Alter: 12"
@@ -72,6 +74,7 @@ Feature: Entities
     And I follow "edit"
     And I fill in "Name" with "La Gioconde"
     And I press "Save"
+    Then I should see "has been changed"
     Then I should be on the entity page for "La Gioconde"
     And I should see "La Gioconde"
 
@@ -119,6 +122,7 @@ Feature: Entities
     When I go to the entity page for "Paris"
     Then I should not see link "edit" within "kor-relationship"
     When I follow "logout"
+    Then I should see "logged out"
     And I am logged in as "admin"
     When I go to the entity page for "Paris"
     Then I should see link "edit relationship" within "kor-relationship"
@@ -133,7 +137,7 @@ Feature: Entities
   Scenario: It should expand all relationships for a relation in one go
     Given I am logged in as "admin"
     When I go to the entity page for "Leonardo"
-    And I follow "expand" within "kor-relation[name='has created'] .name"
+    And I follow "expand" within "kor-relation[name='has created'] > .name"
     Then I should see "2" kor images within "kor-relation[name='has created']"
 
   Scenario: Display creator and updater next in the master data

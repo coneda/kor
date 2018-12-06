@@ -88,7 +88,7 @@ Given /^kind "([^"]*)" has field "([^"]*)" of type "([^"]+)"$/ do |kind, name, k
     :show_label => name.classify,
     :form_label => name.classify,
     :search_label => name.classify,
-    :settings => {'show_on_entity' => '1'}
+    :settings => { 'show_on_entity' => '1' }
   )
 end
 
@@ -100,12 +100,12 @@ end
 
 Then /^entity "([^"]*)" should have dataset value "([^"]*)" for "([^"]*)"$/ do |entity, value, name|
   entity = Entity.find_by_name entity
-  expect(entity.dataset[name]).to eq(value  )
+  expect(entity.dataset[name]).to eq(value )
 end
 
 Given(/^the entity "(.*?)" has property "(.*?)" with value "(.*?)"$/) do |entity, label, value|
   entity = Entity.find_by_name entity
-  entity.properties << {'label' => label, 'value' => value}
+  entity.properties << { 'label' => label, 'value' => value }
   entity.save
 end
 
@@ -210,6 +210,7 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
     step "I follow \"create personal group\""
     step "I fill in \"Name\" with \"#{name}\""
     step "I press \"Save\""
+    step "I should see \"has been created\""
     
     if shared == 'shared '
       step "I follow \"share\""
@@ -450,7 +451,7 @@ end
 Given(/^the relationship has a dating "([^"]*)"$/) do |dating|
   l, ds = dating.split('|')
   Relationship.last.update_attributes(
-    datings_attributes: [{label: l, dating_string: ds}]
+    datings_attributes: [{ label: l, dating_string: ds }]
   )
 end
 

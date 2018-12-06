@@ -62,7 +62,6 @@
       )
 
     create = ->
-      console.log values()
       Zepto.ajax(
         type: 'POST'
         url: '/user_groups'

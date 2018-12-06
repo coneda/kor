@@ -1,1 +1,0 @@
-json.partial! 'customized', relation: @relation, additions: inclusion

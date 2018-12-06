@@ -1,5 +1,4 @@
 class FieldsController < JsonController
-
   def show
     @kind = Kind.find(params[:kind_id])
     @record = @kind.fields.find(params[:id])
@@ -19,7 +18,7 @@ class FieldsController < JsonController
     @record.kind = @kind
 
     if @record.save
-      render_200 I18n.t('objects.create_success', o: @record.name)
+      render_created @record
     else
       render_422 @record.errors
     end
@@ -30,7 +29,7 @@ class FieldsController < JsonController
     @record = @kind.fields.find(params[:id])
 
     if @record.update_attributes(field_params)
-      render_200 I18n.t('objects.update_success', o: @record.name)
+      render_updated @record
     else
       render_422 @record.errors
     end
@@ -40,7 +39,7 @@ class FieldsController < JsonController
     @kind = Kind.find(params[:kind_id])
     @record = @kind.fields.find(params[:id])
     @record.destroy
-    render_200 I18n.t('objects.destroy_success', o: @record.name)
+    render_deleted @record
   end
 
   protected
@@ -60,7 +59,7 @@ class FieldsController < JsonController
     end
 
     def sanitize_type(str)
-      if Kind.available_fields.map{|klass| klass.name}.include?(str)
+      if Kind.available_fields.map { |klass| klass.name }.include?(str)
         str
       else
         'Fields::String'

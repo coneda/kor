@@ -4,7 +4,7 @@ class Kor::Search
     @criteria = criteria.reverse_merge(
       page: 1,
       per_page: 10,
-      sort: {column: 'name', direction: 'ASC'}
+      sort: { column: 'name', direction: 'ASC' }
     )
     validate!
     run
@@ -41,14 +41,14 @@ class Kor::Search
     @scope = case @criteria[:sort][:column]
     when 'default' then @scope.order('name')
     when 'random' then @scope.order('rand()')
-      else
-        @scope.order(
-          @criteria[:sort][:column] => @criteria[:sort][:direction]
-        )
+    else
+      @scope.order(
+        @criteria[:sort][:column] => @criteria[:sort][:direction]
+      )
     end
 
     if id = @criteria[:user_group_id]
-      ids = UserGroup.where(id: id).to_a.select{|g| g.owner == @user}.map{|g| g.id}
+      ids = UserGroup.where(id: id).to_a.select { |g| g.owner == @user }.map { |g| g.id }
       @scope = @scope.within_user_groups(ids) if ids.present?
     end
 

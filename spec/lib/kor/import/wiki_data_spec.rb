@@ -44,9 +44,9 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
 
   it 'should retrieve identifier types' do
     results = subject.identifier_types
-    expect(results).to include('id'=>'227', 'label'=>'GND ID')
-    expect(results).to include('id'=>'245', "label"=>'ULAN ID')
-    expect(results).to include('id'=>'4119', "label"=>'NLS Geographic Names Place ID')
+    expect(results).to include('id' => '227', 'label' => 'GND ID')
+    expect(results).to include('id' => '245', "label" => 'ULAN ID')
+    expect(results).to include('id' => '4119', "label" => 'NLS Geographic Names Place ID')
   end
 
   it "should retrieve all identifiers for Q762" do
@@ -54,9 +54,9 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
 
     results = subject.identifiers_for("Q762")
     expect(results.size).to eq(84)
-    expect(results).to include("id"=>"866", "label"=>"Perlentaucher ID", "value"=>"leonardo-da-vinci")
-    expect(results).to include("id"=>"3219", "label"=>"Encyclopædia Universalis Online ID", "value"=>"leonard-de-vinci")
-    expect(results).to include("id"=>"245", "label"=>"ULAN ID", "value"=>"500010879")
+    expect(results).to include("id" => "866", "label" => "Perlentaucher ID", "value" => "leonardo-da-vinci")
+    expect(results).to include("id" => "3219", "label" => "Encyclopædia Universalis Online ID", "value" => "leonard-de-vinci")
+    expect(results).to include("id" => "245", "label" => "ULAN ID", "value" => "500010879")
   end
 
   it "should retrieve all identifiers P31:Q19847637" do

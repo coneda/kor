@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe User do
-
   it "should not allow special characters within the name" do
     user = User.new name: "test 01"
     user.valid?

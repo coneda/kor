@@ -23,5 +23,4 @@ class AddMedia < ActiveRecord::Migration
   def self.down
     drop_table :media
   end
-
 end

@@ -27,7 +27,7 @@ class RelationsController < JsonController
     @record = Relation.new(relation_params)
 
     if @record.save
-      render_200 I18n.t('objects.create_success', o: @record.name)
+      render_created @record
     else
       render_422 @record.errors
     end
@@ -37,7 +37,7 @@ class RelationsController < JsonController
     @record = Relation.find(params[:id])
 
     if @record.update_attributes(relation_params)
-      render_200 I18n.t('objects.update_success', o: @record.name)
+      render_updated @record
     else
       render_422 @record.errors
     end
@@ -46,8 +46,7 @@ class RelationsController < JsonController
   def destroy
     @record = Relation.find(params[:id])
     @record.destroy
-
-    render_200 I18n.t('objects.destroy_success', o: @record.name)
+    render_deleted @record
   end
 
   def invert

@@ -1,6 +1,6 @@
 require 'digest/sha2'
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   include ActiveModel::ForbiddenAttributesProtection
 
   serialize :login_attempts
@@ -23,19 +23,19 @@ class User < ActiveRecord::Base
 
   validates :name,
     :presence => true,
-    :uniqueness => {:allow_blank => false},
-    :format => {:with => /\A[a-zA-Z0-9_\.\@\-\!\:\/]+\Z/, :allow_blank => true},
+    :uniqueness => { :allow_blank => false },
+    :format => { :with => /\A[a-zA-Z0-9_\.\@\-\!\:\/]+\Z/, :allow_blank => true },
     :white_space => true
   validates :email,
     :presence => true,
-    :uniqueness => {:allow_blank => false},
-    :format => {:with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true},
+    :uniqueness => { :allow_blank => false },
+    :format => { :with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true },
     :white_space => true
   validates :api_key,
     :uniqueness => true,
-    :length => {:minimum => 32, allow_blank: true}
+    :length => { :minimum => 32, allow_blank: true }
   validates(:plain_password, 
-    format: {:allow_nil => true, :with => /\A(.{5,30})|\Z/},
+    format: { :allow_nil => true, :with => /\A(.{5,30})|\Z/ },
     confirmation: true
   )
   
@@ -65,7 +65,7 @@ class User < ActiveRecord::Base
   
   def add_personal_group
     if self.personal_group && !self.personal_group.destroyed?
-      unless self.groups.map{|g| g.id}.include?(self.personal_group.id)
+      unless self.groups.map { |g| g.id }.include?(self.personal_group.id)
         self.groups << self.personal_group
       end
     end
@@ -120,85 +120,6 @@ class User < ActiveRecord::Base
   attr_accessor :plain_password
   attr_writer :make_personal
 
-  def storage
-    if self[:storage].blank?
-      self[:storage] = {'history' => [], 'clipboard' => []}
-    end
-
-    self[:storage]
-  end
-
-  def storage_update
-    clipboard_cleanup
-    history_cleanup
-    update_column :storage, storage
-  end
-
-  def history
-    storage['history']
-  end
-
-  def clipboard
-    storage['clipboard']
-  end
-
-  def history_push(url)
-    if url.present? && storage['history'].last != url
-      storage['history'].push url
-      storage_update
-    end
-  end
-
-  def history_pop
-    history_cleanup
-    result = storage['history'].pop
-    storage_update
-    result
-  end
-
-  def history_cleanup
-    storage['history'].select! do |url|
-      if url.match /\/(entities|blaze)\/[0-9]+$/
-        id = url.scan(/[0-9]+$/).first
-        Entity.exists?(id)
-      else
-        true
-      end
-    end
-    if storage['history'].size > 50
-      storage['history'] = storage['history'][-50..-1]
-    end
-  end
-
-  def clipboard_add(id)
-    if id.present?
-      if id.is_a?(Array)
-        storage['clipboard'] += id
-      else
-        storage['clipboard'].push id
-      end
-      storage_update
-    end
-  end
-
-  def clipboard_remove(id)
-    if id.present?
-      storage['clipboard'] -= [id.to_i]
-      storage_update
-    end
-  end
-
-  def clipboard_cleanup
-    storage['clipboard'].map!{|e| e.to_i}
-    storage['clipboard'].uniq!
-    storage['clipboard'].select!{|e| Entity.exists?(e)}
-  end
-
-  def clipboard_reset
-    storage['clipboard'] = []
-    storage_update
-  end
-  
   def make_personal
     if @make_personal.nil?
       personal?
@@ -209,10 +130,6 @@ class User < ActiveRecord::Base
   
   def personal?
     self.personal_group.present? && self.personal_collection.present?
-  end
-  
-  def list_name
-    (name).short(18)
   end
   
   def password=(value)
@@ -234,10 +151,6 @@ class User < ActiveRecord::Base
     self[:login_attempts].shift if self[:login_attempts].size > 3
   end
   
-  def any_admin?
-    admin || kind_admin || relation_admin || authority_group_admin
-  end
-
   ["", "kind_", "relation_", "authority_group_admin_"].each do |ag|
     define_method "#{ag}admin".to_sym do
       key = "#{ag}admin".to_sym
@@ -293,7 +206,7 @@ class User < ActiveRecord::Base
       collections[g.last] ||= []
       collections[g.last] << g.first
     end
-    Kor::Auth.policies.each{|p| collections[p] ||= []}
+    Kor::Auth.policies.each { |p| collections[p] ||= [] }
   
     return {
       roles: {
@@ -325,13 +238,7 @@ class User < ActiveRecord::Base
   scope :created_recently, lambda {
     where("created_at > ?", 30.days.ago)
   }
-  scope :by_id, lambda {|id| id.present? ? where(id: id) : all}
-  scope :pageit, lambda { |page, per_page|
-    page = [(page || 1).to_i, 1].max
-    per_page = [(per_page || 10).to_i, Kor.settings['max_results_per_request']].min
-
-    offset((page - 1) * per_page).limit(per_page)
-  }
+  scope :by_id, lambda { |id| id.present? ? where(id: id) : all }
   
   def self.admin
     unless user = find_by_name('admin')
@@ -352,7 +259,7 @@ class User < ActiveRecord::Base
   end
 
   def credential_ids
-    groups.map{|c| c.id}
+    groups.map { |c| c.id }
   end
   
   def too_many_login_attempts?
@@ -365,11 +272,11 @@ class User < ActiveRecord::Base
   end
 
   def self.generate_password
-    User.crypt(rand.to_s)[0,6]
+    User.crypt(rand.to_s)[0, 6]
   end
   
   def User.generate_activation_hash
-    User.crypt(rand.to_s)[0,12]
+    User.crypt(rand.to_s)[0, 12]
   end
 
   def self.legacy_crypt(value)

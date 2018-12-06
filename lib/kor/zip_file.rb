@@ -1,5 +1,4 @@
 class Kor::ZipFile
-
   def initialize(filename, options = {})
     @filename = filename
     @options = options
@@ -48,7 +47,7 @@ class Kor::ZipFile
       end
       
       add nil, :as => "#{entity.id}.txt" do
-        {:data => Kor::Export::MetaData.new(user).render(entity)}
+        { :data => Kor::Export::MetaData.new(user).render(entity) }
       end
     end
   end
@@ -64,9 +63,9 @@ class Kor::ZipFile
         case external
         when String then run "ln -s #{external} #{file}"
         when Hash
-            File.open "#{file}", "w" do |f|
-              f.write external[:data]
-            end
+          File.open "#{file}", "w" do |f|
+            f.write external[:data]
+          end
         end
       end
 
@@ -98,5 +97,4 @@ class Kor::ZipFile
   def run(command)
     system command
   end
-
 end

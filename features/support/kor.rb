@@ -23,10 +23,10 @@ Capybara.register_driver :headless_chrome do |app|
   profile = Selenium::WebDriver::Chrome::Profile.new
   profile["download.default_directory"] = Rails.root.join('tmp')
 
-  Capybara::Selenium::Driver.new(app, browser: :chrome, profile: profile, args: [
+  Capybara::Selenium::Driver.new app, browser: :chrome, profile: profile, args: [
     'headless',
     'window-size=1280x960'
-  ])
+  ]
 end
 
 if ENV['HEADLESS']
@@ -50,7 +50,7 @@ Before do |scenario|
   # ensure localstorage doesn't carry over data beyond scenarios
   @local_storage_flushed = false
   orig = Capybara.current_session.method(:visit)
-  allow(Capybara.current_session).to receive(:visit){ |*args|
+  allow(Capybara.current_session).to receive(:visit) { |*args|
     result = orig.call(*args)
     unless @local_storage_flushed
       page.execute_script('try {Lockr.flush()} catch (e) {}')
@@ -77,7 +77,6 @@ Before do |scenario|
   # else
   #   Delayed::Worker.delay_jobs = true
   # end
-
 end
 
 # After do |scenario|

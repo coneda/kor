@@ -19,7 +19,7 @@ RSpec.describe RelationshipsController, type: :controller do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     last_supper = Entity.find_by! name: 'The Last Supper'
     relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
-    patch 'update', id: relationship.id, relationship: {properties: ['perhaps']}
+    patch 'update', id: relationship.id, relationship: { properties: ['perhaps'] }
     expect(response).to be_forbidden
   end
 
@@ -52,7 +52,7 @@ RSpec.describe RelationshipsController, type: :controller do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
       relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
-      patch 'update', id: relationship.id, relationship: {properties: ['perhaps']}
+      patch 'update', id: relationship.id, relationship: { properties: ['perhaps'] }
       expect(response).to be_forbidden
     end
 
@@ -78,7 +78,7 @@ RSpec.describe RelationshipsController, type: :controller do
         relation_name: 'is related to',
         to_id: paris.id,
         properties: ['perhaps'],
-        datings_attributes: [{label: 'time', dating_string: '1833'}]
+        datings_attributes: [{ label: 'time', dating_string: '1833' }]
       }
 
       post 'create', relationship: {}
@@ -115,7 +115,7 @@ RSpec.describe RelationshipsController, type: :controller do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
       relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
-      patch 'update', id: relationship.id, relationship: {properties: ['perhaps']}
+      patch 'update', id: relationship.id, relationship: { properties: ['perhaps'] }
       expect_updated_response
       expect(relationship.reload.properties.first).to eq('perhaps')
     end

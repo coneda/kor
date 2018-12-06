@@ -1,3 +1,6 @@
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "selectors"))
+
 When("I click icon {string}") do |string|
   find("a[title='#{string}']").click
 end
@@ -5,11 +8,6 @@ end
 Then("I should not see icon link {string}") do |string|
   expect(page).not_to have_css("a[title='#{string}']")
 end
-
-# old?
-
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "selectors"))
 
 When /^(.*) within (.+)$/ do |step, parent|
   within find(*selector_for(parent)) do
@@ -50,21 +48,6 @@ When("I scroll down") do
   sleep 1
   page.execute_script "window.scrollBy(0,10000)"
 end
-
-# When /^(?:|I )fill in "([^"]*)" with( quoted)? "([^"]*)"$/ do |locator, quoted, value|
-#   value = "\"#{value}\"" if quoted == ' quoted'
-
-#   timeout = 5.0
-#   field = nil
-#   while timeout > 0 && !field
-#     field = page.first(:field, locator) || all(:css, locator).first
-#     timeout -= 0.2
-#     sleep 0.2
-#   end
-#   # field = all(:css, locator).first || find(:fillable_field, locator)
-#   # binding.pry if locator.match /Label/
-#   field.set value
-# end
 
 When("I fill in {string} with {string}") do |field, value|
   fill_in field, with: value
@@ -175,7 +158,7 @@ end
 
 When /^I select "([^\"]*)" from the collections selector$/ do |collections|
   names = collections.split('/')
-  within('kor-collection-selector'){click_link('edit')}
+  within('kor-collection-selector') { click_link('edit') }
   click_link 'none'
   names.each do |name|
     check name
@@ -219,7 +202,7 @@ When /^I select "([^\"]*)" from the autocomplete$/ do |pattern|
   page.execute_script '$("input[name=search_terms]").keydown()'
 
   t = Time.now
-  while Time.now - t < 5.seconds && !page.all('li.ui-menu-item a').to_a.find{|a| a.text.match ::Regexp.new(pattern)}
+  while Time.now - t < 5.seconds && !page.all('li.ui-menu-item a').to_a.find { |a| a.text.match ::Regexp.new(pattern) }
     sleep 0.2
   end
 
@@ -294,12 +277,6 @@ Then(/^I should (not )?see link "([^\"]+)"$/) do |negate, text|
   end
 end
 
-# When(/^I click on the upper triangle for relation "(.*?)"$/) do |relation_name|
-#   title = page.find(".relation .subtitle", :text => relation_name)
-#   relation = title.find(:xpath, "..")
-#   relation.find(".relation_switch a").click
-# end
-
 Then(/^I should see "(\d+)" kor images$/) do |amount|
   expect(page).to have_selector("img.medium", count: amount.to_i)
 end
@@ -369,17 +346,9 @@ Then(/^I should (not )?see an image$/) do |negation|
   end
 end
 
-# When(/^I paginate right in the relations$/) do
-#   within '.relation' do
-#     page.find("img[data-name='pager_right']").click
-#     # puts page.find("input[type=number]").value
-#     # expect(page).to have_content('ENDE')
-#   end
-# end
-
 Then(/^the select "([^"]*)" should have value "([^"]*)"$/) do |name, value|
   field = page.find_field(name)
-  values = field.all('option[selected]').map{|o| o.text}
+  values = field.all('option[selected]').map { |o| o.text }
   if field['multiple'].present?
     expect(values).to eql(value.split ',')
   else
@@ -393,26 +362,14 @@ end
 
 Then(/^"([^"]*)" should not have option "([^"]*)"$/) do |name, value|
   field = page.find_field(name)
-  options = field.all('option').map{|o| o.text}
+  options = field.all('option').map { |o| o.text }
   expect(options).not_to include(value)
 end
-
-# When(/^I click icon "([^"]*)"$/) do |name|
-#   page.find("i.fa.fa-#{name}").click
-# end
 
 Then(/^select "([^"]*)" should be disabled$/) do |label|
   field = page.find_field(label, disabled: :all) 
   expect(field['disabled']).to be_present
 end
-
-# Then(/^I should( not)? see icon "([^"]*)"$/) do |negation, icon|
-#   if negation
-#     expect(page).to have_no_css("i.fa.fa-#{icon}")
-#   else
-#     expect(page).to have_css("i.fa.fa-#{icon}")
-#   end
-# end
 
 And(/^I should see a message containing "([^"]*)"$/) do |pattern|
   page.find("w-messaging", text: /#{pattern}/)
@@ -438,9 +395,9 @@ Then(/^select "([^"]*)" should have( no)? option "([^"]*)"$/) do |name, negation
   options = page.find("select[name=#{name}]").all('option')
 
   if negation == ' no'
-    options.all?{|o| o.text != option}
+    options.all? { |o| o.text != option }
   else
-    options.any?{|o| o.text == option}
+    options.any? { |o| o.text == option }
   end
 end
 
@@ -454,7 +411,7 @@ Then /^I should see no user groups$/ do
 end
 
 Then /^I should (not )?see field "([^"]*)"(?: with value "([^"]*)")?$/ do |negation, string, value|
-  opts = (value ? {with: value} : {})
+  opts = (value ? { with: value } : {})
   if negation
     expect(page).not_to have_field(string, opts)
   else
@@ -494,4 +451,9 @@ end
 
 Then("field {string} should be a textarea") do |string|
   expect(find_field(string).tag_name).to eq('textarea')
+end
+
+Then("I should see a grid with {string} entities") do |amount|
+  grid = find('kor-gallery-grid')
+  expect(grid).to have_css('.meta', count: amount.to_i)
 end

@@ -1,5 +1,4 @@
 class Kor::NeoGraph
-
   def initialize(user, options = {})
     @user = user
     @options = Rails.configuration.database_configuration[Rails.env]['neo']
@@ -104,7 +103,7 @@ class Kor::NeoGraph
     cypher(
       "statement" => "UNWIND $props AS map CREATE (n:entity) SET n = map",
       "parameters" => {
-        "props" => entity.map{ |item|
+        "props" => entity.map { |item|
           data = {
             "id" => item.id,
             "uuid" => item.uuid,
@@ -129,7 +128,7 @@ class Kor::NeoGraph
     cypher(
       "statement" => "UNWIND $props AS map CREATE (n:group) SET n = map",
       "parameters" => {
-        "props" => group.map{ |item|
+        "props" => group.map { |item|
           data = {
             'id' => item.id,
             'uuid' => item.uuid,
@@ -144,7 +143,7 @@ class Kor::NeoGraph
 
     group.each do |g|
       g.entities.select(:id).find_in_batches batch_size: 100 do |batch|
-        statements = batch.map{|e|
+        statements = batch.map { |e|
           data = {
             "statement" => [
               "MATCH (a:entity),(b:group)",
@@ -192,10 +191,10 @@ class Kor::NeoGraph
 
   def cypher(statements = [])
     data = case statements
-    when String then [{'statement' => statements}]
+    when String then [{ 'statement' => statements }]
     when Hash then [statements]
-      else
-        statements
+    else
+      statements
     end
 
     path = if @transactions.present?
@@ -246,5 +245,4 @@ class Kor::NeoGraph
       # p [method, "#{base_url}#{path}", params, body, headers]
       client.request(method, "#{base_url}#{path}", params, body, headers)
     end
-
 end

@@ -39,22 +39,25 @@ Feature: Inheritable permissions
     And I press "Expires in 7 days"
     And I fill in "Inherit permissions from" with "jdoe"
     And I press "Save"
+    Then I should see "has been created"
 
-    Then user "hmustermann" should be active
+    And user "hmustermann" should be active
     And user "hmustermann" should have the role "relation_admin"
     And user "hmustermann" should expire at "7.days.from_now"
 
     When I go to the users page
     And I follow "edit" within the row for user "hmustermann"
     And I press "Save"
+    Then I should see "has been changed"
 
-    And I go to the users page
+    When I go to the users page
     And I follow "edit" within the row for user "jdoe"
     And I uncheck "Create and edit relations"
     And I uncheck "Active"
     And I press "Doesn't expire"
     And I press "Save"
+    Then I should see "has been changed"
     
-    Then user "hmustermann" should not be active
+    And user "hmustermann" should not be active
     And user "hmustermann" should not have the role "relation_admin"
     And user "hmustermann" should not expire

@@ -137,7 +137,6 @@ shows all entities as possible targets -->
           for (var i = 0; i < data.records.length; i++) {
             tag.sourceKindId.push(data.records[i].kind_id);
           }
-          console.log(tag.sourceKindId);
 
           tag.update();
         }

@@ -6,17 +6,17 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
   it "should respond to 'Identify'" do
     get '/oai-pmh/relationships.xml', verb: 'Identify'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
 
     post '/oai-pmh/relationships.xml', verb: 'Identify'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListMetadataFormats'" do
     get '/oai-pmh/relationships.xml', verb: 'ListMetadataFormats'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListIdentifiers'" do
@@ -27,7 +27,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
       api_key: admin.api_key
     }
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListRecords'" do
@@ -39,7 +39,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
       metadataPrefix: 'kor'
     }
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'GetRecord'" do
@@ -53,7 +53,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
       metadataPrefix: 'kor'
     }
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should only include data the user is authorized for" do
@@ -161,7 +161,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
   end
 
   it "should return 'noRecordsMatch' if the criteria do not yield any records" do
-    Relationship.all.each{|r| r.really_destroy!}
+    Relationship.all.each { |r| r.really_destroy! }
     admin = User.admin
 
     get '/oai-pmh/relationships.xml', {
@@ -231,5 +231,4 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
     expect(properties.first.text).to eq('by wikidata')
     expect(properties.last.text).to eq('A559')
   end
-
 end

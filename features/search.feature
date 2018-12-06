@@ -44,6 +44,8 @@ Feature: search
     And I fill in "Further properties" with "32"
     And I fill in "Search in related entities" with "some"
     And I press "Search"
+    And I follow "Edit profile"
+    And I should see "Edit profile"
 
   Scenario: no elasticsearch available
     Given I am logged in as "admin"

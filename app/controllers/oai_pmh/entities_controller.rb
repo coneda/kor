@@ -1,5 +1,4 @@
 class OaiPmh::EntitiesController < OaiPmh::BaseController
-
   def get_record
     @record = locate(params[:identifier])
 
@@ -30,5 +29,4 @@ class OaiPmh::EntitiesController < OaiPmh::BaseController
       model = records.order(:created_at).first
       model ? model.created_at : super
     end
-
 end

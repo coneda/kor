@@ -12,7 +12,7 @@ end
 if inclusion.request?('owner')
   if record.owner
     json.owner do
-      json.partial! 'users/customized', {record: record.owner}
+      json.partial! 'users/customized', { record: record.owner }
     end
   end
 end

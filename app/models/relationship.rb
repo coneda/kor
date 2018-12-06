@@ -1,4 +1,4 @@
-class Relationship < ActiveRecord::Base
+class Relationship < ApplicationRecord
   serialize :properties
 
   acts_as_paranoid
@@ -90,24 +90,19 @@ class Relationship < ActiveRecord::Base
     end
   end
 
-  scope :pageit, lambda { |page, per_page|
-    page = (page || 1) - 1
-    per_page = [(per_page || 10).to_i, Kor.settings['max_results_per_request']].min
-    limit(per_page).offset(per_page * page)
-  }
   scope :with_ends, lambda {
     joins("LEFT JOIN entities AS froms ON froms.id = relationships.from_id").
-    joins("LEFT JOIN entities AS tos ON tos.id = relationships.to_id")
+      joins("LEFT JOIN entities AS tos ON tos.id = relationships.to_id")
   }
-  scope :allowed, lambda{|user, policy|
-    collection_ids = Kor::Auth.authorized_collections(user, policy).map{|c| c.id}
+  scope :allowed, lambda { |user, policy|
+    collection_ids = Kor::Auth.authorized_collections(user, policy).map { |c| c.id }
     with_ends.where(
       "froms.collection_id in (:ids) AND tos.collection_id in (:ids)",
       :ids => collection_ids
     )
   }
-  scope :updated_after, lambda {|time| time.present? ? where("relationships.updated_at >= ?", time) : all}
-  scope :updated_before, lambda {|time| time.present? ? where("relationships.updated_at <= ?", time) : all}
+  scope :updated_after, lambda { |time| time.present? ? where("relationships.updated_at >= ?", time) : all }
+  scope :updated_before, lambda { |time| time.present? ? where("relationships.updated_at <= ?", time) : all }
   scope :inconsistent, lambda {
     all.
       joins('LEFT JOIN entities froms ON froms.id = relationships.from_id').
@@ -115,13 +110,19 @@ class Relationship < ActiveRecord::Base
       joins('LEFT JOIN relations r ON relationships.relation_id = r.id').
       where('froms.kind_id != r.from_kind_id OR tos.kind_id != r.to_kind_id')
   }
-  scope :dated_in, lambda {|dating|
+  scope :dated_in, lambda { |dating|
     if dating.present?
       if parsed = Dating.parse(dating)
         joins(:datings).
-        distinct(:relationship_id).
-        where("relationship_datings.to_day > ?", Dating.julian_date_for(parsed[:from])).
-        where("relationship_datings.from_day < ?", Dating.julian_date_for(parsed[:to]))
+          distinct(:relationship_id).
+          where(
+            "relationship_datings.to_day > ?",
+            Dating.julian_date_for(parsed[:from])
+          ).
+          where(
+            "relationship_datings.from_day < ?",
+            Dating.julian_date_for(parsed[:to])
+          )
       else
         none
       end
@@ -199,5 +200,4 @@ class Relationship < ActiveRecord::Base
 
   # TODO: add method 'describe' that shows from_id - relation -> to_id with
   # and all that
-
 end

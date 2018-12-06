@@ -21,7 +21,7 @@ end
 
 if inclusion.request?('relationship')
   json.relationship do
-    json.partial! 'relationships/normal', relationship: record.relationship
+    json.partial! 'relationships/customized', record: record.relationship
   end
 end
 

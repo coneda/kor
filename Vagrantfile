@@ -68,7 +68,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "clean"
 
-    c.vm.provision :shell, inline:  <<-SHELL
+    c.vm.provision :shell, inline: <<-SHELL
       mkdir -p /opt/kor
       chown vagrant. /opt/kor
       apt-get install ruby ruby-dev
@@ -100,5 +100,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.centos.sh", args: "install_part2", privileged: false
     c.vm.provision :shell, path: "deploy/vagrant.centos.sh", args: "install_part3"
   end
-
 end

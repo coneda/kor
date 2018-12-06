@@ -23,26 +23,26 @@ class CredentialsController < JsonController
     @record = Credential.new(credential_params)
 
     if @record.save
-      render_200 I18n.t('objects.create_success', :o => @record.name)
+      render_created @record
     else
       render_422 @record.errors
     end
   end
 
   def update
-    @credential = Credential.find(params[:id])
+    @record = Credential.find(params[:id])
 
-    if @credential.update_attributes(credential_params)
-      render_200 I18n.t('objects.update_success', :o => @credential.name)
+    if @record.update_attributes(credential_params)
+      render_updated @record
     else
-      render_422 @credential.errors
+      render_422 @record.errors
     end
   end
 
   def destroy
-    @credential = Credential.find(params[:id])
-    @credential.destroy
-    render_200 I18n.t('objects.destroy_success', :o => @credential.name)
+    @record = Credential.find(params[:id])
+    @record.destroy
+    render_deleted @record
   end
   
   protected

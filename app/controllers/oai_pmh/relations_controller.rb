@@ -1,5 +1,4 @@
 class OaiPmh::RelationsController < OaiPmh::BaseController
-
   def get_record
     @record = locate(params[:identifier])
 
@@ -24,5 +23,4 @@ class OaiPmh::RelationsController < OaiPmh::BaseController
       model = records.order(:created_at).first
       model ? model.created_at : super
     end
-
 end

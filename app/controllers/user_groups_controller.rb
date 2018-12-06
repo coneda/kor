@@ -113,7 +113,7 @@ class UserGroupsController < JsonController
 
     def auth
       ['shared', 'show', 'download_images'].include?(action_name) || 
-      require_non_guest
+        require_non_guest
     end
 
     def user_group_params

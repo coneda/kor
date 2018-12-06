@@ -16,9 +16,7 @@ Commands:
  exif-stats                 count how many images have been taken by a camera versus a scanner
  to-neo                     write all entities and relationships to the neo4j instance
  connect-random             choose 100 pairs of random entities from neo4j and print the shortest path between them
- cleanup-sessions           delete all sessions older than 5 days ago
  list-permissions           list permissions and user credentials (for a given pair of entity and user or all)
- cleanup-exception-logs     delete all exception logs
  consistency-check          show consistency problems (e.g. relationships with unexpected endpoints)
  import-erlangen-crm        import the Erlangen CRM classes as entity types
 

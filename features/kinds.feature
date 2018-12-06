@@ -32,7 +32,7 @@ Feature: Kinds
     Given I am logged in as "admin"
     And I follow "Entity types"
     And I ignore the next confirmation box
-    And I click icon "delete" within the row for kind "literature"
+    And I follow "delete" within the row for kind "literature"
     Then I should see "has been deleted"
     Then I should not see "literature" within widget "kor-kinds"
 
@@ -44,7 +44,7 @@ Feature: Kinds
   Scenario: Create a kind and then an entity
     Given I am logged in as "admin"
     And I follow "Entity types"
-    When I click icon "add"
+    When I follow "add"
     And I fill in "Name" with "literature"
     And I fill in "Plural name" with "literature"
     And I press "Save"
@@ -76,7 +76,7 @@ Feature: Kinds
   Scenario: create kind as child of another
     And I am logged in as "admin"
     And I follow "Entity types"
-    And I click icon "add"
+    And I follow "add"
     And I fill in "Name" with "artist"
     And I fill in "Plural name" with "artists"
     And I select "person" from "Parent type"
@@ -135,7 +135,8 @@ Feature: Kinds
     And I am logged in as "admin"
     And I follow "Entity types"
     And I follow "person"
-    And I click icon "add" within widget "kor-fields"
+    And I follow "add" within widget "kor-fields"
+    Then I should see "Create field"
     And I select "string" from "Type"
     And I fill in "Name" with "viaf_id"
     And I fill in "Label" with "VIAF-ID"
@@ -159,7 +160,7 @@ Feature: Kinds
     And I follow "Entity types"
     And I follow "person"
     And I ignore the next confirmation box
-    And I click icon "delete" within the row for field "wikidata_id"
+    And I follow "delete" within the row for field "wikidata_id"
     Then I should see "has been deleted"
     And kind "person" should not have field "wikidata_id"
 
@@ -167,7 +168,8 @@ Feature: Kinds
     And I am logged in as "admin"
     And I follow "Entity types"
     And I follow "person"
-    And I click icon "add" within widget "kor-generators"
+    And I follow "add" within widget "kor-generators"
+    Then I should see "Create generator"
     Then I should see "Edit person"
     And I fill in "Name" with "activity_id"
     And I fill in "Generator directive" with "<span>12345</span>"
@@ -181,7 +183,7 @@ Feature: Kinds
     And I am logged in as "admin"
     And I follow "Entity types"
     And I follow "person"
-    And I click icon "edit" within the row for generator "gnd"
+    And I follow "edit" within the row for generator "gnd"
     Then I should see "Edit generator"
     And I fill in "Name" with "new_activity_id"
     And I press "Save"
@@ -201,7 +203,7 @@ Feature: Kinds
   Scenario: create a kind and try to add a field/generator before saving
     And I am logged in as "admin"
     And I follow "Entity types"
-    And I click icon "add"
+    And I follow "add"
     And I fill in "Name" with "artist"
     And I fill in "Plural name" with "artists"
     Then I should not see "Fields" within "[data-is=kor-kind-editor]"

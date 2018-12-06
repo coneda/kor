@@ -49,6 +49,7 @@ Feature: Clipboard
     And I select "was created by" from "Relation"
     And I follow "Leonardo"
     And I press "Save"
+    And I should see "have been related"
     Then "Leonardo" should have "created" "Mona Lisa"
 
   Scenario: Mass relate entities reversely
@@ -67,9 +68,9 @@ Feature: Clipboard
     And I select "created" from "Relation"
     And I follow "Mona Lisa"
     And I press "Save"
+    And I should see "have been related"
     Then "Leonardo" should have "created" "Mona Lisa"
 
-  # @javascript
   # Scenario: Select entities by kind
   #   Given I am logged in as "admin"
   #   And the kind "Person/People"

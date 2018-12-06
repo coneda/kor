@@ -1,12 +1,12 @@
-class Field < ActiveRecord::Base
+class Field < ApplicationRecord
   serialize :settings, Hash
   
   belongs_to :kind, touch: true
   
   validates :name,
     :presence => true,
-    :format => {:with => /\A[a-z0-9_]+\z/, allow_blank: true},
-    :uniqueness => {:scope => :kind_id},
+    :format => { :with => /\A[a-z0-9_]+\z/, allow_blank: true },
+    :uniqueness => { :scope => :kind_id },
     :white_space => true
   validates :show_label, :form_label, :search_label, presence: true
 
@@ -63,7 +63,7 @@ class Field < ActiveRecord::Base
   end
 
   def create_identifiers
-    kind_ids = self.class.where(name: self.name).map{|f| f.kind_id}
+    kind_ids = self.class.where(name: self.name).map { |f| f.kind_id }
     Entity.where(kind_id: kind_ids).find_each batch_size: 100 do |entity|
       entity.update_identifiers
     end
@@ -108,8 +108,8 @@ class Field < ActiveRecord::Base
     settings['show_on_entity'] = case value
     when "1" then true
     when "0" then false
-      else
-        !!value
+    else
+      !!value
     end
   end
 

@@ -12,23 +12,23 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   it "should respond to 'Identify'" do
     get '/oai-pmh/entities.xml', verb: 'Identify'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
 
     post '/oai-pmh/entities.xml', verb: 'Identify'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListMetadataFormats'" do
     get '/oai-pmh/entities.xml', verb: 'ListMetadataFormats'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListIdentifiers'" do
     get '/oai-pmh/entities.xml', verb: 'ListIdentifiers'
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListRecords'" do
@@ -37,7 +37,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       metadataPrefix: 'kor'
     }
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'GetRecord'" do
@@ -49,7 +49,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       metadataPrefix: 'kor'
     }
     expect(response).to be_success
-    expect{Hash.from_xml response.body}.not_to raise_error
+    expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should only include data the user is authorized for" do
@@ -93,7 +93,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
     leonardo.update_attributes(
       datings: [FactoryGirl.build(:leonardo_lifespan)],
-      properties: [{'label' => 'age', 'value' => 53}]
+      properties: [{ 'label' => 'age', 'value' => 53 }]
     )
 
     # yes this sucks, check out 
@@ -168,7 +168,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   end
 
   it "should return 'noRecordsMatch' if the criteria do not yield any records" do
-    Entity.all.each{|r| r.really_destroy!}
+    Entity.all.each { |r| r.really_destroy! }
     admin = User.admin
 
     get '/oai-pmh/entities.xml', {
@@ -318,5 +318,4 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     expect(doc.xpath("//xmlns:header[@status='deleted']").count).to eq(1)
     expect(doc.xpath("//xmlns:metadata").count).to eq(0)
   end
-
 end

@@ -43,7 +43,8 @@ Feature: datings
     And I fill in "Type of dating" with "created in"
     And I fill in "Dating" with "1503"
     And I press "Save"
-    Then I should be on the entity page for "The Last Supper"
+    Then I should see "has been created"
+    And I should be on the entity page for "The Last Supper"
     And I should see "created in: 1503"
 
   Scenario: add a second dating to an existing entity

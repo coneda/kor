@@ -32,13 +32,13 @@ RSpec.describe UserGroupsController, type: :controller do
   end
 
   it 'should not POST create' do
-    post :create, user_group: {name: 'interesting'}
+    post :create, user_group: { name: 'interesting' }
     expect(response).to be_client_error
   end
 
   it 'should not PATCH update' do
     group = UserGroup.find_by! name: 'nice'
-    patch :update, id: group.id, user_group: {name: 'interesting'}
+    patch :update, id: group.id, user_group: { name: 'interesting' }
     expect(response).to be_client_error
   end
 
@@ -112,7 +112,7 @@ RSpec.describe UserGroupsController, type: :controller do
     end
 
     it 'should POST create' do
-      post :create, user_group: {name: 'pretty'}
+      post :create, user_group: { name: 'pretty' }
       expect_created_response
       UserGroup.find_by!(name: 'pretty')
     end
@@ -120,13 +120,13 @@ RSpec.describe UserGroupsController, type: :controller do
     it 'should not PATCH update (foreign group)' do
       group = UserGroup.find_by! name: 'nice'
       group.update owner: User.admin
-      patch :update, id: group.id, user_group: {name: 'pretty'}
+      patch :update, id: group.id, user_group: { name: 'pretty' }
       expect(response).to be_client_error
     end
 
     it 'should PATCH update (own group)' do
       group = UserGroup.find_by! name: 'nice'
-      patch :update, id: group.id, user_group: {name: 'pretty'}
+      patch :update, id: group.id, user_group: { name: 'pretty' }
       expect_updated_response
       expect(group.reload.name).to eq('pretty')
     end

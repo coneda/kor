@@ -13,8 +13,7 @@ Feature: Welcome
     Then I should see "Welcome"
     And I should see "Welcome to ConedaKOR"
     And I should see "Randomly selected entries"
-    And I should see "Mona Lisa"
-    And I should see "Leonardo"
+    And I should see a grid with "4" entities
 
   Scenario: Show the 'report a problem' link to admins
     Given I am logged in as "admin"

@@ -19,12 +19,12 @@ RSpec.describe UsersController, type: :controller do
   end
 
   it 'should not POST create' do
-    post :create, user: {name: 'wendig', email: 'info@wendig.io'}
+    post :create, user: { name: 'wendig', email: 'info@wendig.io' }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
-    patch :update, id: User.admin.id, user: {email: 'info@wendig.io'}
+    patch :update, id: User.admin.id, user: { email: 'info@wendig.io' }
     expect(response).to be_forbidden
   end
 
@@ -62,7 +62,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'should PATCH update_me (but not change permissions)' do
-      patch :update_me, user: {locale: 'de', admin: true}
+      patch :update_me, user: { locale: 'de', admin: true }
       expect_updated_response
       user = User.find_by!(name: 'jdoe')
       expect(user.locale).to eq('de')
@@ -120,7 +120,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'should POST create' do
-      post :create, user: {name: 'wendig', email: 'info@wendig.io'}
+      post :create, user: { name: 'wendig', email: 'info@wendig.io' }
       expect_created_response
       User.find_by!(name: 'wendig')
       expect(ActionMailer::Base.deliveries.size).to eq(1)
@@ -128,7 +128,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'should PATCH update' do
       user = User.find_by! name: 'jdoe'
-      patch :update, id: user.id, user: {name: 'john', admin: true}
+      patch :update, id: user.id, user: { name: 'john', admin: true }
       expect_updated_response
       expect(user.reload.name).to eq('john')
       expect(user.reload.admin).to be_truthy
@@ -183,5 +183,4 @@ RSpec.describe UsersController, type: :controller do
   #   get :index, :search_string => "doesntexist"
   #   expect(JSON.parse(response.body).size).to eq(0)
   # end
-
 end

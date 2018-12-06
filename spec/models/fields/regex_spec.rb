@@ -6,7 +6,7 @@ RSpec.describe Fields::Regex do
       kind_id: works.id,
       name: 'trick_id',
       show_label: 'Trick ID',
-      settings: {regex: "^(aa|bb|ccc)$"}
+      settings: { regex: "^(aa|bb|ccc)$" }
     )
     
     expect(field.reload.settings).to eq(regex: "^(aa|bb|ccc)$")

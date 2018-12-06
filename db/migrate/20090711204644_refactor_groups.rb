@@ -11,7 +11,7 @@ class RefactorGroups < ActiveRecord::Migration
       t.integer :entity_id
       t.integer :system_group_id
     end
-    add_index :entities_system_groups, [ :entity_id, :system_group_id ], :unique => true, :name => 'sg_link_index'
+    add_index :entities_system_groups, [:entity_id, :system_group_id], :unique => true, :name => 'sg_link_index'
     
     create_table :authority_groups do |t|
       t.integer :lock_version
@@ -24,7 +24,7 @@ class RefactorGroups < ActiveRecord::Migration
       t.integer :entity_id
       t.integer :authority_group_id
     end
-    add_index :authority_groups_entities, [ :entity_id, :authority_group_id ], :unique => true, :name => 'ag_link_index'
+    add_index :authority_groups_entities, [:entity_id, :authority_group_id], :unique => true, :name => 'ag_link_index'
     
     create_table :user_groups do |t|
       t.integer :lock_version
@@ -39,7 +39,7 @@ class RefactorGroups < ActiveRecord::Migration
       t.integer :user_group_id
     end
     add_index :user_groups, :user_id
-    add_index :entities_user_groups, [ :entity_id, :user_group_id ], :unique => true, :name => 'ug_link_index'
+    add_index :entities_user_groups, [:entity_id, :user_group_id], :unique => true, :name => 'ug_link_index'
   
     SystemGroup.reset_column_information
     AuthorityGroup.reset_column_information
@@ -61,12 +61,12 @@ class RefactorGroups < ActiveRecord::Migration
       
       group = case tag['style']
       when "systemgroup"
-          AuthorityGroup.create(attributes)
+        AuthorityGroup.create(attributes)
       when 'usergroup', "transit"
-          attributes[:user_id] = tag['user_id']
-          UserGroup.create(attributes)
+        attributes[:user_id] = tag['user_id']
+        UserGroup.create(attributes)
       when "technical"
-          SystemGroup.create(attributes)
+        SystemGroup.create(attributes)
       else
         raise "unknown tag/group style #{tag['style'].inspect}"
       end
@@ -78,11 +78,11 @@ class RefactorGroups < ActiveRecord::Migration
       unless values.blank?
         case group
         when AuthorityGroup
-            Kor.db.execute("INSERT INTO authority_groups_entities (entity_id, authority_group_id) VALUES #{values}")
+          Kor.db.execute("INSERT INTO authority_groups_entities (entity_id, authority_group_id) VALUES #{values}")
         when UserGroup
-            Kor.db.execute("INSERT INTO entities_user_groups (entity_id, user_group_id) VALUES #{values}")
+          Kor.db.execute("INSERT INTO entities_user_groups (entity_id, user_group_id) VALUES #{values}")
         when SystemGroup
-            Kor.db.execute("INSERT INTO entities_system_groups (entity_id, system_group_id) VALUES #{values}")
+          Kor.db.execute("INSERT INTO entities_system_groups (entity_id, system_group_id) VALUES #{values}")
         end
       end
     end

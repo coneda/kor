@@ -117,7 +117,7 @@
       fetch()
 
     tag.isMedia = ->
-      tag.opts.id && (tag.data.uuid == wApp.data.medium_kind_uuid)
+      tag.opts.id && (tag.opts.id == wApp.info.data.medium_kind_id)
 
     tag.new_record = -> !(tag.data || {}).id
 

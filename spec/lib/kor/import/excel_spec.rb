@@ -111,7 +111,7 @@ RSpec.describe Kor::Import::Excel do
   it "should import new datings" do
     book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
     sheet = book.worksheet 0
-    sheet[2, 15] = [{'label' => 'entstanden um', 'dating_string' => '1677'}].to_json
+    sheet[2, 15] = [{ 'label' => 'entstanden um', 'dating_string' => '1677' }].to_json
     system "rm #{Rails.root}/tmp/export_spec/entities.0001.xls"
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
 

@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Kor::Elastic, elastic: true do
-
   it 'should be enabled by rspec metadata' do
     expect(described_class.enabled?).to be_truthy
 
@@ -20,7 +19,7 @@ RSpec.describe Kor::Elastic, elastic: true do
     expect {
       described_class.index(@landscape)
       described_class.refresh
-    }.to change{Kor::Elastic.count}.by(1)
+    }.to change { Kor::Elastic.count }.by(1)
   end
 
   it "should search with a full token" do
@@ -74,12 +73,6 @@ RSpec.describe Kor::Elastic, elastic: true do
     
     described_class.index_all
 
-    # This is very nasty, however, there is no better workaround at the moment:
-    # https://github.com/elasticsearch/elasticsearch/issues/1063
-    # sleep 2
-
-    # puts described_class.new(User.admin).search(terms: "\"tree on plane\"").inspect
-
     results = described_class.new(User.admin).search(terms: "\"tree on plane\"")
     expect(results.records.size).to eq(2)
 
@@ -117,7 +110,7 @@ RSpec.describe Kor::Elastic, elastic: true do
   it "should filter by collection" do
     results = described_class.new(User.admin).search(collection_id: priv.id)
     expect(results.total).to eq(2)
-    expect(results.records.first).to eq(last_supper)
+    expect(results.records).to include(last_supper, picture_b)
   end
 
   it "should filter by collection and kind" do
@@ -259,5 +252,4 @@ RSpec.describe Kor::Elastic, elastic: true do
       described_class.new(User.admin).search(synonyms: '*')
     }.not_to raise_error
   end
-
 end

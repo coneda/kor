@@ -11,9 +11,9 @@ class DirectedRelationship < ApplicationRecord
     joins('LEFT JOIN entities tos ON tos.id = directed_relationships.to_id')
   }
   def self.allowed(user, policy = :view)
-    collection_ids = Kor::Auth.authorized_collections(user, policy).map{|c| c.id}
+    collection_ids = Kor::Auth.authorized_collections(user, policy).map { |c| c.id }
     with_from.where('froms.collection_id IN (?)', collection_ids).
-    with_to.where('tos.collection_id IN (?)', collection_ids)
+      with_to.where('tos.collection_id IN (?)', collection_ids)
   end
   scope :by_from_entity, lambda { |entity_id| 
     entity_id.present? ? where(from_id: entity_id) : all

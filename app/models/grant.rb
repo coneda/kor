@@ -1,4 +1,4 @@
-class Grant < ActiveRecord::Base
+class Grant < ApplicationRecord
   self.table_name = 'collections_credentials'
   
   belongs_to :collection

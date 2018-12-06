@@ -1,3 +1,5 @@
+require File.expand_path(__dir__ + '/../dotenv')
+
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
@@ -13,7 +15,7 @@ require 'kor'
 require 'securerandom'
 require 'sucker_punch/async_syntax'
 
-Dir["lib/paperclip_processors/*.rb"].each{|f| require File.expand_path(f)}
+Dir["lib/paperclip_processors/*.rb"].each { |f| require File.expand_path(f) }
 
 module Kor
   class Application < Rails::Application
@@ -74,7 +76,6 @@ module Kor
         openssl_verify_mode: ENV['MAIL_SMTP_OPENSSL_VERIFY_MODE']
       }
     end
-
   end
 end
 

@@ -1,5 +1,4 @@
 class BaseController < ActionController::Base
-
   if Rails.env.production?
     protect_from_forgery with: :null_session, unless: :api_auth?
   else
@@ -127,5 +126,4 @@ class BaseController < ActionController::Base
         result
       end
     end
-
 end

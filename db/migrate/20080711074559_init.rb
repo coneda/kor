@@ -20,7 +20,7 @@ class Init < ActiveRecord::Migration
     
     create_table :credentials, :options => Kor.config['global_database_options'] do |t|
       t.string :name
-      t.string :description,  :default => ""
+      t.string :description, :default => ""
     end
     add_index :credentials, :name, :unique => true
     
@@ -54,7 +54,7 @@ class Init < ActiveRecord::Migration
     add_index :entities, :dataset_id
     add_index :entities, :dataset_type
     add_index :entities, :user_id
-    #add_index :entities, [ :name, :display_name, :kind_id ], :unique => true
+    # add_index :entities, [ :name, :display_name, :kind_id ], :unique => true
     add_index :entities, :distinct_name
     
     create_table :synonyms, :options => Kor.config['global_database_options'] do |t|
@@ -85,7 +85,7 @@ class Init < ActiveRecord::Migration
     add_index :properties, :entity_id
     add_index :properties, :name
     add_index :properties, :value
-    #add_index :properties, [ :entity_id, :name, :value ], :unique => true
+    # add_index :properties, [ :entity_id, :name, :value ], :unique => true
     
 
     ####################################### relations ##########################
@@ -110,7 +110,7 @@ class Init < ActiveRecord::Migration
       t.text :properties
       t.timestamps
     end
-    add_index :relationships, [ :relation_id, :from_id, :to_id ]
+    add_index :relationships, [:relation_id, :from_id, :to_id]
     add_index :relationships, :uuid
     add_index :relationships, :relation_id
     add_index :relationships, :from_id
@@ -142,7 +142,7 @@ class Init < ActiveRecord::Migration
       t.integer :entity_id
       t.integer :tag_id
     end
-    add_index :entities_tags, [ :entity_id, :tag_id ], :unique => true
+    add_index :entities_tags, [:entity_id, :tag_id], :unique => true
 
     create_table :publishments, :options => Kor.config['global_database_options'] do |t|
       t.integer :user_id

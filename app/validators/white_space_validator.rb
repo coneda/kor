@@ -1,5 +1,4 @@
 class WhiteSpaceValidator < ActiveModel::EachValidator
-
   def validate_each(record, attribute, value)
     if value.is_a?(String)
       if value.match(/^\s/)
@@ -15,5 +14,4 @@ class WhiteSpaceValidator < ActiveModel::EachValidator
       end
     end
   end
-
 end

@@ -1,9 +1,25 @@
 Given /^I am logged in as "([^\"]*)"/ do |user|
+  # for the reset to work, the browser's current url has to match our origin
   visit '/'
+
+  # we also have to make sure that the browser actually loaded the page
+  expect(page).to have_content('Report a problem') # should always be visible
+
+  # then we can reset
   Capybara.reset_sessions!
   
+  # now we can be sure that we are logged out
   step "I go to the login page"
-  fill_in 'Username', with: user
+
+  begin
+    fill_in 'Username', with: user
+  rescue Capybara::ElementNotFound => e
+    # TODO: why is this necessary?
+    Capybara.reset_sessions!
+    step "I go to the login page"
+    fill_in 'Username', with: user
+    # binding.pry
+  end
   fill_in 'Password', with: user
   click_button 'Login'
   expect(page).to have_css('w-messaging .notice', text: 'you have been logged in')

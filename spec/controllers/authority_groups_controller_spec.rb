@@ -29,12 +29,12 @@ RSpec.describe AuthorityGroupsController, type: :controller do
   end
 
   it 'should not POST create' do
-    post :create, authority_group: {name: 'seminar 2018'}
+    post :create, authority_group: { name: 'seminar 2018' }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
-    patch :update, id: seminar.id, authority_group: {name: 'seminar 2018'}
+    patch :update, id: seminar.id, authority_group: { name: 'seminar 2018' }
     expect(response).to be_forbidden
   end
 
@@ -117,5 +117,4 @@ RSpec.describe AuthorityGroupsController, type: :controller do
 
   #   expect(User.admin.clipboard).to include(mona_lisa.id, leonardo.id)
   # end
-
 end

@@ -19,7 +19,7 @@ RSpec.describe AuthorityGroupCategoriesController, type: :controller do
     AuthorityGroupCategory.create! name: 'sub archive', parent_id: archive.id
     get :flat
     expect_collection_response
-    names = json['records'].map{|e| e['name']}
+    names = json['records'].map { |e| e['name'] }
     expect(names).to include('archive', 'sub archive')
   end
 
@@ -40,12 +40,12 @@ RSpec.describe AuthorityGroupCategoriesController, type: :controller do
   end
 
   it 'should not POST create' do
-    post :create, authority_group_category: {name: 'seminar 2018'}
+    post :create, authority_group_category: { name: 'seminar 2018' }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
-    patch :update, id: archive.id, authority_group_category: {name: 'professor'}
+    patch :update, id: archive.id, authority_group_category: { name: 'professor' }
     expect(response).to be_forbidden
   end
 

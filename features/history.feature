@@ -8,6 +8,7 @@ Feature: History
     When I go to the entity page for "Mona Lisa"
     And I follow "Leonardo"
     Then I should see "Leonardo"
+    And I should see "person"
     When I ignore the next confirmation box
     And I follow "delete"
     Then I should be on the entity page for "Mona Lisa"

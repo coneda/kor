@@ -14,13 +14,13 @@ RSpec.describe CredentialsController, type: :controller do
   end
 
   it 'should not POST create' do
-    post :create, credential: {name: 'teachers'}
+    post :create, credential: { name: 'teachers' }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
     id = Credential.find_by!(name: 'students').id
-    patch :update, id: id, credential: {name: 'teachers'}
+    patch :update, id: id, credential: { name: 'teachers' }
     expect(response).to be_forbidden
   end
 
@@ -54,14 +54,14 @@ RSpec.describe CredentialsController, type: :controller do
     end
 
     it 'should POST create' do
-      post :create, credential: {name: 'teachers'}
+      post :create, credential: { name: 'teachers' }
       expect_created_response
       c = Credential.find_by!(name: 'teachers')
     end
 
     it 'should PATCH update' do
       id = Credential.find_by!(name: 'students').id
-      patch :update, id: id, credential: {name: 'teachers'}
+      patch :update, id: id, credential: { name: 'teachers' }
       expect_updated_response
       agc = Credential.find(id)
       expect(agc.name).to eq('teachers')
