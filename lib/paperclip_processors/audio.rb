@@ -9,7 +9,7 @@ class Paperclip::Audio < Paperclip::Processor
   end
 
   def self.make_mp3(file, attachment)
-    outfile = Tempfile.new(rand.to_s).path + '.mp3'
+    outfile = Kor.tmp_path + '.mp3'
     args = "-qscale 3"
     args = "-i #{file.path} #{args} #{outfile}"
     Paperclip.run(Kor.video_processor, args)
@@ -17,7 +17,7 @@ class Paperclip::Audio < Paperclip::Processor
   end
 
   def self.make_ogg(file, attachment)
-    outfile = Tempfile.new(rand.to_s).path + '.ogg'
+    outfile = Kor.tmp_path + '.ogg'
     args = "-qscale 7"
     args = "-i #{file.path} #{args} #{outfile}"
     Paperclip.run(Kor.video_processor, args)

@@ -14,8 +14,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   }
 
   config.vm.define 'manual' do |c|
-    config.ssh.insert_key = true
-    config.vm.box = 'debian/stretch64'
+    c.ssh.insert_key = true
+    c.vm.box = 'debian/stretch64'
+    c.vm.synced_folder '.', '/vagrant', type: 'virtualbox'
     c.vm.network :forwarded_port, host: 8080, guest: 80
     c.vm.provider "virtualbox" do |vbox|
       vbox.name = "kor.manual"

@@ -158,6 +158,20 @@
           <span class="value">{data.degree}</span>
         </div>
 
+        <hr />
+
+        <div class="kor-text-right">
+          <a href="/entities/{data.id}.json" target="_blank">
+            <i class="fa fa-file-text"></i>
+            {t('show_json')}
+          </a>
+          <br />
+          <a href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank">
+            <i class="fa fa-code"></i>
+            {t('show_oai_pmh')}
+          </a>
+        </div>
+
       </div>
     </div>
   </div>
@@ -183,10 +197,10 @@
 
         
         <div class="formats">
-          <a href="#/media/{data.id}">{t('verbs.enlarge')}</a>
+          <a href="#/media/{data.medium.id}">{t('verbs.enlarge')}</a>
           <span if={!data.medium.video && !data.medium.audio}> |
             <a
-              href="/media/maximize/{data.medium_id}"
+              href="{data.medium.url.normal}"
               target="_blank"
             >{t('verbs.maximize')}</a>
           </span>
@@ -194,9 +208,9 @@
           {t('verbs.download')}:<br />
           <a 
             if={allowedTo('download_originals', data.collection_id)}
-            href="/media/download/original/{data.medium.id}}" 
+            href={data.medium.url.original}
           >{t('nouns.original')}</a> |
-          <a href="/media/download/normal/{data.medium.id}">
+          <a href={data.medium.url.normal.replace(/\/images\//, '/download/')}>
             {t('nouns.enlargement')}
           </a> |
           <a href="/entities/{data.id}/metadata">{t('nouns.metadata')}</a>
@@ -213,7 +227,7 @@
           <div class="subtitle">
             <a
               if={allowedTo('create')}
-              href="/tools/add_media/{data.id}"
+              href="#/upload?relate_with={data.id}"
             >
               » {t('objects.add', {interpolations: {o: 'activerecord.models.medium.other'} } )}
             </a>
@@ -231,7 +245,6 @@
 
       </div>
     </div>
-
   </div>
 
   <div class="clearfix"></div>

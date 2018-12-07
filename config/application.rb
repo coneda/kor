@@ -10,6 +10,8 @@ Bundler.require(*Rails.groups)
 ENV['KOR_ROOT'] = File.expand_path(__dir__ + '/..')
 require File.expand_path(__dir__ + '/../dotenv')
 system "mkdir -p #{ENV['DATA_DIR']}"
+system "mkdir -p #{ENV['KOR_ROOT']}/tmp"
+system "mkdir -p #{ENV['DATA_DIR']}/processing"
 
 $: << File.expand_path('../../lib', __FILE__)
 

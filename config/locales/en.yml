@@ -1,7 +1,4 @@
 en:
-
-  # General
-
   with: with
   general: "general"
   with_solved_issues_from: "with solved tickets from"
@@ -78,6 +75,8 @@ en:
   reset_password: reset password
   by_related_entities: search in related entities
   edit_tags: edit tags
+  show_json: show JSON
+  show_oai_pmh: show OAI-PMH
 
   help:
     terms_query: |

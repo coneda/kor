@@ -67,6 +67,7 @@
               title={t('reset_login_attempts')}
             ><i class="three_bars"></i></a>
             <a
+              if={user.name != 'admin' && user.name != 'guest'}
               href="#"
               onclick={resetPassword(user.id)}
               title={t('reset_password')}

@@ -20,8 +20,13 @@ class Kor::Elastic
 
   def self.available?
     @available ||= begin
+      return false unless ENV['ELASTIC_URL'].present?
+      
       response = raw_request('get', '/')
       response.status == 200
+    rescue ArgumentError, Errno::ECONNREFUSED => e 
+      Rails.logger.info "tried connecting to elasticsearch, but failed: #{e.message}"
+      false
     end
   end
 

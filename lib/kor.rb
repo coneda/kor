@@ -114,4 +114,9 @@ module Kor
       JSON.parse(File.read(filename)).symbolize_keys
     end
   end
+
+  def self.tmp_path
+    base = File.join(ENV['DATA_DIR'], 'processing')
+    Tempfile.new(rand.to_s, base).path
+  end
 end

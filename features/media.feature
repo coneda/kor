@@ -31,3 +31,23 @@ Feature: Media
     When I go to the new entries page
     Then I should see "New entries"
     Then I should see "File type: image/jpeg"
+
+  Scenario: download original
+    Given I am logged in as "admin"
+    When I go to the entity page for medium "picture_a"
+    And I follow "original"
+    Then I should be on the entity page for medium "picture_a" # no errors
+
+  Scenario: maximize
+    Given I am logged in as "admin"
+    When I go to the entity page for medium "picture_a"
+    And I follow "maximize"
+    Then I should not see "error"
+
+  Scenario: add media feature
+    Given I am logged in as "admin"
+    When I go to the entity page for "Mona Lisa"
+    And I follow "» add media"
+    Then I should see "Relate all files with"
+    And I should see "Mona Lisa"
+    And select "relation_name" should have option "shows"

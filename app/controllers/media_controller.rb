@@ -16,7 +16,7 @@ class MediaController < JsonController
         Publishment.exists?(uuid: params[:uuid])
     end
 
-    disposition = (params[:disposition] == 'download' ? 'attachment' : 'images')
+    disposition = (params[:disposition] == 'download' ? 'attachment' : 'inline')
 
     if auth
       send_data @medium.data(style),

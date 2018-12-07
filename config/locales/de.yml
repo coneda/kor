@@ -79,6 +79,8 @@ de:
   reset_password: Passwort zurücksetzen
   by_related_entities: in verknüpften entitäten suchen
   edit_tags: tags bearbeiten
+  show_json: JSON anzeigen
+  show_oai_pmh: OAI-PMH anzeigen
 
   help:
     terms_query: |

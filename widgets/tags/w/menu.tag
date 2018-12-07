@@ -23,6 +23,8 @@
     </li>
   </ul>
 
+  <div class="header">{tcap('nouns.group', {count: 'other'})}</div>
+
   <ul>
     <li>
       <a href="#/groups/categories">
@@ -46,49 +48,56 @@
     </li>
   </ul>
 
-  <ul if={isLoggedIn() && allowedTo('create')}>
-    <li>
-      <kor-input
-        if="{kinds && kinds.records.length > 0}"
-        name="new_entity_type"
-        type="select"
-        onchange={newEntity}
-        options={kinds.records}
-        placeholder={tcap('objects.new', {interpolations: {o: 'activerecord.models.entity.one'}})}
-        ref="kind_id"
-      />
-    </li>
-    <li if={isLoggedIn()}>
-      <a href="#/upload">{tcap('verbs.upload')}</a>
-    </li>
-    <li>
-      <a href="#/relations">
-        {tcap('activerecord.models.relation.other')}
-      </a>
-    </li>
-    <li>
-      <a href="#/kinds">
-        {tcap('activerecord.models.kind.other')}
-      </a>
-    </li>
-  </ul>
+  <virtual if={isLoggedIn() && (allowedTo('create'))}>
+    <div class="header">{tcap('verbs.create')}</div>
 
-  <ul if={isLoggedIn()}>
-    <li if={allowedTo('delete')}>
-      <a href="#/entities/invalid">{tcap('nouns.invalid_entity', {count: 'other'})}</a>
-    </li>
-    <li if={allowedTo('edit')}>
-      <a href="#/entities/recent">{tcap('nouns.new_entity', {count: 'other'})}</a>
-    </li>
-    <li if={allowedTo('edit')}>
-      <a href="#/entities/isolated">{tcap('nouns.isolated_entity', {count: 'other'})}</a>
-    </li>
-  </ul>
+    <ul>
+      <li>
+        <kor-input
+          if="{kinds && kinds.records.length > 0}"
+          name="new_entity_type"
+          type="select"
+          onchange={newEntity}
+          options={kinds.records}
+          placeholder={tcap('objects.new', {interpolations: {o: 'activerecord.models.entity.one'}})}
+          ref="kind_id"
+        />
+      </li>
+      <li if={isLoggedIn()}>
+        <a href="#/upload">{tcap('verbs.upload')}</a>
+      </li>
+      <li>
+        <a href="#/relations">
+          {tcap('activerecord.models.relation.other')}
+        </a>
+      </li>
+      <li>
+        <a href="#/kinds">
+          {tcap('activerecord.models.kind.other')}
+        </a>
+      </li>
+    </ul>
+  </virtual>
+
+  <virtual if={isLoggedIn() && (allowedTo('delete') || allowedTo('edit'))}>
+    <div class="header">{tcap('verbs.edit')}</div>
+
+    <ul>
+      <li if={allowedTo('delete')}>
+        <a href="#/entities/invalid">{tcap('nouns.invalid_entity', {count: 'other'})}</a>
+      </li>
+      <li if={allowedTo('edit')}>
+        <a href="#/entities/recent">{tcap('nouns.new_entity', {count: 'other'})}</a>
+      </li>
+      <li if={allowedTo('edit')}>
+        <a href="#/entities/isolated">{tcap('nouns.isolated_entity', {count: 'other'})}</a>
+      </li>
+    </ul>
+  </virtual>
+
+  <div class="header">{tcap('nouns.administration')}</div>
 
   <ul if={isAdmin()}>
-    <li>
-      {tcap('nouns.administration')}
-    </li>
     <li>
       <a href="#/settings">
         {tcap('activerecord.models.setting', {count: 'other'})}

@@ -720,10 +720,6 @@ kor-menu {
     margin-bottom: 2rem;
   }
 
-  ul.submenu {
-    padding-left: 1rem;
-  }
-
   li {
     list-style-type: none;
   }
@@ -732,6 +728,12 @@ kor-menu {
     text-decoration: none;
     font-weight: bold;
     color: $kor-text;
+  }
+
+  .header {
+    font-weight: bold;
+    color: #777777;
+    margin-bottom: -0.5rem;
   }
 }
 

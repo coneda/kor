@@ -17,7 +17,7 @@
           ref="group"
         />
 
-        <virtual if={selection}>
+        <div if={selection}>
           {tcap('labels.relate_to_via', {interpolations: {to: selection.display_name}})}:
 
           <kor-relation-selector
@@ -26,7 +26,7 @@
             target-kind-id={selection.kind_id}
             ref="relation-selector"
           />
-        </virtual>
+        </div>
 
         <a class="trigger">
           » {tcap('objects.add', {interpolations: {o: 'nouns.file.other'}})}
@@ -141,8 +141,7 @@
         nil
     }
 
-    var fetchSelected = function() {
-      var id = wApp.clipboard.selection();
+    var fetchSelected = function(id) {
       Zepto.ajax({
         url: '/entities/' + id,
         success: function(data) {
@@ -162,7 +161,11 @@
 
     var init = function() {
       if (tag.hasSelection())
-        fetchSelected();
+        fetchSelected(wApp.clipboard.selection());
+
+      var id = wApp.routing.query()['relate_with']
+      if (id)
+        fetchSelected(id);
 
       uploader = new plupload.Uploader({
         browse_button: Zepto('.trigger')[0],
@@ -204,14 +207,5 @@
 
       uploader.init();
     }
-
-    // tag.uploader.setOption "multipart_params", {
-      //   "entity[kind_id]": scope.data.params.kind_id
-      //   "entity[collection_id]": scope.data.params.collection_id
-      //   "user_group_name": scope.data.params.user_group_name
-      //   "relation_name": scope.data.params.relation_name
-      // }
-      
   </script>
-
 </kor-upload>

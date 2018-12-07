@@ -6,7 +6,8 @@
 # Mime::Type.register "text/html", :mobile
 
 Paperclip.options[:content_type_mappings] = {
-  mp3: "application/octet-stream"
+  mp3: "application/octet-stream",
+  mp4: 'video/mp4'
 }
 
 # required for paperclip to make it accept the .image file extension
