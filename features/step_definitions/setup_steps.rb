@@ -1,11 +1,5 @@
 Given /^the setup "([^"]*)"$/ do |name|
   case name
-  when 'Bamberg'
-    step 'the entity "Bamberg" of kind "Ort/Orte"'
-    step 'the entity "Bamberger Apokalypse" of kind "Werk/Werke"'
-    step 'the entity "Sankt Stephan" of kind "Institution/Institutionen"'
-    step 'the relation "befindet sich in/Aufbewahrungsort von" between "Werk/Werke" and "Institution/Institutionen"'
-    step 'the relation "Institution in Ort/Ort der Institution" between "Institution/Institutionen" and "Ort/Orte"'
   when 'Frankfurt-Berlin'
     step "the credential \"User Frankfurt\""
     step "the credential \"Admin Frankfurt\""
@@ -38,22 +32,6 @@ Given /^the setup "([^"]*)"$/ do |name|
     step "the entity \"Neukölln\" of kind \"Ort/Orte\" inside collection \"Berlin\""
     step "the entity \"Rathaus\" of kind \"Werk/Werke\" inside collection \"Frankfurt\""
     step "the relation \"Standort in/Standort von\" between \"Werk/Werke\" and \"Ort/Orte\""
-  when "Many relationships with images"
-    step "the entity \"Mona Lisa\" of kind \"Werk/Werke\""
-    step "the kind \"Ort/Orte\""
-    step "the medium \"spec/fixtures/image_a.jpg\""
-    step "the relation \"stellt dar/wird dargestellt von\" between \"medium/media\" and \"Ort/Orte\""
-    step "the relation \"ist äquivalent zu/ist äquivalent zu\" between \"Werk/Werke\" and \"Ort/Orte\""
-    
-    mona_lisa = Entity.find_by_name('Mona Lisa')
-    test_entity = FactoryGirl.create :location
-    image = Medium.last.entity
-    
-    11.times do
-      Relationship.relate_and_save(mona_lisa, 'ist äquivalent zu', test_entity)
-    end
-    
-    Relationship.relate_and_save(test_entity, 'wird dargestellt von', image)
   else
     raise "unknown setup #{name}"
   end

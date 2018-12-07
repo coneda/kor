@@ -1,7 +1,10 @@
-require 'support/data_helper'
-require 'support/xml_helper'
-
 module TestHelper
+  def self.require_modules
+    # we do this so they get loaded after SimpleCov
+    require 'support/data_helper'
+    require 'support/xml_helper'
+  end
+
   def self.setup
     DatabaseCleaner.clean_with :truncation
     DatabaseCleaner.strategy = :transaction
@@ -22,7 +25,7 @@ module TestHelper
     DataHelper.default_setup relationships: true, pictures: true
 
     system "rm -rf #{Rails.root}/tmp/test.media.clone"
-    system "mv #{ENV['MEDIA_DIR']} #{Rails.root}/tmp/test.media.clone"
+    system "mv #{ENV['DATA_DIR']}/media #{Rails.root}/tmp/test.media.clone"
   end
 
   def self.around_each(&block)
@@ -37,8 +40,8 @@ module TestHelper
   end
 
   def self.before_each(framework, scope, test)
-    system "rm -rf #{ENV['MEDIA_DIR']}/"
-    system "cp -a #{Rails.root}/tmp/test.media.clone #{ENV['MEDIA_DIR']}"
+    system "rm -rf #{ENV['DATA_DIR']}/media/"
+    system "cp -a #{Rails.root}/tmp/test.media.clone #{ENV['DATA_DIR']}/media"
       
     FactoryGirl.reload
     Kor::Auth.sources(true)
@@ -86,12 +89,12 @@ module TestHelper
       c.allow_http_connections_when_no_cassette = true
 
       c.ignore_request do |r|
-        elastic_config = YAML.load_file('config/database.yml')['test']['elastic']
+        elastic_uri = URI.parse(ENV['ELASTIC_URL'])
         uri = URI.parse(r.uri)
 
         uri.port == 7055 || (
-          elastic_config["host"] == uri.host &&
-          elastic_config["port"] == uri.port
+          elastic_uri.host == uri.host &&
+          elastic_uri.port == uri.port
         )
       end
     end
@@ -104,9 +107,23 @@ module TestHelper
       SimpleCov.start 'rails' do
         merge_timeout 3600
         coverage_dir 'tmp/coverage'
-        track_files '{app,lib,config,features}/**/*.{rb,rake}'
+
+        track_files '{app,lib,config,spec,features}/**/*.{rb,rake}'
+        
+        filters.clear
+        add_filter do |src|
+          !(src.filename =~ /^#{SimpleCov.root}/)
+        end
+        add_filter '/config/'
+        add_filter '/db/'
+        add_filter '/vendor/'
+        add_filter '/spec/spec_helper'
+        add_filter '/spec/support/test_helper'
+        add_filter '/features/support/env'
+
+        add_group "Test files", ["spec", "features"]
       end
-    
+
       puts "performing coverage analysis"
     end
   end

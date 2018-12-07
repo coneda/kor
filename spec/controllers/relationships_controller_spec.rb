@@ -129,34 +129,4 @@ RSpec.describe RelationshipsController, type: :controller do
       expect(Relationship.find_by(id: relationship.id)).to be_nil
     end
   end
-
-  before :each do
-    request.headers['accept'] = 'application/json'
-  end
-  
-  def side_collection
-    @side_collection ||= FactoryGirl.create :private
-  end
-  
-  def side_entity(attributes = {})
-    @side_entity ||= FactoryGirl.create :leonardo, :collection => side_collection
-  end
-  
-  def main_entity(attributes = {})
-    @main_entity ||= FactoryGirl.create :mona_lisa
-  end
-  
-  def set_side_collection_policies(policies = {})
-    policies.each do |p, c|
-      Kor::Auth.grant side_collection, :all, from: c
-      Kor::Auth.grant side_collection, p, :to => c
-    end
-  end
-  
-  def set_main_collection_policies(policies = {})
-    policies.each do |p, c|
-      Kor::Auth.revoke @main, :all, from: c
-      Kor::Auth.grant @main, p, :to => c
-    end
-  end
 end

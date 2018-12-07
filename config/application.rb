@@ -1,5 +1,3 @@
-require File.expand_path(__dir__ + '/../dotenv')
-
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
@@ -7,6 +5,11 @@ require 'rails/all'
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
+
+# Set the app root so that dotenv can make it available in .env files
+ENV['KOR_ROOT'] = File.expand_path(__dir__ + '/..')
+require File.expand_path(__dir__ + '/../dotenv')
+system "mkdir -p #{ENV['DATA_DIR']}"
 
 $: << File.expand_path('../../lib', __FILE__)
 
@@ -162,3 +165,12 @@ end
 # TODO: add more tests to settings_controller, session_controller
 # TODO: add tests for validation handling to controllers (one example per resource)
 # TODO: reintegrate matomo
+# TODO: change docs to reflect the new config handling
+
+# test group assignment during upload
+# remove old config files
+# test version task and erlangen import task
+# write task specs
+# create missing controller tests, look at coverage report for specs only
+# fix deploy.sh
+# add medium reprocess action

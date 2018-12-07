@@ -74,6 +74,7 @@ Feature: Inplace relationship editor
     When I go to the entity page for "Paris"
     Then I should see "Louvre"
     When I click icon "edit relationship" within "kor-relationship"
+    Then I should see "Edit relationship"
     And I follow "recently created"
     And I follow "Musée d'Orsay"
     And I press "Save"

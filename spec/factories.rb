@@ -368,22 +368,4 @@ FactoryGirl.define do
   factory :authority_group do
     name "seminar"
   end
-
-  # factory :user_group do
-  #   name "A user group"
-  #   user_id { User.first.id }
-  # end
-
-  # factory :system_group do
-  #   name "A system group"
-
-  #   factory :invalids do
-  #     name 'invalid'
-  #   end
-  # end
-
-  # factory :exception_log do
-
-  # end
-  
 end

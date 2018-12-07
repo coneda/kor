@@ -71,8 +71,6 @@ function deploy {
   remote "ln -sfn $SHARED_PATH/data/media/thumbnail $CURRENT_PATH/public/media/images/thumbnail"
   remote "ln -sfn $SHARED_PATH/data/media/icon $CURRENT_PATH/public/media/images/icon"
 
-  within_do $CURRENT_PATH "RAILS_ENV=production bundle exec bin/kor secrets"
-
   if which npm > /dev/null ; then
     local "npm install"
     local "npm run build"

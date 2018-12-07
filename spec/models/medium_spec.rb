@@ -14,7 +14,7 @@ RSpec.describe Medium do
     medium = Medium.create :document => File.open("#{Rails.root}/spec/fixtures/text_file.txt")
     medium.reload
 
-    expect(medium.path(:original)).to eql("#{Rails.root}/data/media.test/original/#{medium.ids}/document.txt")
+    expect(medium.path(:original)).to eql("#{ENV['DATA_DIR']}/media/original/#{medium.ids}/document.txt")
     expect(medium.path(:icon)).to eql("#{Rails.root}/public/content_types/text.gif")
     expect(medium.url(:original)).to eql("/media/images/original/#{medium.ids}/document.txt?#{medium.document.updated_at}")
     expect(medium.url(:icon)).to eql('/content_types/text.gif')
@@ -22,16 +22,16 @@ RSpec.describe Medium do
     medium.update_attributes(:image => File.open("#{Rails.root}/spec/fixtures/image_c.jpg"))
     medium.reload
     
-    expect(medium.path(:original)).to eql("#{Rails.root}/data/media.test/original/#{medium.ids}/document.txt")
-    expect(medium.path(:icon)).to eql("#{Rails.root}/data/media.test/icon/#{medium.ids}/image.jpg")
+    expect(medium.path(:original)).to eql("#{ENV['DATA_DIR']}/media/original/#{medium.ids}/document.txt")
+    expect(medium.path(:icon)).to eql("#{ENV['DATA_DIR']}/media/icon/#{medium.ids}/image.jpg")
     expect(medium.url(:original)).to eql("/media/images/original/#{medium.ids}/document.txt?#{medium.document.updated_at}")
     expect(medium.url(:icon)).to eql("/media/images/icon/#{medium.ids}/image.jpg?#{medium.image.updated_at}")
     
     medium.update_attributes(:document => nil)
     medium.reload
     
-    expect(medium.path(:original)).to eql("#{Rails.root}/data/media.test/original/#{medium.ids}/image.jpg")
-    expect(medium.path(:icon)).to eql("#{Rails.root}/data/media.test/icon/#{medium.ids}/image.jpg")
+    expect(medium.path(:original)).to eql("#{ENV['DATA_DIR']}/media/original/#{medium.ids}/image.jpg")
+    expect(medium.path(:icon)).to eql("#{ENV['DATA_DIR']}/media/icon/#{medium.ids}/image.jpg")
     expect(medium.url(:original)).to eql("/media/images/original/#{medium.ids}/image.jpg?#{medium.image.updated_at}")
     expect(medium.url(:icon)).to eql("/media/images/icon/#{medium.ids}/image.jpg?#{medium.image.updated_at}")
   end

@@ -5,12 +5,24 @@
 VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vagrant.plugins = ['vagrant-vbguest']
   config.ssh.insert_key = false
   config.vm.box = 'bento/ubuntu-16.04'
 
   pe = {
     'VERSION' => ENV['VERSION'] || `git rev-parse --abbrev-ref HEAD`
   }
+
+  config.vm.define 'manual' do |c|
+    config.ssh.insert_key = true
+    config.vm.box = 'debian/stretch64'
+    c.vm.network :forwarded_port, host: 8080, guest: 80
+    c.vm.provider "virtualbox" do |vbox|
+      vbox.name = "kor.manual"
+      vbox.customize ["modifyvm", :id, "--memory", "2048"]
+      vbox.customize ["modifyvm", :id, "--cpus", "2"]
+    end
+  end
 
   config.vm.define "dev", :primary => true do |c|
     if RUBY_PLATFORM.match(/darwin/)

@@ -33,13 +33,6 @@ Given /^the user "([^\"]*)"$/ do |user|
   end
 end
 
-Given /^the user "([^\"]*)" is a "([^\"]*)"$/ do |user, role|
-  step "the user \"#{user}\""
-  user = User.find_by_name(user)
-  user.send("#{role}=".to_sym, true)
-  user.save
-end
-
 Given /^the user "([^\"]*)" has password "([^\"]*)"$/ do |username, password|
   user = User.find_by!(name: username)
   user.update_attributes(
@@ -67,13 +60,6 @@ Given /^I log out$/ do
   step "I follow \"logout\""
 end
 
-When /^I mark "([^\"]*)" as current entity$/ do |name|
-  step "I am on the entity page for \"#{name}\""
-  step "I should see \"#{name}\""
-  step "I follow \"mark\""
-  step "I should see a message containing \"has been marked as current entity\""
-end
-
 When(/^I put "(.*?)" into the clipboard$/) do |name|
   step "I am on the entity page for \"#{name}\""
   step "I should see \"#{name}\""
@@ -89,15 +75,6 @@ Given /^the session is not forcibly expired anymore$/ do
   allow_any_instance_of(BaseController).to receive(:session_expired?).and_call_original
 end
 
-Given /^"([^\"]*)" is expanded$/ do |folded_menu_name|
-  case folded_menu_name
-  when "Administration" 
-    click_link "Administration"
-  when "Groups"
-    click_link "Groups"
-  end
-end
-
 Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
   Kind.find_by!(name: kind.split("/").first).entities.each do |entity|
     step "I go to the entity page for \"#{entity.uuid}\""
@@ -111,12 +88,4 @@ end
 
 When(/^I save a screenshot$/) do
   page.save_screenshot "screenshot.png"
-end
-
-When(/^I call the inspector$/) do
-  page.driver.debug
-end
-
-Given /^elasticsearch is (not )?available$/ do |negation|
-  allow(Kor::Elastic).to receive(:available?).and_return(!negation)
 end

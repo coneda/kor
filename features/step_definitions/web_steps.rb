@@ -5,10 +5,6 @@ When("I click icon {string}") do |string|
   find("a[title='#{string}']").click
 end
 
-Then("I should not see icon link {string}") do |string|
-  expect(page).not_to have_css("a[title='#{string}']")
-end
-
 When /^(.*) within (.+)$/ do |step, parent|
   within find(*selector_for(parent)) do
     step(step)
@@ -39,10 +35,6 @@ When /^(?:|I )click button "([^"]*)"$/ do |locator|
   find_button(locator).click
 end
 
-When(/^I follow the link with text "([^"]*)"$/) do |text|
-  click_link(text)
-end
-
 When("I scroll down") do
   # sometimes, capybara doesn't correctly scroll to a button before clicking it
   sleep 1
@@ -51,12 +43,6 @@ end
 
 When("I fill in {string} with {string}") do |field, value|
   fill_in field, with: value
-end
-
-When /^(?:|I )fill in the following:$/ do |fields|
-  fields.rows_hash.each do |name, value|
-    step %{I fill in "#{name}" with "#{value}"}
-  end
 end
 
 When /^(?:|I )select "([^"]*)" from "([^"]*)"$/ do |value, field|
@@ -75,10 +61,6 @@ Given("I choose {string} for {string}") do |value, field|
   choose field, option: value
 end
 
-When /^(?:|I )attach the file "([^"]*)" to "([^"]*)"$/ do |path, field|
-  attach_file(field, File.expand_path(path))
-end
-
 Then /^(?:|I )should see "([^"]*)"(?: exactly "(\d+)" times?)?$/ do |text, amount|
   amount = amount.to_i if amount
   if amount
@@ -86,11 +68,6 @@ Then /^(?:|I )should see "([^"]*)"(?: exactly "(\d+)" times?)?$/ do |text, amoun
   else
     expect(page).to have_content(text)
   end
-end
-
-Then /^(?:|I )should see \/([^\/]*)\/$/ do |regexp|
-  regexp = ::Regexp.new(regexp)
-  expect(page).to have_xpath('//*', :text => regexp)
 end
 
 Then /^(?:|I )should not see "([^\"]*)"$/ do |text|
@@ -110,20 +87,6 @@ Then /^(?:|I )should be on (.+)$/ do |page_name|
   end
 end
 
-Then /^I should( not)? see element "(.*?)" with text "(.*?)"$/ do |negative, locator, text|
-  if negative == " not"
-    expect(page).not_to have_css(locator, :text => text)
-  else
-    element = page.find(locator, :text => text)
-    expect(element).not_to be_nil
-    expect(element.visible?).to be_truthy
-  end
-end
-
-Then(/^I should see the option to create a new "(.*?)"$/) do |text|
-  expect(page).to have_selector('option', :text => text)
-end
-
 Then /^I should (not )?see element "([^\"]*)"$/ do |yesno, selector|
   if yesno == 'not '
     if (elements = page.all(selector)).size > 0
@@ -135,24 +98,6 @@ Then /^I should (not )?see element "([^\"]*)"$/ do |yesno, selector|
     end
   else
     expect(page).to have_css(selector)
-  end
-end
-
-When /^I fill in "([^"]*)" attachment "([^"]*)" with "([^"]*)"$/ do |attachment_id, index, values|
-  values = values.split('/')
-  attachments = page.all("##{attachment_id} .attachment", minimum: index.to_i)
-  attachments[index.to_i - 1].all('input[type=text]').each_with_index do |input, i|
-    input.set(values[i]) unless values[i].blank?
-  end
-end
-
-Then /^I should (not )?really see element "([^\"]*)"$/ do |yesno, selector|
-  page.all(selector).each do |element|
-    if yesno == 'not '
-      expect(element.visible?).to be_falsey
-    else
-      expect(element.visible?).to be_truthy
-    end
   end
 end
 
@@ -170,14 +115,6 @@ Then /^I should see "([^"]*)" before "([^"]*)"$/ do |preceeding, following|
   expect(page.body).to match(/#{preceeding}.*#{following}/m)
 end
 
-Then /^I hover element "([^\"]*)"$/ do |selector|
-  page.execute_script("jQuery('#{selector}').mouseover()")
-end
-
-Then /^I should see an input with the current date$/ do
-  expect(page).to have_field("user_group_name", :with => Time.now.strftime("%d.%m.%Y"))
-end
-
 When /^(?:|I )unselect "([^\"]*)" from "([^\"]*)"(?: within "([^\"]*)")?$/ do |value, field, selector|
   if selector
     within(:css, selector) do
@@ -188,65 +125,13 @@ When /^(?:|I )unselect "([^\"]*)" from "([^\"]*)"(?: within "([^\"]*)")?$/ do |v
   end
 end
 
-When /^I fill in "([^\"]*)" with "([^\"]*)" and select term "([^\"]*)"$/ do |field, value, pattern|
-  step "I fill in \"#{field}\" with \"#{value}\""
-  step "I select \"terms '#{pattern}'\" from the autocomplete"
-end
-
-When /^I fill in "([^\"]*)" with "([^\"]*)" and select tag "([^\"]*)"$/ do |field, value, pattern|
-  step "I fill in \"#{field}\" with \"#{value}\""
-  step "I select \"tag: #{pattern}\" from the autocomplete"
-end
-
-When /^I select "([^\"]*)" from the autocomplete$/ do |pattern|
-  page.execute_script '$("input[name=search_terms]").keydown()'
-
-  t = Time.now
-  while Time.now - t < 5.seconds && !page.all('li.ui-menu-item a').to_a.find { |a| a.text.match ::Regexp.new(pattern) }
-    sleep 0.2
-  end
-
-  page.all('li.ui-menu-item a').to_a.find do |anchor|
-    anchor.text.match ::Regexp.new(pattern)
-  end.click
-end
-
-When /^I send a "([^\"]*)" request to "([^\"]*)" with params "([^\"]*)"$/ do |method, url, params|
-  Capybara.current_session.driver.send method.downcase.to_sym, url, eval(params)
-  if page.status_code >= 300 && page.status_code < 400
-    Capybara.current_session.driver.browser.follow_redirect!
-  end
-end
-
 When /^I ignore the next confirmation box$/ do
   page.evaluate_script('window.confirm = function() { return true; }')
-end
-
-When /^I click(?: on)? element "([^\"]+)"( again)?$/ do |selector, x|
-  page.find(selector).click
-end
-
-When /^I follow the delete link$/ do
-  step "I ignore the next confirmation box"
-  click_link 'X'
-end
-
-When /^I click on "([^\"]*)"$/ do |selector|
-  element = page.find(selector)
-  element.click
 end
 
 Then /^(?:|I )should not be on (.+)$/ do |page_name|
   current_path = URI.parse(current_url).path
   expect(current_path).not_to eq(path_to(page_name))
-end
-
-Then /^I should have access: (yes|no)$/ do |yesno|
-  if yesno == 'yes'
-    expect(page).not_to have_content('Zugriff wurde verweigert')
-  else
-    expect(page).to have_content('Zugriff wurde verweigert')
-  end
 end
 
 When /^I wait for "([^"]*)" seconds?$/ do |num|
@@ -286,28 +171,8 @@ Then(/^I should see "(.*?)"'s API Key$/) do |username|
   expect(find_field("API key").value).to eq(user.api_key)
 end
 
-When(/^I trigger the blur event for "(.*?)"$/) do |selector|
-  page.execute_script("$('#{selector}').blur()")
-end
-
-When(/^I uncheck the checkbox$/) do
-  find("input[type=checkbox]").set false
-end
-
-Then(/^the checkbox should (not )?be checked$/) do |yesno|
-  if yesno == "not "
-    expect(find("input[type=checkbox]").checked?).to be(false)
-  else
-    expect(find("input[type=checkbox]").checked?).to be(true)
-  end
-end
-
 Then("checkbox {string} should be checked") do |locator|
   expect(page).to have_checked_field(locator)
-end
-
-When(/^I click on entity "([^"]*)"$/) do |name|
-  find('[kor-entity-widget]', :text => /#{name}/).click
 end
 
 Then(/^I should see "([^"]*)" gallery items?$/) do |amount|
@@ -336,14 +201,6 @@ end
 
 When(/^I (?:refresh|reload) the page$/) do
   page.evaluate_script("window.location.reload()")
-end
-
-Then(/^I should (not )?see an image$/) do |negation|
-  if negation == 'not '
-    expect(page).not_to have_selector("img[src]")
-  else
-    expect(page).to have_selector('img[src]')
-  end
 end
 
 Then(/^the select "([^"]*)" should have value "([^"]*)"$/) do |name, value|
@@ -375,10 +232,6 @@ And(/^I should see a message containing "([^"]*)"$/) do |pattern|
   page.find("w-messaging", text: /#{pattern}/)
 end
 
-Then(/^select "([^"]*)" should have selected "([^"]*)"$/) do |field, value|
-  expect(find_field(field).value).to eq(value)
-end
-
 Then(/^field "([^"]*)" should have value "([^"]*)"$/) do |field, value|
   expect(find_field(field).value).to eq(value)
 end
@@ -399,11 +252,6 @@ Then(/^select "([^"]*)" should have( no)? option "([^"]*)"$/) do |name, negation
   else
     options.any? { |o| o.text == option }
   end
-end
-
-Then /^I should see no categories nor groups$/ do
-  expect(page).not_to have_css('.authority_group_category')
-  expect(page).not_to have_css('.authority_group')
 end
 
 Then /^I should see no user groups$/ do

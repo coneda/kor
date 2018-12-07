@@ -200,7 +200,7 @@ module Kor
           'development' => 'settings.development.json',
           'test' => 'settings.test.json'
         }[Rails.env.to_s]
-        Rails.root.join('data', file)
+        Rails.root.join(ENV['DATA_DIR'], file)
       end
 
       def self.lockfile

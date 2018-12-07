@@ -42,10 +42,6 @@ module HtmlSelectorsHelpers
       name = $1
       [:css, "#{name}, [data-is=#{name}]"]
 
-    # when /the row for "([^\"]+)" "([^\"]+)"/
-    #   object = $1.classify.constantize.find_by_name($2)
-    #   [:css, "##{$1}_#{object.id}"]
-
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
     #
@@ -61,8 +57,6 @@ module HtmlSelectorsHelpers
     # This allows you to provide a quoted selector as the scope
     # for "within" steps as was previously the default for the
     # web steps:
-    when /^the first relation on the page$/
-      [:css, ".relation"]
     when /"(.+)"/
       $1
     else

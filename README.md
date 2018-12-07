@@ -73,6 +73,8 @@ not go into installing mysql and elasticsearch, we will show how to use rbenv
 to have several ruby versions available easily. Also, we will use
 phusion-passenger to host ConedaKOR with apache:
 
+This installation will work with Version v4.0 an later.
+
 #### Prepare the OS
 
 Make sure the OS has all updates installed. Also install the following packages,
@@ -116,19 +118,50 @@ source ~/.bash_profile
 
 Now you should be ready to use rbenv:
 
+TODO
 ~~~bash
 su app
 rbenv versions
 ~~~
 
 Now install the ruby version for this ConedaKOR version (find it in
-.ruby-version):
+.ruby-version). This will take a minute or two:
 
 ~~~bash
 rbenv install 2.4.3
 ~~~
 
+#### Copy the source
+
+Straight forward:
+
+~~~bash
+su app
+git clone https://github.com/coneda/kor.git /var/kor/app
+~~~
+
+#### Configure KOR
+
+~~~bash
+su app
+cp /var/kor/app/.env.example /var/kor/app/.env
+~~~
+
+Then edit the .env file to reflect your environment. A good location for your
+DATA_DIR is outside the app directory since it should survive updates.
+
+#### Test
+
+Everything should be set up to start the app, run
+
+~~~bash
+su app
+cd /var/kor/app
+~~~
+
 #### Configure apache
+
+Add a file to 
 
 ### Scripted installation
 

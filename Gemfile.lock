@@ -107,9 +107,6 @@ GEM
     diff-lcs (1.3)
     docile (1.3.1)
     dotenv (2.5.0)
-    dotenv-rails (2.5.0)
-      dotenv (= 2.5.0)
-      railties (>= 3.2, < 6.0)
     erubis (2.7.0)
     eventmachine (1.2.5)
     exception_notification (4.2.2)
@@ -308,7 +305,7 @@ DEPENDENCIES
   debase-ruby_core_source
   delayed_job_active_record
   delayed_paperclip
-  dotenv-rails
+  dotenv
   exception_notification
   exifr (= 1.1.1)
   factory_girl_rails

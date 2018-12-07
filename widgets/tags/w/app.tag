@@ -187,11 +187,16 @@
 
         mountIt = ->
           tag.mountedTag = riot.mount(element[0], tagName, opts)[0]
-          element.animate {opacity: 1.0}, 200
+          if wApp.info.data.env != 'test'
+            element.animate {opacity: 1.0}, 200
           wApp.utils.scrollToTop()
 
         if tag.mountedTag
-          element.animate {opacity: 0.0}, 200, ->
+          if wApp.info.data.env != 'test'
+            element.animate {opacity: 0.0}, 200, ->
+              tag.mountedTag.unmount(true)
+              mountIt()
+          else
             tag.mountedTag.unmount(true)
             mountIt()
         else

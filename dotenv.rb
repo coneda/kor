@@ -14,9 +14,8 @@ Dotenv.load(
 
 required = [
   'SECRET_KEY_BASE',
-  'MEDIA_DIR',
-  'DATABASE_URL',
-  'MAIL_DELIVERY_METHOD'
+  'DATA_DIR',
+  'DATABASE_URL'
 ]
 
 required.each do |k|

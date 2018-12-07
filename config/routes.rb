@@ -1,8 +1,3 @@
-# * test group assignment during upload
-# * remove old config files
-# * test version task and erlangen import task
-# * write task specs
-
 class OaiPmhVerbConstraint
   def initialize(verb)
     @verb = verb

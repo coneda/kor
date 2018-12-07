@@ -3,12 +3,9 @@ module NavigationHelpers
     case page_name
     when /the home\s?page/ then '/'
     when /the new entries page/ then '#/new-media'
-    when /the new entities page/ then '#/entities/recent'
     when /the invalid entities page/ then '#/entities/invalid'
-    when /the isolated entities page/ then '#/entities/isolated'
     when /the config page/ then '#/settings'
     when /the search page/ then '#/search'
-    when /the global groups page/ then '#/groups/categories'
     when /^the gallery( page)?$/ then '#/new-media'
     when /the new publishment page/ then '#/groups/published/new'
     when /the publishments page/ then '#/groups/published'
@@ -23,9 +20,7 @@ module NavigationHelpers
     when /the users page/ then '#/users'
     when /the clipboard/ then '#/clipboard'
     when /the new user group page/ then '#/groups/user/new'
-    when /the legacy upload page/ then "/entities/new?kind_id=#{Kind.medium_kind.id}"
     when /the relations page/ then '#/relations'
-    when /the upload page/ then '#/upload'
     when /the upload page/ then '#/upload'
     when /^page "(\d+)" of the gallery$/
       page = $1
@@ -50,10 +45,6 @@ module NavigationHelpers
       "#/entities/#{entity.id}"
     when /the entity page for medium "([^\"]*)"/
       entity = send($1.to_sym)
-      "#/entities/#{entity.id}"
-    when /the (first|last) entity's page/
-      media = Kind.medium_kind.entities
-      entity = ($1 == 'first' ? media.first : media.last)
       "#/entities/#{entity.id}"
     when /the new "([^\"]*)-Entity" page/
       kind_id = Kind.find_by_name($1).id

@@ -2,14 +2,14 @@ class Medium < ApplicationRecord
   has_one :entity
 
   has_attached_file :document, 
-    path: "#{ENV['MEDIA_DIR']}/:style/:id_partition/document.:style_extension",
+    path: "#{ENV['DATA_DIR']}/media/:style/:id_partition/document.:style_extension",
     url: "/media/images/:style/:id_partition/document.:style_extension",
     default_url: "/media/images/:style/:id_partition/image.:style_extension?:style_timestamp",
     styles: lambda { |attachment| attachment.instance.custom_styles },
     processors: lambda { |instance| instance.processors }
     
   has_attached_file :image,
-    :path => "#{ENV['MEDIA_DIR']}/:style/:id_partition/image.:style_extension",
+    :path => "#{ENV['DATA_DIR']}/media/:style/:id_partition/image.:style_extension",
     :url => "/media/images/:style/:id_partition/image.:style_extension",
     :default_url => lambda { |attachment| attachment.instance.dummy_url },
     :styles => {

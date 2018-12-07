@@ -64,6 +64,6 @@ class Download < ApplicationRecord
   end
   
   def dir
-    "#{Rails.root}/data/downloads"
+    "#{ENV['DATA_DIR']}/downloads"
   end
 end
