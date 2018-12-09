@@ -8,6 +8,8 @@ BLUE="\e[0;34m"
 LIGHTBLUE="\e[1;34m"
 NOCOLOR="\e[0m"
 
+mkdir -p tmp/widgets
+
 function all {
   vendor
   lib
@@ -44,7 +46,7 @@ function vendor {
   rsync -aL widgets/vendor/other/ public/
 
   log "combining vendor javascript"
-  uglifyjs widgets/vendor/js/*.js -o public/vendor.js
+  uglifyjs widgets/vendor/js/*.js -o tmp/widgets/vendor.js
 }
 
 function lib {
@@ -53,18 +55,18 @@ function lib {
     widgets/app.js.coffee widgets/lib/*.js.coffee | \
     node_modules/.bin/coffee -s -b -p | \
     cat - widgets/lib/*.js \
-    > public/lib.js
+    > tmp/widgets/lib.js
 }
 
 function tags {
   log "compiling tags"
-  node_modules/.bin/riot widgets/tags public/tags.js > /dev/null
+  node_modules/.bin/riot widgets/tags tmp/widgets/tags.js > /dev/null
 }
 
 function app {
   log "concatenating app"
-  uglifyjs public/vendor.js public/lib.js public/tags.js -b -o public/app-noboot.js
-  uglifyjs public/app-noboot.js widgets/boot.js -b -o public/app.js
+  uglifyjs tmp/widgets/vendor.js tmp/widgets/lib.js tmp/widgets/tags.js -b -o public/app-noboot.js
+  # uglifyjs public/app-noboot.js widgets/boot.js -b -o public/app.js
 }
 
 function css {
@@ -103,7 +105,7 @@ function watch_tags {
 
 function watch_app {
   onchange \
-    public/vendor.js public/lib.js public/tags.js public/styles.css \
+    tmp/widgets/vendor.js tmp/widgets/lib.js tmp/widgets/tags.js \
     -- widgets/build.sh app
 }
 
@@ -113,7 +115,7 @@ function watch_css {
 
 function watch_html {
   onchange \
-    public/app.js public/vendor.* widgets/*.html.ejs \
+    public/app.js public/vendor.css tmp/widgets/vendor.* widgets/*.html.ejs \
     -- widgets/build.sh html
 }
 

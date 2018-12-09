@@ -42,6 +42,8 @@ commit history on GitHub.
   range of 1870-01-01 to 1883-12-31), also 'nach 1883', 'nicht vor 1883', 
   'nicht nach', 'um 1883', 'circa 1883' are possible.
 * added new field type for mult line text
+* option to add custom css has been changed to require a url. Hosting of the
+  file is now the user's responsibility.
 
 ### Internal
 

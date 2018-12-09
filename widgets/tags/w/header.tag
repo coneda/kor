@@ -1,5 +1,4 @@
 <kor-header>
-
   <a href="#/" class="logo">
     <img src="images/logo.gif" />
   </a>
@@ -17,6 +16,10 @@
       <img src="images/vertical_dots.gif" />
       {t('logged_in_as')}:
       <strong>{currentUser().display_name}</strong>
+      <a
+        href="#/profile"
+        title={tcap('edit_self')}
+      ><i class="fa fa-wrench"></i></a>
 
       <span if={!isGuest()}>
         <img src="images/vertical_dots.gif" />
@@ -34,5 +37,4 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
   </script>
-
 </kor-header>

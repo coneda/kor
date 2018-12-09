@@ -15,7 +15,7 @@ Please check out our [DOCS.md](DOCS.md)
 
 ## License ##
 
-see file COPYING
+see file [COPYING](COPYING)
 
 ## Features ##
 
@@ -68,100 +68,7 @@ software for their users.
 
 ### Installation
 
-The easiest way to install ConedaKOR is with on Debian 9 stretch. While we will
-not go into installing mysql and elasticsearch, we will show how to use rbenv
-to have several ruby versions available easily. Also, we will use
-phusion-passenger to host ConedaKOR with apache:
-
-This installation will work with Version v4.0 an later.
-
-#### Prepare the OS
-
-Make sure the OS has all updates installed. Also install the following packages,
-we will need them to install ruby versions and some of the ruby gems:
-
-~~~bash
-apt-get install git-core build-essential libmysqlclient-dev \
-  libcurl4-openssl-dev ruby-dev libxml2-dev libxslt-dev imagemagick \
-  libav-tools zip libapache2-mod-passenger
-~~~
-
-#### Create a User
-
-Create a user to run the ConedaKor with. We will assume a user `app`. Also make
-sure the user has all permissions on a app directory. We will assume `/var/kor`:
-
-~~~bash
-useradd -m app
-mkdir -p /var/kor
-chown -R app. /var/kor
-~~~
-
-#### rbenv
-
-Now install rbenv a plugin ruby-build (loosely following the [Basic Github
-Checkout](https://github.com/rbenv/rbenv#basic-github-checkout)):
-
-~~~bash
-su app
-git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-~~~
-
-Then add rbenv to your shell. In the defailt debian 9 case, you could
-
-~~~bash
-su app
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
-source ~/.bash_profile
-~~~
-
-Now you should be ready to use rbenv:
-
-TODO
-~~~bash
-su app
-rbenv versions
-~~~
-
-Now install the ruby version for this ConedaKOR version (find it in
-.ruby-version). This will take a minute or two:
-
-~~~bash
-rbenv install 2.4.3
-~~~
-
-#### Copy the source
-
-Straight forward:
-
-~~~bash
-su app
-git clone https://github.com/coneda/kor.git /var/kor/app
-~~~
-
-#### Configure KOR
-
-~~~bash
-su app
-cp /var/kor/app/.env.example /var/kor/app/.env
-~~~
-
-Then edit the .env file to reflect your environment. A good location for your
-DATA_DIR is outside the app directory since it should survive updates.
-
-#### Test
-
-Everything should be set up to start the app, run
-
-~~~bash
-su app
-cd /var/kor/app
-~~~
-
-#### Configure apache
-
-Add a file to 
+Please refer to [INSTALL.md](INSTALL.md)
 
 ### Scripted installation
 

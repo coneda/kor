@@ -1,6 +1,6 @@
 <kor-inplace-tags>
 
-  <virtual if={opts.entity.tags.length > 0}>
+  <virtual if={opts.entity.tags.length > 0 || opts.enableEditor}>
     <span class="field">
       {tcap('activerecord.models.tag', {count: 'other'})}:
     </span>

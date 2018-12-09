@@ -15,7 +15,8 @@ Dotenv.load(
 required = [
   'SECRET_KEY_BASE',
   'DATA_DIR',
-  'DATABASE_URL'
+  'DATABASE_URL',
+  'ROOT_URL'
 ]
 
 required.each do |k|

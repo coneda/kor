@@ -93,26 +93,17 @@ module Kor
     end
   end
 
+  def self.root_url
+    ENV['ROOT_URL']
+  end
+
   def self.default_url_options(request = nil)
-    filename = Rails.root.join('tmp', 'default_url_options.json')
-
-    if request
-      options = {
-        host: request.host,
-        port: request.port,
-        protocol: request.protocol
-      }
-
-      if !File.exists?(filename) || Rails.env.development?
-        File.open filename, 'w' do |f|
-          f.write options.to_json
-        end
-      end
-
-      options
-    else
-      JSON.parse(File.read(filename)).symbolize_keys
-    end
+    uri = URI.parse(root_url)
+    return {
+      host: uri.host,
+      port: uri.port,
+      protocol: uri.scheme
+    }
   end
 
   def self.tmp_path

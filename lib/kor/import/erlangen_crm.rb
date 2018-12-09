@@ -158,12 +158,12 @@ class Kor::Import::ErlangenCrm
     def from_urls_for(r)
       return [] unless r
 
-      [r[:from_urls]] + r[:parent_urls].map { |pu| from_urls_for(@lookup[pu]) }.flatten
+      ([r[:from_urls]] + r[:parent_urls]).map { |pu| from_urls_for(@lookup[pu]) }.flatten
     end
 
     def to_urls_for(r)
       return [] unless r
       
-      [r[:to_urls]] + r[:parent_urls].map { |pu| to_urls_for(@lookup[pu]) }.flatten
+      ([r[:to_urls]] + r[:parent_urls]).map { |pu| to_urls_for(@lookup[pu]) }.flatten
     end
 end

@@ -90,7 +90,8 @@
         url: '/entities'
         data: {
           include: 'kind,users,collection'
-          page: tag.opts.query.page
+          page: tag.opts.query.page,
+          per_page: 10,
           collection_id: tag.opts.query.collection_id
           recent: true
         }

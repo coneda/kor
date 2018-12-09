@@ -32,6 +32,8 @@
       console.log('application (re)loaded');
     }
 
+    // this update the page layout with some dynamic content, such as language,
+    // custom css etc
     var updateLayout = function() {
       var meta = Zepto('meta[http-equiv=content-language]');
       var locale = wApp.session.current.locale
@@ -51,6 +53,12 @@
         attr('name', 'description').
         attr('keywords', wApp.i18n.t(locale, 'meta.keywords'));
       meta.after(m);
+
+      var url = wApp.info.data.custom_css;
+      if (url) {
+        var link = Zepto('<link rel="stylesheet" href="' + url + '">');
+        Zepto('head').append(link);
+      }
     }
 
     wApp.bus.on('reload-app', reloadApp);

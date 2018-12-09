@@ -174,7 +174,7 @@ class Kor::Elastic
     @cache = {}
 
     progress = if options[:progress]
-      Kor.progress_bar('indexing entities', Entity.without_media.count)
+      Kor.progress_bar('indexing entities', Entity.count)
     end
     scope = if options[:full]
       Entity.includes(:datings, :tags, outgoing_relationships: :to)

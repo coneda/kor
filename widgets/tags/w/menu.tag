@@ -6,10 +6,6 @@
     </li>
 
     <li if={isLoggedIn()}>
-      <a href="#/profile">{tcap('edit_self')}</a>
-    </li>
-
-    <li if={isLoggedIn()}>
       <a href="#/clipboard">{tcap('nouns.clipboard')}</a>
     </li>
   </ul>
@@ -95,7 +91,7 @@
     </ul>
   </virtual>
 
-  <div class="header">{tcap('nouns.administration')}</div>
+  <div if={isAdmin()} class="header">{tcap('nouns.administration')}</div>
 
   <ul if={isAdmin()}>
     <li>
@@ -165,17 +161,6 @@
 
     tag.on 'umount', ->
       wApp.bus.off 'reload-kinds', fetchKinds
-
-    # tag.toggleGroups = (event) ->
-    #   event.preventDefault()
-    #   tag.showGroups = !tag.showGroups
-    #   tag.update()
-
-    # tag.toggleConfig = (event) ->
-    #   # TODO: memorize this with local storage (Lockr)
-    #   event.preventDefault()
-    #   tag.showConfig = !tag.showConfig
-    #   tag.update()
 
     tag.showHelp = (event) ->
       event.preventDefault()

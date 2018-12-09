@@ -18,7 +18,6 @@ class Kor::Tasks
   end
 
   def self.index_all(config = {})
-    Kor::Elastic.enable
     Kor::Elastic.drop_index
     Kor::Elastic.create_index
     ActiveRecord::Base.logger.level = Logger::ERROR
@@ -39,10 +38,13 @@ class Kor::Tasks
     puts "* the download will be approximately #{human_size} MB in size"
     puts "* the process is running synchronously, blocking your terminal"
     puts "* the file is going to be cleaned up two weeks after it has been created"
-    print "Continue [yes/no]? "
-    response = STDIN.gets.strip
 
-    if response == "yes"
+    response = unless config[:assume_yes]
+      print "Continue [yes/no]? "
+      STDIN.gets.strip
+    end
+
+    if config[:assume_yes] || response == "yes"
       zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/terminal_download.zip", 
         :user_id => User.admin.id,
         :file_name => "#{group.name}.zip"
@@ -54,7 +56,7 @@ class Kor::Tasks
 
       download = zip_file.create_as_download
       puts "Packaging complete, the zip file can be downloaded via"
-      puts download.link
+      puts "#{Kor.root_url}/downloads/#{download.uuid}"
     end
   end
 

@@ -36,7 +36,7 @@ Feature: Media
     Given I am logged in as "admin"
     When I go to the entity page for medium "picture_a"
     And I follow "original"
-    Then I should be on the entity page for medium "picture_a" # no errors
+    # no errors -> good
 
   Scenario: maximize
     Given I am logged in as "admin"

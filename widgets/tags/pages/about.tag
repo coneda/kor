@@ -12,8 +12,7 @@
     tag.mixin(wApp.mixins.config)
 
     tag.on 'mount', ->
-      Zepto(tag.root).find('.target').html tag.config().about_html
+      Zepto(tag.root).find('.target').html tag.config().legal_html
 
   </script>
-
 </kor-about>

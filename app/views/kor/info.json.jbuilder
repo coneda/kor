@@ -12,4 +12,8 @@ json.info do
   json.medium_kind_id Kind.medium_kind_id
   json.env Rails.env.to_s
   json.elastic Kor::Elastic.enabled?
+
+  if url = ENV['CUSTOM_CSS_URL']
+    json.custom_css url
+  end
 end
