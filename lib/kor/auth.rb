@@ -128,7 +128,7 @@ module Kor::Auth
       else
         Rails.logger.info "user couldn't be updated: #{user.errors.full_messages.inspect}"
 
-        if Kor.settings['fail_on_update_errors']
+        if ENV['AUTH_FAIL_ON_UPDATE_ERRORS'] == 'true'
           Rails.logger.info "authentication failed due to update errors"
           nil
         else

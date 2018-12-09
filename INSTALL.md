@@ -162,3 +162,98 @@ systemctl restart apache2
 
 The app should now be available at http://kor.example.com. The exact location 
 depends on your server and your DNS records.
+
+
+# Additional
+
+If you are deploying elasticsearch, make sure to specify its url and the index
+you want to use with ConedaKOR in .env (or via the environment). Also make sure
+to run
+
+~~~bash
+su app
+cd /var/kor/app
+RAILS_ENV=production bundle exec bin/kor index-all
+~~~
+
+To create a populate the index.
+
+### Scripted installation
+
+Before we go into the details of the deployment process, **please be sure to
+backup the database and the `$DEPLOY_TO/shared` directory**. In practice, this
+is achieved by dumping the database to a file and creating a snapshot of the VM
+that contains the above directory.
+
+ConedaKOR includes a deployment script `deploy.sh` that facilitates installs and
+upgrades via SSH. It is a plain bash script that connects to the server
+remotely, deploys the code to the specified directory and runs the necessary
+tasks (compiling assets, starting background jobs, …). The functionality does
+not include the installation of requirements, provisioning of a database server
+nor the setup of a web server, since those differ greatly from server to server.
+Also, it might be that your specific setup requires modification to the script,
+for example to manage the background job, you might prefer to use a systemd,
+changing the way it is restarted.
+
+The script expects a directory `$DEPLOY_TO` on the server where it has write
+permissions. Within, it will create two subdirectories `$DEPLOY_TO/releases` and
+`$DEPLOY_TO/shared`. For every deployment, a subdirectory will be created within
+`releases` containing the ConedaKOR code. Data that is supposed to remain
+unchanged by deployments resides in `$DEPLOY_TO/shared`. Symlinks are used to
+connect the current code with the permanent data. Finally, a symlink
+`$DEPLOY_TO/current` will point to the current code so that your (e.g.
+passenger) web server configuration can use `DEPLOY_TO/current/public` as
+document root.
+
+The script is configured by a config file `deploy.config.sh`, which could look
+something like this:
+
+    #!/bin/bash
+
+    export KEEP=5
+    export PORT="22"
+
+    function instance01 {
+      export HOST="app@node01.example.com"
+      export PORT="22"
+      export DEPLOY_TO="/var/storage/host/kor"
+      export COMMIT="v1.9"
+    }
+
+    function instance02 {
+      export HOST="deploy@node02.example.com"
+      export DEPLOY_TO="/var/www/rack/kor"
+      export COMMIT="master"
+    }
+
+HOST, PORT and DIRECTORY are self-explanatory. COMMIT defines the commit, branch
+(head) or tag that is going to be deployed and KEEP let's you configure how many
+previous deployments are going to be kept.
+
+`deploy.config.sh` is run by the `deploy.sh` using the first parameter passed to
+itself, so a call
+
+    ./deploy.sh instance02
+
+would deploy to instance02 according to the configuration above. On terminals 
+that support it, the output is colorized according to the exit code of every
+command issued by the script.
+
+The first time the script is run, some default configuration files are copied to
+the host. It will then stop execution and let you modify the files according to
+your setup. Re-run it when done.
+
+This will also start the background process that converts images and does other
+heavy lifting. However, this does not ensure monitoring nor restarting of that
+process which can be done for example with upstart scripts or systemd. The
+process can be managed manually with the command (on the server):
+
+    RAILS_ENV=production bundle exec bin/delayed_job
+
+See `--help` for details. By default, log messages are sent to the main rails
+log file.
+
+After deployment has succeeded and you log in the first time, make sure to add
+the application scheme, host and port to "Administration -> General -> Server".
+This is necessary because the information can't always be inferred from all
+contexts.

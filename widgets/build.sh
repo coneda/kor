@@ -66,7 +66,7 @@ function tags {
 function app {
   log "concatenating app"
   uglifyjs tmp/widgets/vendor.js tmp/widgets/lib.js tmp/widgets/tags.js -b -o public/app-noboot.js
-  # uglifyjs public/app-noboot.js widgets/boot.js -b -o public/app.js
+  echo | cat public/app-noboot.js - widgets/boot.js > public/app.js
 }
 
 function css {

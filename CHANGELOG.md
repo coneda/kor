@@ -17,6 +17,14 @@ commit history on GitHub.
 * deployment configuration is now handled entirely by environment variables
   (or .env files) while behavior can now be changed with the web interface
 * users can't specify their start page anymore
+* option to add custom css has been changed to require a url. Hosting of the
+  file is now the user's responsibility.
+* removed the widgets functionality from the documentation: The frontend is now
+  uniformly implemented as widgets but they are not standalone. This requires
+  more work to become a feature.
+* given the facilitated install and configuration process, VirtualBox vms are
+  not built anymore for every release. They can still be built and the scripts
+  will be maintained
 
 ## Internal
 
@@ -42,8 +50,6 @@ commit history on GitHub.
   range of 1870-01-01 to 1883-12-31), also 'nach 1883', 'nicht vor 1883', 
   'nicht nach', 'um 1883', 'circa 1883' are possible.
 * added new field type for mult line text
-* option to add custom css has been changed to require a url. Hosting of the
-  file is now the user's responsibility.
 
 ### Internal
 

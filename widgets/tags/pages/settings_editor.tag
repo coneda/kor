@@ -204,14 +204,6 @@
         />
 
         <kor-input
-          name="fail_on_update_errors"
-          label={nameFor('fail_on_update_errors')}
-          type="checkbox"
-          riot-value={valueWithDefaults('fail_on_update_errors')}
-          ref="fields"
-        />
-
-        <kor-input
           name="max_download_group_size"
           label={nameFor('max_download_group_size')}
           type="number"

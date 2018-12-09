@@ -118,6 +118,7 @@ module TestHelper
         add_filter '/db/'
         add_filter '/vendor/'
         add_filter '/spec/spec_helper'
+        add_filter '/spec/rails_helper'
         add_filter '/spec/support/test_helper'
         add_filter '/features/support/env'
 

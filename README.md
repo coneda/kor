@@ -1,23 +1,43 @@
-# ConedaKOR #
+# ConedaKOR
 
 ConedaKOR is a web based application which allows you to store arbitrary
 documents and interconnect them with relationships. You can build huge semantic
 networks for an unlimited amount of domains. This integrates a sophisticated
 ontology management tool with an easy to use media database.
 
-## Changelog
+## Table of contents
 
-We keep it updated at [CHANGELOG.md](CHANGELOG.md)
+- [Features](#features)
+- [User documentation](#user-documentation)
+- [Changelog](#changelog)
+- [License](#license)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Customization](#customization)
+- [Logging](#logging)
+- [Backups](#backups)
+  * [Restore](#restore)
+- [Authentication](#authentication)
+  * [Unauthenticated access](#unauthenticated-access)
+  * [Permission inheritance](#permission-inheritance)
+  * [External authentication](#external-authentication)
+  * [Authentication via request env](#authentication-via-request-env)
+- [OAI-PMH Interface](#oai-pmh-interface)
+- [JSON API](#json-api)
+- [Generating a virtual appliance](#generating-a-virtual-appliance)
+- [Generating docker images](#generating-docker-images)
+- [Command line tool](#command-line-tool)
+  * [Excel import and export](#excel-import-and-export)
+  * [Importing Erlangen CRM classes](#importing-erlangen-crm-classes)
+  * [Rebuilding elastic index](#rebuilding-elastic-index)
+- [Development](#development)
+  * [Running the test suites](#running-the-test-suites)
+  * [Coverage reports](#coverage-reports)
+  * [Profiling](#profiling)
+  * [Showing media in development](#showing-media-in-development)
 
-## User documentation
-
-Please check out our [DOCS.md](DOCS.md)
-
-## License ##
-
-see file [COPYING](COPYING)
-
-## Features ##
+## Features
 
 * Instead of filling countless lists with your metadata, shape it as
   **entities** within a graph ... never repeat yourself!
@@ -48,192 +68,75 @@ see file [COPYING](COPYING)
 * good unit and integration test coverage
 * checked for security problems with
   [brakeman](https://github.com/presidentbeef/brakeman)
-* a growing javascript widget library allowing easy integration into other apps
 * support for using Erlangen CRM and similar standards as basis for your
   ontology (including a convenient OWL import tool)
 
+## User documentation
 
-## System admistrator's documentation
+Please check out our [DOCS.md](DOCS.md)
 
-These instructions are intended for system operators who wish to deploy the 
-software for their users.
+## Changelog
 
-### Requirements
+We keep it updated at [CHANGELOG.md](CHANGELOG.md)
 
-* ruby (>= 2.1.0)
+## License
+
+see file [COPYING](COPYING)
+
+## Requirements
+
+* ruby 2.4.4 (it should also run with slightly older or more recent versions
+  but we only tested with 2.4.4)
 * mysql server (>= 5.5)
 * elasticsearch (>= 5.0.0, < 6.0.0)
 * web server (optional but highly recommended)
 * neo4j (optional)
 
-### Installation
+## Installation
 
 Please refer to [INSTALL.md](INSTALL.md)
 
-### Scripted installation
+## Configuration
 
-Before we go into the details of the deployment process, **please be sure to
-backup the database and the `$DEPLOY_TO/shared` directory**. In practice, this
-is achieved by dumping the database to a file and creating a snapshot of the VM
-that contains the above directory.
+Configuration on the server such as database connection information and data
+directory can all be set as environment variables. For example, to set a
+database string, you may put the following in your apache VirtualHost:
 
-ConedaKOR includes a deployment script `deploy.sh` that facilitates installs and
-upgrades via SSH. It is a plain bash script that connects to the server
-remotely, deploys the code to the specified directory and runs the necessary
-tasks (compiling assets, starting background jobs, …). The functionality does
-not include the installation of requirements, provisioning of a database server
-nor the setup of a web server, since those differ greatly from server to server.
-Also, it might be that your specific setup requires modification to the script,
-for example to manage the background job, you might prefer to use a systemd,
-changing the way it is restarted.
+~~~apache
+  SetEnv "DATABASE_URL" "mysql2://<user>:<password>@..."
+~~~
 
-The script expects a directory `$DEPLOY_TO` on the server where it has write
-permissions. Within, it will create two subdirectories `$DEPLOY_TO/releases` and
-`$DEPLOY_TO/shared`. For every deployment, a subdirectory will be created within
-`releases` containing the ConedaKOR code. Data that is supposed to remain
-unchanged by deployments resides in `$DEPLOY_TO/shared`. Symlinks are used to
-connect the current code with the permanent data. Finally, a symlink
-`$DEPLOY_TO/current` will point to the current code so that your (e.g.
-passenger) web server configuration can use `DEPLOY_TO/current/public` as
-document root.
+If you prefer file based configuration, you may also create a file `.env` in
+the kor application directory (where config.ru is located) and add the settings
+there like in a bash script, for example
 
-The script is configured by a config file `deploy.config.sh`, which could look
-something like this:
+~~~bash
+export DATABASE_URL="mysql2://<user>:<password>@..."
+~~~
 
-    #!/bin/bash
+`export` is optional but it allows to source this file with bash, should the
+need arise.
 
-    export KEEP=5
-    export PORT="22"
+For a list of configuration options, please refer to
+[.env.example](.env.example) (of the ConedaKOR version deployed).
 
-    function instance01 {
-      export HOST="app@node01.example.com"
-      export PORT="22"
-      export DEPLOY_TO="/var/storage/host/kor"
-      export COMMIT="v1.9"
-    }
+## Customization
 
-    function instance02 {
-      export HOST="deploy@node02.example.com"
-      export DEPLOY_TO="/var/www/rack/kor"
-      export COMMIT="master"
-    }
+All customization can be done via the web interface. As an admin, follow the
+"Settings" navigation link.
 
-HOST, PORT and DIRECTORY are self-explanatory. COMMIT defines the commit, branch
-(head) or tag that is going to be deployed and KEEP let's you configure how many
-previous deployments are going to be kept.
-
-`deploy.config.sh` is run by the `deploy.sh` using the first parameter passed to
-itself, so a call
-
-    ./deploy.sh instance02
-
-would deploy to instance02 according to the configuration above. On terminals 
-that support it, the output is colorized according to the exit code of every
-command issued by the script.
-
-The first time the script is run, some default configuration files are copied to
-the host. It will then stop execution and let you modify the files according to
-your setup. Re-run it when done.
-
-This will also start the background process that converts images and does other
-heavy lifting. However, this does not ensure monitoring nor restarting of that
-process which can be done for example with upstart scripts or systemd. The
-process can be managed manually with the command (on the server):
-
-    RAILS_ENV=production bundle exec bin/delayed_job
-
-See `--help` for details. By default, log messages are sent to the main rails
-log file.
-
-After deployment has succeeded and you log in the first time, make sure to add
-the application scheme, host and port to "Administration -> General -> Server".
-This is necessary because the information can't always be inferred from all
-contexts.
-
-### Logging
+## Logging
 
 Log messages are sent to `log/production.log`. The log level can be
 configured in `config/environments/production.rb`.
 
-### Database and elasticsearch
-
-For normal operation, ConedaKOR requires an mysql and elasticsearch instances to
-be running and reachable via network. The connection specifics can are
-configured in `config/database.yml`. Here is an example taken from
-`config/database.yml.example`:
-
-    production:
-      adapter: mysql2
-      host: 127.0.0.1
-      database: kor
-      username: kor
-      password: kor
-      encoding: utf8
-      collation: utf8_general_ci
-      reconnect: true
-
-      elastic:
-        host: 127.0.0.1
-        port: 9200
-        index: kor
-        token: <secret token>
-
-When adding content via the web interface, ConedaKOR stores information in mysql
-and elasticsearch automatically and keeps the index updated in most cases. Since
-there are still some rare conditions under which the elasticsearch index is not
-up to date, there is a task that regenerates it from scratch, please have a look
-at the [command line tool documentation](#command-line-tool) below. The optional
-token will be sent as query string parameter to elasticsearch with every
-request. This allows to secure it behind a proxy which denies access unless the
-token is present.
-
-### Configuration & customizations
-
-Some aspects of ConedaKOR can be tuned to your specific needs. This sections
-explains those aspects and tells you how to modify configuration options in
-general.
-
-All configuration options can be set via YAML configuration files:
-
-  * `config/kor.defaults.yml`: You should never modify this file but it is a
-    good reference for available options
-  * `config/kor.yml`: this is the place for your changes
-  * `config/kor.<env>.yml`: here, developers can make environemnt-specific
-    overrides, for example for testing
-  * `config/kor.app.<environment>.yml`: this holds configuration changed from
-    within the web interface, see below.
-
-Files further down in that list override values from above. The files' content
-is generally organized under the keys development, production, test or all,
-designating one or all environments they apply to. Within this documentation, we
-will refer to specific options by their key. After changing the YAML
-files, be sure to restart the application for the changes to take effect.
-
-Some options can be configured via web interface: As an admin, navigate to 
-`Administration -> General` and then to one of the sub sections.
-
-#### Specific configuration options
-
-* `custom_css [path, default: data/custom.css]`: if you specify a file 
-  here and given it exists, it will be included as a customized stylesheet after
-  all other style sheets. The file has to be readable by the web server. This 
-  allows you to change the entire graphical design of ConedaKOR. To make this
-  file persist across upgrades, we recommend to choose a path below `data/`
-  which is usually symlinked to a permanent location.
-* `max_results_per_request [integer, default: 500]`: the maximum allowed
-  page size when requesting multiple items via JSON.
-* `max_included_results_per_result [integer, default: 4]`: the maximum allowed
-  page size items related to the requested one. If only a single item is
-  requested, `max_results_per_request` applies instead.
-
-### Backups
+## Backups
 
 Backups consist of
 
 * a database dump file
-* a copy of all configuration files
-* a copy of all data files containing your media and downloads (the data/
-  directory)
+* a the configuration file `.env` (if you use one, see above)
+* a copy of the data directory
 * a reference to the version of ConedaKOR
 
 All other parts of the installation directory are either considered **source
@@ -245,74 +148,58 @@ within a development process that includes regular reconsiliation with upstream.
 For a consistent backup, you should aim to create the dump and file copies at
 the same point in time (or at least be confident that little changes happened in
 between). The dumpfile is created with mysqldump and the files can simply be
-copied with `cp` or `rsync`. The configuration files to be taken into account
-are:
+copied with `cp` or `rsync`.
 
-* kor.*.yml
-* config/contact.txt (if it exists)
-* config/legal.txt (if it exists)
-* help.yml (if it exists)
-* database.yml (this is deployment-specific, it depends on your scenario
-  whether it makes sense to include this in backups)
-* config/secrets.yml (deployment-specific: if this file has to be regenerated,
-  all current user sessions will be lost when the application is restored from a
-  backup, which is acceptable in most cases)
+If you used the scripted install, it creates a "shared" directory and symlinks
+the data and the configuration from that directory to the current deployment's
+directory. In this case, it is sufficient to backup the shared folder and to
+create a database dump.
 
-If you used the deployment script described above, it creates a "shared"
-directory and symlinks the data and the configuration from that directory to the
-current deployment's directory. In this case, it is sufficient to backup the
-shared folder and to create a database dump.
-
-#### Restore
+### Restore
 
 To restore from a previous backup
 
-1. restore data and config files from the backup
-2. import the database dump and modify config/database.yml accordingly if needed
+1. restore data (and potentially the config file) from the backup
+2. import the database dump and modify the configuration accordingly
 3. deploy the relevant version of ConedaKOR
-4. if not using `deploy.sh`, compile all assets:
-   `RAILS_ENV=production bundle exec rake assets:precompile`
-5. regenerate config/secrets.yml if it's missing:
-   `RAILS_ENV=production bundle exec bin/kor secrets`
-6. refresh the elasticsearch index: 
+6. refresh the elasticsearch index (if you are using elasticsearch): 
    `RAILS_ENV=production bundle exec bin/kor index-all`
 
-
-### Authentication
+## Authentication
 
 On new installations, the default user is `admin` with password `admin`. He has
 all permissions to grant permissions and administer the installation. Also, he
 is member of the `Administrators` credential which allows him to see and edit
 all data.
 
-Authentication is performed via a web form at http://kor.example.com/login or by
-providing a valid `api_key` as `GET` or `POST` parameter. You may also specify a
-header `api-key` containing the key (make sure not to use an underscore). Every
-user has a key which can be looked up by an administrator on the user's
-administration page.
+Authentication is performed via a web form at http://kor.example.com#/login or
+by providing a valid `api_key` as `GET` or `POST` parameter. You may also
+specify a header `api-key` containing the key (make sure not to use an
+underscore). Every user has a key which can be looked up by an administrator on
+the user's administration page.
 
 In order to be able to create user accounts, a user needs the `User admin` role.
 
-#### Unauthenticated access
+### Unauthenticated access
 
 If you create a user with the username `guest`, every unauthenticated access
 will be treated as if user `guest` had made it. This gives enables you to define
 exactly what permissions to grant in this case. If it doesn't exist, the app
 will require authentication.
 
-#### Permission inheritance
+### Permission inheritance
 
 You may enter a parent username for every user. This way, the user will also be
 able to all the parts of the application his parent has access to.
 
-#### External authentication
+### External authentication
 
 Additionally, one or more scripts may be written to carry out authentication
 with the credentials provided by the user from the login form. This allows
 flexible authentication via external sources such as PAM, LDAP or
 ActiveDirectory.
 
-Internal users take preceedence before users authenticated via a script.
+Internal users take preceedence over users authenticating via a script.
 
 The script can be written in the language of your choice. Username and password
 are passed on to it through two environment variables `KOR_USERNAME_FILE` and
@@ -320,14 +207,12 @@ are passed on to it through two environment variables `KOR_USERNAME_FILE` and
 The script is expected to terminate with exit code 0 if authentication was
 successful and 1 otherwise. In the positive case, a valid JSON hash has to be
 written to STDOUT. The hash must contain attributes to create/update the user
-record with. Only 'email' is required. A user record is created unless the
-username exists.
+record. Only 'email' is required. A user record is created unless the username
+exists.
 
-To activate the script as authenticator, configure it within `config/app.yml`.
-Optionally, the key map_to can be set. The effect is that all newly created or
-updated users have their parent user set to that username. This allows to grant
-users from a specific authenticator a specific set of permissions. You may
-configure as many authenticators as you wish.
+To activate the script as authenticator, configure it within your environment.
+Have a look at `.env.example` for examples and description of the available
+options.
 
 Example authenticator script `simple_auth.sh`:
 
@@ -343,72 +228,36 @@ Example authenticator script `simple_auth.sh`:
       exit 1
     fi
 
-Example configuration within `config/kor.yml`:
-
-    all:
-      auth:
-        sources:
-          simple:
-            type: script
-            script: /path/to/simple_auth.sh
-            map_to: simple_user
-          ldap:
-            type: script
-            script: /path/to/ldap_auth.pl
-            map_to: ldap_user
-
 The authentication system might need to create users when they authenticate via
 external sources. The above configuration would create new users and set their
 parent to `simple_user` or `ldap_user` depending on which authentication source
-succeeded. This allows you to grant default permissions for new users to come.
+succeeded. This allows you to grant default permissions to new users.
 
-#### Authentication via request env
+### Authentication via request env
 
 It is also possible to configure variables to be used for authentication based
 on the request environment. A common use case are Apache authentication modules
-that set the `REMOTE_USER` environment variable. An example configuration can
-look like this:
-
-    all:
-      auth:
-        sources:
-          remote_user:
-            type: env
-            user: ['REMOTE_USER']
-            mail: ['mail']
-            domain: ['example.com']
-            map_to: my_user_template
+that set the `REMOTE_USER` environment variable. Have a look at `.env.example`
+for examples and description of the available options.
 
 This may be combined with script based authentication sources. Authentication is
-only triggered on GET `/env_auth` which redirects to the login form if the
-environment authentication was not successfull. The `domain` value is used to
-extend the username to an email address. So for example, with the above
-configuration, a user logging in as jdoe would be created with an email address
-`jdoe@example.com` (unless `mail` is found in the request env). Additionally,
-the key `mail` can be supplied which will use that attribute to find the user's
-mail address (overrides the `domain`) setting. Also, a `full_name` can be
-specified which would make the system update successfully authenticated users
-with it.
-
-When the environment yields updated user information like a changed email
-address, the user is updated automatically. However, if that update fails, the
-authentication is considered unsuccessful. This behavior can be deactivated with
-the config option `auth.fail_on_update_errors`.
+only triggered on GET `/env_auth` which falls back to the login form if the
+environment authentication was not successfull.
 
 If you configure any env auth sources, a button will appear above the login form
 to notify users of that possibility. If they choose to use it, they are
 redirected to `/env_auth` where the magic happens. The label for the button can
-be configured with the `auth.env_auth_button_label` option.
+be customized via the web interface.
 
-### OAI-PMH Interface
+## OAI-PMH Interface
 
 ConedaKOR spawns four OAI-PMH endpoints for entities, kinds, relations and
 relationships:
 
-* http://kor.example.com/api/oai-pmh/entities?verb=Identify
-* http://kor.example.com/api/oai-pmh/kinds?verb=Identify
-* http://kor.example.com/api/oai-pmh/relations?verb=Identify
-* http://kor.example.com/api/oai-pmh/relationships?verb=Identify
+* http://kor.example.com/oai-pmh/entities?verb=Identify
+* http://kor.example.com/oai-pmh/kinds?verb=Identify
+* http://kor.example.com/oai-pmh/relations?verb=Identify
+* http://kor.example.com/oai-pmh/relationships?verb=Identify
 
 Please refer to the [OAI-PMH
 specification](https://www.openarchives.org/OAI/openarchivesprotocol.html) for
@@ -429,63 +278,7 @@ https://kor.example.com/schema/1.0/kor.xsd
 as part of every installation (version 2.0.0 and above). We will add new
 versions, should the need arise.
 
-### Widgets
-
-ATTENTION: This feature is experimental and subject to future change.
-
-We are working on creating a complete widget library so that the entire frontend
-is just a composition of widgets. Since that requires extensive refactoring of
-most of the code base, this process is going to take some time. However, some
-components are usable already. We will list those below and describe how they
-work and extend the list continuously.
-
-In general, widgets have the form of custom html tags. They are all prefixed
-with `kor-`. There are two types: application-widgets and standalone-widgets.
-The former are additionally prefixed with `app-`, the latter are not. An example
-for an application-widget would thus be `<kor-app-router>` and `<kor-entity>` is
-a standalone widget. The main difference is that  standalone-widgets try to be
-usable outside of the ConedaKOR context, within other web applications.
-
-To use any of the widgets, the library has to be added to the integrating page.
-The best position for this is directly below the closing body tag, so for
-example:
-
-    <html>
-      ...
-      <body>
-        ...
-        <script
-          src="https://kor.example.com/app.js"
-          kor-url="https://kor.example.com"
-        ></script>
-      </body>
-    </html>
-
-In addition, you will have to list the origin in the configuration parameter
-`allowed_origins` so that the CORS header is set accordingly, e.g.
-
-    ...
-      allowed_origins: ['https://kor.example.com']
-    ...
-
-The following widgets can then be used on the integrating page:
-
-#### `<kor-entity>`
-
-    <kor-entity
-      id="<id or uuid>"
-      kor-style="true"
-    ></kor-entity>
-
-This shows the entity (also supports media entities) referenced by `id`. If you
-add the `kor-style` attribute, the widget will apply some basic styling.
-However, the styles will always mix with the existing styles on the page so some
-CSS adjustments might be necessary. with `kor-include` you may supply a space
-separated list of information to include (currently supports `kind`). The
-attribute `kor-image-size` allows you to specify witch image resultion should
-be loaded (icon, thumbnail, preview, screen, normal) for media.
-
-### JSON API
+## JSON API
 
 This API is undergoing a lot of change. This is why we are not showing all of
 the possible requests here. Instead, we'll just listing the ones that we hope
@@ -530,7 +323,7 @@ there will be an `ids` array instead, e.g.
 Requests that **modify a record** will always be answered with the modified
 record as well as a message indicating the modification applied. Also the
 response code will reflect a successful change (200) or incorrect new data
-(406). This applies to create (POST), update (PATCH) and destroy (DELETE)
+(422). This applies to create (POST), update (PATCH) and destroy (DELETE)
 requests, e.g.
 
     POST /kinds.json
@@ -569,7 +362,7 @@ requests, e.g.
     * `related_kind_id`: see parameters for `/entities.json`
     * `related_relation_name`: see parameters for `/entities.json`
     * `related_per_page`: see parameters for `/entities.json` [different max of 500]
-* `GET /entities/1/relationships.json`, or `/relationships`: returns the relationships (for that entity), returns only viewable content, returns resultset of directed relationships
+* `GET /relationships.json`: returns the relationships, returns only viewable content, returns resultset of directed relationships
     * `from_entity_id`: limits by the source entity, comma-separated
     * `to_entity_id` or `entity_id`: limits by the target entity, comma-separated
     * `relation_name`: limits by relation name, comma-separated
@@ -588,7 +381,7 @@ Be aware that, if you are requesting related entities to be embedded within
 other entities, those are embedded as a list of directed relationships which
 in turn contain the entity itself.
 
-### Generating a virtual appliance
+## Generating a virtual appliance
 
 Versions after and including 1.9.2 can be packaged into a virtualbox appliance
 automatically. The version is specified as a shell parameter:
@@ -600,7 +393,7 @@ The ova file and a checksum are generated within `deploy/build/`. Instead of
 very old versions could not work because of unsatisfiable dependencies. Make
 sure you have pulled the most recent commits when using branches!
 
-### Generating docker images
+## Generating docker images
 
 `deploy/dockerize.sh can be used to build docker images for commits >= v2.0.0.
 `Because of a different set of tools required for each environment, it has to be
@@ -611,7 +404,7 @@ sure you have pulled the most recent commits when using branches!
 Will build a production image based on the master branch. You may also base
 images on tags or commits.
 
-### Command line tool
+## Command line tool
 
 The kor command provides access to functionality which is not easily provided 
 from a web page. For example, the excel export potentially generates many large
@@ -623,7 +416,7 @@ this
 from within the ConedaKOR installation directory to obtain a detailed
 description of all the tasks and options.
 
-#### Excel import and export
+### Excel import and export
 
 Please refer to the command line tool for available command line options. In
 principle, the export produces seceral spreadsheets containing all entities.
@@ -640,7 +433,7 @@ Those sheets may be modified and imported later on.
 * timestamps are not imported: they will be changed if the entity will be
   changed by the import.
 
-#### Importing Erlangen CRM classes
+### Importing Erlangen CRM classes
 
 The task will import all classes from
 http://erlangen-crm.org/ontology/ecrm/ecrm_current.owl, documented by
@@ -649,14 +442,14 @@ entity types. The types will be set up according to their hierarchy and they
 will be set to be "abstract" which prevents them from showing up in the
 interface.
 
-#### Rebuilding elastic index
+### Rebuilding elastic index
 
 Sometimes the elasticsearch index has to be rebuilt from scratch. This is done
 like so:
 
     bundle exec bin/kor index-all
 
-### Development
+## Development
 
 The easiest way to get started hacking on kor, is to use the included vagrant
 test environment. Make sure vagrant and VirtualBox are installed:
@@ -681,7 +474,7 @@ SSH into the resulting VM and start the KOR development server:
 This uses the code from the current working directory on your dev machine. Go to
 http://localhost:3000 with your browser to see the development page.
 
-#### Running the test suites
+### Running the test suites
 
 There are two test suites, rspec unit tests and cucumber integration tests.
 Change to the /vagrant directory within the dev VM first and then run
@@ -698,14 +491,14 @@ headless testing, you may use phantomjs by setting an environment variable:
 
     HEADLESS=true bundle exec cucumber features/
 
-#### Coverage reports
+### Coverage reports
 
 You may run rspec or cucumber tests with the `COVERAGE` environment variable
 set, which will generate a coverage report to `./coverage`. For example:
 
     COVERAGE=true HEADLESS=true bundle exec cucumber features/
 
-#### Profiling
+### Profiling
 
 ConedaKOR will generate a detailed per-action profile when the environment
 variable PROFILE is set, for example in development:
@@ -714,7 +507,7 @@ variable PROFILE is set, for example in development:
 
 The reports will be generated in `./tmp/profiles`
 
-#### Showing media in development
+### Showing media in development
 
 In the development environment, images are not being shown. Instead, a icon
 representing the medium's content_type is displayed. If you'd like to see the

@@ -17,9 +17,4 @@ class AuthorityGroup < EntityGroup
     joins('JOIN authority_groups_entities ge on authority_groups.id = ge.authority_group_id').
       where('ge.entity_id' => entity_ids)
   }
-
-  def serializable_hash(options = {})
-    options.merge! include: :authority_group_category
-    super options
-  end
 end

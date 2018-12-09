@@ -16,6 +16,7 @@
     "karma-jasmine-ajax": "^0.1.13",
     "karma-phantomjs-launcher": "^1.0.2",
     "lockr": "^0.8.4",
+    "markdown-toc": "^1.2.0",
     "node-glob": "^1.2.0",
     "node-sass": "^4.9.3",
     "node-static": "^0.7.8",
@@ -31,7 +32,8 @@
   "scripts": {
     "build": "widgets/build.sh",
     "watch": "widgets/build.sh watch",
-    "start": "widgets/build.sh server"
+    "start": "widgets/build.sh server",
+    "toc": "markdown-toc README.md --no-firsth1"
   },
   "repository": {
     "type": "git",
