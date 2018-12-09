@@ -79,8 +79,6 @@ Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
   Kind.find_by!(name: kind.split("/").first).entities.each do |entity|
     step "I go to the entity page for \"#{entity.uuid}\""
     step "I should see \"#{entity.name}\""
-    # TODO: why?
-    sleep 2
     find('a.to-clipboard').click
     expect(page).to have_content('has been added to the clipboard')
   end

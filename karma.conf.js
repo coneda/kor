@@ -19,8 +19,9 @@ module.exports = function(config) {
     },
     autoWatch: true,
     browsers: [
-      // 'Firefox', 'Chromium',
-      'PhantomJS'
+      // 'Firefox',
+      'Chromium'
+      // 'PhantomJS'
     ],
     singleRun: false,
     concurrency: Infinity,

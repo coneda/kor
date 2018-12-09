@@ -11,7 +11,6 @@ Feature: Media
   Scenario: Upload a video and watch it
     Given I am logged in as "admin"
     And the medium "video_a"
-    And everything is processed
     When I go to the entity page for the last medium
     And I follow "larger"
     Then I should see the video player

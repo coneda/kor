@@ -7,14 +7,9 @@
 
 Paperclip.options[:content_type_mappings] = {
   mp3: "application/octet-stream",
-  mp4: 'video/mp4'
+  mp4: 'video/mp4',
+  image: [
+    "image/tiff", "image/jpeg", "image/png", "image/gif",
+    "image/vnd.adobe.photoshop"
+  ]
 }
-
-# required for paperclip to make it accept the .image file extension
-["image/tiff", "image/jpeg", "image/png", "image/gif", "image/vnd.adobe.photoshop"].each do |mtn|
-  if mt = MIME::Types[mtn].first
-    mt.add_extensions "image"
-  else
-    puts mtn
-  end
-end

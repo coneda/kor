@@ -20,7 +20,6 @@ module TestHelper
       'secondary_relations' => ['has been created by']
     )
     
-    Delayed::Worker.delay_jobs = false
     Rails.application.load_seed
     DataHelper.default_setup relationships: true, pictures: true
 

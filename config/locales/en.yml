@@ -419,7 +419,6 @@ en:
       one: "transit"
       other: "transits"
     user_admin: "user admin"
-    exception_log: "error report"
     company_info: "imprint"
     service_info: "use notice"
     kind:
@@ -490,14 +489,6 @@ en:
     file_format:
       one: "file format"
       other: "file formats"
-    dimensions:
-      one: "dimensions"
-    material:
-      one: "material"
-    technique:
-      one: "technique"
-    material_technique:
-      one: "material and technique"
     subtype:
       one: "sub type"
     width:
@@ -506,8 +497,6 @@ en:
       one: "height"
     isbn:
       one: "ISBN"
-    year_of_publication:
-      one: "year of publication"
     value:
       one: "value"
       other: "values"
@@ -713,7 +702,7 @@ en:
 
   errors:
     too_many_entities_for_zip: "the group contains too many images"
-    collection_not_empty_on_delete: "the collection '%{name}' cannot be deleted, because it is not empty"
+    collection_not_empty_on_delete: "the collection '%{name}' can't be deleted, because it is not empty"
     too_many_login_attempts: "the user has been blocked temporarily because of too many login attempts"
     date_parsing_failed: "the entered date could not be identified"
     personal_password_reset_mail_not_found: "the entered email address could not be found"
@@ -739,7 +728,7 @@ en:
     clipboard_too_many_elements: "the clipboard can only contain 500 elements"
     kind_has_children: kinds with children can't be deleted
     kind_has_entities: the kind can't be removed because it still has entities
-    medium_kind_not_deletable: the medium kind cannot be removed
+    medium_kind_not_deletable: the medium kind can't be removed
     relations_merge_failure: you can only merge relations with matching endpoints
     source_or_target_not_editable: |
       the source has to be editable or all targets have to be editable. In
@@ -802,9 +791,6 @@ en:
       entity_dating:
         one: dating
         other: dating information
-      exception_log:
-        one: error report
-        other: error reports
       kind:
         one: entity type
         other: entity types
@@ -1050,13 +1036,13 @@ en:
         file_size_less_than: "can't be bigger than %{value}MB"
         odd: "has to be odd"
         even: "has to be even"
-        no_two_images: "you cannot attach two images"
+        no_two_images: "you can't attach two images"
         defines_non_existent_kind: "defines a non existent entity type"
         stale_config_update: "The configuration has been changed in the meantime"
         defines_non_existent_relation: "defines a relationship for a non existent relation"
-        needs_medium: "Without a relevant file the entity cannot be created as a medium"
-        needs_file: "Without a relevant file the entity cannot be created as a medium"
-        invalid_words: "cannot contain words longer than 30 characters"
+        needs_medium: "Without a relevant file the entity can't be created as a medium"
+        needs_file: "Without a relevant file the entity can't be created as a medium"
+        invalid_words: "can't contain words longer than 30 characters"
         user_doesnt_exist: "the user doesn't exist"
         whitespace_beginning: "can't start with a space"
         whitespace_end: "can't end with a space"
@@ -1067,7 +1053,7 @@ en:
         would_result_in_cycle: would result in a circular schema
         cannot_be_changed: can't be changed
         field_type_invalid: field type invalid
-        cannot_restrict_less_than_parent: cannot allow more endpoints than its ancestors
+        cannot_restrict_less_than_parent: can't allow more endpoints than its ancestors
 
   # Mime types
 
@@ -1120,14 +1106,6 @@ en:
 
     am: "am"
     pm: "pm"
-
-
-
-  # Will paginate
-
-  will_paginate:
-    page_gap: "&hellip;"
-
 
   # Media transformations
 

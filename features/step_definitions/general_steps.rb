@@ -27,10 +27,6 @@ When /I debug/ do
   x = 15
 end
 
-Given /^everything is processed$/ do
-  Delayed::Worker.new.work_off
-end
-
 Given 'the search api expects to receive the params' do |table|
   values = table.raw.to_h
   values['dataset'] = {}

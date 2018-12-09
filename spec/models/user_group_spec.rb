@@ -9,7 +9,7 @@ RSpec.describe UserGroup do
 
     expect(user_group.valid?).to be_falsey
     expect(user_group.errors.full_messages).to include(
-      "name cannot contain words longer than 30 characters"
+      "name can't contain words longer than 30 characters"
     )
   end
 end

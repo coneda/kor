@@ -432,7 +432,6 @@ de:
       one: "Transit"
       other: "Transits"
     user_admin: "Benutzerverwaltung"
-    exception_log: "Fehlerbericht"
     company_info: "Impressum"
     service_info: "Nutzungshinweise"
     kind:
@@ -503,14 +502,6 @@ de:
     file_format:
       one: "Dateiformat"
       other: "Dateiformate"
-    dimensions:
-      one: "Maße"
-    material:
-      one: "Material"
-    technique:
-      one: "Technik"
-    material_technique:
-      one: "Material und Technik"
     subtype:
       one: "Untertyp"
     width:
@@ -519,8 +510,6 @@ de:
       one: "Höhe"
     isbn:
       one: "ISBN"
-    year_of_publication:
-      one: "Erscheinungsjahr"
     value:
       one: "Wert"
       other: "Werte"
@@ -829,9 +818,6 @@ de:
       entity_dating:
         one: Datierung
         other: Datierungsangaben
-      exception_log:
-        one: Fehlerbericht
-        other: Fehlerberichte
       kind:
         one: Entitätstyp
         other: Entitätstypen
@@ -1154,12 +1140,6 @@ de:
 
     am: "vormittags"
     pm: "nachmittags"
-
-
-  # Will paginate
-
-  will_paginate:
-    page_gap: "&hellip;"
 
 
   # Media transformations

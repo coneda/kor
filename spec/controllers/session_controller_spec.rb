@@ -127,7 +127,7 @@ RSpec.describe SessionController, type: :controller do
       get :env_auth
       expect(session[:user_id]).not_to eq(user.id)
 
-      Kor.settings['fail_on_update_errors'] = false
+      ENV['AUTH_FAIL_ON_UPDATE_ERRORS'] = 'false'
       get :env_auth
       expect(session[:user_id]).to eq(user.id)
       expect(user.reload.full_name).to eq('John Doe')

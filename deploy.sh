@@ -25,32 +25,19 @@ function deploy {
     setup
 
     echo "the initial setup has been done and a sample config has been copied"
-    echo "to the host. Please modify config/database.yml on the host so that it"
-    echo "reflects your database connection. Then run this script again"
+    echo "to the host. Please modify your environment or .env on the host so"
+    echo "that it reflects your deployment. Then run this script again"
 
     exit 0
-  fi
-
-  if git cat-file -e $REVISION:bin/delayed_job ; then
-    within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec bin/delayed_job stop 2> /dev/null || true"
-  else
-    within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job stop 2> /dev/null || true"
   fi
 
   deploy_code
   cleanup
 
-  within_do $CURRENT_PATH "bundle --clean --quiet --deployment --without test development --path $SHARED_PATH/bundle"
+  within_do $CURRENT_PATH "bundle --clean --quiet --without test development --path $SHARED_PATH/bundle"
 
-  remote "ln -sfn $SHARED_PATH/database.yml $CURRENT_PATH/config/database.yml"
-  remote "ln -sfn $SHARED_PATH/contact.txt $CURRENT_PATH/config/contact.txt"
-  remote "ln -sfn $SHARED_PATH/help.yml $CURRENT_PATH/config/help.yml"
-  remote "ln -sfn $SHARED_PATH/legal.txt $CURRENT_PATH/config/legal.txt"
   remote "ln -sfn $SHARED_PATH/log $CURRENT_PATH/log"
   remote "ln -sfn $SHARED_PATH/tmp $CURRENT_PATH/tmp"
-  remote "ln -sfn $SHARED_PATH/data $CURRENT_PATH/data"
-  remote "ln -sfn $SHARED_PATH/kor.yml $CURRENT_PATH/config/kor.yml"
-  remote "ln -sfn $SHARED_PATH/kor.app.yml $CURRENT_PATH/config/kor.app.yml"
 
   if dbexists; then
     within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake db:migrate"
@@ -59,25 +46,14 @@ function deploy {
   fi
 
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake tmp:clear"
-  within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake assets:precompile"
-  if git cat-file -e $REVISION:bin/delayed_job ; then
-    within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec bin/delayed_job start"
-  else
-    within_do $OLD_CURRENT_PATH "RAILS_ENV=production bundle exec script/delayed_job start"
-  fi
-
-  remote "mkdir -p $CURRENT_PATH/public/media/images"
-  remote "ln -sfn $SHARED_PATH/data/media/preview $CURRENT_PATH/public/media/images/preview"
-  remote "ln -sfn $SHARED_PATH/data/media/thumbnail $CURRENT_PATH/public/media/images/thumbnail"
-  remote "ln -sfn $SHARED_PATH/data/media/icon $CURRENT_PATH/public/media/images/icon"
 
   if which npm > /dev/null ; then
     local "npm install"
     local "npm run build"
-    upload "public/widget-test.html" "$CURRENT_PATH/public/widget-test.html"
     upload "public/*.js" "$CURRENT_PATH/public/"
     upload "public/*.css" "$CURRENT_PATH/public/"
     upload "public/fonts/" "$CURRENT_PATH/public/fonts/"
+    upload "public/images/" "$CURRENT_PATH/public/images/"
   fi
 
   remote "touch $CURRENT_PATH/tmp/restart.txt"

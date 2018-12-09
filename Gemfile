@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 
 gem 'acts-as-taggable-on', '~> 3.5'
 gem 'colorize'
-gem 'daemons'
 gem 'delayed_paperclip'
 gem 'dotenv'
 gem 'exifr', '1.1.1'
@@ -18,7 +17,6 @@ gem 'RedCloth'
 gem 'responders', '~> 2.0'
 gem 'ruby-progressbar'
 gem 'semantic', git: 'https://github.com/jlindsey/semantic'
-gem 'sprockets-rails'
 gem 'sucker_punch', '~> 2.0'
 gem 'test-unit'
 
@@ -26,7 +24,6 @@ if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load
   # (and configure) it in app/controllers/application_controller.rb
   gem 'awesome_nested_set', '~> 3.1.1'
-  gem 'delayed_job_active_record'
   gem 'factory_girl_rails'
   gem 'paranoia', '~> 2.2'
 end
@@ -55,7 +52,6 @@ end
 group :test, :development do
   gem 'byebug'
   gem 'pry'
-  gem 'quiet_assets'
   gem 'thin'
 end
 
@@ -64,11 +60,6 @@ group :production do
   gem 'puma'
 end
 
-group :production, :test do
-  gem 'therubyracer'
-  gem 'uglifier'
-end
-
 group :import_export do
-  gem 'spreadsheet'
+  gem 'spreadsheet', '~> 1.1.8'
 end

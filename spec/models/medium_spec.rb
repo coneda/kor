@@ -37,8 +37,6 @@ RSpec.describe Medium do
   end
   
   it "should read an escaped file uri to an existing file" do
-    Delayed::Worker.delay_jobs = false
-
     medium = Medium.create :uri => "file:///#{Rails.root}/spec/fixtures/image_c.jpg"
     medium = Medium.last
     
@@ -66,8 +64,6 @@ RSpec.describe Medium do
   end
   
   it "should delete all files after destruction of an image" do
-    Delayed::Worker.delay_jobs = false
-
     medium = Medium.create :document => File.open("#{Rails.root}/spec/fixtures/image_c.jpg")
     medium = Medium.last
     
@@ -94,13 +90,6 @@ RSpec.describe Medium do
     )
   end
   
-  it "should not generate a delayed job for processing" do
-    Delayed::Worker.delay_jobs = true
-    expect(Delayed::Job.count).to eq(0)
-    medium = FactoryGirl.create(:medium_image_c)
-    expect(Delayed::Job.count).to eq(0)
-  end
-
   it "should generate a datahash for attachments" do
     medium = FactoryGirl.create :medium_image_c
     medium = Medium.last

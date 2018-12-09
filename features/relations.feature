@@ -114,4 +114,4 @@ Feature: relations
     And I select "person" from "Permitted type (from)"
     And I press "Save"
     Then I should see "the input contains errors"
-    And I should see "cannot allow more endpoints than its ancestors"
+    And I should see "can't allow more endpoints than its ancestors"

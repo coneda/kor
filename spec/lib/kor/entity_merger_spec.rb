@@ -74,8 +74,6 @@ RSpec.describe Kor::EntityMerger do
   end
 
   it "should transfer relationships to the merged entity" do
-    # Delayed::Worker.delay_jobs = false
-
     admin = User.admin
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     last_supper = Entity.find_by!(name: 'The Last Supper')
@@ -99,8 +97,6 @@ RSpec.describe Kor::EntityMerger do
   end
 
   it "should fail the whole transaction when the merge result is invalid" do
-    # Delayed::Worker.delay_jobs = false
-
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     other_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Liza"
 
@@ -118,8 +114,6 @@ RSpec.describe Kor::EntityMerger do
   end
 
   it 'should merge media' do
-    # Delayed::Worker.delay_jobs = false
-
     a = Entity.media[0]
     b = Entity.media[1]
 

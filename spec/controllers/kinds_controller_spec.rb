@@ -60,7 +60,7 @@ RSpec.describe KindsController, type: :controller do
     it 'should not DELETE destroy (medium kind)' do
       delete :destroy, id: Kind.medium_kind_id
       expect(response).to be_client_error
-      expect(json['message']).to match(/medium kind cannot be removed/)
+      expect(json['message']).to match(/medium kind can't be removed/)
     end
 
     it 'should not DELETE destroy (kind with entities)' do

@@ -39,7 +39,7 @@ Feature: collections page
     And I ignore the next confirmation box
     When I follow "delete" within the row for collection "Default"
     Then I should be on the collections page
-    And I should see "cannot be deleted"
+    And I should see "can't be deleted"
     And I should see "Default" within widget "kor-collections"
     
   Scenario: Have a right for viewing meta data

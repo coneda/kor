@@ -372,7 +372,7 @@ class Entity < ApplicationRecord
     elsif no_name_statement == 'enter_name'
       distinct_name.blank? ? name : "#{name} (#{distinct_name})".strip
     else
-      I18n.t('values.no_name_statements.' + no_name_statement).capitalize_first_letter
+      I18n.t('values.no_name_statements.' + no_name_statement).capitalize
     end
   end
 

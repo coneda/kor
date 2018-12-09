@@ -168,7 +168,7 @@ module Kor
           'session_lifetime' => 60 * 60 * 2,
           'publishment_lifetime' => 14,
           'default_groups' => [],
-          'env_auth_button_label' => 'federated login'
+          'env_auth_button_label' => 'federated login',
 
           'custom_css_file' => 'data/custom.css',
 

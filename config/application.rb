@@ -29,9 +29,6 @@ module Kor
     config.autoload_paths << "#{Rails.root}/lib"
     config.eager_load_paths << "#{Rails.root}/lib"
 
-    # config.assets.js_compressor = :uglifier
-    # config.assets.precompile += ["kor.js", "blaze.js", "master.css", "blaze.css", "kor_index.js", "kor_index.css"]
-
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -84,95 +81,31 @@ module Kor
   end
 end
 
-# TODO: better test fields_controller.rb
-# TODO: better test generators_controller.rb
-# TODO: test putting a whole authority group to the clipboard
 # TODO: test random query for more than 4 entities
-# TODO: test mailers and that they are used
-# TODO: move all js templates to misc.html.erb or partial them from there
-# TODO: test downloads_controller
-# TODO: make sure there are tests for storing serialized attributes: dataset,
-#       properties, datings, synonyms, relationship properties
 # TODO: merge entity group tables?
-# TODO: add @javascript tag to all feature tests
 # TODO: when deleting relationships and that completely empties the second or a
 #       higher page, the previous page should be loaded
-# TODO: integration tests for tools: mass_destroy, add_to_authority_group, 
-#       add_to_user_group, move_to_collection, remove_from_authority_group,
-#       remove_from_user_group
-# TODO: integration test for reset clipboard
-# TODO: make sure in js kind_id == 1 isn't assumed to ensure medium kind
-# TODO: remove new_datings_attributes and existing_datings_attributes
-# TODO: upgrade elasticsearch
-# TODO: add tests for the command line tool
 # TODO: make sure that time zones are handled correctly from http content type to db
-# TODO: angular: remove flashing of unloaded page areas and remove flashing of strange "select <some HEX>" within media relations
-# TODO: handle stale object errors on json apis
-# TODO: use jbuilder without exception for api responses
 # TODO: make image and video styles configurable live
 # TODO: develop commenting policy
-# TODO: replace fake_authentication and classic data_helper
-# TODO: check helpers for redundant code
-# TOTO: remove redundant code and comments from old js files
 # TODO: remove comments everywhere
 # TODO: re-enable still extraction for videos
 # TODO: make an indicator for not-yet-processed media (use special dummy)
-# TODO: use https://github.com/bkeepers/dotenv
-# TODO: session panel is not visible on welcome page
-# TODO: unify test setup steps
-# TODO: unify default params and sanitation for pagination scopes
-# TODO: instead of describing config defaults in the readme, refer to kor.defaults.yml which should also yield descriptions
-# TODO: clean up translation files (remove obsolete models)
-# TODO: when replacing sprockets, simulate checksum behaviour to provoke correct cache expiries
-# TODO: use json.extract! whenever possible
-# TODO: replace extended json views with customized json views
-# TODO: in json responses, include errors for models
-# TODO: unify save.json.jbuilder files
-# TODO: handle base errors on riot pages
-# TODO: make the busy wheel only show when necessary (e.g. doesn't switch off after error)
-# TODO: make all json endpoints comply with response policy
 # TODO: rename Field.show_label to Field.label
-# TODO: fix spinning wheel for riot, angular and all other ajax
-# TODO: use zlib from stdlib instead of the gem?
-# TODO: use "un" from stdlib to find graph communities?
+# TODO: use "tsort" from stdlib to find graph communities?
 # TODO: use neo transactions to effectively clear the store after tests
-# TODO: change denied redirect to denied action rendering
-# TODO: use http://errbit.com/ instead of custom exception logger
 # TODO: make password retrieval not reset the password until the confirmation
 #       link within the email was clicked
 # TODO: make sure terms_accepted? is respected by all controllers and actions
-# TODO: make default per_page = 10 everywhere
-# TODO: handle stale object exceptions somewhere in application controller
-# TODO: JSON api: only send message keys as response messages, not translated versions
 # TODO: test changing of kind inheritance to update their entities dataset and
 #       that relation inheritance uses the ancestry to show abailable relations
 #       when creating relationships
-# TODO: add consistent optimistic locking
-# TODO: clean up widget directory
-# TODO: ensure stale checks everywhere
-# TODO: upgrade riotjs
-# TODO: save submenu state with Lockr
 # TODO: change name of credentials class
-# TODO: kind editor throws js error ... why?
 # TODO: change piwik and custom css to a more generic html include possibility
 #       for the end of the header and the end of the body
-# TODO: drop all haml and erb views (most)
-# TODO: fix group (user, admin, authority, category) naming: urls, actions, api urls etc
-# TODO: remove "sleep" from tests
-# TODO: do something useful when there was a 500
-# TODO: find smart way to test pagination in controllers
-# TODO: change controller specs to request specs (like already done for oai controllers)
 # TODO: add ONE validation test to each controller/request suite
-# TODO: fix "can't" and "cannot" in all translations
-# TODO: add more tests to settings_controller, session_controller
 # TODO: add tests for validation handling to controllers (one example per resource)
-# TODO: reintegrate matomo
-# TODO: change docs to reflect the new config handling
-
-# test group assignment during upload
-# remove old config files
-# test version task and erlangen import task
-# write task specs
-# create missing controller tests, look at coverage report for specs only
-# fix deploy.sh
-# add medium reprocess action
+# TODO: write all task specs
+# TODO: add medium reprocess action that can be triggered via web
+# TODO: create missing controller tests, look at coverage report for specs only
+# TODO: test version task
