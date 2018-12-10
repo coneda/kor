@@ -2,7 +2,7 @@ class Dating < ApplicationRecord
   self.abstract_class = true
 
   validates :label, :dating_string, presence: true
-  
+
   validate :dating_string_must_be_parseable
   def dating_string_must_be_parseable
     if unparsable? && self[:dating_string].present?
@@ -21,32 +21,32 @@ class Dating < ApplicationRecord
   end
 
   def self.between(dating)
-    after(dating).before(dating)  
+    after(dating).before(dating)
   end
 
   def unparsable?
     !parsable?
   end
-  
+
   def parsable?
     self.class.parse(dating_string) ? true : false
   end
-  
+
   def dating_string=(value)
     self[:dating_string] = value
     parsed = self.class.parse(value)
-    
+
     if parsed
       self[:from_day] ||= self.class.julian_date_for(parsed[:from])
       self[:to_day] ||= self.class.julian_date_for(parsed[:to])
     end
   end
-  
+
   def from_day=(value)
     parsed = self.class.parse(value)
     self[:from_day] = self.class.julian_date_for(parsed[:from]) if parsed
   end
-  
+
   def to_day=(value)
     parsed = self.class.parse(value)
     self[:to_day] = self.class.julian_date_for(parsed[:to]) if parsed
@@ -61,7 +61,7 @@ class Dating < ApplicationRecord
       nil
     end
   end
-  
+
   def self.julian_date_for(date)
     Date.civil(date.year, date.month, date.day).jd
   end

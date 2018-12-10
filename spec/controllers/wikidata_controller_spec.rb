@@ -12,7 +12,7 @@ RSpec.describe WikidataController, type: :request do
       }
       expect(response).to be_success
       expect(json['entity']['name']).to eq('Leonardo da Vinci')
-    }.not_to change { Entity.count }
+    }.not_to(change { Entity.count })
   end
 
   it 'should import an item' do
@@ -26,6 +26,6 @@ RSpec.describe WikidataController, type: :request do
       }
       expect(response).to be_success
       expect(Entity.last.name).to eq('Leonardo da Vinci')
-    }.to change { Entity.count }.by(1)
+    }.to(change { Entity.count }.by(1))
   end
 end

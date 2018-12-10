@@ -29,4 +29,3 @@ if current_user.admin? || (current_user == record)
     json.permissions record.full_auth
   end
 end
-

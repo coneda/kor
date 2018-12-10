@@ -4,7 +4,6 @@ class SessionController < JsonController
   skip_before_filter :auth, :legal
 
   def show
-    
   end
 
   def env_auth
@@ -14,7 +13,7 @@ class SessionController < JsonController
 
     redirect_to '/'
   end
-  
+
   # TODO: make this more secure!
   def recovery
     @user = User.find_by(email: params[:email])
@@ -32,7 +31,7 @@ class SessionController < JsonController
       render_404 I18n.t('errors.personal_password_reset_mail_not_found')
     end
   end
-  
+
   def create
     account_without_password = User.find_by_name(params[:username])
     if account_without_password && account_without_password.too_many_login_attempts?
@@ -64,7 +63,7 @@ class SessionController < JsonController
       end
     end
   end
-  
+
   def destroy
     reset_session
     render_200 I18n.t("notices.logged_out")

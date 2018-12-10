@@ -18,8 +18,8 @@ class Kor::Import::ErlangenCrm
         name: klass.xpath('rdfs:label').text,
         plural_name: klass.xpath('rdfs:label').text.gsub(/E\d+\s/, '').pluralize,
         description: (
-          klass.xpath('rdfs:label').text + "\n\n" + 
-          klass.xpath('rdfs:comment').text 
+          klass.xpath('rdfs:label').text + "\n\n" +
+          klass.xpath('rdfs:comment').text
         ),
         abstract: true,
         uuid: uuid_mapping[klass['rdf:about']]
@@ -163,7 +163,7 @@ class Kor::Import::ErlangenCrm
 
     def to_urls_for(r)
       return [] unless r
-      
+
       ([r[:to_urls]] + r[:parent_urls]).map { |pu| to_urls_for(@lookup[pu]) }.flatten
     end
 end

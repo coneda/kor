@@ -12,7 +12,7 @@ class Kor::ZipFile
     pack
     download = downloadable!
     destroy
-    
+
     download
   end
 
@@ -45,7 +45,7 @@ class Kor::ZipFile
         extention = entity.medium.style_extension(:normal)
         add entity.medium.path(:normal), :as => "#{entity.id}.#{extention}"
       end
-      
+
       add nil, :as => "#{entity.id}.txt" do
         { :data => Kor::Export::MetaData.new(user).render(entity) }
       end
@@ -89,7 +89,7 @@ class Kor::ZipFile
   def user
     User.find(options[:user_id])
   end
-  
+
   def background?
     package_size / 1024 / 1024 > Kor.settings['max_foreground_group_download_size']
   end

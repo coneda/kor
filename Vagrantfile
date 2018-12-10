@@ -108,7 +108,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
-    
+
     c.vm.provision :shell, path: "deploy/vagrant.centos.sh", args: "install_part1"
     c.vm.provision :shell, path: "deploy/vagrant.centos.sh", args: "install_part2", privileged: false
     c.vm.provision :shell, path: "deploy/vagrant.centos.sh", args: "install_part3"

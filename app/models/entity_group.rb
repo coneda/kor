@@ -1,6 +1,6 @@
 class EntityGroup < ApplicationRecord
   self.abstract_class = true
-  
+
   scope :named_like, lambda { |pattern| where("name LIKE ?", "%#{pattern}%") }
 
   validates :name,

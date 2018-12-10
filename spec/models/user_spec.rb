@@ -34,7 +34,7 @@ RSpec.describe User do
   it "should save the plain password in memory" do
     expect(User.new(password: 'secret').plain_password).to eql("secret")
   end
-  
+
   it "should generate a password on creation" do
     user = User.create(name: 'john', email: 'john.doe@example.com')
     expect(user.password).not_to be_blank
@@ -59,7 +59,7 @@ RSpec.describe User do
     )
 
     u = User.new
-    
+
     u.add_login_attempt
     expect(u.login_attempts).to eql([times[0]])
     u.add_login_attempt
@@ -69,7 +69,7 @@ RSpec.describe User do
     u.add_login_attempt
     expect(u.login_attempts).to eql([times[1], times[2], times[3]])
   end
-  
+
   it "should report too many login attempts when three of them were made in one hour" do
     times = [
       Time.parse('2009-09-11 15:15'),

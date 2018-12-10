@@ -2,27 +2,27 @@ require 'rails_helper'
 
 RSpec.describe SessionController, type: :controller do
   render_views
-  
+
   it "should logout in any case and display a message" do
     current_user User.admin
     post :destroy
     expect(response).to be_success
     expect(json['message']).to match(/logged out/)
   end
-  
+
   it "should deny access if there were too many login attempts in one hour" do
     request.headers['HTTP_REFERER'] = 'http://test.host/login'
-    
+
     for i in 1..3 do
       post :create, :username => 'admin', :password => 'wrong'
       expect(response).to be_client_error
       expect(json['message']).to match(/username or password could not be found/)
     end
-  
+
     post :create, :username => 'admin', :password => 'wrong'
     expect(response).to be_client_error
     expect(json['message']).to match(/too many login attempts/)
-    
+
     # one hour later
     later = Time.now + 1.hour
     allow(Time).to receive(:now).and_return(later)
@@ -30,14 +30,14 @@ RSpec.describe SessionController, type: :controller do
     expect(response).to be_client_error
     expect(json['message']).to match(/username or password could not be found/)
   end
-  
+
   it "should reset the users login attempts when he authenticated successfully" do
     User.admin.update login_attempts: [Time.now, Time.now]
     post :create, username: 'admin', password: 'admin'
     expect(response).to be_success
     expect(User.admin.login_attempts).to be_empty
   end
-  
+
   it "should not crash when supplying a non existing username" do
     request.headers['HTTP_REFERER'] = 'http://test.host/login'
     post :create, username: "does_not_exist", password: 'wrong'
@@ -89,7 +89,7 @@ RSpec.describe SessionController, type: :controller do
       request.env['mail'] = 'jdoe@example.com'
 
       get :env_auth
-      
+
       user = User.find_by!(name: 'jdoe')
       expect(user.email).to eq('jdoe@example.com')
     end

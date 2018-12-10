@@ -44,7 +44,7 @@ class JsonController < BaseController
     def render_400(message)
       @message = message
       render template: 'json/message', status: 400
-    end 
+    end
 
     def render_401(message = nil)
       @message = message || I18n.t('notices.not_logged_in')
@@ -135,7 +135,7 @@ class JsonController < BaseController
 
     def per_page
       return Kor.settings['max_results_per_request'] if params[:per_page] == 'max'
-      
+
       @per_page = [
         (params[:per_page] || 10).to_i,
         Kor.settings['max_results_per_request']
@@ -188,7 +188,7 @@ class JsonController < BaseController
         entities.each do |e|
           zip_file.add_entity e
         end
-        
+
         if zip_file.background?
           zip_file.send_later :create_as_download
           render_200 I18n.t('notices.creating_zip_file')

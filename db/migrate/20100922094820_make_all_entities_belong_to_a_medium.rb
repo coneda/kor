@@ -1,33 +1,33 @@
 class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
   def self.up
     add_column :media, :state, :string
-  
+
     add_column :entities, :medium_id, :integer
-    
+
     rename_column :kinds, :mongo_profile, :schema_name
     rename_column :kinds, :dataset_class, :attachment_class
     rename_column :entities, :mongo_id, :attachment_id
-    
+
     Entity.reset_column_information
     Medium.reset_column_information
     Kind.reset_column_information
-    
+
     if artworks = Kind.find_by_attachment_class('Artwork')
       artworks.update_attributes :attachment_class => nil, :schema_name => 'artwork'
     end
-    
+
     if literatures = Kind.find_by_attachment_class('Literature')
       literatures.update_attributes :attachment_class => nil, :schema_name => 'literature'
     end
-    
+
     if textuals = Kind.find_by_attachment_class('Textual')
       textuals.update_attributes :attachment_class => nil, :schema_name => nil
     end
-    
+
     if images = Kind.find_by_attachment_class('KorImage')
       images.update_attributes :attachment_class => nil, :schema_name => nil, :name => 'Medium'
     end
-    
+
     query = "
       SELECT
         e.id as id,
@@ -61,7 +61,7 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
         end
       end
     end
-    
+
     counter = 0
     Entity.find_each do |entity|
       puts counter if (counter += 1) % 100 == 0
@@ -76,7 +76,7 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
         else
           raise "unknown dataset class #{entity.dataset_type.inspect}"
         end
-        
+
         d = Kor.db.select_all("SELECT * FROM #{table} WHERE id = #{entity.dataset_id}").first
         d.delete('id')
         d.delete('lock_version')
@@ -84,27 +84,26 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
       else
         {}
       end
-      
+
       entity.properties = properties.map { |p| { 'label' => p['label'], 'value' => p['value'] } }
       entity.synonyms = synonyms.map { |s| s['name'] }
       entity.dataset = dataset
       entity.save :validate => false
     end
-    
+
     change_table :entities do |t|
       t.remove :dataset_id
       t.remove :dataset_type
     end
-    
   end
 
   def self.down
     remove_column :media, :state
-  
+
     rename_column :kinds, :schema_name, :mongo_profile
     rename_column :kinds, :attachment_class, :dataset_class
     rename_column :entities, :attachment_id, :mongo_id
-    
+
     remove_column :entities, :medium_id
   end
 end

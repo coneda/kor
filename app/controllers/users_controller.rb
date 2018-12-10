@@ -26,14 +26,14 @@ class UsersController < JsonController
       render_422 I18n.t('errors.password_reset_failure')
     end
   end
-  
+
   def reset_login_attempts
     @user = User.find(params[:id])
     @user.login_attempts = []
 
     if @user.save
       render_200 I18n.t(
-        "messages.login_attempts_reset", 
+        "messages.login_attempts_reset",
         username: @user.display_name
       )
     else
@@ -100,7 +100,6 @@ class UsersController < JsonController
     @record.destroy
     render_deleted @record
   end
-  
 
   private
 
@@ -114,7 +113,7 @@ class UsersController < JsonController
         :locale, :home_page, :default_collection_id, :api_key, :lock_version
       )
     end
-    
+
     def auth
       if ['accept_terms', 'me', 'update_me'].include?(action_name)
         require_non_guest

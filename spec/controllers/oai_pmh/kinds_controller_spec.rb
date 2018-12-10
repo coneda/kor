@@ -43,7 +43,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
 
     get '/oai-pmh/kinds.xml', {
       verb: 'GetRecord',
-      identifier: people.uuid, 
+      identifier: people.uuid,
       metadataPrefix: 'kor'
     }
     expect(response).to be_success
@@ -66,7 +66,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
     xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
     get '/oai-pmh/kinds.xml', {
       verb: 'GetRecord',
-      identifier: people.uuid, 
+      identifier: people.uuid,
       metadataPrefix: 'kor'
     }
     doc = parse_xml(response.body)
@@ -79,7 +79,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
 
     get '/oai-pmh/kinds.xml', {
       verb: 'GetRecord',
-      identifier: people.uuid, 
+      identifier: people.uuid,
       metadataPrefix: 'oai_dc'
     }
     doc = parse_xml(response.body)
@@ -87,7 +87,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
 
     get '/oai-pmh/kinds.xml', {
       verb: 'GetRecord',
-      identifier: people.uuid, 
+      identifier: people.uuid,
       metadataPrefix: 'kor'
     }
     doc = parse_xml(response.body)
@@ -113,7 +113,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   it "should return 'idDoesNotExist' if the identifier given does not exist" do
     get '/oai-pmh/kinds.xml', {
       verb: 'GetRecord',
-      identifier: '1234', 
+      identifier: '1234',
       metadataPrefix: 'kor'
     }
 
@@ -161,7 +161,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
 
     get '/oai-pmh/kinds.xml', {
       verb: 'GetRecord',
-      identifier: people.uuid, 
+      identifier: people.uuid,
       metadataPrefix: 'kor'
     }
     doc = parse_xml(response.body)

@@ -3,7 +3,7 @@ class Collection < ApplicationRecord
   has_many :grants, :dependent => :destroy
   has_many :credentials, :through => :grants
   has_one :owner, :class_name => 'User', :foreign_key => :collection_id
-  
+
   scope :personal, lambda { joins(:owner) }
   scope :non_personal, lambda {
     personal_ids = joins(:owner).select('collections.id').map { |c| c.id }
@@ -13,45 +13,45 @@ class Collection < ApplicationRecord
   validates :name,
     :presence => true,
     :uniqueness => true,
-    :white_space => true  
+    :white_space => true
 
   after_save :update_personals
 
   def update_personals
     if personal? && propagate && @grants_by_policy_buffer
       collections = self.class.joins(:owner).where("collections.id != ?", self.id)
-      
+
       collections.each do |collection|
         params = {}
-      
+
         @grants_by_policy_buffer.each do |policy, credential_ids|
           own_c_id = self.owner.credential_id.to_s
           other_c_id = collection.owner.credential_id.to_s
-          
+
           if credential_ids.include? own_c_id
             params[policy] = credential_ids - [own_c_id] + [other_c_id]
           end
         end
-        
+
         Collection.find(collection.id).update_attributes(:grants_by_policy => params, :propagate => false)
       end
     end
   end
-  
+
   attr_writer :propagate
 
   def entity_count
     entities.count
   end
-  
+
   def propagate
     @propagate = (@propagate == false ? false : true)
   end
-  
+
   def personal?
     !!owner
   end
-  
+
   def list_name
     name
   end

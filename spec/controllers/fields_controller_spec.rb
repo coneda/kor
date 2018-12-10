@@ -83,7 +83,7 @@ RSpec.describe FieldsController, type: :controller do
         show_on_entity: false
       }
       expect_updated_response
-      field = people.reload.fields.first 
+      field = people.reload.fields.first
       expect(field.form_label).to eq('GND ID')
       expect(field.search_label).to eq('GND Identifier')
       expect(field.is_identifier).to be_truthy

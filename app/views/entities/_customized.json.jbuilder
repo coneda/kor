@@ -5,7 +5,7 @@ json.extract!(entity,
   :comment, :subtype
 )
 
-json.tags entity.tags.map { |t| t.to_s }
+json.tags(entity.tags.map { |t| t.to_s })
 
 if entity.is_medium?
   json.medium_id entity.medium_id
@@ -63,7 +63,7 @@ if inclusion.request?('dataset')
 end
 
 if inclusion.request?('properties')
-  json.properties entity.properties  
+  json.properties entity.properties
 end
 
 if inclusion.request?('relations')

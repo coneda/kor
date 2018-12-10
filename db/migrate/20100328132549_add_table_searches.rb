@@ -6,17 +6,16 @@ class AddTableSearches < ActiveRecord::Migration
 
       t.integer :collection_id
       t.integer :kind_id
-      
+
       t.string :name
       t.string :dating
       t.string :properties
       t.text :dataset
-      
+
       t.text :relationships
-      
+
       t.timestamps
     end
-  
   end
 
   def self.down

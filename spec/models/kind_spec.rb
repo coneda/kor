@@ -5,7 +5,7 @@ RSpec.describe Kind do
     k = Kind.new name: 'Pflanze', plural_name: 'Pflanzen'
     k.settings[:default_dating_label] = "Datierung"
     k.save
-    
+
     expect(k.reload.settings[:default_dating_label]).to eql("Datierung")
   end
 

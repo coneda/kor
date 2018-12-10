@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe DownloadsController, type: :controller do
   it 'should not GET show (wrong hash)' do
     download = Download.create(
-      file_name: 'test.zip', 
+      file_name: 'test.zip',
       user: User.first,
       data: File.open("README.md")
     )
@@ -14,7 +14,7 @@ RSpec.describe DownloadsController, type: :controller do
 
   it 'should GET show (correct hash)' do
     download = Download.create(
-      file_name: 'test.zip', 
+      file_name: 'test.zip',
       user: User.first,
       data: File.open("README.md")
     )

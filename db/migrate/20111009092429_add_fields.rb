@@ -3,19 +3,19 @@ class AddFields < ActiveRecord::Migration
     create_table :fields do |t|
       t.integer :kind_id
       t.string :type
-      
+
       t.string :name
       t.string :show_label
       t.string :form_label
       t.string :search_label
-      
+
       t.text :settings
-      
+
       t.timestamps
     end
-    
+
     Field.reset_column_information
-    
+
     Kind.all.each do |kind|
       unless kind.settings[:schema].blank?
         kind.fields += kind.settings[:schema].map do |s|

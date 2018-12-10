@@ -12,7 +12,7 @@ RSpec.describe Kor::EntityMerger do
         :name => mona_lisa.name
       }
     )
-    
+
     expect(Entity.count).to eql(7)
     expect(merged.dataset['gnd']).to eql('12345')
     expect(merged.dataset['google_maps']).to eql('Am Dornbusch 13, 60315 Frankfurt')
@@ -30,7 +30,7 @@ RSpec.describe Kor::EntityMerger do
         :synonyms => "La Gioconda"
       }
     )
-    
+
     expect(Entity.count).to eql(7)
     expect(merged.synonyms).to eq(["La Gioconda"])
   end
@@ -46,7 +46,7 @@ RSpec.describe Kor::EntityMerger do
       :old_ids => [mona_lisa.id, other_mona_lisa.id],
       :attributes => { name: mona_lisa.name }
     )
-    
+
     expect(Entity.count).to eql(7)
     expect {
       Kor::Elastic.get merged

@@ -55,7 +55,7 @@ RSpec.describe Kor::Settings do
       subject['something']
     }.not_to raise_error
   end
-  
+
   it 'should have a nil value as default' do
     expect(subject['nothing']).to eq(nil)
   end
@@ -63,7 +63,7 @@ RSpec.describe Kor::Settings do
   it 'should separate the rails envs' do
     expect(described_class.filename.to_s).to match(/\/settings\.test\.json$/)
   end
-  
+
   it 'should store nil, booleans, strings, integers, floats and arrays' do
     subject.update(
       'nothing' => nil,

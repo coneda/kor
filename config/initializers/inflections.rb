@@ -9,7 +9,6 @@
 #     rescue ArgumentError # encoded_masked_token is invalid Base64
 #       return false
 #     end
-    
 
 #     # See if it's actually a masked token or not. In order to
 #     # deploy this code, we should be able to handle any unmasked

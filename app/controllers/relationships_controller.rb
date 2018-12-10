@@ -15,7 +15,7 @@ class RelationshipsController < JsonController
 
   def update
     @relationship = Relationship.find(params[:id])
-    
+
     if authorized_for_relationship?(@relationship, :edit)
       if @relationship.update_attributes(relationship_params)
         render_updated @relationship

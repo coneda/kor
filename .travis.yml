@@ -3,14 +3,11 @@ sudo: required
 
 env:
   - MOZ_HEADLESS=1
-
-install:
-  - npm install
-  - bundle install --jobs=3 --retry=3 --deployment
-  - npm run build
+  - HEADLESS=true
+  - DATABASE_URL=mysql2://travis@localhost/kor_test?encoding=utf8&collation=utf8_general_ci
 
 addons:
-  firefox: latest
+  chrome: stable
 
 services:
   - mysql
@@ -22,18 +19,22 @@ services:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install libav-tools imagemagick
-  - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.6/elasticsearch-2.4.6.deb && sudo dpkg -i --force-confnew elasticsearch-2.4.6.deb && sudo service elasticsearch restart
-  - wget -N https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz -O geckodriver.tar.gz
-  - tar xzf geckodriver.tar.gz
-  - rm geckodriver.tar.gz
-  - chmod +x geckodriver
-  - sudo mv geckodriver /usr/local/bin/geckodriver
+  - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/5.6.9/elasticsearch-5.6.9.deb && sudo dpkg -i --force-confnew elasticsearch-5.6.9.deb && sudo service elasticsearch restart
+  # - wget -N https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz -O geckodriver.tar.gz
+  # - tar xzf geckodriver.tar.gz
+  # - rm geckodriver.tar.gz
+  # - chmod +x geckodriver
+  # - sudo mv geckodriver /usr/local/bin/geckodriver
   - nvm install v6.13.0
   - nvm alias default v6.13.0
 
+install:
+  - npm install
+  - bundle install --jobs=3 --retry=3 --deployment
+  - npm run build
+
 script:
   - mysql -e 'CREATE DATABASE kor_test;'
-  - cp deploy/database.travis.yml config/database.yml
   - bundle exec rake db:test:load
-  - bundle exec rspec spec/ --format=progress
-  - bundle exec cucumber features/ --format=progress
+  - bundle exec rspec spec/ --format=documentation
+  - bundle exec cucumber features/ --format=documentation

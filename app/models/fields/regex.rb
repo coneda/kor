@@ -8,15 +8,15 @@ class Fields::Regex < Field
 
     true
   end
-  
+
   def self.label
     'regex'
   end
-  
+
   def regex=(value)
     settings[:regex] = value
   end
-  
+
   def regex
     if settings[:regex].blank?
       settings[:regex] = '/^.*$/'
@@ -32,5 +32,4 @@ class Fields::Regex < Field
   def self.fields
     [{ 'name' => 'regex' }]
   end
-  
 end

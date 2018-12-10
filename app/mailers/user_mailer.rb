@@ -10,12 +10,12 @@ class UserMailer < ActionMailer::Base
     @user = user
     mail(:to => user.email, :subject => I18n.t("mailer.subjects.account_created"))
   end
-  
+
   def upcoming_expiry(user)
     @user = user
     mail(:to => user.email, :subject => I18n.t("mailer.subjects.upcoming_expiry"))
   end
-  
+
   def download_ready(download)
     @user = download.user
     @download = download

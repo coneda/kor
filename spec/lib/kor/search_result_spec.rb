@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Kor::SearchResult do
-  
   it 'should retrieve items from uuids' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     last_supper = Entity.find_by! name: 'The Last Supper'

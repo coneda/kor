@@ -1,13 +1,13 @@
 class Medium < ApplicationRecord
   has_one :entity
 
-  has_attached_file :document, 
+  has_attached_file :document,
     path: "#{ENV['DATA_DIR']}/media/:style/:id_partition/document.:style_extension",
     url: "/media/images/:style/:id_partition/document.:style_extension",
     default_url: "/media/images/:style/:id_partition/image.:style_extension?:style_timestamp",
     styles: lambda { |attachment| attachment.instance.custom_styles },
     processors: lambda { |instance| instance.processors }
-    
+
   has_attached_file :image,
     :path => "#{ENV['DATA_DIR']}/media/:style/:id_partition/image.:style_extension",
     :url => "/media/images/:style/:id_partition/image.:style_extension",
@@ -53,7 +53,7 @@ class Medium < ApplicationRecord
       return [:video] if ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
       return [:audio] if ct.match(/^audio\//)
     end
-      
+
     []
   end
 
@@ -69,9 +69,9 @@ class Medium < ApplicationRecord
 
   # TODO: fix for audio case or remove if not used
   def presentable?
-    self.content_type.match /^(image|video|application\/x-shockwave-flash|application\/mp4)/
+    self.content_type.match(/^(image|video|application\/x-shockwave-flash|application\/mp4)/)
   end
-  
+
   before_validation do |m|
     if m.document.file? && m.document.content_type.match(/^image\//)
       unless m.image.file?
@@ -79,26 +79,26 @@ class Medium < ApplicationRecord
         m.document.clear
       end
     end
-    
+
     if file = (m.to_file || m.to_file(:image))
       m.datahash = Digest::SHA1.hexdigest(file.read)
     end
   end
-  
+
   after_destroy do |medium|
     medium.custom_styles.each do |name, config|
       file = medium.custom_style_path(name)
       FileUtils.rm(file) if File.exists?(file)
     end
   end
-  
+
   validates_attachment :image, content_type: { content_type: /^image\/.+$/, if: Proc.new { |medium| medium.image.file? } }
-  validates_attachment :document, presence: { unless: Proc.new { |medium| medium.image.file? }, message: :file_must_be_set } 
+  validates_attachment :document, presence: { unless: Proc.new { |medium| medium.image.file? }, message: :file_must_be_set }
   validates :datahash, uniqueness: { :message => :file_exists }
-  
+
   validate :validate_no_two_images
   validate :validate_file_size
-  
+
   def validate_no_two_images
     if document.content_type && image.content_type
       if document.content_type.match(/^image\//) && image.content_type.match(/^image\//)
@@ -119,7 +119,7 @@ class Medium < ApplicationRecord
       errors.add :document_file_size, :file_size_less_than, :value => max_mb
     end
   end
-  
+
   def to_file(attachment = :document, style = :original)
     path = if attachment == :document
       document.staged_path || document.path
@@ -141,11 +141,11 @@ class Medium < ApplicationRecord
       custom_styles[style.to_sym][:content_type]
     end.downcase
   end
-  
+
   def file_size
     original.size
   end
-  
+
   def data(style = :original)
     if style == :original
       document.file? ? to_file(:document, style).read : to_file(:image, style).read
@@ -155,19 +155,19 @@ class Medium < ApplicationRecord
       custom_style_data(style)
     end
   end
-  
+
   def original
     document.file? ? document : image
   end
-  
+
   def original_extension
     File.extname(original.original_filename).gsub('.', '').downcase
   end
-  
+
   def style_extension(style = :original)
     (document.styles[style] || image.styles[style] || {})[:format]
   end
-  
+
   def download_filename(style = :original)
     if style == :original
       a, b = content_type.split('/')
@@ -182,23 +182,23 @@ class Medium < ApplicationRecord
       "#{entity.id}.#{style}.#{custom_styles[style.to_sym][:file_extension]}"
     end
   end
-  
+
   def ids
     ("%09d" % id).scan(/\d{3}/).join('/')
   end
-  
+
   def custom_style_path(style)
     document.path(style.to_sym)
   end
-  
+
   def custom_style_url(style)
     document.url(style.to_sym)
   end
-  
+
   def custom_style_data(style)
     File.read custom_style_path(style.to_sym)
   end
-  
+
   def image_style?(style)
     image.styles.keys.include? style
   end
@@ -221,7 +221,7 @@ class Medium < ApplicationRecord
     if attachment == 'inline'
       r
     else
-      r.gsub /\/images\//, '/download/'
+      r.gsub(/\/images\//, '/download/')
     end
   end
 
@@ -250,10 +250,10 @@ class Medium < ApplicationRecord
   def dummy_url
     self.class.dummy_url(content_type)
   end
-  
+
   def self.dummy_url(content_type)
-    group, type = content_type.split('/').map { |t| t.gsub /\//, '_' }
-  
+    group, type = content_type.split('/').map { |t| t.gsub(/\//, '_') }
+
     dir = "#{Rails.root}/public/content_types"
     group_dir = "#{dir}/#{group}"
 
@@ -265,10 +265,10 @@ class Medium < ApplicationRecord
       "/content_types/default.gif"
     end
   end
-  
+
   def uri=(value)
     self[:original_url] = value
-    
+
     u = URI.parse value
     case u
     when URI::Generic

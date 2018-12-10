@@ -19,7 +19,7 @@ module TestHelper
       'primary_relations' => ['shows'],
       'secondary_relations' => ['has been created by']
     )
-    
+
     Rails.application.load_seed
     DataHelper.default_setup relationships: true, pictures: true
 
@@ -41,7 +41,7 @@ module TestHelper
   def self.before_each(framework, scope, test)
     system "rm -rf #{ENV['DATA_DIR']}/media/"
     system "cp -a #{Rails.root}/tmp/test.media.clone #{ENV['DATA_DIR']}/media"
-      
+
     FactoryGirl.reload
     Kor::Auth.sources(true)
 
@@ -64,7 +64,7 @@ module TestHelper
 
     ActionMailer::Base.deliveries.clear
     system "rm -rf #{Rails.root}/tmp/export_spec"
-    
+
     Kor::Settings.purge_files!
     Kor::Settings.instance.ensure_fresh
     Kor.settings.update(
@@ -102,13 +102,13 @@ module TestHelper
   def self.setup_simplecov
     if ENV['COVERAGE'] == 'true'
       require 'simplecov'
-    
+
       SimpleCov.start 'rails' do
         merge_timeout 3600
         coverage_dir 'tmp/coverage'
 
         track_files '{app,lib,config,spec,features}/**/*.{rb,rake}'
-        
+
         filters.clear
         add_filter do |src|
           src.filename !~ /^#{SimpleCov.root}/

@@ -15,10 +15,10 @@ class DirectedRelationship < ApplicationRecord
     with_from.where('froms.collection_id IN (?)', collection_ids).
       with_to.where('tos.collection_id IN (?)', collection_ids)
   end
-  scope :by_from_entity, lambda { |entity_id| 
+  scope :by_from_entity, lambda { |entity_id|
     entity_id.present? ? where(from_id: entity_id) : all
   }
-  scope :by_to_entity, lambda { |entity_id| 
+  scope :by_to_entity, lambda { |entity_id|
     entity_id.present? ? where(to_id: entity_id) : all
   }
   scope :by_to_name, lambda { |entity_name|

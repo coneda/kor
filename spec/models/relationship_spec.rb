@@ -51,7 +51,7 @@ RSpec.describe Relationship do
 
     expect(relationship.datings.count).to eq(2)
   end
-  
+
   it "should search by dating" do
     leonardo = FactoryGirl.create :leonardo
     mona_lisa = FactoryGirl.create :mona_lisa

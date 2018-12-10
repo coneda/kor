@@ -14,7 +14,7 @@ RSpec.describe Kor do
 
   it "should generate a repository UUID" do
     expect(Kor.settings['repository_uuid']).to be_nil
-    
+
     uuid = Kor.repository_uuid
     expect(uuid).not_to be_nil
     expect(Kor.settings['repository_uuid']).to eq(uuid)

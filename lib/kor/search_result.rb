@@ -30,7 +30,7 @@ class Kor::SearchResult
   def total
     @total || 0
   end
-  
+
   def records
     @records ||= begin
       if @ids.present?

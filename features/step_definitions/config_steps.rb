@@ -10,4 +10,3 @@ Then("the config value {string} should be {string}") do |key, value|
   Kor.settings.ensure_fresh
   expect(Kor.settings[key]).to eq(value)
 end
-

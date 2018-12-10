@@ -2,7 +2,7 @@ class Relationship < ApplicationRecord
   serialize :properties
 
   acts_as_paranoid
-  
+
   belongs_to :owner, :class_name => "User"
   belongs_to :relation
   belongs_to :from, :class_name => "Entity", :foreign_key => :from_id
@@ -63,7 +63,7 @@ class Relationship < ApplicationRecord
       )
 
       if normal
-        self.relation = normal 
+        self.relation = normal
       else
         reverse = Relation.find_by(
           from_kind_id: self.to.kind_id,
@@ -75,7 +75,7 @@ class Relationship < ApplicationRecord
           self.relation = reverse
           tmp = self.from
           self.from = self.to
-          self.to = tmp  
+          self.to = tmp
         else
           raise Kor::Exception, "no relation found for #{from.kind.name} <- #{@relation_name} -> #{to.kind.name}"
         end
@@ -162,11 +162,11 @@ class Relationship < ApplicationRecord
       properties == nil || dr.properties == properties
     end
   end
-  
+
   def has_properties?
     !properties.blank?
   end
-  
+
   def properties
     unless self[:properties]
       self[:properties] = []

@@ -7,7 +7,7 @@ class CredentialsController < JsonController
     @records = Credential.
       non_personal.
       order(params[:sort_by] => params[:sort_order])
-    
+
     params[:per_page] = @records.count
     @total = @records.count
 
@@ -44,7 +44,7 @@ class CredentialsController < JsonController
     @record.destroy
     render_deleted @record
   end
-  
+
   protected
 
     def credential_params
@@ -54,5 +54,4 @@ class CredentialsController < JsonController
     def auth
       require_admin
     end
-    
 end

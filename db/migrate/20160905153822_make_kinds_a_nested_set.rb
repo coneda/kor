@@ -1,6 +1,6 @@
 class MakeKindsANestedSet < ActiveRecord::Migration
   def change
-    add_column :kinds, :abstract, :boolean 
+    add_column :kinds, :abstract, :boolean
     add_column :kinds, :url, :string
 
     add_column :kinds, :parent_id, :integer

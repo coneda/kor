@@ -9,7 +9,7 @@ class Relation < ApplicationRecord
   has_many :children, through: :relation_child_inheritances
   belongs_to :from_kind, class_name: "Kind"
   belongs_to :to_kind, class_name: "Kind"
-  
+
   validates :reverse_name,
     :presence => true,
     :white_space => true
@@ -142,7 +142,7 @@ class Relation < ApplicationRecord
     end
   }
   default_scope lambda { order(:name) }
-  
+
   def self.available_relation_names(options = {})
     froms = options[:from_ids].presence || []
     tos = options[:to_ids].presence || []
@@ -177,7 +177,7 @@ class Relation < ApplicationRecord
   def self.primary_relation_names
     Kor.settings['primary_relations'] || []
   end
-  
+
   def self.secondary_relation_names
     Kor.settings['secondary_relations'] || []
   end
@@ -185,15 +185,15 @@ class Relation < ApplicationRecord
   def self.reverse_primary_relation_names
     primary_relation_names.map { |rn| reverse_name_for_name(rn) }
   end
-  
+
   def self.reverse_secondary_relation_names
     secondary_relation_names.map { |rn| reverse_name_for_name(rn) }
-  end 
+  end
 
   def self.reverse_name_for_name(name)
     result ||= {}
     return result[name] if result[name]
-  
+
     relation = find_by_name(name)
     return (result[name] = relation.reverse_name) if relation
 

@@ -17,5 +17,4 @@ class RemovePrenameFromPeople < ActiveRecord::Migration
   def self.down
     raise ActiveRecord::IrreversibleMigration
   end
-  
 end

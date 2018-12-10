@@ -14,7 +14,7 @@ class RemoveMongodb < ActiveRecord::Migration
       "--jsonArray",
       "--collection attachments"
     ].join(' ')
-    
+
     data = JSON.parse(`#{command}`)
     # data = JSON.parse(File.read "./attachments.json")
 
@@ -25,7 +25,7 @@ class RemoveMongodb < ActiveRecord::Migration
       puts "#{counter}/#{data.size}" if counter % 100 == 0
 
       entity = (
-        Entity.where(:id => doc["entity_id"]).first || 
+        Entity.where(:id => doc["entity_id"]).first ||
         Entity.where(:attachment_id => doc['_id']['$oid']).first
       )
 

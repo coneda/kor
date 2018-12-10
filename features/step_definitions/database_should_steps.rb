@@ -1,8 +1,8 @@
 Then /^user "([^\"]*)" should have the following access rights$/ do |user, table|
   user = User.find_by_name(user)
-  
+
   results = []
-  
+
   user.groups.each do |group|
     group.grants.each do |grant|
       results << {
@@ -12,7 +12,7 @@ Then /^user "([^\"]*)" should have the following access rights$/ do |user, table
       }
     end
   end
-  
+
   if results.size == 0
     expect(table.hashes.size).to eq(0)
   else

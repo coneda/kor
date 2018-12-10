@@ -5,13 +5,11 @@ class KorController < JsonController
     # just a dummy
     render nothing: true
   end
-  
+
   def info
-    
   end
 
   def statistics
-    
   end
 
   def translations

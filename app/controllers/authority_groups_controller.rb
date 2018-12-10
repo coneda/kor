@@ -6,7 +6,7 @@ class AuthorityGroupsController < JsonController
     if params.has_key?(:authority_group_category_id)
       @records = @records.within_category(params[:authority_group_category_id])
     end
-    
+
     @total = @records.count
     @records = @records.pageit(page, per_page)
     render 'json/index'
@@ -15,10 +15,10 @@ class AuthorityGroupsController < JsonController
   def download_images
     @record = AuthorityGroup.find(params[:id])
     @entities = @record.entities.allowed(current_user, :view).media
-    
+
     zip_download @record, @entities
   end
-  
+
   def add_to
     @record = AuthorityGroup.find(params[:id])
     entity_ids = Kor.array_wrap(params[:entity_ids])
@@ -36,7 +36,7 @@ class AuthorityGroupsController < JsonController
 
     render_200 I18n.t('messages.entities_added_to_group')
   end
-  
+
   def show
     @record = AuthorityGroup.find(params[:id])
     render template: 'json/show'
@@ -68,9 +68,9 @@ class AuthorityGroupsController < JsonController
     @record.destroy
     render_deleted @record
   end
-  
+
   protected
-  
+
     def authority_group_params
       params.fetch(:authority_group, {}).permit(:name, :lock_version, :authority_group_category_id)
     end
@@ -82,5 +82,4 @@ class AuthorityGroupsController < JsonController
         require_authority_group_admin
       end
     end
-    
 end

@@ -11,7 +11,7 @@ RSpec.describe "translations" do
       when Hash
         # binding.pry unless test.is_a?(Hash)
         expect(test).to be_a(Hash), "#{locale}: expected #{stack.inspect} to be a Hash, but its not"
-        base.each do |k, v| 
+        base.each do |k, v|
           stack.push k
           comparator.call(v, locale, test[k])
           stack.pop

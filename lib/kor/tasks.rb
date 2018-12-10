@@ -4,13 +4,13 @@ class Kor::Tasks
     left = num
     started_at = nil
     puts "Found #{num} media entities"
-    
+
     Medium.find_each do |m|
       started_at ||= Time.now
-      
+
       m.image.reprocess! if m.image.file?
       m.document.reprocess! if m.document.file?
-      
+
       left -= 1
       seconds_left = (Time.now - started_at).to_f / (num - left) * left
       puts "#{left} items left (ETA: #{Time.now + seconds_left.to_i})"
@@ -45,7 +45,7 @@ class Kor::Tasks
     end
 
     if config[:assume_yes] || response == "yes"
-      zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/terminal_download.zip", 
+      zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/terminal_download.zip",
         :user_id => User.admin.id,
         :file_name => "#{group.name}.zip"
       )
@@ -76,7 +76,7 @@ class Kor::Tasks
     valids = group.entities.select do |entity|
       entity.valid?
     end
-    
+
     puts "removing #{valids.count} from the 'invalids' system group"
     group.remove_entities valids
   end

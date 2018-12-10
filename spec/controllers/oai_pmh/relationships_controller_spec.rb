@@ -48,7 +48,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
 
     get '/oai-pmh/relationships.xml', {
       verb: 'GetRecord',
-      identifier: relationship.uuid, 
+      identifier: relationship.uuid,
       api_key: admin.api_key,
       metadataPrefix: 'kor'
     }
@@ -81,7 +81,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
 
     get '/oai-pmh/relationships.xml', {
       verb: 'GetRecord',
-      identifier: relationship.uuid, 
+      identifier: relationship.uuid,
       metadataPrefix: 'kor'
     }
 
@@ -92,13 +92,13 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
     relationship = Relationship.last
     admin = User.admin
 
-    # yes this sucks, check out 
+    # yes this sucks, check out
     # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
     # for a reason why it has to be done like this
     xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
     get '/oai-pmh/relationships.xml', {
       verb: 'GetRecord',
-      identifier: relationship.uuid, 
+      identifier: relationship.uuid,
       api_key: admin.api_key,
       metadataPrefix: 'kor'
     }
@@ -113,7 +113,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
 
     get '/oai-pmh/relationships.xml', {
       verb: 'GetRecord',
-      identifier: relationship.uuid, 
+      identifier: relationship.uuid,
       api_key: admin.api_key,
       metadataPrefix: 'oai_dc'
     }
@@ -122,7 +122,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
 
     get '/oai-pmh/relationships.xml', {
       verb: 'GetRecord',
-      identifier: relationship.uuid, 
+      identifier: relationship.uuid,
       api_key: admin.api_key,
       metadataPrefix: 'kor'
     }
@@ -153,7 +153,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
   it "should return 'idDoesNotExist' if the identifier given does not exist" do
     get '/oai-pmh/relationships.xml', {
       verb: 'GetRecord',
-      identifier: '1234', 
+      identifier: '1234',
       metadataPrefix: 'kor'
     }
 
@@ -203,7 +203,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
 
     get '/oai-pmh/relationships.xml', {
       verb: 'GetRecord',
-      identifier: rel.uuid, 
+      identifier: rel.uuid,
       metadataPrefix: 'kor',
       api_key: admin.api_key
     }
@@ -220,7 +220,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
 
     get '/oai-pmh/relationships.xml', {
       verb: 'GetRecord',
-      identifier: rel.uuid, 
+      identifier: rel.uuid,
       api_key: admin.api_key,
       metadataPrefix: 'kor'
     }

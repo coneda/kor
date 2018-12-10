@@ -8,7 +8,7 @@ RSpec.describe Entity do
     ]
     expect(leonardo.datings.count).to eql(3)
   end
-  
+
   it "should search by dating" do
     paris.update(
       datings: [
@@ -29,14 +29,14 @@ RSpec.describe Entity do
     entity.save(validate: false)
     expect(entity.uuid).not_to be_nil
   end
-  
+
   it "should generate correct kind names" do
     entity = locations.entities.build(name: "Nürnberg")
     expect(entity.kind_name).to eql("location")
     entity.subtype = "village"
     expect(entity.kind_name).to eql("location (village)")
   end
-  
+
   it "should fire elastic updates", elastic: true do
     expect(Kor::Elastic).to receive(:index).exactly(2).times
     expect(Kor::Elastic).to receive(:drop)

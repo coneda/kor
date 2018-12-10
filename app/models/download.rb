@@ -10,7 +10,7 @@ class Download < ApplicationRecord
   end
   after_create :notify_ready
   after_destroy :delete_files
-  
+
   def copy_file
     unless File.exists?(dir)
       system "mkdir -p #{dir}"
@@ -28,41 +28,41 @@ class Download < ApplicationRecord
       end
     end
   end
-  
+
   def notify_ready
     UserMailer.download_ready(self).deliver_now if notify_user
   end
-  
+
   def generate_uuid
     self[:uuid] ||= SecureRandom.uuid
   end
-  
+
   def guess_content_type
     self[:content_type] ||= `file -ib #{path}`.gsub(/\n/, "")
   end
-  
+
   def delete_files
     FileUtils.rm_f(path)
   end
-  
+
   attr_accessor :notify_user
-  
+
   def data=(value)
     @data = value
   end
-  
+
   def new_data
     @data
   end
-  
+
   def data
     File.read(path)
   end
-  
+
   def path
     "#{dir}/#{uuid}"
   end
-  
+
   def dir
     "#{ENV['DATA_DIR']}/downloads"
   end

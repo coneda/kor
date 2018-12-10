@@ -49,7 +49,7 @@ class PublishmentsController < JsonController
     @publishment.destroy
     render_deleted @publishment
   end
-  
+
   protected
 
     def publishment_params

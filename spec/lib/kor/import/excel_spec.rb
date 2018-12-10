@@ -22,14 +22,14 @@ RSpec.describe Kor::Import::Excel do
   it "should import 7 entities, one of them new" do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     mona_lisa.destroy
-    
+
     book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
     sheet = book.worksheet 0
     sheet[2, 0] = nil
     sheet[2, 1] = nil
     system "rm #{Rails.root}/tmp/export_spec/entities.0001.xls"
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
-    
+
     Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", :verbose => false).run
 
     expect(Entity.count).to eq(7)
@@ -96,7 +96,7 @@ RSpec.describe Kor::Import::Excel do
     sheet[2, 1] = nil
     system "rm #{Rails.root}/tmp/export_spec/entities.0001.xls"
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
-    
+
     Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec",
       :verbose => false,
       :username => "guest",
@@ -151,7 +151,7 @@ RSpec.describe Kor::Import::Excel do
     created_at = leonardo.created_at
 
     book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
-    
+
     expect(leonardo.reload.created_at).to eq(created_at)
   end
 

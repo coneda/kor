@@ -14,7 +14,7 @@ class UnifyWebServices < ActiveRecord::Migration
         when 'ulan'
           field = Fields::String.new(:name => 'ulan', :show_label => 'ULAN-ID', :show_on_entity => false, :kind => kind)
           generator = Generator.new(
-            :name => 'ulan_link', 
+            :name => 'ulan_link',
             :directive => "<a href='http://www.getty.edu/vow/ULANFullDisplay?find=&role=&nation=&prev_page=1&subjectid={{entity.dataset.ulan}}' target='_blank'>» ULAN</a>",
             :kind => kind
           )

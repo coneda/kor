@@ -195,7 +195,7 @@ module DataHelper
     jdoe = FactoryGirl.create :jdoe, groups: [students]
     mrossi = FactoryGirl.create :mrossi, groups: [project]
     ldap = FactoryGirl.create :ldap_template
-    
+
     Kor::Auth.grant default, :view, :to => students
     Kor::Auth.grant priv, :all, :to => admins
     Kor::Auth.grant default, :view, :to => project
@@ -233,8 +233,8 @@ module DataHelper
     last_supper = FactoryGirl.create :the_last_supper, {
       created_at: Time.mktime(2016, 10, 21, 11),
       updated_at: Time.mktime(2017, 10, 21, 11),
-      collection: priv, 
-      creator_id: admin.id, 
+      collection: priv,
+      creator_id: admin.id,
       updater_id: admin.id,
       tag_list: ['art', 'early']
     }

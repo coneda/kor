@@ -8,7 +8,7 @@ class MediaController < JsonController
     style = param_to_style(params[:style])
     auth = if style == :original
       allowed_to?(:download_originals, @medium.entity.collection) || (
-        !@medium.content_type.match(/\image/) && 
+        !@medium.content_type.match(/\image/) &&
         allowed_to?(:view, @medium.entity.collection)
       )
     else

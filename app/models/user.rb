@@ -11,7 +11,7 @@ class User < ApplicationRecord
   has_many :updated_entities, :class_name => 'Entity', :foreign_key => :updater_id
   has_many :user_groups, :dependent => :destroy
   has_many :publishments, :dependent => :destroy
-  
+
   belongs_to :parent, {
     class_name: 'User',
     foreign_key: :parent_username,
@@ -34,14 +34,14 @@ class User < ApplicationRecord
   validates :api_key,
     :uniqueness => true,
     :length => { :minimum => 32, allow_blank: true }
-  validates(:plain_password, 
+  validates(:plain_password,
     format: { :allow_nil => true, :with => /\A(.{5,30})|\Z/ },
     confirmation: true
   )
-  
+
   validate :validate_empty_personal_collection
   validate :validate_existing_parent_user
-  
+
   def validate_empty_personal_collection
     unless make_personal
       if personal_collection
@@ -57,12 +57,12 @@ class User < ApplicationRecord
       end
     end
   end
-  
+
   before_validation(:on => :create) do |model|
     model.generate_secrets
   end
   after_validation :set_expires_at, :create_personal, :add_personal_group
-  
+
   def add_personal_group
     if self.personal_group && !self.personal_group.destroyed?
       unless self.groups.map { |g| g.id }.include?(self.personal_group.id)
@@ -70,15 +70,15 @@ class User < ApplicationRecord
       end
     end
   end
-  
+
   def create_personal
     if make_personal && !personal?
       template = Collection.joins(:owner).first
-      
+
       self.personal_group = Credential.create(:name => name)
       self.personal_collection = Collection.create(:name => name)
       self.groups << self.personal_group
-      
+
       if template
         template.grants.each do |grant|
           Kor::Auth.grant personal_collection, grant.policy, :to => (grant.personal? ? self.personal_group : grant.credential)
@@ -87,19 +87,19 @@ class User < ApplicationRecord
         Kor::Auth.grant personal_collection, :all, :to => self.personal_group
       end
     end
-    
+
     if !make_personal && personal?
       self.personal_group.destroy if self.personal_group
       self.personal_collection.destroy if self.personal_collection
     end
   end
-  
+
   def generate_secrets
     self.activation_hash = User.generate_activation_hash if self[:activation_hash].blank?
     self.password = User.generate_password if self[:password].blank?
     self.api_key = SecureRandom.hex(48)
   end
-  
+
   def set_expires_at
     unless extension.blank?
       case extension
@@ -114,7 +114,7 @@ class User < ApplicationRecord
       end
     end
   end
-  
+
   attr_accessor :extension
   attr_accessor :custom_extension
   attr_accessor :plain_password
@@ -127,22 +127,22 @@ class User < ApplicationRecord
       @make_personal
     end
   end
-  
+
   def personal?
     self.personal_group.present? && self.personal_collection.present?
   end
-  
+
   def password=(value)
     self.plain_password = value
     unless value.blank?
       write_attribute :password, User.crypt(value)
     end
   end
-  
+
   def display_name
     full_name.blank? ? name : full_name
   end
-  
+
   def add_login_attempt
     unless self[:login_attempts]
       self[:login_attempts] = []
@@ -150,7 +150,7 @@ class User < ApplicationRecord
     self[:login_attempts] << Kor.now
     self[:login_attempts].shift if self[:login_attempts].size > 3
   end
-  
+
   ["", "kind_", "relation_", "authority_group_admin_"].each do |ag|
     define_method "#{ag}admin".to_sym do
       key = "#{ag}admin".to_sym
@@ -179,13 +179,13 @@ class User < ApplicationRecord
       end
     end
   end
-  
+
   def self.guest
     if user = find_by(name: 'guest')
       user.active? ? user : nil
     end
   end
-  
+
   def guest?
     name == 'guest'
   end
@@ -193,7 +193,7 @@ class User < ApplicationRecord
   def authorized_collections(policy = :view)
     Kor::Auth.authorized_collections(self, policy)
   end
-  
+
   def full_auth
     group_ids = groups.pluck(:id)
     u = self
@@ -207,7 +207,7 @@ class User < ApplicationRecord
       collections[g.last] << g.first
     end
     Kor::Auth.policies.each { |p| collections[p] ||= [] }
-  
+
     return {
       roles: {
         admin: admin?,
@@ -233,13 +233,13 @@ class User < ApplicationRecord
     where("last_login > ?", 30.days.ago)
   }
   scope :logged_in_last_year, lambda {
-    where("last_login > ?", 1.year.ago) 
+    where("last_login > ?", 1.year.ago)
   }
   scope :created_recently, lambda {
     where("created_at > ?", 30.days.ago)
   }
   scope :by_id, lambda { |id| id.present? ? where(id: id) : all }
-  
+
   def self.admin
     unless user = find_by_name('admin')
       raise "There is no admin user"
@@ -247,13 +247,13 @@ class User < ApplicationRecord
 
     user
   end
-  
+
   def self.authenticate(username, password)
     password ||= ""
     hash_candidates = [crypt(password), legacy_crypt(password)]
     where(name: username, password: hash_candidates).first
   end
-  
+
   def self.pickup_session_for(id)
     id ? includes(:groups).find(id) : nil
   end
@@ -261,12 +261,12 @@ class User < ApplicationRecord
   def credential_ids
     groups.map { |c| c.id }
   end
-  
+
   def too_many_login_attempts?
     self[:login_attempts] ||= []
     self[:login_attempts].size == 3 ? self[:login_attempts].first > Kor.now - 1.hour : false
   end
-  
+
   def reset_password
     self.password = User.generate_password
   end
@@ -274,7 +274,7 @@ class User < ApplicationRecord
   def self.generate_password
     User.crypt(rand.to_s)[0, 6]
   end
-  
+
   def User.generate_activation_hash
     User.crypt(rand.to_s)[0, 12]
   end

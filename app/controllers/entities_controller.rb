@@ -70,7 +70,7 @@ class EntitiesController < JsonController
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
 
     scope = Entity.includes(
-      :medium, :kind, :collection, :datings, :creator, :updater, 
+      :medium, :kind, :collection, :datings, :creator, :updater,
       authority_groups: :authority_group_category
     )
     id = (params[:id] || '').strip.presence
@@ -109,7 +109,7 @@ class EntitiesController < JsonController
             relationship.save!
           end
         end
-        
+
         @record = @entity
         render_created @entity
       else
@@ -124,7 +124,7 @@ class EntitiesController < JsonController
             end
           end
         end
-        
+
         render_422 build_nested_errors(@entity)
       end
     else
@@ -139,12 +139,12 @@ class EntitiesController < JsonController
     @entity.assign_attributes entity_params
 
     authorized = if @entity.collection_id_changed?
-      allowed_to?(:delete, Collection.find(@entity.collection_id_was)) && 
+      allowed_to?(:delete, Collection.find(@entity.collection_id_was)) &&
         allowed_to?(:create, Collection.find(@entity.collection_id))
     else
       allowed_to?(:edit, @entity.collection)
     end
-    
+
     if authorized
       @entity.updater_id = current_user.id
 
@@ -167,10 +167,10 @@ class EntitiesController < JsonController
     new_tags = params[:entity].permit(:tags)['tags'].presence || ""
     new_tags = new_tags.split(/,\s*/)
     @entity = Entity.find(params[:id])
-    
+
     if allowed_to?(:tagging, @entity.collection)
       @entity.tag_list += new_tags
-      
+
       if @entity.save
         render_200 I18n.t('objects.update_success',
           o: I18n.t('activerecord.models.tag', count: 'other')
@@ -201,22 +201,22 @@ class EntitiesController < JsonController
   def merge
     entities = Entity.find(params[:entity_ids])
     collections = entities.map { |e| e.collection }.uniq
-    
+
     allowed_to_create = allowed_to?(:create)
     allowed_to_delete_requested_entities = allowed_to?(:delete, collections, :required => :all)
-  
+
     if allowed_to_create and allowed_to_delete_requested_entities
       if entities.map { |e| e.kind.id }.uniq.size != 1
         render_422 nil, I18n.t('errors.only_same_kind')
       end
 
       @record = Kor::EntityMerger.new.run(
-        :old_ids => params[:entity_ids], 
+        :old_ids => params[:entity_ids],
         :attributes => entity_params.merge(
           :creator_id => current_user.id
         )
       )
-      
+
       if @record.valid?
         render_200 I18n.t('notices.merge_success')
       else
@@ -234,8 +234,8 @@ class EntitiesController < JsonController
       @target = Entity.find(params[:id])
       @entities = Entity.find(params[:entity_ids] || [])
 
-      can_edit = 
-        allowed_to?(:edit, @target.collection_id) || 
+      can_edit =
+        allowed_to?(:edit, @target.collection_id) ||
         allowed_to?(:edit, @entities.map { |e| e.collection_id })
       collections = [@target.collection_id] + @entities.map { |e| e.collection_id }
       can_view = allowed_to?(:view, collections, required: :all)

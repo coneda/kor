@@ -1,9 +1,8 @@
 module Kor
-  
   def self.settings
     Kor::Settings.instance
   end
-  
+
   def self.version
     File.read("#{Rails.root}/config/version.txt").strip
   end
@@ -33,7 +32,7 @@ module Kor
       SecureRandom.uuid
     end
   end
- 
+
   def self.session_expiry_time
     Time.now + Kor.settings['session_lifetime'].seconds
   end
@@ -45,7 +44,7 @@ module Kor
   def self.now
     Time.now.utc
   end
-  
+
   def self.array_wrap(object)
     if object.is_a?(Array)
       object

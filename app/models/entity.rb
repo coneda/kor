@@ -1,6 +1,6 @@
 class Entity < ApplicationRecord
   serialize :attachment, JSON
-  
+
   acts_as_taggable_on :tags
   acts_as_paranoid
 
@@ -8,7 +8,7 @@ class Entity < ApplicationRecord
   belongs_to :collection
   belongs_to :creator, :class_name => "User", :foreign_key => :creator_id
   belongs_to :updater, :class_name => "User", :foreign_key => :updater_id
- 
+
   has_many :identifiers, :dependent => :destroy
   has_many :datings, :class_name => "EntityDating", :dependent => :destroy
 
@@ -29,7 +29,7 @@ class Entity < ApplicationRecord
 
   accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
 
-  validates :name, 
+  validates :name,
     :presence => { :if => :needs_name? },
     :uniqueness => { :scope => [:kind_id, :distinct_name], :allow_blank => true },
     :white_space => true
@@ -58,11 +58,11 @@ class Entity < ApplicationRecord
       end
     end
   end
-  
+
   def validate_distinct_name_needed
     if has_name_duplicates?
       duplicate_collection = find_name_duplicates.first.collection
-      
+
       if duplicate_collection.id != self.collection_id
         message = I18n.t('activerecord.errors.messages.needed_for_disambiguation', :collection => duplicate_collection.name)
         errors.add :distinct_name, message
@@ -71,7 +71,7 @@ class Entity < ApplicationRecord
       end
     end
   end
-  
+
   # TODO: still needed?
   # def simple_errors
   #   result = []
@@ -80,7 +80,7 @@ class Entity < ApplicationRecord
   #   end
   #   result
   # end
-  
+
   def read_attribute_for_validation(attr)
     if attr.match(/^dataset\./)
       self.dataset[attr.split('\.')[1]]
@@ -175,15 +175,15 @@ class Entity < ApplicationRecord
   before_validation :generate_uuid, :sanitize_distinct_name
   before_save :generate_uuid, :add_to_user_group
   after_commit :update_elastic, :update_identifiers
-  
+
   def sanitize_distinct_name
     self.distinct_name = nil if self.distinct_name == ""
   end
-  
+
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
   end
-  
+
   def update_elastic
     if Kor::Elastic.enabled?
       if deleted?
@@ -228,15 +228,15 @@ class Entity < ApplicationRecord
 
     "#{model_name.cache_key}/#{id}-#{timestamp}"
   end
-  
+
   # def recent?
   #   @recent
   # end
-  
+
   # def remember_recent!
   #   @recent = true
   # end
-  
+
   attr_accessor :user_group_id
   def add_to_user_group
     if user_group_id
@@ -245,7 +245,7 @@ class Entity < ApplicationRecord
       user_group.add_entities self
     end
   end
-  
+
   def mark_invalid
     SystemGroup.find_or_create_by(:name => 'invalid').add_entities self
   end
@@ -262,14 +262,14 @@ class Entity < ApplicationRecord
     collections = Kor::Auth.authorized_collections(user, policy)
     where("entities.collection_id IN (?)", collections.map { |c| c.id })
   end
-  
+
   # re-enable this for display
   def html_comment
     red_cloth = RedCloth.new(self.comment || "")
     red_cloth.sanitize_html = true
     red_cloth.to_html
   end
-  
+
   def degree
     Relationship.where("from_id = ? OR to_id = ?", self.id, self.id).count
   end
@@ -297,7 +297,7 @@ class Entity < ApplicationRecord
         includes(to: [:tags, :collection, :kind, :medium])
     end
   end
-  
+
   def relation_counts(user, options = {})
     options.reverse_merge! media: false
     media_id = Kind.medium_kind_id
@@ -350,14 +350,14 @@ class Entity < ApplicationRecord
       kind.name
     end
   end
-  
+
   def has_name_duplicates?
     find_name_duplicates.count > 0
   end
-  
+
   def find_name_duplicates
     return [] unless needs_name?
-      
+
     result = self.class.where(:name => name, :distinct_name => distinct_name, :kind_id => kind_id)
     new_record? ? result : result.where("id != ?", id)
   end
@@ -379,7 +379,7 @@ class Entity < ApplicationRecord
   def no_name_statement
     read_attribute(:no_name_statement) || 'enter_name'
   end
-  
+
   def is_medium?
     !!medium_id || !!medium || kind_id == Kind.medium_kind_id
   end
@@ -394,9 +394,9 @@ class Entity < ApplicationRecord
   }
   scope :by_relation_name, lambda { |relation_name|
     return all if relation_name.blank?
-    
+
     where(kind_id: Relation.to_entity_kind_ids(relation_name))
-  }  
+  }
   scope :by_id, lambda { |id| id.present? ? where(id: id) : all }
   scope :by_uuid, lambda { |uuid| uuid.present? ? where(uuid: uuid) : all }
   scope :created_after, lambda { |time| time.present? ? where("created_at > ?", time) : all }
@@ -502,13 +502,13 @@ class Entity < ApplicationRecord
   }
   scope :within_user_groups, lambda { |ids|
     return all unless ids.present?
-    
+
     joins('LEFT JOIN entities_user_groups eu ON eu.entity_id = id').
       where('eu.user_group_id IN (?)', ids)
   }
   scope :within_system_groups, lambda { |ids|
     return all unless ids.present?
-    
+
     joins('LEFT JOIN entities_system_groups es ON es.entity_id = id').
       where('es.system_group_id IN (?)', ids)
   }
@@ -523,5 +523,4 @@ class Entity < ApplicationRecord
     group = SystemGroup.find_or_create_by(name: 'invalid')
     within_system_groups(group.id)
   end
-  
 end

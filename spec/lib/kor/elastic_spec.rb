@@ -70,7 +70,7 @@ RSpec.describe Kor::Elastic, elastic: true do
   it "should search within synonyms" do
     landscape = FactoryGirl.create :landscape, synonyms: ["Tree on plane", "Nice Tree"]
     jack = FactoryGirl.create :jack, synonyms: ["The Oak", "Tree on plane"]
-    
+
     described_class.index_all
 
     results = described_class.new(User.admin).search(terms: "\"tree on plane\"")

@@ -21,10 +21,10 @@ class Kor::Elastic
   def self.available?
     @available ||= begin
       return false if ENV['ELASTIC_URL'].blank?
-      
+
       response = raw_request('get', '/')
       response.status == 200
-    rescue ArgumentError, Errno::ECONNREFUSED => e 
+    rescue ArgumentError, Errno::ECONNREFUSED => e
       Rails.logger.info "tried connecting to elasticsearch, but failed: #{e.message}"
       false
     end
@@ -110,7 +110,7 @@ class Kor::Elastic
                 }
               },
               "properties" => {
-                "type" => "object", 
+                "type" => "object",
                 "properties" => {
                   "label" => { "type" => "string" },
                   "value" => { "type" => "string" }
@@ -216,7 +216,7 @@ class Kor::Elastic
       "dataset" => entity.dataset,
       'created_at' => entity.created_at.to_i,
       'updated_at' => entity.updated_at.to_i,
-      'datings' => entity.datings.map { |d| 
+      'datings' => entity.datings.map { |d|
         { 'label' => d.dating_string, 'from' => d.from_day, 'to' => d.to_day }
       },
       'degree' => entity.degree,
@@ -264,7 +264,7 @@ class Kor::Elastic
 
   def initialize(user)
     self.class.ensure_index
-    
+
     @user = user
     @query = {
       'must' => [],
@@ -516,7 +516,7 @@ class Kor::Elastic
 
   def by_property(old_terms, property)
     if property.present?
-      (old_terms || '') + 
+      (old_terms || '') +
         " properties.label:(#{property}) OR properties.value:(#{property})"
     else
       old_terms
@@ -624,7 +624,7 @@ class Kor::Elastic
 
     def to_array(value)
       return [] if value.nil?
-    
+
       value.is_a?(Array) ? value : [value]
     end
 

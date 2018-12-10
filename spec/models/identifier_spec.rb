@@ -9,13 +9,13 @@ RSpec.describe Identifier do
 
   it "should not allow duplicate identifiers per kind" do
     described_class.create(
-      :entity => mona_lisa, 
+      :entity => mona_lisa,
       :kind => "ulan",
       :value => "123"
     )
 
     id = described_class.new(
-      :entity => mona_lisa, 
+      :entity => mona_lisa,
       :kind => "ulan",
       :value => "456"
     )

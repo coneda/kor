@@ -41,7 +41,7 @@ class KindsController < JsonController
 
   def destroy
     @kind = Kind.find(params[:id])
-    
+
     # TODO: this has to deal with deleted entities
     # TODO: this should be moved to the model somehow
     if @kind.medium_kind?
@@ -55,10 +55,9 @@ class KindsController < JsonController
       render_200 I18n.t('objects.destroy_success', o: Kind.model_name.human)
     end
   end
-  
-  
+
   protected
-    
+
     def kind_params
       params.require(:kind).permit(
         :schema, :name, :plural_name, :description,
@@ -70,5 +69,4 @@ class KindsController < JsonController
     def auth
       require_kind_admin
     end
-    
 end

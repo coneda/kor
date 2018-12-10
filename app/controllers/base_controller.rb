@@ -24,14 +24,14 @@ class BaseController < ActionController::Base
   protected
 
     def current_user
-      @current_user ||= 
-        user_by_api_key || 
+      @current_user ||=
+        user_by_api_key ||
         User.pickup_session_for(session[:user_id]) ||
         User.guest
     end
 
     def user_by_api_key
-      api_key = 
+      api_key =
         params[:api_key] ||
         request.headers['HTTP_API_KEY'] ||
         request.headers['API_KEY'] ||
@@ -53,7 +53,7 @@ class BaseController < ActionController::Base
     def allowed_to?(policy = :view, collections = Collection.all, options = {})
       Kor::Auth.allowed_to? current_user, policy, collections, options
     end
-    
+
     # TODO: test this
     def session_expiry
       if session_expired?
@@ -117,7 +117,7 @@ class BaseController < ActionController::Base
       end
 
       if options[:download]
-        result = result.gsub /\/images\//, '/download/'
+        result = result.gsub(/\/images\//, '/download/')
       end
 
       if options[:root]

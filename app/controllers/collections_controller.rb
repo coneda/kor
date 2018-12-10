@@ -7,7 +7,7 @@ class CollectionsController < JsonController
     else
       @records = Kor::Auth.authorized_collections(current_user)
     end
-    
+
     @total = @records.count
     @records = @records.pageit(page, per_page)
     render 'json/index'
@@ -44,7 +44,7 @@ class CollectionsController < JsonController
 
   def destroy
     @record = Collection.find(params[:id])
-    
+
     if @record.entities.count == 0
       @record.destroy
       render_deleted @record
@@ -56,7 +56,7 @@ class CollectionsController < JsonController
   def merge
     @record = Collection.find(params[:id])
     target = Collection.find(params[:collection_id])
-    
+
     if allowed_to?(:delete, @record) && allowed_to?(:create, target)
       Entity.where(collection_id: @record.id).update_all collection_id: target.id
       render_200 I18n.t('messages.entities_moved_to_collection', o: target.name)
@@ -64,7 +64,7 @@ class CollectionsController < JsonController
       render_403
     end
   end
-  
+
   protected
 
     def auth
@@ -74,5 +74,4 @@ class CollectionsController < JsonController
     def collection_params
       params.require(:collection).permit!
     end
-    
 end

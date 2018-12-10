@@ -114,7 +114,7 @@ RSpec.shared_examples 'a kor search' do
     search = described_class.new(admin, created_before: Time.now)
     expect(search.total).to eq(7)
 
-    search = described_class.new(admin, 
+    search = described_class.new(admin,
       created_before: picture_a.created_at,
       created_after: last_supper.created_at
     )
@@ -131,7 +131,7 @@ RSpec.shared_examples 'a kor search' do
     search = described_class.new(admin, updated_before: Time.now)
     expect(search.total).to eq(7)
 
-    search = described_class.new(admin, 
+    search = described_class.new(admin,
       updated_before: picture_a.updated_at,
       updated_after: last_supper.updated_at
     )

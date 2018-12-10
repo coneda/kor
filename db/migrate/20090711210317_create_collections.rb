@@ -3,10 +3,10 @@ class CreateCollections < ActiveRecord::Migration
     create_table :collections do |t|
       t.integer :lock_version
       t.string :name
-      
+
       t.timestamps
     end
-    
+
     # apparently, this column already exists from earlier migrations
     # add_column :entities, :collection_id, :integer
   end

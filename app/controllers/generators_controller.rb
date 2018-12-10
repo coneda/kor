@@ -3,7 +3,7 @@ class GeneratorsController < JsonController
     @kind = Kind.find(params[:kind_id])
     @generators = @kind.generators
   end
-  
+
   def show
     @record = @generators.find(params[:id])
     render template: 'json/show'
@@ -47,5 +47,4 @@ class GeneratorsController < JsonController
         require_kind_admin
       end
     end
-  
 end

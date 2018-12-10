@@ -2,9 +2,9 @@ class Kind < ApplicationRecord
   MEDIA_UUID = '93a03d5c-e439-4294-a8d4-d4921c4d0dbc'
 
   serialize :settings
-  
+
   acts_as_paranoid
-  
+
   has_many :entities, :dependent => :destroy
   has_many :fields, :dependent => :destroy
   has_many :generators, :dependent => :destroy
@@ -13,7 +13,7 @@ class Kind < ApplicationRecord
   has_many :kind_child_inheritances, class_name: 'KindInheritance', foreign_key: :parent_id, dependent: :destroy
   has_many :parents, through: :kind_parent_inheritances
   has_many :children, through: :kind_child_inheritances
-  
+
   validates :name,
     :presence => true,
     :uniqueness => true,
@@ -87,17 +87,17 @@ class Kind < ApplicationRecord
     self.fields.each do |field|
       field.entity = object
     end
-    
+
     self.fields
   end
-  
+
   def self.available_fields
     Dir["#{Rails.root}/app/models/fields/*.rb"].map do |f|
       underscore = f.split('/').last.gsub('.rb', '')
       "fields/#{underscore}".classify.constantize
     end
   end
-  
+
   # TODO: still needed?
   def defines_schema?
     !self.fields.empty?
@@ -106,11 +106,11 @@ class Kind < ApplicationRecord
   def medium_kind?
     uuid == MEDIA_UUID
   end
-  
+
   def medium_kind?
     uuid == MEDIA_UUID
   end
-  
+
   def self.medium_kind
     find_by(uuid: MEDIA_UUID)
   end
@@ -120,21 +120,21 @@ class Kind < ApplicationRecord
       m.id
     end
   end
-  
+
   def self.find_ids(ids)
     find_all_by_id(ids).map { |k| k.id }
   end
-  
+
   def self.all_ids
     all.collect { |k| k.id }
   end
-  
+
   def self.for_select
     all.collect { |k| [k.name, k.id] }.sort do |x, y|
       x.first <=> y.first
     end
   end
-  
+
   def settings
     if destroyed?
       (self[:settings] || {}).symbolize_keys
@@ -146,12 +146,12 @@ class Kind < ApplicationRecord
       self[:settings].symbolize_keys!
     end
   end
-  
+
   def settings=(values)
     self[:settings] ||= {}
     self[:settings].deep_merge!(values)
   end
-  
+
   def name_label
     settings[:name_label].presence || Entity.human_attribute_name(:name)
   end
@@ -159,12 +159,12 @@ class Kind < ApplicationRecord
   def name_label=(value)
     settings[:name_label] = value
   end
-  
+
   def tagging
     settings[:tagging] = true if settings[:tagging].nil?
     settings[:tagging]
   end
-  
+
   def tagging=(value)
     settings[:tagging] = !!value
   end
@@ -176,7 +176,7 @@ class Kind < ApplicationRecord
   def dating_label=(value)
     settings[:dating_label] = value
   end
-  
+
   def distinct_name_label
     settings[:distinct_name_label].presence || Entity.human_attribute_name(:distinct_name)
   end
@@ -184,7 +184,7 @@ class Kind < ApplicationRecord
   def distinct_name_label=(value)
     settings[:distinct_name_label] = value
   end
-  
+
   def requires_naming?
     !medium_kind?
   end

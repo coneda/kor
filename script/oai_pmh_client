@@ -92,13 +92,13 @@ module Kor
                 File.open filename, 'w' do |f|
                   f.puts "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                   f.write record.to_xml
-                end 
+                end
               end
             end
           end
 
           break unless resumptionToken
-          
+
           sleep @options[:delay]
           pg.increment
         rescue => e

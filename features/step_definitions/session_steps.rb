@@ -8,7 +8,7 @@ Given /^I am logged in as "([^\"]*)"/ do |user|
 
   # then we can reset
   Capybara.reset_sessions!
-  
+
   # now we can be sure that we are logged out
   step "I go to the login page"
 

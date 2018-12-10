@@ -81,5 +81,4 @@ class RelationsController < JsonController
     def auth
       require_relation_admin
     end
-  
 end

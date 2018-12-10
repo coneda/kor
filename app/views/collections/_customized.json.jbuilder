@@ -6,7 +6,7 @@ if inclusion.request?('permissions')
 end
 
 if inclusion.request?('counts')
-  json.extract! record, :entity_count  
+  json.extract! record, :entity_count
 end
 
 if inclusion.request?('owner')

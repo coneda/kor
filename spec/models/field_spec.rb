@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Field do
-  
   it "should synchronize the value for is_identifier across all kinds" do
     people.update fields: [
       Field.new(name: 'viaf_id', show_label: 'stack')

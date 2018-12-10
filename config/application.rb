@@ -25,7 +25,7 @@ Dir["lib/paperclip_processors/*.rb"].each { |f| require File.expand_path(f) }
 module Kor
   class Application < Rails::Application
     # SQLOrigin.append_to_log
-    
+
     config.autoload_paths << "#{Rails.root}/lib"
     config.eager_load_paths << "#{Rails.root}/lib"
 
@@ -49,7 +49,7 @@ module Kor
 
     config.middleware.insert_before 0, "Rack::Cors" do
       allow do
-        origins *(ENV['CORS_ALLOWED_ORIGINS'] || '').split(/\s+/)
+        origins(*(ENV['CORS_ALLOWED_ORIGINS'] || '').split(/\s+/))
         resource '*', headers: :any, methods: [:get, :options]
       end
     end
@@ -109,4 +109,5 @@ end
 # TODO: add medium reprocess action that can be triggered via web
 # TODO: create missing controller tests, look at coverage report for specs only
 # TODO: test version task
+# TODO: finish rubocop pass
 # TODO: document rubocop usage: bundle exec rubocop -D -E -R -S

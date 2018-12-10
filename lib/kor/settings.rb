@@ -164,7 +164,7 @@ module Kor
           'maintainer_mail' => 'admin@example.com',
           'legal_text' => 'enter a legal notice here',
           'about_text' => 'enter a description of this installation here',
-          
+
           'session_lifetime' => 60 * 60 * 2,
           'publishment_lifetime' => 14,
           'default_groups' => [],

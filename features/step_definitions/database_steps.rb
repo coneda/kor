@@ -47,7 +47,7 @@ end
 Given /^the entity "([^\"]*)" of kind "([^\"]*)"$/ do |name, kind|
   step "the kind \"#{kind}\""
   kind = Kind.find_by_name(kind.split('/').first)
-  
+
   unless Entity.exists? :name => name
     entity = kind.entities.build(
       :name => name,
@@ -90,13 +90,13 @@ Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" (?:through|v
   step "the user \"#{user}\""
   step "the collection \"#{collection}\""
   step "the credential \"#{credential}\""
-  
+
   user = User.find_by_name(user)
   collection = Collection.find_by_name(collection)
   credential = Credential.find_by_name(credential)
 
   user.groups << credential unless user.groups.include? credential
-  
+
   policy.split("/").each do |p|
     Kor::Auth.grant collection, p, :to => credential
   end
@@ -135,7 +135,7 @@ end
 
 Given /^the authority group "([^"]*)" contains a medium$/ do |name|
   # step "Mona Lisa and a medium as correctly related entities"
-  
+
   AuthorityGroup.find_by!(name: name).add_entities picture_a
 end
 
@@ -149,7 +149,7 @@ end
 
 Given /^the authority group categories structure "([^"]*)"$/ do |structure|
   category_names = structure.split(' >> ')
-  
+
   previous = AuthorityGroupCategory.create :name => category_names.shift
   while current = category_names.shift
     previous = AuthorityGroupCategory.create(:name => current, :parent => previous)
@@ -163,14 +163,14 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
     step "I fill in \"Name\" with \"#{name}\""
     step "I press \"Save\""
     step "I should see \"has been created\""
-    
+
     if shared == 'shared '
       step "I follow \"share\""
     end
-    
+
     unless pub.blank?
       pub_name = pub.gsub(/.*\"([^\"]+)\".*/, "\\1")
-    
+
       step "I go to the publishments page"
       step "I follow \"create published group\""
       step "I fill in \"Name\" with \"#{pub_name}\""
@@ -202,7 +202,7 @@ end
 Given /^the relation "([^"]*)" between "([^"]*)" and "([^"]*)"$/ do |relation, from_kind, to_kind|
   step "the kind \"#{from_kind}\""
   step "the kind \"#{to_kind}\""
-  
+
   from_kind = Kind.find_by_name(from_kind.split('/').first)
   to_kind = Kind.find_by_name(to_kind.split('/').first)
   name = relation.split('/').first
@@ -227,7 +227,7 @@ Given /^the triple "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)"$/ do |
   step "the relation \"#{relation}\" between \"#{from_kind}\" and \"#{to_kind}\""
   step "the entity \"#{from_name}\" of kind \"#{from_kind}\""
   step "the entity \"#{to_name}\" of kind \"#{to_kind}\""
-  
+
   relation = relation.split('/').first
   step "the relationship \"#{from_name}\" \"#{relation}\" \"#{to_name}\""
 end
@@ -235,10 +235,10 @@ end
 Then(/^"(.*?)" should have "(.*?)" "(.*?)"$/) do |subject, relation, object|
   subject = Entity.where(:name => subject).first
   object = Entity.where(:name => object).first
-  
+
   normal = if normal_relation = Relation.where(:name => relation).first
     Relationship.where(
-      :from_id => subject.id, 
+      :from_id => subject.id,
       :relation_id => normal_relation.id,
       :to_id => object.id
     ).first
@@ -246,7 +246,7 @@ Then(/^"(.*?)" should have "(.*?)" "(.*?)"$/) do |subject, relation, object|
 
   reverse = if reverse_relation = Relation.where(:reverse_name => relation).first
     Relationship.where(
-      :from_id => object.id, 
+      :from_id => object.id,
       :relation_id => reverse_relation.id,
       :to_id => subject.id
     ).first
@@ -259,18 +259,18 @@ Given /^the relationship "([^\"]*)" "([^\"]*)" "([^\"]*)"(?: with properties "([
   from = Entity.find_by_name(from)
   to = Entity.find_by_name(to)
   props = (props || "").split("/")
-  
+
   name = name.split("/").first
   step "the relation \"#{name}\" between \"#{from.kind.name}/#{from.kind.plural_name}\" and \"#{to.kind.name}/#{to.kind.plural_name}\""
-  
+
   Relationship.relate_and_save(from, name, to, props)
 end
 
 Given /^there are "([^"]*)" entities named "([^"]*)" of kind "([^"]*)"$/ do |num, name_pattern, kind|
   step "the kind \"#{kind}\""
-  
+
   kind = Kind.find_by_name(kind.split('/').first)
-  
+
   num.to_i.times do |i|
     kind.entities.create(
       :collection => Collection.first,

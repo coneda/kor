@@ -34,7 +34,7 @@ class Kor::CommandLine
     @command ||= @args.shift
 
     if @command == "import" || @command == "export"
-      
+
     end
 
     case @command

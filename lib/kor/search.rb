@@ -83,8 +83,8 @@ class Kor::Search
 
   def compat_keys
     return [
-      :name, :id, :uuid, :collection_id, :kind_id, :except_kind_id, :dating, 
-      :created_after, :tags, :relation_name, :sort, :page, :per_page, 
+      :name, :id, :uuid, :collection_id, :kind_id, :except_kind_id, :dating,
+      :created_after, :tags, :relation_name, :sort, :page, :per_page,
       :created_before, :updated_before, :updated_after
     ]
   end

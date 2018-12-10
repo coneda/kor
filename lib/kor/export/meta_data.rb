@@ -1,5 +1,4 @@
 class Kor::Export::MetaData
-  
   def initialize(user)
     @user = user
     @profile = []
@@ -10,19 +9,19 @@ class Kor::Export::MetaData
       }
     end
   end
-  
+
   def line(name, value, indent = 0)
     indent_string = "  " * indent
     indent_string + (name ? "#{name}: #{value}\n" : "#{value}\n")
   end
-  
+
   def render(entity)
     render_entity(entity)
   end
-  
+
   def render_entity(entity, options = {})
     options.reverse_merge!(:profile => @profile, :indent => 0)
-  
+
     result = ""
     if entity.is_medium?
       value = entity.uuid + (options[:properties].blank? ? "" : " (#{options[:properties]})")
@@ -47,8 +46,7 @@ class Kor::Export::MetaData
         )
       end
     end
-    
+
     result
   end
-  
 end

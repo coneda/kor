@@ -79,7 +79,7 @@ class Kor::NeoGraph
       store_entity(batch)
       increment(batch.size)
     end
-    
+
     cypher "CREATE INDEX ON :entity(id)"
     cypher "CREATE INDEX ON :entity(kind_id)"
     cypher "CREATE INDEX ON :entity(kind_name)"
@@ -119,7 +119,7 @@ class Kor::NeoGraph
             "updated_at" => item.updated_at.to_f
           }
         }
-      }  
+      }
     )
   end
 
@@ -138,7 +138,7 @@ class Kor::NeoGraph
             'authority_group_category_id' => item.authority_group_category_id
           }
         }
-      }  
+      }
     )
 
     group.each do |g|
@@ -181,7 +181,7 @@ class Kor::NeoGraph
             "relation_name" => item.relation.name,
             "relation_reverse_name" => item.relation.reverse_name,
             "created_at" => item.created_at.to_f,
-            "updated_at" => item.updated_at.to_f    
+            "updated_at" => item.updated_at.to_f
           }
         }
       }
@@ -218,7 +218,7 @@ class Kor::NeoGraph
     else
       puts response.body, response.status
       nil
-    end    
+    end
   end
 
   protected

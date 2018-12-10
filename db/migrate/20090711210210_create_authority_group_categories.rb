@@ -10,7 +10,7 @@ class CreateAuthorityGroupCategories < ActiveRecord::Migration
       t.timestamps
     end
     add_index :authority_group_categories, [:parent_id, :lft, :rgt], :unique => true, :name => 'agc_hierarchy_index'
-    
+
     add_column :authority_groups, :authority_group_category_id, :integer
   end
 

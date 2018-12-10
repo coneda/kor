@@ -43,7 +43,7 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
 
     get '/oai-pmh/relations.xml', {
       verb: 'GetRecord',
-      identifier: has_created.uuid, 
+      identifier: has_created.uuid,
       metadataPrefix: 'kor'
     }
     expect(response).to be_success
@@ -58,13 +58,13 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
   it "should return XML that validates against the OAI-PMH schema" do
     relation = Relation.where(:name => "has created").first
 
-    # yes this suck, check out 
+    # yes this suck, check out
     # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
     # for a reason why it has to be done like this
     xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
     get '/oai-pmh/relations.xml', {
       verb: 'GetRecord',
-      identifier: relation.uuid, 
+      identifier: relation.uuid,
       metadataPrefix: 'kor'
     }
     doc = parse_xml(response.body)
@@ -77,7 +77,7 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
 
     get '/oai-pmh/relations.xml', {
       verb: 'GetRecord',
-      identifier: has_created.uuid, 
+      identifier: has_created.uuid,
       metadataPrefix: 'oai_dc'
     }
     doc = parse_xml(response.body)
@@ -85,7 +85,7 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
 
     get '/oai-pmh/relations.xml', {
       verb: 'GetRecord',
-      identifier: has_created.uuid, 
+      identifier: has_created.uuid,
       metadataPrefix: 'kor'
     }
     doc = parse_xml(response.body)
@@ -158,7 +158,7 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
 
     get '/oai-pmh/relations.xml', {
       verb: 'GetRecord',
-      identifier: has_created.uuid, 
+      identifier: has_created.uuid,
       metadataPrefix: 'kor'
     }
     doc = parse_xml(response.body)

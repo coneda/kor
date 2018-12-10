@@ -45,7 +45,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
     get '/oai-pmh/entities.xml', {
       verb: 'GetRecord',
-      identifier: mona_lisa.uuid, 
+      identifier: mona_lisa.uuid,
       metadataPrefix: 'kor'
     }
     expect(response).to be_success
@@ -80,9 +80,9 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
     get '/oai-pmh/entities.xml', {
       verb: 'GetRecord',
-      identifier: leonardo.uuid, 
+      identifier: leonardo.uuid,
       metadataPrefix: 'kor'
-    }    
+    }
 
     expect(response.status).to be(403)
   end
@@ -96,13 +96,13 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       properties: [{ 'label' => 'age', 'value' => 53 }]
     )
 
-    # yes this sucks, check out 
+    # yes this sucks, check out
     # https://mail.gnome.org/archives/xml/2009-November/msg0002it "should return 'badVerb' if the verb is not recognized"2.html
     # for a reason why it has to be done like this
     xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
     get '/oai-pmh/entities.xml', {
       verb: 'GetRecord',
-      identifier: leonardo.uuid, 
+      identifier: leonardo.uuid,
       api_key: admin.api_key,
       metadataPrefix: 'kor'
     }
@@ -117,7 +117,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
     get '/oai-pmh/entities.xml', {
       verb: 'GetRecord',
-      identifier: leonardo.uuid, 
+      identifier: leonardo.uuid,
       api_key: admin.api_key,
       metadataPrefix: 'oai_dc'
     }
@@ -126,7 +126,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
     get '/oai-pmh/entities.xml', {
       verb: 'GetRecord',
-      identifier: leonardo.uuid, 
+      identifier: leonardo.uuid,
       api_key: admin.api_key,
       metadataPrefix: 'kor'
     }
@@ -159,7 +159,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
     get '/oai-pmh/entities.xml', {
       verb: 'GetRecord',
-      identifier: '1234', 
+      identifier: '1234',
       api_key: admin.api_key,
       metadataPrefix: 'kor'
     }
@@ -207,7 +207,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
     get '/oai-pmh/entities.xml', {
       verb: 'GetRecord',
-      identifier: leonardo.uuid, 
+      identifier: leonardo.uuid,
       api_key: admin.api_key
     }
     verify_oaipmh_error 'cannotDisseminateFormat'

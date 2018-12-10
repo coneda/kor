@@ -76,7 +76,7 @@ Rails.application.routes.draw do
         post 'remove', action: 'remove_from'
       end
     end
-    
+
     resources :user_groups do
       member do
         get 'download_images'
@@ -85,7 +85,7 @@ Rails.application.routes.draw do
         post 'add', action: 'add_to'
         post 'remove', action: 'remove_from'
       end
-      
+
       collection do
         get 'shared'
       end
@@ -123,7 +123,7 @@ Rails.application.routes.draw do
         post 'merge'
         post 'existence'
       end
-      
+
       member do
         get 'metadata'
         patch 'update_tags'
@@ -146,7 +146,7 @@ Rails.application.routes.draw do
       get ':id/image', action: 'sequence', as: 'iiif_image'
     end
   end
-  
+
   scope 'oai-pmh', format: 'xml', as: 'oai_pmh', via: [:get, :post] do
     ['entities', 'relationships', 'kinds', 'relations'].each do |res|
       controller "oai_pmh/#{res}", defaults: { format: 'xml' } do

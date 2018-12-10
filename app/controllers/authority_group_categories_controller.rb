@@ -1,6 +1,6 @@
 class AuthorityGroupCategoriesController < JsonController
   # layout 'small_normal'
-  
+
   skip_before_filter :auth, :only => [:index, :show, :flat]
 
   def flat
@@ -8,7 +8,7 @@ class AuthorityGroupCategoriesController < JsonController
     @total = @records.count
     render 'json/index'
   end
-  
+
   def index
     @records = if params[:parent_id].present?
       AuthorityGroupCategory.find(params[:parent_id]).children
@@ -56,7 +56,7 @@ class AuthorityGroupCategoriesController < JsonController
     @record.destroy
     render_deleted @record
   end
-  
+
   protected
 
     def authority_group_category_params

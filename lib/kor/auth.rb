@@ -55,7 +55,7 @@ module Kor::Auth
         if username = env[ku]
           Rails.logger.info "found username #{username}"
 
-          mail_candidates = 
+          mail_candidates =
             var_to_array(source['mail']).
               map { |km| env[km] }.
               select { |e| e.present? } +
@@ -66,7 +66,7 @@ module Kor::Auth
             Rails.logger.info "no valid mail address found"
           else
             Rails.logger.info "found mail addresses: #{mail_candidates.inspect}"
-            
+
             mail_candidates.each do |mail|
               full_name = nil
               var_to_array(source['full_name']).each do |kf|
@@ -138,7 +138,7 @@ module Kor::Auth
       end
     end
   end
-  
+
   def self.login(username, password)
     if attributes = authenticate(username, password)
       authorize(username, attributes)
@@ -188,7 +188,7 @@ module Kor::Auth
       raise "can't handle #{objects.inspect}"
     end
   end
-  
+
   def self.allowed_to?(user, policy = :view, collections = nil, options = {})
     options.reverse_merge!(:required => :all)
     collections ||= Collection.all.to_a
@@ -215,14 +215,14 @@ module Kor::Auth
       when :view
         view_from = allowed_to?(user, :view, relationship.from.collection)
         view_to = allowed_to?(user, :view, relationship.to.collection)
-        
+
         view_from and view_to
       when :create, :delete, :edit
         view_from = allowed_to?(user, :view, relationship.from.collection)
         view_to = allowed_to?(user, :view, relationship.to.collection)
         edit_from = allowed_to?(user, :edit, relationship.from.collection)
         edit_to = allowed_to?(user, :edit, relationship.to.collection)
-        
+
         (view_from and edit_to) or (edit_from and view_to)
       else
         false
@@ -247,7 +247,7 @@ module Kor::Auth
     else
       options[:to]
     end
-  
+
     policies.each do |policy|
       options[:to].each do |credential|
         collection.grants << Grant.new(policy: policy, credential: credential)

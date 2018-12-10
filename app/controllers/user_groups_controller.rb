@@ -4,7 +4,7 @@ class UserGroupsController < JsonController
 
     if @user_group.owner == current_user or @user_group.shared
       @entities = @user_group.entities.allowed(current_user, :view).media
-      
+
       zip_download @user_group, @entities
     else
       render_403 I18n.t('errors.access_denied')
@@ -22,14 +22,14 @@ class UserGroupsController < JsonController
 
   def remove_from
     @records = UserGroup.owned_by(current_user).find(params[:id])
-    
+
     entity_ids = Kor.array_wrap(params[:entity_ids])
     entities = Entity.allowed(current_user).find entity_ids
     @records.remove_entities(entities)
 
     render_200 I18n.t('messages.entities_removed_from_group')
   end
-  
+
   def share
     @records = if current_user.admin?
       UserGroup.find(params[:id])
@@ -42,7 +42,7 @@ class UserGroupsController < JsonController
 
     render_200 I18n.t('objects.shared_success', :o => @records.name)
   end
-  
+
   def unshare
     @records = if current_user.admin?
       UserGroup.find(params[:id])
@@ -55,7 +55,7 @@ class UserGroupsController < JsonController
 
     render_200 I18n.t('objects.unshared_success', :o => @records.name)
   end
-  
+
   def shared
     @records = UserGroup.shared
 
@@ -66,7 +66,7 @@ class UserGroupsController < JsonController
 
   def index
     @records = UserGroup.owned_by(current_user).search(params[:terms])
-    
+
     @total = @records.count
     @records = @records.pageit(page, per_page)
     render template: 'json/index'
@@ -74,7 +74,7 @@ class UserGroupsController < JsonController
 
   def show
     @record = UserGroup.find(params[:id])
-    
+
     if @record.owner == current_user || @record.shared
       render template: 'json/show'
     else
@@ -108,16 +108,15 @@ class UserGroupsController < JsonController
     @record.destroy
     render_deleted @record
   end
-  
+
   protected
 
     def auth
-      ['shared', 'show', 'download_images'].include?(action_name) || 
+      ['shared', 'show', 'download_images'].include?(action_name) ||
         require_non_guest
     end
 
     def user_group_params
       params.require(:user_group).permit(:name, :lock_version)
     end
-  
 end

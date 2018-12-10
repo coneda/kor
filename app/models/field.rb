@@ -1,8 +1,8 @@
 class Field < ApplicationRecord
   serialize :settings, Hash
-  
+
   belongs_to :kind, touch: true
-  
+
   validates :name,
     :presence => true,
     :format => { :with => /\A[a-z0-9_]+\z/, allow_blank: true },
@@ -89,7 +89,7 @@ class Field < ApplicationRecord
   scope :identifiers, lambda { where(:is_identifier => true) }
 
   # Attributes
-  
+
   attr_accessor :entity
 
   def settings
@@ -116,15 +116,15 @@ class Field < ApplicationRecord
   def human
     show_label.presence || name
   end
-  
+
   def validate_value
     true
   end
-  
+
   def self.fields
     []
   end
-  
+
   def self.label
     raise "please implement in subclass"
   end
@@ -132,19 +132,18 @@ class Field < ApplicationRecord
   def form?
     true
   end
-  
+
   def index?
     false
   end
-  
+
   def value
     if entity
       entity.dataset[name]
     end
   end
-  
+
   def serializable_hash(*args)
     super(methods: [:value, :show_on_entity]).stringify_keys
   end
-  
 end

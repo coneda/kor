@@ -5,11 +5,11 @@ class AuthorityGroup < EntityGroup
   if column_names.include? 'authority_group_category_id'
     validates :name, uniqueness: { scope: :authority_group_category_id }
   end
-  
+
   default_scope lambda { order(name: 'asc') }
-  
+
   scope :within_category, lambda { |id|
-    id.present? ? 
+    id.present? ?
       where(authority_group_category_id: id) :
       where(authority_group_category_id: nil)
   }

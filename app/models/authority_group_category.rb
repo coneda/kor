@@ -2,7 +2,7 @@ require 'awesome_nested_set'
 
 class AuthorityGroupCategory < ApplicationRecord
   acts_as_nested_set :dependent => :destroy
-  
+
   has_many :authority_groups, :dependent => :destroy
 
   validates :name,

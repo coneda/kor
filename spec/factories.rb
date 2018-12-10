@@ -44,7 +44,7 @@ FactoryGirl.define do
       show_label 'ISBN'
     end
   end
-  
+
   factory :medium do
     factory :medium_image_a do
       document File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
@@ -86,7 +86,7 @@ FactoryGirl.define do
   factory :medium_without_swap, :class => Medium do
     image File.open("#{Rails.root}/spec/fixtures/image_a.jpg")
   end
-  
+
   factory :collection do
     factory :default do
       name "default"
@@ -109,7 +109,7 @@ FactoryGirl.define do
       dating_string "1452 bis 1519"
     end
   end
-  
+
   factory :entity do
     collection { Collection.find_or_create_by :name => "default" }
 
@@ -295,7 +295,7 @@ FactoryGirl.define do
     #   name 'admin'
     #   full_name 'Administrator'
     #   password 'admin'
-      
+
     #   admin true
     #   kind_admin true
     #   relation_admin true

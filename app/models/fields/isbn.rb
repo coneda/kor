@@ -8,13 +8,12 @@ class Fields::Isbn < Field
 
     true
   end
-  
+
   def self.label
     'ISBN'
   end
-  
+
   def index?
     true
   end
-  
 end

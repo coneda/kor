@@ -1,7 +1,7 @@
 class UnifyGndReferences < ActiveRecord::Migration
   def up
     # Code is already present in 20141209173305_unify_web_services
-    
+
     # scope = Entity
 
     # scope.find_each do |e|

@@ -68,7 +68,7 @@ class Kor::Export::Excel
           entity.lock_version
         )
       end
-      
+
       book.write "#{@target_dir}/entities.#{counter.to_s.rjust 4, '0'}.xls"
     end
   end

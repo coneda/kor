@@ -94,7 +94,7 @@ Then /^I should (not )?see element "([^\"]*)"$/ do |yesno, selector|
         expect(element.visible?).to be_falsey
       end
     else
-      expect(page).not_to have_css(selector)  
+      expect(page).not_to have_css(selector)
     end
   else
     expect(page).to have_css(selector)
@@ -224,7 +224,7 @@ Then(/^"([^"]*)" should not have option "([^"]*)"$/) do |name, value|
 end
 
 Then(/^select "([^"]*)" should be disabled$/) do |label|
-  field = page.find_field(label, disabled: :all) 
+  field = page.find_field(label, disabled: :all)
   expect(field['disabled']).to be_present
 end
 

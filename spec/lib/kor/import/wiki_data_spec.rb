@@ -68,7 +68,7 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
 
   it 'should find all properties linking other wikidata items' do
     results = subject.internal_properties_for('Q762')
-    
+
     expect(results).to include(
       'id' => 'P20', 'label' => 'place of death', 'values' => ['Q1122731']
     )

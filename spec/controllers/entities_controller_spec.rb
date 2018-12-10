@@ -8,7 +8,7 @@ RSpec.describe EntitiesController, type: :controller do
     expect_collection_response count: 0
 
     expect(Kor::Search).to receive(:new).with(
-      User.guest, 
+      User.guest,
       hash_including(
         isolated: false,
         sort: { column: 'random', direction: 'asc' }
@@ -111,7 +111,7 @@ RSpec.describe EntitiesController, type: :controller do
         'primary_relations' => [],
         'secondary_relations' => []
       )
-      
+
       get 'index', include: 'gallery_data', kind_id: Kind.medium_kind_id
       expect_collection_response count: 1
       expect(json['records'][0]['primary_entities'].size).to eq(0)
@@ -273,7 +273,7 @@ RSpec.describe EntitiesController, type: :controller do
         'primary_relations' => [],
         'secondary_relations' => []
       )
-      
+
       get 'index', include: 'gallery_data', kind_id: Kind.medium_kind_id
       expect_collection_response count: 2
       expect(json['records'][0]['primary_entities'].size).to eq(0)
@@ -342,7 +342,7 @@ RSpec.describe EntitiesController, type: :controller do
           { label: 'Date of death', dating_string: '1688' }
         ]
       }
-    
+
       post 'create', entity: entity_params, user_group_name: group.name
       expect_created_response
       van_gogh = Entity.find_by!(name: 'Van Gogh')
@@ -586,7 +586,7 @@ RSpec.describe EntitiesController, type: :controller do
       other_mona_lisa = FactoryGirl.create :mona_lisa, name: 'Monalisa', dataset: {
         gnd: '123456',
         google_maps: 'Deutsche Straße 12, Frankfurt'
-      }    
+      }
 
       entity_ids = [
         Entity.find_by_name("Mona Lisa").id,
@@ -613,20 +613,20 @@ RSpec.describe EntitiesController, type: :controller do
       picture_a = Entity.media[0]
       picture_b = Entity.media[1]
       entity_ids = [picture_a.id, picture_b.id]
-      
+
       group_1 = AuthorityGroup.create(name: 'group 1')
       group_1.add_entities(picture_a)
       group_1.add_entities(picture_b)
 
       nice = UserGroup.find_by! name: 'nice'
       lecture = AuthorityGroup.find_by! name: 'lecture'
-         
+
       post 'merge', entity_ids: entity_ids, entity: {
         medium_id: picture_a.medium_id
       }
       expect(response).to be_success
       expect(Entity.all).not_to include(picture_b)
-      
+
       expect(picture_a.authority_groups.count).to eq(2)
       expect(picture_a.authority_groups).to include(group_1, lecture)
       expect(picture_a.user_groups).to eq([nice])
@@ -645,13 +645,13 @@ RSpec.describe EntitiesController, type: :controller do
         }
       }
 
-      post 'merge', entity_ids: [mona_lisa.id, other_mona_lisa.id], entity: { 
-        name: 'Mona Lisa', 
+      post 'merge', entity_ids: [mona_lisa.id, other_mona_lisa.id], entity: {
+        name: 'Mona Lisa',
         comment: 'comment 1',
         kind_id: works.id
       }
       expect(response).to be_success
-        
+
       expect(Entity.find_by_name('Mona Lisa').comment).to eql("comment 1")
     end
 
@@ -663,15 +663,15 @@ RSpec.describe EntitiesController, type: :controller do
         datings: [EntityDating.new(label: 'Lifespan', dating_string: '1877')]
       }
 
-      post 'merge', entity_ids: [leonardo.id, other_leonardo.id], entity: { 
-        :name => 'Leonardo', 
+      post 'merge', entity_ids: [leonardo.id, other_leonardo.id], entity: {
+        :name => 'Leonardo',
         :kind_id => works.id,
       }
       expect(response).to be_success
 
       leonardo = Entity.find_by! name: 'Leonardo'
       expect(Entity.count).to eq(7)
-      expect(leonardo.datings.count).to eq(2)    
+      expect(leonardo.datings.count).to eq(2)
     end
   end
 

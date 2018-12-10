@@ -30,4 +30,3 @@ module Paperclip::Interpolations
     end
   end
 end
-
