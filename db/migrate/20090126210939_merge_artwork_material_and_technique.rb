@@ -7,7 +7,7 @@ class MergeArtworkMaterialAndTechnique < ActiveRecord::Migration
     Artwork.reset_column_information
 
     Artwork.all.each do |a|
-      a.material_technique = "#{a.material}#{(a.material.blank? or a.technique.blank? ) ? "" : ', '}#{a.technique}"
+      a.material_technique = "#{a.material}#{(a.material.blank? or a.technique.blank?) ? "" : ', '}#{a.technique}"
     end
 
     change_table :dataset_artworks do |t|

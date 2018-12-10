@@ -89,10 +89,12 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
 
     var uploader = null;
 
     tag.on('mount', function() {
+      tag.title(tag.t('verbs.upload'))
       init();
     })
 

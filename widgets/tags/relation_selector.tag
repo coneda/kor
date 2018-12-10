@@ -1,5 +1,4 @@
 <kor-relation-selector>
-
   <kor-input
     if="{relationNames && relationNames.length > 0}"
     name="relation_name"
@@ -39,7 +38,6 @@
 
     tag.value = function() {
       var i = tag.refs.input;
-      console.log(i ? i.value() : null);
       return i ? i.value() : null;
     }
 
@@ -58,5 +56,4 @@
     }
 
   </script>
-
 </kor-relation-selector>

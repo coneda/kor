@@ -1,5 +1,4 @@
 <kor-relation-editor>
-
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">
       <h1 if={opts.id}>
@@ -105,6 +104,7 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'before-mount', ->
       if !tag.isRelationAdmin()
@@ -132,7 +132,6 @@
       p.always -> tag.update()
 
     create = ->
-      console.log values()
       Zepto.ajax(
         type: 'POST'
         url: '/relations'
@@ -190,6 +189,4 @@
       )
 
   </script>
-
-
 </kor-relation-editor>

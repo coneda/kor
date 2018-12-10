@@ -116,12 +116,14 @@
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
 
     tag.on('before-mount', function() {
       tag.criteria = urlParams();
     })
 
     tag.on('mount', function() {
+      tag.title(tag.t('nouns.search'))
       fetch()
       tag.on('routing:query', fetch)
     })

@@ -145,6 +145,7 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'before-mount', ->
       tag.errors = {}
@@ -189,14 +190,10 @@
 
     tag.nameLabel = ->
       return '' unless tag.kind
-      console.log tag.kind
       wApp.utils.capitalize tag.kind.settings['name_label']
 
     checkPermissions = ->
       policy = if tag.opts.id then 'edit' else 'create'
-      console.log tag.currentUser()
-      console.log tag.currentUser().permissions.collections
-      console.log policy
       if tag.currentUser().permissions.collections[policy].length == 0
         tag.opts.handlers.accessDenied()
 

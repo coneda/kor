@@ -99,7 +99,7 @@ module Kor
 
   def self.default_url_options(request = nil)
     uri = URI.parse(root_url)
-    return {
+    {
       host: uri.host,
       port: uri.port,
       protocol: uri.scheme

@@ -1,5 +1,4 @@
 <kor-entity-group>
-
   <div class="kor-content-box">
     <div class="pull-right group-commands">
       <a
@@ -15,6 +14,7 @@
     </div>
     <h1>
       {tcap('activerecord.models.' + opts.type + '_group')}
+      <span if={group}>"{group.name}"</span>
     </h1>
 
     <kor-pagination
@@ -48,11 +48,11 @@
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
 
     tag.on('mount', function() {
       fetchGroup()
       tag.on('routing:query', fetch)
-      // h(tag.t('pages.new_media')) if h = tag.opts.handlers.pageTitleUpdate
     })
 
     tag.on('unmount', function() {
@@ -69,7 +69,6 @@
           page: page || 1
         },
         success: function(data) {
-          console.log(data);
           if (data.total > data.page * data.per_page) {
             tag.onMarkClicked(event, page + 1);
           } else {
@@ -88,19 +87,24 @@
         url: '/' + tag.opts.type + '_groups/' + tag.opts.id,
         success: function(data) {
           tag.group = data;
+          wApp.bus.trigger('page-title', data.name);
           fetch();
         }
       })
     }
 
     var fetch = function() {
+      var params = {
+        include: 'gallery_data',
+        page: tag.opts.query.page
+      }
+
+      if (tag.opts.type == 'user') {params['user_group_id'] = tag.opts.id}
+      if (tag.opts.type == 'authority') {params['authority_group_id'] = tag.opts.id}
+
       return Zepto.ajax({
         url: '/entities',
-        data: {
-          include: 'gallery_data',
-          user_group_id: tag.opts.id,
-          page: tag.opts.query.page
-        },
+        data: params,
         success: function(data) {
           tag.data = data;
           tag.update();
@@ -113,5 +117,4 @@
     // queryUpdate = (newQuery) -> h(newQuery) if h = tag.opts.handlers.queryUpdate
 
   </script>
-
 </kor-entity-group>

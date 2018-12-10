@@ -38,6 +38,7 @@
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
 
     tag.submit = function(event) {
       event.preventDefault();

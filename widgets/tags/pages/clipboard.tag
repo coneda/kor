@@ -74,8 +74,15 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
 
     tag.on('mount', function() {
+      tag.title(tag.t('nouns.clipboard'))
+      wApp.bus.trigger(
+        'page-title',
+        tag.tcap('nouns.clipboard')
+      );
+
       wApp.bus.on('routing:query', fetch);
       wApp.bus.on('clipboard-subselection-changed', tag.update);
 

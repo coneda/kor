@@ -109,3 +109,4 @@ end
 # TODO: add medium reprocess action that can be triggered via web
 # TODO: create missing controller tests, look at coverage report for specs only
 # TODO: test version task
+# TODO: document rubocop usage: bundle exec rubocop -D -E -R -S

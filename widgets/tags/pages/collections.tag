@@ -44,8 +44,10 @@
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
 
     tag.on('mount', function() {
+      tag.title(tag.t('activerecord.models.collection', {count: 'other'}))
       fetch()
     })
 

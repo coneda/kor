@@ -75,8 +75,11 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.page)
 
-    tag.on 'mount', -> fetch()
+    tag.on 'mount', ->
+      tag.title(tag.t('activerecord.models.kind', {count: 'other'}))
+      fetch()
 
     tag.filters = {}
 

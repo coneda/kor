@@ -1,5 +1,4 @@
 <kor-publishment-editor>
-
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">
       <h1 if={opts.id}>
@@ -39,6 +38,7 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'before-mount', ->
       fetchGroups()
@@ -67,7 +67,6 @@
     values = ->
       results = {}
       for f in tag.refs.fields
-        console.log f
         results[f.name()] = f.value()
       results
 
@@ -81,5 +80,4 @@
           tag.update()
       )
   </script>
-
 </kor-publishment-editor>

@@ -111,7 +111,7 @@ module TestHelper
         
         filters.clear
         add_filter do |src|
-          !(src.filename =~ /^#{SimpleCov.root}/)
+          src.filename !~ /^#{SimpleCov.root}/
         end
         add_filter '/config/'
         add_filter '/db/'

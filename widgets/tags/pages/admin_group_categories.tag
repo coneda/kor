@@ -64,6 +64,7 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
 
     tag.on('mount', function() {
       if (tag.opts.parentId) {fetchParent();}

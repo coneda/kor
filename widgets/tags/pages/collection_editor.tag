@@ -1,5 +1,4 @@
 <kor-collection-editor>
-
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">
       <h1 if={opts.id}>
@@ -49,6 +48,8 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.page)
+
     tag.policies = [
       'view', 'edit', 'create', 'delete', 'download_originals', 'tagging',
       'view_meta'
@@ -83,7 +84,6 @@
       )
 
     create = ->
-      console.log values()
       Zepto.ajax(
         type: 'POST'
         url: '/collections'
@@ -115,5 +115,4 @@
       )
 
   </script>
-
 </kor-collection-editor>

@@ -59,6 +59,7 @@
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.info)
     tag.mixin(wApp.mixins.config)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'mount', ->
       Zepto(tag.root).find('input').first().focus()

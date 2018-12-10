@@ -99,6 +99,7 @@
           }
         },
         error: function() {
+          // TODO: use console.error?
           console.log(arguments);
         }
       });

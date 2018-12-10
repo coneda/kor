@@ -1,5 +1,4 @@
 <w-app-loader>
-
   <div class="app" ref="target">
     <div class="kor-loading-screen">
       <img src="/images/loading.gif"><br />
@@ -29,7 +28,7 @@
       updateLayout();
       var opts = {routing: true};
       tag.mountedApp = riot.mount(tag.refs.target, 'w-app', opts)[0]
-      console.log('application (re)loaded');
+      console.log('ConedaKOR frontend loaded');
     }
 
     // this update the page layout with some dynamic content, such as language,
@@ -66,5 +65,4 @@
       wApp.bus.trigger('reload-app')
     })
   </script>
-
 </w-app-loader>

@@ -1,5 +1,4 @@
 <kor-generators>
-
   <div class="pull-right kor-text-right">
     <a
       href="#/kinds/{opts.kind.id}/edit/generators/new"
@@ -39,9 +38,6 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
-
-    tag.on 'mount', ->
-      console.log(tag.opts.kind)
 
     tag.remove = (generator) ->
       (event) ->

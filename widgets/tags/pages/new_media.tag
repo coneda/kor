@@ -36,8 +36,10 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'mount', ->
+      tag.title(tag.t('pages.new_media'))
       fetch()
       tag.on 'routing:query', fetch
       h(tag.t('pages.new_media')) if h = tag.opts.handlers.pageTitleUpdate

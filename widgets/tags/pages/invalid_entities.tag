@@ -54,12 +54,13 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'mount', ->
       if tag.allowedTo('delete')
         fetch()
         tag.on 'routing:query', fetch
-        h(tag.t('pages.invalid_entities')) if h = tag.opts.handlers.pageTitleUpdate
+        wApp.bus.trigger 'page-title', tag.t('pages.invalid_entities')
       else
         h() if h = tag.opts.handlers.accessDenied
 

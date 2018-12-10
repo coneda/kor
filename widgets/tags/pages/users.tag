@@ -102,12 +102,14 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'before-mount', ->
       if !tag.isAdmin()
         tag.opts.handlers.accessDenied()
 
     tag.on 'mount', ->
+      tag.title(tag.t('activerecord.models.user', {count: 'other'}))
       fetch()
       tag.on 'routing:query', fetch
 

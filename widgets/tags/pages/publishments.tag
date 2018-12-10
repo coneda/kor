@@ -54,8 +54,13 @@
     tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
 
     tag.on('mount', function() {
+      wApp.bus.trigger(
+        'page-title',
+        tag.tcap('activerecord.models.publishment', {count: 'other'})
+      )
       fetch();
     })
 

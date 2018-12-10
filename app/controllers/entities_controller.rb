@@ -188,7 +188,7 @@ class EntitiesController < JsonController
     @entity = Entity.find(params[:id])
     if allowed_to?(:delete, @entity.collection)
       @entity.destroy
-      flash[:notice] = I18n.t( 'objects.destroy_success', :o => @entity.display_name )
+      flash[:notice] = I18n.t('objects.destroy_success', :o => @entity.display_name)
       if session[:current_entity] == @entity.id
         session[:current_entity] = nil
       end

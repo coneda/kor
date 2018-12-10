@@ -62,8 +62,15 @@
     tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
 
     tag.on('mount', function() {
+      if (tag.opts.type == 'shared') {
+        tag.title(tag.tcap('nouns.shared_user_group'))
+      } else {
+        tag.title(tag.tcap('activerecord.models.user_group'))
+      }
+
       fetch();
     })
 

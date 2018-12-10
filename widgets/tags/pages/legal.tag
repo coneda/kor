@@ -21,8 +21,10 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.config)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'mount', ->
+      tag.title(tag.t('legal'))
       Zepto(tag.root).find('.target').html tag.config().legal_html
 
     tag.termsAccepted = ->

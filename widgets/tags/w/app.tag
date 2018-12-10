@@ -20,14 +20,20 @@
     tag.on 'mount', ->
       wApp.bus.on 'routing:path', tag.routeHandler
       wApp.bus.on 'routing:query', tag.queryHandler
+      wApp.bus.on 'page-title', pageTitleHandler
       if tag.opts.routing
         wApp.routing.setup()
 
     tag.on 'unmount', ->
+      wApp.bus.off 'page-title', pageTitleHandler
       wApp.bus.off 'routing:query', tag.queryHandler
       wApp.bus.off 'routing:path', tag.routeHandler
       if tag.opts.routing
         wApp.routing.tearDown()
+
+    pageTitleHandler = (newTitle) ->
+      nv = if newTitle then newTitle else 'ConedaKOR'
+      Zepto('head title').html nv
 
     tag.routeHandler = (parts) ->
       tagName = 'kor-loading'
@@ -37,9 +43,6 @@
           accessDenied: -> tag.mountTag 'kor-access-denied'
           queryUpdate: (newQuery) -> wApp.routing.query(newQuery)
           doneHandler: -> wApp.routing.back()
-          pageTitleUpdate: (newTitle) ->
-            nv = if newTitle then "KOR: #{newTitle}" else 'ConedaKOR'
-            Zepto('title').html nv
         }
       }
 
@@ -186,6 +189,7 @@
         element = Zepto(tag.root).find('.w-content')
 
         mountIt = ->
+          wApp.bus.trigger 'page-title'
           tag.mountedTag = riot.mount(element[0], tagName, opts)[0]
           if wApp.info.data.env != 'test'
             element.animate {opacity: 1.0}, 200

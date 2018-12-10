@@ -20,7 +20,7 @@ class Kor::Elastic
 
   def self.available?
     @available ||= begin
-      return false unless ENV['ELASTIC_URL'].present?
+      return false if ENV['ELASTIC_URL'].blank?
       
       response = raw_request('get', '/')
       response.status == 200

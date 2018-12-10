@@ -1,5 +1,4 @@
 <kor-credential-editor>
-
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">
       <h1 if={opts.id}>
@@ -43,6 +42,7 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'before-mount', ->
       tag.errors = {}
@@ -71,7 +71,6 @@
       )
 
     create = ->
-      console.log values()
       Zepto.ajax(
         type: 'POST'
         url: '/credentials'
@@ -92,5 +91,4 @@
       results
 
   </script>
-
 </kor-credential-editor>

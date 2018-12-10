@@ -37,6 +37,7 @@
             type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
             wApp.bus.trigger 'message', type, data.message
         catch e
+          # TODO: should this be console.error?
           console.log e, request
 
     self.drop = ->

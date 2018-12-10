@@ -78,7 +78,7 @@ end
 
 Then /^entity "([^"]*)" should have dataset value "([^"]*)" for "([^"]*)"$/ do |entity, value, name|
   entity = Entity.find_by_name entity
-  expect(entity.dataset[name]).to eq(value )
+  expect(entity.dataset[name]).to eq(value)
 end
 
 When /^the "([^"]*)" "([^"]*)" is updated behind the scenes$/ do |klass, name|

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Kor::Tasks do
   before :each do
     @out = []
-    allow(Kor::Tasks).to receive(:puts){|l| @out << l}
+    allow(Kor::Tasks).to receive(:puts) { |l| @out << l }
   end
 
   it 'should run reprocess_all' do

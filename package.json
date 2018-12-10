@@ -33,8 +33,7 @@
     "build": "widgets/build.sh",
     "watch": "widgets/build.sh watch",
     "start": "widgets/build.sh server",
-    "toc": "markdown-toc README.md --no-firsth1",
-    "rubocop": "bundle exec rubocop -D -E -R -S"
+    "toc": "markdown-toc README.md --no-firsth1"
   },
   "repository": {
     "type": "git",

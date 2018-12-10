@@ -254,6 +254,7 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'mount', ->
       wApp.bus.on 'relationship-updated', fetch
@@ -311,7 +312,7 @@
         data: {include: 'all'}
         success: (data) ->
           tag.data = data
-          h(tag.data.name) if h = tag.opts.handlers.pageTitleUpdate
+          tag.title tag.data.display_name
         error: ->
           h() if h = tag.opts.handlers.accessDenied
         complete: ->

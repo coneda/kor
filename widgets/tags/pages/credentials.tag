@@ -42,8 +42,10 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
 
     tag.on('mount', function() {
+      tag.title(tag.t('activerecord.models.credential', {count: 'other'}))
       if (!tag.isAdmin()) {
         tag.opts.handlers.accessDenied();
         return;

@@ -35,12 +35,13 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.page)
 
     tag.on 'mount', ->
       if tag.allowedTo('edit')
         fetch()
         tag.on 'routing:query', fetch
-        h(tag.t('pages.isolated_entities')) if h = tag.opts.handlers.pageTitleUpdate
+        tag.title(tag.t('pages.isolated_entities'))
       else
         h() if h = tag.opts.handlers.accessDenied
 

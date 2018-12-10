@@ -1,5 +1,4 @@
 <kor-input class="{'has-errors': opts.errors}">
-
   <label if={opts.type != 'radio'}>
     {opts.label}
     <a
@@ -94,10 +93,6 @@
     tag.selected = (item) ->
       v = item.id || item.value || item
       if tag.opts.multiple
-        console.log(
-          (tag.valueFromParent() || []),
-          v
-        )
         (tag.valueFromParent() || []).indexOf(v) > -1
       else
         "#{v}" == "#{tag.valueFromParent()}"
@@ -109,5 +104,4 @@
       Zepto(tag.refs.help).html(tag.opts.help) if tag.showHelp
 
   </script>
-
 </kor-input>

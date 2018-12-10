@@ -1,5 +1,4 @@
 <kor-inplace-tags>
-
   <virtual if={opts.entity.tags.length > 0 || opts.enableEditor}>
     <span class="field">
       {tcap('activerecord.models.tag', {count: 'other'})}:
@@ -30,9 +29,6 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
 
-    tag.on 'mount', ->
-      console.log(tag.opts.enableEditor)
-
     tag.toggleEditor = (event) ->
       event.preventDefault() if event
       tag.editorActive = !tag.editorActive
@@ -49,5 +45,4 @@
           h() if h = tag.opts.handlers.doneHandler
       )
   </script>
-
 </kor-inplace-tags>

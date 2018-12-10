@@ -20,7 +20,7 @@ required = [
 ]
 
 required.each do |k|
-  unless ENV.has_key?(k)
+  unless ENV.key?(k)
     raise StandardError, "configuration #{k} needs to be set"
   end
 end
