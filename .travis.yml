@@ -3,7 +3,6 @@ sudo: required
 
 env:
   global:
-    - MOZ_HEADLESS=1
     - HEADLESS=true
     - DATABASE_URL="mysql2://travis@localhost/kor_test?encoding=utf8&collation=utf8_general_ci"
 
@@ -20,15 +19,9 @@ before_install:
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.12.deb 
   - sudo dpkg -i --force-confnew elasticsearch-5.6.12.deb
   - sudo service elasticsearch restart
-
   - wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - sudo ln -sfn $(pwd)/chromedriver /usr/local/bin/chromedriver
-  # - wget -N https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz -O geckodriver.tar.gz
-  # - tar xzf geckodriver.tar.gz
-  # - rm geckodriver.tar.gz
-  # - chmod +x geckodriver
-  # - sudo mv geckodriver /usr/local/bin/geckodriver
   - nvm install v8.12.0
   - nvm alias default v8.12.0
 
@@ -41,4 +34,4 @@ script:
   - mysql -e 'CREATE DATABASE kor_test;'
   - bundle exec rake db:test:load
   - bundle exec rspec spec/ --format=documentation
-  - bundle exec cucumber features/ --format=pretty
+  - bundle exec cucumber features/ --format=pretty --no-strict

@@ -15,7 +15,6 @@ TestHelper.setup
 
 Capybara.server_port = 47001
 Capybara.default_max_wait_time = 5
-# Capybara.ignore_hidden_elements = true
 Capybara.default_driver = :selenium
 # Capybara.default_driver = :selenium_chrome
 
@@ -41,7 +40,6 @@ end
 
 Around do |scenario, block|
   TestHelper.around_each(&block)
-  # DatabaseCleaner.cleaning(&block)
 end
 
 Before do |scenario|

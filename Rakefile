@@ -1,3 +1,3 @@
-require File.expand_path('../config/application', __FILE__)
+require File.expand_path(__dir__ + '/config/application')
 
 Kor::Application.load_tasks
