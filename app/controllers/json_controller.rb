@@ -47,12 +47,12 @@ class JsonController < BaseController
     end
 
     def render_401(message = nil)
-      @message = message || I18n.t('notices.not_logged_in')
+      @message = message || I18n.t('messages.not_logged_in')
       render template: 'json/message', status: 401
     end
 
     def render_403(message = nil)
-      @message = message || I18n.t('notices.access_denied')
+      @message = message || I18n.t('messages.access_denied')
       render template: 'json/message', status: 403
     end
 
@@ -66,7 +66,7 @@ class JsonController < BaseController
     end
 
     def render_stale(exception)
-      @message = I18n.t('errors.stale_update')
+      @message = I18n.t('messages.stale_update')
       render template: 'json/message', status: 422
     end
 
@@ -77,7 +77,7 @@ class JsonController < BaseController
     end
 
     def render_500(message = nil)
-      @message = message || I18n.t('errors.exception_ocurred')
+      @message = message || I18n.t('messages.exception_ocurred')
       render template: 'json/message', status: 500
     end
 
@@ -191,13 +191,13 @@ class JsonController < BaseController
 
         if zip_file.background?
           zip_file.send_later :create_as_download
-          render_200 I18n.t('notices.creating_zip_file')
+          render_200 I18n.t('messages.creating_zip_file')
         else
           download = zip_file.create_as_download
           redirect_to url_for(controller: 'downloads', action: 'show', uuid: download.uuid)
         end
       else
-        render_200 I18n.t('notices.no_entities_in_group')
+        render_200 I18n.t('messages.no_entities_in_group')
       end
     end
 end

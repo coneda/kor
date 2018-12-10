@@ -20,22 +20,22 @@ class SessionController < JsonController
 
     if @user
       if @user.admin?
-        render_422 nil, I18n.t('errors.personal_password_reset_no_admins')
+        render_422 nil, I18n.t('messages.personal_password_reset_no_admins')
       else
         @user.reset_password
         @user.save
         UserMailer.reset_password(@user).deliver_now
-        render_200 I18n.t('notices.personal_password_reset_success')
+        render_200 I18n.t('messages.personal_password_reset_success')
       end
     else
-      render_404 I18n.t('errors.personal_password_reset_mail_not_found')
+      render_404 I18n.t('messages.personal_password_reset_mail_not_found')
     end
   end
 
   def create
     account_without_password = User.find_by_name(params[:username])
     if account_without_password && account_without_password.too_many_login_attempts?
-      render_403 I18n.t('errors.too_many_login_attempts')
+      render_403 I18n.t('messages.too_many_login_attempts')
     else
       account = Kor::Auth.login(params[:username], params[:password])
 
@@ -43,14 +43,14 @@ class SessionController < JsonController
         account.update_attributes(login_attempts: [])
 
         if account.expires_at && (account.expires_at <= Time.now)
-          render_403 I18n.t("errors.account_expired")
+          render_403 I18n.t("messages.account_expired")
         elsif !account.active
           reset_session
-          render_403 I18n.t("errors.account_inactive")
+          render_403 I18n.t("messages.account_inactive")
         else
           account.fix_cryptography(params[:password])
           create_session(account)
-          render_200 I18n.t('notices.logged_in')
+          render_200 I18n.t('messages.logged_in')
         end
       else
         if account_without_password
@@ -59,14 +59,14 @@ class SessionController < JsonController
         end
 
         reset_session
-        render_403 I18n.t("errors.user_or_pass_refused")
+        render_403 I18n.t("messages.user_or_pass_refused")
       end
     end
   end
 
   def destroy
     reset_session
-    render_200 I18n.t("notices.logged_out")
+    render_200 I18n.t("messages.logged_out")
   end
 
   protected

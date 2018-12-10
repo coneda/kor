@@ -60,9 +60,13 @@
       }
     }
 
-    wApp.bus.on('reload-app', reloadApp);
     tag.on('mount', function() {
-      wApp.bus.trigger('reload-app')
+      wApp.bus.on('reload-app', reloadApp);
+      wApp.bus.trigger('reload-app');
+    })
+
+    tag.on('unmount', function() {
+      wApp.bus.off('reload-app', reloadApp);
     })
   </script>
 </w-app-loader>

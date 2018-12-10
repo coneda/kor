@@ -36,6 +36,10 @@
           if data.message
             type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
             wApp.bus.trigger 'message', type, data.message
+
+          if request.status == 401
+            wApp.routing.path('#/login')
+            wApp.bus.trigger('reload-session')
         catch e
           # TODO: should this be console.error?
           console.log e, request
@@ -46,5 +50,4 @@
     self.error = (message) -> message.type == 'error'
     self.notice = (message) -> message.type == 'notice'
   </script>
-
 </w-messaging>

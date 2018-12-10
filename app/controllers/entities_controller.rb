@@ -156,7 +156,7 @@ class EntitiesController < JsonController
       end
     else
       if @entity.collection_id_changed?
-        render_403 I18n.t('errors.move_denied')
+        render_403 I18n.t('messages.move_denied')
       else
         render_403
       end
@@ -188,7 +188,6 @@ class EntitiesController < JsonController
     @entity = Entity.find(params[:id])
     if allowed_to?(:delete, @entity.collection)
       @entity.destroy
-      flash[:notice] = I18n.t('objects.destroy_success', :o => @entity.display_name)
       if session[:current_entity] == @entity.id
         session[:current_entity] = nil
       end
@@ -207,7 +206,7 @@ class EntitiesController < JsonController
 
     if allowed_to_create and allowed_to_delete_requested_entities
       if entities.map { |e| e.kind.id }.uniq.size != 1
-        render_422 nil, I18n.t('errors.only_same_kind')
+        render_422 nil, I18n.t('messages.only_same_kind')
       end
 
       @record = Kor::EntityMerger.new.run(
@@ -218,18 +217,18 @@ class EntitiesController < JsonController
       )
 
       if @record.valid?
-        render_200 I18n.t('notices.merge_success')
+        render_200 I18n.t('messages.merge_success')
       else
-        render_422 @record.errors, I18n.t('errors.merge_failure')
+        render_422 @record.errors, I18n.t('messages.merge_failure')
       end
     else
-      render_403 I18n.t("errors.merge_access_denied_on_entities")
+      render_403 I18n.t("messages.merge_access_denied_on_entities")
     end
   end
 
   def mass_relate
     if params[:id].blank?
-      render_422 I18n.t("errors.destination_not_given")
+      render_422 I18n.t("messages.destination_not_given")
     else
       @target = Entity.find(params[:id])
       @entities = Entity.find(params[:entity_ids] || [])
@@ -252,12 +251,12 @@ class EntitiesController < JsonController
             end
           end
         rescue ActiveRecord::Rollback => e
-          render_422 I18n.t('errors.relationships_not_saved') and return
+          render_422 I18n.t('messages.relationships_not_saved') and return
         end
 
-        render_200 I18n.t('notices.mass_relation_success')
+        render_200 I18n.t('messages.mass_relation_success')
       else
-        render_403 I18n.t('errors.source_or_target_not_editable')
+        render_403 I18n.t('messages.source_or_target_not_editable')
       end
     end
   end

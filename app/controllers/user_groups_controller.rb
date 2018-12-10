@@ -7,7 +7,7 @@ class UserGroupsController < JsonController
 
       zip_download @user_group, @entities
     else
-      render_403 I18n.t('errors.access_denied')
+      render_403 I18n.t('messages.access_denied')
     end
   end
 

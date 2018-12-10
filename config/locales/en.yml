@@ -1,4 +1,5 @@
 en:
+  access_denied: access denied
   with: with
   general: "general"
   with_solved_issues_from: "with solved tickets from"
@@ -639,108 +640,99 @@ en:
         %{link}
       
   messages:
-    entities_moved_to_collection: "all entities have been moved to collection '%{o}'"
-    entities_added_to_group: "the entities have been added to the selected entity group"
-    no_user_groups: "there are no personal groups available"
-    no_authority_groups: "there are no global groups available"
-    swfupload_success: "the upload was successful"
-    none_found: "%{o} not found"
-    no_clipboard_action_selected: "you have not selected an action"
-    following_relationship: "the following relationship should be applied or created"
-    edit_existing_entity: |
-      Identical entity already exists. Do you want to
-      %{edit_link} or %{show_link} instead?
-    password_reset: "the password %{username} has been reset"
-    login_attempts_reset: "the number of login attempts for %{username} has been reset"
-    password_possibly_reset: |
-      If the entered email address exists, an email with new login details will
-      be sent.
     access_denied: |
       Unfortunately you do not have the required rights, to access this part of
       the application. Probably your session has expired.
       Please login again, to have more rights or to renew your
       session.
-    not_logged_in: You are not logged in
+    account_expired: "this account has expired"
+    account_inactive: "this account has been deactivated"
+    cant_mass_relate_more_than_10_entities: "you can't mass relate more than 10 entities"
+    cant_merge_more_than_10_entities: "you can't merge more than 10 entities"
+    clipboard_too_many_elements: "the clipboard can only contain 500 elements"
+    collection_not_empty_on_delete: "the collection '%{name}' can't be deleted, because it is not empty"
+    creating_zip_file: "Zip file will be created. You will receive an email as soon as the download is ready."
+    date_parsing_failed: "the entered date could not be identified"
+    destination_not_given: "you have to chose an entity as a target"
+    edit_existing_entity: |
+      Identical entity already exists. Do you want to
+      %{edit_link} or %{show_link} instead?
+    entities_added_to_group: "the entities have been added to the selected entity group"
+    entities_destroyed: "the entity has been deleted"
+    entities_moved_to_collection: "all entities have been moved to collection '%{o}'"
+    exception_ocurred: "an unexpected error has occurred"
+    file_too_big: "the file '%{file}' is too big (%{size}MB) and can't be uploaded. The maximum allowed size is %{max}MB"
+    following_relationship: "the following relationship should be applied or created"
+    forbidden_clipboard_action: "you do not have enough rights to perform this action"
+    kind_has_children: kinds with children can't be deleted
+    kind_has_entities: the kind can't be removed because it still has entities
+    logged_in: "you have been logged in"
+    logged_out: "you have been logged out successfully"
+    login_attempts_reset: "the number of login attempts for %{username} has been reset"
     maintenance: |
       We are currently carrying out maintenance work. Therefore the application
       is temporary not available. Please try again later.
-    no_systemgroups: "there are no global groups available"
-    no_usergroups: "there are no user groups available"
-    exception_ocurred: |
-      For comprehensibility time and state of the application have been recorded.
-      If required please contact the administrator of KOR.
-    no_exceptions_recorded: "There are no exceptions recorded"
-    no_relations_provided: "There is no relation provided for this combination of entity types"
-    not_found: "The requested resource could not be found"
-    relation_merger_prompt: |
-      Add relations to this merge by clicking on the merge button on the
-      respective row. When you're finished, set one of them as the merge target
-      by clicking it. The star indicates the merge target.
-    statistics_validity: |
-      This data was collected at %{date} and it is recalculated at least every
-      24 hours.
-
-  notices:
-    creating_zip_file: "Zip file will be created. You will receive an email as soon as the download is ready."
-    no_entities_in_group: "There are no entities to download in this group"
-    personal_password_reset_success: |
-      A new password has been created and sent to the entered email address.
-    terms_accepted: "you have accepted the terms of use"
-    entities_destroyed: "the entity has been deleted"
-    no_entities_in_usergroup: "there is no entity in this group"
-    merge_success: "the entities have been merged successfully"
-    upload_success: "the file has been transferred successfully"
-    upload_duplicate: "The transferred image already exists. It has been added to the selected group."
-    no_entries_available: "there are no entries available"
-    reset_clipboard_success: "the clipboard has been reset"
-    access_denied: "access denied"
-    session_expired: "your session has expired"
     maintenance_done: "the maintenance work is completed"
-    logged_out: "you have been logged out successfully"
-    logged_in: "you have been logged in"
     mass_relation_success: all entities have been related
-
-  errors:
-    too_many_entities_for_zip: "the group contains too many images"
-    collection_not_empty_on_delete: "the collection '%{name}' can't be deleted, because it is not empty"
-    too_many_login_attempts: "the user has been blocked temporarily because of too many login attempts"
-    date_parsing_failed: "the entered date could not be identified"
-    personal_password_reset_mail_not_found: "the entered email address could not be found"
-    personal_password_reset_no_admins: "this functionality is not available to admins, please contact your hosting team"
-    search_string_too_short: "the search term must contain at least three characters"
-    forbidden_clipboard_action: "you do not have enough rights to perform this action"
-    merge_failure: "the entities could not be merged"
-    destination_not_given: "you have to chose an entity as a target"
-    not_allowed_action: "you do not have enough rights to perform this action"
-    ocurred: "errors occurred in the input"
-    user_or_pass_refused: "username or password could not be found"
-    account_inactive: "this account has been deactivated"
-    account_expired: "this account has expired"
-    only_same_kind: "please chose only entities of the same type"
-    cant_merge_more_than_10_entities: "you can't merge more than 10 entities"
-    cant_mass_relate_more_than_10_entities: "you can't mass relate more than 10 entities"
-    must_select_2_or_more_entities: "you can only merge two or more entities"
-    must_select_1_or_more_entities: "you must select at least one entity"
-    missing_entities_to_merge: "some entities in your selection couldn't be found, please refresh the clipboard and try again"
-    exception_ocurred: "an unexpected error has occurred"
-    publishment_expired: "this link has expired"
-    file_too_big: "the file '%{file}' is too big (%{size}MB) and can't be uploaded. The maximum allowed size is %{max}MB"
-    clipboard_too_many_elements: "the clipboard can only contain 500 elements"
-    kind_has_children: kinds with children can't be deleted
-    kind_has_entities: the kind can't be removed because it still has entities
     medium_kind_not_deletable: the medium kind can't be removed
-    relations_merge_failure: you can only merge relations with matching endpoints
-    source_or_target_not_editable: |
-      the source has to be editable or all targets have to be editable. In
-      addition, all entities have to be viewable
+    merge_failure: "the entities could not be merged"
+    merge_success: "the entities have been merged successfully"
+    missing_entities_to_merge: "some entities in your selection couldn't be found, please refresh the clipboard and try again"
     move_denied: |
       moving an entity from one collection to another requires the 'delete'
       permission in the source collection and the 'create' permission in the
       target collection
+    must_select_1_or_more_entities: "you must select at least one entity"
+    must_select_2_or_more_entities: "you can only merge two or more entities"
+    no_authority_groups: "there are no global groups available"
+    no_clipboard_action_selected: "you have not selected an action"
+    no_entities_in_group: "There are no entities to download in this group"
+    no_entities_in_usergroup: "there is no entity in this group"
+    no_entries_available: "there are no entries available"
+    no_exceptions_recorded: "There are no exceptions recorded"
+    no_systemgroups: "there are no global groups available"
+    no_relations_provided: "There is no relation provided for this combination of entity types"
+    no_user_groups: "there are no personal groups available"
+    no_usergroups: "there are no user groups available"
+    none_found: "%{o} not found"
+    not_allowed_action: "you do not have enough rights to perform this action"
+    not_found: "The requested resource could not be found"
+    not_logged_in: You are not logged in
+    ocurred: "errors occurred in the input"
+    only_same_kind: "please chose only entities of the same type"
+    password_possibly_reset: |
+      If the entered email address exists, an email with new login details will
+      be sent.
+    password_reset: "the password %{username} has been reset"
+    personal_password_reset_mail_not_found: "the entered email address could not be found"
+    personal_password_reset_no_admins: "this functionality is not available to admins, please contact your hosting team"
+    personal_password_reset_success: |
+      A new password has been created and sent to the entered email address.
+    publishment_expired: "this link has expired"
+    relation_merger_prompt: |
+      Add relations to this merge by clicking on the merge button on the
+      respective row. When you're finished, set one of them as the merge target
+      by clicking it. The star indicates the merge target.
+    relations_merge_failure: you can only merge relations with matching endpoints
+    reset_clipboard_success: "the clipboard has been reset"
+    search_string_too_short: "the search term must contain at least three characters"
+    session_expired: "your session has expired"
+    source_or_target_not_editable: |
+      the source has to be editable or all targets have to be editable. In
+      addition, all entities have to be viewable
     stale_update: |
       The record could not be updated because it has been updated in the
       meantime. This is a rare case which can normally be fixed by reloading the
       page and trying again.
+    statistics_validity: |
+      This data was collected at %{date} and it is recalculated at least every
+      24 hours.
+    terms_accepted: "you have accepted the terms of use"
+    too_many_entities_for_zip: "the group contains too many images"
+    too_many_login_attempts: "the user has been blocked temporarily because of too many login attempts"
+    upload_duplicate: "The transferred image already exists. It has been added to the selected group."
+    upload_success: "the file has been transferred successfully"
+    user_or_pass_refused: "username or password could not be found"
 
   labels:
     relate_to_via: relate all files with "%{to}" via

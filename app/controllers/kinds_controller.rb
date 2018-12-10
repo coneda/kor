@@ -45,11 +45,11 @@ class KindsController < JsonController
     # TODO: this has to deal with deleted entities
     # TODO: this should be moved to the model somehow
     if @kind.medium_kind?
-      render_422 nil, I18n.t('errors.medium_kind_not_deletable')
+      render_422 nil, I18n.t('messages.medium_kind_not_deletable')
     elsif @kind.children.present?
-      render_422 nil, I18n.t('errors.kind_has_children')
+      render_422 nil, I18n.t('messages.kind_has_children')
     elsif @kind.entities.count > 0
-      render_422 nil, I18n.t('errors.kind_has_entities')
+      render_422 nil, I18n.t('messages.kind_has_entities')
     else
       @kind.destroy
       render_200 I18n.t('objects.destroy_success', o: Kind.model_name.human)

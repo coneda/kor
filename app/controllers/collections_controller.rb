@@ -49,7 +49,7 @@ class CollectionsController < JsonController
       @record.destroy
       render_deleted @record
     else
-      render_400 I18n.t('errors.collection_not_empty_on_delete', name: @record.name)
+      render_400 I18n.t('messages.collection_not_empty_on_delete', name: @record.name)
     end
   end
 

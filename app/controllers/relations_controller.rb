@@ -68,7 +68,7 @@ class RelationsController < JsonController
         render_200 I18n.t('objects.merge_success', o: Relation.model_name.human(count: :other))
       end
     else
-      render_422 nil, I18n.t('errors.relations_merge_failure')
+      render_422 nil, I18n.t('messages.relations_merge_failure')
     end
   end
 

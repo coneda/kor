@@ -7,7 +7,7 @@ class UsersController < JsonController
 
     if @user.save
       current_user.reload
-      render_200 I18n.t('notices.terms_accepted')
+      render_200 I18n.t('messages.terms_accepted')
     else
       @errors = @user.errors
       render_422
@@ -23,7 +23,7 @@ class UsersController < JsonController
       render_200 I18n.t("messages.password_reset", username: @user.display_name)
     else
       @errors = @user.errors
-      render_422 I18n.t('errors.password_reset_failure')
+      render_422 I18n.t('messages.password_reset_failure')
     end
   end
 
@@ -38,7 +38,7 @@ class UsersController < JsonController
       )
     else
       @errors = @user.errors
-      render_422 I18n.t('errors.login_attempts_reset_failure')
+      render_422 I18n.t('messages.login_attempts_reset_failure')
     end
   end
 

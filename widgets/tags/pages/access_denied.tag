@@ -1,8 +1,7 @@
 <kor-access-denied>
-
   <div class="kor-layout-left kor-layout-large kor-clear-after">
     <div class="kor-content-box">
-      <h1>{tcap('notices.access_denied')}</h1>
+      <h1>{tcap('access_denied')}</h1>
 
       {t('messages.access_denied')}
 
@@ -22,5 +21,4 @@
 
     tag.returnTo = -> encodeURIComponent(wApp.routing.fragment())
   </script>
-
 </kor-access-denied>

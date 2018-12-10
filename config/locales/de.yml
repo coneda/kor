@@ -1,7 +1,5 @@
 de:
-
-  # General
-
+  access_denied: Zugriff verweigert
   with: mit
   general: "allgemein"
   with_solved_issues_from: "mit gelösten Tickets aus"
@@ -655,120 +653,114 @@ de:
         %{link}
       
   messages:
-    entities_moved_to_collection: "Die Entitäten wurden in Sammlung '%{o}' verschoben"
-    entities_added_to_group: |
-      Die Entitäten sind in die angegebene Gruppe übernommen worden
-    no_user_groups: "Es sind keine eigenen Gruppen vorhanden"
-    no_authority_groups: "Es sind keine globalen Gruppen vorhanden"
-    swfupload_success: "Der Upload war erfolgreich"
-    none_found: "es wurden keine %{o} gefunden"
-    no_clipboard_action_selected: "Sie haben keine Aktion ausgewählt"
-    following_relationship: "Die folgende Verknüpfung soll angelegt oder erstellt werden"
-    edit_existing_entity: |
-      eine gleichnamige Entität existiert bereits. wollen Sie diese stattdessen
-      %{edit_link} oder %{show_link}?
-    password_reset: "Das Passwort für %{username} wurde zurückgesetzt"
-    login_attempts_reset: "Die Anzahl der Anmeldeversuche für %{username} wurde zurückgesetzt"
-    password_possibly_reset: |
-      Wenn die angegebene Mail Adresse existiert, wurde das zugehörige passwort
-      neu generiert und eine Mail mit neuen Zugangsdaten verschickt.
     access_denied: |
       Leider haben Sie nicht die nötigen Zugriffsrechte, um auf diesen Teil der
       Anwendung zuzugreifen. Möglicherweise ist auch Ihre Sitzung abgelaufen.
       Bitte melden Sie sich erneut an, um mehr Rechte zu erhalten oder um Ihre
       Sitzung zu erneuern.
-    not_logged_in: Sie sind nicht angemeldet
-    maintenance: |
-      Wir führen derzeit Wartungsarbeiten am System durch. Die Anwendung steht
-      daher vorübergehend nicht zur Verfügung. Bitten versuchen Sie es später erneut
-    no_systemgroups: "es sind keine globalen Gruppen vorhanden"
-    no_usergroups: "es sind keine Benutzergruppen vorhanden"
+    account_expired: "dieser Zugang ist abgelaufen"
+    account_inactive: "dieser Zugang wurde deaktiviert"
+    cant_mass_relate_more_than_10_entities: |
+      Das gleichzeitige Verknüpfen mehrere Entitäten ist nur für 10 oder
+      weniger Entitäten möglich
+    cant_merge_more_than_10_entities: |
+      Das Zusammenführen von Entitäten ist nur für 10 oder weniger Entitäten
+      möglich
+    clipboard_too_many_elements: "Die Zwischenablage kann nur 500 Elemente beinhalten"
+    collection_not_empty_on_delete: "Die Sammlung '%{name}' kann nicht gelöscht werden, weil sie nicht leer ist"
+    creating_zip_file: "Zip-Datei wird erstellt, Sie erhalten eine Email, sobald der Download bereit steht"
+    date_parsing_failed: "Das angegebene Datum wurde nicht erkannt"
+    destination_not_given: "Sie müssen eine Entität als Ziel auswählen"
+    edit_existing_entity: |
+      eine gleichnamige Entität existiert bereits. wollen Sie diese stattdessen
+      %{edit_link} oder %{show_link}?
+    entities_added_to_group: |
+      Die Entitäten sind in die angegebene Gruppe übernommen worden
+    entities_destroyed: "die Entitäten wurden gelöscht"
+    entities_moved_to_collection: "Die Entitäten wurden in Sammlung '%{o}' verschoben"
     exception_ocurred: |
       Der Zeitpunkt und der Zustand der Anwendung wurden zum Zweck der späteren
       Nachvollziehbarkeit aufgezeichnet. Bitte kontaktieren Sie bei Bedarf den
       Administrator dieser Installation von KOR
+    file_too_big: "Die Datei '%{file}' ist zu groß (%{size}MB) und kann nicht hochgeladen werden. Die maximale Größe beträgt %{max}MB"
+    following_relationship: "Die folgende Verknüpfung soll angelegt oder erstellt werden"
+    forbidden_clipboard_action: "Sie haben nicht die nötigen Rechte, um diese Aktion auszuführen"
+    kind_has_children: Entitätstypen mit abhängigen Entitätstypen können nicht gelöscht werden
+    kind_has_entities: Entitätstypen mit abhängigen Entitäten können nicht gelöscht werden
+    logged_in: "Sie haben sich erfolgreich angemeldet"
+    logged_out: "Sie haben sich erfolgreich abgemeldet"
+    login_attempts_reset: "Die Anzahl der Anmeldeversuche für %{username} wurde zurückgesetzt"
+    maintenance: |
+      Wir führen derzeit Wartungsarbeiten am System durch. Die Anwendung steht
+      daher vorübergehend nicht zur Verfügung. Bitten versuchen Sie es später erneut
+    maintenance_done: "die Wartungsarbeiten wurden abgeschlossen"
+    mass_relation_success: alle Entitäten wurden verküpft
+    medium_kind_not_deletable: Der Entitätstype 'Medium' kann nicht gelöscht werden
+    merge_failure: "die Verschmelzung der Entitäten konnte nicht durchgeführt werden"
+    merge_success: "die Entitäten wurden erfolgreich miteinander verschmolzen"
+    missing_entities_to_merge: |
+      Einige Entitäten in Ihrer Auswahl wurden nicht gefunden. Bitte laden Sie
+      die Seite neu. Vermutlich sind die Entitäten in der Zwischenzeit gelöscht
+      worden
+    move_denied: |
+      Änderungen der Sammlung erfordern Löschrechte für die ehemalige Sammlung
+      und Erstellungsrechte für die neue Sammlung.
+    must_select_1_or_more_entities: Sie müssen mindestens eine Entität auswählen
+    must_select_2_or_more_entities: |
+      Sie müssen mindestens zwei Entitäten auswählen
+    no_authority_groups: "Es sind keine globalen Gruppen vorhanden"
+    no_clipboard_action_selected: "Sie haben keine Aktion ausgewählt"
+    no_entities_in_group: "In dieser Gruppe befinden sich keine herunterladbaren Entitäten"
+    no_entities_in_usergroup: "es befinden sich keine Entitäten in dieser Gruppe"
+    no_entries_available: "es sind keine Einträge vorhanden"
     no_exceptions_recorded: "es wurden keine Ausnahmen registriert"
     no_relations_provided: "Für diese Kombination ist keine Relation vorgesehen"
+    no_systemgroups: "es sind keine globalen Gruppen vorhanden"
+    no_user_groups: "Es sind keine eigenen Gruppen vorhanden"
+    no_usergroups: "es sind keine Benutzergruppen vorhanden"
+    none_found: "es wurden keine %{o} gefunden"
+    not_allowed_action: "Sie haben nicht die nötigen Rechte, um diese Aktion durchzuführen"
     not_found: "Die angefragte Resource konnte nicht gefunden werden"
+    not_logged_in: Sie sind nicht angemeldet
+    ocurred: "bei der Eingabe sind Fehler aufgetreten"
+    only_same_kind: "bitte wählen Sie hierzu nur Entitäten vom selbem Typ"
+    password_possibly_reset: |
+      Wenn die angegebene Mail Adresse existiert, wurde das zugehörige passwort
+      neu generiert und eine Mail mit neuen Zugangsdaten verschickt.
+    password_reset: "Das Passwort für %{username} wurde zurückgesetzt"
+    personal_password_reset_mail_not_found: "Die angegebene Emailadresse konnte nicht gefunden werden"
+    personal_password_reset_no_admins: |
+      Diese Funktionalität steht für Administratoren nicht zur Verfügung, bitte
+      wenden Sie sich an Ihr Rechenzentrum
+    personal_password_reset_success: |
+      Ihr Passwort wurde neu generiert und an die angegebenen Emaildresse gesendet
+    publishment_expired: "Dieser Link ist abgelaufen"
     relation_merger_prompt: |
       Zusammenführen: Fügen Sie einzelne Relationen hinzu, indem Sie in der 
       jeweiligen Reihe den Zusammenführen-Knopf klicken. Wenn Sie fertig sind,
       wählen Sie durch Anklicken eine der Relationen als Ziel aus. Das aktuell
       ausgewählte Ziel ist mit einem Stern gekennzeichnet.
-    statistics_validity: |
-      Diese Daten wurden um %{date} generiert und werden alle 24 Stunden
-      erneuert
-
-  notices:
-    creating_zip_file: "Zip-Datei wird erstellt, Sie erhalten eine Email, sobald der Download bereit steht"
-    no_entities_in_group: "In dieser Gruppe befinden sich keine herunterladbaren Entitäten"
-    personal_password_reset_success: |
-      Ihr Passwort wurde neu generiert und an die angegebenen Emaildresse gesendet
-    terms_accepted: "Sie haben die Nutzungsbedingungen akzeptiert"
-    entities_destroyed: "die Entitäten wurden gelöscht"
-    no_entities_in_usergroup: "es befinden sich keine Entitäten in dieser Gruppe"
-    merge_success: "die Entitäten wurden erfolgreich miteinander verschmolzen"
-    upload_success: "Datei wurde erfolgreich übertragen"
-    upload_duplicate: "Die übertragene Abbildung existiert bereits und wurde in die angegebene Gruppe aufgenommen"
-    no_entries_available: "es sind keine Einträge vorhanden"
-    reset_clipboard_success: "die Zwischenablage wurde zurückgesetzt"
-    access_denied: "der Zugriff wurde verweigert"
-    session_expired: "Ihre Sitzung ist abgelaufen"
-    maintenance_done: "die Wartungsarbeiten wurden abgeschlossen"
-    logged_out: "Sie haben sich erfolgreich abgemeldet"
-    logged_in: "Sie haben sich erfolgreich angemeldet"
-    mass_relation_success: alle Entitäten wurden verküpft
-
-  errors:
-    too_many_entities_for_zip: "Die Gruppe enthält zu viele Abbildungen"
-    collection_not_empty_on_delete: "Die Sammlung '%{name}' kann nicht gelöscht werden, weil sie nicht leer ist"
-    too_many_login_attempts: "Der Benutzer wurde vorübergehend gesperrt, weil zu viele Anmeldeversuche unternommen wurden"
-    date_parsing_failed: "Das angegebene Datum wurde nicht erkannt"
-    personal_password_reset_mail_not_found: "Die angegebene Emailadresse konnte nicht gefunden werden"
-    personal_password_reset_no_admins: |
-      Diese Funktionalität steht für Administratoren nicht zur Verfügung, bitte
-      wenden Sie sich an Ihr Rechenzentrum
-    search_string_too_short: "das Suchwort muss aus mindestens drei Zeichen bestehen"
-    forbidden_clipboard_action: "Sie haben nicht die nötigen Rechte, um diese Aktion auszuführen"
-    merge_failure: "die Verschmelzung der Entitäten konnte nicht durchgeführt werden"
-    destination_not_given: "Sie müssen eine Entität als Ziel auswählen"
-    not_allowed_action: "Sie haben nicht die nötigen Rechte, um diese Aktion durchzuführen"
-    ocurred: "bei der Eingabe sind Fehler aufgetreten"
-    user_or_pass_refused: "der Benutzername oder das Passwort waren falsch"
-    account_inactive: "dieser Zugang wurde deaktiviert"
-    account_expired: "dieser Zugang ist abgelaufen"
-    only_same_kind: "bitte wählen Sie hierzu nur Entitäten vom selbem Typ"
-    cant_merge_more_than_10_entities: |
-      Das Zusammenführen von Entitäten ist nur für 10 oder weniger Entitäten
-      möglich
-    cant_mass_relate_more_than_10_entities: |
-      Das gleichzeitige Verknüpfen mehrere Entitäten ist nur für 10 oder
-      weniger Entitäten möglich
-    must_select_2_or_more_entities: |
-      Sie müssen mindestens zwei Entitäten auswählen
-    must_select_1_or_more_entities: Sie müssen mindestens eine Entität auswählen
-    missing_entities_to_merge: |
-      Einige Entitäten in Ihrer Auswahl wurden nicht gefunden. Bitte laden Sie
-      die Seite neu. Vermutlich sind die Entitäten in der Zwischenzeit gelöscht
-      worden
-    exception_ocurred: "ein unerwarteter Fehler ist eingetreten"
-    publishment_expired: "Dieser Link ist abgelaufen"
-    file_too_big: "Die Datei '%{file}' ist zu groß (%{size}MB) und kann nicht hochgeladen werden. Die maximale Größe beträgt %{max}MB"
-    clipboard_too_many_elements: "Die Zwischenablage kann nur 500 Elemente beinhalten"
-    kind_has_children: Entitätstypen mit abhängigen Entitätstypen können nicht gelöscht werden
-    kind_has_entities: Entitätstypen mit abhängigen Entitäten können nicht gelöscht werden
-    medium_kind_not_deletable: Der Entitätstype 'Medium' kann nicht gelöscht werden
     relations_merge_failure: Sie können nur Relation zusammenführen, deren erlaubte Entitätstypen übereinstimmen
+    reset_clipboard_success: "die Zwischenablage wurde zurückgesetzt"
+    search_string_too_short: "das Suchwort muss aus mindestens drei Zeichen bestehen"
+    session_expired: "Ihre Sitzung ist abgelaufen"
     source_or_target_not_editable: |
       Sie benötigen entweder Schreibrechte für die Quelle oder für alle Ziele.
       Zusätzlich benötigen Sie Leserechte für alle involvierten Entitäten
-    move_denied: |
-      Änderungen der Sammlung erfordern Löschrechte für die ehemalige Sammlung
-      und Erstellungsrechte für die neue Sammlung.
     stale_update: |
       Der Eintrag konnte nicht abgeändert werden, weil er in der Zwischenzeit
       geändert wurde. Dies ist ein relativ seltener Fall, der sich normalerweise
       durch das Neuladen des Bearbeitenformulars lösen lässt.
+    statistics_validity: |
+      Diese Daten wurden um %{date} generiert und werden alle 24 Stunden
+      erneuert
+    swfupload_success: "Der Upload war erfolgreich"
+    terms_accepted: "Sie haben die Nutzungsbedingungen akzeptiert"
+    too_many_entities_for_zip: "Die Gruppe enthält zu viele Abbildungen"
+    too_many_login_attempts: "Der Benutzer wurde vorübergehend gesperrt, weil zu viele Anmeldeversuche unternommen wurden"
+    upload_duplicate: "Die übertragene Abbildung existiert bereits und wurde in die angegebene Gruppe aufgenommen"
+    upload_success: "Datei wurde erfolgreich übertragen"
+    user_or_pass_refused: "der Benutzername oder das Passwort waren falsch"
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

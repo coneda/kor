@@ -1,5 +1,4 @@
 <w-app>
-
   <kor-header />
   
   <div>
@@ -217,5 +216,4 @@
       wApp.routing.path new_path
       null
   </script>
-
 </w-app>

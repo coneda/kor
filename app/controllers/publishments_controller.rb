@@ -29,7 +29,7 @@ class PublishmentsController < JsonController
     @user_group = @publishment.user_group
 
     if @publishment.valid_until < Time.now
-      render_404 I18n.t('errors.publishment_expired')
+      render_404 I18n.t('messages.publishment_expired')
     end
   end
 

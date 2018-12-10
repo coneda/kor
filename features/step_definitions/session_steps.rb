@@ -66,6 +66,14 @@ When(/^I put "(.*?)" into the clipboard$/) do |name|
   step "I should see a message containing \"has been added to the clipboard\""
 end
 
+When /^I travel "([^\"]*)"$/ do |time|
+  travel eval(time)
+end
+
+When /^I travel back$/ do
+  travel_back
+end
+
 Given /^the session has expired$/ do
   allow_any_instance_of(BaseController).to receive(:session_expired?).and_return(true)
 end

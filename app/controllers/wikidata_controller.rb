@@ -35,7 +35,7 @@ class WikidataController < BaseController
 
     def authorization
       unless !!current_user
-        render json: { message: I18n.t('notices.access_denied') }, status: 403
+        render json: { message: I18n.t('messages.access_denied') }, status: 403
       end
     end
 end
