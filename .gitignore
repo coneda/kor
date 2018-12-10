@@ -5,15 +5,7 @@ log/*
 tmp/*
 db/*.sqlite3
 
-public/media
 .env
-
-public/app.css
-public/fonts
-public/images
-public/index.html
-public/vendor.css
-
 
 # Development
 
@@ -24,7 +16,6 @@ db/*.sqlite3
 node_modules
 
 # Testing
-screenshot.png
 spec/.~lock*
 
 # Deployment

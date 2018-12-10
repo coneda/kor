@@ -129,5 +129,10 @@ function log {
   echo -e "$GREEN$TS: $MSG$NOCOLOR"
 }
 
+function clean {
+  git checkout -f public
+  git clean -f -d public
+}
+
 
 $COMMAND

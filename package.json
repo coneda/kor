@@ -33,6 +33,7 @@
     "build": "widgets/build.sh",
     "watch": "widgets/build.sh watch",
     "start": "widgets/build.sh server",
+    "clean": "widgets/build.sh clean",
     "toc": "markdown-toc README.md --no-firsth1"
   },
   "repository": {
