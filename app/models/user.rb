@@ -202,7 +202,7 @@ class User < ApplicationRecord
     end
     collections = {}
     scope = Grant.where(credential_id: group_ids)
-    scope.group(:collection_id, :policy).count.each do |g, count|
+    scope.group(:collection_id, :policy).count.each do |g, _count|
       collections[g.last] ||= []
       collections[g.last] << g.first
     end

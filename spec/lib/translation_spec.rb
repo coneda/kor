@@ -5,13 +5,13 @@ RSpec.describe "translations" do
     base = YAML.load_file("#{Rails.root}/config/locales/en.yml")["en"]
     stack = []
 
-    comparator = Proc.new do |base, locale, test|
-      case base
+    comparator = Proc.new do |b, locale, test|
+      case b
       when String then expect(test).to be_a(String), "expected #{stack.inspect} to be a string"
       when Hash
         # binding.pry unless test.is_a?(Hash)
         expect(test).to be_a(Hash), "#{locale}: expected #{stack.inspect} to be a Hash, but its not"
-        base.each do |k, v|
+        b.each do |k, v|
           stack.push k
           comparator.call(v, locale, test[k])
           stack.pop

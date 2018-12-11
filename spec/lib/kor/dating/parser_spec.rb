@@ -4,7 +4,7 @@ RSpec::Matchers.define :parse do |input|
   match do |parser|
     begin
       parser.parse input
-    rescue Parslet::ParseFailed => e
+    rescue Parslet::ParseFailed
       false
     end
   end

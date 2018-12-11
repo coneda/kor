@@ -9,7 +9,7 @@ RSpec.describe Kor::Statistics::Exif do
   end
 
   it 'should generate a report on camera model and make' do
-    picture = FactoryGirl.create :picture_exif
+    FactoryGirl.create :picture_exif
     from = 2.days.ago.strftime('%Y-%m-%d')
     to = Time.now.strftime('%Y-%m-%d')
     stats = described_class.new(from, to)

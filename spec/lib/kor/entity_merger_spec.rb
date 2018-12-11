@@ -74,11 +74,6 @@ RSpec.describe Kor::EntityMerger do
   end
 
   it "should transfer relationships to the merged entity" do
-    admin = User.admin
-    mona_lisa = Entity.find_by!(name: 'Mona Lisa')
-    last_supper = Entity.find_by!(name: 'The Last Supper')
-    leonardo = Entity.find_by!(name: 'Leonardo')
-
     merged = described_class.new.run(
       old_ids: [mona_lisa.id, last_supper.id],
       attributes: { name: 'Mona Lisa' }
@@ -117,7 +112,7 @@ RSpec.describe Kor::EntityMerger do
     a = Entity.media[0]
     b = Entity.media[1]
 
-    merged = described_class.new.run(
+    described_class.new.run(
       :old_ids => [a.id, b.id],
       :attributes => {
         :medium_id => b.medium_id

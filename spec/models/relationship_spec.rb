@@ -57,7 +57,7 @@ RSpec.describe Relationship do
     mona_lisa = FactoryGirl.create :mona_lisa
     has_created = FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
 
-    relationship = Relationship.create(
+    Relationship.create(
       relation: has_created,
       from: leonardo,
       to: mona_lisa,

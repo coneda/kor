@@ -16,7 +16,7 @@ RSpec.describe Kor::ZipFile do
     system "rm -f #{filename}"
     zip = described_class.new(filename, :user_id => User.first.id, :file_name => "sample.zip")
     zip.add "#{Rails.root}/LICENSE", :as => "info/LICENSE"
-    download = zip.create_as_download
+    zip.create_as_download
 
     expect(Download.count).to eq(1)
   end

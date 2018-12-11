@@ -48,7 +48,7 @@ class RefactorGroups < ActiveRecord::Migration
     puts "retrieving tags with entities"
     count = Kor.db.select_all("SELECT count(*) as c FROM tags").first['c']
     counter = 1
-    tag_ids = Kor.db.select_all("SELECT * from tags").each do |tag|
+    Kor.db.select_all("SELECT * from tags").each do |tag|
       puts "migrating tag #{tag['name']} (#{counter} out of #{count})"
       counter += 1
 

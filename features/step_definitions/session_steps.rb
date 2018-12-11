@@ -14,7 +14,7 @@ Given /^I am logged in as "([^\"]*)"/ do |user|
 
   begin
     fill_in 'Username', with: user
-  rescue Capybara::ElementNotFound => e
+  rescue Capybara::ElementNotFound
     # TODO: why is this necessary?
     Capybara.reset_sessions!
     step "I go to the login page"

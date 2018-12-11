@@ -1,5 +1,5 @@
 class Kor::Elastic
-  class Exception < ::Exception
+  class Exception < RuntimeError
     def initialize(message, data = {})
       @data = data
       super message
@@ -429,8 +429,8 @@ class Kor::Elastic
 
   def by_dating(dating)
     if dating.present?
-      to_array(dating).each do |dating|
-        if parsed = Dating.parse(dating)
+      to_array(dating).each do |d|
+        if parsed = Dating.parse(d)
           from = EntityDating.julian_date_for(parsed[:from])
           to = EntityDating.julian_date_for(parsed[:to])
           @query['filter'] << {
@@ -568,72 +568,53 @@ class Kor::Elastic
     response['count']
   end
 
+  def self.client
+    @client ||= HTTPClient.new
+  end
+
+  def self.request(method, path, query = {}, body = nil, headers = {})
+    raise Kor::Exception, "elasticsearch is not available" if !available?
+    raise Kor::Exception, "elasticsearch functionality has been disabled" if !enabled?
+
+    query ||= {}
+    path = "/#{current_index}#{path}"
+    body = (body ? JSON.dump(body) : nil)
+    response = raw_request(method, path, query, body, headers)
+    require_ok(response)
+
+    # Rails.logger.debug "ELASTIC RESPONSE: #{response.inspect}"
+    JSON.load(response.body)
+  end
+
+  def self.raw_request(method, path, query = {}, body = nil, headers = {})
+    Rails.logger.info "ELASTIC REQUEST: #{method} #{path}\n#{body.inspect}"
+
+    query['token'] = config['token'] if config['token']
+    headers.reverse_merge! 'content-type' => 'application/json', 'accept' => 'application/json'
+    url = "#{config['url']}#{path}"
+    client.request(method, url, query, body, headers)
+  end
+
+  def self.require_ok(response)
+    if response.status < 200 || response.status >= 300
+      raise Exception.new("error", [response.status, response.headers, JSON.load(response.body)])
+    end
+  end
+
+  def self.fetch(*args)
+    if @cache.is_a?(Hash)
+      key = args.map(&:to_s).join('.')
+      @cache[key] ||= yield
+    else
+      yield
+    end
+  end
+
   protected
-
-    def self.client
-      @client ||= HTTPClient.new
-    end
-
-    def self.request(method, path, query = {}, body = nil, headers = {})
-      raise Kor::Exception, "elasticsearch is not available" if !available?
-      raise Kor::Exception, "elasticsearch functionality has been disabled" if !enabled?
-
-      query ||= {}
-      path = "/#{current_index}#{path}"
-      body = (body ? JSON.dump(body) : nil)
-      url = "http://#{config['url']}#{path}"
-      response = raw_request(method, path, query, body, headers)
-      require_ok(response)
-
-      # Rails.logger.debug "ELASTIC RESPONSE: #{response.inspect}"
-      JSON.load(response.body)
-    end
-
-    def self.raw_request(method, path, query = {}, body = nil, headers = {})
-      Rails.logger.info "ELASTIC REQUEST: #{method} #{path}\n#{body.inspect}"
-
-      query['token'] = config['token'] if config['token']
-      headers.reverse_merge! 'content-type' => 'application/json', 'accept' => 'application/json'
-      url = "#{config['url']}#{path}"
-      client.request(method, url, query, body, headers)
-    end
-
-    def self.require_ok(response)
-      if response.status < 200 || response.status >= 300
-        raise Exception.new("error", [response.status, response.headers, JSON.load(response.body)])
-      end
-    end
-
-    # def tokenize(query_string)
-    #   query_string = "" if query_string.blank?
-    #   query_string = query_string.join(' ') if query_string.is_a?(Array)
-
-    #   query_string.scan(/\"[^\"]*\"|[^\"\s]+/).select do |term|
-    #     term.size >= 3
-    #   end
-    # end
-
-    # def escape(terms)
-    #   terms.map do |term|
-    #     term.gsub /[\-]/ do |m|
-    #       '\\' + m
-    #     end
-    #     # + - && || ! ( ) { } [ ] ^ ~ * ? : \ /
-    #   end
-    # end
 
     def to_array(value)
       return [] if value.nil?
 
       value.is_a?(Array) ? value : [value]
-    end
-
-    def self.fetch(*args)
-      if @cache.is_a?(Hash)
-        key = args.map(&:to_s).join('.')
-        @cache[key] ||= yield
-      else
-        yield
-      end
     end
 end

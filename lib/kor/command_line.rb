@@ -41,8 +41,8 @@ class Kor::CommandLine
     when "export"
       @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") { |v| @config[:format] = v }
       @parser.on("-u USERAME", "the user to act as, default: admin") { |v| @config[:username] = v }
-      @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids") { |v| @config[:collection_id] = v.split(",").map { |v| v.to_i } }
-      @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids") { |v| @config[:kind_id] = v.split(",").map { |v| v.to_i } }
+      @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids") { |v| @config[:collection_id] = v.split(",").map { |i| i.to_i } }
+      @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids") { |v| @config[:kind_id] = v.split(",").map { |i| i.to_i } }
       @required += [:format]
     when "import"
       @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") { |v| @config[:format] = v }

@@ -13,7 +13,7 @@ RSpec.describe SessionController, type: :controller do
   it "should deny access if there were too many login attempts in one hour" do
     request.headers['HTTP_REFERER'] = 'http://test.host/login'
 
-    for i in 1..3 do
+    3.times do
       post :create, :username => 'admin', :password => 'wrong'
       expect(response).to be_client_error
       expect(json['message']).to match(/username or password could not be found/)

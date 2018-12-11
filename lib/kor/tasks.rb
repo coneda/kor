@@ -202,17 +202,15 @@ class Kor::Tasks
     Kor::Import::ErlangenCrm.new.run
   end
 
-  protected
-
-    def self.print_table(data)
-      maxes = {}
-      data.each do |record|
-        row = []
-        record.each_with_index do |field, i|
-          maxes[i] ||= data.map { |r| r[i].to_s.size }.max
-          row << "#{field.to_s.ljust(maxes[i])}"
-        end
-        puts '| ' + row.join(' | ') + ' |'
+  def self.print_table(data)
+    maxes = {}
+    data.each do |record|
+      row = []
+      record.each_with_index do |field, i|
+        maxes[i] ||= data.map { |r| r[i].to_s.size }.max
+        row << "#{field.to_s.ljust(maxes[i])}"
       end
+      puts '| ' + row.join(' | ') + ' |'
     end
+  end
 end

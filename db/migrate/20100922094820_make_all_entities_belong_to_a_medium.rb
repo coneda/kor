@@ -47,12 +47,11 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
       id = row['id']
       image_id = row['image_id']
       image_path = "#{Rails.root}/data/images/originals/#{image_id % 1000}/#{image_id}.image"
-      unless File.exists? image_path
+      unless File.exist? image_path
         puts "original #{image_id} does not exist at #{image_path}"
       else
         puts "working on original #{image_id}: #{image_path}"
 
-        entity = Entity.find(row['id'])
         medium = Medium.create(:document => File.open(image_path))
         if medium.id
           Entity.connection.update("UPDATE entities SET medium_id = #{medium.id} WHERE id = #{id}")

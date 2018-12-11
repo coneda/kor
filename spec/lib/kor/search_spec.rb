@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.shared_examples 'a kor search' do
   it 'should raise an exception for unknown keys' do
     expect {
-      search = described_class.new(jdoe, some: 'thing')
+      described_class.new(jdoe, some: 'thing')
     }.to raise_error(Kor::Exception), '[:some] is not a valid search key'
   end
 
@@ -218,19 +218,19 @@ RSpec.describe Kor::Search do
 
     it 'should raise an exception for elasticsearch-only criteria' do
       expect {
-        search = described_class.new(admin, terms: 'lis*')
+        described_class.new(admin, terms: 'lis*')
       }.to raise_error(Kor::Exception, 'terms is only supported with elasticsearch')
 
       expect {
-        search = described_class.new(admin, dataset: { 'gnd_id' => '12345' })
+        described_class.new(admin, dataset: { 'gnd_id' => '12345' })
       }.to raise_error(Kor::Exception, 'dataset is only supported with elasticsearch')
 
       expect {
-        search = described_class.new(admin, property: { 'age' => '41' })
+        described_class.new(admin, property: { 'age' => '41' })
       }.to raise_error(Kor::Exception, 'property is only supported with elasticsearch')
 
       expect {
-        search = described_class.new(admin, related: 'mona')
+        described_class.new(admin, related: 'mona')
       }.to raise_error(Kor::Exception, 'related is only supported with elasticsearch')
     end
   end

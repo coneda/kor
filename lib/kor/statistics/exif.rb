@@ -43,8 +43,7 @@ class Kor::Statistics::Exif < Kor::Statistics::Simple
     end
 
     { :make => parser.make, :model => parser.model }
-  rescue => e
-    # raise e
+  rescue
     result
   end
 end

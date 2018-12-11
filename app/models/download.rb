@@ -12,14 +12,14 @@ class Download < ApplicationRecord
   after_destroy :delete_files
 
   def copy_file
-    unless File.exists?(dir)
+    unless File.exist?(dir)
       system "mkdir -p #{dir}"
     end
 
     case new_data
     when File then FileUtils.copy(new_data.path, path)
     when String
-      if File.exists?(new_data)
+      if File.exist?(new_data)
         system "cp", new_data, path
       else
         File.open path, "w" do |f|

@@ -285,13 +285,13 @@ Then(/^user "(.*?)" should expire at "(.*?)"$/) do |name, time_str|
   expect(user.expires_at.to_date).to eq(date)
 end
 
-Given(/^the entity "([^"]*)" was created by "([^"]*)"$/) do |name, username|
+Given(/^the entity "([^"]*)" was created by "([^"]*)"$/) do |_name, username|
   entity = Entity.where(name: 'Mona Lisa').first
   user = User.where(name: username).first
   entity.update_attributes creator: user
 end
 
-Given(/^the entity "([^"]*)" was updated by "([^"]*)"$/) do |name, username|
+Given(/^the entity "([^"]*)" was updated by "([^"]*)"$/) do |_name, username|
   entity = Entity.where(name: 'Mona Lisa').first
   user = User.where(name: username).first
   entity.update_attributes updater: user
@@ -314,7 +314,7 @@ Given(/^entity "([^"]*)" has dating "([^"]*)"$/) do |name, dating|
 end
 
 Given("mona lisa has many relationships") do
-  10.times do |i|
+  10.times do
     Relationship.relate_and_save last_supper, 'is related to', mona_lisa
   end
 end

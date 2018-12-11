@@ -105,7 +105,7 @@ class UnifyWebServices < ActiveRecord::Migration
         unless e.dataset.empty?
           new_refs = e.dataset.dup
           all_refs = e.dataset.values_at("pnd", "knd", "gnd")
-          all_filtered = all_refs.select { |e| e.present? }
+          all_filtered = all_refs.select { |r| r.present? }
           value = all_filtered.last.presence
           new_refs.delete "pnd"
           new_refs.delete "knd"

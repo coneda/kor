@@ -37,7 +37,7 @@ RSpec.describe Medium do
   end
 
   it "should read an escaped file uri to an existing file" do
-    medium = Medium.create :uri => "file:///#{Rails.root}/spec/fixtures/image_c.jpg"
+    Medium.create :uri => "file:///#{Rails.root}/spec/fixtures/image_c.jpg"
     medium = Medium.last
 
     expect(medium.document.file?).to be_falsey
@@ -70,18 +70,18 @@ RSpec.describe Medium do
     paths = [:original, :icon, :thumbnail, :preview, :normal].map { |s| medium.path(s) }
 
     paths.each do |path|
-      expect(File.exists?(path)).to be_truthy
+      expect(File.exist?(path)).to be_truthy
     end
 
     medium.destroy
 
     paths.each do |path|
-      expect(File.exists?(path)).to be_falsey
+      expect(File.exist?(path)).to be_falsey
     end
   end
 
   it "should not generate the checksum error twice" do
-    original = FactoryGirl.create(:medium_image_c)
+    FactoryGirl.create(:medium_image_c)
     duplicate = FactoryGirl.build(:medium_image_c)
 
     expect(duplicate.valid?).not_to be_truthy
@@ -91,7 +91,7 @@ RSpec.describe Medium do
   end
 
   it "should generate a datahash for attachments" do
-    medium = FactoryGirl.create :medium_image_c
+    FactoryGirl.create :medium_image_c
     medium = Medium.last
     expect(medium.datahash).to eq("faf7e17cdeb3d4ce08bcb60e4d6dea8f6aa9eb73")
   end
@@ -123,19 +123,19 @@ RSpec.describe Medium do
 
       expect(Paperclip::Video).not_to receive(:make)
       expect(Paperclip::Audio).not_to receive(:make)
-      medium = FactoryGirl.create :picture_c
+      FactoryGirl.create :picture_c
     end
 
     it "should run the video processor for videos" do
       expect(Paperclip::Video).to receive(:make).at_least(:once).and_call_original
       expect(Paperclip::Audio).not_to receive(:make)
-      medium = FactoryGirl.create :video_a
+      FactoryGirl.create :video_a
     end
 
     it "should run the audio processor for audio" do
       expect(Paperclip::Video).not_to receive(:make)
       expect(Paperclip::Audio).to receive(:make).at_least(:once).and_call_original
-      medium = FactoryGirl.create :audio_a
+      FactoryGirl.create :audio_a
     end
 
     it "should convert a video to all 3 major html5 containers/codecs" do
@@ -159,8 +159,8 @@ RSpec.describe Medium do
       paths = [document.path(:mp3), document.path(:ogg)]
 
       medium.reload.destroy
-      expect(File.exists? paths[0]).to be_falsey
-      expect(File.exists? paths[1]).to be_falsey
+      expect(File.exist? paths[0]).to be_falsey
+      expect(File.exist? paths[1]).to be_falsey
     end
   end
 end

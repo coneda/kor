@@ -7,7 +7,7 @@ class Kor::EntityMerger
         end
       end
     end
-  rescue ActiveRecord::RecordInvalid => e
+  rescue ActiveRecord::RecordInvalid
     @entity
   end
 
@@ -19,7 +19,7 @@ class Kor::EntityMerger
     @entity.assign_attributes options[:attributes]
 
     # delete the entities but keep their datings and relationships
-    old_entities = Entity.where(id: options[:old_ids]).map do |e|
+    Entity.where(id: options[:old_ids]).map do |e|
       e.delete
       e
     end

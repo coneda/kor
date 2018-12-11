@@ -2,14 +2,6 @@ require "rails_helper"
 
 RSpec.describe Kor::Import::Excel do
   before :each do
-    # admin = FactoryGirl.create :admin
-
-    # FactoryGirl.create :mona_lisa, :updater => admin
-    # FactoryGirl.create :der_schrei, :updater => admin
-    # FactoryGirl.create :leonardo, :updater => admin, :datings => [
-    #   FactoryGirl.build(:leonardo_lifespan)
-    # ]
-
     Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec").run
   end
 
@@ -147,12 +139,11 @@ RSpec.describe Kor::Import::Excel do
   end
 
   it "should not import timestamps" do
-    leonardo = Entity.find_by! name: 'Leonardo'
-    created_at = leonardo.created_at
+    skip "this doesn't test what it says it does"
 
-    book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
-
-    expect(leonardo.reload.created_at).to eq(created_at)
+    # created_at = leonardo.created_at
+    # book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
+    # expect(leonardo.reload.created_at).to eq(created_at)
   end
 
   it "should delete entities" do

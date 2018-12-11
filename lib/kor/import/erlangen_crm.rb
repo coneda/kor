@@ -35,9 +35,9 @@ class Kor::Import::ErlangenCrm
         parent_map[kind.url] << parent['rdf:about']
       end
 
-      klass.xpath('rdfs:subClassOf[@rdf:resource]/@rdf:resource').each do |parent|
+      klass.xpath('rdfs:subClassOf[@rdf:resource]/@rdf:resource').each do |p|
         parent_map[kind.url] ||= []
-        parent_map[kind.url] << parent.text
+        parent_map[kind.url] << p.text
       end
     end
 

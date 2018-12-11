@@ -48,7 +48,7 @@ class RemoveMongodb < ActiveRecord::Migration
       new_value["fields"] = if entity.external_references.present?
         yaml = entity.external_references
         result = YAML.load(yaml) || {}
-        result.each do |k, v|
+        result.each do |k, _v|
           result[k].force_encoding("utf-8")
         end
         result
@@ -57,7 +57,7 @@ class RemoveMongodb < ActiveRecord::Migration
       end
 
       if new_value["fields"]
-        new_value["fields"].each do |k, v|
+        new_value["fields"].each do |_k, v|
           v.force_encoding("utf-8")
         end
       end

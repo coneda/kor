@@ -18,7 +18,7 @@ class Kor::Import::WikiData
 
   def identifier_types
     query = "
-      PREFIX wd: <http://www.wikidata.org/entity/> 
+      PREFIX wd: <http://www.wikidata.org/entity/>
       PREFIX wdt: <http://www.wikidata.org/prop/direct/>
       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -43,7 +43,7 @@ class Kor::Import::WikiData
   def labels_for(ids)
     values = ids.map { |i| "(wd:#{i})" }.join(' ')
     query = "
-      PREFIX wd: <http://www.wikidata.org/entity/> 
+      PREFIX wd: <http://www.wikidata.org/entity/>
       PREFIX wdt: <http://www.wikidata.org/prop/direct/>
       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -148,7 +148,7 @@ class Kor::Import::WikiData
         targets = {}
         r['values'].each { |v| targets[v] = Identifier.resolve(v, 'wikidata_id') }
 
-        targets.each do |id, target|
+        targets.each do |_tid, target|
           relation = Relation.find_or_create_by!(
             name: r['label'],
             reverse_name: "inverse of '#{r['label']}'",
@@ -156,8 +156,8 @@ class Kor::Import::WikiData
             to_kind_id: target.kind_id
           )
 
-          rels << Relationship.find_or_create_by(from_id: entity.id, to_id: target.id) do |r|
-            r.relation_id = relation.id
+          rels << Relationship.find_or_create_by(from_id: entity.id, to_id: target.id) do |rel|
+            rel.relation_id = relation.id
           end
         end
       end
@@ -195,7 +195,7 @@ class Kor::Import::WikiData
 
       begin
         JSON.load(response.body)
-      rescue JSON::ParserError => e
+      rescue JSON::ParserError
         response
       end
     end

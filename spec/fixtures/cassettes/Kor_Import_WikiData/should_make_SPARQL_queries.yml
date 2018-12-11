@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20PREFIX%20wd:%20%3Chttp://www.wikidata.org/entity/%3E%20%0A%20%20%20%20%20%20PREFIX%20wdt:%20%3Chttp://www.wikidata.org/prop/direct/%3E%0A%20%20%20%20%20%20PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%0A%0A%20%20%20%20%20%20SELECT%20?id%20?label%0A%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20?id%20wdt:P31%20wd:Q19847637%20.%20%0A%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20filter%20(lang(?label)%20=%20%27en%27)%20.%0A%20%20%20%20%20%20%7D%0A%20%20%20%20
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20PREFIX%20wd:%20%3Chttp://www.wikidata.org/entity/%3E%0A%20%20%20%20%20%20PREFIX%20wdt:%20%3Chttp://www.wikidata.org/prop/direct/%3E%0A%20%20%20%20%20%20PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%0A%0A%20%20%20%20%20%20SELECT%20?id%20?label%0A%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20?id%20wdt:P31%20wd:Q19847637%20.%0A%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20filter%20(lang(?label)%20=%20%27en%27)%20.%0A%20%20%20%20%20%20%7D%0A%20%20%20%20
     body:
       encoding: UTF-8
       string: ''

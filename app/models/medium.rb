@@ -86,9 +86,9 @@ class Medium < ApplicationRecord
   end
 
   after_destroy do |medium|
-    medium.custom_styles.each do |name, config|
+    medium.custom_styles.each do |name, _config|
       file = medium.custom_style_path(name)
-      FileUtils.rm(file) if File.exists?(file)
+      FileUtils.rm(file) if File.exist?(file)
     end
   end
 
@@ -127,7 +127,7 @@ class Medium < ApplicationRecord
       image.staged_path || image.path(style)
     end
 
-    if path && File.exists?(path)
+    if path && File.exist?(path)
       File.open(path)
     end
   end
@@ -229,7 +229,7 @@ class Medium < ApplicationRecord
     if style == :original
       document.path(:original) || image.path(:original)
     elsif image_style?(style)
-      if image.path(style) && File.exists?(image.path(style))
+      if image.path(style) && File.exist?(image.path(style))
         image.path(style)
       else
         dummy_path
@@ -257,9 +257,9 @@ class Medium < ApplicationRecord
     dir = "#{Rails.root}/public/content_types"
     group_dir = "#{dir}/#{group}"
 
-    if File.exists?("#{group_dir}/#{type}.gif")
+    if File.exist?("#{group_dir}/#{type}.gif")
       "/content_types/#{group}/#{type}.gif"
-    elsif File.exists?("#{group_dir}.gif")
+    elsif File.exist?("#{group_dir}.gif")
       "/content_types/#{group}.gif"
     else
       "/content_types/default.gif"

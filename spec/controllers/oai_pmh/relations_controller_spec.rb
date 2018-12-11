@@ -120,7 +120,6 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
 
   it "should return 'noRecordsMatch' if the criteria do not yield any records" do
     Relation.all.each { |r| r.really_destroy! }
-    admin = User.admin
 
     get '/oai-pmh/relations.xml', verb: 'ListIdentifiers'
     verify_oaipmh_error 'noRecordsMatch'

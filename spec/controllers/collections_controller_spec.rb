@@ -63,7 +63,7 @@ RSpec.describe CollectionsController, type: :controller do
     it 'should POST create' do
       post :create, collection: { name: 'confidential' }
       expect_created_response
-      c = Collection.find_by!(name: 'confidential')
+      Collection.find_by!(name: 'confidential')
     end
 
     it 'should PATCH update' do

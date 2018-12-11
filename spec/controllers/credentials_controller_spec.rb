@@ -56,7 +56,7 @@ RSpec.describe CredentialsController, type: :controller do
     it 'should POST create' do
       post :create, credential: { name: 'teachers' }
       expect_created_response
-      c = Credential.find_by!(name: 'teachers')
+      Credential.find_by!(name: 'teachers')
     end
 
     it 'should PATCH update' do

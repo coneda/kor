@@ -69,7 +69,7 @@ module Kor
 
     def load
       self.class.with_lock do
-        if File.exists?(filename)
+        if File.exist?(filename)
           File.open filename, 'r' do |f|
             @attributes = JSON.parse(f.read)
           end
@@ -80,7 +80,7 @@ module Kor
     end
 
     def stale?
-      if File.exists?(filename)
+      if File.exist?(filename)
         file_version = JSON.parse(File.read filename)['version']
         if file_version
           file_version > self['version'].to_i
@@ -106,6 +106,75 @@ module Kor
 
     def defaults
       self.class.defaults
+    end
+
+    def self.markdown(text)
+      RedCloth.new(text).to_html
+    end
+
+    def self.defaults
+      return {
+        'version' => 1,
+
+        'default_locale' => 'en',
+        'welcome_title' => 'Welcome to ConedaKOR',
+        'welcome_text' => 'This text can be configured in the settings',
+        'current_history_length' => 5,
+        'max_foreground_group_download_size' => 10,
+        'max_file_upload_size' => 100,
+        'max_results_per_request' => 500,
+        'max_included_results_per_result' => 4,
+        'sources_release' => 'https://github.com/coneda/kor/releases/tag/v{{version}}',
+        'sources_pre_release' => 'https://github.com/coneda/kor/commit/{{commit}}',
+        'sources_default' => 'https://github.com/coneda/kor',
+
+        'maintainer_name' => 'Example Organization',
+        'maintainer_mail' => 'admin@example.com',
+        'legal_text' => 'enter a legal notice here',
+        'about_text' => 'enter a description of this installation here',
+
+        'session_lifetime' => 60 * 60 * 2,
+        'publishment_lifetime' => 14,
+        'default_groups' => [],
+        'env_auth_button_label' => 'federated login',
+
+        'custom_css_file' => 'data/custom.css',
+
+        'kind_dating_label' => 'Dating',
+        'kind_name_label' => 'Name',
+        'kind_distinct_name_label' => 'Distinct Name',
+
+        'relationship_dating_label' => 'Dating',
+
+        'max_download_group_size' => 80,
+
+        'search_entity_name' => 'Name / Title / UUID',
+
+        'primary_relations' => [],
+        'secondary_relations' => [],
+
+        'repository_uuid' => nil
+      }
+    end
+
+    def self.filename
+      file = {
+        'production' => 'settings.json',
+        'development' => 'settings.development.json',
+        'test' => 'settings.test.json'
+      }[Rails.env.to_s]
+      Rails.root.join(ENV['DATA_DIR'], file)
+    end
+
+    def self.lockfile
+      "#{filename}.lock"
+    end
+
+    def self.with_lock
+      File.open lockfile, File::RDWR | File::CREAT do |f|
+        f.flock File::LOCK_EX
+        yield
+      end
     end
 
     protected
@@ -140,77 +209,8 @@ module Kor
         end
       end
 
-      def self.markdown(text)
-        RedCloth.new(text).to_html
-      end
-
-      def self.defaults
-        return {
-          'version' => 1,
-
-          'default_locale' => 'en',
-          'welcome_title' => 'Welcome to ConedaKOR',
-          'welcome_text' => 'This text can be configured in the settings',
-          'current_history_length' => 5,
-          'max_foreground_group_download_size' => 10,
-          'max_file_upload_size' => 100,
-          'max_results_per_request' => 500,
-          'max_included_results_per_result' => 4,
-          'sources_release' => 'https://github.com/coneda/kor/releases/tag/v{{version}}',
-          'sources_pre_release' => 'https://github.com/coneda/kor/commit/{{commit}}',
-          'sources_default' => 'https://github.com/coneda/kor',
-
-          'maintainer_name' => 'Example Organization',
-          'maintainer_mail' => 'admin@example.com',
-          'legal_text' => 'enter a legal notice here',
-          'about_text' => 'enter a description of this installation here',
-
-          'session_lifetime' => 60 * 60 * 2,
-          'publishment_lifetime' => 14,
-          'default_groups' => [],
-          'env_auth_button_label' => 'federated login',
-
-          'custom_css_file' => 'data/custom.css',
-
-          'kind_dating_label' => 'Dating',
-          'kind_name_label' => 'Name',
-          'kind_distinct_name_label' => 'Distinct Name',
-
-          'relationship_dating_label' => 'Dating',
-
-          'max_download_group_size' => 80,
-
-          'search_entity_name' => 'Name / Title / UUID',
-
-          'primary_relations' => [],
-          'secondary_relations' => [],
-
-          'repository_uuid' => nil
-        }
-      end
-
       def filename
         self.class.filename
-      end
-
-      def self.filename
-        file = {
-          'production' => 'settings.json',
-          'development' => 'settings.development.json',
-          'test' => 'settings.test.json'
-        }[Rails.env.to_s]
-        Rails.root.join(ENV['DATA_DIR'], file)
-      end
-
-      def self.lockfile
-        "#{filename}.lock"
-      end
-
-      def self.with_lock
-        File.open lockfile, File::RDWR | File::CREAT do |f|
-          f.flock File::LOCK_EX
-          yield
-        end
       end
   end
 end

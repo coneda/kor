@@ -14,7 +14,6 @@ class RemoveNeedlessWhiteSpace < ActiveRecord::Migration
     schema_set.each do |model, attributes|
       attributes.each do |attribute|
         model.where("#{attribute} LIKE ? OR #{attribute} LIKE ? OR #{attribute} LIKE ?", " %", "% ", "  ").each do |record|
-          old_value = record.send(attribute)
           new_value = record.send(attribute).
             gsub(/^\s+/, '').
             gsub(/\s+$/, '').

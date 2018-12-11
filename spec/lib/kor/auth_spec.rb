@@ -79,11 +79,6 @@ RSpec.describe Kor::Auth do
   end
 
   it 'should pass the permissions matrix' do
-    jdoe = User.find_by! name: 'jdoe'
-    mrossi = User.find_by! name: 'mrossi'
-    admin = User.admin
-    default = Collection.find_by! name: 'default'
-    priv = Collection.find_by! name: 'private'
     hmustermann = FactoryGirl.create :hmustermann, parent: jdoe
 
     matrix = [

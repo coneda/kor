@@ -43,7 +43,7 @@ class Kind < ApplicationRecord
   scope :without_media, lambda { where('id != ?', Kind.medium_kind_id) }
   scope :updated_after, lambda { |time| time.present? ? where("updated_at >= ?", time) : all }
   scope :updated_before, lambda { |time| time.present? ? where("updated_at <= ?", time) : all }
-  scope :allowed, lambda { |user, policies| all }
+  scope :allowed, lambda { |_user, _policies| all }
   scope :active, lambda { where(abstract: [false, nil]) }
 
   before_validation :generate_uuid
@@ -101,10 +101,6 @@ class Kind < ApplicationRecord
   # TODO: still needed?
   def defines_schema?
     !self.fields.empty?
-  end
-
-  def medium_kind?
-    uuid == MEDIA_UUID
   end
 
   def medium_kind?

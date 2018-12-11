@@ -27,13 +27,13 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
 
   it "should make SPARQL queries" do
     query = "
-      PREFIX wd: <http://www.wikidata.org/entity/> 
+      PREFIX wd: <http://www.wikidata.org/entity/>
       PREFIX wdt: <http://www.wikidata.org/prop/direct/>
       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
       SELECT ?id ?label
       WHERE {
-        ?id wdt:P31 wd:Q19847637 . 
+        ?id wdt:P31 wd:Q19847637 .
         ?id rdfs:label ?label filter (lang(?label) = 'en') .
       }
     "

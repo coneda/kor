@@ -581,9 +581,7 @@ RSpec.describe EntitiesController, type: :controller do
     end
 
     it "should merge two entities while not messing up the dataset" do
-      works = Kind.find_by! name: 'work'
-      mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      other_mona_lisa = FactoryGirl.create :mona_lisa, name: 'Monalisa', dataset: {
+      FactoryGirl.create :mona_lisa, name: 'Monalisa', dataset: {
         gnd: '123456',
         google_maps: 'Deutsche Straße 12, Frankfurt'
       }

@@ -13,7 +13,7 @@ module Kor::Auth
         f.write password
       end
 
-      script_sources.each do |method, c|
+      script_sources.each do |_method, c|
         command = "bash -c \"#{c["script"]}\""
         status = Bundler.with_clean_env do
           system(
@@ -50,7 +50,7 @@ module Kor::Auth
   def self.env_login(env)
     Rails.logger.info "environment auth with env: #{env.inspect}"
 
-    env_sources.each do |key, source|
+    env_sources.each do |_key, source|
       var_to_array(source['user']).each do |ku|
         if username = env[ku]
           Rails.logger.info "found username #{username}"
@@ -100,14 +100,14 @@ module Kor::Auth
   end
 
   def self.script_sources
-    (sources || {}).select do |key, source|
+    (sources || {}).select do |_key, source|
       type = source['type'] || 'script'
       type == 'script'
     end
   end
 
   def self.env_sources
-    (sources || {}).select do |key, source|
+    (sources || {}).select do |_key, source|
       source['type'] == 'env'
     end
   end

@@ -32,13 +32,13 @@ if ENV['HEADLESS']
   Capybara.default_driver = :headless_chrome
 end
 
-Around('@notravis') do |scenario, block|
+Around('@notravis') do |_scenario, block|
   if ENV['TRAVIS'] != 'true'
     block.call
   end
 end
 
-Around do |scenario, block|
+Around do |_scenario, block|
   TestHelper.around_each(&block)
 end
 

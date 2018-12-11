@@ -47,7 +47,7 @@ RSpec.describe KindsController, type: :controller do
     it 'should POST create' do
       post :create, kind: { name: 'city', plural_name: 'cities' }
       expect_created_response
-      c = Kind.find_by!(name: 'city')
+      Kind.find_by!(name: 'city')
     end
 
     it 'should PATCH update' do
@@ -72,7 +72,7 @@ RSpec.describe KindsController, type: :controller do
 
     it 'should not DELETE destroy (kind with children)' do
       locations = Kind.find_by! name: 'location'
-      cities = Kind.create! name: 'city', plural_name: 'cities', parent_ids: [locations.id]
+      Kind.create! name: 'city', plural_name: 'cities', parent_ids: [locations.id]
       delete :destroy, id: locations.id
       expect(response).to be_client_error
       expect(json['message']).to match(/kinds with children can't be deleted/)

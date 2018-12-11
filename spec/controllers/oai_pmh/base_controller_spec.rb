@@ -13,7 +13,7 @@ RSpec.describe OaiPmh::BaseController, type: :request do
 
     subject.send(:dump_query, 'some' => 'value')
 
-    expect(File.exists?(old_sample)).to be_falsey
-    expect(File.exists?(recent_sample)).to be_truthy
+    expect(File.exist?(old_sample)).to be_falsey
+    expect(File.exist?(recent_sample)).to be_truthy
   end
 end

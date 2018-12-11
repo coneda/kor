@@ -25,7 +25,7 @@ class OaiPmh::BaseController < BaseController
   end
 
   def list_identifiers
-    record_params = params.select do |k, v|
+    record_params = params.select do |k, _v|
       ["metadataPrefix", "from", "to", "set", "resumptionToken", 'page', 'per_page'].include?(k)
     end
 
@@ -39,7 +39,7 @@ class OaiPmh::BaseController < BaseController
   end
 
   def list_records
-    record_params = params.select do |k, v|
+    record_params = params.select do |k, _v|
       ["metadataPrefix", "from", "to", "set", "resumptionToken", 'page', 'per_page'].include?(k)
     end
 
@@ -108,7 +108,7 @@ class OaiPmh::BaseController < BaseController
       token = if scope.count - params['page'] * params['per_page'] > params['per_page']
         dump_query(params)
       elsif params['resumptionToken']
-        token = ''
+        ''
       end
 
       {
@@ -148,7 +148,7 @@ class OaiPmh::BaseController < BaseController
     def load_query(token)
       file = "#{base_dir}/#{token}.json"
 
-      if File.exists?(file)
+      if File.exist?(file)
         JSON.parse(File.read file)
       end
     end

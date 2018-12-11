@@ -50,7 +50,7 @@ class EntitiesController < JsonController
       per_page: per_page,
     }
 
-    criteria = criteria.delete_if do |k, v|
+    criteria = criteria.delete_if do |_k, v|
       ['', nil, -1, [], {}].include?(v)
     end
 
@@ -250,7 +250,7 @@ class EntitiesController < JsonController
               r.save!
             end
           end
-        rescue ActiveRecord::Rollback => e
+        rescue ActiveRecord::Rollback
           render_422 I18n.t('messages.relationships_not_saved') and return
         end
 
@@ -306,7 +306,7 @@ class EntitiesController < JsonController
         end
       end
 
-      result.reject! do |k, v|
+      result.reject! do |k, _v|
         k.match(/^datings/) || k.match(/^dataset\./)
       end
 

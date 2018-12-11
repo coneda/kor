@@ -54,10 +54,10 @@ class CreateEntityDatings < ActiveRecord::Migration
       batch += 1
     end
 
-    Entity.group('dataset_type').count.each do |t, c|
+    Entity.group('dataset_type').count.each do |t, _c|
       if t
         table_name = 'dataset_' + t.pluralize.underscore.split('_').last
-        if Kor.db.columns(table_name).map { |c| c.name }.include? 'dating_string'
+        if Kor.db.columns(table_name).map { |column| column.name }.include? 'dating_string'
           remove_column table_name, :dating_string, :dating_from, :dating_to
         end
       end

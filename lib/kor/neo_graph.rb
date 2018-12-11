@@ -28,7 +28,7 @@ class Kor::NeoGraph
     @transactions.push JSON.parse(response.body)
     yield
     id = @transactions.pop['commit'].split('/')[-2]
-    response = request "delete", "/db/data/transaction/#{id}"
+    request "delete", "/db/data/transaction/#{id}"
   end
 
   def new_progress_bar(title, total)
@@ -104,7 +104,7 @@ class Kor::NeoGraph
       "statement" => "UNWIND $props AS map CREATE (n:entity) SET n = map",
       "parameters" => {
         "props" => entity.map { |item|
-          data = {
+          {
             "id" => item.id,
             "uuid" => item.uuid,
             "collection_id" => item.collection_id,
@@ -129,7 +129,7 @@ class Kor::NeoGraph
       "statement" => "UNWIND $props AS map CREATE (n:group) SET n = map",
       "parameters" => {
         "props" => group.map { |item|
-          data = {
+          {
             'id' => item.id,
             'uuid' => item.uuid,
             'name' => item.name,
@@ -144,7 +144,7 @@ class Kor::NeoGraph
     group.each do |g|
       g.entities.select(:id).find_in_batches batch_size: 100 do |batch|
         statements = batch.map { |e|
-          data = {
+          {
             "statement" => [
               "MATCH (a:entity),(b:group)",
               "WHERE a.id = $entity_id AND b.id = $group_id",

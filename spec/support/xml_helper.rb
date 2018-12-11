@@ -3,7 +3,7 @@ module XmlHelper
     expect(response).to have_http_status(400)
     doc = Nokogiri::XML(response.body)
     doc.collect_namespaces.each { |k, v| doc.root.add_namespace k, v }
-    error = doc.xpath("//xmlns:error")
+    doc.xpath("//xmlns:error")
     expect(doc.at_xpath("//xmlns:error/@code").value).to eq(code)
   end
 

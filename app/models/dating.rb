@@ -57,7 +57,7 @@ class Dating < ApplicationRecord
       if value
         Kor::Dating::Transform.new.apply Kor::Dating::Parser.new.parse(value)
       end
-    rescue Parslet::ParseFailed => e
+    rescue Parslet::ParseFailed
       nil
     end
   end

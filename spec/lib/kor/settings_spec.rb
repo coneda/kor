@@ -4,7 +4,7 @@ RSpec.describe Kor::Settings do
   it "should create the settings file if it doesn't exist" do
     system "rm #{described_class.filename}"
     subject.save
-    expect(File.exists?(described_class.filename)).to be_truthy
+    expect(File.exist?(described_class.filename)).to be_truthy
   end
 
   it 'should load existing configuration' do

@@ -9,7 +9,6 @@ RSpec.describe Grant do
     expect(jdoe.allowed_to?(policies, default, require: :any)).to be_falsey
     expect(jdoe.allowed_to?(:view, default)).to be_truthy
 
-    policies = [:view, :edit, :create, :delete, :download_originals, :tagging, :view_meta]
     expect(jdoe.allowed_to?(:all, priv, require: :any)).to be_falsey
   end
 

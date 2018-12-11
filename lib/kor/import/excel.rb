@@ -143,7 +143,7 @@ class Kor::Import::Excel < Kor::Export::Excel
 
   def json_parse(string, default = nil)
     JSON.parse(string)
-  rescue => e
+  rescue
     log "couldn't parse '#{string}'"
     raise "an error ocurred, see above"
   end

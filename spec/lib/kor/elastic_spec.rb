@@ -82,7 +82,7 @@ RSpec.describe Kor::Elastic, elastic: true do
     results = described_class.new(User.admin).search(terms: "\"tree on plane\"", kind_id: works.id)
     expect(results.records).to eq([landscape])
 
-    is_related_to = FactoryGirl.create :relation, from_kind: landscape.kind, to_kind: jack.kind
+    FactoryGirl.create :relation, from_kind: landscape.kind, to_kind: jack.kind
     Relationship.relate_and_save(landscape, "is related to", jack)
     described_class.index_all full: true
 

@@ -8,13 +8,13 @@ def capybara_wait
         yield
         exception = nil
         break
-      rescue RSpec::Expectations::ExpectationNotMetError => e
+      rescue RSpec::Expectations::ExpectationNotMetError
         exception = e
         sleep 0.2
       end
     end
   end
-rescue Timeout::Error => e
+rescue Timeout::Error
   raise exception
 end
 
@@ -24,7 +24,6 @@ end
 
 When /I debug/ do
   binding.pry
-  x = 15
 end
 
 Given 'the search api expects to receive the params' do |table|

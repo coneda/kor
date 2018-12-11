@@ -282,7 +282,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
     expect(doc.xpath('//oai:resumptionToken', ns).size).to eq(1)
     expect(doc.xpath('//oai:resumptionToken', ns).text).to eq('')
-    expect(File.exists? "#{subject.send :base_dir}/#{token}.json").to be_truthy
+    expect(File.exist? "#{subject.send :base_dir}/#{token}.json").to be_truthy
   end
 
   it 'should include deleted records' do

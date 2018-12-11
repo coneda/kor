@@ -51,6 +51,10 @@ module DataHelper
     User.find_by! name: 'jdoe'
   end
 
+  def mrossi
+    User.find_by! name: 'mrossi'
+  end
+
   def priv
     Collection.find_by! name: 'private'
   end
@@ -193,8 +197,8 @@ module DataHelper
 
     # admin = User.find_by! name: 'admin'
     jdoe = FactoryGirl.create :jdoe, groups: [students]
-    mrossi = FactoryGirl.create :mrossi, groups: [project]
-    ldap = FactoryGirl.create :ldap_template
+    FactoryGirl.create :mrossi, groups: [project]
+    FactoryGirl.create :ldap_template
 
     Kor::Auth.grant default, :view, :to => students
     Kor::Auth.grant priv, :all, :to => admins
@@ -289,7 +293,7 @@ module DataHelper
   def current_user(user)
     @current_user = user
 
-    @current_user_mock ||= begin
+    @created ||= begin
       allow_any_instance_of(BaseController).to(
         receive(:current_user).and_return(@current_user)
       )

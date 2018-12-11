@@ -10,7 +10,7 @@ Paperclip.interpolates :style_extension do |attachment, style|
   end
 end
 
-Paperclip.interpolates :style_timestamp do |attachment, style|
+Paperclip.interpolates :style_timestamp do |attachment, _style|
   if attachment.file?
     attachment.updated_at.to_i
   else
