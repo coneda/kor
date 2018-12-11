@@ -41,7 +41,7 @@
           )
         else
           wApp.bus.trigger('message',
-            'error', tag.t('errors.clipboard_too_many_elements')
+            'error', tag.t('messages.clipboard_too_many_elements')
           )
       tag.update()
 

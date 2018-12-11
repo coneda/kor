@@ -191,7 +191,7 @@
 
       uploader.bind('Error', function(up, error) {
         if (error.code == -600) {
-          var message = tag.t('errors.file_too_big', {
+          var message = tag.t('messages.file_too_big', {
             interpolations: {
               file: error.file.name,
               size: (error.file.origSize / 1024.0 / 1024.0).toFixed(2),

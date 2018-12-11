@@ -108,10 +108,10 @@ shows all entities as possible targets -->
     var fetch = function() {
       // check amount of ids
       if (!tag.opts.ids || tag.opts.ids.length < 1) {
-        return setError('errors.must_select_1_or_more_entities');
+        return setError('messages.must_select_1_or_more_entities');
       }
       if (tag.opts.ids.length > 10) {
-        return setError('errors.cant_merge_more_than_10_entities');
+        return setError('messages.cant_merge_more_than_10_entities');
       }
 
       Zepto.ajax({
@@ -121,14 +121,14 @@ shows all entities as possible targets -->
         success: function(data) {
           // check not retrieved (but requested) entities
           if (data.total < tag.opts.ids.length) {
-            return setError('errors.missing_entities_to_merge');
+            return setError('messages.missing_entities_to_merge');
           }
 
           // check kind of all ids
           for (var i = 1; i < data.records.length; i++) {
             var e = data.records[i];
             if (e.kind_id != data.records[0].kind_id) {
-              return setError('errors.only_same_kind');
+              return setError('messages.only_same_kind');
             }
           }
 

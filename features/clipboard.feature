@@ -1,8 +1,4 @@
 Feature: Clipboard
-  As a user
-  In order to easily handle multiple entities
-  I want to have mass actions from within a clipboard
-
   Scenario: Mass relate
     Given I am logged in as "admin"
     And all entities of kind "Medium/Media" are in the clipboard
