@@ -5,5 +5,6 @@ Feature: Manage user preferences
     Then field "Language" should have value "en"
     When I select "de" from "Language"
     And I press "Save"
+    Then I should see "has been changed"
     When I reload the page
     Then I should see "Benutzer"
