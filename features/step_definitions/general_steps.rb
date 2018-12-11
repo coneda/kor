@@ -8,7 +8,7 @@ def capybara_wait
         yield
         exception = nil
         break
-      rescue RSpec::Expectations::ExpectationNotMetError
+      rescue RSpec::Expectations::ExpectationNotMetError => e
         exception = e
         sleep 0.2
       end
