@@ -90,15 +90,15 @@ class Kor::Elastic
         'mappings' => {
           "entities" => {
             "properties" => {
-              "name" => { "type" => "text" },
-              "distinct_name" => { "type" => "text" },
-              "subtype" => { "type" => "text" },
-              "synonyms" => { "type" => "text" },
-              "comment" => { "type" => "text" },
+              "name" => { "type" => "string" },
+              "distinct_name" => { "type" => "string" },
+              "subtype" => { "type" => "string" },
+              "synonyms" => { "type" => "string" },
+              "comment" => { "type" => "string" },
               'datings' => {
                 'type' => 'object',
                 'properties' => {
-                  'label' => { 'type' => 'text' },
+                  'label' => { 'type' => 'string' },
                   'from' => { 'type' => 'integer' },
                   'to' => { 'type' => 'integer' }
                 }
@@ -106,24 +106,24 @@ class Kor::Elastic
               "dataset" => {
                 "type" => "object",
                 "properties" => {
-                  "_default_" => { "type" => "text" }
+                  "_default_" => { "type" => "string" }
                 }
               },
               "properties" => {
                 "type" => "object",
                 "properties" => {
-                  "label" => { "type" => "text" },
-                  "value" => { "type" => "text" }
+                  "label" => { "type" => "string" },
+                  "value" => { "type" => "string" }
                 }
               },
-              "id" => { "type" => "text", "index" => false },
-              "uuid" => { "type" => "text" },
-              "tags" => { "type" => "text", "analyzer" => "keyword" },
+              "id" => { "type" => "string", "index" => "not_analyzed" },
+              "uuid" => { "type" => "string" },
+              "tags" => { "type" => "string", "analyzer" => "keyword" },
               "related" => {
                 "type" => "nested",
                 "properties" => {
-                  "relation_name" => { "type" => "text" },
-                  "entity_name" => { "type" => "text" },
+                  "relation_name" => { "type" => "string" },
+                  "entity_name" => { "type" => "string" },
                   "entity_collection_id" => { 'type' => 'integer' }
                 }
               },
@@ -131,7 +131,7 @@ class Kor::Elastic
               'created_at' => { 'type' => 'integer' },
               'updated_at' => { 'type' => 'integer' },
 
-              "sort" => { "type" => "text", "index" => false},
+              "sort" => { "type" => "string", "index" => "not_analyzed" },
             }
           }
         }
@@ -229,8 +229,6 @@ class Kor::Elastic
       # select([:id, :name, :kind_id, :attachment])
 
       data["related"] = scope.map do |dr|
-        next nil unless dr.to
-
         names = [dr.to.name] + fetch(:synonyms, dr.to_id) do
           dr.to.synonyms
         end

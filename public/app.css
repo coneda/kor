@@ -2,8 +2,7 @@ w-messaging, [data-is=w-messaging] {
   position: fixed;
   top: 0px;
   left: 50%;
-  margin-left: -20em;
-  z-index: 2000; }
+  margin-left: -20em; }
   w-messaging .message, [data-is=w-messaging] .message {
     width: 40em;
     padding: 1rem;
@@ -22,10 +21,10 @@ w-modal, [data-is=w-modal] {
   left: 0px;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: 1000; }
+  z-index: 10000; }
   w-modal > .receiver, [data-is=w-modal] > .receiver {
     position: fixed;
-    z-index: 1001;
+    z-index: 10001;
     background-color: white;
     left: 50%;
     top: 50%;
@@ -57,8 +56,8 @@ w-modal, [data-is=w-modal] {
 .kor-layout-small {
   width: 24rem; }
 
-.kor-layout-left {
-  min-height: 55rem; }
+.kor-layout-left:first-child {
+  min-height: 45rem; }
 
 .kor-layout-commands {
   float: right;
@@ -157,20 +156,9 @@ button:hover {
 [data-is=w-app] {
   padding: 2rem; }
   [data-is=w-app] .w-content {
-    position: relative;
     margin-left: 18rem;
     width: 72rem;
-    box-shadow: 0px 0px 25px #000000;
-    margin-right: 0px;
-    margin-bottom: 5rem; }
-    [data-is=w-app] .w-content kor-help-button {
-      display: block;
-      position: absolute;
-      top: -4px;
-      right: -40px; }
-
-[data-is=kor-help] {
-  min-width: 40rem; }
+    box-shadow: 0px 0px 25px #000000; }
 
 kor-welcome .teaser, [data-is=kor-welcome] .teaser {
   margin-top: 3rem; }
@@ -222,11 +210,7 @@ kor-gallery-grid td, [data-is=kor-gallery-grid] td {
   padding: 1.5rem; }
 
 kor-gallery-grid kor-entity.medium, [data-is=kor-gallery-grid] kor-entity.medium {
-  width: 100%;
-  height: 200px; }
-
-kor-gallery-grid .name, [data-is=kor-gallery-grid] .name {
-  font-weight: bold; }
+  width: 100%; }
 
 kor-login a.password-recovery, [data-is=kor-login] a.password-recovery {
   text-decoration: underline; }
@@ -309,13 +293,6 @@ kor-media-relation .name, [data-is=kor-media-relation] .name {
 
 kor-media-relation kor-pagination, [data-is=kor-media-relation] kor-pagination {
   margin-top: 1rem; }
-
-kor-relation-selector {
-  display: inline-block;
-  margin-bottom: 1em; }
-  kor-relation-selector em {
-    display: inline-block;
-    margin-top: 0.5em; }
 
 kor-relationship, [data-is=kor-relationship] {
   display: block;
@@ -502,15 +479,16 @@ kor-upload ul, [data-is='kor-upload'] ul {
 kor-upload .text-right, [data-is='kor-upload'] .text-right {
   text-align: right; }
 
-kor-relations .label, kor-relations .name, [data-is=kor-relations] .label, [data-is=kor-relations] .name {
-  color: #ffffff; }
-
-kor-relations th:first-child, [data-is=kor-relations] th:first-child {
-  width: 400px; }
-
-kor-relations .buttons a, [data-is=kor-relations] .buttons a {
-  display: inline-block;
-  margin-left: 3px; }
+kor-relations, [data-is=kor-relations] {
+  font-weight: bold;
+  padding: 30px; }
+  kor-relations .label, kor-relations .name, [data-is=kor-relations] .label, [data-is=kor-relations] .name {
+    color: #ffffff; }
+  kor-relations th:first-child, [data-is=kor-relations] th:first-child {
+    width: 400px; }
+  kor-relations .buttons a, [data-is=kor-relations] .buttons a {
+    display: inline-block;
+    margin-left: 3px; }
 
 kor-relation-merger ul, [data-is=kor-relation-merger] ul {
   margin-top: 12px; }
@@ -556,16 +534,14 @@ kor-menu {
   kor-menu ul {
     padding: 0px;
     margin-bottom: 2rem; }
+  kor-menu ul.submenu {
+    padding-left: 1rem; }
   kor-menu li {
     list-style-type: none; }
   kor-menu a {
     text-decoration: none;
     font-weight: bold;
     color: #bbbbbb; }
-  kor-menu .header {
-    font-weight: bold;
-    color: #777777;
-    margin-bottom: -0.5rem; }
 
 [data-is=kor-statistics] table {
   margin-bottom: 2rem; }
@@ -599,52 +575,24 @@ kor-entity-selector kor-input[ref=terms] {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem; }
 
-kor-properties-editor, kor-datings-editor {
-  display: block; }
-  kor-properties-editor .header, kor-datings-editor .header {
-    font-weight: bold; }
-  kor-properties-editor ul, kor-datings-editor ul {
-    margin: 1rem;
-    padding: 0px; }
-    kor-properties-editor ul li, kor-datings-editor ul li {
-      list-style-type: none;
-      margin-top: 1rem; }
-      kor-properties-editor ul li button, kor-datings-editor ul li button {
-        margin-top: 0.5rem; }
-    kor-properties-editor ul li:first-child, kor-datings-editor ul li:first-child {
-      margin-top: 0px; }
-
-[data-is=kor-entity-merger] {
-  width: 600px; }
-  [data-is=kor-entity-merger] kor-input[name=medium_id] label.radio {
-    margin: 2rem; }
-    [data-is=kor-entity-merger] kor-input[name=medium_id] label.radio img {
-      vertical-align: middle;
-      margin-left: 0.5rem; }
-
-[data-is=kor-to-entity-group] {
-  width: 350px; }
-
-[data-is=kor-admin-group-categories] p.ancestry {
-  margin-top: -2rem; }
-
-[data-is=kor-mass-relate] {
-  width: 450px; }
-
-kor-input .help {
-  border: 1px solid #565656;
-  padding: 0.5rem;
-  margin-top: -1px;
-  margin-bottom: 2rem; }
-  kor-input .help code {
-    display: block;
-    color: white;
-    margin-bottom: 1rem; }
-
-kor-input label {
+kor-properties-editor .header, kor-datings-editor .header {
   font-weight: bold; }
 
-kor-input input, kor-input select, kor-input textarea {
+kor-properties-editor ul, kor-datings-editor ul {
+  margin: 1rem;
+  padding: 0px; }
+  kor-properties-editor ul li, kor-datings-editor ul li {
+    list-style-type: none;
+    margin-top: 1rem; }
+    kor-properties-editor ul li button, kor-datings-editor ul li button {
+      margin-top: 0.5rem; }
+  kor-properties-editor ul li:first-child, kor-datings-editor ul li:first-child {
+    margin-top: 0px; }
+
+kor-input label, [data-is=kor-input] label {
+  font-weight: bold; }
+
+kor-input input, kor-input select, kor-input textarea, [data-is=kor-input] input, [data-is=kor-input] select, [data-is=kor-input] textarea {
   border: 0.1rem solid #565656;
   background-color: #252525;
   font-family: helvetica, arial;
@@ -656,38 +604,38 @@ kor-input input, kor-input select, kor-input textarea {
   outline: none;
   min-height: 2rem; }
 
-kor-input textarea {
+kor-input textarea, [data-is=kor-input] textarea {
   min-height: 15rem;
   resize: vertical; }
 
-kor-input input:focus, kor-input textarea:focus {
+kor-input input:focus, kor-input textarea:focus, [data-is=kor-input] input:focus, [data-is=kor-input] textarea:focus {
   background-color: #333333; }
 
-kor-input input[type=submit], kor-input input[type=reset] {
+kor-input input[type=submit], kor-input input[type=reset], [data-is=kor-input] input[type=submit], [data-is=kor-input] input[type=reset] {
   border: none;
   cursor: pointer;
   width: auto;
   margin-top: 1.5rem;
   margin-bottom: 1rem; }
-  kor-input input[type=submit]:hover, kor-input input[type=reset]:hover {
+  kor-input input[type=submit]:hover, kor-input input[type=reset]:hover, [data-is=kor-input] input[type=submit]:hover, [data-is=kor-input] input[type=reset]:hover {
     background-color: #666666; }
 
-kor-input .errors {
+kor-input .errors, [data-is=kor-input] .errors {
   color: #cb1525; }
 
-kor-input.has-errors input, kor-input.has-errors select, kor-input.has-errors textarea {
+kor-input.has-errors input, kor-input.has-errors select, kor-input.has-errors textarea, [data-is=kor-input].has-errors input, [data-is=kor-input].has-errors select, [data-is=kor-input].has-errors textarea {
   border-color: #cb1525; }
 
-kor-input[type=radio] {
+kor-input[type=radio], [data-is=kor-input][type=radio] {
   display: inline-block; }
-  kor-input[type=radio] label {
+  kor-input[type=radio] label, [data-is=kor-input][type=radio] label {
     display: block; }
-  kor-input[type=radio] label.radio {
+  kor-input[type=radio] label.radio, [data-is=kor-input][type=radio] label.radio {
     display: inline-block;
     padding-right: 2em;
     position: relative;
     top: -0.3em; }
-  kor-input[type=radio] input {
+  kor-input[type=radio] input, [data-is=kor-input][type=radio] input {
     display: inline;
     width: initial;
     position: relative;
@@ -696,32 +644,30 @@ kor-input[type=radio] {
 form {
   display: block;
   margin-bottom: 1rem; }
-  form kor-input {
+  form kor-input, form [data-is=kor-input] {
     display: block;
     margin-bottom: 1rem; }
-    form kor-input input, form kor-input select, form kor-input textarea {
+    form kor-input input, form kor-input select, form kor-input textarea, form [data-is=kor-input] input, form [data-is=kor-input] select, form [data-is=kor-input] textarea {
       width: 100%; }
-    form kor-input input[type=checkbox] {
+    form kor-input input[type=checkbox], form [data-is=kor-input] input[type=checkbox] {
       display: block;
       width: 13px;
       height: 13px;
       vertical-align: bottom;
       margin: 0;
       margin-left: 5px; }
-    form kor-input select[multiple] {
+    form kor-input select[multiple], form [data-is=kor-input] select[multiple] {
       height: 15rem; }
-  form kor-input[type=submit], form kor-input[type=reset] {
-    display: inline-block; }
 
 form.inline {
   display: inline-block;
   margin-bottom: 0rem; }
-  form.inline kor-input {
+  form.inline kor-input, form.inline [data-is=kor-input] {
     display: inline;
     margin-right: 15px; }
-    form.inline kor-input input, form.inline kor-input select, form.inline kor-input textarea {
+    form.inline kor-input input, form.inline kor-input select, form.inline kor-input textarea, form.inline [data-is=kor-input] input, form.inline [data-is=kor-input] select, form.inline [data-is=kor-input] textarea {
       width: auto; }
-    form.inline kor-input input[type=checkbox] {
+    form.inline kor-input input[type=checkbox], form.inline [data-is=kor-input] input[type=checkbox] {
       display: inline; }
 
 i {
@@ -799,34 +745,10 @@ i {
     background-image: url("/images/select_hit.gif"); }
   i.select_hit:hover {
     background-image: url("/images/select_hit_over.gif"); }
-  i.private {
-    background-image: url("/images/private.gif"); }
-  i.private:hover {
-    background-image: url("/images/private_over.gif"); }
-  i.public {
-    background-image: url("/images/public.gif"); }
-  i.public:hover {
-    background-image: url("/images/public_over.gif"); }
-  i.stop_watch {
-    background-image: url("/images/stop_watch.gif"); }
-  i.stop_watch:hover {
-    background-image: url("/images/stop_watch_over.gif"); }
-  i.zip {
-    background-image: url("/images/zip.gif"); }
-  i.zip:hover {
-    background-image: url("/images/zip_over.gif"); }
-  i.help {
-    background-image: url("/images/help.gif"); }
-  i.help:hover {
-    background-image: url("/images/help_over.gif"); }
   i.triangle_up {
     background-image: url("/images/triangle_up.gif"); }
   i.triangle_down {
     background-image: url("/images/triangle_down.gif"); }
-  i.help {
-    background-size: 70%;
-    width: 2.5rem;
-    height: 2.5rem; }
 
 .kor w-modal .receiver, .kor [data-is=w-modal] .receiver {
   background-color: #1e1e1e;
