@@ -1,6 +1,18 @@
 # encoding: UTF-8
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# Note that this schema.rb definition is the authoritative source for your
+# database schema. If you need to create the application database on another
+# system, you should be using db:schema:load, not running all the migrations
+# from scratch. The latter is a flawed and unsustainable approach (the more migrations
+# you'll amass, the slower it'll run and the greater likelihood for issues).
+#
+# It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema.define(version: 20181204034411) do
+
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4,   default: 0
     t.integer  "parent_id",    limit: 4
@@ -65,10 +77,10 @@ ActiveRecord::Schema.define(version: 20181204034411) do
   add_index "credentials_users", ["user_id"], name: "index_credentials_users_on_user_id", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
-    t.integer  "priority",   limit: 4,     default: 0
-    t.integer  "attempts",   limit: 4,     default: 0
-    t.text     "handler",    limit: 65535
-    t.text     "last_error", limit: 65535
+    t.integer  "priority",   limit: 4,        default: 0
+    t.integer  "attempts",   limit: 4,        default: 0
+    t.text     "handler",    limit: 16777215
+    t.text     "last_error", limit: 16777215
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
@@ -126,13 +138,12 @@ ActiveRecord::Schema.define(version: 20181204034411) do
     t.datetime "deleted_at"
   end
 
+  add_index "entities", ["collection_id", "kind_id"], name: "collections_kinds", using: :btree
   add_index "entities", ["created_at"], name: "index_entities_on_created_at", using: :btree
   add_index "entities", ["creator_id"], name: "index_entities_on_user_id", using: :btree
   add_index "entities", ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
   add_index "entities", ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
   add_index "entities", ["kind_id", "deleted_at"], name: "typey", using: :btree
-  add_index "entities", ["kind_id"], name: "index_entities_on_kind_id", using: :btree
-  add_index "entities", ["medium_id"], name: "mediy", using: :btree
   add_index "entities", ["name"], name: "index_entities_on_name", using: :btree
   add_index "entities", ["uuid"], name: "index_entities_on_uuid", using: :btree
 
@@ -169,6 +180,7 @@ ActiveRecord::Schema.define(version: 20181204034411) do
   end
 
   add_index "entity_datings", ["entity_id"], name: "index_entity_datings_on_entity_id", using: :btree
+  add_index "entity_datings", ["from_day", "to_day"], name: "timely", using: :btree
 
   create_table "fields", force: :cascade do |t|
     t.integer  "kind_id",       limit: 4
@@ -388,4 +400,5 @@ ActiveRecord::Schema.define(version: 20181204034411) do
 
   add_index "users", ["name"], name: "index_users_on_name", unique: true, using: :btree
   add_index "users", ["parent_username"], name: "index_users_on_parent_username", using: :btree
+
 end
