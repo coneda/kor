@@ -14,7 +14,8 @@
         <a href="{{login_url()}}" ng-bind="'verbs.login' | translate"></a>
         |
         <a 
-          href="http://localhost:3000/blaze#/entities/465"
+          href="#"
+          ng-click="back($event)"
           ng-bind="'back' | translate"
         ></a>
       </div>
