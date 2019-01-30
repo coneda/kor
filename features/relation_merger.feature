@@ -39,5 +39,6 @@ Feature: Relation merger
     When I follow "add to merge" within "[data-is=kor-relations] tbody tr:nth-child(2)"
     And I follow "has created / has been created by" within "kor-relation-merger li:first-child"
     And I press "merge"
+    Then I should see "merged successfully"
 
     Then there should only be one relation "has created / has been created by"
