@@ -1,7 +1,7 @@
 dist: trusty
 sudo: required
 
-env:
+global:
   - HEADLESS=true
   - MOZ_HEADLESS=1
 
