@@ -35,5 +35,5 @@ script:
   - mysql -e 'CREATE DATABASE kor_test;'
   - cp deploy/database.travis.yml config/database.yml
   - bundle exec rake db:test:load
-  - bundle exec rspec spec/ --format=progress
-  - bundle exec cucumber features/ --format=progress
+  - bundle exec rspec spec/ --format=documentation
+  - bundle exec cucumber features/ --format=documentation
