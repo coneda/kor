@@ -2,6 +2,7 @@ dist: trusty
 sudo: required
 
 env:
+  - HEADLESS=true
   - MOZ_HEADLESS=1
 
 install:
@@ -23,7 +24,7 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install libav-tools imagemagick
   - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.6/elasticsearch-2.4.6.deb && sudo dpkg -i --force-confnew elasticsearch-2.4.6.deb && sudo service elasticsearch restart
-  - wget -N https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz -O geckodriver.tar.gz
+  - wget -N https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz -O geckodriver.tar.gz
   - tar xzf geckodriver.tar.gz
   - rm geckodriver.tar.gz
   - chmod +x geckodriver
