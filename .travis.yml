@@ -1,9 +1,10 @@
 dist: trusty
 sudo: required
 
-global:
-  - HEADLESS=true
-  - MOZ_HEADLESS=1
+env:
+  global:
+    - HEADLESS=true
+    - MOZ_HEADLESS=1
 
 install:
   - npm install
