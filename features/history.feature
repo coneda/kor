@@ -35,7 +35,7 @@ Feature: History
     Then I should be on the entity page for "Nürnberg"
 
 
-  @javascript
+  @javascript @notravis
   Scenario: Back button on denied page
     Given the entity "Paris" of kind "Ort/Orte"
     And I am on the welcome page

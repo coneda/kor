@@ -17,17 +17,20 @@ function install_requirements {
 function install_test_requirements {
   PHANTOMJS_VERSION="2.1.1"
   install_requirements
+
   cd /opt
-  wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
-  tar xjf phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
-  ln -sfn /opt/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/bin/phantomjs
+  wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
+  unzip chromedriver_linux64.zip
+  mkdir -p /usr/local/bin
+  ln -sfn $(pwd)/chromedriver /usr/local/bin/chromedriver
+  chmod 755 $(pwd)/chromedriver
 }
 
 function install_dev_requirements {
   install_requirements
   install_test_requirements
   apt-get install -y \
-    libmysqlclient-dev imagemagick libav-tools zip openjdk-8-jre
+    libmysqlclient-dev imagemagick libav-tools zip openjdk-8-jre chromium-browser
 }
 
 function install_prod_requirements {
