@@ -609,16 +609,19 @@ like so:
 The easiest way to get started hacking on kor, is to use the included vagrant
 test environment. For now, you can create it with
 
-    vagrant up
+    vagrant up dev
 
 SSH into the resulting virtual machine and start the development server:
 
     vargant ssh
+    cd /vagrant
     ...
-    bundle exec rails s
+    bundle exec rails s -b 0.0.0.0
 
 This uses the code from the current working directory on your dev machine. Go to
-http://localhost:3000 with your browser to see the development page.
+http://localhost:3000 with your browser to see the development page. As with all
+new installations of ConedaKOR, you can login with user `admin` and password
+`admin`.
 
 #### Running the test suites
 
