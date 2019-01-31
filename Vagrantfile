@@ -12,7 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "VERSION" => ENV["VERSION"] || `git rev-parse --abbrev-ref HEAD`
   }
 
-  config.vm.define "dev", :primary => true do |c|
+  config.vm.define "dev.v2.1", :primary => true do |c|
     if RUBY_PLATFORM.match(/darwin/)
       config.vm.synced_folder ".", "/vagrant", type: "nfs"
       config.vm.network "private_network", type: "dhcp"
@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     c.vm.network :forwarded_port, host: 3000, guest: 3000
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.dev"
+      vbox.name = "kor.v2.1.dev"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "prod", autostart: false do |c|
     c.vm.network :forwarded_port, host: 8080, guest: 80
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.prod"
+      vbox.name = "kor.v2.1.prod"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
@@ -60,7 +60,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
     c.vm.network :forwarded_port, host: 8080, guest: 80
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.bare"
+      vbox.name = "kor.v2.1.bare"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
@@ -94,7 +94,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.network :forwarded_port, host: 9200, guest: 9200, host_ip: '127.0.0.1'
 
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.centos7"
+      vbox.name = "kor.v2.1.centos7"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
