@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "prod", autostart: false do |c|
     c.vm.network :forwarded_port, host: 8080, guest: 80
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.v2.1.prod"
+      vbox.name = "kor.prod"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
@@ -60,7 +60,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
     c.vm.network :forwarded_port, host: 8080, guest: 80
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.v2.1.bare"
+      vbox.name = "kor.bare"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
@@ -94,7 +94,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.network :forwarded_port, host: 9200, guest: 9200, host_ip: '127.0.0.1'
 
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.v2.1.centos7"
+      vbox.name = "kor.centos7"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
