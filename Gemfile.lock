@@ -109,8 +109,8 @@ GEM
     daemons (1.2.4)
     database_cleaner (1.5.3)
     debase-ruby_core_source (0.8.4)
-    delayed_job (4.1.1)
-      activesupport (>= 3.0, < 5.0)
+    delayed_job (4.1.5)
+      activesupport (>= 3.0, < 5.3)
     delayed_job_active_record (4.1.0)
       activerecord (>= 3.0, < 5)
       delayed_job (>= 3.0, < 5)
@@ -138,7 +138,8 @@ GEM
     highline (1.7.8)
     hirb (0.7.3)
     httpclient (2.8.3)
-    i18n (0.8.4)
+    i18n (0.9.5)
+      concurrent-ruby (~> 1.0)
     jbuilder (2.4.1)
       activesupport (>= 3.0.0, < 5.1)
       multi_json (~> 1.2)
@@ -163,10 +164,10 @@ GEM
     mimemagic (0.3.0)
     mini_mime (1.0.0)
     mini_portile2 (2.3.0)
-    minitest (5.10.2)
+    minitest (5.11.3)
     multi_json (1.12.1)
     multi_test (0.1.2)
-    mysql2 (0.4.2)
+    mysql2 (0.4.10)
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     paperclip (4.3.6)
@@ -301,7 +302,7 @@ GEM
     thor (0.19.4)
     thread_safe (0.3.6)
     tilt (2.0.7)
-    tzinfo (1.2.3)
+    tzinfo (1.2.5)
       thread_safe (~> 0.1)
     uglifier (2.7.2)
       execjs (>= 0.3.0)
@@ -333,6 +334,7 @@ DEPENDENCIES
   daemons
   database_cleaner
   debase-ruby_core_source
+  delayed_job (~> 4.1.1)
   delayed_job_active_record
   delayed_paperclip
   exifr (= 1.1.1)
@@ -345,7 +347,7 @@ DEPENDENCIES
   jquery-ui-rails
   kor_index!
   method_profiler
-  mysql2
+  mysql2 (~> 0.4.2)
   paperclip
   paranoia (~> 2.2)
   parslet
@@ -375,4 +377,4 @@ DEPENDENCIES
   will_paginate (~> 3.0.3)
 
 BUNDLED WITH
-   1.16.1
+   1.17.3
