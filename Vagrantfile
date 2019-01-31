@@ -14,12 +14,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "dev", :primary => true do |c|
     if RUBY_PLATFORM.match(/darwin/)
-      config.vm.synced_folder ".", "/vagrant", type: "nfs"
-      config.vm.network "private_network", type: "dhcp"
+      c.vm.synced_folder ".", "/vagrant", type: "nfs"
+      c.vm.network "private_network", type: "dhcp"
+    else
+      c.vm.synced_folder '.', '/vagrant', type: 'virtualbox'
     end
+
     c.vm.network :forwarded_port, host: 3000, guest: 3000
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.dev"
+      vbox.name = "kor.v3.0.dev"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
@@ -35,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "prod", autostart: false do |c|
     c.vm.network :forwarded_port, host: 8080, guest: 80
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.prod"
+      vbox.name = "kor.v3.0.prod"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
@@ -52,12 +55,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "bare" do |c|
     if RUBY_PLATFORM.match(/darwin/)
-      config.vm.synced_folder ".", "/vagrant", type: "nfs"
-      config.vm.network "private_network", type: "dhcp"
+      c.vm.synced_folder ".", "/vagrant", type: "nfs"
+      c.vm.network "private_network", type: "dhcp"
+    else
+      c.vm.synced_folder '.', '/vagrant', type: 'virtualbox'
     end
     c.vm.network :forwarded_port, host: 8080, guest: 80
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.bare"
+      vbox.name = "kor.v3.0.bare"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
@@ -91,7 +96,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.network :forwarded_port, host: 9200, guest: 9200, host_ip: '127.0.0.1'
 
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.centos7"
+      vbox.name = "kor.v3.0.centos7"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
