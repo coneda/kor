@@ -34,4 +34,4 @@ script:
   - cp deploy/database.travis.yml config/database.yml
   - bundle exec rake db:test:load
   - bundle exec rspec spec/ --format=documentation
-  - bundle exec cucumber features/ --format=pretty
+  - bundle exec cucumber features/ --format=pretty --tags "not @notravis"
