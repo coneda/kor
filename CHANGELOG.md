@@ -10,6 +10,8 @@ commit history on GitHub.
 ### User
 
 * video playback now works with the Safari desktop browser and on iOS devices
+* maximum background processing time has ben extended to 10 hours for lengthy
+  video encoding tasks
 
 ### Internal
 
