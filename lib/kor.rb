@@ -83,12 +83,6 @@ module Kor
     end
   end
 
-  def self.video_processor
-    @video_processor ||= begin
-      system('avconv -version > /dev/null 2> /dev/null') ? 'avconv' : 'ffmpeg'
-    end
-  end
-
   def self.with_exclusive_lock(name, &block)
     mode = File::RDWR | File::CREAT
     File.open "#{Rails.root}/tmp/#{name}.lock", mode do |f|

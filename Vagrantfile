@@ -21,6 +21,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     c.vm.network :forwarded_port, host: 3000, guest: 3000
+    c.vm.network :forwarded_port, host: 3306, guest: 3306
+    c.vm.network :forwarded_port, host: 9200, guest: 9200
+
     c.vm.provider "virtualbox" do |vbox|
       vbox.name = "kor.v2.1.dev"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
@@ -30,7 +33,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "system_updates"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_dev_requirements"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_elasticsearch"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "elasticsearch_dev"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "mysql_dev"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "configure_dev", privileged: false
   end
@@ -53,7 +58,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "clean"
   end
 
-  config.vm.define "bare" do |c|
+  config.vm.define "bare", autostart: false do |c|
     if RUBY_PLATFORM.match(/darwin/)
       config.vm.synced_folder ".", "/vagrant", type: "nfs"
       config.vm.network "private_network", type: "dhcp"
@@ -79,7 +84,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     SHELL
   end
 
-  config.vm.define 'centos7' do |c|
+  config.vm.define 'centos7', autostart: false do |c|
     c.vm.box = 'centos/7'
     # c.ssh.pty = true
 

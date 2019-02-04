@@ -48,11 +48,23 @@ function install_elasticsearch {
   systemctl start elasticsearch.service
 }
 
+function elasticsearch_dev {
+  sed -i -E "s/^#\s*?network.host:\s+.*$/network.host: 0.0.0.0/" /etc/elasticsearch/elasticsearch.yml
+  systemctl restart elasticsearch.service
+}
+
 function install_mysql {
   debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
   debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
   apt-get install -y mysql-server
   echo "GRANT ALL ON kor.* TO 'kor'@'localhost' IDENTIFIED BY 'kor';" | mysql -u root -proot
+}
+
+function mysql_dev {
+  sed -i -E "s/bind-address\s*=\s*127.0.0.1/#bind-address = 127.0.0.1/" /etc/mysql/mysql.conf.d/mysqld.cnf
+  systemctl restart mysql.service
+  mysql -u root -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root'"
+  mysql -u root -proot -e "FLUSH PRIVILEGES"
 }
 
 function appliance {

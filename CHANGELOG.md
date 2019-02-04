@@ -12,6 +12,9 @@ commit history on GitHub.
 * video playback now works with the Safari desktop browser and on iOS devices
 * maximum background processing time has ben extended to 10 hours for lengthy
   video encoding tasks
+* avconv is no longer supported, it doesn't allow mp4 baseline settings and
+  therefore produces videos incompatible with iOS devices
+* extended vagrant environment to expose mysql and elasticsearch
 
 ### Internal
 

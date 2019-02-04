@@ -9,11 +9,14 @@ class Paperclip::Video < Paperclip::Processor
     end
   end
 
+  # see https://trac.ffmpeg.org/wiki/Encode/H.264 and
+  # https://stackoverflow.com/a/9477756/351909
+  # TODO: baseline profile and flags should be applied to all formats?
   def self.make_mp4(file, attachment)
     outfile = Tempfile.new(rand.to_s).path + '.mp4'
-    args = "-c:v libx264 -crf 28 -c:a aac -b:a 256k -strict experimental"
+    args = "-c:v libx264 -crf 28 -c:a aac -b:a 256k -strict experimental -profile:v baseline -level 3.0 -movflags +faststart"
     args = "-loglevel panic -nostats -i #{file.path} #{args} #{outfile}"
-    Paperclip.run(Kor.video_processor, args)
+    Paperclip.run('ffmpeg', args)
     File.open(outfile)
   end
 
@@ -21,7 +24,7 @@ class Paperclip::Video < Paperclip::Processor
     outfile = Tempfile.new(rand.to_s).path + '.ogv'
     args = "-c:v libtheora -qscale:v 7 -c:a libvorbis -qscale:a 7"
     args = "-loglevel panic -nostats -i #{file.path} #{args} #{outfile}"
-    Paperclip.run(Kor.video_processor, args)
+    Paperclip.run('ffmpeg', args)
     File.open(outfile)
   end
 
@@ -29,7 +32,7 @@ class Paperclip::Video < Paperclip::Processor
     outfile = Tempfile.new(rand.to_s).path + '.webm'
     args = "-c:v libvpx -crf 10 -b:v 1M -c:a libvorbis -qscale:a 7"
     args = "-loglevel panic -nostats -i #{file.path} #{args} #{outfile}"
-    Paperclip.run(Kor.video_processor, args)
+    Paperclip.run('ffmpeg', args)
     File.open(outfile)
   end
 end
