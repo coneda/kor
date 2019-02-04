@@ -14,7 +14,7 @@ services:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install libav-tools imagemagick
+  - sudo apt-get install ffmpeg imagemagick
   - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.6/elasticsearch-2.4.6.deb && sudo dpkg -i --force-confnew elasticsearch-2.4.6.deb && sudo service elasticsearch restart
   - wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
