@@ -57,3 +57,4 @@ Feature: Media
     Then I should see "File type: jpeg"
     When I go to the isolated entities page
     Then I should see "File type: jpeg"
+    
