@@ -163,9 +163,9 @@ class Kor::Elastic
       Kor.progress_bar('indexing entities', Entity.without_media.count)
     end
     scope = Entity.includes(:tags).without_media
-    scope.find_in_batches do |batch|
+    scope.find_in_batches batch_size: 50 do |batch|
       data = []
-      batch.map do |e|
+      batch.each do |e|
         data << JSON.dump('index' => {'_id' => e.uuid})
         data << JSON.dump(data_for(e, options))
         progress.increment if options[:progress]
