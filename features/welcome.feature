@@ -56,3 +56,15 @@ Feature: Welcome
     When I go to the entity page for "Mona Lisa"
     Then I should not see "Clipboard"
     And I should not see link "Target"
+
+  @javascript
+  Scenario: Use custom html on the welcome page
+    When I am logged in as "admin"
+    And I follow "Administration"
+    And I follow "General"
+    And I follow "Application"
+    And I fill in "config_app_welcome_text" with "<h1>Benvenuto!</h1><br/><br/><a href='https://custom.example.com'>custom</a>"
+    And I press "Save"
+    And I go to the welcome page
+    Then I should see a link "custom" leading to "https://custom.example.com"
+

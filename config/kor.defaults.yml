@@ -6,8 +6,7 @@ all:
 
   app:
     default_locale: "en"
-    welcome_title: "Welcome to ConedaKOR"
-    welcome_text: "This text can be configured in the general settings"
+    welcome_text: "<h1>Welcome to ConedaKOR</h1>\n\nThis text can be configured in the general settings"
     current_history_length: 5
     max_foreground_group_download_size: 10
     max_file_upload_size: "100"

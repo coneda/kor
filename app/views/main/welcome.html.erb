@@ -1,6 +1,6 @@
-<% content_for :title, @title %>
 <% content_for :content do %>
-  <div class="text">
+  <div class="text welcome">
+
     <%= @red_cloth.to_html.html_safe %>
 
     <% unless @entities.empty? %>
