@@ -14,6 +14,7 @@ kor.controller "record_history_controller", [
   (http, l, ss) ->
     ss.reset_flash()
     ss.read_legacy_flash()
+    Lockr.set('back-url', l.absUrl())
     http(
       method: 'post'
       url: "/tools/history"

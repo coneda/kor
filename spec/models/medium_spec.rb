@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Medium do
+describe Medium, travis: false do
 
   it "should not accept non-image-files as image attachment" do
     expect(Medium.new(:image => File.open("#{Rails.root}/spec/fixtures/text_file.txt")).valid?).to be_falsey

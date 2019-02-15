@@ -54,8 +54,8 @@ kor.directive "korPagination", [
             scope.update(scope.page_input_model)
             scope.$apply()
 
-        $(element).on "blur", "input[type=number]", (event) ->
-          $(event.target).val(sanitize scope.page_model)
+        # $(element).on "blur", "input[type=number]", (event) ->
+        #   $(event.target).val(sanitize scope.page_model)
 
     } 
 ]

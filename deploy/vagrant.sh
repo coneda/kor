@@ -17,17 +17,20 @@ function install_requirements {
 function install_test_requirements {
   PHANTOMJS_VERSION="2.1.1"
   install_requirements
+
   cd /opt
-  wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
-  tar xjf phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
-  ln -sfn /opt/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/bin/phantomjs
+  wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
+  unzip chromedriver_linux64.zip
+  mkdir -p /usr/local/bin
+  ln -sfn $(pwd)/chromedriver /usr/local/bin/chromedriver
+  chmod 755 $(pwd)/chromedriver
 }
 
 function install_dev_requirements {
   install_requirements
   install_test_requirements
   apt-get install -y \
-    libmysqlclient-dev imagemagick libav-tools zip openjdk-8-jre
+    libmysqlclient-dev imagemagick libav-tools zip openjdk-8-jre chromium-browser
 }
 
 function install_prod_requirements {
@@ -48,11 +51,23 @@ function install_elasticsearch {
   systemctl start elasticsearch.service
 }
 
+function elasticsearch_dev {
+  sed -i -E "s/^#\s*?network.host:\s+.*$/network.host: 0.0.0.0/" /etc/elasticsearch/elasticsearch.yml
+  systemctl restart elasticsearch.service
+}
+
 function install_mysql {
   debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
   debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
   apt-get install -y mysql-server
   echo "GRANT ALL ON kor.* TO 'kor'@'localhost' IDENTIFIED BY 'kor';" | mysql -u root -proot
+}
+
+function mysql_dev {
+  sed -i -E "s/bind-address\s*=\s*127.0.0.1/#bind-address = 127.0.0.1/" /etc/mysql/mysql.conf.d/mysqld.cnf
+  systemctl restart mysql.service
+  mysql -u root -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root'"
+  mysql -u root -proot -e "FLUSH PRIVILEGES"
 }
 
 function appliance {

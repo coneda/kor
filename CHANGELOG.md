@@ -47,12 +47,27 @@ commit history on GitHub.
 
 * added lockr.js for localStorage
 
+## Version 2.1.2
+
+### User
+
+* video playback now works with the Safari desktop browser and on iOS devices
+* maximum background processing time has ben extended to 10 hours for lengthy
+  video encoding tasks
+* avconv is no longer supported, it doesn't allow mp4 baseline settings and
+  therefore produces videos incompatible with iOS devices
+* extended vagrant environment to expose mysql and elasticsearch
+
+### Internal
+
+* implemented Range header handling for media retrieval
+
 ## Version 2.1.1
 
 ### User
 
 * for authentication with an api key via request headers, header name has to be
-  dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`.
+  dashed, so `api-key`, `Api-Key` or `API-KEY` instead of `api_key`
 * most parts of OAI-PMH responses are now cached which should enhance
   performance greatly
 * added reference implementation for OAI-PMH client
@@ -72,8 +87,13 @@ commit history on GitHub.
 * kinds and relations can now have parents allowing a semantic hierarchies (e.g.
   for mapping to CIDOC CRM implementations)
 * environment authentication now allows to specify a `mail` attribute and
+<<<<<<< HEAD
   a `domain` attribute, the latter overriding the former.
 * resumptionToken within OAI-PMH responses now behaves according to specs
+=======
+  a `domain` attribute, the latter overriding the former
+* resumptionToken within OAI-PMH responses now behaves according to the specs
+>>>>>>> v2.1
 
 ## Version 2.0.1
 

@@ -25,7 +25,7 @@ Feature: Media
     Then I should see element "img[src*='/media/images/preview/000/000/001/image.jpg']" within ".viewer"
     
     
-  @javascript
+  @javascript @notravis
   Scenario: Upload a video and watch it
     Given I am logged in as "admin"
     And the medium "spec/fixtures/video_a.m4v"
@@ -58,3 +58,4 @@ Feature: Media
     Then I should see "File type: jpeg"
     When I go to the isolated entities page
     Then I should see "File type: jpeg"
+    

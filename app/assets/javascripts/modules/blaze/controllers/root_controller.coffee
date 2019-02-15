@@ -40,5 +40,9 @@ kor.controller('root_controller', [
       else
         result
 
+    scope.back = (event) ->
+      event.preventDefault()
+      window.history.back()
+
     kd.session_load()
 ])

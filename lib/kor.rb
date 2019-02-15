@@ -83,12 +83,6 @@ module Kor
     end
   end
 
-  def self.video_processor
-    @video_processor ||= begin
-      system('avconv -version > /dev/null 2> /dev/null') ? 'avconv' : 'ffmpeg'
-    end
-  end
-
   def self.progress_bar(title, total, options = {})
     options.reverse_merge!(
       :title => title,

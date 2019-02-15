@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '~> 4.2.6'
 gem 'responders', '~> 2.0'
 
+gem 'delayed_job', '~> 4.1.1'
 gem 'delayed_paperclip'
 gem 'paperclip'
 gem 'cocaine'
@@ -49,7 +50,7 @@ group :test do
   gem 'cucumber-rails', require: false
   gem 'selenium-webdriver'
   gem 'rspec-rails', '~> 3.5.2'
-  gem 'capybara'
+  gem 'capybara', '~> 2.18.0'
   gem 'database_cleaner'
   gem 'vcr'
   gem 'webmock'

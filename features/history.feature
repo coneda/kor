@@ -33,3 +33,15 @@ Feature: History
     And I wait for "2" seconds
     When I click element "a[kor-to-clipboard]"
     Then I should be on the entity page for "Nürnberg"
+
+
+  @javascript @notravis
+  Scenario: Back button on denied page
+    Given the entity "Paris" of kind "Ort/Orte"
+    And I am on the welcome page
+    When I follow "New entries"
+    Then I should see "No entries found"
+    When I go to the entity page for "Paris"
+    Then I should see "Access denied"
+    When I follow "back"
+    Then I should see "No entries found"

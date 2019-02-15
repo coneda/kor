@@ -12,6 +12,7 @@ kor.controller('entity_controller', [
         scope.entity = data
       promise.error (data) ->
         return_to = document.location.href
+        l.replace()
         l.path("/denied")
         l.search('return_to': return_to)
     update()

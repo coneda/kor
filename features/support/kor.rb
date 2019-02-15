@@ -6,12 +6,6 @@ require 'factory_girl_rails'
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :truncation
 
-Around('@notravis') do |scenario, block|
-  if ENV['TRAVIS'] != 'true'
-    block.call
-  end
-end
-
 Around do |scenario, block|
   DatabaseCleaner.cleaning(&block)
 end
@@ -52,7 +46,7 @@ Before('@javascript') do
   }
 end
 
-Capybara.default_max_wait_time = 5
+Capybara.default_max_wait_time = 10
 
 Capybara.javascript_driver = :selenium
 # Capybara.javascript_driver = :selenium_chrome

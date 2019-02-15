@@ -157,15 +157,24 @@ class Medium < ActiveRecord::Base
   def file_size
     original.size
   end
-  
-  def data(style = :original)
+
+  def data_file(style = :original)
     if style == :original
-      document.file? ? to_file(:document, style).read : to_file(:iamge, style).read
+      document.file? ? to_file(:document, style) : to_file(:image, style)
     elsif image_style?(style)
-      File.read path(style)
+      File.open path(style)
     else
-      custom_style_data(style)
+      custom_style_file(style)
     end
+  end
+  
+  def data(style = :original, options = {})
+    options.reverse_merge! range: nil
+    self.class.read_range data_file(style), options[:range]
+  end
+
+  def size(style = :original)
+    data_file(style).size
   end
   
   def original
@@ -212,8 +221,8 @@ class Medium < ActiveRecord::Base
     document.url(style.to_sym)
   end
   
-  def custom_style_data(style)
-    File.read custom_style_path(style.to_sym)
+  def custom_style_file(style)
+    File.open custom_style_path(style.to_sym)
   end
   
   def image_style?(style)
@@ -304,6 +313,15 @@ class Medium < ActiveRecord::Base
     if value
       ct = MIME::Types.type_for(document.original_filename).first
       self.document_content_type = ct.to_s if ct
+    end
+  end
+
+  def self.read_range(file, range = nil)
+    if range
+      file.seek range[0]
+      file.read range[0] + range[1] + 1
+    else
+      file.read
     end
   end
   
