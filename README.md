@@ -11,7 +11,8 @@ We keep it updated at [CHANGELOG.md](CHANGELOG.md)
 
 ## User documentation
 
-Please check out our [DOCS.md](DOCS.md)
+Please check out our
+[user guide (German)](https://github.com/coneda/kor_leitfaden_ffm/wiki)
 
 ## License ##
 
