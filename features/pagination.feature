@@ -46,6 +46,11 @@ Feature: Pagination
     And the current js page should be "2"
     And I should see "16" gallery items
 
+    When I fill in ".pagination input[type=number]" with "1"
+    And I press "Gehe zu"
+    And I should see "16" gallery items
+    And the current js page should be "1"
+
 
   @javascript @nodelay
   Scenario: Go to specific page directly

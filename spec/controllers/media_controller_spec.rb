@@ -39,15 +39,20 @@ RSpec.describe MediaController, :type => :controller do
     expect(response.status).not_to eq(403)
   end
 
-  def params_for_medium(medium, style = :normal, attachment = :image, style_extension = :png)
+  def params_for_medium(medium, options = {})
+    options.reverse_merge!(
+      style: :normal,
+      attachment: :image,
+      style_extension: :png
+    )
     ids = medium.ids.split '/'
     return {
-      :style => style,
+      :style => options[:style],
       :id_part_01 => ids[0],
       :id_part_02 => ids[1],
       :id_part_03 => ids[2],
-      :attachment => attachment,
-      :style_extension => style_extension
+      :attachment => options[:attachment],
+      :style_extension => options[:style_extension]
     }
   end
 
@@ -105,4 +110,29 @@ RSpec.describe MediaController, :type => :controller do
     expect(response.status).not_to eq(403)
   end
 
+  it 'should respond to byte ranges' do
+    Delayed::Worker.delay_jobs = false
+    picture_a = FactoryGirl.create(:picture_a)
+
+    get :show, params_for_medium(picture_a.medium, style: :original)
+    expect(response.status).to eq(200)
+    expect(response.body.bytesize).to eq(File.size 'spec/fixtures/image_a.jpg')
+
+    get :show, params_for_medium(picture_a.medium, style: :thumbnail)
+    expect(response.status).to eq(200)
+    expect(response.body.bytesize).to eq(File.size(picture_a.medium.path(:thumbnail)))
+
+    @request.headers['Range'] = 'bytes=0-1'
+    get :show, params_for_medium(picture_a.medium, style: :thumbnail)
+    expect(response.status).to eq(206)
+    expect(response.headers['Content-Range']).to eq(
+      "bytes 0-1/#{File.size(picture_a.medium.path(:thumbnail))}"
+    )
+    expect(response.body.bytesize).to eq(2)
+
+    @request.headers['Range'] = 'bytes=0-100'
+    get :show, params_for_medium(picture_a.medium, style: :thumbnail)
+    expect(response.status).to eq(206)
+    expect(response.body.bytesize).to eq(101)
+  end
 end

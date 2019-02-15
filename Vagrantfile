@@ -33,7 +33,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "system_updates"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_dev_requirements"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_elasticsearch"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "elasticsearch_dev"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "mysql_dev"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "configure_dev", privileged: false
   end
@@ -56,7 +58,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "clean"
   end
 
-  config.vm.define "bare" do |c|
+  config.vm.define "bare", autostart: false do |c|
     if RUBY_PLATFORM.match(/darwin/)
       c.vm.synced_folder ".", "/vagrant", type: "nfs"
       c.vm.network "private_network", type: "dhcp"
@@ -84,7 +86,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     SHELL
   end
 
-  config.vm.define 'centos7' do |c|
+  config.vm.define 'centos7', autostart: false do |c|
     c.vm.box = 'centos/7'
     # c.ssh.pty = true
 

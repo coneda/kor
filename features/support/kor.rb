@@ -46,7 +46,7 @@ Before('@javascript') do
   }
 end
 
-Capybara.default_max_wait_time = 5
+Capybara.default_max_wait_time = 10
 
 Capybara.javascript_driver = :selenium
 # Capybara.javascript_driver = :selenium_chrome
