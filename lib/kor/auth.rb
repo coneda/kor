@@ -14,7 +14,7 @@ module Kor::Auth
         f.write password
       end
 
-      script_sources.each do |method, c|
+      script_sources.each do |key, c|
         command = "bash -c \"#{c["script"]}\""
         status = Bundler.with_clean_env do
           system(
@@ -31,7 +31,8 @@ module Kor::Auth
 
         if status
           return JSON.parse(data).merge(
-            :parent_username => c["map_to"]
+            parent_username: c["map_to"],
+            auth_source: key
           )
         else
           error = File.read "#{dir}/error.log"
@@ -79,7 +80,8 @@ module Kor::Auth
               data = {
                 parent_username: source['map_to'],
                 email: mail,
-                full_name: full_name
+                full_name: full_name,
+                auth_source: key
               }
 
               Rails.logger.info "authorizing user #{username} with data #{data.inspect}"

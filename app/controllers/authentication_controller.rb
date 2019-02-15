@@ -130,6 +130,7 @@ class AuthenticationController < ApplicationController
     def create_session(user)
       session[:expires_at] = Kor.session_expiry_time
       session[:user_id] = user.id
+      session[:auth_source] = user.auth_source
       user.update_attributes(last_login: Time.now)
     end
 

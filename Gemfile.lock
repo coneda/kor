@@ -167,7 +167,7 @@ GEM
     minitest (5.10.3)
     multi_json (1.12.1)
     multi_test (0.1.2)
-    mysql2 (0.4.5)
+    mysql2 (0.4.10)
     nokogiri (1.8.4)
       mini_portile2 (~> 2.3.0)
     paperclip (4.3.6)
@@ -347,7 +347,7 @@ DEPENDENCIES
   jquery-ui-rails
   kor_index!
   method_profiler
-  mysql2
+  mysql2 (~> 0.4.5)
   paperclip
   paranoia (~> 2.2)
   parslet
@@ -378,4 +378,4 @@ DEPENDENCIES
   will_paginate (~> 3.0.3)
 
 BUNDLED WITH
-   1.16.1
+   1.17.3

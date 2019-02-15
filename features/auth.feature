@@ -65,3 +65,17 @@ Feature: Authentication and Authorization
     And I am on the root page
     Then I should not see "Groups"
 
+
+  @javascript
+  Scenario: Login with env auth and use 'forgot password'
+    Given the user "jdoe"
+    And the user "ldap"
+    When I am on the login page
+    And I fill in "username" with "jdoe"
+    And I fill in "password" with "123456"
+    And I press "Login"
+    Then I should see "John Gustav Doe"
+    When I follow "Edit profile"
+    Then I should not see "Repeat password"
+    And I should see a link "your federation's password facility" leading to "https://idp.example.com/change_password"
+    And I debug

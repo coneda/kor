@@ -7,7 +7,7 @@ class BaseController < ActionController::Base
   end
 
   helper_method(
-    :current_user, :logged_in?,
+    :current_user, :current_auth_source, :logged_in?,
     :authorized?, :allowed_to?, :authorized_collections,
     :authorized_for_relationship?
   )
@@ -19,6 +19,14 @@ class BaseController < ActionController::Base
 
     def current_user
       @current_user ||= user_by_api_key || User.pickup_session_for(session[:user_id])
+    end
+
+    def current_auth_source
+      @current_auth_source ||= begin
+        if key = session[:auth_source]
+          Kor::Auth.config['sources'][key]
+        end
+      end
     end
 
     def user_by_api_key

@@ -82,6 +82,7 @@ test:
         type: script
         script: spec/fixtures/auth_script.file
         map_to: ldap
+        password_reset_url: 'https://idp.example.com/change_password'
       credentials_via_env:
         script: spec/fixtures/auth_script.direct
         map_to: ldap

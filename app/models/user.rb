@@ -119,6 +119,7 @@ class User < ActiveRecord::Base
   
   
   # ----------------------------------------------------- virtual attributes ---
+  attr_accessor :auth_source
   attr_accessor :extension
   attr_accessor :custom_extension
   attr_accessor :plain_password

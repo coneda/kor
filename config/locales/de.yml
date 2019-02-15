@@ -638,7 +638,12 @@ de:
       jeweiligen Reihe den Zusammenführen-Knopf klicken. Wenn Sie fertig sind,
       wählen Sie durch Anklicken eine der Relationen als Ziel aus. Das aktuell
       ausgewählte Ziel ist mit einem Stern gekennzeichnet.
-
+    federation_password_reset_facility: |
+      Sie haben sich über den Single-Sign-On Ihrer Institution angemeldet. Bitte
+      verwenden Sie die
+      <a href="%{url}">Password-Funktion Ihrer Institution</a>, um Ihr Passwort
+      zu ändern.
+      
   notices:
     creating_zip_file: "Zip-Datei wird erstellt, Sie erhalten eine Email, sobald der Download bereit steht"
     no_entities_in_group: "In dieser Gruppe befinden sich keine herunterladbaren Entitäten"
