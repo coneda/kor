@@ -7,6 +7,15 @@ commit history on GitHub.
 
 ## Version 3.1.0
 
+### User
+
+* custom help texts can now provided separately for each language
+* the welcome page can now be configured with textile and without any HTML
+  sanitization
+* authentication sources can now specify a custom password management url. This
+  also removes the password fields from the profile editor to prevent federation
+  users to change their local passwords
+
 ### Internal
 
 * added position to fields table to prepare for sorting UI in v4.0
