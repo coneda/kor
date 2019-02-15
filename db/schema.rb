@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180909164045) do
+ActiveRecord::Schema.define(version: 20190215185849) do
 
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4

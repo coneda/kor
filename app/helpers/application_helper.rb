@@ -154,7 +154,7 @@ module ApplicationHelper
   end
   
   def help_for(controller, action)
-    result = Kor.config["help.#{controller.gsub('/', '.')}.#{action}"] || ""
+    result = Kor.config["help.#{controller.gsub('/', '.')}.#{action}.#{I18n.locale}"] || ""
     result.gsub!("\n\n", '<br /><br />')
     result.gsub!("\r\n\r\n", '<br /><br />')
     result.html_safe

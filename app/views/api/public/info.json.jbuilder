@@ -42,6 +42,7 @@ end
 
 json.config do
   json.max_file_size Kor.config['app.max_file_upload_size'].to_f
+  json.help Kor.config['help']
 end
 
 json.translations I18n.backend.send(:translations)

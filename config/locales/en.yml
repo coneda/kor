@@ -177,7 +177,7 @@ en:
       authority_group_categories:
         index: global groups
       user_groups:
-        index: own search
+        index: personal groups
       tools:
         clipboard: clipboard
     values:

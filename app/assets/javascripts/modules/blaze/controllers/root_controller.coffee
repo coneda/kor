@@ -25,7 +25,7 @@ kor.controller('root_controller', [
     scope.toggle_session_panel = ->
       scope.info.session.show_panel = !scope.info.session.show_panel
       kd.toggle_session_panel scope.info.session.show_panel
-      
+
     scope.fully_loaded = -> kd.fully_loaded
 
     scope.flash_error = -> kd.error()

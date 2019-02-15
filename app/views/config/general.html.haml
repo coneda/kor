@@ -41,7 +41,8 @@
       .switcheable.sub_content{:style => 'display: none'}
         = config_value "maintainer.help_text", :type => :text_area
         - @help_sections.each do |hs|
-          = config_value "help.#{hs}", :type => :text_area, :label => I18n.t("config.help.#{hs}")
+          - I18n.available_locales.each do |locale|
+            = config_value "help.#{hs}.#{locale}", :type => :text_area, :label => I18n.t("config.help.#{hs}") + " (#{locale})"
   
     = kor_submit_tag :name => I18n.t('verbs.save')
     

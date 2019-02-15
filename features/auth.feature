@@ -78,4 +78,3 @@ Feature: Authentication and Authorization
     When I follow "Edit profile"
     Then I should not see "Repeat password"
     And I should see a link "your federation's password facility" leading to "https://idp.example.com/change_password"
-    And I debug

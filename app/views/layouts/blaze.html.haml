@@ -49,7 +49,8 @@
     
     #help{:style => 'display: none', :title => I18n.t('nouns.help')}
       = help_for(controller_name, action_name)
-    %button#help_button{:style => 'display: none'}
+    #help_button{:style => 'display: none'}
+      = link_to kor_command_image("help", title: nil), nil, title: I18n.t('nouns.help')
 
     .kor
       %w-modal

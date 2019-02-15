@@ -9,13 +9,14 @@
     = f.kor_input :username, :attribute => :name
     = f.kor_input :email
 
-    - if url = current_auth_source['password_reset_url']
+    - if current_auth_source && (url = current_auth_source['password_reset_url'])
       .hr
       = I18n.t('messages.federation_password_reset_facility', url: url).html_safe
       .hr
     - else
       = f.kor_input :password, :control => f.password_field(:password, :value => '')
       = f.kor_input :password_confirmation, :control => f.password_field(:plain_password_confirmation, :value => '')
+
     = f.kor_input :api_key, :control => f.text_area(:api_key, :class => "small")
     = f.kor_input :locale, :control => f.select(:locale, I18n.available_locales, :selected => I18n.locale)
     
