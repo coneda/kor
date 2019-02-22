@@ -144,7 +144,7 @@ GEM
     minitest (5.11.3)
     multi_json (1.13.1)
     multi_test (0.1.2)
-    mysql2 (0.4.5)
+    mysql2 (0.4.10)
     nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
     paperclip (6.1.0)
@@ -295,7 +295,7 @@ DEPENDENCIES
   httpclient
   jbuilder
   method_profiler
-  mysql2
+  mysql2 (~> 0.4.5)
   paperclip
   paranoia (~> 2.2)
   parslet
@@ -320,4 +320,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.16.1
+   1.17.3
