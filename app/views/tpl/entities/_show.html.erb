@@ -244,7 +244,7 @@
           <a href="/media/{{entity.medium.id}}" ng-bind="'verbs.enlarge' | translate"></a> |
           <a href="/media/maximize/{{entity.medium.id}}" ng-bind="'verbs.maximize' | translate"></a> |
           <a
-            href="<%= root_url + 'mirador/' %>{{entity.id}}"
+            href="<%= root_url + 'mirador?manifest=' + root_url + 'mirador/' %>{{entity.id}}"
             ng-bind="'nouns.mirador' | translate"
             ng-click="openMirador(entity.id, $event)"
           ></a>

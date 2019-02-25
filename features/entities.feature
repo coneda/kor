@@ -256,3 +256,11 @@ Feature: Entities
     When I go to the entity page for "Mona Lisa"
     And I follow "Pen"
     Then I should see "Tags" within ".canvas"
+
+
+  @javascript
+  Scenario: mirador anchor value should be a real link
+    Given I am logged in as "admin"
+    And the medium "spec/fixtures/image_a.jpg"
+    When I go to the entity page for the last medium
+    Then I should see mirador link with a usable href

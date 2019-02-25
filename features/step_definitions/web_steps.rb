@@ -419,3 +419,9 @@ end
 Then(/^"([^"]*)" should be checked$/) do |locator|
   expect(find_field(locator)).to be_checked
 end
+
+Then(/^I should see mirador link with a usable href$/) do
+  href = find_link('Mirador')['href']
+  expect(href).to match(/^http:\/\/127.0.0.1:\d+\/mirador\?manifest=http:\/\/127.0.0.1:\d+\/mirador\/\d+$/)
+end
+
