@@ -18,6 +18,10 @@ Zepto.extend Zepto.ajaxSettings, {
       wApp.state.requests.pop()
       wApp.bus.trigger 'ajax-state-changed'
 
+    xhr.fail (xhr) ->
+      if xhr.status == 401
+        wApp.bus.trigger('reload-session')
+
     xhr.requestUrl = settings.url
     if settings.type.match(/POST|PATCH|PUT|DELETE/i) && wApp.session
       xhr.setRequestHeader 'X-CSRF-Token', wApp.session.csrfToken()

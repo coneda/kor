@@ -42,7 +42,7 @@
       tag.title(tag.t('pages.new_media'))
       fetch()
       tag.on 'routing:query', fetch
-      h(tag.t('pages.new_media')) if h = tag.opts.handlers.pageTitleUpdate
+      tag.title(tag.t('pages.new_media'))
 
     tag.on 'unmount', ->
       tag.off 'routing:query', fetch

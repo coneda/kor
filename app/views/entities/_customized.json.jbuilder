@@ -1,7 +1,7 @@
 json.extract!(entity,
   :id, :collection_id, :kind_id, :creator_id, :updater_id,
   :kind_name,
-  :name, :distinct_name, :display_name,
+  :no_name_statement, :name, :distinct_name, :display_name,
   :comment, :subtype
 )
 
@@ -44,7 +44,6 @@ if allowed_to?(:view_meta, entity.collection)
     json.uuid entity.uuid
     json.created_at entity.created_at
     json.updated_at entity.updated_at
-    json.no_name_statement entity.no_name_statement
   end
 end
 

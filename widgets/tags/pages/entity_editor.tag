@@ -186,7 +186,7 @@
 
     tag.hasName = ->
       field = tag.refs['fields.no_name_statement']
-      field && field.value() == 'enter_name'
+      !!field && field.value() == 'enter_name'
 
     tag.nameLabel = ->
       return '' unless tag.kind
