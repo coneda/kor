@@ -77,7 +77,7 @@
 
     tag.on 'before-mount', ->
       if !tag.isKindAdmin()
-        tag.opts.handlers.accessDenied()
+        wApp.bus.trigger('access-denied')
 
     tag.on 'mount', ->
       fetch() if tag.opts.id

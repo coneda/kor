@@ -106,7 +106,7 @@
 
     tag.on 'before-mount', ->
       if !tag.isAdmin()
-        tag.opts.handlers.accessDenied()
+        wApp.bus.trigger('access-denied')
 
     tag.on 'mount', ->
       tag.title(tag.t('activerecord.models.user', {count: 'other'}))
@@ -164,7 +164,7 @@
         search: tag.refs.search.value()
       )
 
-    queryUpdate = (newQuery) -> h(newQuery) if h = tag.opts.handlers.queryUpdate
+    queryUpdate = (newQuery) -> wApp.bus.trigger('query-update', newQuery)
   </script>
 
 </kor-users>

@@ -111,10 +111,5 @@
         }
       })
     }
-
-    // tag.pageUpdate = (newPage) -> queryUpdate(page: newPage)
-
-    // queryUpdate = (newQuery) -> h(newQuery) if h = tag.opts.handlers.queryUpdate
-
   </script>
 </kor-entity-group>

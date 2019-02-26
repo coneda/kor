@@ -19,7 +19,7 @@ RSpec.describe KindsController, type: :controller do
     get :show, id: Kind.medium_kind_id, include: 'settings'
     expect(response).to be_success
     expect(json['name']).to eq('medium')
-    expect(json['settings']).to be_a(Hash)
+    expect(json['distinct_name_label']).to be_a(String)
   end
 
   it 'should not POST create' do

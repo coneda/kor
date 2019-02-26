@@ -47,7 +47,7 @@
     tag.on('mount', function() {
       tag.title(tag.t('activerecord.models.credential', {count: 'other'}))
       if (!tag.isAdmin()) {
-        tag.opts.handlers.accessDenied();
+        wApp.bus.trigger('access-denied')
         return;
       }
 

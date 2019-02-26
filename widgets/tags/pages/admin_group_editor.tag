@@ -54,7 +54,7 @@
       fetchCategories()
 
       if !tag.isAuthorityGroupAdmin()
-        tag.opts.handlers.accessDenied()
+        wApp.bus.trigger('access-denied')
 
     tag.on 'mount', ->
       if tag.opts.id

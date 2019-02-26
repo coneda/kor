@@ -20,6 +20,9 @@
       wApp.bus.on 'routing:path', tag.routeHandler
       wApp.bus.on 'routing:query', tag.queryHandler
       wApp.bus.on 'page-title', pageTitleHandler
+      wApp.bus.on 'access-denied', accessDenied
+      wApp.bus.on 'go-back', goBack
+      wApp.bus.on 'query-update', queryUpdate
       if tag.opts.routing
         wApp.routing.setup()
 
@@ -27,6 +30,9 @@
       wApp.bus.off 'page-title', pageTitleHandler
       wApp.bus.off 'routing:query', tag.queryHandler
       wApp.bus.off 'routing:path', tag.routeHandler
+      wApp.bus.off 'access-denied', accessDenied
+      wApp.bus.off 'go-back', goBack
+      wApp.bus.off 'query-update', queryUpdate
       if tag.opts.routing
         wApp.routing.tearDown()
 
@@ -34,15 +40,14 @@
       nv = if newTitle then newTitle else 'ConedaKOR'
       Zepto('head title').html nv
 
+    accessDenied = -> tag.mountTag 'kor-access-denied'
+    goBack = -> wApp.routing.back()
+    queryUpdate = (newQuery) -> wApp.routing.query(newQuery)
+
     tag.routeHandler = (parts) ->
       tagName = 'kor-loading'
       opts = {
         query: parts['hash_query']
-        handlers: {
-          accessDenied: -> tag.mountTag 'kor-access-denied'
-          queryUpdate: (newQuery) -> wApp.routing.query(newQuery)
-          doneHandler: -> wApp.routing.back()
-        }
       }
 
       path = parts['hash_path']

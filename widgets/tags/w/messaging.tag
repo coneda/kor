@@ -37,9 +37,14 @@
             type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
             wApp.bus.trigger 'message', type, data.message
 
-          if request.status == 401
-            wApp.routing.path('#/login')
-            wApp.bus.trigger('reload-session')
+          # if request.status == 401
+          #   path = wApp.routing.path()
+          #   wApp.routing.path("/login?return_to=#{path}")
+          #   wApp.bus.trigger('reload-session')
+
+          # if request.status == 403
+          #   path = wApp.routing.path()
+          #   wApp.routing.path("/login?return_to=#{path}")
         catch e
           # TODO: should this be console.error?
           console.log e, request

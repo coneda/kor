@@ -64,8 +64,7 @@
       )
 
     tag.pageUpdate = (newPage) -> queryUpdate(page: newPage)
-
-    queryUpdate = (newQuery) -> h(newQuery) if h = tag.opts.handlers.queryUpdate
+    queryUpdate = (newQuery) -> wApp.bus.trigger('query-update', newQuery)
 
   </script>
 

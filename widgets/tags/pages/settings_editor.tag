@@ -392,6 +392,8 @@
         success: (data) ->
           tag.groups = data.records
           tag.update()
+        error: ->
+          wApp.bus.trigger('access-denied')
       )
 
     fetchRelations = ->

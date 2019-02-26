@@ -109,7 +109,7 @@
           tag.loaded = true
           tag.update()
       else
-        h() if h = tag.opts.handlers.accessDenied
+        wApp.bus.trigger('access-denied')
 
     tag.submit = (event) ->
       event.preventDefault()

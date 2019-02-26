@@ -108,7 +108,7 @@
 
     tag.on 'before-mount', ->
       if !tag.isRelationAdmin()
-        tag.opts.handlers.accessDenied()
+        wApp.bus.trigger('access-denied')
 
     tag.on 'mount', ->
       tag.errors = {}

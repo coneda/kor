@@ -41,7 +41,6 @@ Feature: Authentication and Authorization
     And I press "Login"
     And I should see "Mona Lisa"
     Then I should be on the entity page for "Mona Lisa"
-    And I wait for "3" seconds
 
   Scenario: Show only global groups when not logged in
     And I am on the root page
@@ -49,3 +48,13 @@ Feature: Authentication and Authorization
     And I should not see "Personal groups"
     And I should not see "Shared groups"
     And I should not see "Published groups"
+
+  Scenario: I should 'returned to' my original location after successful login
+    Given I go to the config page
+    Then I should see "Unfortunately you do not have the required rights"
+    And I should see "Access denied" within ".w-content"
+    When I follow "login" within ".w-content"
+    When I fill in "Username" with "admin"
+    And I fill in "Password" with "admin"
+    And I press "Login"
+    Then I should see "Settings"

@@ -69,9 +69,7 @@
       username = tag.refs.username.value()
       password = tag.refs.password.value()
       wApp.auth.login(username, password).then ->
-        parts = wApp.routing.parts()
-        # TODO: test this
-        if r = parts.hash_query.return_to
+        if r = wApp.routing.query()['return_to']
           window.location.hash = decodeURIComponent(r)
         else
           wApp.bus.trigger 'routing:path', wApp.routing.parts()

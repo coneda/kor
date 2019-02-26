@@ -195,7 +195,7 @@
     checkPermissions = ->
       policy = if tag.opts.id then 'edit' else 'create'
       if tag.currentUser().permissions.collections[policy].length == 0
-        tag.opts.handlers.accessDenied()
+        wApp.bus.trigger('access-denied')
 
     queryHandler = (parts = {}) ->
       fetch parts['hash_query']['kind_id']

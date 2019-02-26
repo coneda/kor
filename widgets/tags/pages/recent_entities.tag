@@ -84,7 +84,7 @@
         tag.on 'routing:query', fetch
         tag.title(tag.t('pages.recent_entities'))
       else
-        h() if h = tag.opts.handlers.accessDenied
+        wApp.bus.trigger('access-denied')
 
     fetch = ->
       Zepto.ajax(
@@ -112,8 +112,8 @@
     tag.pageUpdate = (newPage) -> queryUpdate(page: newPage)
     tag.collectionSelected = (event) ->
       queryUpdate(page: 1, collection_id: tag.refs.collectionId.value())
-
-    queryUpdate = (newQuery) -> h(newQuery) if h = tag.opts.handlers.queryUpdate
+      
+    queryUpdate = (newQuery) -> wApp.bus.trigger('query-update', newQuery)
 
   </script>
 

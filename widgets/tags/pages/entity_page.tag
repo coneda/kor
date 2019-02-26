@@ -314,7 +314,7 @@
           tag.data = data
           tag.title tag.data.display_name
         error: ->
-          h() if h = tag.opts.handlers.accessDenied
+          wApp.bus.trigger('access-denied')
         complete: ->
           tag.update()
       )

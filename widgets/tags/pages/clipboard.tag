@@ -89,9 +89,7 @@
       if (tag.currentUser() && !tag.isGuest()) {
         fetch()
       } else {
-        if (h = tag.opts.handlers.accessDenied) {
-          h()
-        }
+        wApp.bus.trigger('access-denied');
       }
     })
 

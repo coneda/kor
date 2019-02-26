@@ -182,12 +182,12 @@
           tag.loaded = true
           tag.update()
       else
-        h() if h = tag.opts.handlers.accessDenied
+        wApp.bus.trigger('access-denied')
 
     tag.submit = (event) ->
       event.preventDefault()
       p = if tag.opts.id then update() else create()
-      p.done (data) -> h() if h = tag.opts.handlers.doneHandler
+      p.done (data) -> wApp.bus.trigger('go-back')
       p.fail (xhr) ->
         tag.errors = JSON.parse(xhr.responseText).errors
         wApp.utils.scrollToTop()

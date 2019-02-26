@@ -62,7 +62,7 @@
         tag.on 'routing:query', fetch
         wApp.bus.trigger 'page-title', tag.t('pages.invalid_entities')
       else
-        h() if h = tag.opts.handlers.accessDenied
+        wApp.bus.trigger('access-denied')
 
     fetch = ->
       Zepto.ajax(
@@ -80,8 +80,7 @@
       )
 
     tag.pageUpdate = (newPage) -> queryUpdate(page: newPage)
-
-    queryUpdate = (newQuery) -> h(newQuery) if h = tag.opts.handlers.queryUpdate
+    queryUpdate = (newQuery) -> wApp.bus.trigger('query-update', newQuery)
 
   </script>
 
