@@ -10,10 +10,16 @@ Feature: Kinds
     When I follow "add"
     And I fill in "Name" with "literature"
     And I fill in "Plural name" with "literature"
+    And I check "Activate tagging for this entity type"
+    And I fill in "Default label for datings" with "Publication date"
+    And I fill in "Label for the entity name" with "Title"
+    And I fill in "Label for the distinct name" with "Subtitle"
     And I press "Save"
     Then I should see "has been created"
     When I follow "back to list"
     Then I should see "literature" within widget "kor-kinds"
+    When I follow "edit" within the row for kind "literature"
+    Then field "Default label for datings" should have value "Publication date"
 
   Scenario: edit kind
     Given I am logged in as "admin"

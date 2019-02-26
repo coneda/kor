@@ -7,14 +7,12 @@ json.extract!(record,
 )
 
 if inclusion.request?('settings')
-  json.settings do
-    json.name_label record.name_label
-    json.tagging record.tagging
-    json.dating_label record.dating_label
-    json.distinct_name_label record.distinct_name_label
-    json.requires_naming record.requires_naming?
-    json.can_have_synonyms record.can_have_synonyms?
-  end
+  json.name_label record.name_label
+  json.tagging record.tagging
+  json.dating_label record.dating_label
+  json.distinct_name_label record.distinct_name_label
+  json.requires_naming record.requires_naming?
+  json.can_have_synonyms record.can_have_synonyms?
 end
 
 if inclusion.request?('technical')

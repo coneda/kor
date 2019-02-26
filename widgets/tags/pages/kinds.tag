@@ -56,7 +56,7 @@
             </div>
           </td>
           <td class="buttons" if={isKindAdmin()}>
-            <a href="#/kinds/{kind.id}/edit"><i class="fa fa-edit"></i></a>
+            <a href="#/kinds/{kind.id}/edit" title={t('verbs.edit')}><i class="fa fa-edit"></i></a>
             <a
               if={kind.removable}
               href="#/kinds/{kind.id}"
