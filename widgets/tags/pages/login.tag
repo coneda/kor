@@ -72,7 +72,7 @@
         if r = wApp.routing.query()['return_to']
           window.location.hash = decodeURIComponent(r)
         else
-          wApp.bus.trigger 'routing:path', wApp.routing.parts()
+          wApp.routing.path '/search'
 
     tag.federationAuth = ->
       tag.config().federation_auth
