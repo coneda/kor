@@ -11,9 +11,12 @@ kor-input {
     font-size: 1rem;
     line-height: 1.5rem;
     color: $kor-shine;
-    padding-left: 0.4rem;
     outline: none;
-    min-height: 2rem;
+    height: 2rem;
+  }
+
+  input {
+    padding-left: 0.4rem;
   }
 
   textarea {
