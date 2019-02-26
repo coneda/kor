@@ -1,10 +1,12 @@
 <div class="pagination" ng-show="total > per_page">
-  <input type="submit" value="Gehe zu Seite" ng-click="update(page_input_model, $event)" />
+  <input type="submit" value="{{ 'goto' | translate:{interpolations: {where: ''} } }}" ng-click="update(page_input_model, $event)" />
   <span class="nowrap ng-binding">
+    {{ 'nouns.page' | translate }}
+
     <a
       href="#"
       ng-click="update(page_model * 1 - 1, $event)"
-      ng-class="{'kor-hidden': page_model <= 1}"
+      ng-class="{'kor-off': page_model <= 1}"
     >
       <%= kor_command_image 'pager_left' %>
     </a>
@@ -12,11 +14,10 @@
       type="number"
       ng-model="page_input_model"
     >
-    von
-    <span ng-bind="total_pages()"></span>
+    {{ 'of' | translate:{interpolations: {amount: total_pages()} } }}
     <a
       href="#"
-      ng-class="{'kor-hidden': page_model >= total_pages()}"
+      ng-class="{'kor-off': page_model >= total_pages()}"
       ng-click="update(page_model * 1 + 1, $event)"
     >
       <%= kor_command_image 'pager_right' %>
