@@ -65,7 +65,7 @@
       if tag.opts.for == 'relationship'
         dl = wApp.config.data.values.relationship_dating_label
       if tag.opts.for == 'entity'
-        dl = tag.opts.kind.settings.dating_label
+        dl = tag.opts.kind.dating_label
 
       tag.data.push(label: dl)
       tag.update()

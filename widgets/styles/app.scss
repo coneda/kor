@@ -404,7 +404,18 @@ kor-relationship-editor, [data-is=kor-relationship-editor] {
 
 kor-entity-editor, [data-is=kor-entity-editor] {
   kor-input[name=no_name_statement] {
-    margin-top: -1em;
+    label:first-child {
+      margin-bottom: 10px;
+    }
+
+    label.radio {
+      display: block;
+      margin-top: 5px;
+
+      input {
+        margin-top: -7px;
+      }
+    }
   }
 
   kor-datings-editor {

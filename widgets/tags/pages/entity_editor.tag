@@ -31,7 +31,7 @@
 
         <virtual if={!isMedium()}>
           <kor-input
-            label={tcap('activerecord.attributes.entity.name')}
+            label={tcap('activerecord.attributes.entity.naming_options')}
             name="no_name_statement"
             type="radio"
             ref="fields.no_name_statement"
@@ -42,8 +42,8 @@
           />
 
           <kor-input
+            label={tcap('activerecord.attributes.entity.name')}
             if={hasName()}
-            label={nameLabel()}
             name="name"
             ref="fields"
             value={data.name}
@@ -185,12 +185,12 @@
       kindId == wApp.info.data.medium_kind_id
 
     tag.hasName = ->
-      !!tag.refs['fields.no_name_statement'] ||
-      tag.refs['fields.no_name_statement'].value() == 'enter_name'
+      field = tag.refs['fields.no_name_statement']
+      field && field.value() == 'enter_name'
 
     tag.nameLabel = ->
       return '' unless tag.kind
-      wApp.utils.capitalize tag.kind.settings['name_label']
+      wApp.utils.capitalize tag.kind.name_label
 
     checkPermissions = ->
       policy = if tag.opts.id then 'edit' else 'create'

@@ -119,10 +119,10 @@ de:
 
   values:
     no_name_statements:
-      unknown: "unbekannt"
-      not_available: "nicht verfügbar"
-      empty_name: "ohne Name"
-      enter_name: "eingeben"
+      unknown: "Name ist unbekannt"
+      not_available: "Name ist nicht verfügbar"
+      empty_name: "Name existiert nicht"
+      enter_name: "Name unten eingeben"
 
   verbs:
     add: "hinzufügen"
@@ -948,6 +948,7 @@ de:
         collection_id: Sammlung
         kind: Entitätstyp
         name: Name
+        naming_options: Optionen zur Eingabe
         title: Titel
         uuid: UUID
         search_name: Name / Titel / UUID

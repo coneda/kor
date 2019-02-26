@@ -117,10 +117,10 @@ en:
 
   values:
     no_name_statements:
-      unknown: "unknown"
-      not_available: "not available"
-      empty_name: "without name"
-      enter_name: "enter"
+      unknown: "name is unknown"
+      not_available: "name is unavailable"
+      empty_name: "name is empty"
+      enter_name: "specify a name below"
 
   verbs:
     add: "add"
@@ -920,6 +920,7 @@ en:
         collection_id: collection
         kind: entity type
         name: name
+        naming_options: naming options
         title: title
         uuid: UUID
         search_name: Name / Title / UUID

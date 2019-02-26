@@ -284,7 +284,7 @@
       (g.name for g in tag.data.groups).join(', ')
 
     tag.showTagging = ->
-      tag.data.kind.settings.tagging && 
+      tag.data.kind.tagging && 
         tag.allowedTo('tagging', tag.data.collection_id)
 
     tag.transform = (op) ->
