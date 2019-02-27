@@ -117,6 +117,10 @@ Given /^(\d+) (invalid )?entities "([^\"]*)" of kind "([^\"]*)" inside collectio
   end
 end
 
+Given /^the entity "([^"]*)" has the synonyms "([^"]*)"$/ do |entity, synonyms|
+  Entity.find_by!(name: entity).update_attributes :synonyms => synonyms.split('/')
+end
+
 Given /^"([^\"]*)" has a (shared )?user group "([^\"]*)"$/ do |user_name, shared, group_name|
   User.find_by!(name: user_name).user_groups.create!(
     name: group_name,

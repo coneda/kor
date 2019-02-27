@@ -169,7 +169,7 @@ class Kor::Elastic
 
   def self.index_all(options = {})
     # TODO: shouldn't :full be true by default?
-    options.reverse_merge! :full => false, :progress => false
+    options.reverse_merge! full: false, progress: false
 
     @cache = {}
 
@@ -354,7 +354,11 @@ class Kor::Elastic
 
   def by_user(user)
     ids = ::Kor::Auth.authorized_collections(@user).pluck(:id)
-    by_collection(ids)
+    if ids.empty?
+      none
+    else
+      by_collection(ids)
+    end
   end
 
   def by_id(ids)
@@ -565,6 +569,12 @@ class Kor::Elastic
         'terms' => { 'kind_id' => ids }
       }
     end
+  end
+
+  def none
+    @query['filter'] << {
+      'terms' => { 'collection_id' => [] }
+    }
   end
 
   def self.count

@@ -179,6 +179,27 @@ RSpec.describe Kor::Dating::Parser do
     )
   end
 
+  it "should parse '1877.11.02'" do
+    expect(subject.transform('1877.11.02')).to eql(
+      :from => Date.new(1877, 11, 2),
+      :to => Date.new(1877, 11, 2)
+    )
+  end
+
+  it "should parse '1877.01.23'" do
+    expect(subject.transform('1877.01.23')).to eql(
+      :from => Date.new(1877, 1, 23),
+      :to => Date.new(1877, 1, 23)
+    )
+  end
+
+  it "should parse '1877-01-23'" do
+    expect(subject.transform('1877-01-23')).to eql(
+      :from => Date.new(1877, 1, 23),
+      :to => Date.new(1877, 1, 23)
+    )
+  end
+  
   it "it should parse the old unit tests" do
     expect(subject.transform("1289")).to eql(:from => Date.new(1289, 1, 1), :to => Date.new(1289, 12, 31))
     expect(subject.transform("ca. 1289")).to eql(:from => Date.new(1284, 1, 1), :to => Date.new(1294, 12, 31))

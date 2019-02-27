@@ -12,7 +12,7 @@ class Paperclip::Audio < Paperclip::Processor
     outfile = Kor.tmp_path + '.mp3'
     args = "-qscale 3"
     args = "-i #{file.path} #{args} #{outfile}"
-    Paperclip.run(Kor.video_processor, args)
+    Paperclip.run('ffmpeg', args)
     File.open(outfile)
   end
 
@@ -20,7 +20,7 @@ class Paperclip::Audio < Paperclip::Processor
     outfile = Kor.tmp_path + '.ogg'
     args = "-qscale 7"
     args = "-i #{file.path} #{args} #{outfile}"
-    Paperclip.run(Kor.video_processor, args)
+    Paperclip.run('ffmpeg', args)
     File.open(outfile)
   end
 end

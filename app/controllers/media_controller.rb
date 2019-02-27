@@ -19,10 +19,19 @@ class MediaController < JsonController
     disposition = (params[:disposition] == 'download' ? 'attachment' : 'inline')
 
     if auth
-      send_data @medium.data(style),
-        :type => @medium.content_type(style),
-        :disposition => disposition,
-        :filename => @medium.download_filename(style)
+      status = 200
+      response.headers['Accept-Ranges'] = 'bytes'
+
+      if range
+        response.headers['Content-Range'] = "bytes #{range[0]}-#{range[1]}/#{@medium.size(style)}"
+        status = 206
+      end
+
+      send_data @medium.data(style, range: range),
+        type: @medium.content_type(style),
+        disposition: disposition,
+        filename: @medium.download_filename(style),
+        status: status
     else
       render_403
     end
@@ -54,4 +63,16 @@ class MediaController < JsonController
       allowed = ["rotate_cw", "rotate_ccw", "rotate_180"]
       allowed.include?(param) ? param.to_sym : param
     end
+
+    def range
+      if raw = request.headers['Range']
+        type, values = raw.split('=')
+        if type == 'bytes'
+          result = values.split('-').map{|s| s.to_i}
+          return nil unless result[1]
+          result
+        end
+      end
+    end
+
 end

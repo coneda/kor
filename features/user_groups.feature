@@ -93,3 +93,20 @@ Feature: usergroups
     When I follow "add to clipboard" within ".group-commands"
     And I go to the clipboard
     Then I should see element "img" within "[data-is=kor-clipboard]"
+
+  Scenario: Add an authority group's entities to the clipboard as a normal user
+    Given I am logged in as "jdoe"
+    And the entity "Louvre" is in authority group "lecture"
+    And the entity "Mona Lisa" is in authority group "lecture"
+    When I follow "Global groups"
+    And I follow "lecture"
+    And I follow "add to clipboard"
+    Then I should see "entities have been copied to the clipboard"
+    When I follow "Clipboard"
+    Then I should see "Mona Lisa"
+    And I should see "Louvre"
+    
+  Scenario: show a user group without permissions
+    Given I am logged in as "mrossi"
+    And I go to the user group "nice"
+    Then I should see "Access denied"

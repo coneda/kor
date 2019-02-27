@@ -111,6 +111,26 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     expect(xsd.validate(doc)).to be_empty
   end
 
+  it 'should return XML that validates against the schema for media' do
+    FactoryGirl.create :media
+    picture = Kind.medium_kind.entities.last
+    admin = User.admin
+
+    # yes this sucks, check out 
+    # https://mail.gnome.org/archives/xml/2009-November/msg0002it "should return 'badVerb' if the verb is not recognized"2.html
+    # for a reason why it has to be done like this
+    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
+    get '/oai-pmh/entities.xml', {
+      verb: 'GetRecord',
+      identifier: picture.uuid,
+      api_key: admin.api_key,
+      metadataPrefix: 'kor'
+    }
+    doc = parse_xml(response.body)
+
+    expect(xsd.validate(doc)).to be_empty
+  end
+
   it "should disseminate oai_dc and kor metadata formats on GetRecord requests" do
     leonardo = Entity.last
     admin = User.admin
@@ -250,7 +270,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   it "should generate a resumptionToken if there are more pages available" do
     ns = {
       'oai' => 'http://www.openarchives.org/OAI/2.0/',
-      'kor' => 'https://coneda.net/XMLSchema/1.0/'
+      'kor' => 'https://coneda.net/XMLSchema/1.1/'
     }
 
     zero = Time.now

@@ -1,18 +1,18 @@
 Feature: Pagination
   Scenario: Paginate 11 search results and paginate back
     Given I am logged in as "admin"
-    And there are "11" entities named "work %02d" of kind "artwork/artworks"
+    And there are "11" entities named "work %02d" of kind "work/works"
     When I go to the search page
-    And I select "artwork" from "Entity type"
+    And I select "work" from "Entity type"
     And I press "Search"
     Then I should see "work 00"
-    And I should see "work 09"
+    And I should see "work 07"
     And I follow "next"
-    Then I should not see "work 09"
+    Then I should not see "work 07"
     And I should see "work 10"
     When I follow "previous"
     Then I should see "work 00"
-    And I should see "work 09"
+    And I should see "work 07"
     And I should not see "work 10"
   
   Scenario: Paginate 33 items on the gallery
@@ -40,6 +40,11 @@ Feature: Pagination
     When I follow "previous" within "kor-pagination.top"
     And the current js page should be "2"
     And I should see "16" gallery items
+
+    When I fill in "page" with "1" within "kor-pagination.top"
+    And I press "go to" within "kor-pagination.top"
+    And I should see "16" gallery items
+    And the current js page should be "1"
 
   Scenario: Go to specific page directly
     Given I am logged in as "admin"

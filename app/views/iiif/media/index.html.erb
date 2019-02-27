@@ -30,7 +30,7 @@
          buildPath: "mirador/",
          data: [
            <% if params[:manifest] %>
-             {manifestUri: "<%= params[:manifest] %>", location: "Thorsten's Schatulle"},
+             {manifestUri: "<%= params[:manifest] %>", location: "<%= Kor.settings['maintainer_name'] %>"},
            <% end %>
            { manifestUri: "https://iiif.lib.harvard.edu/manifests/drs:48309543", location: "Harvard University"},
            { manifestUri: "https://iiif.lib.harvard.edu/manifests/drs:5981093", location: "Harvard University"},

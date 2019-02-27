@@ -28,10 +28,6 @@ class KindsController < JsonController
   def update
     @kind = Kind.find(params[:id])
 
-    params[:kind] ||= {}
-    params[:kind][:settings] ||= {}
-    params[:kind][:settings][:tagging] ||= false
-
     if @kind.update_attributes(kind_params)
       render_updated @kind
     else

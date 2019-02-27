@@ -62,12 +62,12 @@
     tag.onMarkClicked = function(event, page) {
       event.preventDefault();
 
+      var params = {page: page || 1}
+      params[tag.opts.type + '_group_id'] = tag.opts.id
+
       Zepto.ajax({
         url: '/entities',
-        data: {
-          user_group_id: tag.opts.id,
-          page: page || 1
-        },
+        data: params,
         success: function(data) {
           if (data.total > data.page * data.per_page) {
             tag.onMarkClicked(event, page + 1);
@@ -89,13 +89,16 @@
           tag.group = data;
           wApp.bus.trigger('page-title', data.name);
           fetch();
+        },
+        error: function() {
+          wApp.bus.trigger('access-denied');
         }
       })
     }
 
     var fetch = function() {
       var params = {
-        include: 'gallery_data',
+        include: 'gallery_data,kind',
         page: tag.opts.query.page
       }
 

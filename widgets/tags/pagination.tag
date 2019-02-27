@@ -1,6 +1,11 @@
 <kor-pagination>
 
   <virtual if={isActive()}>
+    <input
+      type="submit"
+      value="{t('goto', {interpolations: {where: ''}})}"
+      onclick="inputChanged"
+    />
     <span>{t('nouns.page')}</span>
     <a
       title={t('previous')}
@@ -12,6 +17,7 @@
       type="number"
       value={currentPage()}
       onchange={inputChanged}
+      name="page"
       ref="manual"
     />
     {t('of', {interpolations: {amount: totalPages()}})}

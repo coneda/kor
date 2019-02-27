@@ -99,31 +99,17 @@ class BaseController < ActionController::Base
 
     def medium_url(medium, options = {})
       options.reverse_merge!(
-        root: false,
+        only_path: true,
         style: :original,
         download: false
       )
 
-      if Rails.env.development? && !ENV['SHOW_MEDIA']
-        return medium.dummy_url
+      result = medium.url(options[:style], options[:download] ? 'download' : 'inline')
+
+      unless options[:only_path]
+        result = root_url.gsub(/\/$/, '') + result
       end
 
-      result = if options[:style] == :original
-        medium.document.url(:original)
-      elsif image_style?(options[:style])
-        medium.image.url(options[:style])
-      else
-        medium.custom_style_url(options[:style])
-      end
-
-      if options[:download]
-        result = result.gsub(/\/images\//, '/download/')
-      end
-
-      if options[:root]
-        root_url.gsub(/\/$/, '') + result
-      else
-        result
-      end
+      result
     end
 end

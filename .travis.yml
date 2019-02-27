@@ -33,5 +33,5 @@ install:
 script:
   - mysql -e 'CREATE DATABASE kor_test;'
   - bundle exec rake db:test:load
-  - bundle exec rspec spec/ --format=documentation
-  - bundle exec cucumber features/ --format=pretty --no-strict
+  - bundle exec rspec spec/ --tag ~travis:false --format=documentation
+  - bundle exec cucumber features/ --format=pretty --tags "~@notravis" --no-strict

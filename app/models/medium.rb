@@ -146,16 +146,25 @@ class Medium < ApplicationRecord
     original.size
   end
 
-  def data(style = :original)
+  def data_file(style = :original)
     if style == :original
-      document.file? ? to_file(:document, style).read : to_file(:image, style).read
+      document.file? ? to_file(:document, style) : to_file(:image, style)
     elsif image_style?(style)
-      File.read path(style)
+      File.open path(style)
     else
-      custom_style_data(style)
+      custom_style_file(style)
     end
   end
+  
+  def data(style = :original, options = {})
+    options.reverse_merge! range: nil
+    self.class.read_range data_file(style), options[:range]
+  end
 
+  def size(style = :original)
+    data_file(style).size
+  end
+  
   def original
     document.file? ? document : image
   end
@@ -195,34 +204,33 @@ class Medium < ApplicationRecord
     document.url(style.to_sym)
   end
 
-  def custom_style_data(style)
-    File.read custom_style_path(style.to_sym)
+  def custom_style_file(style)
+    File.open custom_style_path(style.to_sym)
   end
 
   def image_style?(style)
     image.styles.keys.include? style
   end
 
-  def url(style = :original, attachment = 'inline')
-    r = if Rails.env.development? && !ENV['SHOW_MEDIA']
-      dummy_url
-    else
-      result = if style == :original
-        document.url(:original)
-      elsif image_style?(style)
-        image.url(style)
-      else
-        custom_style_url(style)
-      end
+  def url(style = :original, disposition = 'inline')
+    return dummy_url if Rails.env.development? && !ENV['SHOW_MEDIA']
 
-      result.present? ? result.gsub(/%3F/, '?') : result
+    result = if style == :original
+      document.url(:original)
+    elsif image_style?(style)
+      image.url(style)
+    else
+      custom_style_url(style)
     end
 
-    if attachment == 'inline'
-      r
-    else
-      r.gsub(/\/images\//, '/download/')
+    if disposition == 'download'
+      result.gsub! /\/images\//, '/download/'
     end
+
+    # revert escaping, see https://github.com/thoughtbot/paperclip/issues/1945
+    result.gsub! /%3F/, '?'
+
+    result
   end
 
   def path(style = :original)
@@ -293,6 +301,15 @@ class Medium < ApplicationRecord
     if value
       ct = MIME::Types.type_for(document.original_filename).first
       self.document_content_type = ct.to_s if ct
+    end
+  end
+
+  def self.read_range(file, range = nil)
+    if range
+      file.seek range[0]
+      file.read range[0] + range[1] + 1
+    else
+      file.read
     end
   end
 end

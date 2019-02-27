@@ -7,7 +7,8 @@
 
       <div class="hr"></div>
 
-      <a href="#/login?return_to={returnTo()}">{t('verbs.login')}</a>
+      <a href="#/login?return_to={returnTo()}">{t('verbs.login')}</a> |
+      <a href="#" onclick={back}>{t('back')}</a>
     </div>
   </div>
 
@@ -20,5 +21,8 @@
     tag.mixin(wApp.mixins.page)
 
     tag.returnTo = -> encodeURIComponent(wApp.routing.fragment())
+    tag.back = (event) ->
+      event.preventDefault()
+      wApp.bus.trigger 'go-back'
   </script>
 </kor-access-denied>

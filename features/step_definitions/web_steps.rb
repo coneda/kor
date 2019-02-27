@@ -219,8 +219,7 @@ end
 
 Then(/^"([^"]*)" should not have option "([^"]*)"$/) do |name, value|
   field = page.find_field(name)
-  options = field.all('option').map { |o| o.text }
-  expect(options).not_to include(value)
+  expect(field).to have_no_css('option', text: value)
 end
 
 Then(/^select "([^"]*)" should be disabled$/) do |label|
@@ -304,4 +303,13 @@ end
 Then("I should see a grid with {string} entities") do |amount|
   grid = find('kor-gallery-grid')
   expect(grid).to have_css('.meta', count: amount.to_i)
+end
+
+Then(/^"([^"]*)" should be checked$/) do |locator|
+  expect(find_field(locator)).to be_checked
+end
+
+Then(/^I should see mirador link with a usable href$/) do
+  href = find_link('Mirador')['href']
+  expect(href).to match(/^http:\/\/127.0.0.1:\d+\/mirador\?manifest=http:\/\/127.0.0.1:\d+\/mirador\/\d+$/)
 end

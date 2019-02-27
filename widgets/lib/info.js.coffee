@@ -8,5 +8,5 @@ wApp.info = {
 
 wApp.mixins.info = {
   info: -> wApp.info.data
-  rootPath: -> this.info().url
+  rootUrl: -> this.info().url
 }

@@ -4,6 +4,7 @@ module NavigationHelpers
     when /the home\s?page/ then '/'
     when /the new entries page/ then '#/new-media'
     when /the invalid entities page/ then '#/entities/invalid'
+    when /the isolated entities page/ then '#/entities/isolated'
     when /the config page/ then '#/settings'
     when /the search page/ then '#/search'
     when /^the gallery( page)?$/ then '#/new-media'

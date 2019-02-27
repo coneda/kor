@@ -5,8 +5,10 @@ documents and interconnect them with relationships. You can build huge semantic
 networks for an unlimited amount of domains. This integrates a sophisticated
 ontology management tool with an easy to use media database.
 
-## Table of contents
 
+## Table of Contents <!-- regenerate with npm run toc -->
+
+- [Table of Contents](#table-of-contents)
 - [Features](#features)
 - [User documentation](#user-documentation)
 - [Changelog](#changelog)
@@ -23,8 +25,9 @@ ontology management tool with an easy to use media database.
   * [Permission inheritance](#permission-inheritance)
   * [External authentication](#external-authentication)
   * [Authentication via request env](#authentication-via-request-env)
-- [OAI-PMH Interface](#oai-pmh-interface)
-- [JSON API](#json-api)
+- [Interfaces](#interfaces)
+  * [OAI-PMH](#oai-pmh)
+  * [REST (JSON)](#rest-json)
 - [Generating a virtual appliance](#generating-a-virtual-appliance)
 - [Generating docker images](#generating-docker-images)
 - [Command line tool](#command-line-tool)
@@ -73,7 +76,8 @@ ontology management tool with an easy to use media database.
 
 ## User documentation
 
-Please check out our [DOCS.md](DOCS.md)
+Please check out our
+[user guide (German)](https://github.com/coneda/kor_leitfaden_ffm/wiki)
 
 ## Changelog
 
@@ -81,7 +85,7 @@ We keep it updated at [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
-see file [COPYING](COPYING)
+See file [COPYING](COPYING)
 
 ## Requirements
 
@@ -249,7 +253,9 @@ to notify users of that possibility. If they choose to use it, they are
 redirected to `/env_auth` where the magic happens. The label for the button can
 be customized via the web interface.
 
-## OAI-PMH Interface
+## Interfaces
+
+### OAI-PMH
 
 ConedaKOR spawns four OAI-PMH endpoints for entities, kinds, relations and
 relationships:
@@ -270,7 +276,7 @@ Please check out [Authentication](#authentication) for how to use an api key.
 Two formats are available: `oai_dc` and `kor`. While the former is only
 maintained to fulfill the OAI-PMH specification, the latter gives full access to
 all content within the ConedaKOR installation. According to specification, you
-must choose the format like so `metadataPrefix=kor` as a request parameter. The
+must choose the format as a request parameter `metadataPrefix=kor`. The
 kor format adheres to a schema that is included in ConedaKOR. It can be found at
 
 https://kor.example.com/schema/1.0/kor.xsd
@@ -278,7 +284,7 @@ https://kor.example.com/schema/1.0/kor.xsd
 as part of every installation (version 2.0.0 and above). We will add new
 versions, should the need arise.
 
-## JSON API
+### REST (JSON)
 
 This API is undergoing a lot of change. This is why we are not showing all of
 the possible requests here. Instead, we'll just listing the ones that we hope
@@ -296,14 +302,16 @@ In general, there are three types of responses:
 Requests that **retrieve a single record** will always answered with a
 simple object containing just that record, e.g.
 
-    GET /kinds/1.json
+```
+GET /kinds/1.json
 
-    {
-      "id": 123,
-      "name": "person",
-      "plural_name": "people",
-      ...
-    }
+{
+  "id": 123,
+  "name": "person",
+  "plural_name": "people",
+  ...
+}
+```
 
 Requests that **retrieve a series of records** (resultsets) will always be
 answered with the objects themselves but also the total number of records, the
@@ -311,14 +319,16 @@ current page and the amount of records per page. Sometimes not full records are
 returned but only their ids in which case the `records` array will be empty and
 there will be an `ids` array instead, e.g.
 
-    GET /kinds.json
-    
-    {
-      "records": [...],
-      "total": 120,
-      "per_page": 10,
-      "page": 7
-    }
+```
+GET /kinds.json
+
+{
+  "records": [...],
+  "total": 120,
+  "per_page": 10,
+  "page": 7
+}
+```
 
 Requests that **modify a record** will always be answered with the modified
 record as well as a message indicating the modification applied. Also the
@@ -326,18 +336,20 @@ response code will reflect a successful change (200) or incorrect new data
 (422). This applies to create (POST), update (PATCH) and destroy (DELETE)
 requests, e.g.
 
-    POST /kinds.json
-    with JSON {"kind": {"name": "person", "plural_name": "people"}}
+```
+POST /kinds.json
+with JSON {"kind": {"name": "person", "plural_name": "people"}}
 
-    {
-      "message": "the kind 'person' has been created",
-      "record": {
-        "id": 123,
-        "name": "person",
-        "plural_name": "people",
-        ...
-      }
-    }
+{
+  "message": "the kind 'person' has been created",
+  "record": {
+    "id": 123,
+    "name": "person",
+    "plural_name": "people",
+    ...
+  }
+}
+```
 
 
 * `GET /kinds.json`: returns array of all kinds
@@ -468,11 +480,14 @@ Then bring up the vagrant VM:
 SSH into the resulting VM and start the KOR development server:
 
     vargant ssh
+    cd /vagrant
     ...
-    bundle exec rails s
+    bundle exec rails s -b 0.0.0.0
 
 This uses the code from the current working directory on your dev machine. Go to
-http://localhost:3000 with your browser to see the development page.
+http://localhost:3000 with your browser to see the development page. As with all
+new installations of ConedaKOR, you can login with user `admin` and password
+`admin`.
 
 ### Running the test suites
 

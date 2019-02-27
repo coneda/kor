@@ -8,6 +8,13 @@ Feature: Media
     And I should see "has been transformed"
     Then image ".viewer img" should have portrait orientation
   
+  Scenario: Previews for uploaded images
+    Given I am logged in as "admin"
+    And I go to the root page
+    And I go to the entity page for the last medium
+    Then I should see element "img[src*='/media/images/preview/000/000/002/image.jpg']" within ".viewer"
+    
+  @notravis
   Scenario: Upload a video and watch it
     Given I am logged in as "admin"
     And the medium "video_a"
@@ -29,6 +36,9 @@ Feature: Media
     Given I am logged in as "admin"
     When I go to the new entries page
     Then I should see "New entries"
+    Then I should see "File type: image/jpeg"
+    When I follow "Global groups"
+    And I follow "lecture"
     Then I should see "File type: image/jpeg"
 
   Scenario: download original

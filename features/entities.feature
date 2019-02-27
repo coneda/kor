@@ -10,17 +10,6 @@ Feature: Entities
     When I go to the search page
     Then I should see "Dating"
 
-  # not testable right now, we only have the multi upload
-  # Scenario: Upload a medium
-  #   Given I am logged in as "admin"
-  #   When I go to the legacy upload page
-  #   Then I should see "Create medium"
-  #   When I attach the file "spec/fixtures/image_a.jpg" to "entity[medium_attributes][document]"
-  #   And I press "Create"
-  #   Then there should be "1" "Medium" entity in the database
-  #   And I should be on the entity page for the last medium
-  #   And I should see "Medium"
-
   Scenario: Create an entity as an unauthorized user
     Given I am logged in as "jdoe"
     When I go to the new "work-Entity" page
@@ -53,13 +42,13 @@ Feature: Entities
     And I should see "Alter: 12"
     And I should see "Synonyms: La Gioconde"
 
-  # Scenario: I don't see the select as current link when I have no edit rights for no collection
-  #   Given the entity "Mona Lisa" of kind "Werk/Werke"
-  #   And user "john" is allowed to "view" collection "default" via credential "users"
-  #   And I am logged in as "john"
-  #   When I go to the entity page for "Mona Lisa"
-  #   And I should see "Mona Lisa"
-  #   Then I should not see element "a[kor-current-button]"
+  Scenario: I don't see the select as current link when I have no edit rights for no collection
+    Given the entity "Mona Lisa" of kind "Werk/Werke"
+    And user "john" is allowed to "view" collection "default" via credential "users"
+    And I am logged in as "john"
+    When I go to the entity page for "Mona Lisa"
+    And I should see "Mona Lisa"
+    Then I should not see element "a[kor-current-button]"
     
   Scenario: I see the add to clipboard link
     And I am logged in as "jdoe"
@@ -155,4 +144,15 @@ Feature: Entities
     And I ignore the next confirmation box
     And I follow "delete"
     Then I should see "has been deleted"
-    And I should be on the search page
+
+  Scenario: Edit an entity with editing rights but without tagging rights
+    Given user "jdoe" is allowed to "view/edit" collection "default" via "users"
+    And I am logged in as "jdoe"
+    When I go to the entity page for "Mona Lisa"
+    And I follow "edit"
+    Then I should see "Tags" within ".w-content"
+
+  Scenario: mirador anchor value should be a real link
+    Given I am logged in as "admin"
+    When I go to the entity page for the last medium
+    Then I should see mirador link with a usable href

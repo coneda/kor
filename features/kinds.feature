@@ -27,11 +27,14 @@ Feature: Kinds
     And I follow "person"
     And I fill in "Name" with "artist"
     And I fill in "Plural name" with "artists"
+    And I check "Activate tagging for this entity type"
     And I press "Save"
     Then I should see "has been changed"
     When I follow "back to list"
     Then I should see "artist" within widget "kor-kinds"
     Then I should not see "person" within widget "kor-kinds"
+    When I follow "artist"
+    Then "Activate tagging for this entity type" should be checked
 
   Scenario: remove kind
     Given the kind "literature/literature"

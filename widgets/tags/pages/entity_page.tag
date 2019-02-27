@@ -204,6 +204,11 @@
               target="_blank"
             >{t('verbs.maximize')}</a>
           </span>
+          |
+          <a
+            href="{rootUrl()}mirador?manifest={rootUrl()}mirador/{data.id}"
+            onclick={openMirador}
+          >{t('nouns.mirador')}</a>
           <br />
           {t('verbs.download')}:<br />
           <a 
@@ -254,6 +259,7 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.info)
     tag.mixin(wApp.mixins.page)
 
     tag.on 'mount', ->
@@ -305,6 +311,13 @@
         directedRelationship: {from_id: tag.data.id},
         onCreated: tag.reload
       }
+
+    tag.openMirador = (event) ->
+      event.preventDefault()
+      event.stopPropagation()
+
+      url = Zepto(event.target).attr('href')
+      window.open(url, '', 'height=800,width=1024')
 
     fetch = ->
       Zepto.ajax(

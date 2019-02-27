@@ -1,14 +1,13 @@
 <kor-medium-page>
-
   <div class="kor-content-box">
     <a if={data} href="#/entities/{data.id}" title={t('smaller')}>
       <img if={!data.medium.video &&! data.medium.audio} src="{data.medium.url.screen}" />
-      <video if={data.medium.video} controls mute autoplay>
+      <video if={data.medium.video} controls="true" mute autoplay>
         <source riot-src={data.medium.url['video/mp4']} type="video/mp4">
         <source riot-src={data.medium.url['video/webm']} type="video/webm">
         <source riot-src={data.medium.url['video/ogg']} type="video/ogg">
       </video>
-      <audio if={data.medium.audio} controls>
+      <audio if={data.medium.audio} controls="true">
         <source src={data.medium.url['audio/mp3']} type="audio/mp3">
         <source src={data.medium.url['audio/ogg']} type="audio/ogg">
       </audio>
@@ -36,5 +35,4 @@
       })
     }
   </script>
-
 </kor-medium-page>
