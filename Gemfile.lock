@@ -161,6 +161,9 @@ GEM
     paperclip (6.1.0)
       activemodel (>= 4.2.0)
       activesupport (>= 4.2.0)
+      mime-types
+      mimemagic (~> 0.3.0)
+      terrapin (~> 0.6.0)
     parallel (1.12.1)
     paranoia (2.2.0)
       activerecord (>= 4.0, < 5.1)
