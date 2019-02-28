@@ -156,3 +156,11 @@ Feature: Entities
     Given I am logged in as "admin"
     When I go to the entity page for the last medium
     Then I should see mirador link with a usable href
+
+  Scenario: render further properties with url-values as link
+    Given I am logged in as "admin"
+    And I go to the entity page for "Mona Lisa"
+    And I follow "edit"
+    And I fill in "Further properties" with "Wikipedia: https://en.wikipedia.org/wiki/Mona_Lisa"
+    And I press "Save"
+    Then I should see a link "» Wikipedia" leading to "https://en.wikipedia.org/wiki/Mona_Lisa"

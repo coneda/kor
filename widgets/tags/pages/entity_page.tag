@@ -57,8 +57,16 @@
       <div show={visibleFields().length > 0} class="hr silent"></div>
 
       <div each={property in data.properties}>
-        <span class="field">{property.label}:</span>
-        <span class="value">{property.value}</span>
+        <a
+          if={property.url}
+          href="{property.value}"
+          rel="noopener"
+          target="_blank"
+        >» {property.label}</a>
+        <virtual if={!property.url}>
+          <span class="field">{property.label}:</span>
+          <span class="value">{property.value}</span>
+        </virtual>
       </div>
 
       <div class="hr silent"></div>
@@ -326,6 +334,7 @@
         success: (data) ->
           tag.data = data
           tag.title tag.data.display_name
+          linkify_properties()
         error: ->
           wApp.bus.trigger('access-denied')
         complete: ->
@@ -335,6 +344,12 @@
     tag.inplaceTagHandlers = {
       doneHandler: fetch
     }
+
+    linkify_properties = ->
+      for property in tag.data.properties
+        if typeof(property['value']) == 'string'
+          if property['value'].match(/^https?:\/\//)
+            property['url'] = true
 
   </script>
 

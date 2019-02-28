@@ -27,7 +27,7 @@
       results = []
       for line in text.split(/\n/)
         kv = line.split(/\s*:\s*/)
-        results.push {'label': kv[0], 'value': kv[1]}
+        results.push {'label': kv.shift(), 'value': kv.join(':')}
       results
 
   </script>
