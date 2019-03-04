@@ -1,5 +1,4 @@
 <kor-field-editor>
-
   <h2 if={opts.id}>
     {tcap('objects.edit', {interpolations: {o: 'activerecord.models.field'}})}
   </h2>
@@ -16,14 +15,17 @@
       options={types_for_select}
       value={data.type}
       is-disabled={data.id}
-      ref="fields"
+      ref="type"
+      onchange={updateSpecialFields}
     />
 
     <virtual each={f in specialFields}>
       <kor-input
-        name="name"
-        label={f.label}
-        riot-value={field[f.name]}
+        name={f.name}
+        label={tcap('activerecord.attributes.field.' + f.name)}
+        type={f.type}
+        options={f.options}
+        riot-value={data[f.name]}
         errors={errors[f.name]}
         ref="fields"
       />
@@ -91,38 +93,40 @@
     tag.mixin(wApp.mixins.i18n)
     tag.errors = {}
 
+    window.t = tag
+
     tag.on 'mount', ->
+      p = [fetchTypes()]
+
       if tag.opts.id
-        fetch()
+        p.push fetch()
       else
         tag.data = {type: 'Fields::String'}
         tag.update()
-      fetchTypes()
+
+      Zepto.when.apply(null, p).then(tag.updateSpecialFields)
 
     # TODO: do we still need this?
-    tag.opts.notify.on 'add-field', ->
-      tag.field = {type: 'Fields::String'}
-      tag.showForm = true
-      tag.update()
+    # tag.opts.notify.on 'add-field', ->
+    #   tag.field = {type: 'Fields::String'}
+    #   tag.showForm = true
+    #   tag.update()
       # tag.updateSpecialFields()
 
     # TODO: do we still need this?
-    tag.opts.notify.on 'edit-field', (field) ->
-      tag.field = field
-      tag.showForm = true
-      tag.update()
+    # tag.opts.notify.on 'edit-field', (field) ->
+    #   tag.field = field
+    #   tag.showForm = true
+    #   tag.update()
       # tag.updateSpecialFields()
 
-    # tag.updateSpecialFields = (event) ->
-    #   # if tag.showForm
-    #   # get the tag selection or fall back to the model value
-    #   typeName = Zepto('[name=type]').val() || tag.data.type
-    #   # update the model
-    #   tag.data.type = typeName
-    #   if types = tag.types
-    #     tag.specialFields = types[typeName].fields
-    #     tag.update()
-    #   # true
+    tag.updateSpecialFields = (event) ->
+      if tag.refs.type
+        typeName = tag.refs.type.value()
+        if typeName
+          if types = tag.types
+            tag.specialFields = types[typeName].fields
+            tag.update()
 
     tag.submit = (event) ->
       event.preventDefault()
@@ -137,22 +141,23 @@
       p.always -> tag.update()
 
     create = ->
-      # console.log values()
       Zepto.ajax(
         type: 'POST'
         url: "/kinds/#{tag.opts.kindId}/fields"
-        data: JSON.stringify(values())
+        data: JSON.stringify(params())
       )
 
     update = ->
       Zepto.ajax(
         type: 'PATCH'
         url: "/kinds/#{tag.opts.kindId}/fields/#{tag.opts.id}"
-        data: JSON.stringify(values())
+        data: JSON.stringify(params())
       )
 
-    values = ->
-      results = {}
+    params = ->
+      results = {
+        type: tag.refs.type.value()
+      }
       for k, t of tag.refs.fields
         results[t.name()] = t.value()
       return {
@@ -178,9 +183,8 @@
             tag.types_for_select.push(value: t.name, label: t.label)
             tag.types[t.name] = t
           tag.update()
-          #tag.updateSpecialFields()
+          # tag.updateSpecialFields()
       )
 
   </script>
-
 </kor-field-editor>

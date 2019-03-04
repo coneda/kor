@@ -859,6 +859,9 @@ de:
         search_label: Anzeige im Suchformular
         show_on_entity: Bei Entität anzeigen
         is_identifier: ist ein Identifier
+        regex: regulärer Ausdruck
+        subtype: Untertyp
+        values: Werteliste
       generator:
         name: Name
         show_label: Attributname bei Entität

@@ -47,7 +47,8 @@ class FieldsController < JsonController
     def field_params
       results = params.fetch(:field, {}).permit(
         :kind_id, :name, :search_label, :form_label, :show_label, :lock_version,
-        :show_on_entity, :is_identifier, :regex, :type
+        :show_on_entity, :is_identifier, :regex, :type, :values,
+        :allow_other_values, :subtype
       )
       results.merge type: sanitize_type(results[:type])
     end

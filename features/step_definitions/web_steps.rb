@@ -275,6 +275,15 @@ When("I fill in synonyms with {string}") do |string|
   fill_in 'Synonyms', with: string.split('|').join("\n")
 end
 
+When("I fill in value list with {string}") do |string|
+  fill_in 'Value list', with: string.split('|').join("\n")
+end
+
+Then("value list should have value {string}") do |string|
+  value = string.split('|').join("\n")
+  expect(page).to have_field('Value list', with: value)
+end
+
 Then /^image "([^"]*)" should have (portrait|landscape) orientation$/ do |locator, orientation|
   img = find(locator)
 
@@ -305,8 +314,12 @@ Then("I should see a grid with {string} entities") do |amount|
   expect(grid).to have_css('.meta', count: amount.to_i)
 end
 
-Then(/^"([^"]*)" should be checked$/) do |locator|
-  expect(find_field(locator)).to be_checked
+Then(/^"([^"]*)" should (not )?be checked$/) do |locator, negation|
+  if negation
+    expect(find_field(locator)).not_to be_checked
+  else
+    expect(find_field(locator)).to be_checked
+  end
 end
 
 Then(/^I should see mirador link with a usable href$/) do

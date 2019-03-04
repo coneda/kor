@@ -51,7 +51,7 @@
 
       <div each={field in visibleFields()}>
         <span class="field">{field.show_label}:</span>
-        <span class="value">{field.value}</span>
+        <span class="value">{fieldValue(field.value)}</span>
       </div>
 
       <div show={visibleFields().length > 0} class="hr silent"></div>
@@ -326,6 +326,9 @@
 
       url = Zepto(event.target).attr('href')
       window.open(url, '', 'height=800,width=1024')
+
+    tag.fieldValue = (value) ->
+      if Zepto.isArray(value) then value.join(', ') else value
 
     fetch = ->
       Zepto.ajax(

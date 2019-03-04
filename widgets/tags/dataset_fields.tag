@@ -1,13 +1,36 @@
 <kor-dataset-fields>
-  <kor-input
-    each={field in opts.fields}
-    name={field.name}
-    label={field.form_label}
-    riot-value={values()[field.name]}
-    ref="fields"
-    errors={errorsFor(field)}
-    type={type(field)}
-  />
+  <virtual each={field in opts.fields}>
+    <kor-input
+      if={simple(field)}
+      name={field.name}
+      label={field.form_label}
+      riot-value={values()[field.name]}
+      ref="fields"
+      errors={errorsFor(field)}
+    />
+
+    <kor-input
+      if={field.type == 'Fields::Text'}
+      name={field.name}
+      label={field.form_label}
+      riot-value={values()[field.name]}
+      ref="fields"
+      errors={errorsFor(field)}
+      type="textarea"
+    />
+
+    <kor-input
+      if={field.type == 'Fields::Select'}
+      name={field.name}
+      label={field.form_label}
+      riot-value={values()[field.name]}
+      ref="fields"
+      errors={errorsFor(field)}
+      type="select"
+      options={field.values.split("\n")}
+      multiple={field.subtype == 'multiselect'}
+    />
+  </virtual>
 
   <script type="text/javascript">
     var tag = this;
@@ -37,6 +60,14 @@
     tag.type = function(field) {
       if (field.type == 'Fields::Text') {return 'textarea'}
       return 'text';
+    }
+
+    tag.simple = function(field) {
+      return(
+        field.type == 'Fields::String' ||
+        field.type == 'Fields::Isbn' ||
+        field.type == 'Fields::Regex'
+      )
     }
   </script>
 </kor-dataset-fields>
