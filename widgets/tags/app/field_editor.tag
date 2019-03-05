@@ -93,8 +93,6 @@
     tag.mixin(wApp.mixins.i18n)
     tag.errors = {}
 
-    window.t = tag
-
     tag.on 'mount', ->
       p = [fetchTypes()]
 

@@ -49,9 +49,9 @@
 
     tag.value = function() {
       var result = {};
-      var inputs = tag.tags['kor-input'] || []
+      var inputs = wApp.utils.toArray(tag.tags['kor-input'])
       for (var i = 0; i < inputs.length; i++) {
-        var field = tag.tags['kor-input'][i];
+        var field = inputs[i];
         result[field.name()] = field.value();
       }
       return result;
