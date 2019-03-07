@@ -1,5 +1,5 @@
 class UsersController < JsonController
-  skip_before_filter :legal, :only => [:accept_terms]
+  skip_before_action :legal, :only => [:accept_terms]
 
   def accept_terms
     @user = current_user

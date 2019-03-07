@@ -60,6 +60,7 @@ module TestHelper
 
     if framework == :rspec && test.metadata[:type].to_s == 'controller'
       scope.request.headers["accept"] = 'application/json'
+      scope.request.content_type = 'application/json'
     end
 
     ActionMailer::Base.deliveries.clear

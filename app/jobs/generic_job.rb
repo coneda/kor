@@ -1,4 +1,4 @@
-class GenericJob < ActiveJob::Base
+class GenericJob < ApplicationJob
   queue_as :default
 
   def perform(mode, constant, *args)

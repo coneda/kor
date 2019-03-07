@@ -1,6 +1,9 @@
 require File.expand_path('../boot', __FILE__)
 
-require 'rails/all'
+require 'active_record/railtie'
+require "action_controller/railtie"
+require "action_mailer/railtie"
+
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -18,7 +21,6 @@ $: << File.expand_path('../../lib', __FILE__)
 require 'core_ext/array'
 require 'kor'
 require 'securerandom'
-require 'sucker_punch/async_syntax'
 
 Dir["lib/paperclip_processors/*.rb"].each { |f| require File.expand_path(f) }
 
@@ -36,12 +38,10 @@ module Kor
     # config.i18n.default_locale = :de
     config.i18n.available_locales = [:de, :en]
 
-    # Do not swallow errors in after_commit/after_rollback callbacks.
-    config.active_record.raise_in_transactional_callbacks = true
+    config.active_job.queue_adapter = :async
+    config.active_job.queue_name_prefix = "kor"
 
-    config.active_job.queue_adapter = :sucker_punch
-
-    config.middleware.insert_before 0, "Rack::Cors" do
+    config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins(*(ENV['CORS_ALLOWED_ORIGINS'] || '').split(/\s+/))
         resource '*', headers: :any, methods: [:get, :options]

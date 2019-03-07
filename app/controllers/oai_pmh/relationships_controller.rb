@@ -6,7 +6,7 @@ class OaiPmh::RelationshipsController < OaiPmh::BaseController
       if current_user.allowed_to?(:view, [@record.from.collection, @record.to.collection])
         render :template => "oai_pmh/get_record"
       else
-        render :nothing => true, :status => 403
+        head 403
       end
     else
       render_error 'idDoesNotExist'

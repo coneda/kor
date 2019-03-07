@@ -9,7 +9,7 @@ RSpec.describe DirectedRelationshipsController, type: :controller do
   end
 
   it 'should not GET show' do
-    get :show, id: DirectedRelationship.first.id
+    get :show, params: { id: DirectedRelationship.first.id }
     expect(response).to be_forbidden
   end
 
@@ -35,14 +35,16 @@ RSpec.describe DirectedRelationshipsController, type: :controller do
     end
 
     it 'should GET show' do
-      get :show, id: DirectedRelationship.first.id
+      get :show, params: { id: DirectedRelationship.first.id }
       expect(response).to be_success
       expect(json['relation_name']).to be_a(String)
       expect(json['relationship']).to be_nil
     end
 
     it 'should GET show' do
-      get :show, id: DirectedRelationship.first.id, include: 'relationship'
+      get :show, params: {
+        id: DirectedRelationship.first.id, include: 'relationship'
+      }
       expect(response).to be_success
       expect(json['relation_name']).to be_a(String)
       expect(json['relationship']).to be_a(Hash)
@@ -53,49 +55,54 @@ RSpec.describe DirectedRelationshipsController, type: :controller do
       mona_lisa = Entity.find_by!(name: 'Mona Lisa')
       works = Kind.find_by!(name: 'work')
 
-      get :index, per_page: 3
+      get :index, params: { per_page: 3 }
       expect_collection_response count: 3
 
-      get :index, per_page: 5, page: 3
+      get :index, params: { per_page: 5, page: 3 }
       expect_collection_response count: 4
 
-      get :index, from_entity_id: louvre.id
+      get :index, params: { from_entity_id: louvre.id }
       expect_collection_response total: 2
 
-      get :index, relation_name: 'shows'
+      get :index, params: { relation_name: 'shows' }
       expect_collection_response total: 2
 
-      get :index, relation_name: 'is related to'
+      get :index, params: { relation_name: 'is related to' }
       expect_collection_response total: 2
 
-      get :index, relation_name: 'is related to', from_entity_id: mona_lisa.id
+      get :index, params: {
+        relation_name: 'is related to',
+        from_entity_id: mona_lisa.id
+      }
       expect_collection_response total: 1
 
-      get :index, from_kind_id: works.id
+      get :index, params: { from_kind_id: works.id }
       expect_collection_response total: 7
 
-      get :index, to_kind_id: Kind.medium_kind_id
+      get :index, params: { to_kind_id: Kind.medium_kind_id }
       expect_collection_response total: 2
 
-      get :index, except_to_kind_id: Kind.medium_kind_id
+      get :index, params: { except_to_kind_id: Kind.medium_kind_id }
       expect_collection_response total: 12
 
-      get :index, from_entity_id: "#{louvre.id},#{mona_lisa.id}"
+      get :index, params: { from_entity_id: "#{louvre.id},#{mona_lisa.id}" }
       expect_collection_response total: 6
 
-      get :index, to_entity_id: "#{louvre.id},#{mona_lisa.id}"
+      get :index, params: { to_entity_id: "#{louvre.id},#{mona_lisa.id}" }
       expect_collection_response total: 6
 
-      get :index, from_kind_id: "#{works.id},#{Kind.medium_kind_id}"
+      get :index, params: { from_kind_id: "#{works.id},#{Kind.medium_kind_id}" }
       expect_collection_response total: 9
 
-      get :index, to_kind_id: "#{works.id},#{Kind.medium_kind_id}"
+      get :index, params: { to_kind_id: "#{works.id},#{Kind.medium_kind_id}" }
       expect_collection_response total: 9
 
-      get :index, except_to_kind_id: "#{works.id},#{Kind.medium_kind_id}"
+      get :index, params: {
+        except_to_kind_id: "#{works.id},#{Kind.medium_kind_id}"
+      }
       expect_collection_response total: 5
 
-      get :index, relation_name: "shows,is located in"
+      get :index, params: { relation_name: "shows,is located in" }
       expect_collection_response total: 4
     end
   end

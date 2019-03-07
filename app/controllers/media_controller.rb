@@ -1,5 +1,5 @@
 class MediaController < JsonController
-  skip_before_filter :auth
+  skip_before_action :auth
 
   def show
     id = params[:id] || (params[:id_part_01] + params[:id_part_02] + params[:id_part_03]).to_i

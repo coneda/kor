@@ -34,8 +34,9 @@ class EntitiesController < JsonController
       tags: param_to_array(params[:tags], ids: false),
       relation_name: params[:relation_name],
 
-      isolated: params[:isolated],
-      invalid: params[:invalid],
+      isolated: param_to_boolean(params[:isolated]),
+      invalid: param_to_boolean(params[:invalid]),
+      
       user_group_id: params[:user_group_id],
       authority_group_id: params[:authority_group_id],
 
@@ -80,12 +81,8 @@ class EntitiesController < JsonController
       @entity = scope.find_by!(id: params[:id])
     end
 
-    respond_to do |format|
-      if allowed_to?(:view, @entity.collection)
-        format.json
-      else
-        format.json { render nothing: true, status: 403 }
-      end
+    unless allowed_to?(:view, @entity.collection)
+      render_403
     end
   end
 

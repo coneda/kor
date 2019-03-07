@@ -10,29 +10,29 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   end
 
   it "should respond to 'Identify'" do
-    get '/oai-pmh/entities.xml', verb: 'Identify'
+    get '/oai-pmh/entities.xml', params: { verb: 'Identify' }
     expect(response).to be_success
     expect { Hash.from_xml response.body }.not_to raise_error
 
-    post '/oai-pmh/entities.xml', verb: 'Identify'
+    post '/oai-pmh/entities.xml', params: { verb: 'Identify' }
     expect(response).to be_success
     expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListMetadataFormats'" do
-    get '/oai-pmh/entities.xml', verb: 'ListMetadataFormats'
+    get '/oai-pmh/entities.xml', params: { verb: 'ListMetadataFormats' }
     expect(response).to be_success
     expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListIdentifiers'" do
-    get '/oai-pmh/entities.xml', verb: 'ListIdentifiers'
+    get '/oai-pmh/entities.xml', params: { verb: 'ListIdentifiers' }
     expect(response).to be_success
     expect { Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListRecords'" do
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       metadataPrefix: 'kor'
     }
@@ -43,7 +43,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   it "should respond to 'GetRecord'" do
     mona_lisa = Entity.first
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: mona_lisa.uuid,
       metadataPrefix: 'kor'
@@ -53,7 +53,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   end
 
   it "should only include data the user is authorized for" do
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       metadataPrefix: 'kor'
     }
@@ -64,7 +64,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     expect(items.first.xpath("//kor:title")[0].text).to eq("Leonardo")
 
     admin = User.admin
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       api_key: admin.api_key,
       metadataPrefix: 'kor'
@@ -78,7 +78,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   it "should respond with 403 if the user is not authorized" do
     leonardo = Entity.last
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: leonardo.uuid,
       metadataPrefix: 'kor'
@@ -100,7 +100,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     # https://mail.gnome.org/archives/xml/2009-November/msg0002it "should return 'badVerb' if the verb is not recognized"2.html
     # for a reason why it has to be done like this
     xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: leonardo.uuid,
       api_key: admin.api_key,
@@ -120,7 +120,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     # https://mail.gnome.org/archives/xml/2009-November/msg0002it "should return 'badVerb' if the verb is not recognized"2.html
     # for a reason why it has to be done like this
     xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: picture.uuid,
       api_key: admin.api_key,
@@ -135,7 +135,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     leonardo = Entity.last
     admin = User.admin
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: leonardo.uuid,
       api_key: admin.api_key,
@@ -144,7 +144,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     doc = parse_xml(response.body)
     expect(doc.xpath("//xmlns:metadata/oai_dc:dc").count).to eq(1)
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: leonardo.uuid,
       api_key: admin.api_key,
@@ -157,7 +157,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   it "should disseminate oai_dc and kor metadata formats on ListRecords requests" do
     admin = User.admin
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       api_key: admin.api_key,
       metadataPrefix: 'oai_dc'
@@ -165,7 +165,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     doc = parse_xml(response.body)
     expect(doc.xpath("//xmlns:metadata/oai_dc:dc").count).to eq(7)
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       api_key: admin.api_key,
       metadataPrefix: 'kor'
@@ -177,7 +177,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   it "should return 'idDoesNotExist' if the identifier given does not exist" do
     admin = User.admin
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: '1234',
       api_key: admin.api_key,
@@ -191,12 +191,12 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     Entity.all.each { |r| r.really_destroy! }
     admin = User.admin
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListIdentifiers',
     }
     verify_oaipmh_error 'noRecordsMatch'
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       api_key: admin.api_key,
       metadataPrefix: 'kor'
@@ -217,7 +217,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   end
 
   it "should return 'noSetHierarchy' if a set is requested" do
-    get '/oai-pmh/entities.xml', verb: 'ListSets'
+    get '/oai-pmh/entities.xml', params: { verb: 'ListSets' }
     verify_oaipmh_error 'noSetHierarchy'
   end
 
@@ -225,14 +225,14 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     leonardo = Entity.last
     admin = User.admin
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: leonardo.uuid,
       api_key: admin.api_key
     }
     verify_oaipmh_error 'cannotDisseminateFormat'
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       api_key: admin.api_key
     }
@@ -244,7 +244,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     leonardo = Entity.last
     admin = User.admin
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: leonardo.uuid,
       api_key: admin.api_key,
@@ -257,7 +257,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   it "should return 'badResumptionToken' when the resumptionToken is invalid" do
     admin = User.admin
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       api_key: admin.api_key,
       metadataPrefix: 'kor',
@@ -279,7 +279,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       FactoryGirl.create :mona_lisa, name: "Mona Lisa #{i}", updated_at: (zero - i.minutes)
     end
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       api_key: admin.api_key,
       metadataPrefix: 'kor',
@@ -290,7 +290,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     expect(doc.xpath('//kor:entity', ns).count).to eq(50)
 
     token = doc.xpath('//oai:resumptionToken', ns).first.text
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       api_key: admin.api_key,
       metadataPrefix: 'kor',
@@ -310,7 +310,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     mona_lisa = Entity.find_by(name: 'Mona Lisa')
     mona_lisa.destroy
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListRecords',
       api_key: admin.api_key,
       metadataPrefix: 'kor'
@@ -320,7 +320,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(6)
     expect(doc.xpath("//xmlns:metadata").count).to eq(6)
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'ListIdentifiers',
       api_key: admin.api_key
     }
@@ -329,7 +329,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     expect(doc.xpath("//xmlns:header[not(@status)]").count).to eq(6)
     expect(doc.xpath("//xmlns:metadata").count).to eq(0)
 
-    get '/oai-pmh/entities.xml', {
+    get '/oai-pmh/entities.xml', params: {
       verb: 'GetRecord',
       identifier: mona_lisa.uuid,
       metadataPrefix: 'kor'

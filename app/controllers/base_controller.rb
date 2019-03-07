@@ -1,12 +1,12 @@
-class BaseController < ActionController::Base
+class BaseController < ApplicationController
   if Rails.env.production?
     protect_from_forgery with: :null_session, unless: :api_auth?
   else
     protect_from_forgery with: :exception, unless: :api_auth?
   end
 
-  before_filter :reload_settings, :set_default_url_options, :locale
-  before_filter :session_expiry, unless: :api_auth?
+  before_action :reload_settings, :set_default_url_options, :locale
+  before_action :session_expiry, unless: :api_auth?
 
   if ENV['PROFILE']
     require 'perftools'

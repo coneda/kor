@@ -3,7 +3,7 @@ class JsonController < BaseController
   rescue_from ActiveRecord::RecordNotFound, with: :render_record_not_found
   rescue_from ActiveRecord::StaleObjectError, with: :render_stale
 
-  before_filter :auth, :legal
+  before_action :auth, :legal
 
   helper_method :inclusion, :page, :per_page, :sort
 
@@ -176,6 +176,12 @@ class JsonController < BaseController
       else
         raise "unknown param format to convert to array: #{value}"
       end
+    end
+
+    def param_to_boolean(value)
+      return true if ['true', true, 1, '1'].include?(value)
+
+      nil
     end
 
     def zip_download(group, entities)

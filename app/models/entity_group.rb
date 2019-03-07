@@ -17,7 +17,8 @@ class EntityGroup < ApplicationRecord
 
   def add_entities(new_entities)
     new_entities = [new_entities] unless new_entities.is_a? Array
-    new_entities.reject { |e| self.entities.to_a.include? e }.each do |e|
+    ids = entity_ids
+    new_entities.reject { |e| self.entity_ids.include? e.id }.each do |e|
       entities << e
     end
   end

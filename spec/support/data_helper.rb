@@ -284,6 +284,9 @@ module DataHelper
     archive = AuthorityGroupCategory.create! name: 'archive'
     archive.authority_groups.create! name: 'seminar'
 
+    # we have to reload the picture before we add it to the group or it will
+    # receive an update, changing its timestamps
+    picture_a = Entity.find(picture_a.id)
     lecture.add_entities picture_a
 
     nice = UserGroup.create! user_id: jdoe.id, name: 'nice'

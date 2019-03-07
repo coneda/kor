@@ -9,24 +9,24 @@ RSpec.describe CredentialsController, type: :controller do
   end
 
   it 'should GET show' do
-    get :show, id: Credential.find_by!(name: 'students').id
+    get :show, params: { id: Credential.find_by!(name: 'students').id }
     expect(response).to be_forbidden
   end
 
   it 'should not POST create' do
-    post :create, credential: { name: 'teachers' }
+    post :create, params: { credential: { name: 'teachers' } }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
     id = Credential.find_by!(name: 'students').id
-    patch :update, id: id, credential: { name: 'teachers' }
+    patch :update, params: { id: id, credential: { name: 'teachers' } }
     expect(response).to be_forbidden
   end
 
   it 'should not DELETE destroy' do
     id = Credential.find_by!(name: 'students').id
-    delete :destroy, id: id
+    delete :destroy, params: { id: id }
     expect(response).to be_forbidden
   end
 
@@ -41,7 +41,7 @@ RSpec.describe CredentialsController, type: :controller do
     end
 
     it 'should GET show' do
-      get :show, id: Credential.find_by!(name: 'students').id
+      get :show, params: { id: Credential.find_by!(name: 'students').id }
       expect(response).to be_success
       expect(json['name']).to eq('students')
       expect(json['counts']).to be_nil
@@ -49,19 +49,19 @@ RSpec.describe CredentialsController, type: :controller do
 
     it 'should GET show with additions' do
       id = Credential.find_by!(name: 'students').id
-      get :show, id: id, include: 'counts'
+      get :show, params: { id: id, include: 'counts' }
       expect(json['user_count']).to eq(1)
     end
 
     it 'should POST create' do
-      post :create, credential: { name: 'teachers' }
+      post :create, params: { credential: { name: 'teachers' } }
       expect_created_response
       Credential.find_by!(name: 'teachers')
     end
 
     it 'should PATCH update' do
       id = Credential.find_by!(name: 'students').id
-      patch :update, id: id, credential: { name: 'teachers' }
+      patch :update, params: { id: id, credential: { name: 'teachers' } }
       expect_updated_response
       agc = Credential.find(id)
       expect(agc.name).to eq('teachers')
@@ -69,7 +69,7 @@ RSpec.describe CredentialsController, type: :controller do
 
     it 'should DELETE destroy' do
       students = Credential.find_by!(name: 'students')
-      delete :destroy, id: students.id
+      delete :destroy, params: { id: students.id }
       expect_deleted_response
       expect(Credential.find_by(id: students.id)).to be_nil
     end

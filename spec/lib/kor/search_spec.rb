@@ -132,8 +132,8 @@ RSpec.shared_examples 'a kor search' do
     expect(search.total).to eq(7)
 
     search = described_class.new(admin,
-      updated_before: picture_a.updated_at,
-      updated_after: last_supper.updated_at
+      updated_after: last_supper.updated_at,
+      updated_before: picture_a.updated_at
     )
     expect(search.total).to eq(2)
   end
