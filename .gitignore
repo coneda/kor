@@ -39,10 +39,10 @@ coverage
 
 node_modules
 npm-debug.log
-public/*.html
-public/*.css
-public/*.js
-public/fonts
+public/lib.js
+public/tags.js
+public/vendor.js
+public/vendor.css
 widgets/tmp
 
 # Testing

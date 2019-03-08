@@ -60,7 +60,6 @@ function tags {
 function app {
   log "concatenating app"
   uglifyjs public/vendor.js public/lib.js public/tags.js -b -o public/app-noboot.js
-  uglifyjs public/app-noboot.js widgets/boot.js -b -o public/app.js
 }
 
 function css {
@@ -70,10 +69,11 @@ function css {
 
 function html {
   log "compiling html"
-  for TPL in widgets/*.html.ejs; do
-    local TARGET=$(echo $TPL | sed -E "s/\.ejs$//" | sed -E "s/^widgets\///")
-    widgets/build.js $TPL > public/$TARGET
-  done
+  # no templates for now
+  # for TPL in widgets/*.html.ejs; do
+  #   local TARGET=$(echo $TPL | sed -E "s/\.ejs$//" | sed -E "s/^widgets\///")
+  #   widgets/build.js $TPL > public/$TARGET
+  # done
 }
 
 function images {
@@ -109,7 +109,7 @@ function watch_css {
 
 function watch_html {
   onchange \
-    public/app.js public/vendor.* widgets/*.html.ejs \
+    public/app-noboot.js public/vendor.* widgets/*.html.ejs \
     -- widgets/build.sh html
 }
 
