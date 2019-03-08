@@ -30,7 +30,8 @@ Feature: Fields
     And value list should have value "carpenter|weaver|stone mason"
 
     When I go to the entity page for "Leonardo"
-    And I follow "edit"
+    Then I should see "Leonardo"
+    When I follow "edit"
     And I select "stone mason" from "profession"
     And I press "Save"
     Then entity "Leonardo" should have dataset value "stone mason" for "profession"
@@ -42,7 +43,8 @@ Feature: Fields
     And I press "Save"
 
     When I go to the entity page for "Leonardo"
-    And I follow "edit"
+    Then I should see "Leonardo"
+    When I follow "edit"
     And I select "stone mason" from "profession"
     And I select "carpenter" from "profession"
     And I press "Save"

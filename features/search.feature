@@ -3,6 +3,7 @@ Feature: search
   Scenario: set criteria from url
     Given I am logged in as "admin"
     And I go to the path "/#/search?name=leonardo&kind_id=2&dataset_gnd_id=123456789"
+    Then I should see "Search" within ".w-content"
     Then I should see field "Name" with value "leonardo"
     And I should see field "GND-ID" with value "123456789"
     And I should see "Leonardo" within ".search-results"
