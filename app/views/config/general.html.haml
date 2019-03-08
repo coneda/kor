@@ -31,7 +31,6 @@
         = config_value "app.default_home_page", :control => select_tag("config[app][default_home_page]", options_for_select(available_home_pages))
         = config_value "app.max_foreground_group_download_size"
         = config_value "app.max_file_upload_size"
-        = config_value "app.current_history_length"
         = config_value "app.primary_relationships", :control => relation_selector_tag('config[app][gallery][primary_relations][]', {:selected => Kor.config['app.gallery.primary_relations']}, :multiple => true)
         = config_value "app.secondary_relationships", :control => relation_selector_tag('config[app][gallery][secondary_relations][]', {:selected => Kor.config['app.gallery.secondary_relations']}, :multiple => true)
         = config_value "app.welcome_title"
