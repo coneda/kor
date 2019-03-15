@@ -1,6 +1,6 @@
 <kor-input class="{'has-errors': opts.errors}">
   <label if={opts.type != 'radio'}>
-    {opts.label}
+    <span show={!opts.hideLabel}>{opts.label}</span>
     <a
       if={opts.help}
       href="#"
@@ -77,7 +77,6 @@
     tag.valueFromParent = ->
       if tag.opts.type == 'checkbox' then 1 else tag.opts.riotValue
     tag.checkedFromParent = ->
-      # console.log '---', tag.opts
       tag.opts.type == 'checkbox' && tag.opts.riotValue
     tag.checked = ->
       tag.opts.type == 'checkbox' &&
@@ -88,7 +87,6 @@
       else
         Zepto(tag.root).find('input, select, textarea').val(value)
     tag.reset = ->
-      # console.log tag.value_from_parent()
       tag.set tag.valueFromParent()
     tag.selected = (item) ->
       v = item.id || item.value || item
@@ -98,7 +96,6 @@
         "#{v}" == "#{tag.valueFromParent()}"
 
     tag.toggleHelp = (event) ->
-      event.preventDefault()
       tag.showHelp = !tag.showHelp
       tag.update()
       Zepto(tag.refs.help).html(tag.opts.help) if tag.showHelp

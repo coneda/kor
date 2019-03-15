@@ -30,15 +30,22 @@ class EntitiesController < JsonController
       kind_id: params[:kind_id],
       except_kind_id: params[:except_kind_id],
       dating: params[:dating],
-      created_after: params[:created_after],
       tags: param_to_array(params[:tags], ids: false),
       relation_name: params[:relation_name],
+
+      created_after: param_to_time(params[:created_after]),
+      created_before: param_to_time(params[:created_before]),
+      updated_after: param_to_time(params[:updated_after]),
+      updated_before: param_to_time(params[:updated_before]),
 
       isolated: param_to_boolean(params[:isolated]),
       invalid: param_to_boolean(params[:invalid]),
       
       user_group_id: params[:user_group_id],
       authority_group_id: params[:authority_group_id],
+
+      updated_by: params[:updated_by],
+      created_by: params[:created_by],
 
       terms: params[:terms],
       dataset: dataset_params,
@@ -57,6 +64,7 @@ class EntitiesController < JsonController
 
     search = Kor::Search.new(current_user, criteria)
 
+    @engine = search.engine
     @records = search.records
     @total = search.total
   end

@@ -13,10 +13,10 @@ RSpec.describe Kor::Tasks do
 
   it 'should run index_all', elastic: true do
     Kor::Elastic.drop_index
-    expect(Kor::Search.new(admin).total).to eq(0)
+    expect(Kor::Search.new(admin, engine: 'elastic').total).to eq(0)
 
     Kor::Tasks.index_all
-    expect(Kor::Search.new(admin).total).to eq(7)
+    expect(Kor::Search.new(admin, engine: 'elastic').total).to eq(7)
   end
 
   it 'should run group_to_zip' do

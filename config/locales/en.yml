@@ -78,6 +78,11 @@ en:
   edit_tags: edit tags
   show_json: show JSON
   show_oai_pmh: show OAI-PMH
+  year: year
+  month: month
+  day: day
+  before: before
+  after: after
 
   help:
     terms_query: |
@@ -98,6 +103,7 @@ en:
         rel="noopener"
       >elasticsearch
       query string syntax</a>
+    date_input: Use format YYYY-MM-DD
 
   search_term:
     one: search term
@@ -261,6 +267,9 @@ en:
     isolated_entities: isolated entities
 
   nouns:
+    result:
+      one: result
+      other: results
     agpl: "GNU Affero General Public License Version 3"
     license:
       one: license
@@ -899,6 +908,7 @@ en:
       entity:
         display_name: name
         updater: updated by
+        creator: created by
         tag_list: tags
         content_type: file type
         collection_id: collection
@@ -935,6 +945,10 @@ en:
         synonyms: synonyms
         degree: degree
         wikidata_id: Wikidata ID
+        created_after: created after
+        created_before: created before
+        updated_after: updated after
+        updated_before: updated before
       entity_dating:
         label: type of dating
         dating_string: dating

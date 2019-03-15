@@ -57,6 +57,11 @@ RSpec.describe UsersController, type: :controller do
       current_user User.find_by!(name: 'jdoe')
     end
 
+    it 'should not GET index' do
+      get :index
+      expect(response).to be_forbidden
+    end
+
     it 'should GET me' do
       get :me
       expect(response).to be_success

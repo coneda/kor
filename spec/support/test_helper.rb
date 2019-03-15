@@ -21,7 +21,7 @@ module TestHelper
     )
 
     Rails.application.load_seed
-    DataHelper.default_setup relationships: true, pictures: true
+    DataHelper.default_setup
 
     system "rm -rf #{Rails.root}/tmp/test.media.clone"
     system "mv #{ENV['DATA_DIR']}/media #{Rails.root}/tmp/test.media.clone"

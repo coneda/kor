@@ -41,7 +41,7 @@
           var results = [];
           for (var i = 0; i < data.records.length; i++) {
             var k = data.records[i];
-            if (k.id != wApp.info.data.medium_kind_id) {
+            if (tag.opts.includeMedia || k.id != wApp.info.data.medium_kind_id) {
               results.push(k);
             }
           }

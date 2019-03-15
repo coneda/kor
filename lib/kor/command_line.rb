@@ -134,6 +134,7 @@ class Kor::CommandLine
       when 'secrets' then task :secrets
       when 'consistency-check' then task :consistency_check
       when 'import-erlangen-crm' then task :import_erlangen_crm
+      when 'import-test-data' then task :import_test_data
       else
         STDERR.puts "command '#{@command}' is not known"
         usage

@@ -4,6 +4,7 @@ require 'active_record/railtie'
 require "action_controller/railtie"
 require "action_mailer/railtie"
 
+ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'] = '1'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.

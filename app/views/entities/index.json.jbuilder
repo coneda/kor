@@ -2,6 +2,8 @@ json.total @total
 json.per_page per_page
 json.page page
 
+json.engine @engine
+
 json.records @records do |record|
   json.partial! 'entities/customized', {
     entity: record,

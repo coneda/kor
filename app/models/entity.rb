@@ -411,6 +411,8 @@ class Entity < ApplicationRecord
   scope :without_media, lambda { except_kinds(Kind.medium_kind_id) }
   scope :by_subtype, lambda { |subtype| subtype.present? ? where(subtype: subtype) : all }
   scope :by_comment, lambda { |comment| comment.present? ? where('comment LIKE ?', "%#{comment}%") : all }
+  scope :created_by, lambda { |id| id.present? ? where(creator_id: id) : all }
+  scope :updated_by, lambda { |id| id.present? ? where(updater_id: id) : all }
   scope :named_like, lambda { |terms|
     if terms.present?
       terms = terms.split(/\s+/)

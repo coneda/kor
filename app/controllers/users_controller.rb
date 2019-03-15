@@ -1,5 +1,6 @@
 class UsersController < JsonController
   skip_before_action :legal, :only => [:accept_terms]
+  skip_before_action :auth, only: ['autocomplete']
 
   def accept_terms
     @user = current_user

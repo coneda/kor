@@ -10,12 +10,16 @@ RSpec.describe EntitiesController, type: :controller do
     expect(Kor::Search).to receive(:new).with(
       User.guest,
       hash_including(
-        isolated: false,
-        sort: { column: 'random', direction: 'asc' }
+        sort: { column: 'random', direction: 'asc' },
+        created_after: Time.parse('2013-01-02')
       )
     ).and_call_original
 
-    get 'index', as: 'json', params: { isolated: false, sort: 'random' }
+    get 'index', as: 'json', params: {
+      isolated: false,
+      sort: 'random',
+      created_after: '2013-01-02'
+    }
     expect_collection_response count: 0
   end
 

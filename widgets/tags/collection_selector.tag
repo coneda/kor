@@ -1,7 +1,5 @@
 <kor-collection-selector>
-
   <virtual if={collections}>
-
     <virtual if={collections.length == 1}
       <input 
         ref="input"
@@ -44,6 +42,10 @@
 
     tag.on('mount', function() {
       fetch();
+    })
+
+    tag.on('update', function() {
+      tag.ids = tag.opts.riotValue || [];
     })
 
     tag.name = function() {
@@ -105,6 +107,7 @@
 
     var newSelection = function(ids) {
       tag.ids = ids;
+      Zepto(tag.root).trigger('change', [tag.ids]);
       tag.update();
     }
 
@@ -132,5 +135,4 @@
       return results;
     }
   </script>
-
 </kor-collection-selector>

@@ -11,7 +11,7 @@ class Kor::Search
   end
 
   def run
-    if engine == :elastic
+    if engine == 'elastic'
       elastic
     else
       active_record
@@ -36,7 +36,9 @@ class Kor::Search
       created_after(@criteria[:created_after]).
       created_before(@criteria[:created_before]).
       updated_after(@criteria[:updated_after]).
-      updated_before(@criteria[:updated_before])
+      updated_before(@criteria[:updated_before]).
+      updated_by(@criteria[:updated_by]).
+      created_by(@criteria[:created_by])
 
     @scope = case @criteria[:sort][:column]
     when 'default' then @scope.order('name')
@@ -62,7 +64,7 @@ class Kor::Search
   end
 
   def records
-    if engine == :elastic
+    if engine == 'elastic'
       @search_result.records
     else
       @scope.pageit(@criteria[:page], @criteria[:per_page])
@@ -70,7 +72,7 @@ class Kor::Search
   end
 
   def total
-    if engine == :elastic
+    if engine == 'elastic'
       @search_result.total
     else
       @scope.count
@@ -85,7 +87,8 @@ class Kor::Search
     return [
       :name, :id, :uuid, :collection_id, :kind_id, :except_kind_id, :dating,
       :created_after, :tags, :relation_name, :sort, :page, :per_page,
-      :created_before, :updated_before, :updated_after
+      :created_before, :updated_before, :updated_after, :engine, :updated_by,
+      :created_by
     ]
   end
 
@@ -119,12 +122,22 @@ class Kor::Search
     end
   end
 
-  # use elastic only if we have to
+  def preferred_engine
+    @criteria[:engine] || 'active_record'
+  end
+
+  # use elastic only if we have to or if specified
   def engine
-    if Kor::Elastic.enabled? && (keys && elastic_keys).size > 0
-      :elastic
-    else
-      :active_record
+    @engine ||= begin
+      if (keys & compat_keys).size == keys.size
+        return preferred_engine
+      end
+
+      if Kor::Elastic.enabled? && (keys & elastic_keys).size > 0
+        'elastic'
+      else
+        'active_record'
+      end
     end
   end
 end

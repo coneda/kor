@@ -184,6 +184,12 @@ class JsonController < BaseController
       nil
     end
 
+    def param_to_time(value)
+      Time.parse(value)
+    rescue TypeError, ArgumentError => e
+      nil
+    end
+
     def zip_download(group, entities)
       if !entities.empty?
         zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/download.zip",

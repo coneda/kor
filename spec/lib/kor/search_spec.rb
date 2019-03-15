@@ -1,5 +1,28 @@
 require 'rails_helper'
 
+RSpec.describe Kor::Search, elastic: true do
+  it 'should use correct engine' do
+    search = described_class.new(admin, terms: 'mona')
+    expect(search.engine).to eq('elastic')
+
+    search = described_class.new(admin, isolated: true)
+    expect(search.engine).to eq('active_record')
+
+    search = described_class.new(admin, name: 'mona')
+    expect(search.engine).to eq('active_record')
+
+    search = described_class.new(admin, terms: 'mona', engine: 'elastic')
+    expect(search.engine).to eq('elastic')
+
+    # not possible with elastic
+    search = described_class.new(admin, isolated: true, engine: 'elastic')
+    expect(search.engine).to eq('active_record')
+
+    search = described_class.new(admin, name: 'mona', engine: 'elastic')
+    expect(search.engine).to eq('elastic')
+  end
+end
+
 RSpec.shared_examples 'a kor search' do
   it 'should raise an exception for unknown keys' do
     expect {
@@ -7,7 +30,7 @@ RSpec.shared_examples 'a kor search' do
     }.to raise_error(Kor::Exception), '[:some] is not a valid search key'
   end
 
-  it 'should search with the the permissions of a given user' do
+  it 'should search with the permissions of a given user' do
     search = described_class.new(jdoe)
     expect(search.total).to eq(5)
 
@@ -153,6 +176,14 @@ RSpec.shared_examples 'a kor search' do
     search = described_class.new(admin, uuid: 'invalid-id')
     expect(search.total).to eq(0)
   end
+
+  it 'should search by creator & updater' do
+    search = described_class.new(admin, created_by: admin.id)
+    expect(search.total).to eq(5)
+
+    search = described_class.new(admin, updated_by: mrossi.id)
+    expect(search.total).to eq(2)
+  end
 end
 
 RSpec.describe Kor::Search do
@@ -188,6 +219,14 @@ RSpec.describe Kor::Search do
 
       search = described_class.new(jdoe, user_group_id: nice.id)
       expect(search.total).to eq(1)
+    end
+
+    it 'should search by creator & updater' do
+      search = described_class.new(admin, created_by: admin.id)
+      expect(search.total).to eq(5)
+
+      search = described_class.new(admin, updated_by: mrossi.id)
+      expect(search.total).to eq(2)
     end
 
     it 'should search by isolated' do
@@ -236,22 +275,12 @@ RSpec.describe Kor::Search do
   end
 
   context 'with elasticsearch', elastic: true do
+    before :each do
+      allow_any_instance_of(Kor::Search).to receive(:preferred_engine).and_return('elastic')
+    end
+
     # do all of the above
     it_behaves_like 'a kor search'
-
-    it 'should search by name' do
-      search = described_class.new(admin, name: 'ar')
-      expect(search.total).to eq(0)
-
-      search = described_class.new(admin, name: '*ar*')
-      expect(search.total).to eq(2)
-
-      search = described_class.new(admin, name: 'léönärdö')
-      expect(search.total).to eq(1)
-
-      search = described_class.new(admin, name: 'léö*')
-      expect(search.total).to eq(1)
-    end
 
     it 'should search by terms' do
       search = described_class.new(admin, terms: 'mona')
@@ -301,6 +330,21 @@ RSpec.describe Kor::Search do
       expect(search.total).to eq(1)
 
       search = described_class.new(admin, terms: '*ller')
+      expect(search.total).to eq(1)
+    end
+
+    it 'should search by name' do
+      # we have to force elastic here since name: is s compat query
+      search = described_class.new(admin, name: 'ar')
+      expect(search.total).to eq(0)
+
+      search = described_class.new(admin, name: '*ar*')
+      expect(search.total).to eq(2)
+
+      search = described_class.new(admin, name: 'léönärdö')
+      expect(search.total).to eq(1)
+
+      search = described_class.new(admin, name: 'léö*')
       expect(search.total).to eq(1)
     end
 
