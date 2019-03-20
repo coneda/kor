@@ -200,52 +200,52 @@ de:
     other: Weitere
     help: Hilfe
     values:
-      default_locale: Standartsprache
-      default_home_page: Standartseite nach dem Login
+      default_locale: Standardsprache
+      default_home_page: Standardseite nach dem Login
       entities: Entitäten
       relationships: Verknüpfungen
       edit_own_content: Benutzern erlauben, ihre eigenen Inhalte zu bearbeiten
       legal_text: Text für die Nutzungsbedingungen
       about_text: Text für das Impressum
-      current_history_length: Anzahl der "neuen Entitäten"
-      max_file_upload_size: maximale Dateigröße bei Uploads [MB]"
+      max_file_upload_size: maximale Dateigröße bei Uploads [MB]
       max_foreground_group_download_size: |
         maximale Dateigröße für den Zip-Download von Gruppen im Vordergrund
-        [MB]. Darüber hinaus wird der Zip-Download im Hintegrund generiert und
+        [MB]. Darüber hinaus wird der Zip-Download im Hintergrund generiert und
         bei Fertigstellung erhält der Nutzer eine Benachrichtigung per E-Mail.
       max_results_per_request: maximale Anzahl von Resultaten pro Request
       max_included_results_per_result: |
-        maximale Anzahl einbezogener Objekte per Request
+        maximale Anzahl einbezogener Objekte pro Request
       sources_release: Source-Code Url der nächstgelegenen Release
       sources_pre_release: Source-Code der nächstgelegenen Beta-Release
-      sources_default: standart Source-Code Url
-      maintainer_mail: E-Mail Address des Betreibers
+      sources_default: standard Source-Code Url
+      maintainer_mail: E-Mail Addresse des Betreibers
       maintainer_name: Betreiber-Organisation
       primary_relationships: primäre Verkünfungen
       secondary_relationships: sekundäre Verkünfungen
       welcome_title: Titel der Willkommensseite
       welcome_text: Text der Willkommensseite
       session_lifetime: Frist für den Ablauf einer Nutzersitzung [in Sekunden]
-      publishment_lifetime: Lebensdauer von freigegeben Gruppen [in Tagen]
+      publishment_lifetime: Gültigkeit von "freigegeben Gruppen" [in Tagen]
       env_auth_button_label: |
-        Beschriftung für den Button zur Verbunds-Authentifierung
+        Beschriftung für den Button zur Verbunds-Authentifierung (um den Button
+        nicht anzuzeigen, lassen Sie das Feld leer)
       fail_on_update_errors: |
         Benutzer, die durch externe Authentifierungs-Mechanismen angelegt
         werden, müssen alle Validierungsregeln erfüllen
       custom_css_file: Pfad zu eigener CSS-Datei
       kind_dating_label: |
-        Standartbeschriftung von Datierungen für neue Entitätstypen
+        Standardbeschriftung von Datierungen für neue Entitätstypen
       kind_name_label: |
-        Standartbeschriftung des Entitätsnamens für neue Entitätstypen
+        Standardbeschriftung des Entitätsnamens für neue Entitätstypen
       kind_distinct_name_label: |
-        Standartbeschriftung des Zusatzes von Entitätsnamen für neue
+        Standardbeschriftung des Zusatzes von Entitätsnamen für neue
         Entitätstypen
       relationship_dating_label: |
-        Standartbeschriftung von Datierungen für neue Relationen
-      default_groups: für neue Benutzer automatisch diese Gruppen zuweisen
-      max_download_group_size: "maximum downloadable group size [MB]"
+        Standardbeschriftung von Datierungen für neue Relationen
+      default_groups: neue Benutzer automatisch diesen Gruppen zuweisen
+      max_download_group_size: Maximum der herunterladbaren Gruppengröße [MB]
       search_entity_name: |
-        Standartbeschriftung für den Entitätsnamen auf der Suchseite
+        Standardbeschriftung für den Entitätsnamen auf der Suchseite
       primary_relations: primäre Relationen
       secondary_relations: sekundäre Relationen
       repository_uuid: die generierte UUID für diese Installation ändern
@@ -255,7 +255,7 @@ de:
       help_upload: Hilfetext zum Datei-Upload
       help_login: Hilfetext zur Anmeldung
       help_profile: Hilfetext zum Profil
-      help_new_entries: Hilfetext zu 'neue Einträge'
+      help_new_entries: Hilfetext zu 'Neue Einträge'
       help_authority_groups: Hilfetext zu globalen Gruppen
       help_user_groups: Hilfetext zur benutzereigenen Gruppen
       help_clipboard: Hilfetext zur Zwischenablage

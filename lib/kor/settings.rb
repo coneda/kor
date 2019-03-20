@@ -119,7 +119,6 @@ module Kor
         'default_locale' => 'en',
         'welcome_title' => 'Welcome to ConedaKOR',
         'welcome_text' => 'This text can be configured in the settings',
-        'current_history_length' => 5,
         'max_foreground_group_download_size' => 10,
         'max_file_upload_size' => 100,
         'max_results_per_request' => 500,
@@ -185,7 +184,7 @@ module Kor
         @attributes['about_html'] = self.class.markdown(self['about_text'])
 
         integers = [
-          'current_history_length', 'max_results_per_request',
+          'max_results_per_request',
           'max_included_results_per_result', 'session_lifetime',
           'publishment_lifetime'
         ]

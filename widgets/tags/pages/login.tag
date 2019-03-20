@@ -10,10 +10,10 @@
         <p>{t('prompt.federation_login')}</p>
 
         <a href="/env_auth" class="kor-button">
-          {config()['auth']['env_auth_button_label']}
+          {config()['env_auth_button_label']}
         </a>
 
-        <div class="hr"></div>
+        <hr />
       </div>
 
       <form class="form" method="POST" action='#/login' onsubmit={submit}>
@@ -75,7 +75,8 @@
           wApp.routing.path '/search'
 
     tag.federationAuth = ->
-      tag.config().federation_auth
+      l = tag.config().env_auth_button_label
+      typeof l == 'string' && l.length > 0
 
   </script>
 </kor-login>
