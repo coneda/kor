@@ -138,6 +138,7 @@ function deploy_code {
   remote "mkdir $CURRENT_PATH"
   within_do $CURRENT_PATH "tar xzf ../../deploy.tar.gz"
   remote "echo $REVISION > $CURRENT_PATH/REVISION"
+  remote "echo $RUBY_VERSION > $CURRENT_PATH/.ruby-version"
   remote "rm $DEPLOY_TO/deploy.tar.gz"
   remote "ln -sfn $CURRENT_PATH $DEPLOY_TO/current"
 }

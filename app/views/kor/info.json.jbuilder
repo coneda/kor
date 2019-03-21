@@ -1,6 +1,7 @@
 json.info do
   json.product 'ConedaKOR'
   json.version Kor.version
+  json.revision Kor.commit
   json.operator Kor.settings['maintainer_name']
   json.email Kor.settings['maintainer_mail']
   # TODO: imeplement this:
