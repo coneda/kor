@@ -326,6 +326,7 @@
         success: (data) ->
           tag.data = data
           tag.title tag.data.display_name
+          wApp.entityHistory.add(data.id)
         error: ->
           wApp.bus.trigger('access-denied')
         complete: ->

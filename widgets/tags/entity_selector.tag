@@ -131,8 +131,9 @@
             )
         when 'visited'
           Zepto.ajax(
-            url: '/entities/recently_visited'
+            url: '/entities'
             data: {
+              id: wApp.entityHistory.ids()
               relation_name: tag.opts.relationName
               page: tag.page
               per_page: 9

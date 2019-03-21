@@ -30,3 +30,18 @@ Feature: History
     Then I should see "Access denied"
     When I follow "back"
     Then I should see "No entities found"
+
+  Scenario: use "recently visited" to select an entity
+  Given I am logged in as "admin"
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
+    And I go to the entity page for "Leonardo"
+    Then I should see "Leonardo"
+    And I go to the entity page for "The Last Supper"
+    Then I should see "The Last Supper"
+    And I follow "add relationship"
+    And I follow "recently visited"
+    And I should see "Mona Lisa" within widget "kor-entity-selector"
+    And I should see "Leonardo" within widget "kor-entity-selector"
+    And I should see "The Last Supper" within widget "kor-entity-selector"
+    And I should not see "Paris" within widget "kor-entity-selector"
