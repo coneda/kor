@@ -1,11 +1,9 @@
 <kor-pagination>
 
   <virtual if={isActive()}>
-    <input
-      type="submit"
-      value="{t('goto', {interpolations: {where: ''}})}"
-      onclick="inputChanged"
-    />
+    <button onclick={inputChanged}>
+      {t('goto', {interpolations: {where: ''}})}
+    </button>
     <span>{t('nouns.page')}</span>
     <a
       title={t('previous')}
