@@ -82,7 +82,7 @@ de:
 
   help:
     terms_query: |
-      Um nach Teilbegriffen zu seuchen, verwenden Sie * am Anfang oder Ende
+      Um nach Teilbegriffen zu suchen, verwenden Sie * am Anfang oder Ende
       (oder beides) des jeweiligen Begriffs:
       <code>*zone</code> oder <code>quali*</code> oder <code>*vita*</code>
       Begriffe werden standardmäßig per AND verknüpft, es sei denn, Sie geben
