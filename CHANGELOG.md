@@ -1,10 +1,11 @@
 # Changelog
 
-This log has first been created on version `1.9.1`. Also, only feature changes
+This log has first been created for version `1.9.1`. Also, only feature changes
 and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+<<<<<<< HEAD
 ## Version 4.0.0
 
 ### User
@@ -31,6 +32,10 @@ commit history on GitHub.
 * the web frontend is now fully migrated to riot.js.
 * db sessions and exception logs have been removed along with their respective
   command line maintenance tasks
+
+## Version 3.0.1
+
+This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.1+).
 
 ## Version 3.0.0
 

@@ -66,7 +66,6 @@ function tags {
 function app {
   log "concatenating app"
   uglifyjs tmp/widgets/vendor.js tmp/widgets/lib.js tmp/widgets/tags.js -b -o public/app-noboot.js
-  echo | cat public/app-noboot.js - widgets/boot.js > public/app.js
 }
 
 function css {
@@ -76,10 +75,11 @@ function css {
 
 function html {
   log "compiling html"
-  for TPL in widgets/*.html.ejs; do
-    local TARGET=$(echo $TPL | sed -E "s/\.ejs$//" | sed -E "s/^widgets\///")
-    widgets/build.js $TPL > public/$TARGET
-  done
+  # no templates for now
+  # for TPL in widgets/*.html.ejs; do
+  #   local TARGET=$(echo $TPL | sed -E "s/\.ejs$//" | sed -E "s/^widgets\///")
+  #   widgets/build.js $TPL > public/$TARGET
+  # done
 }
 
 function images {

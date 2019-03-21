@@ -237,7 +237,7 @@ GEM
     ruby-ole (1.2.12.1)
     ruby-progressbar (1.10.0)
     rubyzip (1.2.2)
-    safe_yaml (1.0.4)
+    safe_yaml (1.0.5)
     selenium-webdriver (3.141.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.2, >= 1.2.2)
