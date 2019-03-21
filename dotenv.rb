@@ -13,10 +13,13 @@ Dotenv.load(
 )
 
 required = [
-  'SECRET_KEY_BASE',
   'DATA_DIR',
   'DATABASE_URL',
-  'ROOT_URL'
+  'MAIL_DELIVERY_METHOD',
+  'MAIL_SENDMAIL_ARGUMENTS'
+  'MAIL_SENDMAIL_LOCATION',
+  'ROOT_URL',
+  'SECRET_KEY_BASE',
 ]
 
 required.each do |k|
