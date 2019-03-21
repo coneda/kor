@@ -32,7 +32,7 @@ Feature: History
     Then I should see "No entities found"
 
   Scenario: use "recently visited" to select an entity
-  Given I am logged in as "admin"
+    Given I am logged in as "admin"
     When I go to the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
     And I go to the entity page for "Leonardo"

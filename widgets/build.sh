@@ -75,11 +75,10 @@ function css {
 
 function html {
   log "compiling html"
-  # no templates for now
-  # for TPL in widgets/*.html.ejs; do
-  #   local TARGET=$(echo $TPL | sed -E "s/\.ejs$//" | sed -E "s/^widgets\///")
-  #   widgets/build.js $TPL > public/$TARGET
-  # done
+  for TPL in widgets/*.html.ejs; do
+    local TARGET=$(echo $TPL | sed -E "s/\.ejs$//" | sed -E "s/^widgets\///")
+    widgets/build.js $TPL > public/$TARGET
+  done
 }
 
 function images {
