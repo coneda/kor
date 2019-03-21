@@ -162,7 +162,6 @@
         )
       )
 
-
     expiresAtTag = ->
       for f in tag.refs.fields
         return f if f.name() == 'expires_at'
