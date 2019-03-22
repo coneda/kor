@@ -136,15 +136,6 @@
           ref="fields"
         />
 
-
-        <kor-input
-          name="current_history_length"
-          label={nameFor('current_history_length')}
-          type="number"
-          riot-value={valueWithDefaults('current_history_length')}
-          ref="fields"
-        />
-
         <kor-input
           name="max_foreground_group_download_size"
           label={nameFor('max_foreground_group_download_size')}

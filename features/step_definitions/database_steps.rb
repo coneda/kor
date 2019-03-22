@@ -377,3 +377,7 @@ Then("user {string} should not expire") do |name|
   user = User.find_by(name: name)
   expect(user.expires_at).to be_nil
 end
+
+Given("the setting {string} is {string}") do |key, value|
+  Kor.settings.update key => value
+end

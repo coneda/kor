@@ -191,7 +191,7 @@
     var fetch = function() {
       tag.criteria = urlParams();
       if (tag.criteria['kind_id']) {
-        fetchKind(2);
+        fetchKind(tag.criteria['kind_id']);
       }
 
       var params = Zepto.extend({}, tag.criteria, {

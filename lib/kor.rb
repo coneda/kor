@@ -8,7 +8,7 @@ module Kor
   end
 
   def self.commit
-    File.read "#{Rails.root}/REVISION"
+    File.read("#{Rails.root}/REVISION").strip
   rescue Errno::ENOENT
     nil
   end

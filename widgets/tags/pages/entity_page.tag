@@ -338,6 +338,7 @@
           tag.data = data
           tag.title tag.data.display_name
           linkify_properties()
+          wApp.entityHistory.add(data.id)
         error: ->
           wApp.bus.trigger('access-denied')
         complete: ->

@@ -14,3 +14,13 @@ Feature: Config
     And I press "Save"
     Then I should see "has been changed"
     And the config value "maintainer_mail" should be "me@example.com"
+
+  Scenario: Show federation auth button if a label is configured
+    Given the setting "env_auth_button_label" is "fed login"
+    When I go to the login page
+    Then I should see link "fed login"
+
+  Scenario: Show federation auth button if a label is configured
+    Given the setting "env_auth_button_label" is ""
+    When I go to the login page
+    Then I should not see link "federated login"

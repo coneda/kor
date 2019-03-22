@@ -41,6 +41,7 @@ window.wApp = {
   baseUrl: $('script[kor-url]').attr('kor-url') || ''
   setup: ->
     wApp.clipboard.setup()
+    wApp.entityHistory.setup()
 
     return [
       wApp.config.setup()

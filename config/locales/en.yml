@@ -211,7 +211,6 @@ en:
       edit_own_content: "Allow users to edit their own content"
       legal_text: text for terms of use
       about_text: text for imprint
-      current_history_length: number of recent entities
       max_file_upload_size: "maximum file size for uploads [MB]"
       max_foreground_group_download_size: "maximum download size for foreground groups [MB]"
       max_results_per_request: "maxium number of results per request"
@@ -231,7 +230,7 @@ en:
       welcome_text: "text of welcome page"
       session_lifetime: "session lifetime [seconds]"
       publishment_lifetime: "publishments lifetime [days]"
-      env_auth_button_label: "label for federated login button"
+      env_auth_button_label: "label for federated login button (leave empty to hide button)"
       fail_on_update_errors: "users created/updated by auth sources must pass validations"
       custom_css_file: "path to a custom css file"
       kind_dating_label: "default dating label for new kinds"

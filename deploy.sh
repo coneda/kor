@@ -38,6 +38,7 @@ function deploy {
 
   remote "ln -sfn $SHARED_PATH/log $CURRENT_PATH/log"
   remote "ln -sfn $SHARED_PATH/tmp $CURRENT_PATH/tmp"
+  remote "ln -sfn $SHARED_PATH/env $CURRENT_PATH/.env"
 
   if dbexists; then
     within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake db:migrate"
@@ -54,6 +55,7 @@ function deploy {
     upload "public/*.css" "$CURRENT_PATH/public/"
     upload "public/fonts/" "$CURRENT_PATH/public/fonts/"
     upload "public/images/" "$CURRENT_PATH/public/images/"
+    upload "public/index.html" "$CURRENT_PATH/public/index.html"
   fi
 
   remote "touch $CURRENT_PATH/tmp/restart.txt"
@@ -138,6 +140,7 @@ function deploy_code {
   remote "mkdir $CURRENT_PATH"
   within_do $CURRENT_PATH "tar xzf ../../deploy.tar.gz"
   remote "echo $REVISION > $CURRENT_PATH/REVISION"
+  remote "echo $RUBY_VERSION > $CURRENT_PATH/.ruby-version"
   remote "rm $DEPLOY_TO/deploy.tar.gz"
   remote "ln -sfn $CURRENT_PATH $DEPLOY_TO/current"
 }
