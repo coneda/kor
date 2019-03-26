@@ -117,7 +117,8 @@
       p.done (data) ->
         tag.errors = {}
         window.history.back()
-        riot.update() # so locale changes take effect
+        wApp.bus.trigger 'reload-session'
+        # riot.update() # so locale changes take effect
       p.fail (xhr) ->
         tag.errors = JSON.parse(xhr.responseText).errors
         wApp.utils.scrollToTop()
