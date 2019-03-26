@@ -36,7 +36,7 @@ Feature: search
       | dating         | 1988     |
       | property       | 32       |
       | related        | some     |
-    When I fill in "Terms" with "leonardo"
+    When I fill in "Everywhere" with "leonardo"
     And I fill in "Name" with "mona"
     And I fill in "GND-ID" with "12345"
     And I fill in "Tags" with "free"
@@ -52,6 +52,6 @@ Feature: search
     And I am on the search page
     Then I should see "Search"
     When I select "person" from "Entity type"
-    Then I should not see field "Terms"
+    Then I should not see field "Everywhere"
     And I should not see field "GND-ID"
     And I should not see field "Properties"
