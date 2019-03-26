@@ -78,6 +78,7 @@ en:
   edit_tags: edit tags
   show_json: show JSON
   show_oai_pmh: show OAI-PMH
+  all_fields: everywhere
 
   help:
     terms_query: |
@@ -98,6 +99,10 @@ en:
         rel="noopener"
       >elasticsearch
       query string syntax</a>
+    name_query: |
+      To search for parts of a word, add * to the beginning or end of the term:
+      <code>*zone</code> or <code>quali*</code> or <code>*vita*</code>
+
 
   search_term:
     one: search term

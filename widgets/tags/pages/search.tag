@@ -24,7 +24,7 @@
         <kor-input
           if={elastic()}
           name="terms"
-          label={tcap('nouns.term', {count: 'other'})}
+          label={tcap('all_fields')}
           value={criteria.terms}
           ref="fields"
           help={tcap('help.terms_query')}
@@ -35,6 +35,7 @@
           label={tcap('activerecord.attributes.entity.name')}
           value={criteria.name}
           ref="fields"
+          help={tcap('help.name_query')}
         />
 
         <kor-input

@@ -79,6 +79,7 @@ de:
   edit_tags: tags bearbeiten
   show_json: JSON anzeigen
   show_oai_pmh: OAI-PMH anzeigen
+  all_fields: alle Felder
 
   help:
     terms_query: |
@@ -100,6 +101,10 @@ de:
         target="_blank"
         rel="noopener"
       >elasticsearch query string syntax</a> zur Verfügung.
+    name_query: |
+      Um nach Teilbegriffen zu suchen, verwenden Sie * am Anfang oder Ende
+      (oder beides) des jeweiligen Begriffs:
+      <code>*zone</code> oder <code>quali*</code> oder <code>*vita*</code>
 
   search_term: 
     one: Suchbegriff
