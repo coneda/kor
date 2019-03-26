@@ -13,8 +13,6 @@
         <kor-input
           label={tcap('activerecord.attributes.authority_group.name')}
           name="name"
-          ref="fields"
-          value={data.name}
           errors={errors.name}
         />
 
@@ -25,8 +23,6 @@
           type="select"
           options={categories}
           placeholder=""
-          ref="fields"
-          value={data.parent_id || opts.parentId}
           errors={errors.parent_id}
         />
 

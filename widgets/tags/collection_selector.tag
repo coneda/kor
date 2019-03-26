@@ -20,8 +20,8 @@
 
       <virtual if={opts.multiple}>
         <label>{tcap('activerecord.models.collection', {count: 'other'})}:</label>
-        <strong if={ids.length == 0}>{t('all')}</strong>
-        <strong if={ids.length > 0}>{selectedList()}</strong>
+        <strong if={!ids || ids.length == 0}>{t('all')}</strong>
+        <strong if={ids && ids.length > 0}>{selectedList()}</strong>
         <a
           href="#"
           onclick={selectCollections}
@@ -36,17 +36,17 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 
-    tag.on('before-mount', function() {
-      tag.ids = tag.opts.riotValue || [];
-    })
+    // tag.on('before-mount', function() {
+    //   tag.ids = tag.opts.riotValue || [];
+    // })
 
     tag.on('mount', function() {
       fetch();
     })
 
-    tag.on('update', function() {
-      tag.ids = tag.opts.riotValue || [];
-    })
+    // tag.on('update', function() {
+      // tag.ids = tag.opts.riotValue || [];
+    // })
 
     tag.name = function() {
       return tag.opts.name;
@@ -66,6 +66,15 @@
           return tag.refs['input'].value();
         }
       }
+    }
+
+    tag.set = function(value) {
+      tag.ids = value || [];
+      tag.update();
+    }
+
+    tag.reset = function() {
+      tag.set([]);
     }
 
     tag.selectCollections = function(event) {

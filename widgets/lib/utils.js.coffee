@@ -47,15 +47,15 @@ wApp.utils = {
     return null unless obj
     obj = obj.split(',') unless Zepto.isArray(obj)
     parseInt(o) for o in obj
-  formParams: (tags) ->
-    results = {page: 1}
-    for f in tags
-      v = f.value()
-      if v == '' || v == [] || v == undefined
-        results[f.name()] = null
-      else
-        results[f.name()] = v
-    results
+  # formParams: (tags) ->
+  #   results = {page: 1}
+  #   for f in tags
+  #     v = f.value()
+  #     if v == '' || v == [] || v == undefined
+  #       results[f.name()] = null
+  #     else
+  #       results[f.name()] = v
+  #   results
   listToArray: (value) ->
     return null unless value
     for v in value.split(',')

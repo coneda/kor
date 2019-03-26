@@ -3,11 +3,11 @@
     <div class="kor-content-box">
       <h1>{tcap('nouns.new_entity', {count: 'other'})}</h1>
 
-      <form if={criteria} onchange={submit} onsubmit={submit}>
+
+      <form onchange={submit} onsubmit={submit}>
         <kor-collection-selector
           name="collection_id"
           multiple={true}
-          value={criteria.collection_id}
           policy="view"
           ref="fields"
         />
@@ -15,16 +15,13 @@
         <kor-kind-selector
           name="kind_id"
           include-media={true}
-          value={criteria.kind_id}
           ref="fields"
         />
 
         <kor-input
           label={tcap('activerecord.attributes.entity.created_at')}
           name="created_after"
-          riot-value={criteria.created_after}
           placeholder={t('from')}
-          ref="fields"
           help={tcap('help.date_input')}
         />
 
@@ -32,17 +29,13 @@
           label={tcap('activerecord.attributes.entity.created_at')}
           hide-label={true}
           name="created_before"
-          riot-value={criteria.created_before}
           placeholder={t('to')}
-          ref="fields"
         />
 
         <kor-input
           label={tcap('activerecord.attributes.entity.updated_at')}
           name="updated_after"
-          riot-value={criteria.updated_after}
           placeholder={t('from')}
-          ref="fields"
           help={tcap('help.date_input')}
         />
 
@@ -50,22 +43,18 @@
           label={tcap('activerecord.attributes.entity.updated_at')}
           hide-label={true}
           name="updated_before"
-          riot-value={criteria.updated_before}
           placeholder={t('to')}
-          ref="fields"
         />
 
         <kor-user-selector
           label={tcap('activerecord.attributes.entity.creator')}
           name="created_by"
-          riot-value={criteria.created_by}
           ref="fields"
         />
 
         <kor-user-selector
           label={tcap('activerecord.attributes.entity.updater')}
           name="updated_by"
-          riot-value={criteria.updated_by}
           ref="fields"
         />
       </form>
@@ -146,31 +135,41 @@
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
     tag.mixin(wApp.mixins.page);
+    tag.mixin(wApp.mixins.form);
 
-    tag.on('before-mount', function() {
-      set();
-    })
+    window.t = tag;
+
+    // tag.on('before-mount', function() {
+    //   set();
+    // })
 
     tag.on('mount', function() {
       if (tag.allowedTo('edit')) {
-        fetch()
-        tag.on('routing:query', fetch);
         tag.title(tag.t('pages.recent_entities'));
+        tag.setValues(query());
+        fetch();
       } else {
         wApp.bus.trigger('access-denied');
       }
+
+      tag.on('routing:query', queryUpdate);
     })
 
-    // tag.pageUpdate = function(newPage) {
-    //   queryUpdate({page: newPage});
-    // }
+    tag.on('unmount', function() {
+      tag.off('routing:query', queryUpdate);
+    })
+
+    var queryUpdate = function() {
+      tag.setValues(query());
+      fetch();
+    }
+
+    tag.pageUpdate = function(newPage) {
+      wApp.routing.query({page: newPage});
+    }
 
     tag.submit = function(event) {
       wApp.routing.query(formParams());
-    }
-
-    var set = function() {
-      tag.criteria = query();
     }
 
     var defaultParams = function() {
@@ -183,7 +182,7 @@
     }
       
     var formParams = function() {
-      var results = wApp.utils.formParams(tag.refs.fields);
+      var results = tag.values();
       results['collection_id'] = wApp.utils.arrayToList(results['collection_id']);
       return results;
     }
@@ -199,7 +198,7 @@
     }
 
     var fetch = function() {
-      set();
+      // set();
 
       Zepto.ajax({
         url: '/entities',

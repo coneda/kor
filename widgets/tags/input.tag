@@ -1,5 +1,5 @@
 <kor-input class="{'has-errors': opts.errors}">
-  <label if={opts.type != 'radio'}>
+  <label if={opts.type != 'radio' && opts.type != 'submit'}>
     <span show={!opts.hideLabel}>{opts.label}</span>
     <a
       if={opts.help}
@@ -10,8 +10,6 @@
       if={opts.type != 'select' && opts.type != 'textarea'}
       type={opts.type || 'text'}
       name={opts.name}
-      value={valueFromParent()}
-      checked={checkedFromParent()}
       placeholder={opts.placeholder}
     />
     <textarea
@@ -22,7 +20,6 @@
     <select
       if={opts.type == 'select'}
       name={opts.name}
-      value={valueFromParent()}
       multiple={opts.multiple}
       disabled={opts.isDisabled}
     >
@@ -30,10 +27,14 @@
       <option
         each={item in opts.options}
         value={item.id || item.value || item}
-        selected={selected(item)}
       >{item.name || item.label || item}</option>
     </select>
   </label>
+  <input
+    if={opts.type == 'submit'}
+    type="submit"
+    value={opts.riotValue}
+  />
   <virtual if={opts.type == 'radio'}>
     <label>{opts.label}</label>
     <label class="radio" each={item in opts.options}>
@@ -68,34 +69,46 @@
         for input in Zepto(tag.root).find('input')
           if (i = $(input)).prop('checked')
             return i.attr('value')
+      else if tag.opts.type == 'submit'
+        null
       else
         result = Zepto(tag.root).find('input, select, textarea').val()
         if result == "0" && tag.opts.type == 'select'
           undefined
         else
           result
-    tag.valueFromParent = ->
-      if tag.opts.type == 'checkbox' then 1 else tag.opts.riotValue
-    tag.checkedFromParent = ->
-      tag.opts.type == 'checkbox' && tag.opts.riotValue
+    # tag.valueFromParent = ->
+    #   if tag.opts.type == 'checkbox' then 1 else tag.opts.riotValue
+    # tag.checkedFromParent = ->
+    #   tag.opts.type == 'checkbox' && tag.opts.riotValue
     tag.checked = ->
       tag.opts.type == 'checkbox' &&
       Zepto(tag.root).find('input').prop('checked')
     tag.set = (value) ->
       if tag.opts.type == 'checkbox'
         Zepto(tag.root).find('input').prop('checked', !!value)
+      else if tag.opts.type == 'radio'
+        for input in e.find('input')
+          if (i = $(input)).attr('value') == value
+            i.prop('checked', true)
+          else
+            i.prop('checked', false)
+      else if tag.opts.type == 'submit'
+        # do nothing
       else
         Zepto(tag.root).find('input, select, textarea').val(value)
     tag.reset = ->
-      tag.set tag.valueFromParent()
-    tag.selected = (item) ->
-      v = item.id || item.value || item
-      if tag.opts.multiple
-        (tag.valueFromParent() || []).indexOf(v) > -1
-      else
-        "#{v}" == "#{tag.valueFromParent()}"
+      tag.set null
+      # tag.set tag.valueFromParent()
+    # tag.selected = (item) ->
+    #   v = item.id || item.value || item
+    #   if tag.opts.multiple
+    #     (tag.valueFromParent() || []).indexOf(v) > -1
+    #   else
+    #     "#{v}" == "#{tag.valueFromParent()}"
 
     tag.toggleHelp = (event) ->
+      event.preventDefault()
       tag.showHelp = !tag.showHelp
       tag.update()
       Zepto(tag.refs.help).html(tag.opts.help) if tag.showHelp

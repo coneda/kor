@@ -9,46 +9,36 @@
         <kor-collection-selector
           name="collection_id"
           multiple={true}
-          value={criteria.collection_id}
           policy="view"
           ref="fields"
         />
 
         <kor-kind-selector
           name="kind_id"
-          value={criteria.kind_id}
-          ref="fields"
           onchange={selectKind}
+          ref="fields"
         />
 
         <kor-input
           if={elastic()}
           name="terms"
           label={tcap('nouns.term', {count: 'other'})}
-          value={criteria.terms}
-          ref="fields"
           help={tcap('help.terms_query')}
         />
 
         <kor-input
           name="name"
           label={tcap('activerecord.attributes.entity.name')}
-          value={criteria.name}
-          ref="fields"
         />
 
         <kor-input
           name="tags"
           label={tcap('nouns.tag', {count: 'other'})}
-          value={criteria.tags}
-          ref="fields"
         />
 
         <kor-input
           name="dating"
           label={tcap('activerecord.models.entity_dating')}
-          value={criteria.dating}
-          ref="fields"
         />
 
         <virtual if={elastic()}>
@@ -59,7 +49,6 @@
               each={field in kind.fields}
               label={field.search_label}
               name="dataset_{field.name}"
-              value={criteria['dataset_' + field.name]}
               ref="fields"
             />
           </virtual>
@@ -69,20 +58,19 @@
           <kor-input
             name="property"
             label={tcap('activerecord.attributes.entity.properties')}
-            value={criteria.property}
-            ref="fields"
           />
 
           <kor-input
             name="related"
             label={tcap('by_related_entities')}
-            value={criteria.related}
-            ref="fields"
           />
         </virtual>
 
         <div class="kor-text-right">
-          <kor-input type="submit" value={tcap('verbs.search')} />
+          <kor-input
+            type="submit"
+            riot-value={tcap('verbs.search')}
+          />
         </div>
       </form>
     </div>
@@ -107,6 +95,13 @@
         each={entity in data.records}
         entity={entity}
       />
+
+      <kor-pagination
+        page={data.page}
+        per-page={data.per_page}
+        total={data.total}
+        on-paginate={page}
+      />
     </div>
   </div>
 
@@ -117,24 +112,27 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.page);
-
-    tag.on('before-mount', function() {
-      tag.criteria = urlParams();
-    })
+    tag.mixin(wApp.mixins.form);
 
     tag.on('mount', function() {
-      tag.title(tag.t('nouns.search'))
-      fetch()
-      tag.on('routing:query', fetch)
+      tag.title(tag.t('nouns.search'));
+
+      queryUpdate();
+      tag.on('routing:query', queryUpdate);
     })
 
     tag.on('unmount', function() {
-      tag.off('routing:query', fetch)
+      tag.off('routing:query', queryUpdate);
     })
+
+    var queryUpdate = function() {
+      tag.setValues(urlParams());
+      fetch();
+    }
 
     tag.submit = function(event) {
       event.preventDefault();
-      wApp.routing.query(params(), true);
+      wApp.routing.query(formParams(), true);
     }
 
     tag.page = function(newPage) {
@@ -145,6 +143,7 @@
       var id = Zepto(event.target).val();
       if (id && id != '0') {
         fetchKind(id);
+        wApp.routing.query({kind_id: id});
       } else {
         tag.kind = null;
         tag.update();
@@ -155,26 +154,30 @@
       return wApp.info.data.elastic
     }
 
-    var params = function() {
-      var results = {page: 1};
-      for (var i = 0; i < tag.refs.fields.length; i++) {
-        var f = tag.refs.fields[i];
-        var v = f.value();
-        if (v != '' && v != [] && v != undefined) {
-          if (Zepto.isArray(v)) {
-            results[f.name()] = v.join(',');
-          } else {
-            results[f.name()] = v;
-          }
-        }
+    var defaultParams = function() {
+      return {
+        except_kind_id: wApp.info.data.medium_kind_id,
+        per_page: 10,
+        include: 'related',
+        related_kind_id: wApp.info.data.medium_kind_id,
+        related_per_page: 4
       }
+    }
+      
+    var formParams = function() {
+      var results = tag.values();
+      results['collection_id'] = wApp.utils.arrayToList(results['collection_id']);
       return results;
     }
 
     var urlParams = function() {
       var results = wApp.routing.query();
-      results['collection_id'] = wApp.utils.toIdArray(results['collection_id']);
+      results['collection_id'] = wApp.utils.listToArray(results['collection_id']);
       return results;
+    }
+
+    var query = function() {
+      return Zepto.extend(defaultParams(), urlParams());
     }
 
     var fetchKind = function(id) {
@@ -184,26 +187,22 @@
         success: function(data) {
           tag.kind = data;
           tag.update();
+          tag.setValues(urlParams());
         }
       })
     }
 
     var fetch = function() {
-      tag.criteria = urlParams();
-      if (tag.criteria['kind_id']) {
-        fetchKind(tag.criteria['kind_id']);
+      var kind_id = urlParams()['kind_id'];
+      if (kind_id) {
+        fetchKind(kind_id);
       }
 
-      var params = Zepto.extend({}, tag.criteria, {
-        except_kind_id: wApp.info.data.medium_kind_id,
-        include: 'related',
-        related_kind_id: wApp.info.data.medium_kind_id,
-        related_per_page: 4
-      });
+      console.log(query());
 
       Zepto.ajax({
         url: '/entities',
-        data: params,
+        data: query(),
         success: function(data) {
           tag.data = data;
           tag.update();

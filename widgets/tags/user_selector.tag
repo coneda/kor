@@ -12,8 +12,8 @@
     tag.mixin(wApp.mixins.i18n);
 
     tag.on('mount', function() {
-      tag.user_id = tag.opts.riotValue;
-      fetch();
+      // tag.user_id = tag.opts.riotValue;
+      // fetch();
 
       input().on('keydown', function(event) {
         var newValue = tag.refs.input.value();
@@ -35,17 +35,17 @@
     tag.on('update', function() {
       // we have to do this here because recalculating the select options
       // creates the options only during an update
-      var newUserId = tag.opts.riotValue;
-      if (tag.user_id != newUserId) {
-        tag.user_id = newUserId;
-        fetch();
-      }
+      // var newUserId = tag.opts.riotValue;
+      // if (tag.user_id != newUserId) {
+      //   tag.user_id = newUserId;
+      //   fetch();
+      // }
     })
 
     tag.on('updated', function() {
       input().tinyAutocomplete({
         method: 'get',
-        url: 'http://localhost:3000/users',
+        url: '/users',
         queryProperty: 'terms',
         grouped: false,
         itemTemplate: '<li class="autocomplete-item">{{full_name}}</li>',
@@ -91,7 +91,7 @@
         success: function(data) {
           tag.refs.input.set(data.display_name);
           tag.old_field_value = data.display_name;
-          tag.update();
+          // tag.update();
         },
         error: function(xhr) {
           tag.refs.input.set('');

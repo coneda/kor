@@ -12,8 +12,6 @@
         <kor-input
           label={tcap('activerecord.attributes.authority_group.name')}
           name="name"
-          ref="fields"
-          value={data.name}
           errors={errors.name}
         />
 
@@ -24,8 +22,7 @@
           type="select"
           options={categories}
           placeholder=""
-          ref="fields"
-          value={data.authority_group_category_id}
+          ref="category_id"
           errors={errors.authority_group_category_id}
         />
 
@@ -47,6 +44,7 @@
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
     tag.mixin(wApp.mixins.page)
+    tag.mixin(wApp.mixins.form)
 
     tag.on 'before-mount', ->
       tag.errors = {}
@@ -59,15 +57,14 @@
     tag.on 'mount', ->
       if tag.opts.id
         fetch()
-      else
-        tag.data.authority_group_category_id = tag.opts.categoryId
 
     tag.submit = (event) ->
       event.preventDefault()
       p = (if tag.opts.id then update() else create())
       p.done (data) ->
         tag.errors = {}
-        if id = values()['authority_group_category_id']
+        console.log(tag.values())
+        if id = tag.values()['authority_group_category_id']
           wApp.routing.path('/groups/categories/' + id)
         else
           wApp.routing.path('/groups/categories')
@@ -82,6 +79,7 @@
         success: (data) ->
           tag.data = data
           tag.update()
+          tag.setValues(data)
       )
 
     fetchCategories = ->
@@ -99,27 +97,28 @@
             )
           tag.categories = results
           tag.update()
+          tag.refs.category_id.set(tag.opts.categoryId);
       )
 
     create = ->
       Zepto.ajax(
         type: 'POST'
         url: '/authority_groups'
-        data: JSON.stringify(authority_group: values())
+        data: JSON.stringify(authority_group: tag.values())
       )
 
     update = ->
       Zepto.ajax(
         type: 'PATCH'
         url: "/authority_groups/#{tag.opts.id}"
-        data: JSON.stringify(authority_group: values())
+        data: JSON.stringify(authority_group: tag.values())
       )
 
-    values = ->
-      results = {}
-      for f in wApp.utils.toArray(tag.refs.fields)
-        results[f.name()] = f.value()
-      results
+    # values = ->
+    #   results = {}
+    #   for f in wApp.utils.toArray(tag.refs.fields)
+    #     results[f.name()] = f.value()
+    #   results
 
   </script>
 </kor-admin-group-editor>

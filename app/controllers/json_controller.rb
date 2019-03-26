@@ -25,6 +25,7 @@ class JsonController < BaseController
     end
 
     def render_created(record)
+      @id = record.id
       render_200 I18n.t('objects.create_success', o: name_for(record))
     end
 

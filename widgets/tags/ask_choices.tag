@@ -19,7 +19,6 @@
       <kor-input
         label={choice.name || choice.label}
         name={choice.id || choice.value}
-        value={isChecked(choice)}
         type="checkbox"
         ref="choices"
       />
@@ -40,9 +39,17 @@
     tag.mixin(wApp.mixins.i18n);
 
     tag.on('before-mount', function() {
-      // console.log(tag.opts);
-      fromOpts();
+      tag.set(tag.opts.riotValue || []);
     })
+
+    tag.one('updated', function() {
+      tag.set(tag.opts.riotValue || []);
+    })
+
+    tag.on('mount', function() {
+      tag.update();
+    })
+
 
     tag.ok = function(event) {
       var results = tag.value();
@@ -91,14 +98,14 @@
       }
     }
 
-    tag.isChecked = function(choice) {
-      // console.log(tag.ids, choice);
-      return tag.ids.indexOf(choice.id || choice.value) > -1
-    }
-
-    var fromOpts = function() {
-      // console.log(tag.opts);
-      tag.ids = tag.opts.riotValue || [];
+    tag.set = function(values) {
+      tag.ids = values;
+      var choices = tag.refs['choices'] || [];
+      for (var i = 0; i < choices.length; i++) {
+        var c = choices[i];
+        var v = (tag.ids.indexOf(c.name()) != -1);
+        c.set(v);
+      }
     }
   </script>
 
