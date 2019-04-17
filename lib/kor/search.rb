@@ -121,7 +121,7 @@ class Kor::Search
 
   # use elastic only if we have to
   def engine
-    if Kor::Elastic.enabled? && (keys && elastic_keys).size > 0
+    if Kor::Elastic.enabled? && (keys & elastic_keys).size > 0
       :elastic
     else
       :active_record

@@ -4,7 +4,7 @@
     href="#"
     onclick={click}
     title={t('nouns.help')}
-  ><i class="help"></i></a>
+  ><i class="fa fa-question-circle fa-2x"></i></a>
 
   <script type="text/javascript">
     var tag = this;

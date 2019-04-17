@@ -18,8 +18,8 @@
       class="toggle"
       href="#"
     >
-      <i show={!expanded} class="triangle_up"></i>
-      <i show={expanded} class="triangle_down"></i>
+      <i show={!expanded} class="fa fa-chevron-up"></i>
+      <i show={expanded} class="fa fa-chevron-down"></i>
     </a>
 
     <div class="clearfix"></div>

@@ -66,7 +66,7 @@
       </ul>
 
       <form class="inline" onsubmit={submit}>
-        <div class="text-right">
+        <div class="kor-text-right">
           <kor-input
             type="submit"
             value={tcap('verbs.upload')}

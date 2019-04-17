@@ -104,6 +104,14 @@ button:hover {
   background-color: $kor-button-highlight;
 }
 
+i {
+  margin-left: 5px;
+}
+
+i:last-child {
+  margin-right: 0px;
+}
+
 [data-is=w-app] {
   padding: 2rem;
 
@@ -118,7 +126,7 @@ button:hover {
     kor-help-button {
       display: block;
       position: absolute;
-      top: -4px;
+      top: -2px;
       right: -40px;
     }
   }
@@ -152,8 +160,10 @@ kor-entity {
     position: relative;
 
     kor-clipboard-control {
+      font-size: 14px;
       display: block;
       text-align: right;
+      margin-bottom: 1rem;
     }
 
     a {
@@ -238,8 +248,6 @@ kor-login-info {
 kor-pagination, [data-is=kor-pagination] {
   display: block;
   text-align: right;
-  margin-top: -0.5rem;
-  margin-bottom: -3px;
 
   a {
     position: relative;
@@ -254,6 +262,13 @@ kor-pagination, [data-is=kor-pagination] {
     margin-top: -1rem;
     position: relative;
     top: 0.4rem;
+  }
+
+  i {
+    position: relative;
+    top: -4px;
+    margin-left: 3px;
+    margin-right: 3px;
   }
 }
 
@@ -317,6 +332,11 @@ kor-relation, [data-is=kor-relation] {
   display: block;
   margin-bottom: 2rem;
 
+  i {
+    position: relative;
+    top: -3px;
+  }
+
   .name {
     margin-bottom: 1rem;
   }
@@ -356,6 +376,11 @@ kor-relationship, [data-is=kor-relationship] {
   display: block;
   margin-bottom: 0.2rem;
 
+  i {
+    position: relative;
+    top: -3px;
+  }
+
   .part {
     padding: 1rem;
     background-color: $kor-bg-2;
@@ -388,7 +413,6 @@ kor-relationship, [data-is=kor-relationship] {
     tr:last-child {
       td {border-bottom: none;}
     }
-
   }
 }
 
@@ -500,6 +524,10 @@ kor-generators {
   text-align: right;
 }
 
+.kor-glow {
+  text-shadow: 0px 0px 5px white;
+}
+
 .kor-loading-screen {
   margin: 0px auto;
   text-align: center;
@@ -566,6 +594,8 @@ kor-search-result {
   kor-clipboard-control {
     display: block;
     float: left;
+    margin-top: 0.1rem;
+    margin-left: 1rem;
   }
 
   div.labels {
@@ -644,10 +674,6 @@ kor-upload, [data-is='kor-upload'] {
       margin-bottom: 0.5em;
     }
   }
-
-  .text-right {
-    text-align: right;
-  }
 }
 
 kor-relations, [data-is=kor-relations] {
@@ -703,6 +729,12 @@ kor-entity-page, [data-is=kor-entity-page] {
 
     .commands {
       text-align: center;
+    }
+  }
+
+  .kor-api-links {
+    i {
+      margin-right: 5px;
     }
   }
 }

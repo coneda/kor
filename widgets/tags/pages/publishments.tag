@@ -5,7 +5,7 @@
       href="#/groups/published/new"
       class="pull-right"
       title={t('objects.new', {interpolations: {o: t('activerecord.models.publishment')}})}
-    ><i class="plus"></i></a>
+    ><i class="fa fa-plus-square"></i></a>
     <h1>{tcap('activerecord.models.publishment', {count: 'other'})}</h1>
 
     <kor-nothing-found data={data} type="entity" />
@@ -34,12 +34,12 @@
               href="#"
               title={t('verbs.extend')}
               onclick={onExtendClicked}
-            ><i class="stop_watch"></i></a>
+            ><i class="fa fa-clock-o"></i></a>
             <a
               href="#/groups/user/{user_group_id}/destroy"
               onclick={onDeleteClicked}
               title={t('verbs.delete')}
-            ><i class="x"></i></a>
+            ><i class="fa fa-trash"></i></a>
           </td>
         </tr>
       </tbody>

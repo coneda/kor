@@ -7,8 +7,7 @@
     class="to-clipboard"
     title={t('add_to_clipboard')}
   >
-    <i class="target_hit" show={isIncluded()}></i>
-    <i class="target" show={!isIncluded()}></i>
+    <i class="fa fa-clipboard {kor-glow: isIncluded()}"></i>
   </a>
 
   <script type="text/coffee">

@@ -9,12 +9,12 @@
             href="#"
             onclick={edit}
             title={t('objects.edit', {interpolations: {o: 'activerecord.models.relationship'}})}
-          ><i class="pen"></i></a>
+          ><i class="fa fa-pencil"></i></a>
           <a
             href="#"
             onclick={delete}
             title={t('objects.delete', {interpolations: {o: 'activerecord.models.relationship'}})}
-          ><i class="x"></i></a>
+          ><i class="fa fa-trash"></i></a>
         </virtual>
       </div>
 
@@ -30,8 +30,8 @@
         class="toggle"
         href="#"
       >
-        <i show={!expanded} class="triangle_up"></i>
-        <i show={expanded} class="triangle_down"></i>
+        <i show={!expanded} class="fa fa-chevron-up"></i>
+        <i show={expanded} class="fa fa-chevron-down"></i>
       </a>
 
       <virtual if={relationship.properties.length > 0}>

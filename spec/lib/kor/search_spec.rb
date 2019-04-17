@@ -241,15 +241,18 @@ RSpec.describe Kor::Search do
 
     it 'should search by name' do
       search = described_class.new(admin, name: 'ar')
-      expect(search.total).to eq(0)
+      expect(search.total).to eq(2)
 
       search = described_class.new(admin, name: '*ar*')
-      expect(search.total).to eq(2)
+      expect(search.total).to eq(0)
 
       search = described_class.new(admin, name: 'léönärdö')
       expect(search.total).to eq(1)
 
       search = described_class.new(admin, name: 'léö*')
+      expect(search.total).to eq(0)
+
+      search = described_class.new(admin, name: 'léö')
       expect(search.total).to eq(1)
     end
 

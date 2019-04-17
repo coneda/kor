@@ -17,7 +17,7 @@
     </li>
   </ul>
 
-  <div class="text-right" if={valid()}>
+  <div class="kor-text-right" if={valid()}>
     <button onclick={check}>{t('verbs.check')}</button>
     <button onclick={merge}>{t('verbs.merge')}</button>
   </div>

@@ -5,7 +5,7 @@
       <a
         href="#/users/new"
         title={t('verbs.add')}
-      ><i class="plus"></i></a>
+      ><i class="fa fa-plus-square"></i></a>
     </div>
     <h1>{tcap('activerecord.models.user', {count: 'other'})}</h1>
 
@@ -65,22 +65,22 @@
             <a
               onclick={resetLoginAttempts(user.id)}
               title={t('reset_login_attempts')}
-            ><i class="three_bars"></i></a>
+            ><i class="fa fa-unlock"></i></a>
             <a
               if={user.name != 'admin' && user.name != 'guest'}
               href="#"
               onclick={resetPassword(user.id)}
               title={t('reset_password')}
-            ><i class="reset_password"></i></a>
+            ><i class="fa fa-key"></i></a>
             <a
               href="#/users/{user.id}/edit"
               title={t('verbs.edit')}
-            ><i class="pen"></i></a>
+            ><i class="fa fa-pencil"></i></a>
             <a
               href="#"
               onclick={destroy(user.id)}
               title={t('verbs.delete')}
-            ><i class="x"></i></a>
+            ><i class="fa fa-trash"></i></a>
           </td>
         </tr>
       </tbody>

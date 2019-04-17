@@ -10,7 +10,7 @@
       show={!isFirst()}
       onclick={toPrevious}
       href="#"
-    ><i class="icon pager_left"></i></a>
+    ><i class="fa fa-arrow-left"></i></a>
     <kor-input
       type="number"
       value={currentPage()}
@@ -24,7 +24,7 @@
       show={!isLast()}
       onclick={toNext}
       href="#"
-    ><i class="icon pager_right"></i></a>
+    ><i class="fa fa-arrow-right"></i></a>
   </virtual>
 
   <virtual if={opts.perPageControl}>

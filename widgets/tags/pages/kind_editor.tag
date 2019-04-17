@@ -31,7 +31,7 @@
 
       <hr if={opts.id} />
 
-      <div class="text-right">
+      <div class="kor-text-right">
         <a href="#/kinds" class="kor-button">{t('back_to_list')}</a>
       </div>
     </div>

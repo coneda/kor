@@ -4,7 +4,7 @@
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">
       <div class="kor-layout-commands">
-        <a onclick={reset}><i class="minus"></i></a>
+        <a onclick={reset}><i class="fa fa-minus-square"></i></a>
       </div>
       <h1>{tcap('nouns.clipboard')}</h1>
 

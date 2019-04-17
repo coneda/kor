@@ -5,7 +5,7 @@
       href="#/credentials/new"
       class="pull-right"
       title={t('objects.new', {interpolations: {o: t('activerecord.models.credential')}})}
-    ><i class="plus"></i></a>
+    ><i class="fa fa-plus-square"></i></a>
     <h1>{tcap('activerecord.models.credential', {count: 'other'})}</h1>
 
     <table>
@@ -25,12 +25,12 @@
             <a
               href="#/credentials/{credential.id}/edit"
               title={t('verbs.edit')}
-            ><i class="pen"></i></a>
+            ><i class="fa fa-pencil"></i></a>
             <a
               href="#/credentials/{credential.id}/destroy"
               onclick={onDeleteClicked}
               title={t('verbs.delete')}
-            ><i class="x"></i></a>
+            ><i class="fa fa-trash"></i></a>
           </td>
         </tr>
       </tbody>

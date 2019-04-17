@@ -5,7 +5,7 @@
       href="{baseUrl()}/new"
       class="pull-right"
       title={t('objects.new', {interpolations: {o: t('activerecord.models.authority_group')}})}
-    ><i class="plus"></i></a>
+    ><i class="fa fa-plus-square"></i></a>
     <h1>
       {tcap('activerecord.models.authority_group', {count: 'other'})}
     </h1>
@@ -27,12 +27,12 @@
             <a
               href="{baseUrl()}/{group.id}/edit"
               title={t('verbs.edit')}
-            ><i class="pen"></i></a>
+            ><i class="fa fa-pencil"></i></a>
             <a
               href="{baseUrl()}/{group.id}"
               title={t('verbs.delete')}
               onclick={onDeleteClicked}
-            ><i class="x"></i></a>
+            ><i class="fa fa-trash"></i></a>
           </td>
         </tr>
       </tbody>

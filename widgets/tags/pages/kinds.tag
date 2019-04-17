@@ -6,7 +6,7 @@
       href="#/kinds/new"
       class="pull-right"
       title={t('verbs.add')}
-    ><i class="plus"></i></a>
+    ><i class="fa fa-plus-square"></i></a>
     <h1>{tcap('activerecord.models.kind', {count: 'other'})}</h1>
 
     <form class="inline">

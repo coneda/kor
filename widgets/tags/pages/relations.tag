@@ -80,11 +80,11 @@
               {kind(relation.to_kind_id)}
             </div>
           </td>
-          <td class="text-right buttons" if={isRelationAdmin()}>
+          <td class="kor-text-right buttons" if={isRelationAdmin()}>
             <a
               href="#/relations/{relation.id}/edit"
               title={t('verbs.edit')}
-            ><i class="pen"></i></a>
+            ><i class="fa fa-pencil"></i></a>
             <a
               if={merge}
               href="#"
@@ -96,13 +96,12 @@
               onclick={invert}
               title={t('verbs.invert')}
             ><i class="fa fa-exchange"></i></a>
-            <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a>
             <a
               if={relation.removable}
               href="#/relations/{relation.id}"
               onclick={delete(relation)}
               title={t('verbs.delete')}
-            ><i class="fa fa-remove"></i></a>
+            ><i class="fa fa-trash"></i></a>
           </td>
         </tr>
       </tbody>

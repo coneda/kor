@@ -8,14 +8,14 @@
           <a
             href="#/entities/{data.id}/edit"
             title={t('verbs.edit')}
-          ><i class="pen"></i></a>
+          ><i class="fa fa-pencil"></i></a>
         </virtual>
         <a
           if={allowedTo('edit', data.collection_id)}
           href="#/entities/{data.id}"
           onclick={delete}
           title={t('verbs.delete')}
-        ><i class="x"></i></a>
+        ><i class="fa fa-trash"></i></a>
       </div>
       <h1>
         {data.display_name}
@@ -92,7 +92,7 @@
             href="#"
             onclick={addRelationship}
             title={t('objects.add', {interpolations: {o: 'activerecord.models.relationship'}})}
-          ><i class="plus"></i></a>
+          ><i class="fa fa-plus-square"></i></a>
         </div>
         <h1>{tcap('activerecord.models.relationship', {count: 'other'})}</h1>
 
@@ -160,16 +160,15 @@
 
         <hr />
 
-        <div class="kor-text-right">
-          <a href="/entities/{data.id}.json" target="_blank">
-            <i class="fa fa-file-text"></i>
-            {t('show_json')}
-          </a>
-          <br />
-          <a href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank">
-            <i class="fa fa-code"></i>
-            {t('show_oai_pmh')}
-          </a>
+        <div class="kor-text-right kor-api-links">
+          <a
+            href="/entities/{data.id}.json"
+            target="_blank"
+          ><i class="fa fa-file-text"></i>{t('show_json')}</a><br />
+          <a
+            href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}"
+            target="_blank"
+          ><i class="fa fa-code"></i>{t('show_oai_pmh')}</a>
         </div>
 
       </div>
@@ -192,7 +191,7 @@
             href="#/media/{data.medium_id}/{op}"
             onclick={transform(op)}
             title={t('image_transformations.' + op)}
-          ><i class="{op}"></i></a>
+          ><i class="fa fa-{opIcon(op)}"></i></a>
         </div>
 
         
@@ -304,6 +303,15 @@
             tag.data.medium.url.preview += '?cb=' + (new Date()).getTime()
             tag.update()
         )
+
+    tag.opIcon = (op) ->
+      return {
+        'flip': 'arrows-h',
+        'flop': 'arrows-v',
+        'rotate_cw': 'mail-reply fa-flip-horizontal',
+        'rotate_ccw': 'mail-reply',
+        'rotate_180': 'circle-o-notch fa-flip-vertical'
+      }[op]
 
     tag.addRelationship = (event) ->
       event.preventDefault()

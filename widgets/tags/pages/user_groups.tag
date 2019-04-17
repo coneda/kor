@@ -8,7 +8,7 @@
         href="#/groups/user/new"
         class="pull-right"
         title={t('objects.new', {interpolations: {o: t('activerecord.models.user_group')}})}
-      ><i class="plus"></i></a>
+      ><i class="fa fa-plus-square"></i></a>
       <h1>
         <virtual if={!opts.type}>{tcap('activerecord.models.user_group', {count: 'other'})}</virtual>
         <virtual if={opts.type == 'shared'}>{tcap('nouns.shared_user_group')}</virtual>
@@ -35,17 +35,17 @@
                 <a
                   href="#/groups/user/{user_group.id}/edit"
                   title={t('verbs.edit')}
-                ><i class="pen"></i></a>
+                ><i class="fa fa-pencil"></i></a>
                 <a
                   href="#/groups/user/{user_group.id}/destroy"
                   onclick={onDeleteClicked}
                   title={t('verbs.delete')}
-                ><i class="x"></i></a>
+                ><i class="fa fa-trash"></i></a>
                 <a
                   href="#/groups/user/{user_group.id}/share"
                   onclick={onShareClicked}
                   title={t('verbs.' + (user_group.shared ? 'unshare' : 'share'))}
-                ><i class={private: !user_group.shared, public: user_group.shared}></i></a>
+                ><i class={'fa fa-lock': !user_group.shared, 'fa fa-unlock': user_group.shared}></i></a>
               </virtual>
             </td>
           </tr>

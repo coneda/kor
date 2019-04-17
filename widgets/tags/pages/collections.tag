@@ -5,7 +5,7 @@
       href="#/collections/new"
       class="pull-right"
       title={t('objects.new', {interpolations: {o: t('activerecord.models.collection')}})}
-    ><i class="plus"></i></a>
+    ><i class="fa fa-plus-square"></i></a>
     <h1>{tcap('activerecord.models.collection', {count: 'other'})}</h1>
 
     <table>
@@ -28,12 +28,12 @@
             <a
               href="#/collections/{collection.id}/edit"
               title={t('verbs.edit')}
-            ><i class="pen"></i></a>
+            ><i class="fa fa-pencil"></i></a>
             <a
               href="#/collections/{collection.id}/destroy"
               onclick={onDeleteClicked}
               title={t('verbs.delete')}
-            ><i class="x"></i></a>
+            ><i class="fa fa-trash"></i></a>
           </td>
         </tr>
       </tbody>

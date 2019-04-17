@@ -12,7 +12,7 @@
       onclick={toggleEditor}
       href="#"
       title={t('edit_tags')}
-    ><i class="fa fa-plus-circle"></i></a>
+    ><i class="fa fa-plus-square"></i></a>
 
     <virtual if={editorActive}>
       <kor-input
