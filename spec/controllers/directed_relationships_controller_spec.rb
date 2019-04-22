@@ -21,6 +21,7 @@ RSpec.describe DirectedRelationshipsController, type: :controller do
     it 'should GET index' do
       get :index
       expect_collection_response total: 8
+      # 8/14 because of permissions
     end
   end
 

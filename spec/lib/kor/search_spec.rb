@@ -44,6 +44,12 @@ RSpec.shared_examples 'a kor search' do
     expect(search.records.first).to eq(monalisa)
   end
 
+  it 'should search by distinct name' do
+    leonardo.update distinct_name: 'uzh-khist-gd-04207-53'
+    search = described_class.new(admin, name: 'uzh-khist-gd-04207-53')
+    expect(search.total).to eq(1)
+  end
+
   it 'should search by collection' do
     search = described_class.new(admin, collection_id: [priv.id])
     expect(search.total).to eq(2)
