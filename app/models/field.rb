@@ -146,4 +146,12 @@ class Field < ApplicationRecord
   def serializable_hash(*args)
     super(methods: [:value, :show_on_entity]).stringify_keys
   end
+
+  def subtype=(v)
+    
+  end
+
+  def values=(v)
+    
+  end
 end

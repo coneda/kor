@@ -13,12 +13,13 @@ wApp.mixins.form = {
     }
     return results;
   },
-  setValues: function(values, clean){
+  setValues: function(values, clean) {
     var fields = this.fields();
     for (var i = 0; i < fields.length; i++) {
       var f = fields[i];
       var v = values[f.name()];
       if (v) {
+        if (!f.set) {console.log(f)}
         f.set(v);
       }
 

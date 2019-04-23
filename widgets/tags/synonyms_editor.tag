@@ -2,23 +2,28 @@
   <kor-input
     label={opts.label}
     type="textarea"
-    value={valueFromParent()}
+    ref="field"
   />
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+  <script type="text/javascript">
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
 
-    tag.valueFromParent = ->
-      if opts.riotValue then opts.riotValue.join("\n") else ''
+    tag.name = function() {return tag.opts.name}
 
-    tag.name = -> tag.opts.name
+    tag.set = function(value) {
+      if (value) {
+        tag.refs['field'].set(value.join("\n"));
+      }
+    }
 
-    tag.value = ->
-      text = tag.tags['kor-input'].value()
-      return [] if text.match(/^\s*$/)
-      
-      s for s in text.split(/\n/) when s
+    tag.value = function() {
+      var text = tag.tags['kor-input'].value();
+      if (text.match(/^\s*$/)) {return []}
+
+      var lines = text.split("\n");
+      return lines.filter(function(e) {return !!e});
+    }
   </script>
 </kor-synonyms-editor>

@@ -5,7 +5,6 @@
     <form if={data && possibleParents} onsubmit={submit}>
       <kor-input
         name="lock_version"
-        value={data.lock_version || 0}
         ref="fields"
         type="hidden"
       />
@@ -13,14 +12,12 @@
       <kor-input
         name="schema"
         label={tcap('activerecord.attributes.kind.schema')}
-        riot-value={data.schema}
         ref="fields"
       />
       
       <kor-input
         name="name"
         label={tcap('activerecord.attributes.kind.name')}
-        riot-value={data.name}
         errors={errors.name}
         ref="fields"
       />
@@ -28,7 +25,6 @@
       <kor-input
         name="plural_name"
         label={tcap('activerecord.attributes.kind.plural_name')}
-        riot-value={data.plural_name}
         errors={errors.plural_name}
         ref="fields"
       />
@@ -37,14 +33,12 @@
         name="description"
         type="textarea"
         label={tcap('activerecord.attributes.kind.description')}
-        riot-value={data.description}
         ref="fields"
       />
 
       <kor-input
         name="url"
         label={tcap('activerecord.attributes.kind.url')}
-        riot-value={data.url}
         ref="fields"
       />
 
@@ -54,7 +48,6 @@
         options={possibleParents}
         multiple={true}
         label={tcap('activerecord.attributes.kind.parent')}
-        riot-value={data.parent_ids}
         errors={errors.parent_ids}
         ref="fields"
       />
@@ -63,7 +56,6 @@
         name="abstract"
         type="checkbox"
         label={tcap('activerecord.attributes.kind.abstract')}
-        riot-value={data.abstract}
         ref="fields"
       />
 
@@ -71,7 +63,6 @@
         name="tagging"
         type="checkbox"
         label={tcap('activerecord.attributes.kind.tagging')}
-        riot-value={data.tagging}
         ref="fields"
       />
 
@@ -79,21 +70,18 @@
         <kor-input
           name="dating_label"
           label={tcap('activerecord.attributes.kind.dating_label')}
-          riot-value={data.dating_label}
           ref="fields"
         />
 
         <kor-input
           name="name_label"
           label={tcap('activerecord.attributes.kind.name_label')}
-          riot-value={data.name_label}
           ref="fields"
         />
 
         <kor-input
           name="distinct_name_label"
           label={tcap('activerecord.attributes.kind.distinct_name_label')}
-          riot-value={data.distinct_name_label}
           ref="fields"
         />
       </div>
@@ -112,6 +100,7 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.page)
+    tag.mixin(wApp.mixins.form)
 
     tag.on 'mount', ->
       tag.errors = {}
@@ -186,6 +175,7 @@
                 value: kind.id
               )
           tag.update()
+          tag.setValues(tag.data)
       )
 
   </script>

@@ -1,5 +1,4 @@
 <kor-generator-editor>
-
   <h2 if={opts.id}>
     {tcap('objects.edit', {interpolations: {o: 'activerecord.models.generator'}})}
   </h2>
@@ -11,7 +10,6 @@
     <kor-input
       name="name"
       label={tcap('activerecord.attributes.generator.name')}
-      riot-value={data.name}
       errors={errors.name}
       ref="fields"
     />
@@ -20,7 +18,6 @@
       name="directive"
       label={tcap('activerecord.attributes.generator.directive')}
       type="textarea"
-      riot-value={data.directive}
       errors={errors.directive}
       ref="fields"
     />
@@ -38,6 +35,7 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.form)
     tag.errors = {}
 
     tag.on 'mount', ->
@@ -85,8 +83,8 @@
         success: (data) ->
           tag.data = data
           tag.update()
+          tag.setValues(tag.data)
       )
 
   </script>
-
 </kor-generator-editor>

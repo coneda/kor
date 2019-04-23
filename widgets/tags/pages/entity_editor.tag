@@ -11,7 +11,6 @@
       <form onsubmit={submit} if={data}>
         <kor-input
           name="lock_version"
-          value={data.lock_version || 0}
           ref="fields"
           type="hidden"
         />
@@ -23,7 +22,6 @@
           type="select"
           options={collections}
           ref="fields"
-          value={data.collection_id}
           errors={errors.collection_id}
         />
 
@@ -35,7 +33,6 @@
             name="no_name_statement"
             type="radio"
             ref="fields.no_name_statement"
-            value={data.no_name_statement}
             options={noNameStatements}
             onchange={update}
             errors={errors.no_name_statement}
@@ -46,7 +43,6 @@
             if={hasName()}
             name="name"
             ref="fields"
-            value={data.name}
             errors={errors.name}
           />
 
@@ -55,7 +51,6 @@
             label={tcap('activerecord.attributes.entity.distinct_name')}
             name="distinct_name"
             ref="fields"
-            value={data.distinct_name}
             errors={errors.distinct_name}
           />
 
@@ -66,7 +61,6 @@
           label={tcap('activerecord.attributes.entity.subtype')}
           name="subtype"
           ref="fields"
-          value={data.subtype}
           errors={errors.subtype}
         />
 
@@ -74,7 +68,6 @@
           label={tcap('activerecord.attributes.entity.tag_list')}
           name="tag_list"
           ref="fields"
-          value={data.tags.join(', ')}
           errors={errors.tag_list}
         />
 
@@ -82,7 +75,6 @@
           if={kind}
           name="dataset"
           fields={kind.fields}
-          values={data.dataset}
           ref="fields"
           errors={errors.dataset}
         />
@@ -92,7 +84,6 @@
           name="comment"
           ref="fields"
           type="textarea"
-          value={data.comment}
           errors={errors.comment}
         />
 
@@ -102,7 +93,6 @@
           label={tcap('activerecord.attributes.entity.synonyms')}
           name="synonyms"
           ref="fields"
-          value={data.synonyms}
         />
 
         <hr />
@@ -112,10 +102,10 @@
           label={tcap('activerecord.models.entity_dating', {count: 'other'})}
           name="datings_attributes"
           ref="fields"
-          value={data.datings}
           errors={errors.datings}
           for="entity"
           kind={kind}
+          default-dating-label={kind.dating_label}
         />
 
         <hr />
@@ -124,7 +114,6 @@
           label={tcap('activerecord.attributes.entity.properties')}
           name="properties"
           ref="fields"
-          value={data.properties}
         />
 
         <hr />
@@ -146,6 +135,7 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.page)
+    tag.mixin(wApp.mixins.form)
 
     tag.on 'before-mount', ->
       tag.errors = {}
@@ -163,7 +153,7 @@
 
       fetchCollections()
       wApp.bus.on 'routing:query', queryHandler
-      fetch tag.opts.kind_id
+      fetch(tag.opts.kindId)
 
     tag.on 'unmount', ->
       wApp.bus.off 'routing:query', queryHandler
@@ -200,6 +190,15 @@
     queryHandler = (parts = {}) ->
       fetch parts['hash_query']['kind_id']
 
+    defaults = (kind_id) ->
+      return {
+        kind_id: kind_id
+        no_name_statement: 'enter_name'
+        lock_version: 0
+        tags: [],
+        datings_attributes: []
+      }
+
     fetch = (kind_id) ->
       if tag.opts.id
         Zepto.ajax(
@@ -210,11 +209,7 @@
             fetchKind()
         )
       else
-        tag.data = {
-          kind_id: kind_id,
-          no_name_statement: 'enter_name',
-          tags: []
-        }
+        tag.data = defaults(kind_id)
         fetchKind()
 
     fetchKind = ->
@@ -223,6 +218,12 @@
         data: {include: 'fields,settings'}
         success: (data) ->
           tag.kind = data
+          tag.update()
+          tag.setValues(tag.data)
+          # after the no_name_statement has been set, the component has to be
+          # updated to show the name fields which can then be filled with values
+          tag.update()
+          tag.setValues(tag.data)
           tag.update()
       )
 

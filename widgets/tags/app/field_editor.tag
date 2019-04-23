@@ -13,7 +13,6 @@
       label={tcap('activerecord.attributes.field.type')}
       type="select"
       options={types_for_select}
-      value={data.type}
       is-disabled={data.id}
       ref="type"
       onchange={updateSpecialFields}
@@ -25,7 +24,6 @@
         label={tcap('activerecord.attributes.field.' + f.name)}
         type={f.type}
         options={f.options}
-        riot-value={data[f.name]}
         errors={errors[f.name]}
         ref="fields"
       />
@@ -34,7 +32,6 @@
     <kor-input
       name="name"
       label={tcap('activerecord.attributes.field.name')}
-      riot-value={data.name}
       errors={errors.name}
       ref="fields"
     />
@@ -42,7 +39,6 @@
     <kor-input
       name="show_label"
       label={tcap('activerecord.attributes.field.show_label')}
-      riot-value={data.show_label}
       errors={errors.show_label}
       ref="fields"
     />
@@ -50,7 +46,6 @@
     <kor-input
       name="form_label"
       label={tcap('activerecord.attributes.field.form_label')}
-      riot-value={data.form_label}
       errors={errors.form_label}
       ref="fields"
     />
@@ -58,7 +53,6 @@
     <kor-input
       name="search_label"
       label={tcap('activerecord.attributes.field.search_label')}
-      riot-value={data.search_label}
       errors={errors.search_label}
       ref="fields"
     />
@@ -67,7 +61,6 @@
       name="show_on_entity"
       type="checkbox"
       label={tcap('activerecord.attributes.field.show_on_entity')}
-      riot-value={data.show_on_entity}
       ref="fields"
     />
 
@@ -75,7 +68,6 @@
       name="is_identifier"
       type="checkbox"
       label={tcap('activerecord.attributes.field.is_identifier')}
-      riot-value={data.is_identifier}
       ref="fields"
     />
 
@@ -91,6 +83,8 @@
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.form)
+
     tag.errors = {}
 
     tag.on 'mount', ->
@@ -169,6 +163,8 @@
         success: (data) ->
           tag.data = data
           tag.update()
+          tag.setValues(tag.data)
+          tag.update()
       )
 
     fetchTypes = ->
@@ -180,6 +176,8 @@
           for t in data
             tag.types_for_select.push(value: t.name, label: t.label)
             tag.types[t.name] = t
+          tag.update()
+          tag.setValues(tag.data)
           tag.update()
           # tag.updateSpecialFields()
       )

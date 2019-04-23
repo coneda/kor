@@ -15,7 +15,7 @@
     <textarea
       if={opts.type == 'textarea'}
       name={opts.name}
-      value={valueFromParent()}
+      <!-- value={valueFromParent()} -->
     ></textarea>
     <select
       if={opts.type == 'select'}
@@ -42,7 +42,7 @@
         type="radio"
         name={opts.name}
         value={item.id || item.value || item}
-        checked={valueFromParent() == (item.id || item.value || item)}
+        <!-- checked={valueFromParent() == (item.id || item.value || item)} -->
       />
       <virtual if={!item.image_url}>{item.name || item.label || item}</virtual>
       <img if={item.image_url} src={item.image_url} />
@@ -62,6 +62,7 @@
       Zepto(tag.root).find('input, textarea, select').focus() if tag.opts.autofocus
 
     tag.name = -> tag.opts.name
+
     tag.value = ->
       if tag.opts.type == 'checkbox'
         Zepto(tag.root).find('input').prop('checked')
@@ -77,26 +78,37 @@
           undefined
         else
           result
+
     # tag.valueFromParent = ->
     #   if tag.opts.type == 'checkbox' then 1 else tag.opts.riotValue
     # tag.checkedFromParent = ->
     #   tag.opts.type == 'checkbox' && tag.opts.riotValue
+
     tag.checked = ->
       tag.opts.type == 'checkbox' &&
       Zepto(tag.root).find('input').prop('checked')
+
     tag.set = (value) ->
       if tag.opts.type == 'checkbox'
         Zepto(tag.root).find('input').prop('checked', !!value)
       else if tag.opts.type == 'radio'
-        for input in e.find('input')
+        for input in Zepto(tag.root).find('input')
           if (i = $(input)).attr('value') == value
             i.prop('checked', true)
           else
             i.prop('checked', false)
       else if tag.opts.type == 'submit'
         # do nothing
+      else if tag.opts.type == 'select' && Zepto.isArray(value)
+        # we have to simulate a working Zepto.val([...])
+        e = Zepto(tag.root).find('select')
+        e.val([])
+        for v in value
+          e.find("option[value='#{v}']").prop('selected', true)
+          Zepto(tag.root).find('select')
       else
         Zepto(tag.root).find('input, select, textarea').val(value)
+
     tag.reset = ->
       tag.set null
       # tag.set tag.valueFromParent()

@@ -45,6 +45,15 @@
       return opts.values || {};
     }
 
+    tag.set = function(values) {
+      var fields = wApp.utils.toArray(tag.refs['fields'])
+
+      for (var i = 0; i < fields.length; i++) {
+        var f = fields[i];
+        f.set(values[f.name()]);
+      }
+    }
+
     tag.name = function() {return tag.opts.name;}
 
     tag.value = function() {

@@ -2,33 +2,40 @@
   <kor-input
     label={opts.label}
     type="textarea"
-    value={valueFromParent()}
+    ref="field"
   />
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+  <script type="text/javascript">
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
 
-    tag.valueFromParent = ->
-      results = []
-      if opts.riotValue
-        for p in opts.riotValue
-          results.push "#{p.label}: #{p.value}"
+    tag.name = function() {
+      return tag.opts.name;
+    }
 
-      results.join("\n")
+    tag.set = function(values) {
+      var results = [];
+      if (values) {
+        for (var i = 0; i < values.length; i++) {
+          var v = values[i];
+          results.push(v.label + ': ' + v.value);
+        }
+      }
+      tag.refs['field'].set(results.join("\n"));
+    }
 
-    tag.name = -> tag.opts.name
+    tag.value = function() {
+      var text = tag.refs['field'].value()
+      if (text.match(/^\s*$/)) {return []}
 
-    tag.value = ->
-      text = tag.tags['kor-input'].value()
-      return [] if text.match(/^\s*$/)
-
-      results = []
-      for line in text.split(/\n/)
-        kv = line.split(/\s*:\s*/)
-        results.push {'label': kv.shift(), 'value': kv.join(':')}
-      results
-
+      var results = [];
+      var lines = text.split("\n");
+      for (var i = 0; i < lines.length; i++) {
+        var kv = lines[i].split(/\s*:\s*/);
+        results.push({'label': kv.shift(), 'value': kv.join(':')})
+      }
+      return results;
+    }
   </script>
 </kor-entity-properties-editor>

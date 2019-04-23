@@ -16,13 +16,11 @@
     >
       <kor-input
         label={t('activerecord.attributes.dating.label', {capitalize: true})}
-        value={dating.label}
         ref="labels"
         errors={errorsFor(i, 'label')}
       />
       <kor-input
         label={t('activerecord.attributes.dating.dating_string', {capitalize: true})}
-        value={dating.dating_string}
         ref="dating_strings"
         errors={errorsFor(i, 'dating_string')}
       />
@@ -40,10 +38,8 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
 
-    tag.on 'mount', ->
-      # console.log(tag.opts);
-      tag.data = tag.opts.riotValue || []
-      tag.update()
+    # tag.on 'mount', ->
+    #  tag.update()
 
     tag.anyVisibleDatings = ->
       for dating in (tag.data || [])
@@ -57,18 +53,21 @@
       o = e[i] || {}
       o[field]
 
+    tag.set = (values) ->
+      tag.data = values
+      tag.update()
+
+      labelInputs = wApp.utils.toArray(tag.refs['labels'])
+      datingStringInputs = wApp.utils.toArray(tag.refs['dating_strings'])
+
+      for i, dating of tag.data
+        labelInputs[i].set(dating['label'])
+        datingStringInputs[i].set(dating['dating_string'])
+
     tag.add = (event) ->
       event.preventDefault()
-      # TODO: refactor so that the parent specifies the default label instead
-      # of this messy retrieval
-      dl = ''
-      if tag.opts.for == 'relationship'
-        dl = wApp.config.data.values.relationship_dating_label
-      if tag.opts.for == 'entity'
-        dl = tag.opts.kind.dating_label
-
-      tag.data.push(label: dl)
-      tag.update()
+      tag.data.push(label: tag.opts.defaultDatingLabel)
+      tag.set(tag.data)
 
     tag.remove = (event) ->
       event.preventDefault()
