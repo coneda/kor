@@ -15,8 +15,8 @@ RSpec.describe Kor::Tasks do
     Kor::Elastic.drop_index
     expect(Kor::Search.new(admin, engine: 'elastic').total).to eq(0)
 
+    expect(Kor::Elastic).to receive(:index_all)
     Kor::Tasks.index_all
-    expect(Kor::Search.new(admin, engine: 'elastic').total).to eq(7)
   end
 
   it 'should run group_to_zip' do
