@@ -1,5 +1,4 @@
 <kor-datings-editor>
-
   <div class="header" if={add}>
     <button onclick={add} class="pull-right" type="button">
       {t('verbs.add', {capitalize: true})}
@@ -66,8 +65,9 @@
 
     tag.add = (event) ->
       event.preventDefault()
-      tag.data.push(label: tag.opts.defaultDatingLabel)
-      tag.set(tag.data)
+      newData = tag.value()
+      newData.push(label: tag.opts.defaultDatingLabel)
+      tag.set(newData)
 
     tag.remove = (event) ->
       event.preventDefault()
@@ -83,12 +83,13 @@
       labelInputs = wApp.utils.toArray(tag.refs['labels'])
       datingStringInputs = wApp.utils.toArray(tag.refs['dating_strings'])
 
-      for i, dating of tag.data
-        dating['label'] = labelInputs[i].value()
-        dating['dating_string'] = datingStringInputs[i].value()
-
-      tag.data
+      result = []
+      for i, input of labelInputs
+        result.push(
+          label: input.value()
+          dating_string: datingStringInputs[i].value()
+        )
+      result
 
   </script>
-
 </kor-datings-editor>

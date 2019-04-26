@@ -6,14 +6,14 @@
     {tcap('objects.create', {interpolations: {o: 'activerecord.models.field'}})}
   </h2>
 
-  <form if={data && types} onsubmit={submit}>
+  <form if={types} onsubmit={submit}>
 
     <kor-input
       name="type"
       label={tcap('activerecord.attributes.field.type')}
       type="select"
       options={types_for_select}
-      is-disabled={data.id}
+      is-disabled={opts.id}
       ref="type"
       onchange={updateSpecialFields}
     />
@@ -88,37 +88,14 @@
     tag.errors = {}
 
     tag.on 'mount', ->
-      p = [fetchTypes()]
-
-      if tag.opts.id
-        p.push fetch()
-      else
-        tag.data = {type: 'Fields::String'}
-        tag.update()
-
-      Zepto.when.apply(null, p).then(tag.updateSpecialFields)
-
-    # TODO: do we still need this?
-    # tag.opts.notify.on 'add-field', ->
-    #   tag.field = {type: 'Fields::String'}
-    #   tag.showForm = true
-    #   tag.update()
-      # tag.updateSpecialFields()
-
-    # TODO: do we still need this?
-    # tag.opts.notify.on 'edit-field', (field) ->
-    #   tag.field = field
-    #   tag.showForm = true
-    #   tag.update()
-      # tag.updateSpecialFields()
-
-    tag.updateSpecialFields = (event) ->
-      if tag.refs.type
-        typeName = tag.refs.type.value()
-        if typeName
-          if types = tag.types
-            tag.specialFields = types[typeName].fields
+      fetchTypes().then(
+        ->
+          if tag.opts.id
+            fetch()
+          else
+            tag.refs.type.set('Fields::String')
             tag.update()
+      )
 
     tag.submit = (event) ->
       event.preventDefault()
@@ -157,13 +134,24 @@
         klass: results.type
       }
 
+    tag.updateSpecialFields = (event) ->
+      if tag.refs.type
+        typeName = tag.refs.type.value()
+        if typeName
+          if types = tag.types
+            tag.specialFields = types[typeName].fields
+            tag.update()
+
     fetch = ->
       Zepto.ajax(
         url: "/kinds/#{tag.opts.kindId}/fields/#{tag.opts.id}"
         success: (data) ->
-          tag.data = data
-          tag.update()
-          tag.setValues(tag.data)
+          # tag.data = data
+          # tag.update()
+          tag.refs.type.set(data.type)
+          tag.updateSpecialFields()
+          tag.setValues(data)
+          # tag.setValues(data)
           tag.update()
       )
 
@@ -177,9 +165,6 @@
             tag.types_for_select.push(value: t.name, label: t.label)
             tag.types[t.name] = t
           tag.update()
-          tag.setValues(tag.data)
-          tag.update()
-          # tag.updateSpecialFields()
       )
 
   </script>

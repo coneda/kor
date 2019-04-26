@@ -75,7 +75,6 @@ Feature: authority groups
     And I fill in "Name" with "Level 2"
     And I press "Save"
     And I follow "Level 2"
-    And I debug
     Then I should see "top level » Level 1 » Level 2"
 
   Scenario: delete deep authority group category

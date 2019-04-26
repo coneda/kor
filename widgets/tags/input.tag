@@ -1,5 +1,5 @@
 <kor-input class="{'has-errors': opts.errors}">
-  <label if={opts.type != 'radio' && opts.type != 'submit'}>
+  <label if={opts.type != 'radio' && opts.type != 'submit' && opts.type != 'reset'}>
     <span show={!opts.hideLabel}>{opts.label}</span>
     <a
       if={opts.help}
@@ -33,6 +33,11 @@
   <input
     if={opts.type == 'submit'}
     type="submit"
+    value={opts.riotValue}
+  />
+  <input
+    if={opts.type == 'reset'}
+    type="reset"
     value={opts.riotValue}
   />
   <virtual if={opts.type == 'radio'}>

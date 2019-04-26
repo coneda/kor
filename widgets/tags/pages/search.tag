@@ -198,8 +198,6 @@
         fetchKind(kind_id);
       }
 
-      console.log(query());
-
       Zepto.ajax({
         url: '/entities',
         data: query(),

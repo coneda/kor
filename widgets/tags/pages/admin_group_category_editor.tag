@@ -13,6 +13,7 @@
         <kor-input
           label={tcap('activerecord.attributes.authority_group.name')}
           name="name"
+          ref="fields"
           errors={errors.name}
         />
 
@@ -24,6 +25,7 @@
           options={categories}
           placeholder=""
           errors={errors.parent_id}
+          ref="fields"
         />
 
         <hr />
@@ -44,9 +46,9 @@
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
     tag.mixin(wApp.mixins.page)
+    tag.mixin(wApp.mixins.form)
 
     tag.on 'before-mount', ->
-      fetchCategories()
       tag.errors = {}
       tag.data = {}
 
@@ -54,14 +56,20 @@
         wApp.bus.trigger('access-denied')
 
     tag.on 'mount', ->
-      fetch() if tag.opts.id
+      fetchCategories().then(
+        ->
+          if tag.opts.id
+            fetch()
+          else
+            tag.setValues({parent_id: tag.opts.parentId})
+      )
 
     tag.submit = (event) ->
       event.preventDefault()
       p = (if tag.opts.id then update() else create())
       p.done (data) ->
         tag.errors = {}
-        if id = values()['parent_id']
+        if id = tag.values()['parent_id']
           wApp.routing.path('/groups/categories/' + id)
         else
           wApp.routing.path('/groups/categories')
@@ -75,6 +83,7 @@
         url: "/authority_group_categories/#{tag.opts.id}"
         success: (data) ->
           tag.data = data
+          tag.setValues(data)
           tag.update()
       )
 
@@ -97,24 +106,18 @@
       )
 
     create = ->
+      console.log(tag.values())
       Zepto.ajax(
         type: 'POST'
         url: '/authority_group_categories'
-        data: JSON.stringify(authority_group_category: values())
+        data: JSON.stringify(authority_group_category: tag.values())
       )
 
     update = ->
       Zepto.ajax(
         type: 'PATCH'
         url: "/authority_group_categories/#{tag.opts.id}"
-        data: JSON.stringify(authority_group_category: values())
+        data: JSON.stringify(authority_group_category: tag.values())
       )
-
-    values = ->
-      results = {}
-      for f in wApp.utils.toArray(tag.refs.fields)
-        results[f.name()] = f.value()
-      results
-
   </script>
 </kor-admin-group-category-editor>

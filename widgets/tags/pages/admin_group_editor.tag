@@ -114,11 +114,5 @@
         data: JSON.stringify(authority_group: tag.values())
       )
 
-    # values = ->
-    #   results = {}
-    #   for f in wApp.utils.toArray(tag.refs.fields)
-    #     results[f.name()] = f.value()
-    #   results
-
   </script>
 </kor-admin-group-editor>

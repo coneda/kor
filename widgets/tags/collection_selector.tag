@@ -81,8 +81,8 @@
       event.preventDefault();
 
       var cols = allowedCollections();
-      var ids = tag.ids;
-      if (tag.ids.length == 0) {
+      var ids = tag.ids || [];
+      if (ids.length == 0) {
         for (var i = 0; i < cols.length; i++) {
           ids.push(cols[i].id);
         }

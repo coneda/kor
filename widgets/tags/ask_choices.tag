@@ -65,17 +65,18 @@
 
     tag.all = function(event) {
       event.preventDefault();
-      tag.ids = [];
+      var ids = [];
       for (var i = 0; i < tag.opts.choices.length; i++) {
         var c = tag.opts.choices[i];
-        tag.ids.push(c.id || c.value);
+        ids.push(c.id || c.value);
       }
+      tag.set(ids);
       tag.update();
     }
 
     tag.none = function(event) {
       event.preventDefault();
-      tag.ids = [];
+      tag.set([]);
       tag.update();
     }
 
