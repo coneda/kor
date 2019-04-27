@@ -5,7 +5,8 @@ wApp.mixins.form = {
     for (var i = 0; i < fields.length; i++) {
       var f = fields[i];
       var v = f.value();
-      if (v == '' || v == [] || v == undefined) {
+
+      if (v === '' || v === [] || v === undefined) {
         results[f.name()] = null;
       } else {
         results[f.name()] = v;
@@ -29,7 +30,9 @@ wApp.mixins.form = {
     }
   },
   fields: function() {
-    var byTag = wApp.utils.toArray(this.tags['kor-input']);
+    // TODO: apply this to all forms!
+    var byTag = wApp.utils.toArray(this.tags['kor-input']).
+      filter(function(i){return i.opts.type != 'submit' && i.opts.type != 'reset'});
     var byRef = wApp.utils.toArray(this.refs['fields']);
     return byTag.concat(byRef);
   },
