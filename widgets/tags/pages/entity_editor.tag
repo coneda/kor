@@ -196,7 +196,7 @@
         no_name_statement: 'enter_name'
         lock_version: 0
         tags: [],
-        datings_attributes: []
+        datings: []
       }
 
     fetch = (kind_id) ->
@@ -206,11 +206,23 @@
           data: {include: 'dataset,synonyms,properties,datings'}
           success: (data) ->
             tag.data = data
-            fetchKind()
+            fetchKind().then(-> tag.setValues(tag.data))
         )
       else
         tag.data = defaults(kind_id)
-        fetchKind()
+        fetchKind().then(-> tag.setValues(tag.data))
+
+    tag.oldSetValues = tag.setValues
+    tag.setValues = (values) ->
+      values.datings_attributes = values.datings
+      values.datings = undefined
+
+      tag.oldSetValues(values)
+      # after the no_name_statement has been set, the component has to be
+      # updated to show the name fields which can then be filled with values
+      tag.update()
+      tag.oldSetValues(values)
+      tag.update()
 
     fetchKind = ->
       Zepto.ajax(
@@ -218,12 +230,6 @@
         data: {include: 'fields,settings'}
         success: (data) ->
           tag.kind = data
-          tag.update()
-          tag.setValues(tag.data)
-          # after the no_name_statement has been set, the component has to be
-          # updated to show the name fields which can then be filled with values
-          tag.update()
-          tag.setValues(tag.data)
           tag.update()
       )
 
