@@ -123,6 +123,17 @@ Feature: Inplace relationship editor
     When I follow "The Last Supper" within "kor-entity-selector"
     And I press "Save"
     And I should see "has to be filled in" within "kor-entity-selector"
+
+  Scenario: Paginate target entities
+    Given I am logged in as "admin"
+    And 10 entities "artwork" of kind "work/works" inside collection "default"
+    And I am on the entity page for "Mona Lisa"
+    Then I should see "Mona Lisa"
+    And I click icon "add relationship"
+    And I fill in "terms" with "supper"
+    Then I should not see "artwork_7"
+    When I follow "next"
+    Then I should see "artwork_7"
     
   Scenario: Select another entity which should limit the choices for the relation
     Given I am logged in as "admin"

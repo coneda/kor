@@ -160,7 +160,12 @@
           if tag.refs.terms
             Zepto.ajax(
               url: '/entities'
-              data: {terms: tag.refs.terms.value(), relation_name: tag.opts.relationName}
+              data: {
+                terms: tag.refs.terms.value(),
+                relation_name: tag.opts.relationName,
+                per_page: 9,
+                page: tag.page
+              }
               success: (data) ->
                 tag.data = data
                 group()
