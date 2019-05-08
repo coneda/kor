@@ -48,7 +48,7 @@ module Kor
           params = { 'verb' => 'ListRecords' }
           params['from'] = from if @options[:continue]
           params['resumptionToken'] = resumptionToken if resumptionToken
-          doc = oaipmh("/api/oai-pmh/#{type}.xml", params)
+          doc = oaipmh("/oai-pmh/#{type}.xml", params)
 
           if doc.xpath("//xmlns:error/@code").text == 'noRecordsMatch'
             break # nothing to do
