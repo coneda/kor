@@ -126,12 +126,21 @@
     tag.on('mount', function() {
       tag.title(tag.t('nouns.search'))
       fetch()
-      tag.on('routing:query', fetch)
+      tag.on('routing:query', queryUpdate)
     })
 
     tag.on('unmount', function() {
-      tag.off('routing:query', fetch)
+      tag.off('routing:query', queryUpdate)
     })
+
+    var queryUpdate = function() {
+      tag.criteria = urlParams();
+      if (tag.criteria['kind_id']) {
+        fetchKind(tag.criteria['kind_id']);
+      }
+      tag.tags['kor-collection-selector'].reset();
+      fetch();
+    }
 
     tag.submit = function(event) {
       event.preventDefault();
@@ -153,7 +162,7 @@
     }
 
     tag.elastic = function() {
-      return wApp.info.data.elastic
+      return wApp.info.data.elastic;
     }
 
     var params = function() {
@@ -190,11 +199,6 @@
     }
 
     var fetch = function() {
-      tag.criteria = urlParams();
-      if (tag.criteria['kind_id']) {
-        fetchKind(tag.criteria['kind_id']);
-      }
-
       var params = Zepto.extend({}, tag.criteria, {
         except_kind_id: wApp.info.data.medium_kind_id,
         include: 'related',

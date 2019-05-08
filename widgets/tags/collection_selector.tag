@@ -39,12 +39,16 @@
     tag.mixin(wApp.mixins.i18n);
 
     tag.on('before-mount', function() {
-      tag.ids = tag.opts.riotValue || [];
+      tag.reset();
     })
 
     tag.on('mount', function() {
       fetch();
     })
+
+    tag.reset = function() {
+      tag.ids = tag.opts.riotValue || [];
+    }
 
     tag.name = function() {
       return tag.opts.name;
