@@ -26,7 +26,11 @@ Capybara.register_driver :headless_chrome do |app|
   opts.add_argument 'headless'
   opts.add_argument 'window-size=1280x960'
 
-  Capybara::Selenium::Driver.new app, browser: :chrome, profile: profile, options: opts
+  Capybara::Selenium::Driver.new app, {
+    browser: :chrome,
+    profile: profile,
+    options: opts
+  }
 end
 
 if ENV['HEADLESS']
