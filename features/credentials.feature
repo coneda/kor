@@ -18,6 +18,7 @@ Feature: credentials
   Scenario: create credential
     Given I am logged in as "admin"
     When I go to the credentials page
+    Then I should see "students"
     When I follow "create user group"
     And I fill in "Name" with "Freaks"
     And I fill in "Description" with "The KOR-Freaks"

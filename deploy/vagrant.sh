@@ -10,16 +10,15 @@ function system_updates {
 
 function install_requirements {
   apt-get install -y \
-    git-core build-essential libmysqlclient-dev libcurl4-openssl-dev ruby-dev \
-    libxml2-dev libxslt-dev imagemagick libav-tools zip
+    git-core build-essential default-libmysqlclient-dev libcurl4-openssl-dev ruby-dev \
+    libxml2-dev libxslt-dev imagemagick ffmpeg zip
 }
 
 function install_test_requirements {
-  PHANTOMJS_VERSION="2.1.1"
   install_requirements
 
   cd /opt
-  wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
+  wget https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
   unzip chromedriver_linux64.zip
   mkdir -p /usr/local/bin
   ln -sfn $(pwd)/chromedriver /usr/local/bin/chromedriver
@@ -30,7 +29,7 @@ function install_dev_requirements {
   install_requirements
   install_test_requirements
   apt-get install -y \
-    libmysqlclient-dev imagemagick libav-tools zip openjdk-8-jre chromium-browser
+    default-libmysqlclient-dev imagemagick ffmpeg zip default-jre chromium
 }
 
 function install_prod_requirements {
@@ -43,8 +42,8 @@ function install_prod_requirements {
 }
 
 function install_elasticsearch {
-  wget -O /root/elasticsearch.deb "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.4/elasticsearch-2.4.4.deb"
-  apt-get install -y openjdk-8-jre
+  wget -O /root/elasticsearch.deb "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.16.deb"
+  apt-get install -y default-jre
   dpkg -i /root/elasticsearch.deb
   rm /root/elasticsearch.deb
   systemctl enable elasticsearch.service
@@ -57,16 +56,18 @@ function elasticsearch_dev {
 }
 
 function install_mysql {
-  debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
-  debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
-  apt-get install -y mysql-server
+  debconf-set-selections <<< "mariadb-server-10.3 mariadb-server-10.3/root_password password root"
+  debconf-set-selections <<< "mariadb-server-10.3 mariadb-server-10.3/root_password_again password root" 
+
+  apt-get install -y mariadb-server
   echo "GRANT ALL ON kor.* TO 'kor'@'localhost' IDENTIFIED BY 'kor';" | mysql -u root -proot
 }
 
 function mysql_dev {
-  sed -i -E "s/bind-address\s*=\s*127.0.0.1/#bind-address = 127.0.0.1/" /etc/mysql/mysql.conf.d/mysqld.cnf
-  systemctl restart mysql.service
+  sed -i -E "s/bind-address\s*=\s*127.0.0.1/#bind-address = 127.0.0.1/" /etc/mysql/mariadb.conf.d/50-server.cnf
+  systemctl restart mariadb.service
   mysql -u root -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root'"
+  mysql -u root -proot -e "DELETE FROM mysql.user where User='root' AND Host='localhost'"
   mysql -u root -proot -e "FLUSH PRIVILEGES"
 }
 
@@ -101,7 +102,7 @@ function checksums {
 function install_rbenv {
   apt-get install -y autoconf bison build-essential libssl-dev \
     libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev \
-    libffi-dev libgdbm3 libgdbm-dev git-core
+    libffi-dev libgdbm6 libgdbm-dev git-core
 
   git clone https://github.com/sstephenson/rbenv.git /opt/rbenv
   git clone https://github.com/rbenv/ruby-build.git /opt/rbenv/plugins/ruby-build
@@ -112,16 +113,26 @@ function install_rbenv {
 
   source /etc/profile.d/rbenv.sh
 
-  RUBY_VERSION=`cat /vagrant/.ruby-version`
-  if [ -d "/opt/kor" ]; then
-    RUBY_VERSION=`cat /opt/kor/.ruby-version`
-  fi
   rbenv install $RUBY_VERSION
-  rbenv shell $RUBY_VERSION
+  rbenv global $RUBY_VERSION
   gem install bundler
 
   chown -R vagrant. /opt/rbenv
   chmod -R g+w /opt/rbenv/shims
+}
+
+function install_nvm {
+  git clone https://github.com/nvm-sh/nvm.git /opt/nvm
+  source /opt/nvm/nvm.sh
+
+  echo 'export NVM_DIR="/opt/nvm"' >> /etc/profile.d/nvm.sh
+  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /etc/profile.d/nvm.sh
+  echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> /etc/profile.d/nvm.sh
+
+  source /etc/profile.d/nvm.sh
+  nvm install $NODE_VERSION
+
+  chown -R vagrant. /opt/nvm
 }
 
 function clean {
@@ -130,9 +141,10 @@ function clean {
 
 function configure_dev {
   cd /vagrant
+  npm install -g
   bundle install
   rbenv rehash
-  cp config/database.yml.example config/database.yml
+  # cp config/database.yml.example config/database.yml
   bundle exec rake db:drop db:setup
   bundle exec rake db:test:load
   bundle exec bin/kor index-all

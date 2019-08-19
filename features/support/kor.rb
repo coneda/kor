@@ -8,6 +8,18 @@ class ActiveRecord::Base
 end
 ActiveRecord::Base.shared_connection = ActiveRecord::Base.connection
 
+require 'active_record/connection_adapters/abstract_mysql_adapter'
+class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
+  SEMAPHORE = Mutex.new
+  def execute(sql, name = nil)
+    begin
+      raise 'Debugging'
+    rescue => e
+      SEMAPHORE.synchronize { log(sql, name) { @connection.query(sql) } }
+    end
+  end
+end
+
 World(DataHelper)
 
 TestHelper.setup_vcr :cucumber
@@ -58,3 +70,33 @@ Before do |scenario|
     result
   }
 end
+
+# we wait for all ajax requests to finish so the connection pool 
+# class AjaxWait
+#   def initialize(page)
+#     @page = page
+#   end
+
+#   def active_count
+#     @page.evaluate_script('$.active')
+#   rescue Selenium::WebDriver::Error::JavascriptError => e
+#     0
+#   end
+
+#   def active?
+#     !active_count.zero?
+#   end
+
+#   def run
+#     Timeout.timeout(Capybara.default_max_wait_time) do
+#       while active? do
+#         puts 'GOTCHA!'
+#         sleep 0.1
+#       end
+#     end
+#   end
+# end
+
+# After do |scenario|
+#   AjaxWait.new(page).run
+# end

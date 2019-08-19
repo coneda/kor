@@ -15,7 +15,7 @@
     <textarea
       if={opts.type == 'textarea'}
       name={opts.name}
-      <!-- value={valueFromParent()} -->
+      value={tag.data}
     ></textarea>
     <select
       if={opts.type == 'select'}
@@ -115,7 +115,7 @@
         Zepto(tag.root).find('input, select, textarea').val(value)
 
     tag.reset = ->
-      tag.set null
+      tag.set tag.opts.riotValue
       # tag.set tag.valueFromParent()
     # tag.selected = (item) ->
     #   v = item.id || item.value || item

@@ -34,6 +34,7 @@ Feature: Fields
     When I follow "edit"
     And I select "stone mason" from "profession"
     And I press "Save"
+    Then I should see "Leonardo has been changed"
     Then entity "Leonardo" should have dataset value "stone mason" for "profession"
 
     When I follow "Entity types"
@@ -41,10 +42,11 @@ Feature: Fields
     And I follow "profession" within widget "kor-fields"
     And select "multiselect" from "Subtype"
     And I press "Save"
+    Then I should see "profession has been changed"
 
     When I go to the entity page for "Leonardo"
-    Then I should see "Leonardo"
-    When I follow "edit"
+    Then I should see "profession: stone mason"
+    When I follow "edit" within ".page-commands"
     And I select "stone mason" from "profession"
     And I select "carpenter" from "profession"
     And I press "Save"

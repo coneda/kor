@@ -27,5 +27,6 @@ Feature: Merge
     And I follow "Merge"
     And I choose "7" for "medium_id"
     And I press "Save"
+    And I debug
     Then I should be on the entity page for the last medium
     

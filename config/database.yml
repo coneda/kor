@@ -1,0 +1,56 @@
+development:
+  adapter: mysql2
+  host: 127.0.0.1
+  database: kor_development
+  username: root
+  password: root
+  encoding: utf8
+  collation: utf8_general_ci
+  reconnect: true
+
+  elastic:
+    host: 127.0.0.1
+    port: 9200
+    index: kor_development
+
+  neo:
+    host: 127.0.0.1
+    port: 7474
+
+test:
+  adapter: mysql2
+  host: 127.0.0.1
+  database: kor_test
+  username: root
+  password: root
+  encoding: utf8
+  collation: utf8_general_ci
+  reconnect: true
+
+  elastic:
+    host: 127.0.0.1
+    port: 9200
+    index: kor_test
+
+  neo:
+    host: 127.0.0.1
+    port: 7474
+
+production:
+  adapter: mysql2
+  host: 127.0.0.1
+  database: kor
+  username: kor
+  password: kor
+  encoding: utf8
+  collation: utf8_general_ci
+  reconnect: true
+
+  elastic:
+    host: 127.0.0.1
+    port: 9200
+    index: kor
+
+  #neo:
+  #  host: 127.0.0.1
+  #  port: 7474

@@ -1,5 +1,4 @@
 <kor-field class={'errors': has_errors()}>
-  
   <label>
     {label()}
     <input
@@ -102,5 +101,4 @@
         element.val()
 
   </script>
-
 </kor-field>

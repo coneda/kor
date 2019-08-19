@@ -270,6 +270,7 @@
 
       tag.combined = combined;
       tag.media = media;
+      setValues(tag.combined);
       tag.update();
     }
 

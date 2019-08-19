@@ -1,3 +1,21 @@
+# class TestConnectionManagement
+#   def initialize(app)
+#     @app = app
+#   end
+
+#   def call(env)
+#     response = @app.call(env)
+#     response[2] = ::Rack::BodyProxy.new(response[2]) do
+#       ActiveRecord::Base.clear_active_connections!
+#     end
+
+#     response
+#   rescue Exception
+#     ActiveRecord::Base.clear_active_connections!
+#     raise
+#   end
+# end
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -41,4 +59,6 @@ Rails.application.configure do
   config.action_view.raise_on_missing_translations = true
 
   config.active_job.queue_adapter     = :inline
+
+  # config.middleware.use TestConnectionManagement
 end

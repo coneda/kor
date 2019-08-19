@@ -23,8 +23,14 @@
         type: type,
         content: message
       }
-      window.setTimeout(self.drop, self.opts.duration || 3000)
+      window.setTimeout(self.drop, duration())
       self.update()
+
+    duration = ->
+      if wApp.info.data.env == 'test'
+        500
+      else
+        3000
 
     ajaxCompleteHandler = (event, request, options) ->
       contentType = request.getResponseHeader('content-type')
