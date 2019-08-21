@@ -19,7 +19,7 @@ before_install:
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.12.deb 
   - sudo dpkg -i --force-confnew elasticsearch-5.6.12.deb
   - sudo service elasticsearch restart
-  - wget https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip
+  - wget https://chromedriver.storage.googleapis.com/76.0.3809.126/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - sudo ln -sfn $(pwd)/chromedriver /usr/local/bin/chromedriver
   - nvm install v8.12.0
