@@ -24,6 +24,8 @@ before_install:
   - sudo ln -sfn $(pwd)/chromedriver /usr/local/bin/chromedriver
   - nvm install v8.12.0
   - nvm alias default v8.12.0
+  - gem update --system
+  - gem install bundler
 
 install:
   - npm install
