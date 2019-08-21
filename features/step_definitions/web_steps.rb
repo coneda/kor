@@ -206,7 +206,7 @@ end
 Then(/^the select "([^"]*)" should have value "([^"]*)"$/) do |name, value|
   field = page.find_field(name)
   options = field.all('option').map{|o| [o.value, o.text]}.to_h
-  if field['multiple'].present?
+  if field.multiple?
     values = field.value.map{|v| options[v]}
     expect(values).to eql(value.split ',')
   else
