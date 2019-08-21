@@ -12,3 +12,7 @@ end
 if record.is_a?(Fields::Regex)
   json.extract! record, :regex
 end
+
+if record.is_a?(Fields::Select)
+  json.extract! record, :subtype, :values
+end

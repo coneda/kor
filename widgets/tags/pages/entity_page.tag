@@ -51,14 +51,22 @@
 
       <div each={field in visibleFields()}>
         <span class="field">{field.show_label}:</span>
-        <span class="value">{field.value}</span>
+        <span class="value">{fieldValue(field.value)}</span>
       </div>
 
       <div show={visibleFields().length > 0} class="hr silent"></div>
 
       <div each={property in data.properties}>
-        <span class="field">{property.label}:</span>
-        <span class="value">{property.value}</span>
+        <a
+          if={property.url}
+          href="{property.value}"
+          rel="noopener"
+          target="_blank"
+        >» {property.label}</a>
+        <virtual if={!property.url}>
+          <span class="field">{property.label}:</span>
+          <span class="value">{property.value}</span>
+        </virtual>
       </div>
 
       <div class="hr silent"></div>
@@ -327,6 +335,9 @@
       url = Zepto(event.target).attr('href')
       window.open(url, '', 'height=800,width=1024')
 
+    tag.fieldValue = (value) ->
+      if Zepto.isArray(value) then value.join(', ') else value
+
     fetch = ->
       Zepto.ajax(
         url: "/entities/#{tag.opts.id}"
@@ -334,6 +345,7 @@
         success: (data) ->
           tag.data = data
           tag.title tag.data.display_name
+          linkify_properties()
           wApp.entityHistory.add(data.id)
         error: ->
           wApp.bus.trigger('access-denied')
@@ -344,6 +356,12 @@
     tag.inplaceTagHandlers = {
       doneHandler: fetch
     }
+
+    linkify_properties = ->
+      for property in tag.data.properties
+        if typeof(property['value']) == 'string'
+          if property['value'].match(/^https?:\/\//)
+            property['url'] = true
 
   </script>
 

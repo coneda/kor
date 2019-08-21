@@ -23,8 +23,14 @@
         type: type,
         content: message
       }
-      window.setTimeout(self.drop, self.opts.duration || 3000)
+      window.setTimeout(self.drop, duration())
       self.update()
+
+    duration = ->
+      if wApp.info.data.env == 'test'
+        500
+      else
+        3000
 
     ajaxCompleteHandler = (event, request, options) ->
       contentType = request.getResponseHeader('content-type')
@@ -33,7 +39,7 @@
         try
           data = JSON.parse(request.response)
           
-          if data.message
+          if data.message && !request.noMessaging
             type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
             wApp.bus.trigger 'message', type, data.message
             

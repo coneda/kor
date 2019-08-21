@@ -1,6 +1,4 @@
 class KorController < JsonController
-  skip_before_action :authentication, :authorization, :legal
-
   def index
     # just a dummy
     render nothing: true

@@ -5,7 +5,7 @@ RSpec.describe FieldsController, type: :controller do
 
   it 'should GET show' do
     people = Kind.find_by! name: 'person'
-    get :show, id: Field.first.id, kind_id: people.id
+    get :show, params: { id: Field.first.id, kind_id: people.id }
     expect(response).to be_success
     expect(json['name']).to be_a(String)
     expect(json['created_at']).to be_nil
@@ -15,12 +15,14 @@ RSpec.describe FieldsController, type: :controller do
     get :types
     expect(response).to be_success
     expect(json).to be_a(Array)
-    expect(json[0]['name']).to eq('Fields::Text')
+    expect(json[0]['name']).to eq('Fields::Select')
   end
 
   it 'should GET show with additions' do
     people = Kind.find_by! name: 'person'
-    get :show, id: Field.first.id, kind_id: people.id, include: 'technical'
+    get :show, params: {
+      id: Field.first.id, kind_id: people.id, include: 'technical'
+    }
     expect(response).to be_success
     expect(json['name']).to be_a(String)
     expect(Time.parse json['created_at']).to be < Time.now
@@ -28,8 +30,10 @@ RSpec.describe FieldsController, type: :controller do
 
   it 'should not POST create' do
     people = Kind.find_by! name: 'person'
-    post :create, kind_id: people.id, field: {
-      type: 'Fields::String', name: 'isbn', show_label: 'ISBN'
+    post :create, params: {
+      kind_id: people.id, field: {
+        type: 'Fields::String', name: 'isbn', show_label: 'ISBN'
+      }
     }
     expect(response).to be_forbidden
   end
@@ -37,8 +41,10 @@ RSpec.describe FieldsController, type: :controller do
   it 'should not PATCH update' do
     people = Kind.find_by! name: 'person'
     field = people.fields.first
-    post :update, kind_id: people.id, id: field.id, field: {
-      show_label: 'GND Identifier'
+    post :update, params: {
+      kind_id: people.id, id: field.id, field: {
+        show_label: 'GND Identifier'
+      }
     }
     expect(response).to be_forbidden
   end
@@ -46,7 +52,7 @@ RSpec.describe FieldsController, type: :controller do
   it 'should not DELETE destroy' do
     people = Kind.find_by! name: 'person'
     field = people.fields.first
-    delete :destroy, kind_id: people.id, id: field.id
+    delete :destroy, params: { kind_id: people.id, id: field.id }
     expect(response).to be_forbidden
   end
 
@@ -57,16 +63,21 @@ RSpec.describe FieldsController, type: :controller do
 
     it 'should POST create' do
       people = Kind.find_by! name: 'person'
-      post :create, kind_id: people.id, field: {
-        type: 'Fields::String', name: 'isbn', show_label: 'ISBN'
+      post :create, params: {
+        kind_id: people.id, field: {
+          type: 'Fields::String', name: 'isbn', show_label: 'ISBN'
+        }
       }
       expect_created_response
     end
 
     it 'should sanitize the class string' do
       people = Kind.find_by! name: 'person'
-      post :create, kind_id: people.id, field: {
-        type: 'Wrong::Klass', name: 'isbn', show_label: 'ISBN'
+      post :create, params: {
+        kind_id: people.id,
+        field: {
+          type: 'Wrong::Klass', name: 'isbn', show_label: 'ISBN'
+        }
       }
       expect_created_response
       expect(people.reload.fields.last.type).to eq('Fields::String')
@@ -75,12 +86,15 @@ RSpec.describe FieldsController, type: :controller do
     it 'should PATCH update' do
       people = Kind.find_by! name: 'person'
       field = people.fields.first
-      post :update, kind_id: people.id, id: field.id, field: {
-        show_label: 'GND Identifier',
-        form_label: 'GND ID',
-        search_label: 'GND Identifier',
-        is_identifier: true,
-        show_on_entity: false
+      post :update, params: {
+        kind_id: people.id,
+        id: field.id, field: {
+          show_label: 'GND Identifier',
+          form_label: 'GND ID',
+          search_label: 'GND Identifier',
+          is_identifier: true,
+          show_on_entity: false
+        }
       }
       expect_updated_response
       field = people.reload.fields.first
@@ -93,9 +107,13 @@ RSpec.describe FieldsController, type: :controller do
     it 'should not allow to change the type when updating' do
       people = Kind.find_by! name: 'person'
       field = people.fields.first
-      post :update, kind_id: people.id, id: field.id, field: {
-        type: 'Fields::Regex',
-        show_label: 'GND Identifier'
+      post :update, params: { 
+        kind_id: people.id,
+        id: field.id,
+        field: {
+          type: 'Fields::Regex',
+          show_label: 'GND Identifier'
+        }
       }
       expect(response).to be_client_error
       expect(json['errors']['type']).to include("can't be changed")
@@ -104,7 +122,7 @@ RSpec.describe FieldsController, type: :controller do
     it 'should DELETE destroy' do
       people = Kind.find_by! name: 'person'
       field = people.fields.first
-      delete :destroy, kind_id: people.id, id: field.id
+      delete :destroy, params: { kind_id: people.id, id: field.id }
       expect_deleted_response
     end
   end

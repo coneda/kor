@@ -1,7 +1,5 @@
 <kor-collection-selector>
-
   <virtual if={collections}>
-
     <virtual if={collections.length == 1}
       <input 
         ref="input"
@@ -22,8 +20,8 @@
 
       <virtual if={opts.multiple}>
         <label>{tcap('activerecord.models.collection', {count: 'other'})}:</label>
-        <strong if={ids.length == 0}>{t('all')}</strong>
-        <strong if={ids.length > 0}>{selectedList()}</strong>
+        <strong if={!ids || ids.length == 0}>{t('all')}</strong>
+        <strong if={ids && ids.length > 0}>{selectedList()}</strong>
         <a
           href="#"
           onclick={selectCollections}
@@ -70,12 +68,17 @@
       }
     }
 
+    tag.set = function(value) {
+      tag.ids = value || [];
+      tag.update();
+    }
+
     tag.selectCollections = function(event) {
       event.preventDefault();
 
       var cols = allowedCollections();
-      var ids = tag.ids;
-      if (tag.ids.length == 0) {
+      var ids = tag.ids || [];
+      if (ids.length == 0) {
         for (var i = 0; i < cols.length; i++) {
           ids.push(cols[i].id);
         }
@@ -109,6 +112,7 @@
 
     var newSelection = function(ids) {
       tag.ids = ids;
+      Zepto(tag.root).trigger('change', [tag.ids]);
       tag.update();
     }
 
@@ -136,5 +140,4 @@
       return results;
     }
   </script>
-
 </kor-collection-selector>

@@ -7,7 +7,6 @@
     ref="input"
     options={kinds}
     placeholder={t('all')}
-    value={opts.riotValue}
   />
 
   </kor-input>
@@ -34,6 +33,18 @@
       }
     }
 
+    tag.set = function(value) {
+      if (tag.refs.input) {
+        tag.refs.input.set(value);
+      } else {
+        tag.kind_id = value;
+      }
+    }
+
+    tag.reset = function() {
+      tag.set(null);
+    }
+
     var fetch = function() {
       Zepto.ajax({
         url: '/kinds',
@@ -41,12 +52,17 @@
           var results = [];
           for (var i = 0; i < data.records.length; i++) {
             var k = data.records[i];
-            if (k.id != wApp.info.data.medium_kind_id) {
+            if (tag.opts.includeMedia || k.id != wApp.info.data.medium_kind_id) {
               results.push(k);
             }
           }
           tag.kinds = results;
           tag.update();
+
+          if (tag.kind_id) {
+            tag.refs.input.set(tag.kind_id);
+            tag.kind_id = null;
+          }
         }
       })
     }

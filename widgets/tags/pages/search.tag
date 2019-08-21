@@ -83,7 +83,10 @@
         </virtual>
 
         <div class="kor-text-right">
-          <kor-input type="submit" value={tcap('verbs.search')} />
+          <kor-input
+            type="submit"
+            label={tcap('verbs.search')}
+          />
         </div>
       </form>
     </div>
@@ -102,11 +105,20 @@
         per-page={data.per_page}
         total={data.total}
         on-paginate={page}
+        class="top"
       />
 
       <kor-search-result
         each={entity in data.records}
         entity={entity}
+      />
+
+      <kor-pagination
+        page={data.page}
+        per-page={data.per_page}
+        total={data.total}
+        on-paginate={page}
+        class="bottom"
       />
     </div>
   </div>
@@ -155,6 +167,7 @@
       var id = Zepto(event.target).val();
       if (id && id != '0') {
         fetchKind(id);
+        wApp.routing.query({kind_id: id});
       } else {
         tag.kind = null;
         tag.update();

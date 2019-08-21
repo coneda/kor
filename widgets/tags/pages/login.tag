@@ -31,7 +31,7 @@
 
         <kor-input
           type="submit"
-          value={tcap('verbs.login')}
+          label={tcap('verbs.login')}
         />
       </form>
 

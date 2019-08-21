@@ -43,6 +43,21 @@ module DataHelper
     expect(json['message']).to match(/has been deleted/)
   end
 
+  def expect_autocomplete_response(options = {})
+    expect(response).to be_success
+
+    data = json
+
+    if options[:count]
+      expect(data.size).to eq(options[:count])
+    end
+
+    data.each do |record|
+      expect(record['id']).to be_a(Integer)
+      expect(record['title']).to be_a(String)
+    end
+  end
+
   def admin
     User.admin
   end
@@ -135,12 +150,7 @@ module DataHelper
     UserGroup.find_by! name: 'nice'
   end
 
-  def default_setup(options = {})
-    options.reverse_merge!(
-      pictures: false,
-      relationships: false
-    )
-
+  def default_setup
     # default = Collection.find_by!(name: 'default')
     priv = Collection.create! name: 'private'
 
@@ -197,7 +207,7 @@ module DataHelper
 
     # admin = User.find_by! name: 'admin'
     jdoe = FactoryGirl.create :jdoe, groups: [students]
-    FactoryGirl.create :mrossi, groups: [project]
+    mrossi = FactoryGirl.create :mrossi, groups: [project]
     FactoryGirl.create :ldap_template
 
     Kor::Auth.grant default, :view, :to => students
@@ -238,8 +248,8 @@ module DataHelper
       created_at: Time.mktime(2016, 10, 21, 11),
       updated_at: Time.mktime(2017, 10, 21, 11),
       collection: priv,
-      creator_id: admin.id,
-      updater_id: admin.id,
+      creator_id: mrossi.id,
+      updater_id: mrossi.id,
       tag_list: ['art', 'early']
     }
     louvre = institutions.entities.create!(
@@ -268,8 +278,8 @@ module DataHelper
       created_at: Time.mktime(2016, 10, 21, 18, 9),
       updated_at: Time.mktime(2017, 10, 21, 18, 9),
       collection: priv,
-      creator_id: admin.id,
-      updater_id: admin.id
+      creator_id: mrossi.id,
+      updater_id: mrossi.id
     }
 
     Relationship.relate_and_save mona_lisa, 'is related to', last_supper
@@ -284,6 +294,9 @@ module DataHelper
     archive = AuthorityGroupCategory.create! name: 'archive'
     archive.authority_groups.create! name: 'seminar'
 
+    # we have to reload the picture before we add it to the group or it will
+    # receive an update, changing its timestamps
+    picture_a = Entity.find(picture_a.id)
     lecture.add_entities picture_a
 
     nice = UserGroup.create! user_id: jdoe.id, name: 'nice'
@@ -306,9 +319,9 @@ module DataHelper
     end
   end
 
-  def self.default_setup(*args)
+  def self.default_setup
     dummy = Class.new
     dummy.include(self)
-    dummy.new.default_setup(*args)
+    dummy.new.default_setup
   end
 end

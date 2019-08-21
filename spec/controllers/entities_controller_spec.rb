@@ -10,65 +10,71 @@ RSpec.describe EntitiesController, type: :controller do
     expect(Kor::Search).to receive(:new).with(
       User.guest,
       hash_including(
-        isolated: false,
-        sort: { column: 'random', direction: 'asc' }
+        sort: { column: 'random', direction: 'asc' },
+        created_after: Time.parse('2013-01-02')
       )
     ).and_call_original
 
-    get 'index', {
+    get 'index', as: 'json', params: {
       isolated: false,
-      sort: 'random'
+      sort: 'random',
+      created_after: '2013-01-02'
     }
     expect_collection_response count: 0
   end
 
   it 'should GET existence' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    get 'existence', ids: [mona_lisa.id]
+    get 'existence', params: { ids: [mona_lisa.id] }
     expect(json).to eq({ mona_lisa.id.to_s => false })
   end
 
   it 'should GET show' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    get 'show', id: mona_lisa.id
+    get 'show', params: { id: mona_lisa.id }
     expect(response).to be_forbidden
 
     students = Credential.find_by! name: 'students'
     students.users << User.guest
 
-    get 'show', id: mona_lisa.id
+    get 'show', params: { id: mona_lisa.id }
     expect(response).to be_success
   end
 
   it 'should not GET metadata' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    get 'metadata', id: mona_lisa.id
+    get 'metadata', params: { id: mona_lisa.id }
     expect(response).to be_forbidden
   end
 
   it 'should GET relation_counts' # action still relevant?
 
   it 'should not POST create' do
-    post 'create', entity: { name: 'Danube' }
+    post 'create', params: { entity: { name: 'Danube' } }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    patch 'update', id: mona_lisa.id, entity: { name: 'Mona Liza' }
+    patch 'update', params: { id: mona_lisa.id, entity: { name: 'Mona Liza' } }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update_tags' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    patch 'update_tags', id: mona_lisa.id, entity: { tags: 'pretty,smile' }
+    patch 'update_tags', params: {
+      id: mona_lisa.id, entity: { tags: 'pretty,smile' }
+    }
     expect(response).to be_forbidden
   end
 
   it 'should not POST merge' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     last_supper = Entity.find_by! name: 'The Last Supper'
-    post 'merge', entity_ids: [mona_lisa.id, last_supper.id], entity: { name: 'Mona Lisa' }
+    post 'merge', params: {
+      entity_ids: [mona_lisa.id, last_supper.id],
+      entity: { name: 'Mona Lisa' }
+    }
     expect(response).to be_forbidden
   end
 
@@ -76,7 +82,7 @@ RSpec.describe EntitiesController, type: :controller do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     last_supper = Entity.find_by! name: 'The Last Supper'
     paris = Entity.find_by! name: 'Paris'
-    post 'mass_relate', {
+    post 'mass_relate', params: {
       id: paris.id,
       entity_ids: [mona_lisa.id, last_supper.id],
       relation_name: 'is related to'
@@ -86,7 +92,7 @@ RSpec.describe EntitiesController, type: :controller do
 
   it 'should not DELETE destroy' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    delete 'destroy', id: mona_lisa.id
+    delete 'destroy', params: { id: mona_lisa.id }
     expect(response).to be_forbidden
   end
 
@@ -99,11 +105,13 @@ RSpec.describe EntitiesController, type: :controller do
       get 'index'
       expect_collection_response count: 5
 
-      get 'index', kind_id: Kind.medium_kind_id
+      get 'index', params: { kind_id: Kind.medium_kind_id }
       expect_collection_response count: 1
       expect(json['records'][0]['primary_entities']).to be_nil
 
-      get 'index', include: 'gallery_data', kind_id: Kind.medium_kind_id
+      get 'index', params: {
+        include: 'gallery_data', kind_id: Kind.medium_kind_id
+      }
       expect_collection_response count: 1
       expect(json['records'][0]['primary_entities'].size).to eq(1)
 
@@ -112,37 +120,39 @@ RSpec.describe EntitiesController, type: :controller do
         'secondary_relations' => []
       )
 
-      get 'index', include: 'gallery_data', kind_id: Kind.medium_kind_id
+      get 'index', params: {
+        include: 'gallery_data', kind_id: Kind.medium_kind_id
+      }
       expect_collection_response count: 1
       expect(json['records'][0]['primary_entities'].size).to eq(0)
     end
 
     it 'should GET existence' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      get 'existence', ids: [mona_lisa.id]
+      get 'existence', params: { ids: [mona_lisa.id] }
       expect(json).to eq({ mona_lisa.id.to_s => true })
     end
 
     it 'should GET show' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      get 'show', id: mona_lisa.id
+      get 'show', params: { id: mona_lisa.id }
       expect(response).to be_success
       expect(json['name']).to eq('Mona Lisa')
       expect(json['relations']).to be_nil
 
-      get 'show', id: mona_lisa.id, include: 'relations,technical'
+      get 'show', params: { id: mona_lisa.id, include: 'relations,technical' }
       expect(response).to be_success
       expect(json['relations']['has been created by']).to eq(1)
       expect(json['relations']['is located in']).to eq(1)
       expect(json['uuid']).to be_nil
 
-      get 'show', id: mona_lisa.uuid, include: 'relations,technical'
+      get 'show', params: { id: mona_lisa.uuid, include: 'relations,technical' }
       expect(response).to be_success
     end
 
     it 'should GET metadata' do
       picture = Kind.medium_kind.entities.first
-      get 'metadata', id: picture.id
+      get 'metadata', params: { id: picture.id }
       expect(response).to be_success
       expect(response.body).to match(/medium/)
       expect(response.body).to match(/Mona Lisa/)
@@ -152,26 +162,33 @@ RSpec.describe EntitiesController, type: :controller do
     it 'should GET relation_counts' # action still relevant?
 
     it 'should not POST create' do
-      post 'create', entity: { name: 'Danube' }
+      post 'create', params: { entity: { name: 'Danube' } }
       expect(response).to be_forbidden
     end
 
     it 'should not PATCH update' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      patch 'update', id: mona_lisa.id, entity: { name: 'Mona Liza' }
+      patch 'update', params: {
+        id: mona_lisa.id, entity: { name: 'Mona Liza' }
+      }
       expect(response).to be_forbidden
     end
 
     it 'should not PATCH update_tags' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      patch 'update_tags', id: mona_lisa.id, entity: { tags: 'pretty,smile' }
+      patch 'update_tags', params: {
+        id: mona_lisa.id, entity: { tags: 'pretty,smile' }
+      }
       expect(response).to be_forbidden
     end
 
     it 'should not POST merge' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
-      post 'merge', entity_ids: [mona_lisa.id, last_supper.id], entity: { name: 'Mona Lisa' }
+      post 'merge', params: {
+        entity_ids: [mona_lisa.id, last_supper.id],
+        entity: { name: 'Mona Lisa' }
+      }
       expect(response).to be_forbidden
     end
 
@@ -179,7 +196,7 @@ RSpec.describe EntitiesController, type: :controller do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
       paris = Entity.find_by! name: 'Paris'
-      post 'mass_relate', {
+      post 'mass_relate', params: {
         id: paris.id,
         entity_ids: [mona_lisa.id, last_supper.id],
         relation_name: 'is related to'
@@ -189,7 +206,7 @@ RSpec.describe EntitiesController, type: :controller do
 
     it 'should not DELETE destroy' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      delete 'destroy', id: mona_lisa.id
+      delete 'destroy', params: { id: mona_lisa.id }
       expect(response).to be_forbidden
     end
   end
@@ -206,12 +223,12 @@ RSpec.describe EntitiesController, type: :controller do
 
     it 'should GET show' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      get 'show', id: mona_lisa.id
+      get 'show', params: { id: mona_lisa.id }
       expect(response).to be_success
       expect(json['name']).to eq('Mona Lisa')
       expect(json['relations']).to be_nil
 
-      get 'show', id: mona_lisa.id, include: 'relations,technical'
+      get 'show', params: { id: mona_lisa.id, include: 'relations,technical' }
       expect(response).to be_success
       expect(json['relations']['has been created by']).to eq(1)
       expect(json['relations']['is located in']).to eq(1)
@@ -230,7 +247,9 @@ RSpec.describe EntitiesController, type: :controller do
     end
 
     it 'should PATCH update_tags' do
-      patch 'update_tags', id: mona_lisa.id, entity: { tags: 'pretty,smile' }
+      patch 'update_tags', params: {
+        id: mona_lisa.id, entity: { tags: 'pretty,smile' }
+      }
       expect(response).to be_success
       expect(mona_lisa.reload.tag_list).to eq(['art', 'late', 'pretty', 'smile'])
     end
@@ -244,7 +263,9 @@ RSpec.describe EntitiesController, type: :controller do
     it "should restrict moving entities between collections" do
       last_supper = Entity.find_by! name: 'The Last Supper'
       default = Collection.find_by! name: 'default'
-      patch :update, id: last_supper.id, entity: { collection_id: default.id }
+      patch :update, params: {
+        id: last_supper.id, entity: { collection_id: default.id }
+      }
       expect(response.status).to eq(403)
       expect(json['message']).to match(/moving an entity from one collection/)
     end
@@ -259,12 +280,14 @@ RSpec.describe EntitiesController, type: :controller do
       get 'index'
       expect_collection_response count: 7
 
-      get 'index', kind_id: Kind.medium_kind_id
+      get 'index', params: { kind_id: Kind.medium_kind_id }
       expect_collection_response count: 2
       expect(json['records'][0]['primary_entities']).to be_nil
       expect(json['records'][1]['primary_entities']).to be_nil
 
-      get 'index', include: 'gallery_data', kind_id: Kind.medium_kind_id
+      get 'index', params: {
+        include: 'gallery_data', kind_id: Kind.medium_kind_id
+      }
       expect_collection_response count: 2
       expect(json['records'][0]['primary_entities'].size).to eq(1)
       expect(json['records'][1]['primary_entities'].size).to eq(1)
@@ -274,14 +297,16 @@ RSpec.describe EntitiesController, type: :controller do
         'secondary_relations' => []
       )
 
-      get 'index', include: 'gallery_data', kind_id: Kind.medium_kind_id
+      get 'index', params: {
+        include: 'gallery_data', kind_id: Kind.medium_kind_id
+      }
       expect_collection_response count: 2
       expect(json['records'][0]['primary_entities'].size).to eq(0)
       expect(json['records'][1]['primary_entities'].size).to eq(0)
 
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       leonardo = Entity.find_by! name: 'Leonardo'
-      get 'index', id: "#{mona_lisa.id},#{leonardo.id}"
+      get 'index', params: { id: "#{mona_lisa.id},#{leonardo.id}" }
       expect(json['records'][0]['name']).to eq('Leonardo')
       expect(json['records'][1]['name']).to eq('Mona Lisa')
     end
@@ -289,7 +314,7 @@ RSpec.describe EntitiesController, type: :controller do
     it 'should GET existence' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       leonardo = Entity.find_by! name: 'Leonardo'
-      get 'existence', ids: [mona_lisa.id, leonardo.id, 588]
+      get 'existence', params: { ids: [mona_lisa.id, leonardo.id, 588] }
       expect(json).to eq(
         mona_lisa.id.to_s => true,
         leonardo.id.to_s => true,
@@ -299,12 +324,12 @@ RSpec.describe EntitiesController, type: :controller do
 
     it 'should GET show' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      get 'show', id: mona_lisa.id
+      get 'show', params: { id: mona_lisa.id }
       expect(response).to be_success
       expect(json['name']).to eq('Mona Lisa')
       expect(json['relations']).to be_nil
 
-      get 'show', id: mona_lisa.id, include: 'relations,technical'
+      get 'show', params: { id: mona_lisa.id, include: 'relations,technical' }
       expect(response).to be_success
       expect(json['relations']['has been created by']).to eq(1)
       expect(json['relations']['is located in']).to eq(1)
@@ -314,7 +339,7 @@ RSpec.describe EntitiesController, type: :controller do
 
     it 'should GET metadata' do
       picture = Kind.medium_kind.entities.first
-      get 'metadata', id: picture.id
+      get 'metadata', params: { id: picture.id }
       expect(response).to be_success
       expect(response.body).to match(/medium/)
       expect(response.body).to match(/Mona Lisa/)
@@ -343,7 +368,9 @@ RSpec.describe EntitiesController, type: :controller do
         ]
       }
 
-      post 'create', entity: entity_params, user_group_name: group.name
+      post 'create', params: {
+        entity: entity_params, user_group_name: group.name
+      }
       expect_created_response
       van_gogh = Entity.find_by!(name: 'Van Gogh')
       expect(van_gogh.dataset['gnd_id']).to eq('12345')
@@ -360,18 +387,22 @@ RSpec.describe EntitiesController, type: :controller do
     end
 
     it "should verify that there is a file for media uploads" do
-      post 'create', entity: {
-        collection_id: default.id,
-        kind_id: Kind.medium_kind.id
+      post 'create', params: {
+        entity: {
+          collection_id: default.id,
+          kind_id: Kind.medium_kind.id
+        }
       }
       expect(response).not_to be_success
       expect(json['errors']['medium'].size).to eq(1)
 
-      post :create, entity: {
-        collection_id: Collection.first.id,
-        name: "Some name",
-        kind_id: Kind.medium_kind.id,
-        medium_attributes: {}
+      post :create, params: {
+        entity: {
+          collection_id: Collection.first.id,
+          name: "Some name",
+          kind_id: Kind.medium_kind.id,
+          medium_attributes: {}
+        }
       }
       expect(response).not_to be_success
     end
@@ -380,10 +411,12 @@ RSpec.describe EntitiesController, type: :controller do
       Kor.settings["max_file_upload_size"] = 0.2
       file = fixture_file_upload("image_c.jpg", 'image/jpeg')
 
-      post :create, entity: {
-        kind_id: Kind.medium_kind.id,
-        collection_id: default.id,
-        medium_attributes: { image: file }
+      post :create, params: {
+        entity: {
+          kind_id: Kind.medium_kind.id,
+          collection_id: default.id,
+          medium_attributes: { image: file }
+        }
       }
       expect(response.status).to eq(422)
       expect(json['errors']['medium.image_file_size'].size).to eq(1)
@@ -391,27 +424,31 @@ RSpec.describe EntitiesController, type: :controller do
 
     it 'should verify that there are no duplicates' do
       file = fixture_file_upload("image_a.jpg", 'image/jpeg')
-      post 'create', entity: {
-        kind_id: Kind.medium_kind.id,
-        collection_id: default.id,
-        medium_attributes: { image: file }
+      post 'create', params: {
+        entity: {
+          kind_id: Kind.medium_kind.id,
+          collection_id: default.id,
+          medium_attributes: { image: file }
+        }
       }
       expect(response.status).to eq(422)
     end
 
     it 'should POST create (media)' do
       file = fixture_file_upload("image_c.jpg", 'image/jpeg')
-      post 'create', entity: {
-        kind_id: Kind.medium_kind.id,
-        collection_id: default.id,
-        medium_attributes: { image: file }
+      post 'create', params: {
+        entity: {
+          kind_id: Kind.medium_kind.id,
+          collection_id: default.id,
+          medium_attributes: { image: file }
+        }
       }
       expect_created_response
     end
 
     it 'should POST create (media) and put it into a designated group' do
       file = fixture_file_upload("image_c.jpg", 'image/jpeg')
-      post 'create', {
+      post 'create', params: {
         entity: {
           kind_id: Kind.medium_kind.id,
           collection_id: default.id,
@@ -428,7 +465,7 @@ RSpec.describe EntitiesController, type: :controller do
 
     it 'should POST create (media) and relate id with a designated entity' do
       file = fixture_file_upload("image_c.jpg", 'image/jpeg')
-      post 'create', {
+      post 'create', params: {
         entity: {
           kind_id: Kind.medium_kind.id,
           collection_id: default.id,
@@ -445,7 +482,7 @@ RSpec.describe EntitiesController, type: :controller do
 
     it 'when a duplicate was found, put it in the designated group' do
       file = fixture_file_upload("image_a.jpg", 'image/jpeg')
-      post 'create', {
+      post 'create', params: {
         entity: {
           kind_id: Kind.medium_kind.id,
           collection_id: default.id,
@@ -461,14 +498,18 @@ RSpec.describe EntitiesController, type: :controller do
 
     it 'should PATCH update' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      patch 'update', id: mona_lisa.id, entity: { name: 'Mona Liza' }
+      patch 'update', params: {
+        id: mona_lisa.id, entity: { name: 'Mona Liza' }
+      }
       expect_updated_response
       expect(mona_lisa.reload.name).to eq('Mona Liza')
     end
 
     it 'should PATCH update_tags' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      patch 'update_tags', id: mona_lisa.id, entity: { tags: 'pretty,smile' }
+      patch 'update_tags', params: {
+        id: mona_lisa.id, entity: { tags: 'pretty,smile' }
+      }
       expect(response).to be_success
       expect(mona_lisa.reload.tag_list).to eq(['art', 'late', 'pretty', 'smile'])
     end
@@ -476,7 +517,10 @@ RSpec.describe EntitiesController, type: :controller do
     it 'should POST merge' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
-      post 'merge', entity_ids: [mona_lisa.id, last_supper.id], entity: { name: 'Mona Lisa' }
+      post 'merge', params: {
+        entity_ids: [mona_lisa.id, last_supper.id],
+        entity: { name: 'Mona Lisa' }
+      }
       expect(response).to be_success
       result = Entity.find(json['id'])
       expect(result.name).to eq('Mona Lisa')
@@ -488,7 +532,7 @@ RSpec.describe EntitiesController, type: :controller do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
       paris = Entity.find_by! name: 'Paris'
-      post 'mass_relate', {
+      post 'mass_relate', params: {
         id: paris.id,
         entity_ids: [mona_lisa.id, last_supper.id],
         relation_name: 'is related to'
@@ -500,7 +544,7 @@ RSpec.describe EntitiesController, type: :controller do
 
     it 'should not DELETE destroy' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
-      delete 'destroy', id: mona_lisa.id
+      delete 'destroy', params: { id: mona_lisa.id }
       expect_deleted_response
       expect(Entity.find_by id: mona_lisa.id).to be_nil
     end
@@ -508,7 +552,9 @@ RSpec.describe EntitiesController, type: :controller do
     it "should restrict moving entities between collections" do
       last_supper = Entity.find_by! name: 'The Last Supper'
       default = Collection.find_by! name: 'default'
-      patch :update, id: last_supper.id, entity: { collection_id: default.id }
+      patch :update, params: {
+        id: last_supper.id, entity: { collection_id: default.id }
+      }
       expect_updated_response
       expect(last_supper.reload.collection_id).to eq(default.id)
     end
@@ -541,14 +587,14 @@ RSpec.describe EntitiesController, type: :controller do
       }
 
       facets.each do |param, key|
-        get 'show', id: leonardo.id
+        get 'show', params: { id: leonardo.id }
         expect(json[key]).to be_nil
 
-        get 'show', id: leonardo.id, include: param
+        get 'show', params: { id: leonardo.id, include: param }
         expect(json[key]).not_to be_nil
       end
 
-      get 'show', id: leonardo.id, include: 'all'
+      get 'show', params: { id: leonardo.id, include: 'all' }
 
       expect(json['datings']).to be_a(Array)
       expect(json['datings'].size).to eq(1)
@@ -591,11 +637,14 @@ RSpec.describe EntitiesController, type: :controller do
         Entity.find_by_name("Monalisa").id
       ]
 
-      post 'merge', entity_ids: entity_ids, entity: {
-        name: 'Mona Lisa',
-        kind_id: works.id,
-        dataset: {
-          viaf_id: '1234'
+      post 'merge', params: {
+        entity_ids: entity_ids,
+        entity: {
+          name: 'Mona Lisa',
+          kind_id: works.id,
+          dataset: {
+            viaf_id: '1234'
+          }
         }
       }
       expect(response).to be_success
@@ -619,8 +668,9 @@ RSpec.describe EntitiesController, type: :controller do
       nice = UserGroup.find_by! name: 'nice'
       lecture = AuthorityGroup.find_by! name: 'lecture'
 
-      post 'merge', entity_ids: entity_ids, entity: {
-        medium_id: picture_a.medium_id
+      post 'merge', params: {
+        entity_ids: entity_ids,
+        entity: { medium_id: picture_a.medium_id }
       }
       expect(response).to be_success
       expect(Entity.all).not_to include(picture_b)
@@ -643,10 +693,13 @@ RSpec.describe EntitiesController, type: :controller do
         }
       }
 
-      post 'merge', entity_ids: [mona_lisa.id, other_mona_lisa.id], entity: {
-        name: 'Mona Lisa',
-        comment: 'comment 1',
-        kind_id: works.id
+      post 'merge', params: {
+        entity_ids: [mona_lisa.id, other_mona_lisa.id],
+        entity: {
+          name: 'Mona Lisa',
+          comment: 'comment 1',
+          kind_id: works.id
+        }
       }
       expect(response).to be_success
 
@@ -661,9 +714,12 @@ RSpec.describe EntitiesController, type: :controller do
         datings: [EntityDating.new(label: 'Lifespan', dating_string: '1877')]
       }
 
-      post 'merge', entity_ids: [leonardo.id, other_leonardo.id], entity: {
-        :name => 'Leonardo',
-        :kind_id => works.id,
+      post 'merge', params: {
+        entity_ids: [leonardo.id, other_leonardo.id],
+        entity: {
+          name: 'Leonardo',
+          kind_id: works.id,
+        }
       }
       expect(response).to be_success
 

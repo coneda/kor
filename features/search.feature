@@ -3,6 +3,7 @@ Feature: search
   Scenario: set criteria from url
     Given I am logged in as "admin"
     And I go to the path "/#/search?name=leonardo&kind_id=2&dataset_gnd_id=123456789"
+    Then I should see "Search" within ".w-content"
     Then I should see field "Name" with value "leonardo"
     And I should see field "GND-ID" with value "123456789"
     And I should see "Leonardo" within ".search-results"
@@ -25,6 +26,13 @@ Feature: search
     Then I should see "Search"
     And I should see "Mona Lisa" within ".search-results"
     When I select "person" from "Entity type"
+    When I fill in "Everywhere" with "leonardo"
+    And I fill in "Name" with "mona"
+    And I fill in "GND-ID" with "12345"
+    And I fill in "Tags" with "free"
+    And I fill in "Dating" with "1988"
+    And I fill in "Further properties" with "32"
+    And I fill in "Search in related entities" with "some"
     Given the search api expects to receive the params
       | name           | value    |
       | kind_id        | 2        |
@@ -36,13 +44,6 @@ Feature: search
       | dating         | 1988     |
       | property       | 32       |
       | related        | some     |
-    When I fill in "Everywhere" with "leonardo"
-    And I fill in "Name" with "mona"
-    And I fill in "GND-ID" with "12345"
-    And I fill in "Tags" with "free"
-    And I fill in "Dating" with "1988"
-    And I fill in "Further properties" with "32"
-    And I fill in "Search in related entities" with "some"
     And I press "Search"
     And I follow "Edit profile"
     And I should see "Edit profile"

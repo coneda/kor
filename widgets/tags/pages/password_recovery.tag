@@ -15,7 +15,7 @@
         <div class="kor-text-right">
           <kor-input
             type="submit"
-            value={tcap('verbs.reset')}
+            label={tcap('verbs.reset')}
           />
         </div>
       </form>

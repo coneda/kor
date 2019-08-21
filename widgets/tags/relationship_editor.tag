@@ -49,12 +49,13 @@
         ref="datings"
         errors={errors.datings}
         for="relationship"
+        default-dating-label={config().relationship_dating_label}
       />
 
       <hr />
 
-      <kor-input type="submit" value={tcap('verbs.save')} />
-      <kor-input type="reset" value={tcap('cancel')} />
+      <kor-input type="submit" />
+      <kor-input type="reset" label={tcap('cancel')} />
     </form>
   </div>
 
@@ -62,6 +63,7 @@
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.editor);
 
     tag.resource = {

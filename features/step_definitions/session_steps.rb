@@ -94,3 +94,11 @@ end
 When(/^I save a screenshot$/) do
   page.save_screenshot "screenshot.png"
 end
+
+When /^I am not logged in$/ do
+  if page.has_text?('logged in as: administrator')
+    binding.pry #asdf
+    Capybara.reset_sessions!
+    step 'I reload the page'
+  end
+end

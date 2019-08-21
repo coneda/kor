@@ -1,5 +1,5 @@
 class GeneratorsController < JsonController
-  before_filter do
+  before_action do
     @kind = Kind.find(params[:kind_id])
     @generators = @kind.generators
   end

@@ -5,9 +5,9 @@ class OaiPmh::BaseController < BaseController
 
   helper_method :timestamp, :base_url # , :medium_url
 
-  skip_before_filter :verify_authenticity_token
-  before_filter :ensure_metadata_prefix, only: [:get_record, :list_records]
-  before_filter :handle_resumption_token, only: [:list_identifiers, :list_records]
+  skip_before_action :verify_authenticity_token
+  before_action :ensure_metadata_prefix, only: [:get_record, :list_records]
+  before_action :handle_resumption_token, only: [:list_identifiers, :list_records]
 
   def identify
     @admin_email = User.admin.email
@@ -68,7 +68,8 @@ class OaiPmh::BaseController < BaseController
     def handle_resumption_token
       if params['resumptionToken']
         if token_data = load_query(params['resumptionToken'])
-          params.merge! token_data.merge(params)
+          mm = token_data.merge(params.permit!.to_h)
+          params.merge! mm
           params['page'] += 1
         else
           render_error 'badResumptionToken'

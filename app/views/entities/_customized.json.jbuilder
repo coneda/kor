@@ -2,7 +2,7 @@ json.extract!(entity,
   :id, :collection_id, :kind_id, :creator_id, :updater_id,
   :kind_name,
   :no_name_statement, :name, :distinct_name, :display_name,
-  :comment, :subtype
+  :comment, :subtype, :lock_version
 )
 
 json.tags(entity.tags.map { |t| t.to_s })

@@ -27,14 +27,14 @@ Rails.application.routes.draw do
   defaults format: 'json' do
     get 'fields/types', to: 'fields#types'
 
-    controller 'session' do
+    scope controller: 'session' do
       get 'session', action: 'show'
       post 'login', action: 'create'
       delete 'logout', action: 'destroy'
       post 'account-recovery', action: 'recovery'
     end
 
-    controller 'kor' do
+    scope controller: 'kor' do
       get 'translations', action: 'translations'
       get 'info', action: 'info'
       get 'statistics', action: 'statistics'
@@ -149,7 +149,7 @@ Rails.application.routes.draw do
 
   scope 'oai-pmh', format: 'xml', as: 'oai_pmh', via: [:get, :post] do
     ['entities', 'relationships', 'kinds', 'relations'].each do |res|
-      controller "oai_pmh/#{res}", defaults: { format: 'xml' } do
+      scope controller: "oai_pmh/#{res}", defaults: { format: 'xml' } do
         match res, to: "oai_pmh/#{res}#identify", constraints: OaiPmhVerbConstraint.new('Identify')
         match res, to: "oai_pmh/#{res}#list_sets", constraints: OaiPmhVerbConstraint.new('ListSets')
         match res, to: "oai_pmh/#{res}#list_metadata_formats", constraints: OaiPmhVerbConstraint.new('ListMetadataFormats')

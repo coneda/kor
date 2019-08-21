@@ -130,6 +130,8 @@ class Kor::Elastic
               'degree' => { 'type' => 'float' },
               'created_at' => { 'type' => 'integer' },
               'updated_at' => { 'type' => 'integer' },
+              'creator_id' => { 'type' => 'integer' },
+              'updater_id' => { 'type' => 'integer' },
 
               "sort" => { "type" => "keyword", "index" => false },
             }
@@ -216,6 +218,8 @@ class Kor::Elastic
       "dataset" => entity.dataset,
       'created_at' => entity.created_at.to_i,
       'updated_at' => entity.updated_at.to_i,
+      'updater_id' => entity.updater_id,
+      'creator_id' => entity.creator_id,
       'datings' => entity.datings.map { |d|
         { 'label' => d.dating_string, 'from' => d.from_day, 'to' => d.to_day }
       },
@@ -307,6 +311,8 @@ class Kor::Elastic
     by_degree(criteria[:degree])
     by_max_degree(criteria[:max_degree])
     by_min_degree(criteria[:min_degree])
+    by_created_by(criteria[:created_by])
+    by_updated_by(criteria[:updated_by])
 
     data = {
       'query' => { 'bool' => @query },
@@ -517,7 +523,7 @@ class Kor::Elastic
   end
 
   def by_name(old_terms, name)
-    name.present? ? (old_terms || '') + " name:(#{name})" : old_terms
+    name.present? ? (old_terms || '') + " name:(#{name}) OR distinct_name:(#{name})" : old_terms
   end
 
   def by_property(old_terms, property)
@@ -567,6 +573,22 @@ class Kor::Elastic
       ids = Relation.to_entity_kind_ids(relation_name)
       @query['filter'] << {
         'terms' => { 'kind_id' => ids }
+      }
+    end
+  end
+
+  def by_created_by(id)
+    if id.present?
+      @query['filter'] << {
+        'term' => { 'creator_id' => id }
+      }
+    end
+  end
+
+  def by_updated_by(id)
+    if id.present?
+      @query['filter'] << {
+        'term' => { 'updater_id' => id }
       }
     end
   end

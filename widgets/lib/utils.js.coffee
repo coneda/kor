@@ -47,4 +47,14 @@ wApp.utils = {
     return null unless obj
     obj = obj.split(',') unless Zepto.isArray(obj)
     parseInt(o) for o in obj
+  listToArray: (value) ->
+    return null unless value
+    for v in value.split(',')
+      parseInt(v)
+  arrayToList: (values) ->
+    return '' unless values
+    values.join(',')
+  isoToDate: (str) ->
+    parts = (parseInt(i) for i in str.split('-'))
+    new Date(parts[0], parts[1] - 1, parts[2])
 }

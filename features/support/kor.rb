@@ -8,6 +8,18 @@ class ActiveRecord::Base
 end
 ActiveRecord::Base.shared_connection = ActiveRecord::Base.connection
 
+require 'active_record/connection_adapters/abstract_mysql_adapter'
+class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
+  SEMAPHORE = Mutex.new
+  def execute(sql, name = nil)
+    begin
+      raise 'Debugging'
+    rescue => e
+      SEMAPHORE.synchronize { log(sql, name) { @connection.query(sql) } }
+    end
+  end
+end
+
 World(DataHelper)
 
 TestHelper.setup_vcr :cucumber

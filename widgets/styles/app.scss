@@ -893,6 +893,10 @@ kor-properties-editor, kor-datings-editor {
 }
 
 kor-input {
+  i.fa.fa-question-circle {
+    max-height: 8px;
+  }
+
   .help {
     border: 1px solid $kor-input-border;
     padding: 0.5rem;
@@ -906,3 +910,62 @@ kor-input {
     }
   }
 }
+
+[data-is=kor-recent-entities] {
+  kor-input[name='created_after'] {
+    display: inline-block;
+    width: 50%;
+  }
+
+  kor-input[name='created_before'] {
+    display: inline-block;
+    width: 50%;
+    margin-left: -4px;
+  }
+
+  kor-input[name='updated_after'] {
+    display: inline-block;
+    width: 50%;
+  }
+
+  kor-input[name='updated_before'] {
+    display: inline-block;
+    width: 50%;
+    margin-left: -4px;
+  }
+
+  td:first-child {
+    width: 160px;
+  }
+}
+
+kor-user-selector {
+  .autocomplete {
+    font-weight: normal;
+
+    .autocomplete-item {
+      font-size: 1rem;
+    }
+  }
+}
+
+// kor-date-selector {
+//   > label {
+//     display: block;
+//     font-weight: bold;
+//   }
+
+//   kor-input {
+//     float: left;
+//     width: 33.3%;
+//     padding-right: 1rem;
+
+//     label {
+//       font-weight: normal;
+//     }
+//   }
+
+//   kor-input:last-child {
+//     padding-right: 0rem;
+//   }
+// }

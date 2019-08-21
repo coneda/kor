@@ -1,5 +1,4 @@
 <kor-user-editor>
-
   <div class="kor-layout-left kor-layout-large" show={loaded}>
     <div class="kor-content-box">
       <h1 show={opts.id}>
@@ -156,16 +155,12 @@
 
         <div class="hr"></div>
 
-        <kor-input
-          type="submit"
-          value={tcap('verbs.save')}
-        />
+        <kor-input type="submit" />
       </form>
     </div>
   </div>
 
   <div class="clearfix"></div>
-
 
   <script type="text/coffee">
     tag = this
@@ -231,7 +226,9 @@
             tag.update()
         )
       else
-        tag.data = {}
+        tag.data = {
+          lock_version: 0
+        }
         tag.update()
 
     create = ->
@@ -248,7 +245,6 @@
         data: JSON.stringify(user: values())
       )
 
-
     expiresAtTag = ->
       for f in tag.refs.fields
         return f if f.name() == 'expires_at'
@@ -261,5 +257,4 @@
       results
 
   </script>
-
 </kor-user-editor>

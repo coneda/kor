@@ -17,13 +17,16 @@
       value={data.type}
       is-disabled={data.id}
       ref="fields"
+      onchange={updateSpecialFields}
     />
 
     <virtual each={f in specialFields}>
       <kor-input
-        name="name"
-        label={f.label}
-        riot-value={field[f.name]}
+        name={f.name}
+        label={tcap('activerecord.attributes.field.' + f.name)}
+        type={f.type}
+        options={f.options}
+        value={data[f.name]}
         errors={errors[f.name]}
         ref="fields"
       />
@@ -32,7 +35,7 @@
     <kor-input
       name="name"
       label={tcap('activerecord.attributes.field.name')}
-      riot-value={data.name}
+      value={data.name}
       errors={errors.name}
       ref="fields"
     />
@@ -40,7 +43,7 @@
     <kor-input
       name="show_label"
       label={tcap('activerecord.attributes.field.show_label')}
-      riot-value={data.show_label}
+      value={data.show_label}
       errors={errors.show_label}
       ref="fields"
     />
@@ -48,7 +51,7 @@
     <kor-input
       name="form_label"
       label={tcap('activerecord.attributes.field.form_label')}
-      riot-value={data.form_label}
+      value={data.form_label}
       errors={errors.form_label}
       ref="fields"
     />
@@ -56,7 +59,7 @@
     <kor-input
       name="search_label"
       label={tcap('activerecord.attributes.field.search_label')}
-      riot-value={data.search_label}
+      value={data.search_label}
       errors={errors.search_label}
       ref="fields"
     />
@@ -65,7 +68,7 @@
       name="show_on_entity"
       type="checkbox"
       label={tcap('activerecord.attributes.field.show_on_entity')}
-      riot-value={data.show_on_entity}
+      value={data.show_on_entity}
       ref="fields"
     />
 
@@ -73,16 +76,13 @@
       name="is_identifier"
       type="checkbox"
       label={tcap('activerecord.attributes.field.is_identifier')}
-      riot-value={data.is_identifier}
+      value={data.is_identifier}
       ref="fields"
     />
 
     <div class="hr"></div>
 
-    <kor-input
-      type="submit"
-      value={tcap('verbs.save')}
-    />
+    <kor-input type="submit" />
   </form>
 
   <script type="text/coffee">
@@ -99,30 +99,12 @@
         tag.update()
       fetchTypes()
 
-    # TODO: do we still need this?
-    tag.opts.notify.on 'add-field', ->
-      tag.field = {type: 'Fields::String'}
-      tag.showForm = true
-      tag.update()
-      # tag.updateSpecialFields()
-
-    # TODO: do we still need this?
-    tag.opts.notify.on 'edit-field', (field) ->
-      tag.field = field
-      tag.showForm = true
-      tag.update()
-      # tag.updateSpecialFields()
-
-    # tag.updateSpecialFields = (event) ->
-    #   # if tag.showForm
-    #   # get the tag selection or fall back to the model value
-    #   typeName = Zepto('[name=type]').val() || tag.data.type
-    #   # update the model
-    #   tag.data.type = typeName
-    #   if types = tag.types
-    #     tag.specialFields = types[typeName].fields
-    #     tag.update()
-    #   # true
+    tag.updateSpecialFields = (event) ->
+      typeName = if event then Zepto(event.target).val() else tag.data.type
+      tag.data.type = typeName
+      if types = tag.types
+        tag.specialFields = types[typeName].fields
+        tag.update()
 
     tag.submit = (event) ->
       event.preventDefault()
@@ -137,7 +119,6 @@
       p.always -> tag.update()
 
     create = ->
-      # console.log values()
       Zepto.ajax(
         type: 'POST'
         url: "/kinds/#{tag.opts.kindId}/fields"
@@ -166,6 +147,7 @@
         success: (data) ->
           tag.data = data
           tag.update()
+          tag.updateSpecialFields()
       )
 
     fetchTypes = ->
@@ -178,7 +160,7 @@
             tag.types_for_select.push(value: t.name, label: t.label)
             tag.types[t.name] = t
           tag.update()
-          #tag.updateSpecialFields()
+          tag.updateSpecialFields()
       )
 
   </script>

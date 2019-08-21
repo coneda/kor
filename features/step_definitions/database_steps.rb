@@ -76,8 +76,9 @@ Given /^the entity "([^"]*)" has dataset value "([^"]*)" for "([^"]*)"$/ do |ent
   entity.save
 end
 
-Then /^entity "([^"]*)" should have dataset value "([^"]*)" for "([^"]*)"$/ do |entity, value, name|
+Then /^entity "([^"]*)" should have dataset values? "([^"]*)" for "([^"]*)"$/ do |entity, value, name|
   entity = Entity.find_by_name entity
+  value = value.split('|') if value.match(/\|/)
   expect(entity.dataset[name]).to eq(value)
 end
 

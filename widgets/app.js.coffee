@@ -27,6 +27,11 @@ Zepto.extend Zepto.ajaxSettings, {
       xhr.setRequestHeader 'X-CSRF-Token', wApp.session.csrfToken()
 }
 
+$.tinyAutocomplete.prototype.beforeReceiveData = (data, xhr) ->
+  this.json = data.records;
+  this.field.trigger('receivedata', [this, data, xhr]);
+  this.onReceiveData(this.json);
+
 window.wApp = {
   bus: riot.observable()
   mixins: {}

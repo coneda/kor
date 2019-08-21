@@ -91,8 +91,10 @@ Feature: usergroups
     When I follow "MyStuff"
     Then I should see "Leonardo"
     When I follow "add to clipboard" within ".group-commands"
+    And I should see "the entities have been copied to the clipboard"
     And I go to the clipboard
-    Then I should see element "img" within "[data-is=kor-clipboard]"
+    Then I should see "Clipboard"
+    And I should see element "img" within widget "kor-clipboard"
 
   Scenario: Add an authority group's entities to the clipboard as a normal user
     Given I am logged in as "jdoe"

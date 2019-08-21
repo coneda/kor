@@ -252,14 +252,14 @@ RSpec.describe MediaController, type: :request do
       expect(response.status).to eq(200)
       expect(response.body.bytesize).to eq(File.size(entity.medium.path(:thumbnail)))
 
-      get entity.medium.url(:thumbnail), nil, {'Range' => 'bytes=0-1'}
+      get entity.medium.url(:thumbnail), headers: { 'Range' => 'bytes=0-1' }
       expect(response.status).to eq(206)
       expect(response.headers['Content-Range']).to eq(
         "bytes 0-1/#{File.size(entity.medium.path(:thumbnail))}"
       )
       expect(response.body.bytesize).to eq(2)
 
-      get entity.medium.url(:thumbnail), nil, {'Range' => 'bytes=0-100'}
+      get entity.medium.url(:thumbnail), headers: { 'Range' => 'bytes=0-100' }
       expect(response.status).to eq(206)
       expect(response.body.bytesize).to eq(101)
     end

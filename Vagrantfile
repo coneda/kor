@@ -13,7 +13,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     'VERSION' => ENV['VERSION'] || `git rev-parse --abbrev-ref HEAD`
   }
 
-  config.vm.define 'manual' do |c|
+  config.vm.define 'manual', autostart: false do |c|
     c.ssh.insert_key = true
     c.vm.box = 'debian/stretch64'
     c.vm.synced_folder '.', '/vagrant', type: 'virtualbox'
@@ -26,6 +26,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "dev.v4.0", primary: true do |c|
+    c.vm.box = 'generic/debian10'
+    
     if RUBY_PLATFORM.match(/darwin/)
       c.vm.synced_folder ".", "/vagrant", type: "nfs"
       c.vm.network "private_network", type: "dhcp"
@@ -49,7 +51,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "elasticsearch_dev"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "mysql_dev"
-    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv"
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_nvm", env: {'NODE_VERSION' => '8.15.1'}
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv", env: {'RUBY_VERSION' => '2.5.5'}
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "configure_dev", privileged: false
   end
 

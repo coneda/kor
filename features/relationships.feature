@@ -148,7 +148,7 @@ Feature: Inplace relationship editor
     Then select "relation_name" should have option "has been created by"
     Then select "relation_name" should have option "is related to"
 
-  Scenario: make use of the default dating label for relations
+  Scenario: make use of the global default dating label for relations
     Given I am logged in as "admin"
     When I go to the entity page for "Paris"
     Then I should see "Louvre"

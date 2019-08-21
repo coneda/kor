@@ -44,6 +44,7 @@ Feature: Authentication and Authorization
 
   Scenario: Show only global groups when not logged in
     And I am on the root page
+    And I am not logged in
     Then I should see "Global groups"
     And I should not see "Personal groups"
     And I should not see "Shared groups"

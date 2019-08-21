@@ -205,11 +205,12 @@ end
 
 Then(/^the select "([^"]*)" should have value "([^"]*)"$/) do |name, value|
   field = page.find_field(name)
-  values = field.all('option[selected]').map { |o| o.text }
+  options = field.all('option').map{|o| [o.value, o.text]}.to_h
   if field['multiple'].present?
+    values = field.value.map{|v| options[v]}
     expect(values).to eql(value.split ',')
   else
-    expect(values.first).to eql(value)
+    expect(field.value).to eql(value)
   end
 end
 
@@ -275,6 +276,15 @@ When("I fill in synonyms with {string}") do |string|
   fill_in 'Synonyms', with: string.split('|').join("\n")
 end
 
+When("I fill in value list with {string}") do |string|
+  fill_in 'Value list', with: string.split('|').join("\n")
+end
+
+Then("value list should have value {string}") do |string|
+  value = string.split('|').join("\n")
+  expect(page).to have_field('Value list', with: value)
+end
+
 Then /^image "([^"]*)" should have (portrait|landscape) orientation$/ do |locator, orientation|
   img = find(locator)
 
@@ -305,11 +315,19 @@ Then("I should see a grid with {string} entities") do |amount|
   expect(grid).to have_css('.meta', count: amount.to_i)
 end
 
-Then(/^"([^"]*)" should be checked$/) do |locator|
-  expect(find_field(locator)).to be_checked
+Then(/^"([^"]*)" should (not )?be checked$/) do |locator, negation|
+  if negation
+    expect(find_field(locator)).not_to be_checked
+  else
+    expect(find_field(locator)).to be_checked
+  end
 end
 
 Then(/^I should see mirador link with a usable href$/) do
   href = find_link('Mirador')['href']
   expect(href).to match(/^http:\/\/127.0.0.1:\d+\/mirador\?manifest=http:\/\/127.0.0.1:\d+\/mirador\/\d+$/)
+end
+
+When("I select autocomplete option {string}") do |string|
+  find('li.autocomplete-item', text: string).click
 end

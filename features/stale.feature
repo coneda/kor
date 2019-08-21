@@ -3,6 +3,7 @@ Feature: Stale update protection
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "Werk/Werke"
     When I go to the edit page for "entity" "Mona Lisa"
+    And I should see "Edit entity"
     And the "entity" "Mona Lisa" is updated behind the scenes
     And I press "Save"
     Then I should see "has been updated in the meantime"

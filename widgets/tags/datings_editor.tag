@@ -1,5 +1,4 @@
 <kor-datings-editor>
-
   <div class="header" if={add}>
     <button onclick={add} class="pull-right" type="button">
       {t('verbs.add', {capitalize: true})}
@@ -13,6 +12,7 @@
       each={dating, i in data}
       show={!dating._destroy}
       visible={!dating._destroy}
+      no-reorder
     >
       <kor-input
         label={t('activerecord.attributes.dating.label', {capitalize: true})}
@@ -41,8 +41,8 @@
     tag.mixin(wApp.mixins.i18n)
 
     tag.on 'mount', ->
-      # console.log(tag.opts);
       tag.data = tag.opts.riotValue || []
+      tag.deleted = []
       tag.update()
 
     tag.anyVisibleDatings = ->
@@ -57,17 +57,16 @@
       o = e[i] || {}
       o[field]
 
-    tag.add = (event) ->
-      event.preventDefault()
-      # TODO: refactor so that the parent specifies the default label instead
-      # of this messy retrieval
-      dl = ''
-      if tag.opts.for == 'relationship'
-        dl = wApp.config.data.values.relationship_dating_label
-      if tag.opts.for == 'entity'
-        dl = tag.opts.kind.dating_label
+    tag.set = (values) ->
+      tag.data = values
+      tag.update()
 
-      tag.data.push(label: dl)
+      for i, dating of tag.data
+        tag.setDating(i, dating)
+
+    tag.add = (event) ->
+      event.preventDefault() if event
+      tag.data.push({label: tag.opts.defaultDatingLabel})
       tag.update()
 
     tag.remove = (event) ->
@@ -75,10 +74,9 @@
       dating = event.item.dating
       index = event.item.i
       if dating.id
-        tag.data[index]._destroy = true
+        dating._destroy = true
       else
         tag.data.splice(index, 1)
-      tag.update()
 
     tag.value = ->
       labelInputs = wApp.utils.toArray(tag.refs['labels'])
@@ -91,5 +89,4 @@
       tag.data
 
   </script>
-
 </kor-datings-editor>

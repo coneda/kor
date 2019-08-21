@@ -116,6 +116,7 @@
           errors={errors.datings}
           for="entity"
           kind={kind}
+          default-dating-label={kind.dating_label}
         />
 
         <hr />
@@ -129,10 +130,7 @@
 
         <hr />
 
-        <kor-input
-          type="submit"
-          value={tcap('verbs.save')}
-        />
+        <kor-input type="submit" />
       </form>
     </div>
   </div>
@@ -163,7 +161,7 @@
 
       fetchCollections()
       wApp.bus.on 'routing:query', queryHandler
-      fetch tag.opts.kind_id
+      fetch(tag.opts.kindId)
 
     tag.on 'unmount', ->
       wApp.bus.off 'routing:query', queryHandler
@@ -199,6 +197,15 @@
 
     queryHandler = (parts = {}) ->
       fetch parts['hash_query']['kind_id']
+
+    defaults = (kind_id) ->
+      return {
+        kind_id: kind_id
+        no_name_statement: 'enter_name'
+        lock_version: 0
+        tags: [],
+        datings: []
+      }
 
     fetch = (kind_id) ->
       if tag.opts.id

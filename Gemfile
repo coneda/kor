@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'acts-as-taggable-on', '~> 3.5'
+gem 'acts-as-taggable-on', '~> 4.0.0'
 gem 'colorize'
 gem 'delayed_paperclip'
 gem 'dotenv'
@@ -12,12 +12,11 @@ gem 'mysql2', '~> 0.4.5'
 gem 'paperclip'
 gem 'parslet'
 gem 'rack-cors', require: 'rack/cors'
-gem 'rails', '~> 4.2.11'
+gem 'rails', '~> 5.0.7'
 gem 'RedCloth'
 gem 'responders', '~> 2.0'
 gem 'ruby-progressbar'
 gem 'semantic', git: 'https://github.com/jlindsey/semantic'
-gem 'sucker_punch', '~> 2.0'
 gem 'test-unit'
 
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
@@ -33,10 +32,9 @@ group :test do
   gem 'connection_pool'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
-  gem 'rspec-rails', '~> 3.7.2'
+  gem 'rspec-rails', '~> 3.8.2'
   gem 'selenium-webdriver'
   gem 'simplecov', require: false
-  gem 'test_after_commit'
   gem 'vcr'
   gem 'webmock'
 end

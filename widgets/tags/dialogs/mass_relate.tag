@@ -45,11 +45,10 @@ shows all entities as possible targets -->
 
         <hr />
 
-        <kor-input type="submit" value={tcap('verbs.save')} />
-
+        <kor-input type="submit" />
       </virtual>
 
-      <kor-input type="reset" value={tcap('cancel')} />
+      <kor-input type="reset" label={tcap('cancel')} />
     </form>
   </div>
 

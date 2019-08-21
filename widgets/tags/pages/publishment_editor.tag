@@ -27,7 +27,7 @@
           errors={errors.user_group}
         />
 
-        <kor-input type="submit" value={tcap('verbs.save')} />
+        <kor-input type="submit" />
       </form>
     </div>
   </div>
