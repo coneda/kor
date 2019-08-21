@@ -21,6 +21,7 @@
       />
 
       <button onclick={save}>{tcap('verbs.save')}</button>
+      <button onclick={cancel}>{tcap('cancel')}</button>
     </virtual>
   </virtual>
 
@@ -44,5 +45,9 @@
           tag.update()
           h() if h = tag.opts.handlers.doneHandler
       )
+
+    tag.cancel = (event) ->
+      event.preventDefault()
+      tag.editorActive = false
   </script>
 </kor-inplace-tags>

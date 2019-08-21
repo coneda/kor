@@ -69,11 +69,11 @@
         <div class="kor-text-right">
           <kor-input
             type="submit"
-            value={tcap('verbs.upload')}
+            label={tcap('verbs.upload')}
           />
           <kor-input
             type="submit"
-            value={tcap('empty_list')}
+            label={tcap('empty_list')}
             onclick={abort}
           />
         </div>

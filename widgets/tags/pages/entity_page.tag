@@ -204,7 +204,7 @@
 
         
         <div class="formats">
-          <a href="#/media/{data.medium.id}">{t('verbs.enlarge')}</a>
+          <a href="#/media/{data.id}">{t('verbs.enlarge')}</a>
           <span if={!data.medium.video && !data.medium.audio}> |
             <a
               href="{data.medium.url.normal}"
@@ -220,7 +220,7 @@
           {t('verbs.download')}:<br />
           <a 
             if={allowedTo('download_originals', data.collection_id)}
-            href={data.medium.url.original}
+            href={data.medium.url.original.replace(/\/images\//, '/download/')}
           >{t('nouns.original')}</a> |
           <a href={data.medium.url.normal.replace(/\/images\//, '/download/')}>
             {t('nouns.enlargement')}
@@ -314,8 +314,8 @@
 
     tag.opIcon = (op) ->
       return {
-        'flip': 'arrows-h',
-        'flop': 'arrows-v',
+        'flip': 'arrows-v',
+        'flop': 'arrows-h',
         'rotate_cw': 'mail-reply fa-flip-horizontal',
         'rotate_ccw': 'mail-reply',
         'rotate_180': 'circle-o-notch fa-flip-vertical'
