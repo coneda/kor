@@ -30,3 +30,14 @@ module Paperclip::Interpolations
     end
   end
 end
+
+# so we can change the adapter for image transformations to :inline
+require 'delayed_paperclip/process_job'
+class DelayedPaperclip::ProcessJob
+  def self.with_adapter(adapter, &block)
+    old = self.queue_adapter
+    self.queue_adapter = adapter
+    yield
+    self.queue_adapter = old
+  end
+end
