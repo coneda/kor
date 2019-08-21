@@ -5,7 +5,6 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
-<<<<<<< HEAD
 ## Version 4.0.0
 
 ### User
@@ -105,13 +104,8 @@ This is just a bugfix release, for details see the [milestone summary](https://g
 * kinds and relations can now have parents allowing a semantic hierarchies (e.g.
   for mapping to CIDOC CRM implementations)
 * environment authentication now allows to specify a `mail` attribute and
-<<<<<<< HEAD
-  a `domain` attribute, the latter overriding the former.
-* resumptionToken within OAI-PMH responses now behaves according to specs
-=======
   a `domain` attribute, the latter overriding the former
-* resumptionToken within OAI-PMH responses now behaves according to the specs
->>>>>>> v2.1
+* resumptionToken within OAI-PMH responses now behaves according to specs
 
 ## Version 2.0.1
 
