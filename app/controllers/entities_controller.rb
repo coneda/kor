@@ -33,19 +33,22 @@ class EntitiesController < JsonController
       tags: param_to_array(params[:tags], ids: false),
       relation_name: params[:relation_name],
 
+      file_name: params[:file_name],
+      file_type: params[:file_type],
+      datahash: params[:datahash],
+
       created_after: param_to_time(params[:created_after]),
       created_before: param_to_time(params[:created_before]),
       updated_after: param_to_time(params[:updated_after]),
       updated_before: param_to_time(params[:updated_before]),
+      updated_by: params[:updated_by],
+      created_by: params[:created_by],
 
       isolated: param_to_boolean(params[:isolated]),
       invalid: param_to_boolean(params[:invalid]),
       
       user_group_id: params[:user_group_id],
       authority_group_id: params[:authority_group_id],
-
-      updated_by: params[:updated_by],
-      created_by: params[:created_by],
 
       terms: params[:terms],
       dataset: dataset_params,
@@ -57,6 +60,19 @@ class EntitiesController < JsonController
       page: page,
       per_page: per_page,
     }
+
+    if params[:file_size].present?
+      regex = /^([\+\-])?(\d+)\s*(kb|mb|gb|tb)?$/
+      x, sign, size, unit = params[:file_size].downcase.match(regex).to_a
+      if size
+        if unit
+          exp = {'kb' => 1, 'mb' => 2, 'gb' => 3, 'tb' => 3}[unit] || 0
+          size = size.to_i * 1024**exp
+        end
+        key = {'+' => :larger_than, '-' => :smaller_than}[sign] || :file_size
+        criteria[key] = size.to_i
+      end
+    end
 
     criteria = criteria.delete_if do |_k, v|
       ['', nil, -1, [], {}].include?(v)

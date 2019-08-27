@@ -19,6 +19,7 @@
           value={criteria.kind_id}
           ref="fields"
           onchange={selectKind}
+          include-media={true}
         />
 
         <kor-input
@@ -51,6 +52,43 @@
           value={criteria.dating}
           ref="fields"
         />
+
+        <virtual if={isMedia(kind)}>
+          <hr />
+
+          <kor-input
+            name="file_name"
+            label={tcap('activerecord.attributes.medium.file_name')}
+            value={criteria.file_name}
+            ref="fields"
+          />
+
+          <kor-input
+            if={mime_types}
+            name="file_type"
+            label={tcap('activerecord.attributes.medium.file_type')}
+            type="select"
+            options={mime_types}
+            placeholder={t('all')}
+            value={criteria.file_type}
+            ref="fields"
+          />
+
+          <kor-input
+            name="file_size"
+            label={tcap('activerecord.attributes.medium.file_size')}
+            value={criteria.file_size}
+            ref="fields"
+            help={tcap('help.file_size_query')}
+          />
+
+          <kor-input
+            name="datahash"
+            label={tcap('activerecord.attributes.medium.datahash')}
+            value={criteria.datahash}
+            ref="fields"
+          />
+        </virtual>
 
         <virtual if={elastic()}>
           <virtual if={kind && kind.fields.length}>
@@ -108,10 +146,12 @@
         class="top"
       />
 
-      <kor-search-result
-        each={entity in data.records}
-        entity={entity}
-      />
+      <div class="kor-search-results">
+        <kor-search-result
+          each={entity in data.records}
+          entity={entity}
+        />
+      </div>
 
       <kor-pagination
         page={data.page}
@@ -132,6 +172,7 @@
     tag.mixin(wApp.mixins.page);
 
     tag.on('before-mount', function() {
+      fetchMimeTypes();
       tag.criteria = urlParams();
     })
 
@@ -178,6 +219,12 @@
       return wApp.info.data.elastic;
     }
 
+    tag.isMedia = function(kind) {
+      if (!kind) {return false;}
+
+      return kind.id === wApp.info.data.medium_kind_id;
+    }
+
     var params = function() {
       var results = {page: 1};
       for (var i = 0; i < tag.refs.fields.length; i++) {
@@ -211,9 +258,18 @@
       })
     }
 
+    var fetchMimeTypes = function() {
+      Zepto.ajax({
+        url: '/statistics',
+        success: function(data) {
+          tag.mime_types = Object.keys(data.mime_counts).sort();
+          tag.update();
+        }
+      })
+    }
+
     var fetch = function() {
       var params = Zepto.extend({}, tag.criteria, {
-        except_kind_id: wApp.info.data.medium_kind_id,
         include: 'related',
         related_kind_id: wApp.info.data.medium_kind_id,
         related_per_page: 4

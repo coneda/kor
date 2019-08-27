@@ -581,6 +581,10 @@ kor-search-result {
   display: block;
   border-bottom: 1px solid $kor-bg-3;
 
+  &:last-child {
+    border-bottom: none;
+  }
+
   a.to-entity {
     display: block;
     padding: 0.5rem;

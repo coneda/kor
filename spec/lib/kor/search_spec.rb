@@ -192,6 +192,51 @@ RSpec.shared_examples 'a kor search' do
     search = described_class.new(admin, updated_by: mrossi.id)
     expect(search.total).to eq(2)
   end
+
+  it 'should search by media properties' do
+    search = described_class.new(admin, file_size: 271994)
+    expect(search.total).to eq(0)
+
+    search = described_class.new(admin, file_size: 271993)
+    expect(search.total).to eq(1)
+
+    search = described_class.new(admin, larger_than: 150000)
+    expect(search.total).to eq(2)
+
+    search = described_class.new(admin, larger_than: 300000)
+    expect(search.total).to eq(1)
+
+    search = described_class.new(admin, larger_than: 400000)
+    expect(search.total).to eq(0)
+
+    search = described_class.new(admin, smaller_than: 150000)
+    expect(search.total).to eq(0)
+
+    search = described_class.new(admin, smaller_than: 300000)
+    expect(search.total).to eq(1)
+
+    search = described_class.new(admin, smaller_than: 400000)
+    expect(search.total).to eq(2)
+
+    search = described_class.new(admin, file_type: 'image/jpeg')
+    expect(search.total).to eq(2)
+
+    search = described_class.new(admin, file_type: 'image/png')
+    expect(search.total).to eq(0)
+
+    search = described_class.new(admin, file_name: 'no_exist.tif')
+    expect(search.total).to eq(0)
+
+    search = described_class.new(admin, file_name: 'image_a.jpg')
+    expect(search.total).to eq(1)
+
+    search = described_class.new(admin, datahash: '12345')
+    expect(search.total).to eq(0)
+
+    entity = Collection.find_by!(name: 'private').entities.media.first
+    search = described_class.new(admin, datahash: entity.medium.datahash)
+    expect(search.total).to eq(1)
+  end
 end
 
 RSpec.describe Kor::Search do

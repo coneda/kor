@@ -1,7 +1,7 @@
 class KorController < JsonController
   def index
     # just a dummy
-    render nothing: true
+    render nothing: true, layout: false
   end
 
   def info

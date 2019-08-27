@@ -324,4 +324,12 @@ module DataHelper
     dummy.include(self)
     dummy.new.default_setup
   end
+
+  def reset_browser!
+    visit '/'
+    expect(page).to have_text('logged in as')
+    execute_script('localStorage.clear()')
+    execute_script('sessionStorage.clear()')
+    Capybara.reset_sessions!
+  end
 end

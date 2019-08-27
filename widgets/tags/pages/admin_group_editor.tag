@@ -1,6 +1,6 @@
 <kor-admin-group-editor>
   <div class="kor-layout-left kor-layout-large">
-    <div class="kor-content-box">
+    <div class="kor-content-box" >
       <h1 if={opts.id}>
         {tcap('objects.edit', {interpolations: {o: 'activerecord.models.authority_group'}})}
       </h1>
@@ -47,7 +47,6 @@
 
     tag.on 'before-mount', ->
       tag.errors = {}
-      tag.data = {}
       fetchCategories()
 
       if !tag.isAuthorityGroupAdmin()
@@ -57,6 +56,7 @@
       if tag.opts.id
         fetch()
       else
+        tag.data = {}
         tag.data.authority_group_category_id = tag.opts.categoryId
 
     tag.submit = (event) ->

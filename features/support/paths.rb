@@ -59,6 +59,7 @@ module NavigationHelpers
       object = klass.classify.constantize.find_by_name(name)
       "#/#{klass.pluralize}/#{object.id}/edit"
     when /the path "([^\"]+)"/ then $1
+    when /url "([^\"]+)"/ then $1
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

@@ -36,7 +36,6 @@ Feature: search
     Given the search api expects to receive the params
       | name           | value    |
       | kind_id        | 2        |
-      | except_kind_id | 1        |
       | terms          | leonardo |
       | name           | mona     |
       | dataset_gnd_id | 12345    |
@@ -71,3 +70,35 @@ Feature: search
     When I press "Search"
     And I go back
     Then I should see "Collections: all" within widget "kor-collection-selector"
+
+  Scenario: searching for media
+    Given I am logged in as "admin"
+    And I am on the search page
+    When I select "medium" from "Entity type"
+    And I fill in "File size" with "32445"
+    And I fill in "File name" with "skull.jpg"
+    And I select "image/jpeg" from "File type"
+    And I fill in "Checksum" with "67zhjnmbnghtztz656"
+    Given the search api expects to receive the params
+      | name           | value              |
+      | file_size      | 32445              |
+      | file_name      | skull.jpg          |
+      | file_type      | image/jpeg         |
+      | datahash       | 67zhjnmbnghtztz656 |
+    And I press "Search"
+    When I fill in "File size" with "+300000"
+    Given the search api expects to receive the params
+      | name        | value  |
+      | larger_than | 300000 |
+    And I press "Search"
+    When I fill in "File size" with "-300000"
+    Given the search api expects to receive the params
+      | name         | value  |
+      | smaller_than | 300000 |
+    And I press "Search"
+    When I fill in "File size" with "-300KB"
+    Given the search api expects to receive the params
+      | name         | value  |
+      | smaller_than | 307200 |
+    And I press "Search"
+    Then I should see "logged in as"

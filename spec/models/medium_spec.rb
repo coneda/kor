@@ -51,7 +51,7 @@ RSpec.describe Medium do
 
     expect(medium.save).to be_falsey
     expect(medium.errors.full_messages).to eql(
-      ['data hash a file with identical content already exists']
+      ['checksum a file with identical content already exists']
     )
   end
 
@@ -86,7 +86,7 @@ RSpec.describe Medium do
 
     expect(duplicate.valid?).not_to be_truthy
     expect(duplicate.errors.full_messages).to eq(
-      ["data hash a file with identical content already exists"]
+      ["checksum a file with identical content already exists"]
     )
   end
 

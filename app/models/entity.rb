@@ -72,15 +72,6 @@ class Entity < ApplicationRecord
     end
   end
 
-  # TODO: still needed?
-  # def simple_errors
-  #   result = []
-  #   errors.each do |a, m|
-  #     result << [I18n.t(a, :scope => [:activerecord, :attributes]), m] unless a == 'medium'
-  #   end
-  #   result
-  # end
-
   def read_attribute_for_validation(attr)
     if attr.match(/^dataset\./)
       self.dataset[attr.split('\.')[1]]
@@ -154,24 +145,6 @@ class Entity < ApplicationRecord
     end
   end
 
-  # TODO: can this method be removed?
-  # def new_datings_attributes=(values)
-  #   values.each do |v|
-  #     datings.build v
-  #   end
-  # end
-
-  # TODO: can this method be removed?
-  # def existing_datings_attributes=(values)
-  #   datings.reject(&:new_record?).each do |d|
-  #     if a = values.find { |e| e['id'].to_i == d.id }
-  #       d.assign_attributes a
-  #     else
-  #       d.mark_for_destruction
-  #     end
-  #   end
-  # end
-
   before_validation :generate_uuid, :sanitize_distinct_name
   before_save :generate_uuid, :add_to_user_group
   after_commit :update_elastic, :update_identifiers
@@ -211,11 +184,6 @@ class Entity < ApplicationRecord
     end
   end
 
-  # def after_merge
-  #   update_elastic
-  #   update_identifiers
-  # end
-
   def cache_key(*timestamp_names)
     timestamp = [
       created_at,
@@ -228,14 +196,6 @@ class Entity < ApplicationRecord
 
     "#{model_name.cache_key}/#{id}-#{timestamp}"
   end
-
-  # def recent?
-  #   @recent
-  # end
-
-  # def remember_recent!
-  #   @recent = true
-  # end
 
   attr_accessor :user_group_id
   def add_to_user_group
@@ -424,39 +384,6 @@ class Entity < ApplicationRecord
       all
     end
   }
-  # scope :has_property, lambda { |user, properties|
-  #   if properties.blank?
-  #     all
-  #   else
-  #     ids = Kor::Elastic.new(user).search(
-  #       :properties => properties,
-  #       :size => Entity.count,
-  #     ).ids
-  #     where("entities.id IN (?)", ids.uniq)
-  #   end
-  # }
-  # scope :related_to, lambda { |user, spec|
-  #   entity_ids = nil
-  #   spec ||= []
-
-  #   relation_names = spec.map { |s| s["relation_name"] }.select { |e| e.present? }
-  #   entity_names = spec.map { |s| s["entity_name"] }.select { |e| e.present? }
-
-  #   scope = all
-  #   if relation_names.present?
-  #     scope = scope.joins(:outgoing).where(
-  #       'directed_relationships.relation_name' => relation_names
-  #     )
-  #   end
-  #   if entity_names.present?
-  #     query = entity_names.map { |n| 'outgoings_entities.name LIKE ?' }
-  #     query = "(#{query.join ') OR ('})"
-  #     names = entity_names.map { |n| "%#{n}%" }
-  #     scope = scope.joins(:outgoing).where(query, names)
-  #   end
-
-  #   scope
-  # }
   scope :dated_in, lambda { |datings|
     datings = [datings] unless datings.is_a?(Array)
 
@@ -480,15 +407,6 @@ class Entity < ApplicationRecord
     end
     results
   }
-  # scope :dataset_attributes, lambda { |user, dataset|
-  #   dataset ||= {}
-  #   ids = Kor::Elastic.new(user).search(
-  #     :dataset => dataset,
-  #     :size => Entity.count
-  #   ).ids
-
-  #   dataset.values.all? { |v| v.blank? } ? all : where("entities.id IN (?)", ids.uniq)
-  # }
   scope :load_fully, lambda { joins(:kind, :collection).includes(:medium) }
   scope :isolated, lambda { |activate|
     return all unless activate.present?
@@ -524,5 +442,39 @@ class Entity < ApplicationRecord
 
     group = SystemGroup.find_or_create_by(name: 'invalid')
     within_system_groups(group.id)
+  end
+
+  def self.by_file_size(size, mode = :equal)
+    return all if size.blank?
+
+    op = {equal: '=', smaller: '<=', larger: '>='}[mode]
+
+    includes(:medium).
+    references(:media).
+    where("media.image_file_size #{op} :s OR media.document_file_size #{op} :s", s: size)
+  end
+
+  def self.by_file_type(type)
+    return all if type.blank?
+
+    includes(:medium).
+    references(:media).
+    where('media.image_content_type = :t OR media.document_content_type = :t', t: type)
+  end
+
+  def self.by_file_name(name)
+    return all if name.blank?
+
+    includes(:medium).
+    references(:media).
+    where('media.image_file_name = :n OR media.document_file_name = :n', n: name)
+  end
+
+  def self.by_datahash(hash)
+    return all if hash.blank?
+
+    includes(:medium).
+    references(:media).
+    where('media.datahash = ?', hash)
   end
 end

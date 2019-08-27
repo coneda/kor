@@ -42,7 +42,7 @@ When("I scroll down") do
 end
 
 When("I fill in {string} with {string}") do |field, value|
-  fill_in field, with: value
+  find(:fillable_field, field).set(value)
 end
 
 When /^(?:|I )select "([^"]*)" from "([^"]*)"$/ do |value, field|

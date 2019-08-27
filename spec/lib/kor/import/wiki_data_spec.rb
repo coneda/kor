@@ -50,8 +50,6 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
   end
 
   it "should retrieve all identifiers for Q762" do
-    # skip "there are vcr issues with using ruby 2.1.5 and/or ruby 2.2.5"
-
     results = subject.identifiers_for("Q762")
     expect(results.size).to eq(84)
     expect(results).to include("id" => "866", "label" => "Perlentaucher ID", "value" => "leonardo-da-vinci")

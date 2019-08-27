@@ -133,6 +133,11 @@ class Kor::Elastic
               'creator_id' => { 'type' => 'integer' },
               'updater_id' => { 'type' => 'integer' },
 
+              'file_size' => {'type' => 'integer'},
+              'file_type' => {'type' => 'keyword'},
+              'file_name' => {'type' => 'keyword'},
+              'datahash' => {'type' => 'keyword'},
+
               "sort" => { "type" => "keyword", "index" => false },
             }
           }
@@ -227,6 +232,15 @@ class Kor::Elastic
       "sort" => entity.display_name
     }
 
+    if entity.medium
+      data.merge!(
+        'file_size' => entity.medium.file_size,
+        'file_type' => entity.medium.content_type,
+        'file_name' => entity.medium.original_filename,
+        'datahash' => entity.medium.datahash
+      )
+    end
+
     if options[:full]
       scope = entity.
         outgoing_relationships
@@ -313,6 +327,12 @@ class Kor::Elastic
     by_min_degree(criteria[:min_degree])
     by_created_by(criteria[:created_by])
     by_updated_by(criteria[:updated_by])
+    by_file_size(criteria[:file_size])
+    by_file_size(criteria[:larger_than], :larger)
+    by_file_size(criteria[:smaller_than], :smaller)
+    by_file_type(criteria[:file_type])
+    by_file_name(criteria[:file_name])
+    by_datahash(criteria[:datahash])
 
     data = {
       'query' => { 'bool' => @query },
@@ -589,6 +609,49 @@ class Kor::Elastic
     if id.present?
       @query['filter'] << {
         'term' => { 'updater_id' => id }
+      }
+    end
+  end
+
+  def by_file_size(size, mode = :equal)
+    return if size.blank?
+
+    case mode
+    when :equal
+      @query['filter'] << {
+        'term' => { 'file_size' => size }
+      }
+    when :smaller
+      @query['filter'] << {
+        'range' => { 'file_size' => { 'lte' => size } }
+      }
+    when :larger
+      @query['filter'] << {
+        'range' => { 'file_size' => { 'gte' => size } }
+      }
+    end
+  end
+
+  def by_file_type(type)
+    if type.present?
+      @query['filter'] << {
+        'term' => { 'file_type' => type }
+      }
+    end
+  end
+
+  def by_file_name(name)
+    if name.present?
+      @query['filter'] << {
+        'term' => { 'file_name' => name }
+      }
+    end
+  end
+
+  def by_datahash(hash)
+    if hash.present?
+      @query['filter'] << {
+        'term' => { 'datahash' => hash }
       }
     end
   end

@@ -38,7 +38,13 @@ class Kor::Search
       updated_after(@criteria[:updated_after]).
       updated_before(@criteria[:updated_before]).
       updated_by(@criteria[:updated_by]).
-      created_by(@criteria[:created_by])
+      created_by(@criteria[:created_by]).
+      by_file_size(@criteria[:file_size]).
+      by_file_size(@criteria[:larger_than], :larger).
+      by_file_size(@criteria[:smaller_than], :smaller).
+      by_file_type(@criteria[:file_type]).
+      by_file_name(@criteria[:file_name]).
+      by_datahash(@criteria[:datahash])
 
     @scope = case @criteria[:sort][:column]
     when 'default' then @scope.order('name')
@@ -88,7 +94,8 @@ class Kor::Search
       :name, :id, :uuid, :collection_id, :kind_id, :except_kind_id, :dating,
       :created_after, :tags, :relation_name, :sort, :page, :per_page,
       :created_before, :updated_before, :updated_after, :engine, :updated_by,
-      :created_by
+      :created_by, :file_size, :file_type, :file_name, :datahash, :larger_than,
+      :smaller_than
     ]
   end
 

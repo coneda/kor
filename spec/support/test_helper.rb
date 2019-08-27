@@ -33,8 +33,8 @@ module TestHelper
       yield
       DatabaseCleaner.clean
     rescue ActiveRecord::RecordInvalid => e
-      binding.pry
       p e.record.errors.full_messages
+      binding.pry
     end
   end
 
@@ -105,27 +105,22 @@ module TestHelper
       require 'simplecov'
 
       SimpleCov.start 'rails' do
+        use_merging true
         merge_timeout 3600
         coverage_dir 'tmp/coverage'
 
-        track_files '{app,lib,config,spec,features}/**/*.{rb,rake}'
-
-        filters.clear
-        add_filter do |src|
-          src.filename !~ /^#{SimpleCov.root}/
-        end
-        add_filter '/config/'
-        add_filter '/db/'
-        add_filter '/vendor/'
-        add_filter '/spec/spec_helper'
-        add_filter '/spec/rails_helper'
-        add_filter '/spec/support/test_helper'
-        add_filter '/features/support/env'
-
-        add_group "Test files", ["spec", "features"]
+        track_files '{bin,config,app,lib}/**/*.{rb,rake}'
       end
 
       puts "performing coverage analysis"
     end
+  end
+
+  def self.reset_browser
+    visit '/empty'
+    expect(page).to have_text('logged in as')
+    execute_script('localStorage.clear()')
+    execute_script('sessionStorage.clear()')
+    Capybara.reset_sessions!
   end
 end

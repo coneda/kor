@@ -54,10 +54,12 @@
 
     tag.on 'before-mount', ->
       tag.errors = {}
-      tag.data = {}
 
     tag.on 'mount', ->
-      fetch() if tag.opts.id
+      if tag.opts.id
+        fetch()
+      else
+        tag.data = {}
       fetchCredentials()
 
     tag.submit = (event) ->

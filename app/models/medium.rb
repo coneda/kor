@@ -169,6 +169,10 @@ class Medium < ApplicationRecord
     document.file? ? document : image
   end
 
+  def original_filename
+    original.original_filename
+  end
+
   def original_extension
     File.extname(original.original_filename).gsub('.', '').downcase
   end
@@ -311,5 +315,12 @@ class Medium < ApplicationRecord
     else
       file.read
     end
+  end
+
+  def self.mime_counts
+    result = Medium.group(:image_content_type).count.
+      merge(Medium.group(:document_content_type).count)
+    result.delete nil
+    result
   end
 end

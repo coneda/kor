@@ -3,7 +3,7 @@
 This log has first been created for version `1.9.1`. Also, only feature changes
 and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
-commit history on GitHub.
+commit history and the closed issues on GitHub.
 
 ## Version 4.0.0
 
@@ -31,6 +31,9 @@ commit history on GitHub.
 * the web frontend is now fully migrated to riot.js.
 * db sessions and exception logs have been removed along with their respective
   command line maintenance tasks
+* upgraded to rails 5.0.7.1
+* setting `DEBUG_FAILS=true` while running the cucumber test suite will drop
+  to a `pry` session on test failures
 
 ## Version 3.0.1
 

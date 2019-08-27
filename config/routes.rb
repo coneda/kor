@@ -10,6 +10,7 @@ end
 
 Rails.application.routes.draw do
   root to: 'kor#index', as: 'root'
+  get '/empty', to: 'kor#index' # dummy for testing
 
   get '/downloads/:uuid', to: 'downloads#show'
   get '/resolve(/:kind)/:id', to: 'identifiers#resolve'

@@ -28,7 +28,7 @@
 
     duration = ->
       if wApp.info.data.env == 'test'
-        500
+        3000
       else
         3000
 

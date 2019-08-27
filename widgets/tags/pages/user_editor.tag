@@ -182,7 +182,7 @@
     tag.submit = (event) ->
       event.preventDefault()
       p = if tag.opts.id then update() else create()
-      p.done (data) -> wApp.bus.trigger('go-back')
+      p.done (data) -> wApp.routing.path('/users')
       p.fail (xhr) ->
         tag.errors = JSON.parse(xhr.responseText).errors
         wApp.utils.scrollToTop()

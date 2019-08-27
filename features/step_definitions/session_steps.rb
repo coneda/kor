@@ -1,29 +1,22 @@
 Given /^I am logged in as "([^\"]*)"/ do |user|
-  # for the reset to work, the browser's current url has to match our origin
-  visit '/'
+  reset_browser!
+  # # for the reset to work, the browser's current url has to match our origin
+  # visit '/info'
 
-  # we also have to make sure that the browser actually loaded the page, this
-  # content should always be visible
-  expect(page).to have_content(/Report a problem|loading/)
+  # # we also have to make sure that the browser actually loaded the page, this
+  # # content should always be visible
+  # # expect(page).to have_content(/Report a problem|loading/)
 
-  # then we can reset
-  Capybara.reset_sessions!
+  # # then we can reset
+  # Capybara.reset_sessions!
 
   # now we can be sure that we are logged out
   step "I go to the login page"
-
-  begin
-    fill_in 'Username', with: user
-  rescue Capybara::ElementNotFound
-    # TODO: why is this necessary?
-    Capybara.reset_sessions!
-    step "I go to the login page"
-    fill_in 'Username', with: user
-    # binding.pry
-  end
+  fill_in 'Username', with: user
   fill_in 'Password', with: user
   click_button 'Login'
-  expect(page).to have_css('w-messaging .notice', text: 'you have been logged in')
+  expect(page).to have_text('you have been logged in')
+  page.refresh
 end
 
 Given /^the user "([^\"]*)"$/ do |user|
@@ -100,4 +93,18 @@ When /^I am not logged in$/ do
     Capybara.reset_sessions!
     step 'I reload the page'
   end
+end
+
+Given("I set local storage {string} to {string}") do |key, value|
+  page.evaluate_script("Lockr.set('#{key}', '#{value}')")
+end
+
+Then("I should not be logged in") do
+  visit '/'
+  expect(page).to have_text('logged in as: guest')
+end
+
+Then("local storage {string} should be empty") do |key|
+  result = page.evaluate_script("Lockr.get('#{key}')")
+  expect(result).to be_nil
 end

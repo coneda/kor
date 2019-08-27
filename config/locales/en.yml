@@ -108,6 +108,11 @@ en:
       To search for parts of a word, add * to the beginning or end of the term:
       <code>*zone</code> or <code>quali*</code> or <code>*vita*</code>
     date_input: Use format YYYY-MM-DD
+    file_size_query: |
+      Prefix the amount with '+' to find all media with a file size
+      larger than the given amount of bytes or with '-' to find smaller
+      files. Add KB, MB, GB, or TB to change the unit. Some examples:
+      <code>+50MB<br />-100KB<br />+1GB</code>
 
   search_term:
     one: search term
@@ -858,11 +863,12 @@ en:
         content_type: file type
         document_file_name: document
         document_file_size: file size
-        file_size: file size of the original
+        file_name: file name
+        file_size: file size
         file_type: file type
         original: original file
         original_extension: file type of the original
-        datahash: data hash
+        datahash: checksum
       credential:
         name: name
         description: description

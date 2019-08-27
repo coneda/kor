@@ -28,13 +28,17 @@ end
 
 Given 'the search api expects to receive the params' do |table|
   values = table.raw.to_h
-  values['dataset'] = {}
+  values.delete 'name'
+
+  dataset = {}
   values.each do |k, v|
     if m = k.match(/^dataset_(.+)$/)
-      values['dataset'][m[1]] = v
+      dataset[m[1]] = v
       values.delete k
     end
   end
+  values['dataset'] = dataset unless dataset.empty?
+
   if values['kind_id']
     values['kind_id'] = values['kind_id'].split(',').map { |e| e.to_i }
   end
@@ -43,6 +47,10 @@ Given 'the search api expects to receive the params' do |table|
   end
   if values['tags']
     values['tags'] = values['tags'].split(',')
+  end
+
+  ['file_size', 'larger_than', 'smaller_than'].each do |k|
+    values[k] = values[k].to_i if values[k]
   end
   values.symbolize_keys!
 

@@ -27,4 +27,6 @@ json.cache! 'statistics', expires_in: 24.hours do
     json.relation_name Relation.find(stat.first).name
     json.count stat.last
   end
+
+  json.mime_counts Medium.mime_counts
 end

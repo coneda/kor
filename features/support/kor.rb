@@ -27,26 +27,43 @@ TestHelper.setup
 
 Capybara.server_port = 47001
 Capybara.default_max_wait_time = 5
-Capybara.default_driver = :selenium
-# Capybara.default_driver = :selenium_chrome
 
-Capybara.register_driver :headless_chrome do |app|
-  profile = Selenium::WebDriver::Chrome::Profile.new
-  profile["download.default_directory"] = Rails.root.join('tmp')
+Capybara.register_driver :selenium_chrome_headless do |app|
+  # profile = Selenium::WebDriver::Chrome::Profile.new
+  # profile["download.default_directory"] = Rails.root.join('tmp')
 
-  opts = Selenium::WebDriver::Chrome::Options.new
-  opts.add_argument 'headless'
-  opts.add_argument 'window-size=1280x960'
+  browser_options = ::Selenium::WebDriver::Chrome::Options.new.tap do |opts|
+    opts.args << '--headless'
+    opts.args << '--window-size=1280x960'
+    opts.args << '--remote-debugging-port=9222'
+  end
+
+  # opts = Selenium::WebDriver::Chrome::Options.new
+  # opts.args << '--headless'
+  # opts.add_argument 'window-size=1280x960'
+  # opts.args << '--disable-site-isolation-trials'
 
   Capybara::Selenium::Driver.new app, {
     browser: :chrome,
-    profile: profile,
-    options: opts
+    # profile: profile,
+    options: browser_options
   }
 end
 
+# Capybara.register_driver :selenium_chrome_headless do |app|
+#   # Capybara::Selenium::Driver.load_selenium
+  # browser_options = ::Selenium::WebDriver::Chrome::Options.new.tap do |opts|
+  #   opts.args << '--headless'
+    # opts.args << '--disable-gpu' if Gem.win_platform?
+    # Workaround https://bugs.chromium.org/p/chromedriver/issues/detail?id=2650&q=load&sort=-id&colspec=ID%20Status%20Pri%20Owner%20Summary
+    # opts.args << '--disable-site-isolation-trials'
+  # end
+#   Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
+# end
+
+Capybara.default_driver = :selenium
 if ENV['HEADLESS']
-  Capybara.default_driver = :headless_chrome
+  Capybara.default_driver = :selenium_chrome_headless
 end
 
 Around('@notravis') do |_scenario, block|
@@ -60,17 +77,24 @@ Around do |_scenario, block|
 end
 
 Before do |scenario|
+  reset_browser!
   TestHelper.before_each(:cucumber, self, scenario)
+end
 
-  # ensure localstorage doesn't carry over data beyond scenarios
-  @local_storage_flushed = false
-  orig = Capybara.current_session.method(:visit)
-  allow(Capybara.current_session).to receive(:visit) { |*args|
-    result = orig.call(*args)
-    unless @local_storage_flushed
-      page.execute_script('try {Lockr.flush()} catch (e) {}')
-      @local_storage_flushed = true
+if ENV['DEBUG_FAILS'] == 'true'
+  After do |scenario|
+    if scenario.failed?
+      if ENV['HEADLESS'] == 'true'
+        errors = page.driver.browser.manage.logs.get(:browser)
+        if errors.present?
+          message = errors.map(&:message).join("\n")
+          Kernel.puts message
+        end
+      end
+
+      # save_screenshot('failed.png', full: true)
+      binding.pry
+      # now go to http://127.0.0.1:9222 and debug
     end
-    result
-  }
+  end
 end
