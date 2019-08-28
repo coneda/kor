@@ -595,6 +595,7 @@ de:
       wird, wenn Sie über die entsprechenden Rechte an der Entität verfügen.
     could_merge: "die ausgewählten %{o} können zusammengeführt werden"
     invert_success: "%{o} wurde invertiert"
+    report: "diese %{o} melden"
 
   move_contents_from: Inhalte aus %{o} verschieben
 
@@ -780,6 +781,17 @@ de:
     upload_duplicate: "Die übertragene Abbildung existiert bereits und wurde in die angegebene Gruppe aufgenommen"
     upload_success: "Datei wurde erfolgreich übertragen"
     user_or_pass_refused: "der Benutzername oder das Passwort waren falsch"
+    report_entity_subject: Korrektur Metadaten
+    report_entity_body: |
+      Liebes KOR Team,
+
+      Die Metadaten dieser Entität sind nicht korrekt:
+      %{entity_url}
+
+      **Beschreiben Sie das Problem hier genauer**
+
+      Viele Grüße,
+      user: %{user}
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

@@ -4,10 +4,6 @@ Zepto.extend Zepto.ajaxSettings, {
   contentType: 'application/json'
   accepts: 'application/json'
   beforeSend: (xhr, settings) ->
-    # why are we doing this?
-    unless settings.url.match(/^http/)
-      settings.url = "#{wApp.baseUrl}#{settings.url}"
-
     wApp.state.requests.push xhr
     wApp.bus.trigger 'ajax-state-changed'
 
@@ -38,7 +34,6 @@ window.wApp = {
   state: {
     requests: []
   }
-  baseUrl: $('script[kor-url]').attr('kor-url') || ''
   setup: ->
     wApp.clipboard.setup()
     wApp.entityHistory.setup()

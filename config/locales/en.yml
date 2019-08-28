@@ -583,6 +583,7 @@ en:
     merge_success: "%{o} has been merged successfully"
     could_merge: "the selected %{o} could be merged"
     invert_success: "%{o} has been inverted"
+    report: "report something about this %{o}"
 
   move_contents_from: move content from %{o}
 
@@ -750,6 +751,17 @@ en:
     upload_duplicate: "The transferred image already exists. It has been added to the selected group."
     upload_success: "the file has been transferred successfully"
     user_or_pass_refused: "username or password could not be found"
+    report_entity_subject: metadata incorrect
+    report_entity_body: |
+      Dear KOR Team,
+
+      The following entity's data is incorrect:
+      %{entity_url}
+
+      **provide more details here**
+
+      Kind regards,
+      user: %{user}
 
   labels:
     relate_to_via: relate all files with "%{to}" via

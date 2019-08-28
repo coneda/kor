@@ -11,6 +11,10 @@
           ><i class="fa fa-pencil"></i></a>
         </virtual>
         <a
+          href={reportUrl()}
+          title={ tcap('objects.report', {interpolations: {o: 'activerecord.models.entity'}}) }
+        ><i class="fa fa-exclamation"></i></a>
+        <a
           if={allowedTo('edit', data.collection_id)}
           href="#/entities/{data.id}"
           onclick={delete}
@@ -320,6 +324,15 @@
         'rotate_ccw': 'mail-reply',
         'rotate_180': 'circle-o-notch fa-flip-vertical'
       }[op]
+
+    tag.reportUrl = ->
+      to = wApp.config.data.values.maintainer_mail
+      subject = tag.t('messages.report_entity_subject')
+      body = tag.t('messages.report_entity_body', {interpolations: {
+        entity_url: "#{wApp.info.data.url}#/entities/#{tag.data.id}"
+        user: wApp.session.current.user.name
+      }})
+      "mailto:#{to}?subject=#{subject}&body=#{encodeURIComponent(body)}"
 
     tag.addRelationship = (event) ->
       event.preventDefault()
