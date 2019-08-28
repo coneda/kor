@@ -17,6 +17,7 @@ Given /^I am logged in as "([^\"]*)"/ do |user|
   click_button 'Login'
   expect(page).to have_text('you have been logged in')
   page.refresh
+  expect(page).to have_text("logged in as: ")
 end
 
 Given /^the user "([^\"]*)"$/ do |user|

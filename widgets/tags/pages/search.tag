@@ -177,9 +177,9 @@
     })
 
     tag.on('mount', function() {
-      tag.title(tag.t('nouns.search'))
-      fetch()
-      tag.on('routing:query', queryUpdate)
+      tag.title(tag.t('nouns.search'));
+      tag.on('routing:query', queryUpdate);
+      queryUpdate();
     })
 
     tag.on('unmount', function() {

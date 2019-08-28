@@ -5,7 +5,7 @@ Feature: Capybara framework
   Scenario:
     Given I am logged in as "admin"
     And I set local storage "x" to "hello"
-    And I go to url "https://wendig.io/privacy.html"
+    And I go to url "https://google.com"
 
   Scenario:
     Given I am on the home page

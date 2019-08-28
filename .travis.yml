@@ -36,4 +36,4 @@ script:
   - mysql -e 'CREATE DATABASE kor_test;'
   - bundle exec rake db:test:load
   - bundle exec rspec spec/ --tag ~travis:false --format=documentation
-  - bundle exec cucumber features/ --format=pretty --tags "~@notravis" --no-strict
+  - bundle exec cucumber features/ --format=pretty --tags "~@notravis" --no-strict --retry 3

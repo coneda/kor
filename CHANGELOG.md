@@ -32,7 +32,7 @@ commit history and the closed issues on GitHub.
 * db sessions and exception logs have been removed along with their respective
   command line maintenance tasks
 * upgraded to rails 5.0.7.1
-* setting `DEBUG_FAILS=true` while running the cucumber test suite will drop
+* setting `DEBUG_FAILED=true` while running the cucumber test suite will drop
   to a `pry` session on test failures
 
 ## Version 3.0.1

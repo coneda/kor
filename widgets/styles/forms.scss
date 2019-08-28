@@ -119,6 +119,8 @@ form.inline {
 
     input[type=checkbox] {
       display: inline;
+      position: relative;
+      top: -4px;
     }
   }
 }

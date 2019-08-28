@@ -29,8 +29,8 @@ Capybara.server_port = 47001
 Capybara.default_max_wait_time = 5
 
 Capybara.register_driver :selenium_chrome_headless do |app|
-  # profile = Selenium::WebDriver::Chrome::Profile.new
-  # profile["download.default_directory"] = Rails.root.join('tmp')
+  profile = Selenium::WebDriver::Chrome::Profile.new
+  profile["download.default_directory"] = Rails.root.join('tmp')
 
   browser_options = ::Selenium::WebDriver::Chrome::Options.new.tap do |opts|
     opts.args << '--headless'
@@ -38,14 +38,9 @@ Capybara.register_driver :selenium_chrome_headless do |app|
     opts.args << '--remote-debugging-port=9222'
   end
 
-  # opts = Selenium::WebDriver::Chrome::Options.new
-  # opts.args << '--headless'
-  # opts.add_argument 'window-size=1280x960'
-  # opts.args << '--disable-site-isolation-trials'
-
   Capybara::Selenium::Driver.new app, {
     browser: :chrome,
-    # profile: profile,
+    profile: profile,
     options: browser_options
   }
 end
@@ -81,7 +76,7 @@ Before do |scenario|
   TestHelper.before_each(:cucumber, self, scenario)
 end
 
-if ENV['DEBUG_FAILS'] == 'true'
+if ENV['DEBUG_FAILED'] == 'true'
   After do |scenario|
     if scenario.failed?
       if ENV['HEADLESS'] == 'true'
