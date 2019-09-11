@@ -25,6 +25,15 @@ commit history and the closed issues on GitHub.
 * given the facilitated install and configuration process, VirtualBox vms are
   not built anymore for every release. They can still be built and the scripts
   will be maintained
+* angularjs was dropped in favor of riotjs. As a result generator directives
+  have to be changed to use the new syntax, e.g.
+  ~~~html
+  <span ng-if="entity.dataset.gnd_id">{{entity.dataset.gnd_id}}</span>
+  ~~~
+  becomes
+  ~~~html
+  <span if={entity.dataset.gnd_id}>{entity.dataset.gnd_id}</span>
+  ~~~
 
 ## Internal
 
