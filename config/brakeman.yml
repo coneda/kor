@@ -1,7 +1,7 @@
 ---
-:exit_on_warn: true
-:rails4: true
-:run_all_checks: true
+:output_format: :to_html
 :output_files:
-- brakeman_report.html
-:collapse_mass_assignment: false
+- tmp/brakeman.html
+:exit_on_warn: true
+:rails5: true
+:run_all_checks: true

@@ -9,7 +9,7 @@ FactoryGirl.define do
       name "Medium"
       plural_name "Media"
       uuid Kind::MEDIA_UUID
-      settings { { :naming => false } }
+      settings{ {:naming => false} }
     end
 
     factory :locations do
@@ -111,17 +111,17 @@ FactoryGirl.define do
   end
 
   factory :entity do
-    collection { Collection.find_or_create_by :name => "default" }
+    collection{ Collection.find_or_create_by :name => "default" }
 
     factory :work do
       name "A entity"
-      kind { Kind.find_or_create_by name: 'work', plural_name: 'works' }
+      kind{ Kind.find_or_create_by name: 'work', plural_name: 'works' }
 
       factory :mona_lisa do
         name "Mona Lisa"
 
         dataset do
-          { :gnd => '12345' }
+          {:gnd => '12345'}
         end
       end
 
@@ -148,7 +148,7 @@ FactoryGirl.define do
 
     factory :location do
       name "A location"
-      kind { Kind.find_or_create_by name: "location", plural_name: 'locations' }
+      kind{ Kind.find_or_create_by name: "location", plural_name: 'locations' }
 
       factory :united_kingdom do
         name "United Kingdom"
@@ -165,7 +165,7 @@ FactoryGirl.define do
 
     factory :person do
       name "A person"
-      kind { Kind.find_or_create_by name: 'person', plural_name: 'people' }
+      kind{ Kind.find_or_create_by name: 'person', plural_name: 'people' }
 
       factory :jack do
         name "Jack"
@@ -182,46 +182,46 @@ FactoryGirl.define do
 
     factory :institution do
       name "An institution"
-      kind { Kind.find_or_create_by name: 'Institution', plural_name: 'Institutionen' }
+      kind{ Kind.find_or_create_by name: 'Institution', plural_name: 'Institutionen' }
     end
 
     factory :medium_entity do
-      kind { Kind.medium_kind }
+      kind{ Kind.medium_kind }
 
       factory :picture_a do
-        medium { FactoryGirl.build :medium_image_a }
+        medium{ FactoryGirl.build :medium_image_a }
       end
 
       factory :picture_b do
-        medium { FactoryGirl.build :medium_image_b }
+        medium{ FactoryGirl.build :medium_image_b }
       end
 
       factory :picture_c do
-        medium { FactoryGirl.build :medium_image_c }
+        medium{ FactoryGirl.build :medium_image_c }
       end
 
       factory :picture_exif do
-        medium { FactoryGirl.build :medium_image_exif }
+        medium{ FactoryGirl.build :medium_image_exif }
       end
 
       factory :video_a do
-        medium { FactoryGirl.build :medium_video_a }
+        medium{ FactoryGirl.build :medium_video_a }
       end
 
       factory :video_b do
-        medium { FactoryGirl.build :medium_video_b }
+        medium{ FactoryGirl.build :medium_video_b }
       end
 
       factory :audio_a do
-        medium { FactoryGirl.build :medium_audio_a }
+        medium{ FactoryGirl.build :medium_audio_a }
       end
 
       factory :audio_b do
-        medium { FactoryGirl.build :medium_audio_b }
+        medium{ FactoryGirl.build :medium_audio_b }
       end
 
       factory :text do
-        medium { FactoryGirl.build :medium_text_a }
+        medium{ FactoryGirl.build :medium_text_a }
       end
     end
   end

@@ -30,6 +30,6 @@ class Fields::Regex < Field
   end
 
   def self.fields
-    [{ 'name' => 'regex' }]
+    [{'name' => 'regex'}]
   end
 end

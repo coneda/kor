@@ -90,55 +90,55 @@ class Kor::Elastic
         'mappings' => {
           "entities" => {
             "properties" => {
-              "name" => { "type" => "text" },
-              "distinct_name" => { "type" => "text" },
-              "subtype" => { "type" => "text" },
-              "synonyms" => { "type" => "text" },
-              "comment" => { "type" => "text" },
+              "name" => {"type" => "text"},
+              "distinct_name" => {"type" => "text"},
+              "subtype" => {"type" => "text"},
+              "synonyms" => {"type" => "text"},
+              "comment" => {"type" => "text"},
               'datings' => {
                 'type' => 'object',
                 'properties' => {
-                  'label' => { 'type' => 'text' },
-                  'from' => { 'type' => 'integer' },
-                  'to' => { 'type' => 'integer' }
+                  'label' => {'type' => 'text'},
+                  'from' => {'type' => 'integer'},
+                  'to' => {'type' => 'integer'}
                 }
               },
               "dataset" => {
                 "type" => "object",
                 "properties" => {
-                  "_default_" => { "type" => "text" }
+                  "_default_" => {"type" => "text"}
                 }
               },
               "properties" => {
                 "type" => "object",
                 "properties" => {
-                  "label" => { "type" => "text" },
-                  "value" => { "type" => "text" }
+                  "label" => {"type" => "text"},
+                  "value" => {"type" => "text"}
                 }
               },
-              "id" => { "type" => "keyword" },
-              "uuid" => { "type" => "text" },
-              "tags" => { "type" => "text", "analyzer" => "keyword" },
+              "id" => {"type" => "keyword"},
+              "uuid" => {"type" => "text"},
+              "tags" => {"type" => "text", "analyzer" => "keyword"},
               "related" => {
                 "type" => "nested",
                 "properties" => {
-                  "relation_name" => { "type" => "text" },
-                  "entity_name" => { "type" => "text" },
-                  "entity_collection_id" => { 'type' => 'integer' }
+                  "relation_name" => {"type" => "text"},
+                  "entity_name" => {"type" => "text"},
+                  "entity_collection_id" => {'type' => 'integer'}
                 }
               },
-              'degree' => { 'type' => 'float' },
-              'created_at' => { 'type' => 'integer' },
-              'updated_at' => { 'type' => 'integer' },
-              'creator_id' => { 'type' => 'integer' },
-              'updater_id' => { 'type' => 'integer' },
+              'degree' => {'type' => 'float'},
+              'created_at' => {'type' => 'integer'},
+              'updated_at' => {'type' => 'integer'},
+              'creator_id' => {'type' => 'integer'},
+              'updater_id' => {'type' => 'integer'},
 
               'file_size' => {'type' => 'integer'},
               'file_type' => {'type' => 'keyword'},
               'file_name' => {'type' => 'keyword'},
               'datahash' => {'type' => 'keyword'},
 
-              "sort" => { "type" => "keyword", "index" => false },
+              "sort" => {"type" => "keyword", "index" => false},
             }
           }
         }
@@ -191,7 +191,7 @@ class Kor::Elastic
     scope.find_in_batches do |batch|
       data = []
       batch.map do |e|
-        data << JSON.dump('index' => { '_id' => e.uuid })
+        data << JSON.dump('index' => {'_id' => e.uuid})
         data << JSON.dump(data_for(e, options))
         progress.increment if options[:progress]
       end.join("\n")
@@ -214,8 +214,8 @@ class Kor::Elastic
       "name" => entity.name,
       "distinct_name" => entity.distinct_name,
       "subtype" => entity.subtype,
-      "tags" => entity.tags.map { |t| t.name },
-      "synonyms" => fetch(:synonyms, entity.id) { entity.synonyms },
+      "tags" => entity.tags.map{ |t| t.name },
+      "synonyms" => fetch(:synonyms, entity.id){ entity.synonyms },
       "kind_id" => entity.kind_id,
       "collection_id" => entity.collection_id,
       "comment" => entity.comment,
@@ -225,8 +225,8 @@ class Kor::Elastic
       'updated_at' => entity.updated_at.to_i,
       'updater_id' => entity.updater_id,
       'creator_id' => entity.creator_id,
-      'datings' => entity.datings.map { |d|
-        { 'label' => d.dating_string, 'from' => d.from_day, 'to' => d.to_day }
+      'datings' => entity.datings.map{ |d|
+        {'label' => d.dating_string, 'from' => d.from_day, 'to' => d.to_day}
       },
       'degree' => entity.degree,
       "sort" => entity.display_name
@@ -257,7 +257,7 @@ class Kor::Elastic
           'entity_name' => names,
           'entity_collection_id' => dr.to.collection_id
         }
-      end.flatten.select { |e| e.present? }
+      end.flatten.select{ |e| e.present? }
     end
 
     data
@@ -300,7 +300,7 @@ class Kor::Elastic
       analyzer: 'folding',
       page: 1,
       per_page: 10,
-      sort: { column: '_score', direction: 'desc' }
+      sort: {column: '_score', direction: 'desc'}
     )
 
     criteria[:terms] = by_name(criteria[:terms], criteria[:name])
@@ -335,7 +335,7 @@ class Kor::Elastic
     by_datahash(criteria[:datahash])
 
     data = {
-      'query' => { 'bool' => @query },
+      'query' => {'bool' => @query},
       'size' => criteria[:per_page],
       'from' => (criteria[:page] - 1) * criteria[:per_page],
       'sort' => sorting(criteria[:sort]),
@@ -352,8 +352,8 @@ class Kor::Elastic
 
     ::Kor::SearchResult.new(
       total: response['hits']['total'],
-      uuids: response['hits']['hits'].map { |hit| hit['_id'] },
-      ids: response['hits']['hits'].map { |hit| hit['_source']['id'] },
+      uuids: response['hits']['hits'].map{ |hit| hit['_id'] },
+      ids: response['hits']['hits'].map{ |hit| hit['_source']['id'] },
       raw_records: response['hits']['hits'],
       page: criteria[:page],
       per_page: criteria[:per_page]
@@ -362,19 +362,19 @@ class Kor::Elastic
 
   def sorting(sort)
     case sort[:column]
-    when 'name' then [{ 'sort' => sort[:direction] }]
-    when 'default' then [{ 'sort' => 'asc' }]
+    when 'name' then [{'sort' => sort[:direction]}]
+    when 'default' then [{'sort' => 'asc'}]
     when 'score' then ['_score']
     when 'random'
       @query['must'] << {
         'function_score' => {
-          'random_score' => { 'seed' => Time.now.to_i }
+          'random_score' => {'seed' => Time.now.to_i}
         }
       }
 
       ['_score']
     else
-      [{ sort[:column] => sort[:direction] }]
+      [{sort[:column] => sort[:direction]}]
     end
   end
 
@@ -390,7 +390,7 @@ class Kor::Elastic
   def by_id(ids)
     if ids.present?
       @query['filter'] << {
-        'terms' => { 'id' => to_array(ids) }
+        'terms' => {'id' => to_array(ids)}
       }
     end
   end
@@ -398,7 +398,7 @@ class Kor::Elastic
   def by_uuid(ids)
     if ids.present?
       @query['filter'] << {
-        'terms' => { '_id' => to_array(ids) }
+        'terms' => {'_id' => to_array(ids)}
       }
     end
   end
@@ -406,7 +406,7 @@ class Kor::Elastic
   def by_collection(ids)
     if ids.present?
       @query['filter'] << {
-        'terms' => { 'collection_id' => to_array(ids) }
+        'terms' => {'collection_id' => to_array(ids)}
       }
     end
   end
@@ -414,7 +414,7 @@ class Kor::Elastic
   def by_kind(ids)
     if ids.present?
       @query['filter'] << {
-        'terms' => { 'kind_id' => to_array(ids) }
+        'terms' => {'kind_id' => to_array(ids)}
       }
     end
   end
@@ -422,7 +422,7 @@ class Kor::Elastic
   def by_kind_except(ids)
     if ids.present?
       @query['must_not'] << {
-        'terms' => { 'kind_id' => to_array(ids) }
+        'terms' => {'kind_id' => to_array(ids)}
       }
     end
   end
@@ -430,7 +430,7 @@ class Kor::Elastic
   def by_created_after(time)
     if time.present?
       @query['filter'] << {
-        'range' => { 'created_at' => { 'gt' => time.to_i } }
+        'range' => {'created_at' => {'gt' => time.to_i}}
       }
     end
   end
@@ -438,7 +438,7 @@ class Kor::Elastic
   def by_created_before(time)
     if time.present?
       @query['filter'] << {
-        'range' => { 'created_at' => { 'lt' => time.to_i } }
+        'range' => {'created_at' => {'lt' => time.to_i}}
       }
     end
   end
@@ -446,7 +446,7 @@ class Kor::Elastic
   def by_updated_after(time)
     if time.present?
       @query['filter'] << {
-        'range' => { 'updated_at' => { 'gt' => time.to_i } }
+        'range' => {'updated_at' => {'gt' => time.to_i}}
       }
     end
   end
@@ -454,7 +454,7 @@ class Kor::Elastic
   def by_updated_before(time)
     if time.present?
       @query['filter'] << {
-        'range' => { 'updated_at' => { 'lt' => time.to_i } }
+        'range' => {'updated_at' => {'lt' => time.to_i}}
       }
     end
   end
@@ -466,10 +466,10 @@ class Kor::Elastic
           from = EntityDating.julian_date_for(parsed[:from])
           to = EntityDating.julian_date_for(parsed[:to])
           @query['filter'] << {
-            'range' => { 'datings.to' => { 'gt' => from } }
+            'range' => {'datings.to' => {'gt' => from}}
           }
           @query['filter'] << {
-            'range' => { 'datings.from' => { 'lt' => to } }
+            'range' => {'datings.from' => {'lt' => to}}
           }
         end
       end
@@ -480,7 +480,7 @@ class Kor::Elastic
     if tags.present?
       to_array(tags).each do |tag|
         @query['filter'] << {
-          'term' => { 'tags' => tag }
+          'term' => {'tags' => tag}
         }
       end
     end
@@ -490,7 +490,7 @@ class Kor::Elastic
     if dataset.present?
       dataset.each do |field, value|
         @query['filter'] << {
-          'term' => { "dataset.#{field}" => value }
+          'term' => {"dataset.#{field}" => value}
         }
       end
     end
@@ -506,10 +506,10 @@ class Kor::Elastic
           'query' => {
             'bool' => {
               'must' => [
-                { 'match' => { 'related.entity_name' => related } },
+                {'match' => {'related.entity_name' => related}},
               ],
               'filter' => [
-                { 'terms' => { 'related.entity_collection_id' => ids } }
+                {'terms' => {'related.entity_collection_id' => ids}}
               ]
             }
           }
@@ -521,7 +521,7 @@ class Kor::Elastic
   def by_degree(degree)
     if degree.present?
       @query['filter'] << {
-        'term' => { 'degree' => degree }
+        'term' => {'degree' => degree}
       }
     end
   end
@@ -529,7 +529,7 @@ class Kor::Elastic
   def by_min_degree(degree)
     if degree.present?
       @query['filter'] << {
-        'range' => { 'degree' => { 'gte' => degree } }
+        'range' => {'degree' => {'gte' => degree}}
       }
     end
   end
@@ -537,7 +537,7 @@ class Kor::Elastic
   def by_max_degree(degree)
     if degree.present?
       @query['filter'] << {
-        'range' => { 'degree' => { 'lte' => degree } }
+        'range' => {'degree' => {'lte' => degree}}
       }
     end
   end
@@ -592,7 +592,7 @@ class Kor::Elastic
     if relation_name.present?
       ids = Relation.to_entity_kind_ids(relation_name)
       @query['filter'] << {
-        'terms' => { 'kind_id' => ids }
+        'terms' => {'kind_id' => ids}
       }
     end
   end
@@ -600,7 +600,7 @@ class Kor::Elastic
   def by_created_by(id)
     if id.present?
       @query['filter'] << {
-        'term' => { 'creator_id' => id }
+        'term' => {'creator_id' => id}
       }
     end
   end
@@ -608,7 +608,7 @@ class Kor::Elastic
   def by_updated_by(id)
     if id.present?
       @query['filter'] << {
-        'term' => { 'updater_id' => id }
+        'term' => {'updater_id' => id}
       }
     end
   end
@@ -619,15 +619,15 @@ class Kor::Elastic
     case mode
     when :equal
       @query['filter'] << {
-        'term' => { 'file_size' => size }
+        'term' => {'file_size' => size}
       }
     when :smaller
       @query['filter'] << {
-        'range' => { 'file_size' => { 'lte' => size } }
+        'range' => {'file_size' => {'lte' => size}}
       }
     when :larger
       @query['filter'] << {
-        'range' => { 'file_size' => { 'gte' => size } }
+        'range' => {'file_size' => {'gte' => size}}
       }
     end
   end
@@ -635,7 +635,7 @@ class Kor::Elastic
   def by_file_type(type)
     if type.present?
       @query['filter'] << {
-        'term' => { 'file_type' => type }
+        'term' => {'file_type' => type}
       }
     end
   end
@@ -643,7 +643,7 @@ class Kor::Elastic
   def by_file_name(name)
     if name.present?
       @query['filter'] << {
-        'term' => { 'file_name' => name }
+        'term' => {'file_name' => name}
       }
     end
   end
@@ -651,14 +651,14 @@ class Kor::Elastic
   def by_datahash(hash)
     if hash.present?
       @query['filter'] << {
-        'term' => { 'datahash' => hash }
+        'term' => {'datahash' => hash}
       }
     end
   end
 
   def none
     @query['filter'] << {
-      'terms' => { 'collection_id' => [] }
+      'terms' => {'collection_id' => []}
     }
   end
 

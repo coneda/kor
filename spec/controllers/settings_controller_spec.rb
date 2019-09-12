@@ -22,14 +22,14 @@ RSpec.describe SettingsController, type: :controller do
     end
 
     it 'should update the configuration' do
-      put :update, params: { settings: { 'some' => 'value' } }
+      put :update, params: {settings: {'some' => 'value'}}
       Kor.settings.ensure_fresh
       expect(Kor.settings['some']).to eq('value')
     end
 
     it 'should update only parts of the configuration' do
       Kor.settings.update 'some' => 'value', 'other' => 'thing'
-      put :update, params: { settings: { 'some' => '123' } }
+      put :update, params: {settings: {'some' => '123'}}
       Kor.settings.ensure_fresh
       expect(Kor.settings['some']).to eq('123')
       expect(Kor.settings['other']).to eq('thing')
@@ -37,7 +37,7 @@ RSpec.describe SettingsController, type: :controller do
 
     it 'should deny updating with stale configuration' do
       Kor.settings.update 'some' => '567'
-      put :update, params: { settings: { 'some' => '123', 'version' => 0 } }
+      put :update, params: {settings: {'some' => '123', 'version' => 0}}
       Kor.settings.ensure_fresh
       expect(response.status).to eq(422)
     end

@@ -103,7 +103,7 @@ end
 
 When /^I select "([^\"]*)" from the collections selector$/ do |collections|
   names = collections.split('/')
-  within('kor-collection-selector') { click_link('edit') }
+  within('kor-collection-selector'){ click_link('edit') }
   click_link 'none'
   names.each do |name|
     check name
@@ -205,9 +205,9 @@ end
 
 Then(/^the select "([^"]*)" should have value "([^"]*)"$/) do |name, value|
   field = page.find_field(name)
-  options = field.all('option').map{|o| [o.value, o.text]}.to_h
+  options = field.all('option').map{ |o| [o.value, o.text] }.to_h
   if field.multiple?
-    values = field.value.map{|v| options[v]}
+    values = field.value.map{ |v| options[v] }
     expect(values).to eql(value.split ',')
   else
     expect(field.value).to eql(value)
@@ -248,9 +248,9 @@ Then(/^select "([^"]*)" should have( no)? option "([^"]*)"$/) do |name, negation
   options = page.find("select[name=#{name}]").all('option')
 
   if negation == ' no'
-    options.all? { |o| o.text != option }
+    options.all?{ |o| o.text != option }
   else
-    options.any? { |o| o.text == option }
+    options.any?{ |o| o.text == option }
   end
 end
 
@@ -259,7 +259,7 @@ Then /^I should see no user groups$/ do
 end
 
 Then /^I should (not )?see field "([^"]*)"(?: with value "([^"]*)")?$/ do |negation, string, value|
-  opts = (value ? { with: value } : {})
+  opts = (value ? {with: value} : {})
   if negation
     expect(page).not_to have_field(string, opts)
   else

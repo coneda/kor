@@ -23,19 +23,19 @@ class User < ApplicationRecord
 
   validates :name,
     :presence => true,
-    :uniqueness => { :allow_blank => false },
-    :format => { :with => /\A[a-zA-Z0-9_\.\@\-\!\:\/]+\Z/, :allow_blank => true },
+    :uniqueness => {:allow_blank => false},
+    :format => {:with => /\A[a-zA-Z0-9_\.\@\-\!\:\/]+\Z/, :allow_blank => true},
     :white_space => true
   validates :email,
     :presence => true,
-    :uniqueness => { :allow_blank => false },
-    :format => { :with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true },
+    :uniqueness => {:allow_blank => false},
+    :format => {:with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true},
     :white_space => true
   validates :api_key,
     :uniqueness => true,
-    :length => { :minimum => 32, allow_blank: true }
+    :length => {:minimum => 32, allow_blank: true}
   validates(:plain_password,
-    format: { :allow_nil => true, :with => /\A(.{5,30})|\Z/ },
+    format: {:allow_nil => true, :with => /\A(.{5,30})|\Z/},
     confirmation: true
   )
 
@@ -65,7 +65,7 @@ class User < ApplicationRecord
 
   def add_personal_group
     if self.personal_group && !self.personal_group.destroyed?
-      unless self.groups.map { |g| g.id }.include?(self.personal_group.id)
+      unless self.groups.map{ |g| g.id }.include?(self.personal_group.id)
         self.groups << self.personal_group
       end
     end
@@ -206,7 +206,7 @@ class User < ApplicationRecord
       collections[g.last] ||= []
       collections[g.last] << g.first
     end
-    Kor::Auth.policies.each { |p| collections[p] ||= [] }
+    Kor::Auth.policies.each{ |p| collections[p] ||= [] }
 
     return {
       roles: {
@@ -219,9 +219,9 @@ class User < ApplicationRecord
     }
   end
 
-  scope :without_predefined, lambda { where("name NOT IN (?)", ["admin", "guest"]) }
-  scope :without_admin, lambda { where("name NOT LIKE ?", "admin") }
-  scope :search, lambda { |search_string|
+  scope :without_predefined, lambda{ where("name NOT IN (?)", ["admin", "guest"]) }
+  scope :without_admin, lambda{ where("name NOT LIKE ?", "admin") }
+  scope :search, lambda{ |search_string|
     unless search_string.blank?
       pattern = "%#{search_string}%"
       where('name LIKE ? OR full_name LIKE ? or email LIKE ?', pattern, pattern, pattern)
@@ -229,16 +229,16 @@ class User < ApplicationRecord
       all
     end
   }
-  scope :logged_in_recently, lambda {
+  scope :logged_in_recently, lambda{
     where("last_login > ?", 30.days.ago)
   }
-  scope :logged_in_last_year, lambda {
+  scope :logged_in_last_year, lambda{
     where("last_login > ?", 1.year.ago)
   }
-  scope :created_recently, lambda {
+  scope :created_recently, lambda{
     where("created_at > ?", 30.days.ago)
   }
-  scope :by_id, lambda { |id| id.present? ? where(id: id) : all }
+  scope :by_id, lambda{ |id| id.present? ? where(id: id) : all }
 
   def self.admin
     unless user = find_by_name('admin')
@@ -259,7 +259,7 @@ class User < ApplicationRecord
   end
 
   def credential_ids
-    groups.map { |c| c.id }
+    groups.map{ |c| c.id }
   end
 
   def too_many_login_attempts?

@@ -21,54 +21,54 @@ RSpec.describe UserGroupsController, type: :controller do
 
   it 'should not GET download_images' do
     group = UserGroup.find_by! name: 'nice'
-    get :download_images, params: { id: group.id }
+    get :download_images, params: {id: group.id}
     expect(response).to be_client_error
   end
 
   it 'should not GET show' do
     group = UserGroup.find_by! name: 'nice'
-    get :show, params: { id: group.id }
+    get :show, params: {id: group.id}
     expect(response).to be_forbidden
   end
 
   it 'should not POST create' do
-    post :create, params: { user_group: { name: 'interesting' } }
+    post :create, params: {user_group: {name: 'interesting'}}
     expect(response).to be_client_error
   end
 
   it 'should not PATCH update' do
     group = UserGroup.find_by! name: 'nice'
-    patch :update, params: { id: group.id, user_group: { name: 'interesting' } }
+    patch :update, params: {id: group.id, user_group: {name: 'interesting'}}
     expect(response).to be_client_error
   end
 
   it 'should not DELETE destroy' do
     group = UserGroup.find_by! name: 'nice'
-    delete :destroy, params: { id: group.id }
+    delete :destroy, params: {id: group.id}
     expect(response).to be_client_error
   end
 
   it 'should not PATCH share' do
     group = UserGroup.find_by! name: 'nice'
-    patch :share, params: { id: group.id }
+    patch :share, params: {id: group.id}
     expect(response).to be_client_error
   end
 
   it 'should not PATCH unshare' do
     group = UserGroup.find_by! name: 'nice'
     group.update shared: true
-    patch :unshare, params: { id: group.id }
+    patch :unshare, params: {id: group.id}
     expect(response).to be_client_error
   end
 
   it 'should not POST add_to' do
-    post 'add_to', params: { id: nice.id, entity_ids: [mona_lisa.id] }
+    post 'add_to', params: {id: nice.id, entity_ids: [mona_lisa.id]}
     expect(response).to be_client_error
   end
 
   it 'should not POST remove_from' do
     nice.add_entities mona_lisa
-    post 'remove_from', params: { id: nice.id, entity_ids: [mona_lisa.id] }
+    post 'remove_from', params: {id: nice.id, entity_ids: [mona_lisa.id]}
     expect(response).to be_client_error
   end
 
@@ -85,13 +85,13 @@ RSpec.describe UserGroupsController, type: :controller do
     it 'should not GET show (foreign group)' do
       group = UserGroup.find_by! name: 'nice'
       group.update owner: User.admin
-      get :show, params: { id: group.id }
+      get :show, params: {id: group.id}
       expect(response).to be_forbidden
     end
 
     it 'should GET show (own group)' do
       group = UserGroup.find_by! name: 'nice'
-      get :show, params: { id: group.id }
+      get :show, params: {id: group.id}
       expect(response).to be_success
       expect(json['name']).to eq('nice')
       expect(json['owner']).to be_nil
@@ -99,20 +99,20 @@ RSpec.describe UserGroupsController, type: :controller do
 
     it 'should GET show with additions' do
       group = UserGroup.find_by! name: 'nice'
-      get :show, params: { id: group.id, include: 'owner' }
+      get :show, params: {id: group.id, include: 'owner'}
       expect(response).to be_success
       expect(json['owner']).to be_a(Hash)
     end
 
     it 'should GET download_images' do
       group = UserGroup.find_by! name: 'nice'
-      get :download_images, params: { id: group.id }
+      get :download_images, params: {id: group.id}
       dl = Download.first
       expect(response).to redirect_to("/downloads/#{dl.uuid}")
     end
 
     it 'should POST create' do
-      post :create, params: { user_group: { name: 'pretty' } }
+      post :create, params: {user_group: {name: 'pretty'}}
       expect_created_response
       UserGroup.find_by!(name: 'pretty')
     end
@@ -120,13 +120,13 @@ RSpec.describe UserGroupsController, type: :controller do
     it 'should not PATCH update (foreign group)' do
       group = UserGroup.find_by! name: 'nice'
       group.update owner: User.admin
-      patch :update, params: { id: group.id, user_group: { name: 'pretty' } }
+      patch :update, params: {id: group.id, user_group: {name: 'pretty'}}
       expect(response).to be_client_error
     end
 
     it 'should PATCH update (own group)' do
       group = UserGroup.find_by! name: 'nice'
-      patch :update, params: { id: group.id, user_group: { name: 'pretty' } }
+      patch :update, params: {id: group.id, user_group: {name: 'pretty'}}
       expect_updated_response
       expect(group.reload.name).to eq('pretty')
     end
@@ -134,13 +134,13 @@ RSpec.describe UserGroupsController, type: :controller do
     it 'should not DELETE destroy (foreign group)' do
       group = UserGroup.find_by! name: 'nice'
       group.update owner: User.admin
-      delete :destroy, params: { id: group.id }
+      delete :destroy, params: {id: group.id}
       expect(response).to be_client_error
     end
 
     it 'should not DELETE destroy (own group)' do
       group = UserGroup.find_by! name: 'nice'
-      delete :destroy, params: { id: group.id }
+      delete :destroy, params: {id: group.id}
       expect(response).to be_success
       expect(UserGroup.find_by id: group.id).to be_nil
     end
@@ -148,51 +148,51 @@ RSpec.describe UserGroupsController, type: :controller do
     it 'should not PATCH share (foreign group)' do
       group = UserGroup.find_by! name: 'nice'
       group.update owner: User.admin
-      patch :share, params: { id: group.id }
+      patch :share, params: {id: group.id}
       expect(response).to be_client_error
     end
 
     it 'should not PATCH unshare (foreign group)' do
       group = UserGroup.find_by! name: 'nice'
       group.update owner: User.admin, shared: true
-      patch :unshare, params: { id: group.id }
+      patch :unshare, params: {id: group.id}
       expect(response).to be_client_error
     end
 
     it 'should not POST add_to (foreign group)' do
       nice.update owner: User.admin
-      post 'add_to', params: { id: nice.id, entity_ids: [mona_lisa.id] }
+      post 'add_to', params: {id: nice.id, entity_ids: [mona_lisa.id]}
       expect(response).to be_client_error
     end
 
     it 'should not POST remove_from (foreign group)' do
       nice.add_entities mona_lisa
       nice.update owner: User.admin
-      post 'remove_from', params: { id: nice.id, entity_ids: [mona_lisa.id] }
+      post 'remove_from', params: {id: nice.id, entity_ids: [mona_lisa.id]}
       expect(response).to be_client_error
     end
 
     it 'should PATCH share (own group)' do
       group = UserGroup.find_by! name: 'nice'
-      patch :share, params: { id: group.id }
+      patch :share, params: {id: group.id}
       expect(response).to be_success
     end
 
     it 'should PATCH unshare (own group)' do
       group = UserGroup.find_by! name: 'nice'
       group.update shared: true
-      patch :unshare, params: { id: group.id }
+      patch :unshare, params: {id: group.id}
       expect(response).to be_success
     end
 
     it 'should POST add_to (own group)' do
-      post :add_to, params: { id: nice.id, entity_ids: [mona_lisa.id] }
+      post :add_to, params: {id: nice.id, entity_ids: [mona_lisa.id]}
       expect(response).to be_success
       expect(nice.entities).to include(mona_lisa)
     end
 
     it 'should POST remove_from (own group)' do
-      post :remove_from, params: { id: nice.id, entity_ids: [picture_a.id] }
+      post :remove_from, params: {id: nice.id, entity_ids: [picture_a.id]}
       expect(response).to be_success
       expect(nice.entities).not_to include(picture_a)
     end

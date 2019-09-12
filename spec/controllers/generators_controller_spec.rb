@@ -5,7 +5,7 @@ RSpec.describe GeneratorsController, type: :controller do
 
   it 'should GET show' do
     generator = Generator.first
-    get :show, params: { id: generator.id, kind_id: generator.kind_id }
+    get :show, params: {id: generator.id, kind_id: generator.kind_id}
     expect(response).to be_success
     expect(json['directive']).to be_a(String)
     expect(json['created_at']).to be_nil
@@ -24,7 +24,7 @@ RSpec.describe GeneratorsController, type: :controller do
 
   it 'should not POST create' do
     people = Kind.find_by! name: 'person'
-    post :create, params: { 
+    post :create, params: {
       kind_id: people.id,
       generator: {
         name: 'viaf', directive: 'https://viaf.org/id/{{entity.dataset.viaf}}'
@@ -47,7 +47,7 @@ RSpec.describe GeneratorsController, type: :controller do
 
   it 'should not DELETE destroy' do
     generator = Generator.first
-    delete :destroy, params: { kind_id: generator.kind_id, id: generator.id }
+    delete :destroy, params: {kind_id: generator.kind_id, id: generator.id}
     expect(response).to be_forbidden
   end
 
@@ -81,7 +81,7 @@ RSpec.describe GeneratorsController, type: :controller do
 
     it 'should DELETE destroy' do
       generator = Generator.first
-      delete :destroy, params: { 
+      delete :destroy, params: {
         kind_id: generator.kind_id,
         id: generator.id
       }

@@ -59,10 +59,10 @@ class Kor::Import::ErlangenCrm
           type: property.name,
           url: url,
           name: property.xpath('rdfs:label').text,
-          reverse_url: property.xpath('owl:inverseOf/*').map { |r| r['rdf:about'] }.first,
-          parent_urls: property.xpath('rdfs:subPropertyOf/*').map { |sp| sp['rdf:about'] },
-          from_urls: property.xpath('rdfs:domain').map { |d| d['rdf:resource'] },
-          to_urls: property.xpath('rdfs:range').map { |d| d['rdf:resource'] },
+          reverse_url: property.xpath('owl:inverseOf/*').map{ |r| r['rdf:about'] }.first,
+          parent_urls: property.xpath('rdfs:subPropertyOf/*').map{ |sp| sp['rdf:about'] },
+          from_urls: property.xpath('rdfs:domain').map{ |d| d['rdf:resource'] },
+          to_urls: property.xpath('rdfs:range').map{ |d| d['rdf:resource'] },
           description: property.xpath('rdfs:comment').text
         }
       rescue => e
@@ -158,12 +158,12 @@ class Kor::Import::ErlangenCrm
     def from_urls_for(r)
       return [] unless r
 
-      ([r[:from_urls]] + r[:parent_urls]).map { |pu| from_urls_for(@lookup[pu]) }.flatten
+      ([r[:from_urls]] + r[:parent_urls]).map{ |pu| from_urls_for(@lookup[pu]) }.flatten
     end
 
     def to_urls_for(r)
       return [] unless r
 
-      ([r[:to_urls]] + r[:parent_urls]).map { |pu| to_urls_for(@lookup[pu]) }.flatten
+      ([r[:to_urls]] + r[:parent_urls]).map{ |pu| to_urls_for(@lookup[pu]) }.flatten
     end
 end

@@ -46,7 +46,7 @@ class EntitiesController < JsonController
 
       isolated: param_to_boolean(params[:isolated]),
       invalid: param_to_boolean(params[:invalid]),
-      
+
       user_group_id: params[:user_group_id],
       authority_group_id: params[:authority_group_id],
 
@@ -220,13 +220,13 @@ class EntitiesController < JsonController
 
   def merge
     entities = Entity.find(params[:entity_ids])
-    collections = entities.map { |e| e.collection }.uniq
+    collections = entities.map{ |e| e.collection }.uniq
 
     allowed_to_create = allowed_to?(:create)
     allowed_to_delete_requested_entities = allowed_to?(:delete, collections, :required => :all)
 
     if allowed_to_create and allowed_to_delete_requested_entities
-      if entities.map { |e| e.kind.id }.uniq.size != 1
+      if entities.map{ |e| e.kind.id }.uniq.size != 1
         render_422 nil, I18n.t('messages.only_same_kind')
       end
 
@@ -256,8 +256,8 @@ class EntitiesController < JsonController
 
       can_edit =
         allowed_to?(:edit, @target.collection_id) ||
-        allowed_to?(:edit, @entities.map { |e| e.collection_id })
-      collections = [@target.collection_id] + @entities.map { |e| e.collection_id }
+        allowed_to?(:edit, @entities.map{ |e| e.collection_id })
+      collections = [@target.collection_id] + @entities.map{ |e| e.collection_id }
       can_view = allowed_to?(:view, collections, required: :all)
 
       if can_edit & can_view
@@ -284,7 +284,7 @@ class EntitiesController < JsonController
 
   def existence
     ids = params[:ids]
-    found_ids = Entity.allowed(current_user).where(id: ids).map { |e| e.id }
+    found_ids = Entity.allowed(current_user).where(id: ids).map{ |e| e.id }
     existence = found_ids.zip(Array.new(found_ids.size, true)).to_h
     ids = ids.zip(Array.new(ids.size, false)).to_h
 
@@ -332,7 +332,7 @@ class EntitiesController < JsonController
       end
 
       result.merge!(
-        'datings' => entity.datings.map { |d| d.errors.as_json },
+        'datings' => entity.datings.map{ |d| d.errors.as_json },
         'dataset' => de
       )
 

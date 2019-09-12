@@ -1,0 +1,71 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  ExtraDetails: true
+  Exclude:
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - '.git/**/*'
+    - 'db/schema.rb'
+
+Layout/AlignArguments:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/AlignArray:
+  Exclude:
+    - 'app/models/relation.rb'
+
+Layout/CaseIndentation:
+  EnforcedStyle: end
+
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+Layout/ElseAlignment:
+  Exclude:
+    - 'app/controllers/authority_group_categories_controller.rb'
+    - 'app/controllers/entities_controller.rb'
+    - 'app/controllers/media_controller.rb'
+    - 'app/controllers/oai_pmh/base_controller.rb'
+    - 'app/controllers/user_groups_controller.rb'
+    - 'app/models/medium.rb'
+    - 'app/views/entities/gallery.json.jbuilder'
+    - 'db/migrate/20100922094820_make_all_entities_belong_to_a_medium.rb'
+    - 'db/migrate/20141101121336_remove_mongodb.rb'
+    - 'features/support/paths.rb'
+    - 'lib/kor/dating/transform.rb'
+    - 'lib/kor/elastic.rb'
+    - 'lib/kor/import/excel.rb'
+    - 'lib/kor/neo_graph.rb'
+    - 'lib/kor/statistics/exif.rb'
+
+Layout/EndAlignment:
+  EnforcedStyleAlignWith: start_of_line
+
+Layout/IndentationConsistency:
+  EnforcedStyle: indented_internal_methods
+
+Layout/IndentationWidth:
+  Exclude:
+    - 'app/models/user.rb'
+
+Layout/MultilineMethodCallBraceLayout:
+  EnforcedStyle: new_line
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/RescueEnsureAlignment:
+  Exclude:
+    - 'db/migrate/20111009074800_move_schema_settings_to_kinds_table.rb'
+    - 'lib/kor/elastic.rb'
+
+Layout/SpaceBeforeBlockBraces:
+  EnforcedStyle: no_space
+  EnforcedStyleForEmptyBraces: no_space
+
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+  EnforcedStyleForEmptyBraces: no_space

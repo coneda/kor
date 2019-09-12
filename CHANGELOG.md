@@ -9,6 +9,10 @@ commit history and the closed issues on GitHub.
 
 ### User
 
+This is a major release with many bug fixes, new features and some removed
+features. For all the details please refer to the
+[milestone summary](https://github.com/coneda/kor/milestone/9?closed=1).
+
 * the elasticsearch query_string syntax is now available to users via the
   "Terms" field
 * changing permissions for all personal collections has been dropped in favor
@@ -43,6 +47,10 @@ commit history and the closed issues on GitHub.
 * upgraded to rails 5.0.7.1
 * setting `DEBUG_FAILED=true` while running the cucumber test suite will drop
   to a `pry` session on test failures
+
+## Version 3.0.2
+
+This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.2+).
 
 ## Version 3.0.1
 

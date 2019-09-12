@@ -103,7 +103,7 @@ class Kor::NeoGraph
     cypher(
       "statement" => "UNWIND $props AS map CREATE (n:entity) SET n = map",
       "parameters" => {
-        "props" => entity.map { |item|
+        "props" => entity.map{ |item|
           {
             "id" => item.id,
             "uuid" => item.uuid,
@@ -128,7 +128,7 @@ class Kor::NeoGraph
     cypher(
       "statement" => "UNWIND $props AS map CREATE (n:group) SET n = map",
       "parameters" => {
-        "props" => group.map { |item|
+        "props" => group.map{ |item|
           {
             'id' => item.id,
             'uuid' => item.uuid,
@@ -143,7 +143,7 @@ class Kor::NeoGraph
 
     group.each do |g|
       g.entities.select(:id).find_in_batches batch_size: 100 do |batch|
-        statements = batch.map { |e|
+        statements = batch.map{ |e|
           {
             "statement" => [
               "MATCH (a:entity),(b:group)",
@@ -191,7 +191,7 @@ class Kor::NeoGraph
 
   def cypher(statements = [])
     data = case statements
-    when String then [{ 'statement' => statements }]
+    when String then [{'statement' => statements}]
     when Hash then [statements]
     else
       statements

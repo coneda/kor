@@ -66,7 +66,7 @@ Given /^kind "([^"]*)" has field "([^"]*)" of type "([^"]+)"$/ do |kind, name, k
     :show_label => name.classify,
     :form_label => name.classify,
     :search_label => name.classify,
-    :settings => { 'show_on_entity' => '1' }
+    :settings => {'show_on_entity' => '1'}
   )
 end
 

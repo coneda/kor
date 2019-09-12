@@ -2,7 +2,8 @@ w-messaging, [data-is=w-messaging] {
   position: fixed;
   top: 0px;
   left: 50%;
-  margin-left: -20em; }
+  margin-left: -20em;
+  z-index: 2000; }
   w-messaging .message, [data-is=w-messaging] .message {
     width: 40em;
     padding: 1rem;
@@ -21,10 +22,10 @@ w-modal, [data-is=w-modal] {
   left: 0px;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: 10000; }
+  z-index: 1000; }
   w-modal > .receiver, [data-is=w-modal] > .receiver {
     position: fixed;
-    z-index: 10001;
+    z-index: 1001;
     background-color: white;
     left: 50%;
     top: 50%;
@@ -37,14 +38,14 @@ w-modal, [data-is=w-modal] {
 
 .kor-layout-left {
   float: left;
-  border-right: 0.2rem solid #181818; }
+  border-right: 0.2rem solid #171717; }
 
 .kor-layout-bottom {
-  border-top: 0.2rem solid #181818; }
+  border-top: 0.2rem solid #171717; }
 
 .kor-layout-right {
   float: left;
-  border-left: 0.2rem solid #181818;
+  border-left: 0.2rem solid #171717;
   margin-left: -0.2rem; }
 
 .kor-layout-large {
@@ -56,8 +57,8 @@ w-modal, [data-is=w-modal] {
 .kor-layout-small {
   width: 24rem; }
 
-.kor-layout-left:first-child {
-  min-height: 45rem; }
+.kor-layout-left {
+  min-height: 55rem; }
 
 .kor-layout-commands {
   float: right;
@@ -81,7 +82,7 @@ hr.silent {
 html {
   font-family: helvetica, arial;
   font-size: 11px;
-  line-height: 15px;
+  line-height: 16px;
   color: #bbbbbb; }
 
 a {
@@ -153,12 +154,29 @@ button {
 button:hover {
   background-color: #666666; }
 
+i {
+  margin-left: 5px; }
+
+i:last-child {
+  margin-right: 0px; }
+
 [data-is=w-app] {
   padding: 2rem; }
   [data-is=w-app] .w-content {
+    position: relative;
     margin-left: 18rem;
     width: 72rem;
-    box-shadow: 0px 0px 25px #000000; }
+    box-shadow: 0px 0px 25px #000000;
+    margin-right: 0px;
+    margin-bottom: 5rem; }
+    [data-is=w-app] .w-content kor-help-button {
+      display: block;
+      position: absolute;
+      top: -2px;
+      right: -40px; }
+
+[data-is=kor-help] {
+  min-width: 40rem; }
 
 kor-welcome .teaser, [data-is=kor-welcome] .teaser {
   margin-top: 3rem; }
@@ -175,8 +193,10 @@ kor-entity.medium {
   font-size: 0.8rem;
   position: relative; }
   kor-entity.medium kor-clipboard-control {
+    font-size: 14px;
     display: block;
-    text-align: right; }
+    text-align: right;
+    margin-bottom: 1rem; }
   kor-entity.medium a {
     display: inline-block; }
   kor-entity.medium img {
@@ -210,7 +230,11 @@ kor-gallery-grid td, [data-is=kor-gallery-grid] td {
   padding: 1.5rem; }
 
 kor-gallery-grid kor-entity.medium, [data-is=kor-gallery-grid] kor-entity.medium {
-  width: 100%; }
+  width: 100%;
+  height: 200px; }
+
+kor-gallery-grid .name, [data-is=kor-gallery-grid] .name {
+  font-weight: bold; }
 
 kor-login a.password-recovery, [data-is=kor-login] a.password-recovery {
   text-decoration: underline; }
@@ -227,18 +251,21 @@ kor-login-info {
 
 kor-pagination, [data-is=kor-pagination] {
   display: block;
-  text-align: right;
-  margin-top: -0.5rem;
-  margin-bottom: -3px; }
+  text-align: right; }
   kor-pagination a, [data-is=kor-pagination] a {
     position: relative;
     top: 0.4rem; }
   kor-pagination input, [data-is=kor-pagination] input {
-    width: 5rem; }
+    width: 5rem !important; }
   kor-pagination img[src='images/vertical_dots.gif'], [data-is=kor-pagination] img[src='images/vertical_dots.gif'] {
     margin-top: -1rem;
     position: relative;
     top: 0.4rem; }
+  kor-pagination i, [data-is=kor-pagination] i {
+    position: relative;
+    top: -4px;
+    margin-left: 3px;
+    margin-right: 3px; }
 
 kor-users kor-pagination, [data-is=kor-users] kor-pagination {
   float: right; }
@@ -279,6 +306,9 @@ kor-inplace-tags, [data-is=kor-inplace-tags] {
 kor-relation, [data-is=kor-relation] {
   display: block;
   margin-bottom: 2rem; }
+  kor-relation i, [data-is=kor-relation] i {
+    position: relative;
+    top: -3px; }
   kor-relation .name, [data-is=kor-relation] .name {
     margin-bottom: 1rem; }
   kor-relation .toggle, [data-is=kor-relation] .toggle {
@@ -294,9 +324,19 @@ kor-media-relation .name, [data-is=kor-media-relation] .name {
 kor-media-relation kor-pagination, [data-is=kor-media-relation] kor-pagination {
   margin-top: 1rem; }
 
+kor-relation-selector {
+  display: inline-block;
+  margin-bottom: 1em; }
+  kor-relation-selector em {
+    display: inline-block;
+    margin-top: 0.5em; }
+
 kor-relationship, [data-is=kor-relationship] {
   display: block;
   margin-bottom: 0.2rem; }
+  kor-relationship i, [data-is=kor-relationship] i {
+    position: relative;
+    top: -3px; }
   kor-relationship .part, [data-is=kor-relationship] .part {
     padding: 1rem;
     background-color: #292929;
@@ -326,8 +366,14 @@ kor-relationship-editor, [data-is=kor-relationship-editor] {
   kor-relationship-editor form kor-input, [data-is=kor-relationship-editor] form kor-input {
     display: inline; }
 
-kor-entity-editor kor-input[name=no_name_statement], [data-is=kor-entity-editor] kor-input[name=no_name_statement] {
-  margin-top: -1em; }
+kor-entity-editor kor-input[name=no_name_statement] label:first-child, [data-is=kor-entity-editor] kor-input[name=no_name_statement] label:first-child {
+  margin-bottom: 10px; }
+
+kor-entity-editor kor-input[name=no_name_statement] label.radio, [data-is=kor-entity-editor] kor-input[name=no_name_statement] label.radio {
+  display: block;
+  margin-top: 5px; }
+  kor-entity-editor kor-input[name=no_name_statement] label.radio input, [data-is=kor-entity-editor] kor-input[name=no_name_statement] label.radio input {
+    margin-top: -7px; }
 
 kor-entity-editor kor-datings-editor .header label, [data-is=kor-entity-editor] kor-datings-editor .header label {
   font-weight: bold; }
@@ -382,6 +428,9 @@ kor-generators {
 .kor-text-right {
   text-align: right; }
 
+.kor-glow {
+  text-shadow: 0px 0px 5px white; }
+
 .kor-loading-screen {
   margin: 0px auto;
   text-align: center;
@@ -407,7 +456,7 @@ kor-search div.kor-layout-right .kor-content-box, [data-is=kor-search] div.kor-l
   padding-bottom: 0rem; }
 
 kor-search kor-pagination, [data-is=kor-search] kor-pagination {
-  border-bottom: 1px solid #181818;
+  border-bottom: 1px solid #171717;
   padding-bottom: 1rem;
   padding-right: 1rem; }
 
@@ -416,7 +465,9 @@ kor-search kor-nothing-found, [data-is=kor-search] kor-nothing-found {
 
 kor-search-result {
   display: block;
-  border-bottom: 1px solid #181818; }
+  border-bottom: 1px solid #171717; }
+  kor-search-result:last-child {
+    border-bottom: none; }
   kor-search-result a.to-entity {
     display: block;
     padding: 0.5rem;
@@ -425,7 +476,9 @@ kor-search-result {
     background-color: #505050; }
   kor-search-result kor-clipboard-control {
     display: block;
-    float: left; }
+    float: left;
+    margin-top: 0.1rem;
+    margin-left: 1rem; }
   kor-search-result div.labels {
     margin-left: 5rem;
     margin-right: 3rem;
@@ -476,19 +529,15 @@ kor-upload ul, [data-is='kor-upload'] ul {
     list-style-type: none;
     margin-bottom: 0.5em; }
 
-kor-upload .text-right, [data-is='kor-upload'] .text-right {
-  text-align: right; }
+kor-relations .label, kor-relations .name, [data-is=kor-relations] .label, [data-is=kor-relations] .name {
+  color: #ffffff; }
 
-kor-relations, [data-is=kor-relations] {
-  font-weight: bold;
-  padding: 30px; }
-  kor-relations .label, kor-relations .name, [data-is=kor-relations] .label, [data-is=kor-relations] .name {
-    color: #ffffff; }
-  kor-relations th:first-child, [data-is=kor-relations] th:first-child {
-    width: 400px; }
-  kor-relations .buttons a, [data-is=kor-relations] .buttons a {
-    display: inline-block;
-    margin-left: 3px; }
+kor-relations th:first-child, [data-is=kor-relations] th:first-child {
+  width: 400px; }
+
+kor-relations .buttons a, [data-is=kor-relations] .buttons a {
+  display: inline-block;
+  margin-left: 3px; }
 
 kor-relation-merger ul, [data-is=kor-relation-merger] ul {
   margin-top: 12px; }
@@ -518,6 +567,9 @@ kor-entity-page .viewer img, [data-is=kor-entity-page] .viewer img {
 kor-entity-page .viewer .commands, [data-is=kor-entity-page] .viewer .commands {
   text-align: center; }
 
+kor-entity-page .kor-api-links i, [data-is=kor-entity-page] .kor-api-links i {
+  margin-right: 5px; }
+
 kor-notifications ul {
   perspective: 1000px;
   position: absolute;
@@ -534,14 +586,16 @@ kor-menu {
   kor-menu ul {
     padding: 0px;
     margin-bottom: 2rem; }
-  kor-menu ul.submenu {
-    padding-left: 1rem; }
   kor-menu li {
     list-style-type: none; }
   kor-menu a {
     text-decoration: none;
     font-weight: bold;
     color: #bbbbbb; }
+  kor-menu .header {
+    font-weight: bold;
+    color: #777777;
+    margin-bottom: -0.5rem; }
 
 [data-is=kor-statistics] table {
   margin-bottom: 2rem; }
@@ -562,7 +616,7 @@ kor-entity-selector table {
   kor-entity-selector table td {
     width: 33.3%; }
   kor-entity-selector table td.selected {
-    background-color: #333333; }
+    background-color: #171717; }
 
 kor-entity-selector .errors {
   color: #cb1525; }
@@ -575,24 +629,84 @@ kor-entity-selector kor-input[ref=terms] {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem; }
 
-kor-properties-editor .header, kor-datings-editor .header {
+kor-entity-selector kor-entity.medium {
+  width: 100%; }
+
+kor-properties-editor, kor-datings-editor {
+  display: block; }
+  kor-properties-editor .header, kor-datings-editor .header {
+    font-weight: bold; }
+  kor-properties-editor ul, kor-datings-editor ul {
+    margin: 1rem;
+    padding: 0px; }
+    kor-properties-editor ul li, kor-datings-editor ul li {
+      list-style-type: none;
+      margin-top: 1rem; }
+      kor-properties-editor ul li button, kor-datings-editor ul li button {
+        margin-top: 0.5rem; }
+    kor-properties-editor ul li:first-child, kor-datings-editor ul li:first-child {
+      margin-top: 0px; }
+
+[data-is=kor-entity-merger] {
+  width: 600px; }
+  [data-is=kor-entity-merger] kor-input[name=medium_id] label.radio {
+    margin: 2rem; }
+    [data-is=kor-entity-merger] kor-input[name=medium_id] label.radio img {
+      vertical-align: middle;
+      margin-left: 0.5rem; }
+
+[data-is=kor-to-entity-group] {
+  width: 350px; }
+
+[data-is=kor-admin-group-categories] p.ancestry {
+  margin-top: -2rem; }
+
+[data-is=kor-mass-relate] {
+  width: 450px; }
+
+kor-input i.fa.fa-question-circle {
+  max-height: 8px; }
+
+kor-input .help {
+  border: 1px solid #565656;
+  padding: 0.5rem;
+  margin-top: -1px;
+  margin-bottom: 2rem; }
+  kor-input .help code {
+    display: block;
+    color: white;
+    margin-bottom: 1rem; }
+
+[data-is=kor-recent-entities] kor-input[name='created_after'] {
+  display: inline-block;
+  width: 50%; }
+
+[data-is=kor-recent-entities] kor-input[name='created_before'] {
+  display: inline-block;
+  width: 50%;
+  margin-left: -4px; }
+
+[data-is=kor-recent-entities] kor-input[name='updated_after'] {
+  display: inline-block;
+  width: 50%; }
+
+[data-is=kor-recent-entities] kor-input[name='updated_before'] {
+  display: inline-block;
+  width: 50%;
+  margin-left: -4px; }
+
+[data-is=kor-recent-entities] td:first-child {
+  width: 160px; }
+
+kor-user-selector .autocomplete {
+  font-weight: normal; }
+  kor-user-selector .autocomplete .autocomplete-item {
+    font-size: 1rem; }
+
+kor-input label {
   font-weight: bold; }
 
-kor-properties-editor ul, kor-datings-editor ul {
-  margin: 1rem;
-  padding: 0px; }
-  kor-properties-editor ul li, kor-datings-editor ul li {
-    list-style-type: none;
-    margin-top: 1rem; }
-    kor-properties-editor ul li button, kor-datings-editor ul li button {
-      margin-top: 0.5rem; }
-  kor-properties-editor ul li:first-child, kor-datings-editor ul li:first-child {
-    margin-top: 0px; }
-
-kor-input label, [data-is=kor-input] label {
-  font-weight: bold; }
-
-kor-input input, kor-input select, kor-input textarea, [data-is=kor-input] input, [data-is=kor-input] select, [data-is=kor-input] textarea {
+kor-input input, kor-input select, kor-input textarea {
   border: 0.1rem solid #565656;
   background-color: #252525;
   font-family: helvetica, arial;
@@ -600,42 +714,44 @@ kor-input input, kor-input select, kor-input textarea, [data-is=kor-input] input
   font-size: 1rem;
   line-height: 1.5rem;
   color: #ffffff;
-  padding-left: 0.4rem;
   outline: none;
-  min-height: 2rem; }
+  height: 2rem; }
 
-kor-input textarea, [data-is=kor-input] textarea {
+kor-input input {
+  padding-left: 0.4rem; }
+
+kor-input textarea {
   min-height: 15rem;
   resize: vertical; }
 
-kor-input input:focus, kor-input textarea:focus, [data-is=kor-input] input:focus, [data-is=kor-input] textarea:focus {
+kor-input input:focus, kor-input textarea:focus {
   background-color: #333333; }
 
-kor-input input[type=submit], kor-input input[type=reset], [data-is=kor-input] input[type=submit], [data-is=kor-input] input[type=reset] {
+kor-input input[type=submit], kor-input input[type=reset] {
   border: none;
   cursor: pointer;
   width: auto;
   margin-top: 1.5rem;
   margin-bottom: 1rem; }
-  kor-input input[type=submit]:hover, kor-input input[type=reset]:hover, [data-is=kor-input] input[type=submit]:hover, [data-is=kor-input] input[type=reset]:hover {
+  kor-input input[type=submit]:hover, kor-input input[type=reset]:hover {
     background-color: #666666; }
 
-kor-input .errors, [data-is=kor-input] .errors {
+kor-input .errors {
   color: #cb1525; }
 
-kor-input.has-errors input, kor-input.has-errors select, kor-input.has-errors textarea, [data-is=kor-input].has-errors input, [data-is=kor-input].has-errors select, [data-is=kor-input].has-errors textarea {
+kor-input.has-errors input, kor-input.has-errors select, kor-input.has-errors textarea {
   border-color: #cb1525; }
 
-kor-input[type=radio], [data-is=kor-input][type=radio] {
+kor-input[type=radio] {
   display: inline-block; }
-  kor-input[type=radio] label, [data-is=kor-input][type=radio] label {
+  kor-input[type=radio] label {
     display: block; }
-  kor-input[type=radio] label.radio, [data-is=kor-input][type=radio] label.radio {
+  kor-input[type=radio] label.radio {
     display: inline-block;
     padding-right: 2em;
     position: relative;
     top: -0.3em; }
-  kor-input[type=radio] input, [data-is=kor-input][type=radio] input {
+  kor-input[type=radio] input {
     display: inline;
     width: initial;
     position: relative;
@@ -644,111 +760,35 @@ kor-input[type=radio], [data-is=kor-input][type=radio] {
 form {
   display: block;
   margin-bottom: 1rem; }
-  form kor-input, form [data-is=kor-input] {
+  form kor-input {
     display: block;
     margin-bottom: 1rem; }
-    form kor-input input, form kor-input select, form kor-input textarea, form [data-is=kor-input] input, form [data-is=kor-input] select, form [data-is=kor-input] textarea {
+    form kor-input input, form kor-input select, form kor-input textarea {
       width: 100%; }
-    form kor-input input[type=checkbox], form [data-is=kor-input] input[type=checkbox] {
+    form kor-input input[type=checkbox] {
       display: block;
       width: 13px;
       height: 13px;
       vertical-align: bottom;
       margin: 0;
       margin-left: 5px; }
-    form kor-input select[multiple], form [data-is=kor-input] select[multiple] {
+    form kor-input select[multiple] {
       height: 15rem; }
+  form kor-input[type=submit], form kor-input[type=reset] {
+    display: inline-block; }
 
 form.inline {
   display: inline-block;
   margin-bottom: 0rem; }
-  form.inline kor-input, form.inline [data-is=kor-input] {
+  form.inline kor-input {
     display: inline;
     margin-right: 15px; }
-    form.inline kor-input input, form.inline kor-input select, form.inline kor-input textarea, form.inline [data-is=kor-input] input, form.inline [data-is=kor-input] select, form.inline [data-is=kor-input] textarea {
+    form.inline kor-input input, form.inline kor-input select, form.inline kor-input textarea {
       width: auto; }
-    form.inline kor-input input[type=checkbox], form.inline [data-is=kor-input] input[type=checkbox] {
-      display: inline; }
-
-i {
-  display: inline-block;
-  width: 1.5rem;
-  height: 1.5rem;
-  background-size: contain;
-  background-position: center center;
-  background-repeat: no-repeat; }
-  i.pager_left {
-    background-image: url("/images/pager_left.gif"); }
-  i.pager_left:hover {
-    background-image: url("/images/pager_left_over.gif"); }
-  i.pager_right {
-    background-image: url("/images/pager_right.gif"); }
-  i.pager_right:hover {
-    background-image: url("/images/pager_right_over.gif"); }
-  i.three_bars {
-    background-image: url("/images/three_bars.gif"); }
-  i.three_bars:hover {
-    background-image: url("/images/three_bars_over.gif"); }
-  i.pen {
-    background-image: url("/images/pen.gif"); }
-  i.pen:hover {
-    background-image: url("/images/pen_over.gif"); }
-  i.x {
-    background-image: url("/images/x.gif"); }
-  i.x:hover {
-    background-image: url("/images/x_over.gif"); }
-  i.reset_password {
-    background-image: url("/images/reset_password.gif"); }
-  i.reset_password:hover {
-    background-image: url("/images/reset_password_over.gif"); }
-  i.plus {
-    background-image: url("/images/plus.gif"); }
-  i.plus:hover {
-    background-image: url("/images/plus_over.gif"); }
-  i.target {
-    background-image: url("/images/target.gif"); }
-  i.target:hover {
-    background-image: url("/images/target_over.gif"); }
-  i.target_hit {
-    background-image: url("/images/target_hit.gif"); }
-  i.target_hit:hover {
-    background-image: url("/images/target_hit_over.gif"); }
-  i.minus {
-    background-image: url("/images/minus.gif"); }
-  i.minus:hover {
-    background-image: url("/images/minus_over.gif"); }
-  i.flip {
-    background-image: url("/images/flip.gif"); }
-  i.flip:hover {
-    background-image: url("/images/flip_over.gif"); }
-  i.flop {
-    background-image: url("/images/flop.gif"); }
-  i.flop:hover {
-    background-image: url("/images/flop_over.gif"); }
-  i.rotate_cw {
-    background-image: url("/images/rotate_cw.gif"); }
-  i.rotate_cw:hover {
-    background-image: url("/images/rotate_cw_over.gif"); }
-  i.rotate_ccw {
-    background-image: url("/images/rotate_ccw.gif"); }
-  i.rotate_ccw:hover {
-    background-image: url("/images/rotate_ccw_over.gif"); }
-  i.rotate_180 {
-    background-image: url("/images/rotate_180.gif"); }
-  i.rotate_180:hover {
-    background-image: url("/images/rotate_180_over.gif"); }
-  i.select {
-    background-image: url("/images/select.gif"); }
-  i.select:hover {
-    background-image: url("/images/select_over.gif"); }
-  i.select_hit {
-    background-image: url("/images/select_hit.gif"); }
-  i.select_hit:hover {
-    background-image: url("/images/select_hit_over.gif"); }
-  i.triangle_up {
-    background-image: url("/images/triangle_up.gif"); }
-  i.triangle_down {
-    background-image: url("/images/triangle_down.gif"); }
+    form.inline kor-input input[type=checkbox] {
+      display: inline;
+      position: relative;
+      top: -4px; }
 
 .kor w-modal .receiver, .kor [data-is=w-modal] .receiver {
   background-color: #1e1e1e;

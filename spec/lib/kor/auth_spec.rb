@@ -44,7 +44,7 @@ RSpec.describe Kor::Auth do
 
   context 'prefers the mail attribute to the domain attribute' do
     it 'has mail attribute in config and finds a value for it' do
-      env = { 'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com' }
+      env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
       expect(described_class).to receive(:authorize).with(
         'jdoe', hash_including(email: 'jdoe@personal.com')
       )
@@ -52,7 +52,7 @@ RSpec.describe Kor::Auth do
     end
 
     it 'has mail attribute in config and finds no value for it' do
-      env = { 'REMOTE_USER' => 'jdoe' }
+      env = {'REMOTE_USER' => 'jdoe'}
       expect(described_class).to receive(:authorize).with(
         'jdoe', hash_including(:email => 'jdoe@example.com')
       )
@@ -61,7 +61,7 @@ RSpec.describe Kor::Auth do
 
     it 'has no mail attribute in config and finds a value for it' do
       described_class.sources['remoteuser'].delete 'mail'
-      env = { 'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com' }
+      env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
       expect(described_class).to receive(:authorize).with(
         'jdoe', hash_including(email: 'jdoe@example.com')
       )
@@ -70,7 +70,7 @@ RSpec.describe Kor::Auth do
 
     it 'has no mail attribute in config and finds no value for it' do
       described_class.sources['remoteuser'].delete 'mail'
-      env = { 'REMOTE_USER' => 'jdoe' }
+      env = {'REMOTE_USER' => 'jdoe'}
       expect(described_class).to receive(:authorize).with(
         'jdoe', hash_including(:email => 'jdoe@example.com')
       )
@@ -91,14 +91,14 @@ RSpec.describe Kor::Auth do
       [jdoe, [:view, :tagging], default, {}, false],
       [jdoe, :view, priv, {}, false],
       [jdoe, :view, [default, priv], {}, false],
-      [jdoe, :view, [default, priv], { required: :any }, true],
+      [jdoe, :view, [default, priv], {required: :any}, true],
       [mrossi, :create, default, {}, false],
       [mrossi, :create, priv, {}, true],
       [mrossi, :create, [default, priv], {}, false],
-      [mrossi, :create, [default, priv], { required: :any }, true],
+      [mrossi, :create, [default, priv], {required: :any}, true],
       [mrossi, :view, [default, priv], {}, true],
       [mrossi, [:create, :view], [default, priv], {}, false],
-      [mrossi, [:create, :view], [default, priv], { required: :any }, true],
+      [mrossi, [:create, :view], [default, priv], {required: :any}, true],
       [hmustermann, :view, default, {}, true],
       [hmustermann, :delete, default, {}, false]
     ]

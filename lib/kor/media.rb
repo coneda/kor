@@ -14,6 +14,6 @@ module Kor::Media
   end
 
   def self.transformation_by_name(name)
-    Transformations.all_transformations.select { |t| t.name == name }.first
+    Transformations.all_transformations.select{ |t| t.name == name }.first
   end
 end

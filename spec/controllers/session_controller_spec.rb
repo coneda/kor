@@ -14,33 +14,33 @@ RSpec.describe SessionController, type: :controller do
     request.headers['HTTP_REFERER'] = 'http://test.host/login'
 
     3.times do
-      post :create, params: { username: 'admin', password: 'wrong' }
+      post :create, params: {username: 'admin', password: 'wrong'}
       expect(response).to be_client_error
       expect(json['message']).to match(/username or password could not be found/)
     end
 
-    post :create, params: { username: 'admin', password: 'wrong' }
+    post :create, params: {username: 'admin', password: 'wrong'}
     expect(response).to be_client_error
     expect(json['message']).to match(/too many login attempts/)
 
     # one hour later
     later = Time.now + 1.hour
     allow(Time).to receive(:now).and_return(later)
-    post :create, params: { username: 'admin', password: 'wrong' }
+    post :create, params: {username: 'admin', password: 'wrong'}
     expect(response).to be_client_error
     expect(json['message']).to match(/username or password could not be found/)
   end
 
   it "should reset the users login attempts when he authenticated successfully" do
     User.admin.update login_attempts: [Time.now, Time.now]
-    post :create, params: { username: 'admin', password: 'admin' }
+    post :create, params: {username: 'admin', password: 'admin'}
     expect(response).to be_success
     expect(User.admin.login_attempts).to be_empty
   end
 
   it "should not crash when supplying a non existing username" do
     request.headers['HTTP_REFERER'] = 'http://test.host/login'
-    post :create, params: { username: "does_not_exist", password: 'wrong' }
+    post :create, params: {username: "does_not_exist", password: 'wrong'}
     expect(response).to be_client_error
     expect(json['message']).to match(/username or password could not be found/)
   end
@@ -49,7 +49,7 @@ RSpec.describe SessionController, type: :controller do
     User.admin.update_column(:password, User.legacy_crypt('admin'))
     expect(User.admin.password.size).to eq(40)
 
-    post :create, params: { username: 'admin', password: 'admin' }
+    post :create, params: {username: 'admin', password: 'admin'}
     expect(response).to be_success
     expect(User.admin.password.size).to eq(64)
   end
@@ -134,13 +134,13 @@ RSpec.describe SessionController, type: :controller do
     end
 
     it 'should not POST recovery (wrong email)' do
-      post :recovery, params: { email: 'info@does.not.exist' }
+      post :recovery, params: {email: 'info@does.not.exist'}
       expect(response).to be_not_found
     end
 
     it 'should POST recovery (correct email)' do
       old = jdoe.password
-      post :recovery, params: { email: jdoe.email }
+      post :recovery, params: {email: jdoe.email}
       expect(response).to be_success
       expect(jdoe.reload.password).not_to eq(old)
     end

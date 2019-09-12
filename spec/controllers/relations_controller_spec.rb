@@ -16,7 +16,7 @@ RSpec.describe RelationsController, type: :controller do
 
   it 'should not GET show' do
     relation = Relation.find_by! name: 'has created'
-    get 'show', params: { id: relation.id }
+    get 'show', params: {id: relation.id}
     expect(response).to be_success
     expect(json['name']).to eq('has created')
   end
@@ -31,22 +31,22 @@ RSpec.describe RelationsController, type: :controller do
       to_kind_id: locations.id
     }
 
-    post 'create', params: { relation: params }
+    post 'create', params: {relation: params}
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
     relation = Relation.find_by! name: 'has created'
-    patch 'update', params: { 
+    patch 'update', params: {
       id: relation.id,
-      relation: { reverse_name: 'was created by' }
+      relation: {reverse_name: 'was created by'}
     }
     expect(response).to be_forbidden
   end
 
   it 'should not DELETE destroy' do
     relation = Relation.find_by! name: 'has created'
-    delete 'destroy', params: { id: relation.id }
+    delete 'destroy', params: {id: relation.id}
     expect(response).to be_forbidden
   end
 
@@ -65,22 +65,22 @@ RSpec.describe RelationsController, type: :controller do
         to_kind_id: locations.id
       }
 
-      post 'create', params: { relation: params }
+      post 'create', params: {relation: params}
       expect(response).to be_forbidden
     end
 
     it 'should not PATCH update' do
       relation = Relation.find_by! name: 'has created'
-      patch 'update', params: { 
+      patch 'update', params: {
         id: relation.id,
-        relation: { reverse_name: 'was created by' }
+        relation: {reverse_name: 'was created by'}
       }
       expect(response).to be_forbidden
     end
 
     it 'should not DELETE destroy' do
       relation = Relation.find_by! name: 'has created'
-      delete 'destroy', params: { id: relation.id }
+      delete 'destroy', params: {id: relation.id}
       expect(response).to be_forbidden
     end
   end
@@ -100,7 +100,7 @@ RSpec.describe RelationsController, type: :controller do
         to_kind_id: locations.id
       }
 
-      post 'create', params: { relation: params }
+      post 'create', params: {relation: params}
       expect_created_response
       relation = Relation.find(json['id'])
       expect(relation.from_kind_id).to eq(people.id)
@@ -111,9 +111,9 @@ RSpec.describe RelationsController, type: :controller do
 
     it 'should PATCH update' do
       relation = Relation.find_by! name: 'has created'
-      patch 'update', params: { 
+      patch 'update', params: {
         id: relation.id,
-        relation: { reverse_name: 'was created by' }
+        relation: {reverse_name: 'was created by'}
       }
       expect_updated_response
       expect(relation.reload.reverse_name).to eq('was created by')
@@ -121,7 +121,7 @@ RSpec.describe RelationsController, type: :controller do
 
     it 'should DELETE destroy' do
       relation = Relation.find_by! name: 'has created'
-      delete 'destroy', params: { id: relation.id }
+      delete 'destroy', params: {id: relation.id}
       expect_deleted_response
       expect(Relation.find_by(id: relation.id)).to be_nil
     end

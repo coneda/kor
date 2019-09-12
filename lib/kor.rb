@@ -55,7 +55,7 @@ module Kor
 
   def self.id_for_model(object)
     if object.is_a?(Array)
-      object.collect { |o| id_for_model(o) }
+      object.collect{ |o| id_for_model(o) }
     else
       object.is_a?(ActiveRecord::Base) ? object.id : object
     end

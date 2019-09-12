@@ -84,8 +84,8 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
         {}
       end
 
-      entity.properties = properties.map { |p| { 'label' => p['label'], 'value' => p['value'] } }
-      entity.synonyms = synonyms.map { |s| s['name'] }
+      entity.properties = properties.map{ |p| {'label' => p['label'], 'value' => p['value']} }
+      entity.synonyms = synonyms.map{ |s| s['name'] }
       entity.dataset = dataset
       entity.save :validate => false
     end

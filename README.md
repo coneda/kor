@@ -77,7 +77,7 @@ ontology management tool with an easy to use media database.
 ## User documentation
 
 Please check out our
-[user guide (German)](https://github.com/coneda/kor_leitfaden_ffm/wiki)
+[user guide (German, for version 3)](https://github.com/coneda/kor_leitfaden_ffm/wiki)
 
 ## Changelog
 

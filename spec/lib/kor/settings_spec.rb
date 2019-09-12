@@ -9,7 +9,7 @@ RSpec.describe Kor::Settings do
 
   it 'should load existing configuration' do
     File.open described_class.filename, 'w' do |f|
-      data = { 'some' => 'value' }.to_json
+      data = {'some' => 'value'}.to_json
       f.write data
     end
     expect(subject['some']).to eq('value')
@@ -24,7 +24,7 @@ RSpec.describe Kor::Settings do
 
   it 'should overwrite only new configuration' do
     File.open described_class.filename, 'w' do |f|
-      data = { 'some' => 'value' }.to_json
+      data = {'some' => 'value'}.to_json
       f.write data
     end
 
@@ -51,7 +51,7 @@ RSpec.describe Kor::Settings do
   end
 
   it 'should not raise an error when the file is missing' do
-    expect {
+    expect{
       subject['something']
     }.not_to raise_error
   end

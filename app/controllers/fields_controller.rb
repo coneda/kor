@@ -60,7 +60,7 @@ class FieldsController < JsonController
     end
 
     def sanitize_type(str)
-      if Kind.available_fields.map { |klass| klass.name }.include?(str)
+      if Kind.available_fields.map{ |klass| klass.name }.include?(str)
         str
       else
         'Fields::String'

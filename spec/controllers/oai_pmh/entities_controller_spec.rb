@@ -10,25 +10,25 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   end
 
   it "should respond to 'Identify'" do
-    get '/oai-pmh/entities.xml', params: { verb: 'Identify' }
+    get '/oai-pmh/entities.xml', params: {verb: 'Identify'}
     expect(response).to be_success
-    expect { Hash.from_xml response.body }.not_to raise_error
+    expect{ Hash.from_xml response.body }.not_to raise_error
 
-    post '/oai-pmh/entities.xml', params: { verb: 'Identify' }
+    post '/oai-pmh/entities.xml', params: {verb: 'Identify'}
     expect(response).to be_success
-    expect { Hash.from_xml response.body }.not_to raise_error
+    expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListMetadataFormats'" do
-    get '/oai-pmh/entities.xml', params: { verb: 'ListMetadataFormats' }
+    get '/oai-pmh/entities.xml', params: {verb: 'ListMetadataFormats'}
     expect(response).to be_success
-    expect { Hash.from_xml response.body }.not_to raise_error
+    expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListIdentifiers'" do
-    get '/oai-pmh/entities.xml', params: { verb: 'ListIdentifiers' }
+    get '/oai-pmh/entities.xml', params: {verb: 'ListIdentifiers'}
     expect(response).to be_success
-    expect { Hash.from_xml response.body }.not_to raise_error
+    expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListRecords'" do
@@ -37,7 +37,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       metadataPrefix: 'kor'
     }
     expect(response).to be_success
-    expect { Hash.from_xml response.body }.not_to raise_error
+    expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'GetRecord'" do
@@ -49,7 +49,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       metadataPrefix: 'kor'
     }
     expect(response).to be_success
-    expect { Hash.from_xml response.body }.not_to raise_error
+    expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should only include data the user is authorized for" do
@@ -94,7 +94,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
       leonardo.update_attributes(
         datings: [FactoryGirl.build(:leonardo_lifespan)],
-        properties: [{ 'label' => 'age', 'value' => 53 }]
+        properties: [{'label' => 'age', 'value' => 53}]
       )
 
       # yes this sucks, check out
@@ -119,7 +119,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       picture = Kind.medium_kind.entities.last
       admin = User.admin
 
-      # yes this sucks, check out 
+      # yes this sucks, check out
       # https://mail.gnome.org/archives/xml/2009-November/msg0002it "should return 'badVerb' if the verb is not recognized"2.html
       # for a reason why it has to be done like this
       xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
@@ -192,7 +192,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   end
 
   it "should return 'noRecordsMatch' if the criteria do not yield any records" do
-    Entity.all.each { |r| r.really_destroy! }
+    Entity.all.each{ |r| r.really_destroy! }
     admin = User.admin
 
     get '/oai-pmh/entities.xml', params: {
@@ -221,7 +221,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
   end
 
   it "should return 'noSetHierarchy' if a set is requested" do
-    get '/oai-pmh/entities.xml', params: { verb: 'ListSets' }
+    get '/oai-pmh/entities.xml', params: {verb: 'ListSets'}
     verify_oaipmh_error 'noSetHierarchy'
   end
 

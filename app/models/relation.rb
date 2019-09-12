@@ -122,41 +122,41 @@ class Relation < ApplicationRecord
     self[:uuid] ||= SecureRandom.uuid
   end
 
-  scope :updated_after, lambda { |time| time.present? ? where("updated_at >= ?", time) : all }
-  scope :updated_before, lambda { |time| time.present? ? where("updated_at <= ?", time) : all }
-  scope :allowed, lambda { |_user, _policies| all }
-  scope :by_from, lambda { |ids|
+  scope :updated_after, lambda{ |time| time.present? ? where("updated_at >= ?", time) : all }
+  scope :updated_before, lambda{ |time| time.present? ? where("updated_at <= ?", time) : all }
+  scope :allowed, lambda{ |_user, _policies| all }
+  scope :by_from, lambda{ |ids|
     if ids.blank?
       all
     else
       ids = [ids] unless ids.is_a?(Array)
-      where(from_kind_id: ids.map { |i| i.to_i })
+      where(from_kind_id: ids.map{ |i| i.to_i })
     end
   }
-  scope :by_to, lambda { |ids|
+  scope :by_to, lambda{ |ids|
     if ids.blank?
       all
     else
       ids = [ids] unless ids.is_a?(Array)
-      where(to_kind_id: ids.map { |i| i.to_i })
+      where(to_kind_id: ids.map{ |i| i.to_i })
     end
   }
-  default_scope lambda { order(:name) }
+  default_scope lambda{ order(:name) }
 
   def self.available_relation_names(options = {})
     froms = options[:from_ids].presence || []
     tos = options[:to_ids].presence || []
-    froms = Array.wrap(froms).map { |e| e.to_i }.uniq
-    tos = Array.wrap(tos).map { |e| e.to_i }.uniq
+    froms = Array.wrap(froms).map{ |e| e.to_i }.uniq
+    tos = Array.wrap(tos).map{ |e| e.to_i }.uniq
 
     names = {}
 
     Relation.all.each do |relation|
-      names[relation.name] ||= { froms: [], tos: [] }
+      names[relation.name] ||= {froms: [], tos: []}
       names[relation.name][:froms] << relation.from_kind_id
       names[relation.name][:tos] << relation.to_kind_id
 
-      names[relation.reverse_name] ||= { froms: [], tos: [] }
+      names[relation.reverse_name] ||= {froms: [], tos: []}
       names[relation.reverse_name][:froms] << relation.to_kind_id
       names[relation.reverse_name][:tos] << relation.from_kind_id
     end
@@ -183,11 +183,11 @@ class Relation < ApplicationRecord
   end
 
   def self.reverse_primary_relation_names
-    primary_relation_names.map { |rn| reverse_name_for_name(rn) }
+    primary_relation_names.map{ |rn| reverse_name_for_name(rn) }
   end
 
   def self.reverse_secondary_relation_names
-    secondary_relation_names.map { |rn| reverse_name_for_name(rn) }
+    secondary_relation_names.map{ |rn| reverse_name_for_name(rn) }
   end
 
   def self.reverse_name_for_name(name)
@@ -202,8 +202,8 @@ class Relation < ApplicationRecord
   end
 
   def self.to_entity_kind_ids(relation_name)
-    kind_ids = where(name: relation_name).map { |r| r.to_kind_id }
-    kind_ids << where(reverse_name: relation_name).map { |r| r.from_kind_id }
+    kind_ids = where(name: relation_name).map{ |r| r.to_kind_id }
+    kind_ids << where(reverse_name: relation_name).map{ |r| r.from_kind_id }
     kind_ids.flatten.uniq
   end
 

@@ -5,7 +5,7 @@ RSpec.describe FieldsController, type: :controller do
 
   it 'should GET show' do
     people = Kind.find_by! name: 'person'
-    get :show, params: { id: Field.first.id, kind_id: people.id }
+    get :show, params: {id: Field.first.id, kind_id: people.id}
     expect(response).to be_success
     expect(json['name']).to be_a(String)
     expect(json['created_at']).to be_nil
@@ -52,7 +52,7 @@ RSpec.describe FieldsController, type: :controller do
   it 'should not DELETE destroy' do
     people = Kind.find_by! name: 'person'
     field = people.fields.first
-    delete :destroy, params: { kind_id: people.id, id: field.id }
+    delete :destroy, params: {kind_id: people.id, id: field.id}
     expect(response).to be_forbidden
   end
 
@@ -107,7 +107,7 @@ RSpec.describe FieldsController, type: :controller do
     it 'should not allow to change the type when updating' do
       people = Kind.find_by! name: 'person'
       field = people.fields.first
-      post :update, params: { 
+      post :update, params: {
         kind_id: people.id,
         id: field.id,
         field: {
@@ -122,7 +122,7 @@ RSpec.describe FieldsController, type: :controller do
     it 'should DELETE destroy' do
       people = Kind.find_by! name: 'person'
       field = people.fields.first
-      delete :destroy, params: { kind_id: people.id, id: field.id }
+      delete :destroy, params: {kind_id: people.id, id: field.id}
       expect_deleted_response
     end
   end

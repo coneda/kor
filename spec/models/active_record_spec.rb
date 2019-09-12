@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe ActiveRecord do
   it "should find or initialize with additional attributes" do
     u = User.find_or_initialize_by(:name => "Gagamel")
-    u.attributes = { :email => "gagamel@schloss.com" }
+    u.attributes = {:email => "gagamel@schloss.com"}
     u.save
     gagamel = User.find_by_name("Gagamel")
 

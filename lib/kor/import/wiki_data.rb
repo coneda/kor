@@ -41,7 +41,7 @@ class Kor::Import::WikiData
   end
 
   def labels_for(ids)
-    values = ids.map { |i| "(wd:#{i})" }.join(' ')
+    values = ids.map{ |i| "(wd:#{i})" }.join(' ')
     query = "
       PREFIX wd: <http://www.wikidata.org/entity/>
       PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -82,18 +82,18 @@ class Kor::Import::WikiData
 
     results = []
     item['entities'].values.first['claims'].each do |pid, claims|
-      internal = claims.select { |c| c['mainsnak']['datatype'] == 'wikibase-item' }
+      internal = claims.select{ |c| c['mainsnak']['datatype'] == 'wikibase-item' }
 
       if !internal.empty?
-        values = internal.map { |i| i['mainsnak']['datavalue']['value']['id'] }
-        results << { 'id' => pid, 'values' => values }
+        values = internal.map{ |i| i['mainsnak']['datavalue']['value']['id'] }
+        results << {'id' => pid, 'values' => values}
       end
     end
 
-    ids = results.map { |r| r['id'] }
+    ids = results.map{ |r| r['id'] }
     labels = labels_for(ids)
     results.each do |r|
-      r['label'] = labels.find { |l| l['id'] == r['id'] }['label']
+      r['label'] = labels.find{ |l| l['id'] == r['id'] }['label']
     end
 
     results
@@ -118,10 +118,10 @@ class Kor::Import::WikiData
     item = find(id)
     label = item['entities'][id]['labels'][@locale]['value']
     rels = internal_properties_for(item).map do |r|
-      values = r['values'].select { |v| Identifier.resolve(v, 'wikidata_id') }
+      values = r['values'].select{ |v| Identifier.resolve(v, 'wikidata_id') }
       r['values'] = values
       r
-    end.reject { |r| r['values'].empty? }
+    end.reject{ |r| r['values'].empty? }
 
     results = {
       'success' => true,
@@ -131,7 +131,7 @@ class Kor::Import::WikiData
         'kind_id' => kind.id,
         'id' => (entity ? entity.id : nil),
         'name' => label,
-        'dataset' => { 'wikidata_id' => id }
+        'dataset' => {'wikidata_id' => id}
       },
       'relationships' => rels
     }
@@ -146,7 +146,7 @@ class Kor::Import::WikiData
       rels = []
       pd['relationships'].each do |r|
         targets = {}
-        r['values'].each { |v| targets[v] = Identifier.resolve(v, 'wikidata_id') }
+        r['values'].each{ |v| targets[v] = Identifier.resolve(v, 'wikidata_id') }
 
         targets.each do |_tid, target|
           relation = Relation.find_or_create_by!(

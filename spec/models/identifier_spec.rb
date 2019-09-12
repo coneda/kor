@@ -34,7 +34,7 @@ RSpec.describe Identifier do
   end
 
   it "should be removed when an identifier-field is blank" do
-    leonardo.update dataset: { "gnd_id" => "" }
+    leonardo.update dataset: {"gnd_id" => ""}
     expect(described_class.count).to eq(0)
   end
 

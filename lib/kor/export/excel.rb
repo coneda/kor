@@ -55,7 +55,7 @@ class Kor::Export::Excel
           JSON.dump(entity.synonyms),
           entity.comment,
           JSON.dump(
-            entity.datings.map { |d|
+            entity.datings.map{ |d|
               {
                 "id" => d.id,
                 "label" => d.label,
@@ -79,25 +79,25 @@ class Kor::Export::Excel
 
   def columns
     @columns ||= [
-      { :name => "id", :ro => true }, # 0
-      { :name => "uuid", :ro => true },
-      { :name => "delete" },
-      { :name => "name" },
-      { :name => "distinct_name" },
-      { :name => "no_name_statement" }, # 5
-      { :name => "collection_id" },
-      { :name => "collection_name", :ro => true },
-      { :name => "kind_id", :ro => true },
-      { :name => "kind_name", :ro => true },
-      { :name => "created_at", :ro => true }, # 10
-      { :name => "updated_at", :ro => true },
-      { :name => "subtype" },
-      { :name => "synonyms" },
-      { :name => "comment" },
-      { :name => "datings" }, # 15
-      { :name => "dataset" },
-      { :name => "properties" },
-      { :name => "lock_version", :ro => true },
+      {:name => "id", :ro => true}, # 0
+      {:name => "uuid", :ro => true},
+      {:name => "delete"},
+      {:name => "name"},
+      {:name => "distinct_name"},
+      {:name => "no_name_statement"}, # 5
+      {:name => "collection_id"},
+      {:name => "collection_name", :ro => true},
+      {:name => "kind_id", :ro => true},
+      {:name => "kind_name", :ro => true},
+      {:name => "created_at", :ro => true}, # 10
+      {:name => "updated_at", :ro => true},
+      {:name => "subtype"},
+      {:name => "synonyms"},
+      {:name => "comment"},
+      {:name => "datings"}, # 15
+      {:name => "dataset"},
+      {:name => "properties"},
+      {:name => "lock_version", :ro => true},
     ]
   end
 end

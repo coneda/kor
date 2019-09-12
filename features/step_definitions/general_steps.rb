@@ -40,10 +40,10 @@ Given 'the search api expects to receive the params' do |table|
   values['dataset'] = dataset unless dataset.empty?
 
   if values['kind_id']
-    values['kind_id'] = values['kind_id'].split(',').map { |e| e.to_i }
+    values['kind_id'] = values['kind_id'].split(',').map{ |e| e.to_i }
   end
   if values['except_kind_id']
-    values['except_kind_id'] = values['except_kind_id'].split(',').map { |e| e.to_i }
+    values['except_kind_id'] = values['except_kind_id'].split(',').map{ |e| e.to_i }
   end
   if values['tags']
     values['tags'] = values['tags'].split(',')

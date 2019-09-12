@@ -47,9 +47,9 @@ Then(pattern) do |kind, negation, field, attr, value|
   kind = Kind.find_by(name: kind)
 
   if negation
-    expect(kind.fields.map { |f| f.name }).not_to include(field)
+    expect(kind.fields.map{ |f| f.name }).not_to include(field)
   else
-    expect(kind.fields.map { |f| f.name }).to include(field)
+    expect(kind.fields.map{ |f| f.name }).to include(field)
     if attr.present?
       expect(kind.fields.find_by(name: field).send(attr)).to eq(value)
     end
@@ -61,9 +61,9 @@ Then(pattern) do |kind, negation, generator|
   kind = Kind.find_by!(name: kind)
 
   if negation
-    expect(kind.generators.map { |f| f.name }).not_to include(generator)
+    expect(kind.generators.map{ |f| f.name }).not_to include(generator)
   else
-    expect(kind.generators.map { |f| f.name }).to include(generator)
+    expect(kind.generators.map{ |f| f.name }).to include(generator)
   end
 end
 

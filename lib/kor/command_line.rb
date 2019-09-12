@@ -22,11 +22,11 @@ class Kor::CommandLine
     @parser.version = Kor.version
     @parser.banner = File.read("#{Rails.root}/config/banner.txt")
 
-    @parser.on("--version", "print the version") { @command = "version" }
-    @parser.on("-v", "--verbose", "run in verbose mode") { @config[:verbose] = true }
-    @parser.on("-h", "--help", "print available options and commands") { @config[:help] = true }
-    @parser.on("--debug", "the user to act as, default: admin") { @config[:debug] = true }
-    @parser.on("--timestamp", "print a timestamp before doing anything") { @config[:timestamp] = true }
+    @parser.on("--version", "print the version"){ @command = "version" }
+    @parser.on("-v", "--verbose", "run in verbose mode"){ @config[:verbose] = true }
+    @parser.on("-h", "--help", "print available options and commands"){ @config[:help] = true }
+    @parser.on("--debug", "the user to act as, default: admin"){ @config[:debug] = true }
+    @parser.on("--timestamp", "print a timestamp before doing anything"){ @config[:timestamp] = true }
     @parser.separator ""
 
     @parser.order!(@args)
@@ -39,30 +39,30 @@ class Kor::CommandLine
 
     case @command
     when "export"
-      @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") { |v| @config[:format] = v }
-      @parser.on("-u USERAME", "the user to act as, default: admin") { |v| @config[:username] = v }
-      @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids") { |v| @config[:collection_id] = v.split(",").map { |i| i.to_i } }
-      @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids") { |v| @config[:kind_id] = v.split(",").map { |i| i.to_i } }
+      @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel"){ |v| @config[:format] = v }
+      @parser.on("-u USERAME", "the user to act as, default: admin"){ |v| @config[:username] = v }
+      @parser.on("--collection-id=IDS", "export only the given collections, may contain a comma separated list of ids"){ |v| @config[:collection_id] = v.split(",").map{ |i| i.to_i } }
+      @parser.on("--kind-id=IDS", "export only the given kinds, may contain a comma separated list of ids"){ |v| @config[:kind_id] = v.split(",").map{ |i| i.to_i } }
       @required += [:format]
     when "import"
-      @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel") { |v| @config[:format] = v }
-      @parser.on("-u USERAME", "the user to act as, default: admin") { |v| @config[:username] = v }
-      @parser.on("-i", "write objects even if they are stale, default: false") { @config[:ignore_stale] = true }
-      @parser.on("-p", "obey the permission system, default: false") { @config[:obey_permissions] = true }
-      @parser.on("-s", "for imports: don't make any changes, default: false, implies verbose") { @config[:simulate] = true }
-      @parser.on("-o", "ignore all validations") { @config[:ignore_validations] = true }
+      @parser.on("-f FORMAT", "the format to use, supported values: [excel], default: excel"){ |v| @config[:format] = v }
+      @parser.on("-u USERAME", "the user to act as, default: admin"){ |v| @config[:username] = v }
+      @parser.on("-i", "write objects even if they are stale, default: false"){ @config[:ignore_stale] = true }
+      @parser.on("-p", "obey the permission system, default: false"){ @config[:obey_permissions] = true }
+      @parser.on("-s", "for imports: don't make any changes, default: false, implies verbose"){ @config[:simulate] = true }
+      @parser.on("-o", "ignore all validations"){ @config[:ignore_validations] = true }
       @required += [:format]
     when "group-to-zip"
-      @parser.on("--group-id=ID", "select the group to package") { |v| @config[:group_id] = v.to_i }
-      @parser.on("--class-name=NAME", "select the group klass to package") { |v| @config[:class_name] = v }
+      @parser.on("--group-id=ID", "select the group to package"){ |v| @config[:group_id] = v.to_i }
+      @parser.on("--class-name=NAME", "select the group klass to package"){ |v| @config[:class_name] = v }
       @required += [:group_id, :class_name]
     when "exif-stats"
-      @parser.on("-f DATE", "the lower bound for the time period to consider (YYYY-MM-DD)") { |v| @config[:from] = v }
-      @parser.on("-t DATE", "the upper bound for the time period to consider (YYYY-MM-DD)") { |v| @config[:to] = v }
+      @parser.on("-f DATE", "the lower bound for the time period to consider (YYYY-MM-DD)"){ |v| @config[:from] = v }
+      @parser.on("-t DATE", "the upper bound for the time period to consider (YYYY-MM-DD)"){ |v| @config[:to] = v }
       @required += [:from, :to]
     when 'list-permissions'
-      @parser.on('-e ENTITY', 'the id of an entity to limit the result list to') { |v| @config[:entity_id] = v }
-      @parser.on('-u USER', 'the id of a user to limit the result list to') { |v| @config[:user_id] = v }
+      @parser.on('-e ENTITY', 'the id of an entity to limit the result list to'){ |v| @config[:entity_id] = v }
+      @parser.on('-u USER', 'the id of a user to limit the result list to'){ |v| @config[:user_id] = v }
     end
 
     @parser.order!(@args)

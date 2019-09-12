@@ -47,7 +47,7 @@ class Kor::ZipFile
       end
 
       add nil, :as => "#{entity.id}.txt" do
-        { :data => Kor::Export::MetaData.new(user).render(entity) }
+        {:data => Kor::Export::MetaData.new(user).render(entity)}
       end
     end
   end

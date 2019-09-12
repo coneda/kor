@@ -20,7 +20,7 @@ RSpec.describe Relationship do
     expect(relationship.from_id).to eq(leonardo.id)
     expect(relationship.to_id).to eq(mona_lisa.id)
 
-    expect {
+    expect{
       relationship.update_attributes(
         from: leonardo,
         relation_name: 'has been created by',
@@ -44,8 +44,8 @@ RSpec.describe Relationship do
       from: leonardo,
       to: mona_lisa,
       datings_attributes: [
-        { label: 'erste Phase', dating_string: '11. Jahrhundert' },
-        { label: 'zweite Phase', dating_string: '13. Jahrhundert' }
+        {label: 'erste Phase', dating_string: '11. Jahrhundert'},
+        {label: 'zweite Phase', dating_string: '13. Jahrhundert'}
       ]
     )
 
@@ -62,9 +62,9 @@ RSpec.describe Relationship do
       from: leonardo,
       to: mona_lisa,
       datings_attributes: [
-        { label: 'erste Phase', dating_string: '1888' },
-        { label: 'zweite Phase', dating_string: '1890' },
-        { label: 'dritte Phase', dating_string: '1912 bis 1915' },
+        {label: 'erste Phase', dating_string: '1888'},
+        {label: 'zweite Phase', dating_string: '1890'},
+        {label: 'dritte Phase', dating_string: '1912 bis 1915'},
       ]
     )
 

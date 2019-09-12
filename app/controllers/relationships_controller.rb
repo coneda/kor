@@ -49,8 +49,8 @@ class RelationshipsController < JsonController
     end
 
     def build_nested_errors(relationship)
-      relationship.errors.as_json.reject { |k, _v| k.match(/^datings/) }.merge(
-        'datings' => relationship.datings.map { |d| d.errors.as_json }
+      relationship.errors.as_json.reject{ |k, _v| k.match(/^datings/) }.merge(
+        'datings' => relationship.datings.map{ |d| d.errors.as_json }
       )
     end
 end

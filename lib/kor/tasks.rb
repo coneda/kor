@@ -155,7 +155,7 @@ class Kor::Tasks
       Kor::Auth.policies.each do |policy|
         record << Kor::Auth.
           authorized_credentials(entity.collection, policy).
-          map { |c| c.name }.
+          map{ |c| c.name }.
           join(', ')
       end
 
@@ -166,7 +166,7 @@ class Kor::Tasks
     puts "\nUsers: "
     data = [['username (id)', 'credentials']]
     User.by_id(config[:user_id]).find_each do |user|
-      data << ["#{user.name} (#{user.id})", user.groups.map { |c| c.name }.join(', ')]
+      data << ["#{user.name} (#{user.id})", user.groups.map{ |c| c.name }.join(', ')]
     end
     print_table data
   end
@@ -217,7 +217,7 @@ class Kor::Tasks
     data.each do |record|
       row = []
       record.each_with_index do |field, i|
-        maxes[i] ||= data.map { |r| r[i].to_s.size }.max
+        maxes[i] ||= data.map{ |r| r[i].to_s.size }.max
         row << "#{field.to_s.ljust(maxes[i])}"
       end
       puts '| ' + row.join(' | ') + ' |'

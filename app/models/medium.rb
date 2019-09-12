@@ -5,13 +5,13 @@ class Medium < ApplicationRecord
     path: "#{ENV['DATA_DIR']}/media/:style/:id_partition/document.:style_extension",
     url: "/media/images/:style/:id_partition/document.:style_extension",
     default_url: "/media/images/:style/:id_partition/image.:style_extension?:style_timestamp",
-    styles: lambda { |attachment| attachment.instance.custom_styles },
-    processors: lambda { |instance| instance.processors }
+    styles: lambda{ |attachment| attachment.instance.custom_styles },
+    processors: lambda{ |instance| instance.processors }
 
   has_attached_file :image,
     :path => "#{ENV['DATA_DIR']}/media/:style/:id_partition/image.:style_extension",
     :url => "/media/images/:style/:id_partition/image.:style_extension",
-    :default_url => lambda { |attachment| attachment.instance.dummy_url },
+    :default_url => lambda{ |attachment| attachment.instance.dummy_url },
     :styles => {
       :icon => ['80x80>', :jpg],
       :thumbnail => ['140x140>', :jpg],
@@ -31,15 +31,15 @@ class Medium < ApplicationRecord
       ct = document.content_type
       if ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
         result.merge!(
-          mp4: { format: :mp4, content_type: 'video/mp4' },
-          ogg: { format: :ogv, content_type: 'video/ogg' },
-          webm: { format: :webm, content_type: 'video/webm' }
+          mp4: {format: :mp4, content_type: 'video/mp4'},
+          ogg: {format: :ogv, content_type: 'video/ogg'},
+          webm: {format: :webm, content_type: 'video/webm'}
         )
       end
       if ct.match(/^audio\//)
         result.merge!(
-          mp3: { format: :mp3, content_type: 'audio/mp3' },
-          ogg: { format: :ogg, content_type: 'audio/ogg' }
+          mp3: {format: :mp3, content_type: 'audio/mp3'},
+          ogg: {format: :ogg, content_type: 'audio/ogg'}
         )
       end
     end
@@ -92,9 +92,9 @@ class Medium < ApplicationRecord
     end
   end
 
-  validates_attachment :image, content_type: { content_type: /^image\/.+$/, if: Proc.new { |medium| medium.image.file? } }
-  validates_attachment :document, presence: { unless: Proc.new { |medium| medium.image.file? }, message: :file_must_be_set }
-  validates :datahash, uniqueness: { :message => :file_exists }
+  validates_attachment :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{ |medium| medium.image.file? }}
+  validates_attachment :document, presence: {unless: Proc.new{ |medium| medium.image.file? }, message: :file_must_be_set}
+  validates :datahash, uniqueness: {:message => :file_exists}
 
   validate :validate_no_two_images
   validate :validate_file_size
@@ -155,7 +155,7 @@ class Medium < ApplicationRecord
       custom_style_file(style)
     end
   end
-  
+
   def data(style = :original, options = {})
     options.reverse_merge! range: nil
     self.class.read_range data_file(style), options[:range]
@@ -164,7 +164,7 @@ class Medium < ApplicationRecord
   def size(style = :original)
     data_file(style).size
   end
-  
+
   def original
     document.file? ? document : image
   end
@@ -264,7 +264,7 @@ class Medium < ApplicationRecord
   end
 
   def self.dummy_url(content_type)
-    group, type = content_type.split('/').map { |t| t.gsub(/\//, '_') }
+    group, type = content_type.split('/').map{ |t| t.gsub(/\//, '_') }
 
     dir = "#{Rails.root}/public/content_types"
     group_dir = "#{dir}/#{group}"

@@ -11,7 +11,7 @@ RSpec.describe RelationshipsController, type: :controller do
       relation_name: 'is related to',
       to_id: paris.id
     }
-    post 'create', params: { relationship: params }
+    post 'create', params: {relationship: params}
     expect(response).to be_forbidden
   end
 
@@ -21,7 +21,7 @@ RSpec.describe RelationshipsController, type: :controller do
     relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
     patch 'update', params: {
       id: relationship.id,
-      relationship: { properties: ['perhaps'] }
+      relationship: {properties: ['perhaps']}
     }
     expect(response).to be_forbidden
   end
@@ -30,7 +30,7 @@ RSpec.describe RelationshipsController, type: :controller do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     last_supper = Entity.find_by! name: 'The Last Supper'
     relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
-    delete 'destroy', params: { id: relationship.id }
+    delete 'destroy', params: {id: relationship.id}
     expect(response).to be_forbidden
   end
 
@@ -47,7 +47,7 @@ RSpec.describe RelationshipsController, type: :controller do
         relation_name: 'is related to',
         to_id: paris.id
       }
-      post 'create', params: { relationship: params }
+      post 'create', params: {relationship: params}
       expect(response).to be_forbidden
     end
 
@@ -57,7 +57,7 @@ RSpec.describe RelationshipsController, type: :controller do
       relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
       patch 'update', params: {
         id: relationship.id,
-        relationship: { properties: ['perhaps'] }
+        relationship: {properties: ['perhaps']}
       }
       expect(response).to be_forbidden
     end
@@ -66,7 +66,7 @@ RSpec.describe RelationshipsController, type: :controller do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
       relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
-      delete 'destroy', params: { id: relationship.id }
+      delete 'destroy', params: {id: relationship.id}
       expect(response).to be_forbidden
     end
   end
@@ -77,7 +77,7 @@ RSpec.describe RelationshipsController, type: :controller do
     end
 
     it 'should POST create (empty attribs)' do
-      post 'create', params: { relationship: {} }
+      post 'create', params: {relationship: {}}
       expect(response.status).to eq(422)
     end
 
@@ -89,10 +89,10 @@ RSpec.describe RelationshipsController, type: :controller do
         relation_name: 'is related to',
         to_id: paris.id,
         properties: ['perhaps'],
-        datings_attributes: [{ label: 'time', dating_string: '1833' }]
+        datings_attributes: [{label: 'time', dating_string: '1833'}]
       }
-      
-      post 'create', params: { relationship: attribs }
+
+      post 'create', params: {relationship: attribs}
       expect_created_response
       relationship = Relationship.find(json['id'])
       expect(relationship.from.name).to eq('The Last Supper')
@@ -111,7 +111,7 @@ RSpec.describe RelationshipsController, type: :controller do
         to_id: last_supper.id
       }
 
-      post 'create', params: { relationship: params }
+      post 'create', params: {relationship: params}
       expect_created_response
       relationship = Relationship.find(json['id'])
       expect(relationship.from.name).to eq('The Last Supper')
@@ -125,7 +125,7 @@ RSpec.describe RelationshipsController, type: :controller do
       relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
       patch 'update', params: {
         id: relationship.id,
-        relationship: { properties: ['perhaps'] }
+        relationship: {properties: ['perhaps']}
       }
       expect_updated_response
       expect(relationship.reload.properties.first).to eq('perhaps')
@@ -135,7 +135,7 @@ RSpec.describe RelationshipsController, type: :controller do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
       relationship = Relationship.find_by!(from_id: mona_lisa.id, to_id: last_supper.id)
-      delete 'destroy', params: { id: relationship.id }
+      delete 'destroy', params: {id: relationship.id}
       expect_deleted_response
       expect(Relationship.find_by(id: relationship.id)).to be_nil
     end

@@ -8,7 +8,7 @@ RSpec.describe DownloadsController, type: :controller do
       data: File.open("README.md")
     )
 
-    get 'show', params: { uuid: download.id }
+    get 'show', params: {uuid: download.id}
     expect(response).to be_not_found
   end
 
@@ -19,7 +19,7 @@ RSpec.describe DownloadsController, type: :controller do
       data: File.open("README.md")
     )
 
-    get 'show', params: { uuid: download.uuid }
+    get 'show', params: {uuid: download.uuid}
     expect(response).to be_success
     expect(response.body).to match(/ConedaKOR is a web based application/)
   end

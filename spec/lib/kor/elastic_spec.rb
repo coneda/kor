@@ -16,10 +16,10 @@ RSpec.describe Kor::Elastic, elastic: true do
     @landscape = FactoryGirl.create :landscape
     Kor::Elastic.enabled = true
 
-    expect {
+    expect{
       described_class.index(@landscape)
       described_class.refresh
-    }.to change { Kor::Elastic.count }.by(1)
+    }.to change{ Kor::Elastic.count }.by(1)
   end
 
   it "should search with a full token" do
@@ -248,7 +248,7 @@ RSpec.describe Kor::Elastic, elastic: true do
   end
 
   it 'should not crash with just an asterisk for synonyms' do
-    expect {
+    expect{
       described_class.new(User.admin).search(synonyms: '*')
     }.not_to raise_error
   end

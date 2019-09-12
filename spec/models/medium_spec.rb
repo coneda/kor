@@ -67,7 +67,7 @@ RSpec.describe Medium do
     medium = Medium.create :document => File.open("#{Rails.root}/spec/fixtures/image_c.jpg")
     medium = Medium.last
 
-    paths = [:original, :icon, :thumbnail, :preview, :normal].map { |s| medium.path(s) }
+    paths = [:original, :icon, :thumbnail, :preview, :normal].map{ |s| medium.path(s) }
 
     paths.each do |path|
       expect(File.exist?(path)).to be_truthy
@@ -119,7 +119,7 @@ RSpec.describe Medium do
     end
 
     it "should not run the video processor for images" do
-      Dir["#{Rails.root}/lib/paperclip_processors/*"].each { |f| require f }
+      Dir["#{Rails.root}/lib/paperclip_processors/*"].each{ |f| require f }
 
       expect(Paperclip::Video).not_to receive(:make)
       expect(Paperclip::Audio).not_to receive(:make)

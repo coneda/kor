@@ -2027,6 +2027,7 @@
     }
     var settings = extend(create(brackets.settings), {
         skipAnonymousTags: true,
+        keepValueAttributes: false,
         autoUpdate: true
     });
     function $$(selector, ctx) {
@@ -2395,6 +2396,9 @@
         }
     }
     function makeReplaceVirtual(tag, ref) {
+        if (!ref.parentNode) {
+            return;
+        }
         var frag = createFragment();
         makeVirtual.call(tag, frag);
         ref.parentNode.replaceChild(frag, ref);
@@ -2464,8 +2468,10 @@
         var ref = this.__;
         var isAnonymous = ref.isAnonymous;
         var parent = dom && (expr.parent || dom.parentNode);
+        var keepValueAttributes = settings.keepValueAttributes;
         var isStyleAttr = attrName === "style";
         var isClassAttr = attrName === "class";
+        var isValueAttr = attrName === "value";
         var value;
         if (expr._riot_id) {
             if (expr.__.wasCreated) {
@@ -2492,7 +2498,7 @@
                 value = styleObjectToString(value);
             }
         }
-        if (expr.attr && (!expr.wasParsedOnce || !hasValue || value === false)) {
+        if (expr.attr && (!expr.wasParsedOnce || value === false || !hasValue && (!isValueAttr || isValueAttr && !keepValueAttributes))) {
             removeAttribute(dom, getAttribute(dom, expr.attr) ? expr.attr : attrName);
         }
         if (expr.bool) {
@@ -2542,7 +2548,7 @@
             if (expr.bool) {
                 dom[attrName] = value;
             }
-            if (attrName === "value" && dom.value !== value) {
+            if (isValueAttr && dom.value !== value) {
                 dom.value = value;
             } else if (hasValue && value !== false) {
                 setAttribute(dom, attrName, value);
@@ -2666,7 +2672,7 @@
                     riotTag = tagName;
                     setAttribute(root, IS_DIRECTIVE, tagName);
                 }
-                tag = mount$1(root, riotTag || root.tagName.toLowerCase(), opts);
+                tag = mount$1(root, riotTag || root.tagName.toLowerCase(), isFunction(opts) ? opts() : opts);
                 if (tag) {
                     tags.push(tag);
                 }
@@ -2675,7 +2681,7 @@
             }
         }
         styleManager.inject();
-        if (isObject(tagName)) {
+        if (isObject(tagName) || isFunction(tagName)) {
             opts = tagName;
             tagName = 0;
         }
@@ -2727,7 +2733,7 @@
         styleManager.remove(name);
         return delete __TAG_IMPL[name];
     }
-    var version = "v3.11.1";
+    var version = "v3.13.2";
     var core = Object.freeze({
         Tag: Tag,
         tag: tag,
@@ -3178,8 +3184,9 @@
     function setMountState(value) {
         var ref = this.__;
         var isAnonymous = ref.isAnonymous;
+        var skipAnonymous = ref.skipAnonymous;
         define(this, "isMounted", value);
-        if (!isAnonymous) {
+        if (!isAnonymous || !skipAnonymous) {
             if (value) {
                 this.trigger("mount");
             } else {
@@ -3517,22 +3524,18 @@
         try {
             value = JSON.parse(localStorage.getItem(query_key));
         } catch (e) {
-            try {
-                if (localStorage[query_key]) {
-                    value = JSON.parse('{"data":"' + localStorage.getItem(query_key) + '"}');
-                } else {
-                    value = null;
-                }
-            } catch (e) {
-                if (console) console.warn("Lockr could not load the item with key " + key);
+            if (localStorage[query_key]) {
+                value = {
+                    data: localStorage.getItem(query_key)
+                };
+            } else {
+                value = null;
             }
         }
-        if (value === null) {
+        if (!value) {
             return missing;
-        } else if (typeof value.data !== "undefined") {
+        } else if (typeof value === "object" && typeof value.data !== "undefined") {
             return value.data;
-        } else {
-            return missing;
         }
     };
     Lockr.sadd = function(key, value, options) {
@@ -3559,14 +3562,34 @@
         } catch (e) {
             value = null;
         }
-        if (value === null) return []; else return value.data || [];
+        return value && value.data ? value.data : [];
     };
     Lockr.sismember = function(key, value, options) {
-        var query_key = this._getPrefixedKey(key, options);
         return Lockr.smembers(key).indexOf(value) > -1;
     };
-    Lockr.getAll = function() {
-        var keys = Object.keys(localStorage);
+    Lockr.keys = function() {
+        var keys = [];
+        var allKeys = Object.keys(localStorage);
+        if (Lockr.prefix.length === 0) {
+            return allKeys;
+        }
+        allKeys.forEach(function(key) {
+            if (key.indexOf(Lockr.prefix) !== -1) {
+                keys.push(key.replace(Lockr.prefix, ""));
+            }
+        });
+        return keys;
+    };
+    Lockr.getAll = function(includeKeys) {
+        var keys = Lockr.keys();
+        if (includeKeys) {
+            return keys.reduce(function(accum, key) {
+                var tempObj = {};
+                tempObj[key] = Lockr.get(key);
+                accum.push(tempObj);
+                return accum;
+            }, []);
+        }
         return keys.map(function(key) {
             return Lockr.get(key);
         });
@@ -3586,10 +3609,17 @@
         }
     };
     Lockr.rm = function(key) {
-        localStorage.removeItem(key);
+        var queryKey = this._getPrefixedKey(key);
+        localStorage.removeItem(queryKey);
     };
     Lockr.flush = function() {
-        localStorage.clear();
+        if (Lockr.prefix.length) {
+            Lockr.keys().forEach(function(key) {
+                localStorage.removeItem(Lockr._getPrefixedKey(key));
+            });
+        } else {
+            localStorage.clear();
+        }
     };
     return Lockr;
 });
@@ -3669,7 +3699,7 @@ var route = function() {
         return el;
     };
     var RE_ORIGIN = /^.+?\/\/+[^/]+/, EVENT_LISTENER = "EventListener", REMOVE_EVENT_LISTENER = "remove" + EVENT_LISTENER, ADD_EVENT_LISTENER = "add" + EVENT_LISTENER, HAS_ATTRIBUTE = "hasAttribute", POPSTATE = "popstate", HASHCHANGE = "hashchange", TRIGGER = "trigger", MAX_EMIT_STACK_LEVEL = 3, win = typeof window != "undefined" && window, doc = typeof document != "undefined" && document, hist = win && history, loc = win && (hist.location || win.location), prot = Router.prototype, clickEvent = doc && doc.ontouchstart ? "touchstart" : "click", central = observable();
-    var started = false, routeFound = false, debouncedEmit, base, current, parser, secondParser, emitStack = [], emitStackLevel = 0;
+    var started = false, routeFound = false, debouncedEmit, current, parser, secondParser, emitStack = [], emitStackLevel = 0;
     function DEFAULT_PARSER(path) {
         return path.split(/[/?#]/);
     }
@@ -3713,6 +3743,7 @@ var route = function() {
         return (href || loc.href).replace(RE_ORIGIN, "");
     }
     function getPathFromBase(href) {
+        var base = route._.base;
         return base[0] === "#" ? (href || loc.href || "").split(base)[1] || "" : (loc ? getPathFromRoot(href) : href || "").replace(base, "");
     }
     function emit(force) {
@@ -3747,6 +3778,7 @@ var route = function() {
         if (!el || el.nodeName !== "A" || el[HAS_ATTRIBUTE]("download") || !el[HAS_ATTRIBUTE]("href") || el.target && el.target !== "_self" || el.href.indexOf(loc.href.match(RE_ORIGIN)[0]) === -1) {
             return;
         }
+        var base = route._.base;
         if (el.href !== loc.href && (el.href.split("#")[0] === loc.href.split("#")[0] || base[0] !== "#" && getPathFromRoot(el.href).indexOf(base) !== 0 || base[0] === "#" && el.href.split(base)[0] !== loc.href.split(base)[0] || !go(getPathFromBase(el.href), el.title || doc.title))) {
             return;
         }
@@ -3756,7 +3788,7 @@ var route = function() {
         if (!hist) {
             return central[TRIGGER]("emit", getPathFromBase(path));
         }
-        path = base + normalize(path);
+        path = route._.base + normalize(path);
         title = title || doc.title;
         shouldReplace ? hist.replaceState(null, title, path) : hist.pushState(null, title, path);
         doc.title = title;
@@ -3795,6 +3827,10 @@ var route = function() {
     };
     var mainRouter = new Router();
     var route = mainRouter.m.bind(mainRouter);
+    route._ = {
+        base: null,
+        getPathFromBase: getPathFromBase
+    };
     route.create = function() {
         var newSubRouter = new Router();
         var router = newSubRouter.m.bind(newSubRouter);
@@ -3802,7 +3838,7 @@ var route = function() {
         return router;
     };
     route.base = function(arg) {
-        base = arg || "#";
+        route._.base = arg || "#";
         current = getPathFromBase();
     };
     route.exec = function() {
@@ -8856,214 +8892,357 @@ var route = function() {
     }(this, e);
 });
 
-var autoComplete = function() {
-    function autoComplete(options) {
-        if (!document.querySelector) return;
-        function hasClass(el, className) {
-            return el.classList ? el.classList.contains(className) : new RegExp("\\b" + className + "\\b").test(el.className);
-        }
-        function addEvent(el, type, handler) {
-            if (el.attachEvent) el.attachEvent("on" + type, handler); else el.addEventListener(type, handler);
-        }
-        function removeEvent(el, type, handler) {
-            if (el.detachEvent) el.detachEvent("on" + type, handler); else el.removeEventListener(type, handler);
-        }
-        function live(elClass, event, cb, context) {
-            addEvent(context || document, event, function(e) {
-                var found, el = e.target || e.srcElement;
-                while (el && !(found = hasClass(el, elClass))) el = el.parentElement;
-                if (found) cb.call(el, e);
+(function(window, $) {
+    var TinyAutocomplete = function(el, options) {
+        var that = this;
+        that.field = $(el);
+        that.el = null;
+        that.json = null;
+        that.items = [];
+        that.selectedItem = null;
+        that.list = $('<ul class="autocomplete-list" />');
+        that.lastSearch = null;
+        that.options = options;
+    };
+    TinyAutocomplete.prototype = {
+        defaults: {
+            minChars: 2,
+            markAsBold: true,
+            grouped: false,
+            queryProperty: "q",
+            queryParameters: {},
+            method: "get",
+            scrollOnFocus: "auto",
+            maxItems: 100,
+            keyboardDelay: 300,
+            lastItemTemplate: null,
+            closeOnSelect: true,
+            groupContentName: ".autocomplete-items",
+            groupTemplate: '<li class="autocomplete-group"><span class="autocomplete-group-header">{{title}}</span><ul class="autocomplete-items" /></li>',
+            itemTemplate: '<li class="autocomplete-item">{{title}}</li>',
+            showNoResults: false,
+            noResultsTemplate: '<li class="autocomplete-item">No results for {{title}}</li>',
+            wrapClasses: "autocomplete"
+        },
+        init: function() {
+            this.defaults.templateMethod = this.template;
+            this.settings = $.extend({}, this.defaults, this.options);
+            this.setupSettings();
+            this.setupMarkup();
+            this.setupEvents();
+            return this;
+        },
+        template: function(template, vars) {
+            return template.replace(/{{\s*[\w]+\s*}}/g, function(v) {
+                return vars[v.substr(2, v.length - 4)];
             });
-        }
-        var o = {
-            selector: 0,
-            source: 0,
-            minChars: 3,
-            delay: 150,
-            offsetLeft: 0,
-            offsetTop: 1,
-            cache: 1,
-            menuClass: "",
-            renderItem: function(item, search) {
-                search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
-                var re = new RegExp("(" + search.split(" ").join("|") + ")", "gi");
-                return '<div class="autocomplete-suggestion" data-val="' + item + '">' + item.replace(re, "<b>$1</b>") + "</div>";
-            },
-            onSelect: function(e, term, item) {}
-        };
-        for (var k in options) {
-            if (options.hasOwnProperty(k)) o[k] = options[k];
-        }
-        var elems = typeof o.selector == "object" ? [ o.selector ] : document.querySelectorAll(o.selector);
-        for (var i = 0; i < elems.length; i++) {
-            var that = elems[i];
-            that.sc = document.createElement("div");
-            that.sc.className = "autocomplete-suggestions " + o.menuClass;
-            that.autocompleteAttr = that.getAttribute("autocomplete");
-            that.setAttribute("autocomplete", "off");
-            that.cache = {};
-            that.last_val = "";
-            that.updateSC = function(resize, next) {
-                var rect = that.getBoundingClientRect();
-                that.sc.style.left = Math.round(rect.left + (window.pageXOffset || document.documentElement.scrollLeft) + o.offsetLeft) + "px";
-                that.sc.style.top = Math.round(rect.bottom + (window.pageYOffset || document.documentElement.scrollTop) + o.offsetTop) + "px";
-                that.sc.style.width = Math.round(rect.right - rect.left) + "px";
-                if (!resize) {
-                    that.sc.style.display = "block";
-                    if (!that.sc.maxHeight) {
-                        that.sc.maxHeight = parseInt((window.getComputedStyle ? getComputedStyle(that.sc, null) : that.sc.currentStyle).maxHeight);
-                    }
-                    if (!that.sc.suggestionHeight) that.sc.suggestionHeight = that.sc.querySelector(".autocomplete-suggestion").offsetHeight;
-                    if (that.sc.suggestionHeight) if (!next) that.sc.scrollTop = 0; else {
-                        var scrTop = that.sc.scrollTop, selTop = next.getBoundingClientRect().top - that.sc.getBoundingClientRect().top;
-                        if (selTop + that.sc.suggestionHeight - that.sc.maxHeight > 0) that.sc.scrollTop = selTop + that.sc.suggestionHeight + scrTop - that.sc.maxHeight; else if (selTop < 0) that.sc.scrollTop = selTop + scrTop;
-                    }
-                }
+        },
+        debounce: function(func, wait, immediate) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
             };
-            addEvent(window, "resize", that.updateSC);
-            document.body.appendChild(that.sc);
-            live("autocomplete-suggestion", "mouseleave", function(e) {
-                var sel = that.sc.querySelector(".autocomplete-suggestion.selected");
-                if (sel) setTimeout(function() {
-                    sel.className = sel.className.replace("selected", "");
-                }, 20);
-            }, that.sc);
-            live("autocomplete-suggestion", "mouseover", function(e) {
-                var sel = that.sc.querySelector(".autocomplete-suggestion.selected");
-                if (sel) sel.className = sel.className.replace("selected", "");
-                this.className += " selected";
-            }, that.sc);
-            live("autocomplete-suggestion", "mousedown", function(e) {
-                if (hasClass(this, "autocomplete-suggestion")) {
-                    var v = this.getAttribute("data-val");
-                    that.value = v;
-                    o.onSelect(e, v, this);
-                    that.sc.style.display = "none";
-                }
-            }, that.sc);
-            that.blurHandler = function() {
-                try {
-                    var over_sb = document.querySelector(".autocomplete-suggestions:hover");
-                } catch (e) {
-                    var over_sb = 0;
-                }
-                if (!over_sb) {
-                    that.last_val = that.value;
-                    that.sc.style.display = "none";
-                    setTimeout(function() {
-                        that.sc.style.display = "none";
-                    }, 350);
-                } else if (that !== document.activeElement) setTimeout(function() {
-                    that.focus();
-                }, 20);
-            };
-            addEvent(that, "blur", that.blurHandler);
-            var suggest = function(data) {
-                var val = that.value;
-                that.cache[val] = data;
-                if (data.length && val.length >= o.minChars) {
-                    var s = "";
-                    for (var i = 0; i < data.length; i++) s += o.renderItem(data[i], val);
-                    that.sc.innerHTML = s;
-                    that.updateSC(0);
-                } else that.sc.style.display = "none";
-            };
-            that.keydownHandler = function(e) {
-                var key = window.event ? e.keyCode : e.which;
-                if ((key == 40 || key == 38) && that.sc.innerHTML) {
-                    var next, sel = that.sc.querySelector(".autocomplete-suggestion.selected");
-                    if (!sel) {
-                        next = key == 40 ? that.sc.querySelector(".autocomplete-suggestion") : that.sc.childNodes[that.sc.childNodes.length - 1];
-                        next.className += " selected";
-                        that.value = next.getAttribute("data-val");
-                    } else {
-                        next = key == 40 ? sel.nextSibling : sel.previousSibling;
-                        if (next) {
-                            sel.className = sel.className.replace("selected", "");
-                            next.className += " selected";
-                            that.value = next.getAttribute("data-val");
-                        } else {
-                            sel.className = sel.className.replace("selected", "");
-                            that.value = that.last_val;
-                            next = 0;
-                        }
-                    }
-                    that.updateSC(0, next);
-                    return false;
-                } else if (key == 27) {
-                    that.value = that.last_val;
-                    that.sc.style.display = "none";
-                } else if (key == 13 || key == 9) {
-                    var sel = that.sc.querySelector(".autocomplete-suggestion.selected");
-                    if (sel && that.sc.style.display != "none") {
-                        o.onSelect(e, sel.getAttribute("data-val"), sel);
-                        setTimeout(function() {
-                            that.sc.style.display = "none";
-                        }, 20);
-                    }
-                }
-            };
-            addEvent(that, "keydown", that.keydownHandler);
-            that.keyupHandler = function(e) {
-                var key = window.event ? e.keyCode : e.which;
-                if (!key || (key < 35 || key > 40) && key != 13 && key != 27) {
-                    var val = that.value;
-                    if (val.length >= o.minChars) {
-                        if (val != that.last_val) {
-                            that.last_val = val;
-                            clearTimeout(that.timer);
-                            if (o.cache) {
-                                if (val in that.cache) {
-                                    suggest(that.cache[val]);
-                                    return;
-                                }
-                                for (var i = 1; i < val.length - o.minChars; i++) {
-                                    var part = val.slice(0, val.length - i);
-                                    if (part in that.cache && !that.cache[part].length) {
-                                        suggest([]);
-                                        return;
-                                    }
-                                }
-                            }
-                            that.timer = setTimeout(function() {
-                                o.source(val, suggest);
-                            }, o.delay);
-                        }
-                    } else {
-                        that.last_val = val;
-                        that.sc.style.display = "none";
-                    }
-                }
-            };
-            addEvent(that, "keyup", that.keyupHandler);
-            that.focusHandler = function(e) {
-                that.last_val = "\n";
-                that.keyupHandler(e);
-            };
-            if (!o.minChars) addEvent(that, "focus", that.focusHandler);
-        }
-        this.destroy = function() {
-            for (var i = 0; i < elems.length; i++) {
-                var that = elems[i];
-                removeEvent(window, "resize", that.updateSC);
-                removeEvent(that, "blur", that.blurHandler);
-                removeEvent(that, "focus", that.focusHandler);
-                removeEvent(that, "keydown", that.keydownHandler);
-                removeEvent(that, "keyup", that.keyupHandler);
-                if (that.autocompleteAttr) that.setAttribute("autocomplete", that.autocompleteAttr); else that.removeAttribute("autocomplete");
-                document.body.removeChild(that.sc);
-                that = null;
+        },
+        setupSettings: function() {
+            if (this.settings.scrollOnFocus == "auto") {
+                this.settings.scrollOnFocus = this.isTouchDevice();
             }
-        };
-    }
-    return autoComplete;
-}();
-
-(function() {
-    if (typeof define === "function" && define.amd) define("autoComplete", function() {
-        return autoComplete;
-    }); else if (typeof module !== "undefined" && module.exports) module.exports = autoComplete; else window.autoComplete = autoComplete;
-})();
+            if ($(window).height() < 500) {
+                this.settings.maxItems = Math.min(this.settings.maxItems, 3);
+            }
+            if (this.settings.data) {
+                this.request = this.localRequest;
+            } else {
+                this.request = this.remoteRequest;
+            }
+            if (this.settings.keyboardDelay != null) {
+                this.request = this.debounce(this.request, this.settings.keyboardDelay);
+            }
+        },
+        setupEvents: function() {
+            this.el.on("keyup", ".autocomplete-field", $.proxy(this.onKeyUp, this));
+            this.el.on("keydown", ".autocomplete-field", $.proxy(this.onKeyDown, this));
+            this.el.on("click", ".autocomplete-item", $.proxy(this.onClickItem, this));
+            if (this.settings.scrollOnFocus) {
+                this.field.on("focus", function() {
+                    var h = $(this).offset().top;
+                    setTimeout(function() {
+                        window.scrollTo(0, h);
+                    }, 0);
+                });
+            }
+        },
+        setupMarkup: function() {
+            this.field.addClass("autocomplete-field");
+            this.field.attr("autocomplete", "off");
+            this.field.wrap('<div class="' + this.settings.wrapClasses + '" />');
+            this.el = this.field.parent();
+        },
+        remoteRequest: function(val) {
+            this.field.trigger("beforerequest", [ this, val ]);
+            var data = {};
+            $.extend(data, this.settings.queryParameters);
+            data[this.settings.queryProperty] = val;
+            $.ajax({
+                method: this.settings.method,
+                url: this.settings.url,
+                dataType: "json",
+                data: data,
+                success: $.proxy(this.beforeReceiveData, this)
+            });
+        },
+        localRequest: function(val) {
+            if (this.settings.grouped) {
+                this.beforeReceiveData(this.matchLocalPatternGrouped(val));
+            } else {
+                this.beforeReceiveData(this.matchLocalPatternFlat(val));
+            }
+        },
+        matchLocalPatternFlat: function(val) {
+            return this.matchArray(val, this.settings.data);
+        },
+        matchLocalPatternGrouped: function(val) {
+            var r = $.extend(true, [], this.settings.data);
+            for (var i = 0; i < r.length; i++) {
+                var a = this.matchArray(val, r[i].data);
+                if (a.length == 0) {
+                    r.splice(i, 1);
+                    i--;
+                } else {
+                    r[i].data = a;
+                }
+            }
+            return r;
+        },
+        matchArray: function(val, arr) {
+            var r = [];
+            for (var i = 0; i < arr.length; i++) {
+                for (var j in arr[i]) {
+                    if (arr[i][j].toLowerCase && arr[i][j].toLowerCase().indexOf(val.toLowerCase()) > -1 || arr[i][j] == val) {
+                        r.push(arr[i]);
+                        break;
+                    }
+                }
+            }
+            return r;
+        },
+        itemAt: function(i) {
+            if (i == null) {
+                return $();
+            }
+            return this.el.find(".autocomplete-item").eq(i);
+        },
+        clickedItemAt: function(o) {
+            for (var i = 0; i < this.items.length; i++) {
+                if (o == this.el.find(".autocomplete-item").eq(i).get(0)) {
+                    return i;
+                }
+            }
+            return null;
+        },
+        prevItem: function() {
+            this.selectedItem--;
+            if (this.selectedItem < 0) {
+                this.selectedItem = null;
+            }
+            this.markSelected(this.selectedItem);
+        },
+        nextItem: function() {
+            if (this.selectedItem == null) {
+                this.selectedItem = -1;
+            }
+            this.selectedItem++;
+            var l = this.settings.lastItemTemplate ? this.items.length : this.items.length - 1;
+            if (this.selectedItem >= l) {
+                this.selectedItem = l;
+            }
+            this.markSelected(this.selectedItem);
+        },
+        markSelected: function(i) {
+            this.el.find(".active").removeClass("active");
+            this.itemAt(i).addClass("active");
+        },
+        markHitText: function(v, str) {
+            var words = str.split(" ");
+            for (var i in v) {
+                if (typeof v[i] == "string" && i != "template") {
+                    var replacements = [ str ];
+                    for (var j = 0; j < words.length; j++) {
+                        var word = words[j].trim().replace(/[^a-ö0-9]/gi, "");
+                        if (word.length > 0) {
+                            replacements.push(word);
+                        }
+                    }
+                    v[i] = v[i].replace(new RegExp("(" + replacements.join("|") + ")", "gi"), "<strong>$1</strong>");
+                }
+            }
+            return v;
+        },
+        renderGroups: function() {
+            this.list.remove();
+            this.list = $('<ul class="autocomplete-list" />');
+            for (var i in this.json) {
+                this.list.append(this.settings.templateMethod(this.settings.groupTemplate, this.json[i]));
+            }
+            this.el.append(this.list);
+        },
+        renderItemsInGroups: function() {
+            var v = this.field.val();
+            for (var i = 0; i < this.json.length; i++) {
+                var group = this.el.find(this.settings.groupContentName).eq(i);
+                for (var j = 0; j < this.json[i].data.length && j < this.settings.maxItems; j++) {
+                    var jsonData = $.extend({}, this.json[i].data[j]);
+                    if (this.settings.markAsBold) {
+                        jsonData = this.markHitText(jsonData, v);
+                    }
+                    group.append(this.settings.templateMethod(this.json[i].template || this.settings.itemTemplate, jsonData));
+                }
+            }
+        },
+        renderItemsFlat: function() {
+            this.list.remove();
+            this.list = $('<ul class="autocomplete-list" />');
+            var v = this.field.val();
+            for (var i = 0; i < this.json.length && i < this.settings.maxItems; i++) {
+                var jsonData = $.extend({}, this.json[i]);
+                if (this.settings.markAsBold) {
+                    jsonData = this.markHitText(jsonData, v);
+                }
+                this.list.append(this.settings.templateMethod(this.json[i].template || this.settings.itemTemplate, jsonData));
+            }
+            this.el.append(this.list);
+        },
+        renderLastItem: function() {
+            this.list.append(this.settings.templateMethod(this.settings.lastItemTemplate, {
+                title: this.field.val()
+            }));
+        },
+        renderNoResults: function() {
+            this.list.append(this.settings.templateMethod(this.settings.noResultsTemplate, {
+                title: this.field.val()
+            }));
+        },
+        closeList: function() {
+            $("html").off("click");
+            this.list.remove();
+            this.selectedItem = null;
+        },
+        getItemsFromGroups: function() {
+            var r = [];
+            for (var i in this.json) {
+                for (var j = 0; j < this.json[i].data.length; j++) {
+                    if (j < this.settings.maxItems) {
+                        r.push(this.json[i].data[j]);
+                    }
+                }
+            }
+            return r;
+        },
+        valueHasChanged: function() {
+            if (this.field.val() != this.lastSearch) {
+                this.lastSearch = this.field.val();
+                return true;
+            }
+            return false;
+        },
+        isTouchDevice: function() {
+            return !!("ontouchstart" in window);
+        },
+        beforeReceiveData: function(data, xhr) {
+            this.json = data;
+            this.field.trigger("receivedata", [ this, data, xhr ]);
+            this.onReceiveData(this.json);
+        },
+        onReceiveData: function(data) {
+            this.selectedItem = null;
+            if (this.settings.grouped) {
+                this.renderGroups();
+                this.items = this.getItemsFromGroups();
+                this.renderItemsInGroups();
+            } else {
+                this.items = this.json;
+                this.renderItemsFlat();
+            }
+            if (!this.items.length) {
+                if (this.settings.showNoResults) {
+                    this.renderNoResults();
+                }
+            }
+            if (this.settings.lastItemTemplate) {
+                this.renderLastItem();
+            }
+            $("html").one("click", $.proxy(this.closeList, this));
+        },
+        onKeyUp: function(e) {
+            if (this.field.val().length >= this.settings.minChars && this.valueHasChanged()) {
+                this.request(this.field.val());
+            }
+            if (this.field.val() == "") {
+                this.lastSearch = "";
+                this.closeList();
+            }
+        },
+        onKeyDown: function(e) {
+            if (e.keyCode == 38) {
+                e.preventDefault();
+                this.prevItem();
+            }
+            if (e.keyCode == 40) {
+                e.preventDefault();
+                this.nextItem();
+            }
+            if (e.keyCode == 13) {
+                this.onPressEnter(e);
+            }
+            if (e.keyCode == 27) {
+                e.preventDefault();
+                this.closeList();
+            }
+        },
+        onClickItem: function(e) {
+            var i = this.clickedItemAt(e.currentTarget);
+            this.onSelect(e.currentTarget, this.items[i]);
+        },
+        onPressEnter: function(e) {
+            if (this.selectedItem === null) {
+                return true;
+            }
+            e.preventDefault();
+            this.onSelect(this.itemAt(this.selectedItem), this.items[this.selectedItem]);
+        },
+        onSelect: function(item, val) {
+            if (this.settings.onSelect) {
+                this.settings.onSelect.apply(this.field, [ item, val ]);
+            }
+            this.lastSearch = this.field.val();
+            if (this.settings.closeOnSelect) {
+                this.closeList();
+            }
+        }
+    };
+    TinyAutocomplete.defaults = TinyAutocomplete.prototype.defaults;
+    $.fn.tinyAutocomplete = function(settings) {
+        return this.each(function() {
+            if (this.tinyAutocomplete) {
+                $.extend(this.tinyAutocomplete.settings, settings);
+                return this;
+            }
+            var d = new TinyAutocomplete(this, settings).init();
+            this.tinyAutocomplete = {
+                settings: d.settings
+            };
+        });
+    };
+    $.tinyAutocomplete = TinyAutocomplete;
+})(window, $);
 
 var indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
@@ -9078,9 +9257,6 @@ Zepto.extend(Zepto.ajaxSettings, {
     contentType: "application/json",
     accepts: "application/json",
     beforeSend: function(xhr, settings) {
-        if (!settings.url.match(/^http/)) {
-            settings.url = "" + wApp.baseUrl + settings.url;
-        }
         wApp.state.requests.push(xhr);
         wApp.bus.trigger("ajax-state-changed");
         xhr.then(function() {
@@ -9090,6 +9266,11 @@ Zepto.extend(Zepto.ajaxSettings, {
             wApp.state.requests.pop();
             return wApp.bus.trigger("ajax-state-changed");
         });
+        xhr.fail(function(xhr) {
+            if (xhr.status === 401) {
+                return wApp.bus.trigger("reload-session");
+            }
+        });
         xhr.requestUrl = settings.url;
         if (settings.type.match(/POST|PATCH|PUT|DELETE/i) && wApp.session) {
             return xhr.setRequestHeader("X-CSRF-Token", wApp.session.csrfToken());
@@ -9097,16 +9278,21 @@ Zepto.extend(Zepto.ajaxSettings, {
     }
 });
 
+$.tinyAutocomplete.prototype.beforeReceiveData = function(data, xhr) {
+    this.json = data.records;
+    this.field.trigger("receivedata", [ this, data, xhr ]);
+    return this.onReceiveData(this.json);
+};
+
 window.wApp = {
     bus: riot.observable(),
-    data: {},
     mixins: {},
     state: {
         requests: []
     },
-    baseUrl: $("script[kor-url]").attr("kor-url") || "",
     setup: function() {
         wApp.clipboard.setup();
+        wApp.entityHistory.setup();
         return [ wApp.config.setup(), wApp.session.setup(), wApp.i18n.setup(), wApp.info.setup() ];
     }
 };
@@ -9152,35 +9338,32 @@ wApp.auth = {
 };
 
 wApp.mixins.auth = {
-    hasRole: function(roles) {
-        var j, len, role;
+    isAdmin: function() {
         if (!this.currentUser()) {
             return false;
         }
-        if (!Zepto.isArray(roles)) {
-            roles = [ roles ];
+        return !!this.currentUser().admin;
+    },
+    isAuthorityGroupAdmin: function() {
+        if (!this.currentUser()) {
+            return false;
         }
-        for (j = 0, len = roles.length; j < len; j++) {
-            role = roles[j];
-            if (!this.currentUser().permissions.roles[role]) {
-                return false;
-            }
+        return !!this.currentUser().authority_group_admin;
+    },
+    isRelationAdmin: function() {
+        if (!this.currentUser()) {
+            return false;
         }
-        return true;
+        return !!this.currentUser().relation_admin;
+    },
+    isKindAdmin: function() {
+        if (!this.currentUser()) {
+            return false;
+        }
+        return !!this.currentUser().kind_admin;
     },
     hasAnyRole: function() {
-        var k, perms, v;
-        if (!this.currentUser()) {
-            return false;
-        }
-        perms = this.currentUser().permissions.roles;
-        for (k in perms) {
-            v = perms[k];
-            if (v) {
-                return true;
-            }
-        }
-        return false;
+        return this.isAdmin() || this.isAuthorityGroupAdmin() || this.isRelationAdmin() || this.isKindAdmin();
     },
     allowedTo: function(policy, collections, requireAll) {
         var perms;
@@ -9279,6 +9462,30 @@ wApp.clipboard = {
             results.push(wApp.clipboard.subSelect(id));
         }
         return results;
+    },
+    checkEntityExistence: function() {
+        var ids;
+        ids = wApp.clipboard.ids().concat(wApp.clipboard.subSelection());
+        return Zepto.ajax({
+            type: "POST",
+            url: "/entities/existence",
+            data: JSON.stringify({
+                ids: ids
+            }),
+            success: function(data) {
+                var existence, id, results;
+                results = [];
+                for (id in data) {
+                    existence = data[id];
+                    if (!existence) {
+                        results.push(wApp.clipboard.remove(parseInt(id)));
+                    } else {
+                        results.push(void 0);
+                    }
+                }
+                return results;
+            }
+        });
     }
 };
 
@@ -9290,6 +9497,23 @@ wApp.config = {
                 return wApp.config.data = data;
             }
         });
+    },
+    hasHelp: function(key) {
+        return wApp.config.helpFor(key).length > 0;
+    },
+    helpFor: function(key) {
+        var help;
+        help = wApp.config.data.values["help_" + key];
+        if (help) {
+            return help.trim();
+        } else {
+            return "";
+        }
+    },
+    showHelp: function(k) {
+        return wApp.bus.trigger("modal", "kor-help", {
+            key: k
+        });
     }
 };
 
@@ -9298,6 +9522,8 @@ wApp.mixins.config = {
         return wApp.config.data.values;
     }
 };
+
+wApp.bus.on("config-updated", wApp.config.setup);
 
 wApp.i18n = {
     setup: function() {
@@ -9429,7 +9655,7 @@ wApp.mixins.info = {
     info: function() {
         return wApp.info.data;
     },
-    rootPath: function() {
+    rootUrl: function() {
         return this.info().url;
     }
 };
@@ -9500,7 +9726,7 @@ wApp.routing = {
                     for (l = 0, len1 = ref1.length; l < len1; l++) {
                         pair = ref1[l];
                         kv = pair.split("=");
-                        result.hash_query[kv[0]] = kv[1];
+                        result.hash_query[kv[0]] = decodeURIComponent(kv[1]);
                     }
                 }
             }
@@ -9666,6 +9892,39 @@ wApp.utils = {
             results.push(parseInt(o));
         }
         return results;
+    },
+    listToArray: function(value) {
+        var j, len, ref, results, v;
+        if (!value) {
+            return null;
+        }
+        ref = value.split(",");
+        results = [];
+        for (j = 0, len = ref.length; j < len; j++) {
+            v = ref[j];
+            results.push(parseInt(v));
+        }
+        return results;
+    },
+    arrayToList: function(values) {
+        if (!values) {
+            return "";
+        }
+        return values.join(",");
+    },
+    isoToDate: function(str) {
+        var i, parts;
+        parts = function() {
+            var j, len, ref, results;
+            ref = str.split("-");
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+                i = ref[j];
+                results.push(parseInt(i));
+            }
+            return results;
+        }();
+        return new Date(parts[0], parts[1] - 1, parts[2]);
     }
 };
 
@@ -9723,11 +9982,83 @@ wApp.mixins.editor = {
     }
 };
 
-riot.tag2("kor-add-to-user-group", "<strong>HELLO</strong>", "", "", function(opts) {
-    var tag = this;
-});
+wApp.mixins.form = {
+    values: function() {
+        var results = {};
+        var fields = this.fields();
+        for (var i = 0; i < fields.length; i++) {
+            var f = fields[i];
+            var v = f.value();
+            if (v === "" || v === [] || v === undefined) {
+                results[f.name()] = null;
+            } else {
+                results[f.name()] = v;
+            }
+        }
+        return results;
+    },
+    setValues: function(values, clean) {
+        var fields = this.fields();
+        for (var i = 0; i < fields.length; i++) {
+            var f = fields[i];
+            var v = values[f.name()];
+            if (v) {
+                if (!f.set) {
+                    console.log(f);
+                }
+                f.set(v);
+            }
+            if (!v && !!clean) {
+                f.reset();
+            }
+        }
+    },
+    fields: function() {
+        var byTag = wApp.utils.toArray(this.tags["kor-input"]).filter(function(i) {
+            return i.opts.type != "submit" && i.opts.type != "reset";
+        });
+        var byRef = wApp.utils.toArray(this.refs["fields"]);
+        return byTag.concat(byRef);
+    },
+    fieldsByName: function() {
+        var results = {};
+        var fields = this.fields();
+        for (var i = 0; i < fields.length; i++) {
+            f = fields[i];
+            results[f.name()] = f;
+        }
+        return results;
+    }
+};
 
-riot.tag2("kor-field-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <h2 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <form if="{data && types}" onsubmit="{submit}"> <kor-input name="type" label="{tcap(\'activerecord.attributes.field.type\')}" type="select" options="{types_for_select}" riot-value="{data.type}" is-disabled="{data.id}" ref="fields"></kor-input> <virtual each="{f in specialFields}"> <kor-input name="name" label="{f.label}" riot-value="{field[f.name]}" errors="{errors[f.name]}" ref="fields"></kor-input> </virtual> <kor-input name="name" label="{tcap(\'activerecord.attributes.field.name\')}" riot-value="{data.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="show_label" label="{tcap(\'activerecord.attributes.field.show_label\')}" riot-value="{data.show_label}" errors="{errors.show_label}" ref="fields"></kor-input> <kor-input name="form_label" label="{tcap(\'activerecord.attributes.field.form_label\')}" riot-value="{data.form_label}" errors="{errors.form_label}" ref="fields"></kor-input> <kor-input name="search_label" label="{tcap(\'activerecord.attributes.field.search_label\')}" riot-value="{data.search_label}" errors="{errors.search_label}" ref="fields"></kor-input> <kor-input name="show_on_entity" type="checkbox" label="{tcap(\'activerecord.attributes.field.show_on_entity\')}" riot-value="{data.show_on_entity}" ref="fields"></kor-input> <kor-input name="is_identifier" type="checkbox" label="{tcap(\'activerecord.attributes.field.is_identifier\')}" riot-value="{data.is_identifier}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
+wApp.entityHistory = {
+    add: function(id) {
+        console.log(id);
+        var ids = wApp.entityHistory.ids();
+        ids.unshift(id);
+        ids = ids.slice(0, 30);
+        Lockr.set("entity-history", ids);
+    },
+    ids: function() {
+        return Lockr.get("entity-history") || [];
+    },
+    reset: function() {
+        Lockr.rm("entity-history");
+    },
+    setup: function() {
+        wApp.bus.on("logout", function() {
+            wApp.entityHistory.reset();
+        });
+    }
+};
+
+wApp.mixins.page = {
+    title: function(newTitle) {
+        wApp.bus.trigger("page-title", wApp.utils.capitalize(newTitle));
+    }
+};
+
+riot.tag2("kor-field-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <h2 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <form if="{data && types}" onsubmit="{submit}"> <kor-input name="type" label="{tcap(\'activerecord.attributes.field.type\')}" type="select" options="{types_for_select}" riot-value="{data.type}" is-disabled="{data.id}" ref="fields" onchange="{updateSpecialFields}"></kor-input> <virtual each="{f in specialFields}"> <kor-input name="{f.name}" label="{tcap(\'activerecord.attributes.field.\' + f.name)}" type="{f.type}" options="{f.options}" riot-value="{data[f.name]}" errors="{errors[f.name]}" ref="fields"></kor-input> </virtual> <kor-input name="name" label="{tcap(\'activerecord.attributes.field.name\')}" riot-value="{data.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="show_label" label="{tcap(\'activerecord.attributes.field.show_label\')}" riot-value="{data.show_label}" errors="{errors.show_label}" ref="fields"></kor-input> <kor-input name="form_label" label="{tcap(\'activerecord.attributes.field.form_label\')}" riot-value="{data.form_label}" errors="{errors.form_label}" ref="fields"></kor-input> <kor-input name="search_label" label="{tcap(\'activerecord.attributes.field.search_label\')}" riot-value="{data.search_label}" errors="{errors.search_label}" ref="fields"></kor-input> <kor-input name="show_on_entity" type="checkbox" label="{tcap(\'activerecord.attributes.field.show_on_entity\')}" riot-value="{data.show_on_entity}" ref="fields"></kor-input> <kor-input name="is_identifier" type="checkbox" label="{tcap(\'activerecord.attributes.field.is_identifier\')}" riot-value="{data.is_identifier}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
     var create, fetch, fetchTypes, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -9744,18 +10075,15 @@ riot.tag2("kor-field-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {inte
         }
         return fetchTypes();
     });
-    tag.opts.notify.on("add-field", function() {
-        tag.field = {
-            type: "Fields::String"
-        };
-        tag.showForm = true;
-        return tag.update();
-    });
-    tag.opts.notify.on("edit-field", function(field) {
-        tag.field = field;
-        tag.showForm = true;
-        return tag.update();
-    });
+    tag.updateSpecialFields = function(event) {
+        var typeName, types;
+        typeName = event ? Zepto(event.target).val() : tag.data.type;
+        tag.data.type = typeName;
+        if (types = tag.types) {
+            tag.specialFields = types[typeName].fields;
+            return tag.update();
+        }
+    };
     tag.submit = function(event) {
         var p;
         event.preventDefault();
@@ -9805,13 +10133,14 @@ riot.tag2("kor-field-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {inte
             url: "/kinds/" + tag.opts.kindId + "/fields/" + tag.opts.id,
             success: function(data) {
                 tag.data = data;
-                return tag.update();
+                tag.update();
+                return tag.updateSpecialFields();
             }
         });
     };
     fetchTypes = function() {
         return Zepto.ajax({
-            url: "/kinds/" + tag.opts.kindId + "/fields/types",
+            url: "/fields/types",
             success: function(data) {
                 var i, len, t;
                 tag.types = {};
@@ -9824,13 +10153,14 @@ riot.tag2("kor-field-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {inte
                     });
                     tag.types[t.name] = t;
                 }
+                tag.update();
                 return tag.updateSpecialFields();
             }
         });
     };
 });
 
-riot.tag2("kor-fields", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/new"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.field\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{field in opts.kind.fields}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(field)}"><i class="fa fa-remove"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit">{field.name}</a> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-fields", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/new" title="{t(\'verbs.add\')}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.field\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{field in opts.kind.fields}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(field)}" title="{t(\'verbs.delete\')}"><i class="fa fa-remove"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit">{field.name}</a> <div class="clearfix"></div> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -9920,14 +10250,11 @@ riot.tag2("kor-generator-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {
     };
 });
 
-riot.tag2("kor-generators", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/new"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.generator\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{generator in opts.kind.generators}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit"><i class="fa fa-edit"></i></a> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}" onclick="{remove(generator)}"><i class="fa fa-remove"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit">{generator.name}</a> <div class="clearfix"></div> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-generators", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/new" title="{t(\'verbs.add\')}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.generator\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{generator in opts.kind.generators}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}" onclick="{remove(generator)}" title="{t(\'verbs.delete\')}"><i class="fa fa-remove"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit">{generator.name}</a> <div class="clearfix"></div> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.on("mount", function() {
-        return console.log(tag.opts.kind);
-    });
     tag.remove = function(generator) {
         return function(event) {
             event.preventDefault();
@@ -10006,12 +10333,11 @@ riot.tag2("kor-sub-menu", '<a href="#" onclick="{toggle}">{opts.label}</a> <div 
     };
 });
 
-riot.tag2("kor-ask-choices", '<div class="kor-content-box" if="{ready()}"> <virtual each="{choice in opts.choices}"> <kor-input label="{choice.name || choice.label}" name="{choice.id || choice.value}" riot-value="{isChecked(choice)}" type="checkbox" ref="choices"></kor-input> <div class="clearfix"></div> </virtual> <hr> <div class="kor-text-right"> <button onclick="{cancel}">{t(\'cancel\')}</button> <button onclick="{ok}">{t(\'ok\')}</button> </div> </div>', "", "", function(opts) {
+riot.tag2("kor-ask-choices", '<div class="kor-content-box" if="{ready()}"> <a href="#" onclick="{all}" title="{t(\'all\')}">{t(\'all\')}</a> | <a href="#" onclick="{none}" title="{t(\'none\')}">{t(\'none\')}</a> <hr> <virtual each="{choice in opts.choices}"> <kor-input label="{choice.name || choice.label}" name="{choice.id || choice.value}" riot-value="{isChecked(choice)}" type="checkbox" ref="choices"></kor-input> <div class="clearfix"></div> </virtual> <hr> <div class="kor-text-right"> <button onclick="{cancel}">{t(\'cancel\')}</button> <button onclick="{ok}">{t(\'ok\')}</button> </div> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.on("before-mount", function() {
-        console.log(tag.opts);
         fromOpts();
     });
     tag.ok = function(event) {
@@ -10023,6 +10349,20 @@ riot.tag2("kor-ask-choices", '<div class="kor-content-box" if="{ready()}"> <virt
     };
     tag.cancel = function(event) {
         tag.opts.modal.trigger("close");
+    };
+    tag.all = function(event) {
+        event.preventDefault();
+        tag.ids = [];
+        for (var i = 0; i < tag.opts.choices.length; i++) {
+            var c = tag.opts.choices[i];
+            tag.ids.push(c.id || c.value);
+        }
+        tag.update();
+    };
+    tag.none = function(event) {
+        event.preventDefault();
+        tag.ids = [];
+        tag.update();
     };
     tag.ready = function() {
         return Zepto.isArray(tag.ids);
@@ -10049,7 +10389,7 @@ riot.tag2("kor-ask-choices", '<div class="kor-content-box" if="{ready()}"> <virt
     };
 });
 
-riot.tag2("kor-clipboard-control", '<a onclick="{toggle}" if="{!isGuest()}"> <i class="target_hit" show="{isIncluded()}"></i> <i class="target" show="{!isIncluded()}"></i> </a> <a onclick="{toggleSelection}" if="{!isGuest()}"> <i class="select_hit" show="{isSelected()}"></i> <i class="select" show="{!isSelected()}"></i> </a>', "", "", function(opts) {
+riot.tag2("kor-clipboard-control", '<a onclick="{toggle}" if="{!isGuest()}" href="#/entities/{opts.entity.id}/to_clipboard" class="to-clipboard" title="{t(\'add_to_clipboard\')}"> <i class="fa fa-clipboard {kor-glow: isIncluded()}"></i> </a>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -10077,7 +10417,7 @@ riot.tag2("kor-clipboard-control", '<a onclick="{toggle}" if="{!isGuest()}"> <i 
                 wApp.clipboard.add(tag.opts.entity.id);
                 wApp.bus.trigger("message", "notice", tag.t("objects.marked_entity_success"));
             } else {
-                wApp.bus.trigger("message", "error", tag.t("errors.clipboard_too_many_elements"));
+                wApp.bus.trigger("message", "error", tag.t("messages.clipboard_too_many_elements"));
             }
         }
         return tag.update();
@@ -10108,47 +10448,74 @@ riot.tag2("kor-clipboard-subselect-control", '<kor-input type="checkbox" riot-va
     };
 });
 
-riot.tag2("kor-collection-selector", '<virtual if="{collections}"> <kor-input if="{!opts.multiple}" label="{tcap(\'activerecord.models.collection\')}" name="{opts.name}" type="select" options="{collections}" ref="input"></kor-input> <virtual if="{opts.multiple}"> <label>{tcap(\'activerecord.models.collection\', {count: \'other\'})}:</label> <strong if="{ids.length == 0}">{t(\'all\')}</strong> <strong if="{ids.length > 0}">{selectedList()}</strong> <a onclick="{selectCollections}"><i class="fa fa-edit"></i></a> </virtual> </virtual>', "", "", function(opts) {
+riot.tag2("kor-collection-selector", '<virtual if="{collections}"> <virtual if="{collections.length == 1}" input ref="input" type="hidden" riot-value="{collections[0].id}"></virtual> </virtual> <virtual if="{collections && collections.length > 1}"> <kor-input if="{!opts.multiple}" label="{tcap(\'activerecord.models.collection\')}" name="{opts.name}" type="select" options="{collections}" ref="input"></kor-input> <virtual if="{opts.multiple}"> <label>{tcap(\'activerecord.models.collection\', {count: \'other\'})}:</label> <strong if="{!ids || ids.length == 0}">{t(\'all\')}</strong> <strong if="{ids && ids.length > 0}">{selectedList()}</strong> <a href="#" onclick="{selectCollections}" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> </virtual> </virtual> </virtual>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.on("before-mount", function() {
-        tag.ids = tag.opts.riotValue || [];
+        tag.reset();
     });
     tag.on("mount", function() {
         fetch();
     });
+    tag.reset = function() {
+        tag.ids = tag.opts.riotValue || [];
+    };
     tag.name = function() {
         return tag.opts.name;
     };
     tag.value = function() {
-        if (tag.opts.multiple) {
-            return tag.ids;
+        if (tag.collections.length == 1) {
+            var id = tag.collections[0].id;
+            if (tag.opts.multiple) return [ id ]; else return id;
         } else {
-            return tag.refs["input"].value();
+            if (tag.opts.multiple) {
+                return tag.ids;
+            } else {
+                return tag.refs["input"].value();
+            }
         }
+    };
+    tag.set = function(value) {
+        tag.ids = value || [];
+        tag.update();
     };
     tag.selectCollections = function(event) {
         event.preventDefault();
+        var cols = allowedCollections();
+        var ids = tag.ids || [];
+        if (ids.length == 0) {
+            for (var i = 0; i < cols.length; i++) {
+                ids.push(cols[i].id);
+            }
+        }
         wApp.bus.trigger("modal", "kor-ask-choices", {
             choices: allowedCollections(),
             multiple: true,
             notify: newSelection,
-            riotValue: tag.ids
+            riotValue: ids
         });
     };
     tag.selectedList = function() {
+        var all = true;
         var results = [];
         for (var i = 0; i < tag.collections.length; i++) {
             var c = tag.collections[i];
             if (tag.ids.indexOf(c.id) != -1) {
                 results.push(c.name);
+            } else {
+                all = false;
             }
         }
-        return results.join(", ");
+        if (all) {
+            return tag.t("all");
+        } else {
+            return results.join(", ");
+        }
     };
     var newSelection = function(ids) {
         tag.ids = ids;
+        Zepto(tag.root).trigger("change", [ tag.ids ]);
         tag.update();
     };
     var fetch = function() {
@@ -10173,32 +10540,54 @@ riot.tag2("kor-collection-selector", '<virtual if="{collections}"> <kor-input if
     };
 });
 
-riot.tag2("kor-dataset-fields", '<kor-input each="{field in opts.fields}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields"></kor-input>', "", "", function(opts) {
+riot.tag2("kor-dataset-fields", '<virtual each="{field in opts.fields}"> <kor-input if="{simple(field)}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields" errors="{errorsFor(field)}"></kor-input> <kor-input if="{field.type == \'Fields::Text\'}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields" errors="{errorsFor(field)}" type="textarea"></kor-input> <kor-input if="{field.type == \'Fields::Select\'}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields" errors="{errorsFor(field)}" type="select" options="{field.values.split(⁗\\n⁗)}" multiple="{field.subtype == \'multiselect\'}"></kor-input> </virtual>', "", "", function(opts) {
     var tag = this;
+    tag.errorsFor = function(field) {
+        if (tag.opts.errors) {
+            return tag.opts.errors[field.name];
+        }
+    };
     tag.values = function() {
         return opts.values || {};
+    };
+    tag.set = function(values) {
+        var fields = wApp.utils.toArray(tag.refs["fields"]);
+        for (var i = 0; i < fields.length; i++) {
+            var f = fields[i];
+            f.set(values[f.name()]);
+        }
     };
     tag.name = function() {
         return tag.opts.name;
     };
     tag.value = function() {
         var result = {};
-        var inputs = tag.tags["kor-input"] || [];
+        var inputs = wApp.utils.toArray(tag.tags["kor-input"]);
         for (var i = 0; i < inputs.length; i++) {
-            var field = tag.tags["kor-input"][i];
+            var field = inputs[i];
             result[field.name()] = field.value();
         }
         return result;
     };
+    tag.type = function(field) {
+        if (field.type == "Fields::Text") {
+            return "textarea";
+        }
+        return "text";
+    };
+    tag.simple = function(field) {
+        return field.type == "Fields::String" || field.type == "Fields::Isbn" || field.type == "Fields::Regex";
+    };
 });
 
-riot.tag2("kor-datings-editor", '<div class="header"> <button onclick="{add}" class="pull-right"> {t(\'verbs.add\', {capitalize: true})} </button> <label>{opts.label || tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}</label> <div class="clearfix"></div> </div> <ul show="{anyVisibleDatings()}"> <li each="{dating, i in data}" show="{!dating._destroy}" visible="{!dating._destroy}"> <kor-input label="{t(\'activerecord.attributes.dating.label\', {capitalize: true})}" riot-value="{dating.label}" ref="labels" errors="{errorsFor(i, \'label\')}"></kor-input> <kor-input label="{t(\'activerecord.attributes.dating.dating_string\', {capitalize: true})}" riot-value="{dating.dating_string}" ref="dating_strings" errors="{errorsFor(i, \'dating_string\')}"></kor-input> <div class="kor-text-right"> <button onclick="{remove}"> {t(\'verbs.remove\')} </button> </div> <div class="clearfix"></div> </li> </ul>', "", "", function(opts) {
+riot.tag2("kor-datings-editor", '<div class="header" if="{add}"> <button onclick="{add}" class="pull-right" type="button"> {t(\'verbs.add\', {capitalize: true})} </button> <label>{opts.label || tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}</label> <div class="clearfix"></div> </div> <ul show="{anyVisibleDatings()}"> <li each="{dating, i in data}" show="{!dating._destroy}" visible="{!dating._destroy}" no-reorder> <kor-input label="{t(\'activerecord.attributes.dating.label\', {capitalize: true})}" riot-value="{dating.label}" ref="labels" errors="{errorsFor(i, \'label\')}"></kor-input> <kor-input label="{t(\'activerecord.attributes.dating.dating_string\', {capitalize: true})}" riot-value="{dating.dating_string}" ref="dating_strings" errors="{errorsFor(i, \'dating_string\')}"></kor-input> <div class="kor-text-right"> <button onclick="{remove}"> {t(\'verbs.delete\')} </button> </div> <div class="clearfix"></div> </li> </ul>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.on("mount", function() {
         tag.data = tag.opts.riotValue || [];
+        tag.deleted = [];
         return tag.update();
     });
     tag.anyVisibleDatings = function() {
@@ -10221,18 +10610,24 @@ riot.tag2("kor-datings-editor", '<div class="header"> <button onclick="{add}" cl
         o = e[i] || {};
         return o[field];
     };
-    tag.add = function(event) {
-        var dl;
-        event.preventDefault();
-        dl = "";
-        if (tag.opts["for"] === "relationship") {
-            dl = wApp.config.data.values.relationship_dating_label;
+    tag.set = function(values) {
+        var dating, i, ref, results;
+        tag.data = values;
+        tag.update();
+        ref = tag.data;
+        results = [];
+        for (i in ref) {
+            dating = ref[i];
+            results.push(tag.setDating(i, dating));
         }
-        if (tag.opts["for"] === "entity") {
-            dl = tag.opts.kind.settings.dating_label;
+        return results;
+    };
+    tag.add = function(event) {
+        if (event) {
+            event.preventDefault();
         }
         tag.data.push({
-            label: dl
+            label: tag.opts.defaultDatingLabel
         });
         return tag.update();
     };
@@ -10242,11 +10637,10 @@ riot.tag2("kor-datings-editor", '<div class="header"> <button onclick="{add}" cl
         dating = event.item.dating;
         index = event.item.i;
         if (dating.id) {
-            tag.data[index]._destroy = true;
+            return dating._destroy = true;
         } else {
-            tag.data.splice(index, 1);
+            return tag.data.splice(index, 1);
         }
-        return tag.update();
     };
     tag.value = function() {
         var dating, datingStringInputs, i, labelInputs, ref;
@@ -10262,13 +10656,362 @@ riot.tag2("kor-datings-editor", '<div class="header"> <button onclick="{add}" cl
     };
 });
 
-riot.tag2("kor-entity", '<virtual if="{isMedium()}"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{opts.entity}"></kor-clipboard-control> <a href="#/entities/{opts.entity.id}" class="to-medium"> <img riot-src="{opts.entity.medium.url.thumbnail}"> </a> <div if="{!opts.noContentType}"> {t(\'nouns.content_type\')}: <span class="content-type">{opts.entity.medium.content_type}</span> </div> </virtual> <virtual if="{!isMedium()}"> <a class="name" href="#/entities/{opts.entity.id}">{opts.entity.display_name}</a> <span class="kind">{opts.entity.kind_name}</span> </virtual>', "", 'class="{medium: isMedium()}"', function(opts) {
+riot.tag2("kor-help", '<div class="kor-content-box" ref="target"></div>', "", "", function(opts) {
+    var tag = this;
+    tag.on("mount", function() {
+        var help = wApp.config.helpFor(tag.opts.key);
+        Zepto(tag.refs.target).html(help);
+    });
+});
+
+riot.tag2("kor-mass-relate", '<div class="kor-content-box"> <h1>{tcap(\'clipboard_actions.mass_relate\')}</h1> <div if="{error}" class="error">{tcap(error)}</div> <form onsubmit="{save}" onreset="{cancel}"> <virtual if="{data}"> <kor-relation-selector source-kind-id="{sourceKindId}" target-kind-id="{targetKindId}" errors="{errors.relation_id}" ref="relationName" onchange="{relationChanged}"></kor-relation-selector> <hr> <kor-entity-selector relation-name="{relation_name}" errors="{errors.to_id}" ref="targetId" onchange="{targetChanged}"></kor-entity-selector> <hr> <kor-properties-editor ref="properties"></kor-properties-editor> <hr> <kor-datings-editor ref="datings" errors="{errors.datings}" for="relationship"></kor-datings-editor> <hr> <kor-input type="submit"></kor-input> </virtual> <kor-input type="reset" label="{tcap(\'cancel\')}"></kor-input> </form> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.editor);
+    tag.on("mount", function() {
+        tag.errors = {};
+        fetch();
+    });
+    tag.save = function(event) {
+        event.preventDefault();
+        Zepto.ajax({
+            type: "POST",
+            url: "/entities/" + tag.to_id + "/mass_relate",
+            data: JSON.stringify({
+                entity_ids: tag.opts.ids,
+                relation_name: tag.relation_name
+            }),
+            success: function(data) {
+                tag.opts.modal.trigger("close");
+            }
+        });
+    };
+    tag.cancel = function() {
+        tag.opts.modal.trigger("close");
+    };
+    tag.relationChanged = function() {
+        tag.relation_name = tag.refs.relationName.value();
+        tag.update();
+        tag.refs.targetId.trigger("reload");
+    };
+    tag.targetChanged = function() {
+        tag.to_id = tag.refs.targetId.value();
+        fetchTarget();
+    };
+    tag.formValues = function() {
+        return {
+            from_id: tag.from_id,
+            relation_name: tag.refs.relationName.value(),
+            to_id: tag.refs.targetId.value(),
+            properties: tag.refs.properties.value(),
+            datings_attributes: tag.refs.datings.value()
+        };
+    };
+    var fetch = function() {
+        if (!tag.opts.ids || tag.opts.ids.length < 1) {
+            return setError("messages.must_select_1_or_more_entities");
+        }
+        if (tag.opts.ids.length > 10) {
+            return setError("messages.cant_merge_more_than_10_entities");
+        }
+        Zepto.ajax({
+            type: "GET",
+            url: "/entities",
+            data: {
+                id: tag.opts.ids.join(",")
+            },
+            success: function(data) {
+                if (data.total < tag.opts.ids.length) {
+                    return setError("messages.missing_entities_to_merge");
+                }
+                for (var i = 1; i < data.records.length; i++) {
+                    var e = data.records[i];
+                    if (e.kind_id != data.records[0].kind_id) {
+                        return setError("messages.only_same_kind");
+                    }
+                }
+                tag.data = data;
+                tag.sourceKindId = [];
+                for (var i = 0; i < data.records.length; i++) {
+                    tag.sourceKindId.push(data.records[i].kind_id);
+                }
+                tag.update();
+            }
+        });
+    };
+    var fetchTarget = function() {
+        if (tag.to_id) {
+            Zepto.ajax({
+                url: "/entities/" + tag.to_id,
+                success: function(data) {
+                    tag.targetKindId = data.kind_id;
+                    tag.update();
+                    tag.refs.relationName.trigger("reload");
+                }
+            });
+        } else {
+            tag.targetKindId = null;
+            tag.update();
+            tag.refs.relationName.trigger("reload");
+        }
+    };
+    var setError = function(error) {
+        tag.error = error;
+        tag.update();
+    };
+});
+
+riot.tag2("kor-to-entity-group", '<div class="kor-content-box"> <h1>{title()}</h1> <form onsubmit="{submit}"> <kor-entity-group-selector type="{opts.type}" ref="group"></kor-entity-group-selector> <kor-input type="submit"></kor-input> </form> <a href="#/groups/categories/admin/new" onclick="{add}">{t(\'create_new\')}</a> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.title = function() {
+        return tag.tcap("clipboard_actions.add_to_" + opts.type + "_group");
+    };
+    tag.submit = function(event) {
+        event.preventDefault();
+        Zepto.ajax({
+            type: "POST",
+            url: "/" + tag.opts.type + "_groups/" + tag.refs.group.value() + "/add",
+            data: JSON.stringify({
+                entity_ids: tag.opts.entityIds
+            }),
+            success: function(data) {
+                tag.opts.modal.trigger("close");
+            }
+        });
+    };
+});
+
+riot.tag2("kor-entity", '<virtual if="{isMedium()}"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{opts.entity}"></kor-clipboard-control> <a href="#/entities/{opts.entity.id}" class="to-medium"> <img riot-src="{imageUrl()}"> </a> <div if="{!opts.noContentType}"> {tcap(\'nouns.content_type\')}: <span class="content-type">{opts.entity.medium.content_type}</span> </div> </virtual> <virtual if="{!isMedium()}"> <a class="name" href="#/entities/{opts.entity.id}">{opts.entity.display_name}</a> <span class="kind">{opts.entity.kind_name}</span> </virtual>', "", 'class="{medium: isMedium()}"', function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.info);
     tag.isMedium = function() {
         return tag.opts.entity && !!tag.opts.entity.medium_id;
+    };
+    tag.imageUrl = function() {
+        var base = opts.entity.medium.url.thumbnail;
+        if (tag.opts.publishment) {
+            return base.replace(/\?([0-9]+)$/, "?uuid=" + tag.opts.publishment + "&$1");
+        } else {
+            return base;
+        }
+    };
+});
+
+riot.tag2("kor-entity-group-selector", '<kor-input if="{groups}" label="{tcap(\'activerecord.models.\' + opts.type + \'_group\')}" name="{opts.id}" type="select" ref="input" options="{groups}" riot-value="{opts.riotValue}" errors="{opts.errors}"></kor-input>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        Zepto.ajax({
+            url: "/" + tag.opts.type + "_groups",
+            data: {
+                include: "directory"
+            },
+            success: function(data) {
+                tag.groups = data.records;
+                for (var i = 0; i < data.records.length; i++) {
+                    var r = data.records[i];
+                    if (r.directory) {
+                        var names = [];
+                        var containers = [ r.directory ].concat(r.directory.ancestors);
+                        for (var j = 0; j < containers.length; j++) {
+                            var a = containers[j];
+                            names.push(a.name);
+                        }
+                        names.push(r.name);
+                        r.name = names.join(" » ");
+                    }
+                }
+                tag.update();
+            }
+        });
+    });
+    tag.name = function() {
+        return tag.opts.name;
+    };
+    tag.value = function() {
+        return tag.refs["input"].value();
+    };
+});
+
+riot.tag2("kor-entity-merger", '<div class="kor-content-box"> <h1>{tcap(\'verbs.merge\')}</h1> <div if="{error}" class="error">{tcap(error)}</div> <form if="{data}" onsubmit="{submit}"> <kor-input name="uuid" label="{tcap(\'activerecord.attributes.entity.uuid\')}" type="select" options="{combined.uuid}" ref="fields"></kor-input> <kor-input name="subtype" label="{tcap(\'activerecord.attributes.entity.subtype\')}" type="select" options="{combined.subtype}" ref="fields"></kor-input> <kor-collection-selector label="{tcap(\'activerecord.attributes.entity.collection_id\')}"></kor-collection-selector> <kor-input label="{tcap(\'activerecord.attributes.entity.name\')}" name="no_name_statement" type="radio" ref="fields" options="{noNameStatements}"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.entity.name\')}" type="select" options="{combined.name}" ref="fields"></kor-input> <kor-input name="distinct_name" label="{tcap(\'activerecord.attributes.entity.distinct_name\')}" type="select" options="{combined.distinct_name}" ref="fields"></kor-input> <kor-input if="combined.medium_id.length > 0" label="{tcap(\'activerecord.models.medium\')}" name="medium_id" type="radio" options="{media}" riot-value="{combined.medium_id[0]}" ref="fields"></kor-input> <kor-input if="{combined.comment.length > 0}" name="comment" label="{tcap(\'activerecord.attributes.entity.comment\')}" type="radio" options="{combined.comment}" ref="fields"></kor-input> <kor-input name="tag_list" label="{tcap(\'activerecord.attributes.entity.tag_list\')}" riot-value="{combined.tags.join(\', \')}" ref="fields"></kor-input> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{combined.synonyms}"></kor-synonyms-editor> <hr> <kor-input each="{values, key in combined.dataset}" label="{fieldByKey(key).form_label}" name="{key}" type="select" options="{values}" ref="dataset"></kor-input> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{combined.datings}" for="entity" kind="{kind}"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" ref="fields" riot-value="{combined.properties}"></kor-entity-properties-editor> <hr> <kor-input type="submit"></kor-input> </form> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.noNameStatements = [ {
+        label: tag.t("values.no_name_statements.unknown"),
+        value: "unknown"
+    }, {
+        label: tag.t("values.no_name_statements.not_available"),
+        value: "not_available"
+    }, {
+        label: tag.t("values.no_name_statements.empty_name"),
+        value: "empty_name"
+    }, {
+        label: tag.t("values.no_name_statements.enter_name"),
+        value: "enter_name"
+    } ];
+    tag.on("mount", function() {
+        fetch();
+        tag.update();
+    });
+    tag.submit = function(event) {
+        event.preventDefault();
+        Zepto.ajax({
+            type: "POST",
+            url: "/entities/merge",
+            data: JSON.stringify({
+                entity_ids: tag.combined.id,
+                entity: Zepto.extend(values())
+            }),
+            success: function(data) {
+                tag.opts.modal.trigger("close");
+                wApp.routing.path("/entities/" + data.id);
+            }
+        });
+    };
+    tag.fieldByKey = function(key) {
+        for (var i = 0; i < tag.kind.fields.length; i++) {
+            var f = tag.kind.fields[i];
+            if (f.name == key) {
+                return f;
+            }
+        }
+    };
+    var fetch = function() {
+        if (!tag.opts.ids || tag.opts.ids.length < 2) {
+            return setError("messages.must_select_2_or_more_entities");
+        }
+        if (tag.opts.ids.length > 10) {
+            return setError("messages.cant_merge_more_than_10_entities");
+        }
+        Zepto.ajax({
+            type: "GET",
+            url: "/entities",
+            data: {
+                id: tag.opts.ids.join(","),
+                include: "all"
+            },
+            success: function(data) {
+                if (data.total < tag.opts.ids.length) {
+                    return setError("messages.missing_entities_to_merge");
+                }
+                for (var i = 1; i < data.records.length; i++) {
+                    var e = data.records[i];
+                    if (e.kind_id != data.records[0].kind_id) {
+                        return setError("messages.only_same_kind");
+                    }
+                }
+                tag.data = data;
+                fetchKind(tag.data.records[0].kind_id);
+            }
+        });
+    };
+    var fetchKind = function(id) {
+        Zepto.ajax({
+            type: "GET",
+            url: "/kinds/" + id,
+            data: {
+                include: "fields,settings"
+            },
+            success: function(data) {
+                tag.kind = data;
+                combineData();
+            }
+        });
+    };
+    var combineData = function() {
+        var media = [];
+        var combined = {
+            id: [],
+            uuid: [],
+            subtype: [],
+            collection_id: [],
+            name: [],
+            distinct_name: [],
+            medium_id: [],
+            comment: [],
+            tags: [],
+            synonyms: [],
+            datings: [],
+            properties: [],
+            dataset: {}
+        };
+        for (var i = 0; i < tag.data.records.length; i++) {
+            var e = tag.data.records[i];
+            combined.id.push(e.id);
+            combined.uuid.push(e.uuid);
+            combined.subtype.push(e.subtype);
+            combined.collection_id.push(e.collection_id);
+            combined.name.push(e.name);
+            combined.distinct_name.push(e.distinct_name);
+            if (e.medium_id) {
+                combined.medium_id.push(e.medium_id);
+                media.push({
+                    image_url: e.medium.url.thumbnail,
+                    value: e.id
+                });
+            }
+            combined.comment.push(e.comment);
+            combined.tags = combined.tags.concat(e.tags);
+            combined.datings = combined.datings.concat(e.datings);
+            combined.synonyms = combined.synonyms.concat(e.synonyms);
+            combined.properties = combined.properties.concat(e.properties);
+            for (k in e.dataset) {
+                if (!combined.dataset[k]) {
+                    combined.dataset[k] = [];
+                }
+                combined.dataset[k].push(e.dataset[k]);
+            }
+        }
+        combined = cleanup(combined);
+        tag.combined = combined;
+        tag.media = media;
+        tag.update();
+    };
+    var cleanup = function(values) {
+        if (Zepto.isArray(values)) {
+            if (values.length == 0) return [];
+            if (Zepto.isPlainObject(values[0])) return values;
+            var result = wApp.utils.uniq(values).filter(function(e) {
+                return e != null && e != "";
+            });
+            return result.sort();
+        } else {
+            for (var k in values) {
+                values[k] = cleanup(values[k]);
+            }
+        }
+        return values;
+    };
+    var values = function() {
+        var results = {
+            dataset: {}
+        };
+        for (var i = 0; i < tag.refs.fields.length; i++) {
+            var korInput = tag.refs.fields[i];
+            results[korInput.name()] = korInput.value();
+        }
+        var df = tag.refs.dataset;
+        if (df) {
+            if (!Zepto.isArray(df)) {
+                df = [ df ];
+            }
+            for (var i = 0; i < df.length; i++) {
+                var korInput = df[i];
+                results.dataset[korInput.name()] = korInput.value();
+            }
+        }
+        return results;
+    };
+    var setError = function(error) {
+        tag.error = error;
+        tag.update();
     };
 });
 
@@ -10302,17 +11045,17 @@ riot.tag2("kor-entity-properties-editor", '<kor-input label="{opts.label}" type=
         ref = text.split(/\n/);
         for (i = 0, len = ref.length; i < len; i++) {
             line = ref[i];
-            kv = line.split(/\s*:\s*/);
+            kv = line.split(/:/);
             results.push({
-                label: kv[0],
-                value: kv[1]
+                label: kv.shift().trim(),
+                value: kv.join(":").trim()
             });
         }
         return results;
     };
 });
 
-riot.tag2("kor-entity-selector", '<div class="pull-right"> <a href="#" onclick="{gotoTab(\'search\')}" class="{\'selected\': currentTab == \'search\'}">{t(\'nouns.search\')}</a> | <a href="#" onclick="{gotoTab(\'visited\')}" class="{\'selected\': currentTab == \'visited\'}">{t(\'recently_visited\')}</a> | <a href="#" onclick="{gotoTab(\'created\')}" class="{\'selected\': currentTab == \'created\'}">{t(\'recently_created\')}</a> <virtual if="{id}"> | <a href="#" onclick="{gotoTab(\'current\')}" class="{\'selected\': currentTab == \'current\'}">{t(\'currently_linked\')}</a> </virtual> </div> <div class="header"> <label>{opts.label || tcap(\'activerecord.models.entity\')}</label> </div> <kor-input if="{currentTab == \'search\'}" name="terms" placeholder="{tcap(\'nouns.term\')}" ref="terms" onkeyup="{search}"></kor-input> <kor-pagination if="{data}" page="{page}" per-page="{9}" total="{data.total}" on-paginate="{paginate}"></kor-pagination> <table if="{!!groupedEntities}"> <tbody> <tr each="{row in groupedEntities}"> <td each="{record in row}" onclick="{select}" class="{selected: isSelected(record)}"> <kor-entity if="{record}" entity="{record}"></kor-entity> </td> </tr> </tbody> </table> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "", function(opts) {
+riot.tag2("kor-entity-selector", '<div class="pull-right"> <a href="#" onclick="{gotoTab(\'search\')}" class="{\'selected\': currentTab == \'search\'}">{t(\'nouns.search\')}</a> | <a href="#" onclick="{gotoTab(\'visited\')}" class="{\'selected\': currentTab == \'visited\'}">{t(\'recently_visited\')}</a> | <a href="#" onclick="{gotoTab(\'created\')}" class="{\'selected\': currentTab == \'created\'}">{t(\'recently_created\')}</a> <virtual if="{existing}"> | <a href="#" onclick="{gotoTab(\'current\')}" class="{\'selected\': currentTab == \'current\'}">{t(\'currently_linked\')}</a> </virtual> </div> <div class="header"> <label>{opts.label || tcap(\'activerecord.models.entity\')}</label> </div> <kor-input if="{currentTab == \'search\'}" name="terms" placeholder="{tcap(\'nouns.term\')}" ref="terms" onkeyup="{search}"></kor-input> <kor-pagination if="{data}" page="{page}" per-page="{9}" total="{data.total}" on-paginate="{paginate}"></kor-pagination> <table if="{!!groupedEntities}"> <tbody> <tr each="{row in groupedEntities}"> <td each="{record in row}" onclick="{select}" class="{selected: isSelected(record)}"> <kor-entity if="{record}" entity="{record}"></kor-entity> </td> </tr> </tbody> </table> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "", function(opts) {
     var fetch, group, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -10320,6 +11063,9 @@ riot.tag2("kor-entity-selector", '<div class="pull-right"> <a href="#" onclick="
     tag.page = 1;
     tag.on("before-mount", function() {
         tag.id = tag.opts.riotValue;
+        if (tag.id) {
+            tag.existing = true;
+        }
         tag.currentTab = tag.id ? "current" : "search";
         tag.trigger("reload");
         return tag.update();
@@ -10386,8 +11132,9 @@ riot.tag2("kor-entity-selector", '<div class="pull-right"> <a href="#" onclick="
 
           case "visited":
             return Zepto.ajax({
-                url: "/entities/recently_visited",
+                url: "/entities",
                 data: {
+                    id: wApp.entityHistory.ids(),
                     relation_name: tag.opts.relationName,
                     page: tag.page,
                     per_page: 9
@@ -10400,11 +11147,13 @@ riot.tag2("kor-entity-selector", '<div class="pull-right"> <a href="#" onclick="
 
           case "created":
             return Zepto.ajax({
-                url: "/entities/recently_created",
+                url: "/entities",
                 data: {
                     relation_name: tag.opts.relationName,
                     page: tag.page,
-                    per_page: 9
+                    per_page: 9,
+                    sort: "created_at",
+                    direction: "desc"
                 },
                 success: function(data) {
                     tag.data = data;
@@ -10417,7 +11166,10 @@ riot.tag2("kor-entity-selector", '<div class="pull-right"> <a href="#" onclick="
                 return Zepto.ajax({
                     url: "/entities",
                     data: {
-                        terms: tag.refs.terms.value()
+                        terms: tag.refs.terms.value(),
+                        relation_name: tag.opts.relationName,
+                        per_page: 9,
+                        page: tag.page
                     },
                     success: function(data) {
                         tag.data = data;
@@ -10528,7 +11280,7 @@ riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{input
     };
 });
 
-riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, opts.entities)}"> <td each="{entity in row}"> <virtual if="{entity.medium}"> <kor-entity entity="{entity}"></kor-entity> <div class="meta" if="{entity.primary_entities}"> <div class="hr"></div> <div class="name"> <a each="{e in secondaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> <div class="desc"> <a each="{e in primaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> </div> </virtual> <div class="meta" if="{!entity.medium}"> <div class="name"> <a href="#/entities/{entity.id}">{entity.display_name}</a> </div> <div class="desc">{entity.kind.name}</div> </meta> </td> </tr> </tbody> </table>', "", "", function(opts) {
+riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, opts.entities, false)}"> <td each="{entity in row}"> <virtual if="{entity && entity.medium}"> <kor-entity entity="{entity}" publishment="{opts.publishment}"></kor-entity> <div class="meta" if="{entity.primary_entities}"> <div class="hr"></div> <div class="name"> <a each="{e in secondaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> <div class="desc"> <a each="{e in primaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> </div> </virtual> <div class="meta" if="{entity && !entity.medium}"> <div class="name"> <a href="#/entities/{entity.id}">{entity.display_name}</a> </div> <div class="desc">{entity.kind.name}</div> </div> </td> </tr> </tbody> </table>', "", "", function(opts) {
     var compare, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -10593,7 +11345,20 @@ riot.tag2("kor-generator", "", "", "", function(opts) {
     render = riot.util.tmpl;
 });
 
-riot.tag2("kor-inplace-tags", '<virtual if="{opts.entity.tags.length > 0}"> <span class="field"> {tcap(\'activerecord.models.tag\', {count: \'other\'})}: </span> <span class="value">{opts.entity.tags}</span> </virtual> <virtual if="{opts.enableEditor}"> <a show="{!editorActive}" onclick="{toggleEditor}"><i class="plus"></i></a> <virtual if="{editorActive}"> <kor-input name="tags" ref="field"></kor-input> <button onclick="{save}">{tcap(\'verbs.save\')}</button> </virtual> </virtual>', "", "", function(opts) {
+riot.tag2("kor-help-button", '<a if="{hasHelp()}" href="#" onclick="{click}" title="{t(\'nouns.help\')}"><i class="fa fa-question-circle fa-2x"></i></a>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.click = function(event) {
+        event.preventDefault();
+        wApp.config.showHelp(tag.opts.key);
+    };
+    tag.hasHelp = function() {
+        return wApp.config.hasHelp(tag.opts.key);
+    };
+});
+
+riot.tag2("kor-inplace-tags", '<virtual if="{opts.entity.tags.length > 0 || opts.enableEditor}"> <span class="field"> {tcap(\'activerecord.models.tag\', {count: \'other\'})}: </span> <span class="value">{opts.entity.tags.join(\', \')}</span> </virtual> <virtual if="{opts.enableEditor}"> <a show="{!editorActive}" onclick="{toggleEditor}" href="#" title="{t(\'edit_tags\')}"><i class="fa fa-plus-square"></i></a> <virtual if="{editorActive}"> <kor-input name="tags" ref="field"></kor-input> <button onclick="{save}">{tcap(\'verbs.save\')}</button> <button onclick="{cancel}">{tcap(\'cancel\')}</button> </virtual> </virtual>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -10624,11 +11389,22 @@ riot.tag2("kor-inplace-tags", '<virtual if="{opts.entity.tags.length > 0}"> <spa
             }
         });
     };
+    tag.cancel = function(event) {
+        event.preventDefault();
+        return tag.editorActive = false;
+    };
 });
 
-riot.tag2("kor-input", '<label if="{opts.type != \'radio\'}"> {opts.label} <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{valueFromParent()}" checked="{checkedFromParent()}" placeholder="{opts.placeholder}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{valueFromParent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{valueFromParent()}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.placeholder}" riot-value="{0}"> {opts.placeholder} </option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}"> {item.name || item.label || item} </option> </select> </label> <virtual if="{opts.type == \'radio\'}"> <label>{opts.label}</label> <label class="radio" each="{item in opts.options}"> <input type="radio" name="{opts.name}" riot-value="{item.id || item.value || item}" checked="{valueFromParent() == (item.id || item.value || item)}"> {item.name || item.label || item} </label> </virtual> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}">{e}</div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
+riot.tag2("kor-input", '<label if="{opts.type != \'radio\' && opts.type != \'submit\' && opts.type != \'reset\'}"> <span show="{!opts.hideLabel}">{opts.label}</span> <a if="{opts.help}" href="#" onclick="{toggleHelp}"><i class="fa fa-question-circle"></i></a> <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{valueFromParent()}" checked="{checkedFromParent()}" placeholder="{opts.placeholder}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{valueFromParent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{valueFromParent()}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.placeholder}" riot-value="{0}">{opts.placeholder}</option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}">{item.name || item.label || item}</option> </select> </label> <input if="{opts.type == \'submit\'}" type="submit" riot-value="{opts.label || tcap(\'verbs.save\')}"> <input if="{opts.type == \'reset\'}" type="reset" riot-value="{opts.label || tcap(\'verbs.reset\')}"> <virtual if="{opts.type == \'radio\'}"> <label>{opts.label}</label> <label class="radio" each="{item in opts.options}"> <input type="radio" name="{opts.name}" riot-value="{item.id || item.value || item}" checked="{valueFromParent() == (item.id || item.value || item)}"> <virtual if="{!item.image_url}">{item.name || item.label || item}</virtual> <img if="{item.image_url}" riot-src="{item.image_url}"> </label> </virtual> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}"> {e} </div> </div> <div if="{opts.help && showHelp}" class="help" ref="help"></div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
     var tag;
     tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        if (tag.opts.autofocus) {
+            return Zepto(tag.root).find("input, textarea, select").focus();
+        }
+    });
     tag.name = function() {
         return tag.opts.name;
     };
@@ -10644,6 +11420,8 @@ riot.tag2("kor-input", '<label if="{opts.type != \'radio\'}"> {opts.label} <inpu
                     return i.attr("value");
                 }
             }
+        } else if (tag.opts.type === "submit") {
+            return null;
         } else {
             result = Zepto(tag.root).find("input, select, textarea").val();
             if (result === "0" && tag.opts.type === "select") {
@@ -10667,8 +11445,31 @@ riot.tag2("kor-input", '<label if="{opts.type != \'radio\'}"> {opts.label} <inpu
         return tag.opts.type === "checkbox" && Zepto(tag.root).find("input").prop("checked");
     };
     tag.set = function(value) {
+        var e, i, input, j, k, len, len1, ref, results, results1, v;
         if (tag.opts.type === "checkbox") {
             return Zepto(tag.root).find("input").prop("checked", !!value);
+        } else if (tag.opts.type === "radio") {
+            ref = Zepto(tag.root).find("input");
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+                input = ref[j];
+                if ((i = $(input)).attr("value") === value) {
+                    results.push(i.prop("checked", true));
+                } else {
+                    results.push(i.prop("checked", false));
+                }
+            }
+            return results;
+        } else if (tag.opts.type === "submit") {} else if (tag.opts.type === "select" && Zepto.isArray(value)) {
+            e = Zepto(tag.root).find("select");
+            e.val([]);
+            results1 = [];
+            for (k = 0, len1 = value.length; k < len1; k++) {
+                v = value[k];
+                e.find("option[value='" + v + "']").prop("selected", true);
+                results1.push(Zepto(tag.root).find("select"));
+            }
+            return results1;
         } else {
             return Zepto(tag.root).find("input, select, textarea").val(value);
         }
@@ -10685,9 +11486,17 @@ riot.tag2("kor-input", '<label if="{opts.type != \'radio\'}"> {opts.label} <inpu
             return "" + v === "" + tag.valueFromParent();
         }
     };
+    tag.toggleHelp = function(event) {
+        event.preventDefault();
+        tag.showHelp = !tag.showHelp;
+        tag.update();
+        if (tag.showHelp) {
+            return Zepto(tag.refs.help).html(tag.opts.help);
+        }
+    };
 });
 
-riot.tag2("kor-kind-selector", '<kor-input if="{kinds}" label="{tcap(\'activerecord.models.kind\')}" type="select" ref="input" options="{kinds}" placeholder="{t(\'all\')}" riot-value="{opts.riotValue}"></kor-input> </kor-input>', "", "", function(opts) {
+riot.tag2("kor-kind-selector", '<kor-input if="{kinds}" label="{tcap(\'activerecord.models.kind\')}" type="select" ref="input" options="{kinds}" placeholder="{t(\'all\')}"></kor-input> </kor-input>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -10705,6 +11514,16 @@ riot.tag2("kor-kind-selector", '<kor-input if="{kinds}" label="{tcap(\'activerec
             return v;
         }
     };
+    tag.set = function(value) {
+        if (tag.refs.input) {
+            tag.refs.input.set(value);
+        } else {
+            tag.kind_id = value;
+        }
+    };
+    tag.reset = function() {
+        tag.set(null);
+    };
     var fetch = function() {
         Zepto.ajax({
             url: "/kinds",
@@ -10712,12 +11531,16 @@ riot.tag2("kor-kind-selector", '<kor-input if="{kinds}" label="{tcap(\'activerec
                 var results = [];
                 for (var i = 0; i < data.records.length; i++) {
                     var k = data.records[i];
-                    if (k.id != wApp.info.data.medium_kind_id) {
+                    if (tag.opts.includeMedia || k.id != wApp.info.data.medium_kind_id) {
                         results.push(k);
                     }
                 }
                 tag.kinds = results;
                 tag.update();
+                if (tag.kind_id) {
+                    tag.refs.input.set(tag.kind_id);
+                    tag.kind_id = null;
+                }
             }
         });
     };
@@ -10743,13 +11566,24 @@ riot.tag2("kor-login-info", '<div class="item"> <span class="kor-shine">ConedaKO
     tag.mixin(wApp.mixins.info);
 });
 
-riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amount"> {opts.ids.length} {t(\'activerecord.models.entity\', {count: \'other\'})} </div> <hr> <a class="action" onclick="{merge}">{tcap(\'clipboard_actions.merge\')}</a> <a class="action" onclick="{massRelate}">{tcap(\'clipboard_actions.mass_relate\')}</a> <a class="action" onclick="{massDelete}">{tcap(\'clipboard_actions.mass_delete\')}</a> <a class="action" onclick="{addToAuthorityGroup}">{tcap(\'clipboard_actions.add_to_authority_group\')}</a> <a class="action" onclick="{addToUserGroup}">{tcap(\'clipboard_actions.add_to_user_group\')}</a> <a class="action" onclick="{moveToCollection}">{tcap(\'clipboard_actions.move_to_collection\')}</a>', "", "", function(opts) {
+riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amount"> {opts.ids.length} {t(\'activerecord.models.entity\', {count: \'other\'})} </div> <hr> <a class="action" href="#" onclick="{merge}">{tcap(\'clipboard_actions.merge\')}</a> <a class="action" href="#" onclick="{massRelate}">{tcap(\'clipboard_actions.mass_relate\')}</a> <a class="action" href="#" onclick="{massDelete}">{tcap(\'clipboard_actions.mass_delete\')}</a> <a if="{session().user.authority_group_admin}" class="action" href="#" onclick="{addToAuthorityGroup}">{tcap(\'clipboard_actions.add_to_authority_group\')}</a> <a class="action" href="#" onclick="{addToUserGroup}">{tcap(\'clipboard_actions.add_to_user_group\')}</a> <a class="action" href="#" onclick="{moveToCollection}">{tcap(\'clipboard_actions.move_to_collection\')}</a>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.merge = function() {};
-    tag.massRelate = function() {};
-    tag.massDelete = function() {
+    tag.merge = function(event) {
+        event.preventDefault();
+        wApp.bus.trigger("modal", "kor-entity-merger", {
+            ids: tag.opts.ids
+        });
+    };
+    tag.massRelate = function(event) {
+        event.preventDefault();
+        wApp.bus.trigger("modal", "kor-mass-relate", {
+            ids: wApp.clipboard.subSelection()
+        });
+    };
+    tag.massDelete = function(event) {
+        event.preventDefault();
         if (wApp.utils.confirm()) {
             var data = {
                 ids: wApp.clipboard.subSelection()
@@ -10768,14 +11602,23 @@ riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amou
             });
         }
     };
-    tag.addToAuthorityGroup = function() {};
-    tag.addToUserGroup = function() {
-        var ids = wApp.clipboard.subSelection();
-        wApp.bus.trigger("modal", "kor-add-to-user-group", {
-            id: ids
+    var addToEntityGroup = function(type) {
+        wApp.bus.trigger("modal", "kor-to-entity-group", {
+            type: type,
+            entityIds: wApp.clipboard.subSelection()
         });
     };
-    tag.moveToCollection = function() {};
+    tag.addToAuthorityGroup = function(event) {
+        event.preventDefault();
+        addToEntityGroup("authority");
+    };
+    tag.addToUserGroup = function(event) {
+        event.preventDefault();
+        addToEntityGroup("user");
+    };
+    tag.moveToCollection = function(event) {
+        event.preventDefault();
+    };
     var notify = function() {
         var h = tag.opts.onActionSuccess;
         if (h) {
@@ -10793,12 +11636,16 @@ riot.tag2("kor-media-relation", '<div class="name"> {opts.name} <kor-pagination 
     tag.mixin(wApp.mixins.info);
     tag.on("mount", function() {
         var base;
+        wApp.bus.on("relationship-created", fetch);
         wApp.bus.on("relationship-updated", fetch);
+        wApp.bus.on("relationship-deleted", fetch);
         (base = tag.opts).query || (base.query = {});
         return fetch();
     });
     tag.on("unmount", function() {
-        return wApp.bus.off("relationship-updated", fetch);
+        wApp.bus.off("relationship-deleted", fetch);
+        wApp.bus.off("relationship-updated", fetch);
+        return wApp.bus.off("relationship-created", fetch);
     });
     tag.pageUpdate = function(newPage) {
         opts.query.page = newPage;
@@ -10809,11 +11656,13 @@ riot.tag2("kor-media-relation", '<div class="name"> {opts.name} <kor-pagination 
     };
     fetch = function() {
         return Zepto.ajax({
-            url: "/entities/" + tag.opts.entity.id + "/relationships",
+            url: "relationships",
             data: {
+                from_entity_id: tag.opts.entity.id,
                 page: tag.opts.query.page,
                 relation_name: tag.opts.name,
-                to_kind_id: tag.info().medium_kind_id
+                to_kind_id: tag.info().medium_kind_id,
+                include: "all"
             },
             success: function(data) {
                 tag.data = data;
@@ -10865,39 +11714,385 @@ riot.tag2("kor-nothing-found", "<span>{t('no_results')}</span>", "", 'show="{!op
 riot.tag2("kor-about", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.config);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
-        return Zepto(tag.root).find(".target").html(tag.config().about_html);
+        tag.title(tag.t("about"));
+        return Zepto(tag.root).find(".target").html(tag.config().legal_html);
     });
 });
 
-riot.tag2("kor-access-denied", '<div class="kor-layout-left kor-layout-large kor-clear-after"> <div class="kor-content-box"> <h1>{tcap(\'notices.access_denied\')}</h1> {t(\'messages.access_denied\')} <div class="hr"></div> <a href="#/login?return_to={returnTo()}">{t(\'verbs.login\')}</a> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-access-denied", '<div class="kor-layout-left kor-layout-large kor-clear-after"> <div class="kor-content-box"> <h1>{tcap(\'access_denied\')}</h1> {t(\'messages.access_denied\')} <div class="hr"></div> <a href="#/login?return_to={returnTo()}">{t(\'verbs.login\')}</a> | <a href="#" onclick="{back}">{t(\'back\')}</a> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.returnTo = function() {
         return encodeURIComponent(wApp.routing.fragment());
     };
+    tag.back = function(event) {
+        event.preventDefault();
+        return wApp.bus.trigger("go-back");
+    };
 });
 
-riot.tag2("kor-clipboard", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="kor-layout-commands"> <a onclick="{reset}"><i class="minus"></i></a> </div> <h1>{tcap(\'nouns.clipboard\')}</h1> <div class="mass-subselect"> <a href="#" onclick="{selectAll}">{t(\'all\')}</a> | <a href="#" onclick="{selectNone}">{t(\'none\')}</a> </div> <kor-pagination if="{data}" page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" per-page-control="{true}"></kor-pagination> <hr> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-nothing-found data="{data}"></kor-nothing-found> <table if="{data}"> <tbody> <tr each="{entity in data.records}"> <td> <kor-clipboard-subselect-control entity="{entity}"></kor-clipboard-subselect-control> </td> <td> <a href="#/entities/{entity.id}"> <span show="{!entity.medium}">{entity.display_name}</span> <img if="{entity.medium}" riot-src="{entity.medium.url.icon}" class="image"> </a> </td> <td class="right nobreak"> <a onclick="{remove(entity.id)}"><i class="minus"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box"> <kor-mass-action if="{data}" ids="{selectedIds()}" on-action-success="{reload}"></kor-mass-action> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-admin-group-categories", '<kor-help-button key="authority_groups"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <a if="{!opts.type && isAuthorityGroupAdmin()}" href="{newCategoryUrl()}" class="pull-right" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.authority_group_category\')}})}"><i class="fa fa-plus-square"></i></a> <h1> {tcap(\'activerecord.models.authority_group_category\', {count: \'other\'})} </h1> <p class="ancestry" if="{parentCategory}"> <a href="#/groups/categories">{t(\'nouns.top_level\')}</a> <virtual each="{a in parentCategory.ancestors}"> <span class="separator">»</span> <a href="#/groups/categories/{a.id}">{a.name}</a> </virtual> <span class="separator">»</span> <span>{parentCategory.name}</span> </p> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.authority_group_category.name\')}</th> <th if="{isAuthorityGroupAdmin()}"></th> </tr> </thead> <tbody> <tr each="{category in data.records}"> <td> <a href="#/groups/categories/{category.id}">{category.name}</td> <td class="right nowrap" if="{isAuthorityGroupAdmin()}"> <a href="#/groups/categories/{category.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a href="#/groups/categories/{category.id}" title="{t(\'verbs.delete\')}" onclick="{onDeleteClicked}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="kor-layout-right kor-layout-large"> <kor-admin-groups category-id="{opts.parentId}"></kor-admin-groups> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
+        if (tag.opts.parentId) {
+            fetchParent();
+        }
+        fetch();
+    });
+    tag.newCategoryUrl = function() {
+        if (tag.opts.parentId) {
+            return "#/groups/categories/" + tag.opts.parentId + "/new";
+        }
+        return "#/groups/categories/new";
+    };
+    tag.onDeleteClicked = function(event) {
+        event.preventDefault();
+        if (wApp.utils.confirm()) destroy(event.item.category.id);
+    };
+    var destroy = function(id) {
+        Zepto.ajax({
+            type: "DELETE",
+            url: "/authority_group_categories/" + id,
+            success: fetch
+        });
+    };
+    var fetchParent = function() {
+        Zepto.ajax({
+            url: "/authority_group_categories/" + tag.opts.parentId,
+            data: {
+                include: "ancestors"
+            },
+            success: function(data) {
+                tag.parentCategory = data;
+                tag.update();
+            }
+        });
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/authority_group_categories",
+            data: {
+                parent_id: tag.opts.parentId
+            },
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-admin-group-category-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.authority_group_category\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.authority_group_category\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.authority_group.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input if="{categories}" label="{tcap(\'activerecord.models.authority_group_category\')}" name="parent_id" type="select" options="{categories}" placeholder="" ref="fields" riot-value="{data.parent_id || opts.parentId}" errors="{errors.parent_id}"></kor-input> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var create, fetch, fetchCategories, tag, update, values;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
+    tag.on("before-mount", function() {
+        fetchCategories();
+        tag.errors = {};
+        tag.data = {};
+        if (!tag.isAuthorityGroupAdmin()) {
+            return wApp.bus.trigger("access-denied");
+        }
+    });
+    tag.on("mount", function() {
+        if (tag.opts.id) {
+            return fetch();
+        }
+    });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            var id;
+            tag.errors = {};
+            if (id = values()["parent_id"]) {
+                return wApp.routing.path("/groups/categories/" + id);
+            } else {
+                return wApp.routing.path("/groups/categories");
+            }
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/authority_group_categories/" + tag.opts.id,
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    fetchCategories = function() {
+        return Zepto.ajax({
+            url: "/authority_group_categories/flat",
+            data: {
+                include: "ancestors"
+            },
+            success: function(data) {
+                var a, i, len, names, r, ref, results;
+                results = [ {
+                    value: "0",
+                    label: tag.t("none")
+                } ];
+                ref = data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    r = ref[i];
+                    if (r.id !== tag.opts.id) {
+                        names = function() {
+                            var j, len1, ref1, results1;
+                            ref1 = r.ancestors;
+                            results1 = [];
+                            for (j = 0, len1 = ref1.length; j < len1; j++) {
+                                a = ref1[j];
+                                results1.push(a.name);
+                            }
+                            return results1;
+                        }();
+                        names.push(r.name);
+                        results.push({
+                            value: r.id,
+                            label: names.join(" » ")
+                        });
+                    }
+                }
+                tag.categories = results;
+                return tag.update();
+            }
+        });
+    };
+    create = function() {
+        return Zepto.ajax({
+            type: "POST",
+            url: "/authority_group_categories",
+            data: JSON.stringify({
+                authority_group_category: values()
+            })
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/authority_group_categories/" + tag.opts.id,
+            data: JSON.stringify({
+                authority_group_category: values()
+            })
+        });
+    };
+    values = function() {
+        var f, i, len, ref, results;
+        results = {};
+        ref = wApp.utils.toArray(tag.refs.fields);
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            results[f.name()] = f.value();
+        }
+        return results;
+    };
+});
+
+riot.tag2("kor-admin-group-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.authority_group\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.authority_group\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.authority_group.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input if="{categories}" label="{tcap(\'activerecord.models.authority_group_category\')}" name="authority_group_category_id" type="select" options="{categories}" placeholder="" ref="fields" riot-value="{data.authority_group_category_id}" errors="{errors.authority_group_category_id}"></kor-input> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var create, fetch, fetchCategories, tag, update, values;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
+    tag.on("before-mount", function() {
+        tag.errors = {};
+        fetchCategories();
+        if (!tag.isAuthorityGroupAdmin()) {
+            return wApp.bus.trigger("access-denied");
+        }
+    });
+    tag.on("mount", function() {
+        if (tag.opts.id) {
+            return fetch();
+        } else {
+            tag.data = {};
+            return tag.data.authority_group_category_id = tag.opts.categoryId;
+        }
+    });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            var id;
+            tag.errors = {};
+            if (id = values()["authority_group_category_id"]) {
+                return wApp.routing.path("/groups/categories/" + id);
+            } else {
+                return wApp.routing.path("/groups/categories");
+            }
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/authority_groups/" + tag.opts.id,
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    fetchCategories = function() {
+        return Zepto.ajax({
+            url: "/authority_group_categories/flat",
+            data: {
+                include: "ancestors"
+            },
+            success: function(data) {
+                var a, i, len, names, r, ref, results;
+                results = [ {
+                    value: "0",
+                    label: tag.t("none")
+                } ];
+                ref = data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    r = ref[i];
+                    names = function() {
+                        var j, len1, ref1, results1;
+                        ref1 = r.ancestors;
+                        results1 = [];
+                        for (j = 0, len1 = ref1.length; j < len1; j++) {
+                            a = ref1[j];
+                            results1.push(a.name);
+                        }
+                        return results1;
+                    }();
+                    names.push(r.name);
+                    results.push({
+                        value: r.id,
+                        label: names.join(" » ")
+                    });
+                }
+                tag.categories = results;
+                return tag.update();
+            }
+        });
+    };
+    create = function() {
+        return Zepto.ajax({
+            type: "POST",
+            url: "/authority_groups",
+            data: JSON.stringify({
+                authority_group: values()
+            })
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/authority_groups/" + tag.opts.id,
+            data: JSON.stringify({
+                authority_group: values()
+            })
+        });
+    };
+    values = function() {
+        var f, i, len, ref, results;
+        results = {};
+        ref = wApp.utils.toArray(tag.refs.fields);
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            results[f.name()] = f.value();
+        }
+        return results;
+    };
+});
+
+riot.tag2("kor-admin-groups", '<div class="kor-content-box"> <a if="{!opts.type && isAuthorityGroupAdmin()}" href="{baseUrl()}/new" class="pull-right" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.authority_group\')}})}"><i class="fa fa-plus-square"></i></a> <h1> {tcap(\'activerecord.models.authority_group\', {count: \'other\'})} </h1> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.authority_group.name\')}</th> <th if="{isAuthorityGroupAdmin()}"></th> </tr> </thead> <tbody> <tr each="{group in data.records}"> <td> <a href="#/groups/admin/{group.id}">{group.name}</td> <td class="right nowrap" if="{isAuthorityGroupAdmin()}"> <a href="{baseUrl()}/{group.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a href="{baseUrl()}/{group.id}" title="{t(\'verbs.delete\')}" onclick="{onDeleteClicked}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
+    tag.on("mount", function() {
+        tag.title(tag.tcap("activerecord.models.authority_group", {
+            count: "other"
+        }));
+        fetch();
+    });
+    tag.baseUrl = function() {
+        if (tag.opts.categoryId) {
+            return "#/groups/categories/" + tag.opts.categoryId + "/admin";
+        }
+        return "#/groups/categories/admin";
+    };
+    tag.onDeleteClicked = function(event) {
+        event.preventDefault();
+        if (wApp.utils.confirm()) destroy(event.item.group.id);
+    };
+    var destroy = function(id) {
+        Zepto.ajax({
+            type: "DELETE",
+            url: "/authority_groups/" + id,
+            success: fetch
+        });
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/authority_groups",
+            data: {
+                authority_group_category_id: tag.opts.categoryId
+            },
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-clipboard", '<kor-help-button key="clipboard"></kor-help-button> <div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="kor-layout-commands"> <a onclick="{reset}"><i class="fa fa-minus-square"></i></a> </div> <h1>{tcap(\'nouns.clipboard\')}</h1> <div class="mass-subselect"> <a href="#" onclick="{selectAll}">{t(\'all\')}</a> | <a href="#" onclick="{selectNone}">{t(\'none\')}</a> </div> <kor-pagination if="{data}" page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" per-page-control="{true}"></kor-pagination> <div class="clearfix"></div> <hr> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-nothing-found data="{data}"></kor-nothing-found> <table if="{data}"> <tbody> <tr each="{entity in data.records}"> <td> <kor-clipboard-subselect-control entity="{entity}"></kor-clipboard-subselect-control> </td> <td> <a href="#/entities/{entity.id}"> <span show="{!entity.medium}">{entity.display_name}</span> <img if="{entity.medium}" riot-src="{entity.medium.url.icon}" class="image"> </a> </td> <td class="right nobreak"> <a onclick="{remove(entity.id)}"><i class="minus"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box"> <kor-mass-action if="{data}" ids="{selectedIds()}" on-action-success="{reload}"></kor-mass-action> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
+    tag.on("mount", function() {
+        tag.title(tag.t("nouns.clipboard"));
+        wApp.bus.trigger("page-title", tag.tcap("nouns.clipboard"));
         wApp.bus.on("routing:query", fetch);
+        wApp.bus.on("clipboard-subselection-changed", tag.update);
         if (tag.currentUser() && !tag.isGuest()) {
             fetch();
         } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                h();
-            }
+            wApp.bus.trigger("access-denied");
         }
     });
     tag.on("umount", function() {
         wApp.bus.off("routing:query", fetch);
+        wApp.bus.off("clipboard-subselection-changed", tag.update);
     });
     tag.reload = function() {
         fetch();
@@ -10937,35 +12132,40 @@ riot.tag2("kor-clipboard", '<div class="kor-layout-left kor-layout-large"> <div 
         return results;
     };
     var fetch = function() {
-        var params = urlParams();
-        if (params["id"].length) {
-            Zepto.ajax({
-                url: "/entities",
-                data: urlParams(),
-                success: function(data) {
-                    tag.data = data;
-                    tag.update();
-                }
-            });
-        } else {
-            tag.data = null;
-            tag.update();
-        }
+        wApp.clipboard.checkEntityExistence().then(function() {
+            var params = urlParams();
+            if (params["id"].length) {
+                Zepto.ajax({
+                    url: "/entities",
+                    data: urlParams(),
+                    success: function(data) {
+                        tag.data = data;
+                        tag.update();
+                    }
+                });
+            } else {
+                tag.data = null;
+                tag.update();
+            }
+        });
     };
 });
 
-riot.tag2("kor-collection-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.collection\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.collection\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.collection.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-collection-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.collection\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.collection\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.collection.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <virtual if="{credentials}"> <hr> <kor-input each="{policy in policies}" label="{tcap(\'activerecord.attributes.collection.\' + policy)}" name="{policy}" type="select" multiple="{true}" options="{credentials.records}" riot-value="{data.permissions[policy]}" ref="permissions"></kor-input> </virtual> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var create, fetch, fetchCredentials, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
+    tag.policies = [ "view", "edit", "create", "delete", "download_originals", "tagging", "view_meta" ];
     tag.on("before-mount", function() {
-        tag.errors = {};
-        return tag.data = {};
+        return tag.errors = {};
     });
     tag.on("mount", function() {
         if (tag.opts.id) {
             fetch();
+        } else {
+            tag.data = {};
         }
         return fetchCredentials();
     });
@@ -10988,6 +12188,9 @@ riot.tag2("kor-collection-editor", '<div class="kor-layout-left kor-layout-large
     fetch = function() {
         return Zepto.ajax({
             url: "/collections/" + tag.opts.id,
+            data: {
+                include: "permissions"
+            },
             success: function(data) {
                 tag.data = data;
                 return tag.update();
@@ -10995,7 +12198,6 @@ riot.tag2("kor-collection-editor", '<div class="kor-layout-left kor-layout-large
         });
     };
     create = function() {
-        console.log(values());
         return Zepto.ajax({
             type: "POST",
             url: "/collections",
@@ -11014,9 +12216,17 @@ riot.tag2("kor-collection-editor", '<div class="kor-layout-left kor-layout-large
         });
     };
     values = function() {
-        return {
-            name: tag.refs.fields.value()
+        var base, f, i, len, name, ref, results;
+        results = {
+            name: tag.refs.fields.value(),
+            permissions: {}
         };
+        ref = tag.refs.permissions;
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            (base = results.permissions)[name = f.name()] || (base[name] = f.value());
+        }
+        return results;
     };
     fetchCredentials = function() {
         return Zepto.ajax({
@@ -11029,11 +12239,15 @@ riot.tag2("kor-collection-editor", '<div class="kor-layout-left kor-layout-large
     };
 });
 
-riot.tag2("kor-collections", '<div class="kor-content-box"> <a href="#/collections/new" class="pull-right"><i class="plus"></i></a> <h1>{tcap(\'activerecord.models.collection\', {count: \'other\'})}</h1> <table> <thead> <th>{tcap(\'activerecord.attributes.collection.name\')}</th> <th class="right"># {tcap(\'activerecord.models.entity.other\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{collection in data.records}"> <td>{collection.name}</td> <td class="right">{collection.entity_count}</td> <td class="right"> <a href="#/collections/{collection.id}/edit"><i class="pen"></i></a> <a href="#/collections/{collection.id}/destroy" onclick="{onDeleteClicked}"><i class="x"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
+riot.tag2("kor-collections", '<div class="kor-content-box"> <a href="#/collections/new" class="pull-right" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.collection\')}})}"><i class="fa fa-plus-square"></i></a> <h1>{tcap(\'activerecord.models.collection\', {count: \'other\'})}</h1> <table> <thead> <th>{tcap(\'activerecord.attributes.collection.name\')}</th> <th class="right"># {tcap(\'activerecord.models.entity.other\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{collection in data.records}"> <td> {collection.name} <span if="{collection.owner}"> ({t(\'activerecord.models.user\')}: <a href="#/users/{collection.owner.id}/edit">{collection.owner.full_name}</a>) </span> </td> <td class="right">{collection.entity_count}</td> <td class="right"> <a href="#/collections/{collection.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a href="#/collections/{collection.id}/destroy" onclick="{onDeleteClicked}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
+        tag.title(tag.t("activerecord.models.collection", {
+            count: "other"
+        }));
         fetch();
     });
     tag.onDeleteClicked = function(event) {
@@ -11055,6 +12269,122 @@ riot.tag2("kor-collections", '<div class="kor-content-box"> <a href="#/collectio
         Zepto.ajax({
             url: "/collections",
             data: {
+                include: "counts,owner"
+            },
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+    tag.fetch = fetch;
+});
+
+riot.tag2("kor-credential-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.credential\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.credential\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.credential.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.credential.description\')}" name="description" type="textarea" ref="fields" riot-value="{data.description}" errors="{errors.description}"></kor-input> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var create, fetch, tag, update, values;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
+    tag.on("before-mount", function() {
+        tag.errors = {};
+        return tag.data = {};
+    });
+    tag.on("mount", function() {
+        if (tag.opts.id) {
+            return fetch();
+        }
+    });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = tag.opts.id ? update() : create();
+        p.done(function(data) {
+            tag.errors = {};
+            return window.history.back();
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    fetch = function() {
+        return Zepto.ajax({
+            url: "/credentials/" + tag.opts.id,
+            success: function(data) {
+                tag.data = data;
+                return tag.update();
+            }
+        });
+    };
+    create = function() {
+        return Zepto.ajax({
+            type: "POST",
+            url: "/credentials",
+            data: JSON.stringify({
+                credential: values()
+            })
+        });
+    };
+    update = function() {
+        return Zepto.ajax({
+            type: "PATCH",
+            url: "/credentials/" + tag.opts.id,
+            data: JSON.stringify({
+                credential: values()
+            })
+        });
+    };
+    values = function() {
+        var f, i, len, ref, results;
+        results = {};
+        ref = tag.refs.fields;
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            results[f.name()] = f.value();
+        }
+        return results;
+    };
+});
+
+riot.tag2("kor-credentials", '<div class="kor-content-box"> <a href="#/credentials/new" class="pull-right" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.credential\')}})}"><i class="fa fa-plus-square"></i></a> <h1>{tcap(\'activerecord.models.credential\', {count: \'other\'})}</h1> <table> <thead> <th>{tcap(\'activerecord.attributes.credential.name\')}</th> <th class="right"># {tcap(\'activerecord.attributes.credential.user_count\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{credential in data.records}"> <td> <strong>{credential.name}</strong> <div if="{credential.description}">{credential.description}</div> </td> <td class="right">{credential.user_count}</td> <td class="right"> <a href="#/credentials/{credential.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a href="#/credentials/{credential.id}/destroy" onclick="{onDeleteClicked}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
+    tag.on("mount", function() {
+        tag.title(tag.t("activerecord.models.credential", {
+            count: "other"
+        }));
+        if (!tag.isAdmin()) {
+            wApp.bus.trigger("access-denied");
+            return;
+        }
+        fetch();
+    });
+    tag.onDeleteClicked = function(event) {
+        event.preventDefault();
+        if (wApp.utils.confirm()) destroy(event.item.credential.id);
+    };
+    var destroy = function(id) {
+        Zepto.ajax({
+            type: "DELETE",
+            url: "/credentials/" + id,
+            success: fetch,
+            error: function(xhr) {
+                tag.errors = JSON.parse(xhr.responseText).errors;
+                wApp.utils.scrollToTop();
+            }
+        });
+    };
+    fetch = function() {
+        Zepto.ajax({
+            url: "/credentials",
+            data: {
                 include: "counts"
             },
             success: function(data) {
@@ -11065,11 +12395,12 @@ riot.tag2("kor-collections", '<div class="kor-content-box"> <a href="#/collectio
     };
 });
 
-riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <hr> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.name\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}"></kor-input> <kor-input if="{hasName()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input if="{hasName()}" label="{tcap(\'activerecord.attributes.entity.distinct_name\')}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <hr> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <hr> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var create, fetch, fetchCollections, fetchKind, queryHandler, tag, update, values;
+riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <hr> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.naming_options\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.name\')}" if="{hasName()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input if="{hasName()}" label="{tcap(\'activerecord.attributes.entity.distinct_name\')}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <hr> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.tag_list\')}" name="tag_list" ref="fields" riot-value="{data.tags.join(\', \')}" errors="{errors.tag_list}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields" errors="{errors.dataset}"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <hr> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}" default-dating-label="{kind.dating_label}"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var checkPermissions, create, defaults, fetch, fetchCollections, fetchKind, queryHandler, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("before-mount", function() {
         tag.errors = {};
         tag.dating_errors = [];
@@ -11088,9 +12419,10 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
         } ];
     });
     tag.on("mount", function() {
+        checkPermissions();
         fetchCollections();
         wApp.bus.on("routing:query", queryHandler);
-        return fetch(tag.opts.kind_id);
+        return fetch(tag.opts.kindId);
     });
     tag.on("unmount", function() {
         return wApp.bus.off("routing:query", queryHandler);
@@ -11119,13 +12451,37 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
         return kindId === wApp.info.data.medium_kind_id;
     };
     tag.hasName = function() {
-        return tag.refs["fields.no_name_statement"] && tag.refs["fields.no_name_statement"].value() === "enter_name";
+        var field;
+        field = tag.refs["fields.no_name_statement"];
+        return !!field && field.value() === "enter_name";
+    };
+    tag.nameLabel = function() {
+        if (!tag.kind) {
+            return "";
+        }
+        return wApp.utils.capitalize(tag.kind.name_label);
+    };
+    checkPermissions = function() {
+        var policy;
+        policy = tag.opts.id ? "edit" : "create";
+        if (tag.currentUser().permissions.collections[policy].length === 0) {
+            return wApp.bus.trigger("access-denied");
+        }
     };
     queryHandler = function(parts) {
         if (parts == null) {
             parts = {};
         }
         return fetch(parts["hash_query"]["kind_id"]);
+    };
+    defaults = function(kind_id) {
+        return {
+            kind_id: kind_id,
+            no_name_statement: "enter_name",
+            lock_version: 0,
+            tags: [],
+            datings: []
+        };
     };
     fetch = function(kind_id) {
         if (tag.opts.id) {
@@ -11142,7 +12498,8 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
         } else {
             tag.data = {
                 kind_id: kind_id,
-                no_name_statement: "enter_name"
+                no_name_statement: "enter_name",
+                tags: []
             };
             return fetchKind();
         }
@@ -11189,7 +12546,9 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
     values = function() {
         var f, i, len, ref, results;
         results = {};
-        results.no_name_statement = tag.refs["fields.no_name_statement"].value();
+        if (!tag.isMedium()) {
+            results.no_name_statement = tag.refs["fields.no_name_statement"].value();
+        }
         results.kind_id = tag.data.kind_id || tag.opts.kindId;
         ref = tag.refs.fields;
         for (i = 0, len = ref.length; i < len; i++) {
@@ -11200,12 +12559,82 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
     };
 });
 
-riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands"> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <a href="#/entities/{data.id}/edit"><i class="pen"></i></a> </virtual> <a if="{allowedTo(\'edit\', data.collection_id)}" onclick="{delete}"><i class="x"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{field.value}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="plus"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.creator}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span show="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updater}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span show="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <span class="value">{authorityGroups()}</span> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}"><i class="{op}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="/media/maximize/{data.medium_id}" target="_blank">{t(\'verbs.maximize\')}</a> </span> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="/media/download/original/{data.medium.id}}">{t(\'nouns.original\')}</a> | <a href="/media/download/normal/{data.medium.id}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="/tools/add_media/{data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var fetch, tag;
+riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-text-right pull-right group-commands"> <a if="{opts.type == \'user\' || opts.type == \'authority\'}" href="#" title="{t(\'add_to_clipboard\')}" onclick="{onMarkClicked}"><i class="fa fa-clipboard"></i></a> <a href="/authority_groups/{opts.id}/download_images" title="{t(\'title_verbs.zip\')}"><i class="fa fa-download"></i></a> </div> <h1> {tcap(\'activerecord.models.\' + opts.type + \'_group\')} <span if="{group}">"{group.name}"</span> </h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
+    tag.on("mount", function() {
+        fetchGroup();
+        tag.on("routing:query", fetch);
+    });
+    tag.on("unmount", function() {
+        tag.off("routing:query", fetch);
+    });
+    tag.onMarkClicked = function(event, page) {
+        event.preventDefault();
+        var params = {
+            page: page || 1
+        };
+        params[tag.opts.type + "_group_id"] = tag.opts.id;
+        Zepto.ajax({
+            url: "/entities",
+            data: params,
+            success: function(data) {
+                if (data.total > data.page * data.per_page) {
+                    tag.onMarkClicked(event, page + 1);
+                } else {
+                    wApp.bus.trigger("message", "notice", tag.t("objects.marked_entities_success"));
+                }
+                for (var i = 0; i < data.records.length; i++) {
+                    wApp.clipboard.add(data.records[i].id);
+                }
+            }
+        });
+    };
+    var fetchGroup = function() {
+        return Zepto.ajax({
+            url: "/" + tag.opts.type + "_groups/" + tag.opts.id,
+            success: function(data) {
+                tag.group = data;
+                wApp.bus.trigger("page-title", data.name);
+                fetch();
+            },
+            error: function() {
+                wApp.bus.trigger("access-denied");
+            }
+        });
+    };
+    var fetch = function() {
+        var params = {
+            include: "gallery_data,kind",
+            page: tag.opts.query.page
+        };
+        if (tag.opts.type == "user") {
+            params["user_group_id"] = tag.opts.id;
+        }
+        if (tag.opts.type == "authority") {
+            params["authority_group_id"] = tag.opts.id;
+        }
+        return Zepto.ajax({
+            url: "/entities",
+            data: params,
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands page-commands"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <a href="#/entities/{data.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> </virtual> <a href="{reportUrl()}" title="{tcap(\'objects.report\', {interpolations: {o: \'activerecord.models.entity\'}})}"><i class="fa fa-exclamation"></i></a> <a if="{allowedTo(\'edit\', data.collection_id)}" href="#/entities/{data.id}" onclick="{delete}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{fieldValue(field.value)}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <a if="{property.url}" href="{property.value}" rel="noopener" target="_blank">» {property.label}</a> <virtual if="{!property.url}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </virtual> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box relations"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a href="#" onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom .meta" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.created_at}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span if="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updated_at}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span if="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <span class="value">{authorityGroups()}</span> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> <hr> <div class="kor-text-right kor-api-links"> <a href="/entities/{data.id}.json" target="_blank"><i class="fa fa-file-text"></i>{t(\'show_json\')}</a><br> <a href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank"><i class="fa fa-code"></i>{t(\'show_oai_pmh\')}</a> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}" title="{t(\'larger\')}"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}" title="{t(\'image_transformations.\' + op)}"><i class="fa fa-{opIcon(op)}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="{data.medium.url.normal}" target="_blank">{t(\'verbs.maximize\')}</a> </span> | <a href="{rootUrl()}mirador?manifest={rootUrl()}mirador/{data.id}" onclick="{openMirador}">{t(\'nouns.mirador\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="{data.medium.url.original.replace(/\\/images\\//, \'/download/\')}">{t(\'nouns.original\')}</a> | <a href="{data.medium.url.normal.replace(/\\/images\\//, \'/download/\')}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="#/upload?relate_with={data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var fetch, linkify_properties, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.info);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
         wApp.bus.on("relationship-updated", fetch);
         wApp.bus.on("relationship-created", fetch);
@@ -11224,7 +12653,13 @@ riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="
             }
         });
         if (confirm(message)) {
-            return console.log("deleting");
+            return Zepto.ajax({
+                type: "DELETE",
+                url: "/entities/" + tag.opts.id,
+                success: function() {
+                    return window.history.go(-1);
+                }
+            });
         }
     };
     tag.visibleFields = function() {
@@ -11253,12 +12688,41 @@ riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="
         }().join(", ");
     };
     tag.showTagging = function() {
-        return tag.data.kind.settings.tagging === "1" && (tag.data.tags.length > 0 || tag.allowedTo("tagging", tag.data.collection_id));
+        return tag.data.kind.tagging && tag.allowedTo("tagging", tag.data.collection_id);
     };
     tag.transform = function(op) {
         return function(event) {
-            return event.preventDefault();
+            event.preventDefault();
+            return Zepto.ajax({
+                type: "PATCH",
+                url: "/media/transform/" + tag.data.medium_id + "/image/" + op,
+                success: function() {
+                    tag.data.medium.url.preview += "?cb=" + new Date().getTime();
+                    return tag.update();
+                }
+            });
         };
+    };
+    tag.opIcon = function(op) {
+        return {
+            flip: "arrows-v",
+            flop: "arrows-h",
+            rotate_cw: "mail-reply fa-flip-horizontal",
+            rotate_ccw: "mail-reply",
+            rotate_180: "circle-o-notch fa-flip-vertical"
+        }[op];
+    };
+    tag.reportUrl = function() {
+        var body, subject, to;
+        to = wApp.config.data.values.maintainer_mail;
+        subject = tag.t("messages.report_entity_subject");
+        body = tag.t("messages.report_entity_body", {
+            interpolations: {
+                entity_url: wApp.info.data.url + "#/entities/" + tag.data.id,
+                user: wApp.session.current.user.name
+            }
+        });
+        return "mailto:" + to + "?subject=" + subject + "&body=" + encodeURIComponent(body);
     };
     tag.addRelationship = function(event) {
         event.preventDefault();
@@ -11269,6 +12733,20 @@ riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="
             onCreated: tag.reload
         });
     };
+    tag.openMirador = function(event) {
+        var url;
+        event.preventDefault();
+        event.stopPropagation();
+        url = Zepto(event.target).attr("href");
+        return window.open(url, "", "height=800,width=1024");
+    };
+    tag.fieldValue = function(value) {
+        if (Zepto.isArray(value)) {
+            return value.join(", ");
+        } else {
+            return value;
+        }
+    };
     fetch = function() {
         return Zepto.ajax({
             url: "/entities/" + tag.opts.id,
@@ -11276,17 +12754,13 @@ riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="
                 include: "all"
             },
             success: function(data) {
-                var h;
                 tag.data = data;
-                if (h = tag.opts.handlers.pageTitleUpdate) {
-                    return h(tag.data.name);
-                }
+                tag.title(tag.data.display_name);
+                linkify_properties();
+                return wApp.entityHistory.add(data.id);
             },
             error: function() {
-                var h;
-                if (h = tag.opts.handlers.accessDenied) {
-                    return h();
-                }
+                return wApp.bus.trigger("access-denied");
             },
             complete: function() {
                 return tag.update();
@@ -11296,34 +12770,51 @@ riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="
     tag.inplaceTagHandlers = {
         doneHandler: fetch
     };
+    linkify_properties = function() {
+        var i, len, property, ref, results;
+        ref = tag.data.properties;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            property = ref[i];
+            if (typeof property["value"] === "string") {
+                if (property["value"].match(/^https?:\/\//)) {
+                    results.push(property["url"] = true);
+                } else {
+                    results.push(void 0);
+                }
+            } else {
+                results.push(void 0);
+            }
+        }
+        return results;
+    };
 });
 
-riot.tag2("kor-invalid-entities", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-invalid-entities", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}" class="top"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, queryUpdate, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
-        var h;
         if (tag.allowedTo("delete")) {
             fetch();
             tag.on("routing:query", fetch);
-            if (h = tag.opts.handlers.pageTitleUpdate) {
-                return h(tag.t("pages.invalid_entities"));
-            }
+            return wApp.bus.trigger("page-title", tag.t("pages.invalid_entities"));
         } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
+            return wApp.bus.trigger("access-denied");
         }
     });
     fetch = function() {
         return Zepto.ajax({
-            url: "/entities/invalid",
+            url: "/entities",
             data: {
+                invalid: true,
                 include: "kind",
-                page: tag.opts.query.page
+                page: tag.opts.query.page,
+                per_page: 20,
+                sort: "id"
             },
             success: function(data) {
                 tag.data = data;
@@ -11337,10 +12828,7 @@ riot.tag2("kor-invalid-entities", '<div class="kor-layout-left kor-layout-large"
         });
     };
     queryUpdate = function(newQuery) {
-        var h;
-        if (h = tag.opts.handlers.queryUpdate) {
-            return h(newQuery);
-        }
+        return wApp.bus.trigger("query-update", newQuery);
     };
 });
 
@@ -11350,25 +12838,22 @@ riot.tag2("kor-isolated-entities", '<div class="kor-content-box"> <h1>{tcap(\'no
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
-        var h;
         if (tag.allowedTo("edit")) {
             fetch();
             tag.on("routing:query", fetch);
-            if (h = tag.opts.handlers.pageTitleUpdate) {
-                return h(tag.t("pages.isolated_entities"));
-            }
+            return tag.title(tag.t("pages.isolated_entities"));
         } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
+            return wApp.bus.trigger("access-denied");
         }
     });
     fetch = function() {
         return Zepto.ajax({
-            url: "/entities/isolated",
+            url: "/entities",
             data: {
                 include: "kind",
+                isolated: true,
                 page: tag.opts.query.page
             },
             success: function(data) {
@@ -11383,19 +12868,23 @@ riot.tag2("kor-isolated-entities", '<div class="kor-content-box"> <h1>{tcap(\'no
         });
     };
     queryUpdate = function(newQuery) {
-        var h;
-        if (h = tag.opts.handlers.queryUpdate) {
-            return h(newQuery);
-        }
+        return wApp.bus.trigger("query-update", newQuery);
     };
 });
 
-riot.tag2("kor-kind-editor", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1 if="{opts.id && data}"> {tcap(\'objects.edit\', {interpolations: {o: data.name}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.kind\'}})} </h1> <virtual if="{opts.id}"> <a href="#/kinds/{opts.id}/edit"> » {tcap(\'general\', {capitalize: true})} </a><br> </virtual> <hr if="{opts.id}"> <virtual if="{data}"> <kor-fields kind="{data}" notify="{notify}"></kor-fields> <kor-generators kind="{data}" notify="{notify}"></kor-generators> </virtual> <hr if="{opts.id}"> <div class="text-right"> <a href="#/kinds" class="kor-button">{t(\'back_to_list\')}</a> </div> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <virtual if="{!data}"> <kor-kind-general-editor></kor-kind-general-editor> </virtual> <virtual if="{data}"> <kor-kind-general-editor if="{!opts.newField && !opts.fieldId && !opts.newGenerator && !opts.generatorId}" id="{opts.id}"></kor-kind-general-editor> <kor-field-editor if="{opts.newField || opts.fieldId}" id="{opts.fieldId}" kind-id="{data.id}" notify="{notify}"></kor-field-editor> <kor-generator-editor if="{opts.newGenerator || opts.generatorId}" id="{opts.generatorId}" kind-id="{data.id}" notify="{notify}"></kor-generator-editor> </virtual> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-kind-editor", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1 if="{opts.id && data}"> {tcap(\'objects.edit\', {interpolations: {o: data.name}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.kind\'}})} </h1> <virtual if="{opts.id}"> <a href="#/kinds/{opts.id}/edit"> » {tcap(\'general\', {capitalize: true})} </a><br> </virtual> <hr if="{opts.id}"> <virtual if="{data}"> <kor-fields kind="{data}" notify="{notify}"></kor-fields> <kor-generators kind="{data}" notify="{notify}"></kor-generators> </virtual> <hr if="{opts.id}"> <div class="kor-text-right"> <a href="#/kinds" class="kor-button">{t(\'back_to_list\')}</a> </div> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <virtual if="{!data}"> <kor-kind-general-editor></kor-kind-general-editor> </virtual> <virtual if="{data}"> <kor-kind-general-editor if="{!opts.newField && !opts.fieldId && !opts.newGenerator && !opts.generatorId}" id="{opts.id}"></kor-kind-general-editor> <kor-field-editor if="{opts.newField || opts.fieldId}" id="{opts.fieldId}" kind-id="{data.id}" notify="{notify}"></kor-field-editor> <kor-generator-editor if="{opts.newGenerator || opts.generatorId}" id="{opts.generatorId}" kind-id="{data.id}" notify="{notify}"></kor-generator-editor> </virtual> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, tag;
     tag = this;
     tag.notify = riot.observable();
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
+    tag.on("before-mount", function() {
+        if (!tag.isKindAdmin()) {
+            return wApp.bus.trigger("access-denied");
+        }
+    });
     tag.on("mount", function() {
         if (tag.opts.id) {
             fetch();
@@ -11409,7 +12898,7 @@ riot.tag2("kor-kind-editor", '<div class="kor-layout-left kor-layout-small"> <di
         return Zepto.ajax({
             url: "/kinds/" + tag.opts.id,
             data: {
-                include: "fields,generators,inheritance"
+                include: "settings,fields,generators,inheritance"
             },
             success: function(data) {
                 tag.data = data;
@@ -11419,17 +12908,18 @@ riot.tag2("kor-kind-editor", '<div class="kor-layout-left kor-layout-small"> <di
     };
 });
 
-riot.tag2("kor-kind-general-editor", '<h2>{tcap(\'general\')}</h2> <div> <form if="{data && possibleParents}" onsubmit="{submit}"> <kor-input name="schema" label="{tcap(\'activerecord.attributes.kind.schema\')}" riot-value="{data.schema}" ref="fields"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.kind.name\')}" riot-value="{data.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="plural_name" label="{tcap(\'activerecord.attributes.kind.plural_name\')}" riot-value="{data.plural_name}" errors="{errors.plural_name}" ref="fields"></kor-input> <kor-input name="description" type="textarea" label="{tcap(\'activerecord.attributes.kind.description\')}" riot-value="{data.description}" ref="fields"></kor-input> <kor-input name="url" label="{tcap(\'activerecord.attributes.kind.url\')}" riot-value="{data.url}" ref="fields"></kor-input> <kor-input name="parent_ids" type="select" options="{possibleParents}" multiple="{true}" label="{tcap(\'activerecord.attributes.kind.parent\')}" riot-value="{data.parent_ids}" errors="{errors.parent_ids}" ref="fields"></kor-input> <kor-input name="abstract" type="checkbox" label="{tcap(\'activerecord.attributes.kind.abstract\')}" riot-value="{data.abstract}" ref="fields"></kor-input> <kor-input name="tagging" type="checkbox" label="{tcap(\'activerecord.attributes.kind.tagging\')}" riot-value="{data.tagging}" ref="fields"></kor-input> <div if="{!isMedia()}"> <kor-input name="dating_label" label="{tcap(\'activerecord.attributes.kind.dating_label\')}" riot-value="{data.dating_label}" ref="fields"></kor-input> <kor-input name="name_label" label="{tcap(\'activerecord.attributes.kind.name_label\')}" riot-value="{data.name_label}" ref="fields"></kor-input> <kor-input name="distinct_name_label" label="{tcap(\'activerecord.attributes.kind.distinct_name_label\')}" riot-value="{data.distinct_name_label}" ref="fields"></kor-input> </div> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div>', "", "", function(opts) {
+riot.tag2("kor-kind-general-editor", '<h2>{tcap(\'general\')}</h2> <div> <form if="{data && possibleParents}" onsubmit="{submit}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input name="schema" label="{tcap(\'activerecord.attributes.kind.schema\')}" riot-value="{data.schema}" ref="fields"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.kind.name\')}" riot-value="{data.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="plural_name" label="{tcap(\'activerecord.attributes.kind.plural_name\')}" riot-value="{data.plural_name}" errors="{errors.plural_name}" ref="fields"></kor-input> <kor-input name="description" type="textarea" label="{tcap(\'activerecord.attributes.kind.description\')}" riot-value="{data.description}" ref="fields"></kor-input> <kor-input name="url" label="{tcap(\'activerecord.attributes.kind.url\')}" riot-value="{data.url}" ref="fields"></kor-input> <kor-input name="parent_ids" type="select" options="{possibleParents}" multiple="{true}" label="{tcap(\'activerecord.attributes.kind.parent\')}" riot-value="{data.parent_ids}" errors="{errors.parent_ids}" ref="fields"></kor-input> <kor-input name="abstract" type="checkbox" label="{tcap(\'activerecord.attributes.kind.abstract\')}" riot-value="{data.abstract}" ref="fields"></kor-input> <kor-input name="tagging" type="checkbox" label="{tcap(\'activerecord.attributes.kind.tagging\')}" riot-value="{data.tagging}" ref="fields"></kor-input> <div if="{!isMedia()}"> <kor-input name="dating_label" label="{tcap(\'activerecord.attributes.kind.dating_label\')}" riot-value="{data.dating_label}" ref="fields"></kor-input> <kor-input name="name_label" label="{tcap(\'activerecord.attributes.kind.name_label\')}" riot-value="{data.name_label}" ref="fields"></kor-input> <kor-input name="distinct_name_label" label="{tcap(\'activerecord.attributes.kind.distinct_name_label\')}" riot-value="{data.distinct_name_label}" ref="fields"></kor-input> </div> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div>', "", "", function(opts) {
     var error, fetch, fetchPossibleParents, success, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
         tag.errors = {};
         return fetch();
     });
     tag.isMedia = function() {
-        return tag.opts.id && tag.data.uuid === wApp.data.medium_kind_uuid;
+        return tag.opts.id && tag.opts.id === wApp.info.data.medium_kind_id;
     };
     tag.new_record = function() {
         return !(tag.data || {}).id;
@@ -11446,6 +12936,7 @@ riot.tag2("kor-kind-general-editor", '<h2>{tcap(\'general\')}</h2> <div> <form i
     };
     success = function(data) {
         route("/kinds/" + data.id + "/edit");
+        wApp.bus.trigger("reload-kinds");
         tag.errors = {};
         return tag.update();
     };
@@ -11483,6 +12974,9 @@ riot.tag2("kor-kind-general-editor", '<h2>{tcap(\'general\')}</h2> <div> <form i
         if (tag.opts.id) {
             return Zepto.ajax({
                 url: "/kinds/" + tag.opts.id,
+                data: {
+                    include: "all"
+                },
                 success: function(data) {
                     tag.data = data;
                     tag.update();
@@ -11516,13 +13010,18 @@ riot.tag2("kor-kind-general-editor", '<h2>{tcap(\'general\')}</h2> <div> <form i
     };
 });
 
-riot.tag2("kor-kinds", '<div class="kor-content-box"> <a href="#/kinds/new" class="pull-right"><i class="plus"></i></a> <h1>{tcap(\'activerecord.models.kind\', {count: \'other\'})}</h1> <form class="inline"> <kor-input label="{tcap(\'search_term\')}" name="terms" onkeyup="{delayedSubmit}" ref="terms"></kor-input> <kor-input label="{tcap(\'hide_abstract\')}" type="checkbox" name="hideAbstract" onchange="{submit}" ref="hideAbstract"></kor-input> </form> <div class="hr"></div> <virtual if="{filteredRecords && filteredRecords.length}"> <table each="{records, schema in groupedResults}" class="kor_table text-left"> <thead> <tr> <th>{schema == \'null\' ? tcap(\'no_schema\') : schema}</th> <th></th> </tr> </thead> <tbody> <tr each="{kind in records}"> <td class="{active: !kind.abstract}"> <div class="name"> <a href="#/kinds/{kind.id}/edit">{kind.name}</a> </div> <div show="{kind.fields.length}"> <span class="label"> {t(\'activerecord.models.field\', {count: \'other\'})}: </span> {fieldNamesFor(kind)} </div> <div show="{kind.generators.length}"> <span class="label"> {t(\'activerecord.models.generator\', {count: \'other\'})}: </span> {generatorNamesFor(kind)} </div> </td> <td class="buttons"> <a href="#/kinds/{kind.id}/edit"><i class="fa fa-edit"></i></a> <a if="{kind.removable}" href="#/kinds/{kind.id}" onclick="{delete(kind)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </virtual>', "", "", function(opts) {
+riot.tag2("kor-kinds", '<div class="kor-content-box"> <a if="{isKindAdmin()}" href="#/kinds/new" class="pull-right" title="{t(\'verbs.add\')}"><i class="fa fa-plus-square"></i></a> <h1>{tcap(\'activerecord.models.kind\', {count: \'other\'})}</h1> <form class="inline"> <kor-input label="{tcap(\'search_term\')}" name="terms" onkeyup="{delayedSubmit}" ref="terms"></kor-input> <kor-input label="{tcap(\'hide_abstract\')}" type="checkbox" name="hideAbstract" onchange="{submit}" ref="hideAbstract"></kor-input> </form> <div class="hr"></div> <virtual if="{filteredRecords && filteredRecords.length}"> <table each="{records, schema in groupedResults}" class="kor_table text-left"> <thead> <tr> <th>{schema == \'null\' ? tcap(\'no_schema\') : schema}</th> <th if="{isKindAdmin()}"></th> </tr> </thead> <tbody> <tr each="{kind in records}"> <td class="{active: !kind.abstract}"> <div class="name"> <a href="#/kinds/{kind.id}/edit">{kind.name}</a> </div> <div show="{kind.fields.length}"> <span class="label"> {t(\'activerecord.models.field\', {count: \'other\'})}: </span> {fieldNamesFor(kind)} </div> <div show="{kind.generators.length}"> <span class="label"> {t(\'activerecord.models.generator\', {count: \'other\'})}: </span> {generatorNamesFor(kind)} </div> </td> <td class="buttons" if="{isKindAdmin()}"> <a href="#/kinds/{kind.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> <a if="{kind.removable}" href="#/kinds/{kind.id}" onclick="{delete(kind)}" title="{t(\'verbs.delete\')}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </virtual>', "", "", function(opts) {
     var fetch, filter_records, groupAndSortRecords, tag, typeCompare;
     tag = this;
     tag.requireRoles = [ "kind_admin" ];
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
+        tag.title(tag.t("activerecord.models.kind", {
+            count: "other"
+        }));
         return fetch();
     });
     tag.filters = {};
@@ -11665,7 +13164,9 @@ riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div clas
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
+        tag.title(tag.t("legal"));
         return Zepto(tag.root).find(".target").html(tag.config().legal_html);
     });
     tag.termsAccepted = function() {
@@ -11673,13 +13174,14 @@ riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div clas
     };
 });
 
-riot.tag2("kor-login", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'verbs.login\')}</h1> <div if="{federationAuth()}"> <div class="hr"></div> <p>{t(\'prompt.federation_login\')}</p> <a href="/env_auth" class="kor-button"> {config()[\'auth\'][\'env_auth_button_label\']} </a> <div class="hr"></div> </div> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <kor-input type="submit" riot-value="{tcap(\'verbs.login\')}"></kor-input> </form> <a href="#/password-recovery" class="password-recovery"> {tcap(\'password_forgotten_question\')} </a> <hr> <kor-login-info></kor-login-info> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <div class="kor-blend"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-login", '<kor-help-button key="login"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'verbs.login\')}</h1> <div if="{federationAuth()}"> <div class="hr"></div> <p>{t(\'prompt.federation_login\')}</p> <a href="/env_auth" class="kor-button"> {config()[\'env_auth_button_label\']} </a> <hr> </div> <form class="form" method="POST" action="#/login" onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" type="text" ref="username"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" type="password" ref="password"></kor-input> <kor-input type="submit" label="{tcap(\'verbs.login\')}"></kor-input> </form> <a href="#/password-recovery" class="password-recovery"> {tcap(\'password_forgotten_question\')} </a> <hr> <kor-login-info></kor-login-info> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <div class="kor-blend"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.info);
     tag.mixin(wApp.mixins.config);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
         return Zepto(tag.root).find("input").first().focus();
     });
@@ -11689,24 +13191,26 @@ riot.tag2("kor-login", '<div class="kor-layout-left kor-layout-small"> <div clas
         username = tag.refs.username.value();
         password = tag.refs.password.value();
         return wApp.auth.login(username, password).then(function() {
-            var parts, r;
-            parts = wApp.routing.parts();
-            if (r = parts.hash_query.return_to) {
+            var r;
+            if (r = wApp.routing.query()["return_to"]) {
                 return window.location.hash = decodeURIComponent(r);
             } else {
-                return wApp.bus.trigger("routing:path", wApp.routing.parts());
+                return wApp.routing.path("/search");
             }
         });
     };
     tag.federationAuth = function() {
-        return tag.config().federation_auth;
+        var l;
+        l = tag.config().env_auth_button_label;
+        return typeof l === "string" && l.length > 0;
     };
 });
 
-riot.tag2("kor-medium-page", '<div class="kor-content-box"> <a if="{data}" href="#/entities/{data.id}"> <img if="{!data.medium.video &&! data.medium.audio}" riot-src="{data.medium.url.screen}"> <video if="{data.medium.video}" controls mute autoplay> <source riot-src="{data.medium.url[\'video/mp4\']}" type="video/mp4"> <source riot-src="{data.medium.url[\'video/webm\']}" type="video/webm"> <source riot-src="{data.medium.url[\'video/ogg\']}" type="video/ogg"> </video> <audio if="{data.medium.audio}" controls> <source riot-src="{data.medium.url[\'audio/mp3\']}" type="audio/mp3"> <source riot-src="{data.medium.url[\'audio/ogg\']}" type="audio/ogg"> </audio> </a> </div>', "", "", function(opts) {
+riot.tag2("kor-medium-page", '<div class="kor-content-box"> <a if="{data}" href="#/entities/{data.id}" title="{t(\'smaller\')}"> <img if="{!data.medium.video &&! data.medium.audio}" riot-src="{data.medium.url.screen}"> <video if="{data.medium.video}" controls="true" mute autoplay> <source riot-src="{data.medium.url[\'video/mp4\']}" type="video/mp4"> <source riot-src="{data.medium.url[\'video/webm\']}" type="video/webm"> <source riot-src="{data.medium.url[\'video/ogg\']}" type="video/ogg"> </video> <audio if="{data.medium.audio}" controls="true"> <source riot-src="{data.medium.url[\'audio/mp3\']}" type="audio/mp3"> <source riot-src="{data.medium.url[\'audio/ogg\']}" type="audio/ogg"> </audio> </a> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
         fetch();
     });
@@ -11724,25 +13228,31 @@ riot.tag2("kor-medium-page", '<div class="kor-content-box"> <a if="{data}" href=
     };
 });
 
-riot.tag2("kor-new-media", '<div class="kor-content-box"> <h1>{tcap(\'pages.new_media\')}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+riot.tag2("kor-new-media", '<kor-help-button key="new_entries"></kor-help-button> <div class="kor-content-box"> <h1>{tcap(\'pages.new_media\')}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}" class="top"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
     var fetch, queryUpdate, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
-        var h;
+        tag.title(tag.t("pages.new_media"));
         fetch();
         tag.on("routing:query", fetch);
-        if (h = tag.opts.handlers.pageTitleUpdate) {
-            return h(tag.t("pages.new_media"));
-        }
+        return tag.title(tag.t("pages.new_media"));
+    });
+    tag.on("unmount", function() {
+        return tag.off("routing:query", fetch);
     });
     fetch = function() {
         return Zepto.ajax({
-            url: "/entities/gallery",
+            url: "/entities",
             data: {
                 include: "kind,gallery_data",
-                page: tag.opts.query.page
+                page: tag.opts.query.page,
+                per_page: 16,
+                sort: "created_at",
+                direction: "desc",
+                kind_id: wApp.info.data.medium_kind_id
             },
             success: function(data) {
                 tag.data = data;
@@ -11756,17 +13266,15 @@ riot.tag2("kor-new-media", '<div class="kor-content-box"> <h1>{tcap(\'pages.new_
         });
     };
     queryUpdate = function(newQuery) {
-        var h;
-        if (h = tag.opts.handlers.queryUpdate) {
-            return h(newQuery);
-        }
+        return wApp.bus.trigger("query-update", newQuery);
     };
 });
 
-riot.tag2("kor-password-recovery", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'password_reset\')}</h1> <form onsubmit="{submit}"> <kor-input label="{tcap(\'prompt.email_for_personal_password_reset\')}" name="email" type="text" ref="fields"></kor-input> <div class="kor-text-right"> <kor-input type="submit" riot-value="{tcap(\'verbs.reset\')}"></kor-input> </div> </form> <hr> <kor-login-info></kor-login-info> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <div class="kor-blend"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-password-recovery", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'password_reset\')}</h1> <form onsubmit="{submit}"> <kor-input label="{tcap(\'prompt.email_for_personal_password_reset\')}" name="email" type="text" ref="fields"></kor-input> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.reset\')}"></kor-input> </div> </form> <hr> <kor-login-info></kor-login-info> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <div class="kor-blend"></div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.submit = function(event) {
         event.preventDefault();
         var params = {
@@ -11774,7 +13282,7 @@ riot.tag2("kor-password-recovery", '<div class="kor-layout-left kor-layout-small
         };
         var promise = Zepto.ajax({
             type: "POST",
-            url: "/reset_password",
+            url: "/account-recovery",
             data: JSON.stringify(params),
             success: function(data) {
                 wApp.routing.path("/login");
@@ -11783,14 +13291,19 @@ riot.tag2("kor-password-recovery", '<div class="kor-layout-left kor-layout-small
     };
 });
 
-riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'objects.edit\', {interpolations: {o: \'nouns.profile\'}})}</h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" name="password" type="password" ref="fields" riot-value="{data.password}" errors="{errors.password}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.plain_password_confirmation\')}" name="plain_password_confirmation" type="password" ref="fields" errors="{errors.plain_password_confirmation}"></kor-input> <hr> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <hr> <kor-input label="{tcap(\'activerecord.attributes.user.locale\')}" name="locale" type="select" options="{[\'de\', \'en\']}" ref="fields" riot-value="{data.locale}"></kor-input> <hr> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.user.default_collection_id\')}" name="default_collection_id" type="select" options="{collections.records}" ref="fields" riot-value="{data.default_collection_id}"></kor-input> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-profile", '<kor-help-button key="profile"></kor-help-button> <div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'objects.edit\', {interpolations: {o: \'nouns.profile\'}})}</h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.password\')}" name="password" type="password" ref="fields" riot-value="{data.password}" errors="{errors.password}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.plain_password_confirmation\')}" name="plain_password_confirmation" type="password" ref="fields" errors="{errors.plain_password_confirmation}"></kor-input> <hr> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <hr> <kor-input label="{tcap(\'activerecord.attributes.user.locale\')}" name="locale" type="select" options="{[\'de\', \'en\']}" ref="fields" riot-value="{data.locale}"></kor-input> <hr> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.user.default_collection_id\')}" name="default_collection_id" type="select" options="{collections.records}" ref="fields" riot-value="{data.default_collection_id}"></kor-input> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var expiresAtTag, fetchCollections, fetchUser, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
-        var h;
+        tag.title(tag.t("objects.edit", {
+            interpolations: {
+                o: "nouns.profile"
+            }
+        }));
         tag.errors = {};
         if (tag.currentUser() && !tag.isGuest()) {
             return Zepto.when(fetchCollections(), fetchUser()).then(function() {
@@ -11798,9 +13311,7 @@ riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{l
                 return tag.update();
             });
         } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
+            return wApp.bus.trigger("access-denied");
         }
     });
     tag.submit = function(event) {
@@ -11810,7 +13321,7 @@ riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{l
         p.done(function(data) {
             tag.errors = {};
             window.history.back();
-            return riot.update();
+            return wApp.bus.trigger("reload-session");
         });
         p.fail(function(xhr) {
             tag.errors = JSON.parse(xhr.responseText).errors;
@@ -11841,7 +13352,7 @@ riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{l
     };
     fetchUser = function() {
         return Zepto.ajax({
-            url: "/users/" + tag.currentUser().id,
+            url: "/users/me",
             data: {
                 include: "security"
             },
@@ -11863,7 +13374,7 @@ riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{l
     update = function() {
         return Zepto.ajax({
             type: "PATCH",
-            url: "/profile",
+            url: "/users/me",
             data: JSON.stringify({
                 id: tag.currentUser().id,
                 user: values()
@@ -11893,76 +13404,218 @@ riot.tag2("kor-profile", '<div class="kor-layout-left kor-layout-large" show="{l
     };
 });
 
-riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'nouns.new_entity\', {count: \'other\'})}</h1> <form> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" type="select" options="{collections.records}" placeholder="{t(\'prompts.please_select\')}" onchange="{collectionSelected}" ref="collectionId" riot-value="{opts.query.collection_id}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> <th>{tcap(\'activerecord.attributes.entity.collection_id\')}</th> <th>{tcap(\'activerecord.attributes.entity.updater\')}</th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> <td> {entity.collection.name} </td> <td> {(entity.updater || entity.creator || {}).full_name} </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
-    var fetch, fetchCollections, queryUpdate, tag;
-    tag = this;
+riot.tag2("kor-publishment", '<div class="kor-content-box"> <h1>{data.name}</h1> <div class="hr"></div> <kor-gallery-grid if="{data}" entities="{data.entities}" publishment="{opts.uuid}"></kor-gallery-grid> <div class="hr"></div> </div>', "", "", function(opts) {
+    var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
-        var h;
-        if (tag.allowedTo("edit")) {
-            Zepto.when(fetchCollections(), fetch()).then(function() {
-                tag.loaded = true;
-                return tag.update();
-            });
-            tag.on("routing:query", fetch);
-            if (h = tag.opts.handlers.pageTitleUpdate) {
-                return h(tag.t("pages.recent_entities"));
-            }
-        } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
-        }
+        fetch();
     });
-    fetch = function() {
+    var fetch = function() {
         return Zepto.ajax({
-            url: "/entities/recent",
+            url: "/publishments/" + tag.opts.userId + "/" + tag.opts.uuid,
             data: {
-                include: "kind,users,collection",
-                page: tag.opts.query.page,
-                collection_id: tag.opts.query.collection_id
+                include: "gallery_data"
             },
             success: function(data) {
                 tag.data = data;
-                return tag.update();
+                tag.update();
             }
         });
-    };
-    fetchCollections = function() {
-        return Zepto.ajax({
-            url: "/collections",
-            success: function(data) {
-                tag.collections = data;
-                return tag.update();
-            }
-        });
-    };
-    tag.pageUpdate = function(newPage) {
-        return queryUpdate({
-            page: newPage
-        });
-    };
-    tag.collectionSelected = function(event) {
-        return queryUpdate({
-            page: 1,
-            collection_id: tag.refs.collectionId.value()
-        });
-    };
-    queryUpdate = function(newQuery) {
-        var h;
-        if (h = tag.opts.handlers.queryUpdate) {
-            return h(newQuery);
-        }
     };
 });
 
-riot.tag2("kor-relation-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.relation\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.relation\'}})} </h1> <form onsubmit="{submit}" if="{relation && possible_parents}"> <kor-input name="schema" label="{tcap(\'activerecord.attributes.relation.schema\')}" ref="fields"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.relation.name\')}" riot-value="{relation.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="reverse_name" label="{tcap(\'activerecord.attributes.relation.reverse_name\')}" riot-value="{relation.reverse_name}" errors="{errors.reverse_name}" ref="fields"></kor-input> <kor-input name="description" type="textarea" label="{tcap(\'activerecord.attributes.relation.description\')}" riot-value="{relation.description}" ref="fields"></kor-input> <kor-input if="{possible_kinds}" name="from_kind_id" type="select" options="{possible_kinds}" label="{tcap(\'activerecord.attributes.relation.from_kind_id\')}" riot-value="{relation.from_kind_id}" errors="{errors.from_kind_id}" ref="fields"></kor-input> <kor-input if="{possible_kinds}" name="to_kind_id" type="select" options="{possible_kinds}" label="{tcap(\'activerecord.attributes.relation.to_kind_id\')}" riot-value="{relation.to_kind_id}" errors="{errors.to_kind_id}" ref="fields"></kor-input> <kor-input name="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label="{tcap(\'activerecord.attributes.relation.parent\')}" riot-value="{relation.parent_ids}" errors="{errors.parent_ids}" ref="fields"></kor-input> <kor-input name="abstract" type="checkbox" label="{tcap(\'activerecord.attributes.relation.abstract\')}" riot-value="{relation.abstract}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-publishment-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.publishment\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.publishment\'}})} </h1> <form onsubmit="{submit}"> <kor-input label="{tcap(\'activerecord.attributes.publishment.name\')}" name="name" ref="fields" errors="{errors.name}" autofocus="{true}"></kor-input> <kor-input if="{userGroups}" label="{tcap(\'activerecord.models.user_group\')}" name="user_group_id" type="select" options="{userGroups}" ref="fields" errors="{errors.user_group}"></kor-input> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var create, fetchGroups, tag, values;
+    tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
+    tag.on("before-mount", function() {
+        fetchGroups();
+        tag.data = {};
+        return tag.errors = {};
+    });
+    tag.submit = function(event) {
+        var p;
+        event.preventDefault();
+        p = create();
+        p.done(function(data) {
+            var id;
+            tag.errors = {};
+            id = tag.opts.id || data.id;
+            return wApp.routing.path("/groups/published");
+        });
+        p.fail(function(xhr) {
+            tag.errors = JSON.parse(xhr.responseText).errors;
+            return wApp.utils.scrollToTop();
+        });
+        return p.always(function() {
+            return tag.update();
+        });
+    };
+    create = function() {
+        return Zepto.ajax({
+            type: "POST",
+            url: "/publishments",
+            data: JSON.stringify({
+                publishment: values()
+            })
+        });
+    };
+    values = function() {
+        var f, i, len, ref, results;
+        results = {};
+        ref = tag.refs.fields;
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            results[f.name()] = f.value();
+        }
+        return results;
+    };
+    fetchGroups = function() {
+        return Zepto.ajax({
+            url: "/user_groups",
+            success: function(data) {
+                var i, len, record, ref;
+                tag.userGroups = [];
+                ref = data.records;
+                for (i = 0, len = ref.length; i < len; i++) {
+                    record = ref[i];
+                    tag.userGroups.push({
+                        value: record.id,
+                        label: record.name
+                    });
+                }
+                return tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-publishments", '<div class="kor-content-box"> <a href="#/groups/published/new" class="pull-right" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.publishment\')}})}"><i class="fa fa-plus-square"></i></a> <h1>{tcap(\'activerecord.models.publishment\', {count: \'other\'})}</h1> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <table if="{data && data.total > 0}"> <thead> <th>{tcap(\'activerecord.attributes.publishment.name\')}</th> <th>{tcap(\'activerecord.attributes.publishment.link\')}</th> <th>{tcap(\'activerecord.attributes.publishment.valid_until\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{publishment in data.records}"> <td>{publishment.name}</td> <td> <a href="{wApp.info.data.url}#{publishment.link}" target="_blank"> {wApp.info.data.url}#{publishment.link} </a> </td> <td>{l(publishment.valid_until, \'time.formats.default\')}</td> <td class="right"> <a href="#" title="{t(\'verbs.extend\')}" onclick="{onExtendClicked}"><i class="fa fa-clock-o"></i></a> <a href="#/groups/user/{user_group_id}/destroy" onclick="{onDeleteClicked}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.config);
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
+    tag.on("mount", function() {
+        wApp.bus.trigger("page-title", tag.tcap("activerecord.models.publishment", {
+            count: "other"
+        }));
+        fetch();
+    });
+    tag.onDeleteClicked = function(event) {
+        event.preventDefault();
+        var publishment = event.item.publishment;
+        if (wApp.utils.confirm()) destroy(publishment.id);
+    };
+    tag.onExtendClicked = function(event) {
+        event.preventDefault();
+        var publishment = event.item.publishment;
+        Zepto.ajax({
+            type: "PATCH",
+            url: "/publishments/" + publishment.id + "/extend",
+            success: fetch
+        });
+    };
+    var destroy = function(id) {
+        Zepto.ajax({
+            type: "DELETE",
+            url: "/publishments/" + id,
+            success: fetch
+        });
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/publishments",
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-recent-entities", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.new_entity\', {count: \'other\'})}</h1> <form onchange="{submit}" onsubmit="{submit}"> <kor-collection-selector name="collection_id" multiple="{true}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" include-media="{true}" ref="fields"></kor-kind-selector> <kor-input label="{tcap(\'activerecord.attributes.entity.created_at\')}" name="created_after" placeholder="{t(\'from\')}" help="{tcap(\'help.date_input\')}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.created_at\')}" hide-label="{true}" name="created_before" placeholder="{t(\'to\')}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.updated_at\')}" name="updated_after" placeholder="{t(\'from\')}" help="{tcap(\'help.date_input\')}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.updated_at\')}" hide-label="{true}" name="updated_before" placeholder="{t(\'to\')}"></kor-input> <kor-user-selector label="{tcap(\'activerecord.attributes.entity.creator\')}" name="created_by" ref="fields"></kor-user-selector> <kor-user-selector label="{tcap(\'activerecord.attributes.entity.updater\')}" name="updated_by" ref="fields"></kor-user-selector> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.result\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <hr> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <table if="{data && data.total > 0}"> <thead> <tr> <th>{tcap(\'activerecord.attributes.entity.name\')}</th> <th>{tcap(\'activerecord.attributes.entity.collection_id\')}</th> <th> <kor-sort-by key="created_at"> {tcap(\'activerecord.attributes.entity.created_at\')} </kor-sort-by> </th> <th> <kor-sort-by key="updated_at"> {tcap(\'activerecord.attributes.entity.updated_at\')} </kor-sort-by> </th> </tr> </thead> <tbody> <tr each="{entity in data.records}"> <td> <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a> <span class="kind">{entity.kind.name}</span> </td> <td>{entity.collection.name}</td> <td> {l(entity.created_at, \'time.formats.exact\')} <div>{(entity.creator || {}).full_name}</div> </td> <td> {l(entity.updated_at, \'time.formats.exact\')} <div>{(entity.updater || {}).full_name}</div> </td> </tr> </tbody> </table> <hr> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
+    tag.mixin(wApp.mixins.form);
+    window.t = tag;
+    tag.on("mount", function() {
+        if (tag.allowedTo("edit")) {
+            tag.title(tag.t("pages.recent_entities"));
+            tag.setValues(query());
+            fetch();
+        } else {
+            wApp.bus.trigger("access-denied");
+        }
+        tag.on("routing:query", queryUpdate);
+    });
+    tag.on("unmount", function() {
+        tag.off("routing:query", queryUpdate);
+    });
+    var queryUpdate = function() {
+        tag.setValues(query());
+        fetch();
+    };
+    tag.pageUpdate = function(newPage) {
+        wApp.routing.query({
+            page: newPage
+        });
+    };
+    tag.submit = function(event) {
+        wApp.routing.query(formParams());
+    };
+    var defaultParams = function() {
+        return {
+            include: "kind,users,collection,technical",
+            per_page: 10,
+            date: strftime("%Y-%m-%d"),
+            recent: true
+        };
+    };
+    var formParams = function() {
+        var results = tag.values();
+        results["collection_id"] = wApp.utils.arrayToList(results["collection_id"]);
+        return results;
+    };
+    var urlParams = function() {
+        var results = wApp.routing.query();
+        results["collection_id"] = wApp.utils.listToArray(results["collection_id"]);
+        return results;
+    };
+    var query = function() {
+        return Zepto.extend(defaultParams(), urlParams());
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/entities",
+            data: query(),
+            success: function(data) {
+                tag.data = data;
+                tag.update();
+            }
+        });
+    };
+});
+
+riot.tag2("kor-relation-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.relation\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.relation\'}})} </h1> <form onsubmit="{submit}" if="{relation && possible_parents}"> <kor-input name="lock_version" riot-value="{relation.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input name="schema" label="{tcap(\'activerecord.attributes.relation.schema\')}" ref="fields"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.relation.name\')}" riot-value="{relation.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="reverse_name" label="{tcap(\'activerecord.attributes.relation.reverse_name\')}" riot-value="{relation.reverse_name}" errors="{errors.reverse_name}" ref="fields"></kor-input> <kor-input name="description" type="textarea" label="{tcap(\'activerecord.attributes.relation.description\')}" riot-value="{relation.description}" ref="fields"></kor-input> <kor-input if="{possible_kinds}" name="from_kind_id" type="select" options="{possible_kinds}" label="{tcap(\'activerecord.attributes.relation.from_kind_id\')}" riot-value="{relation.from_kind_id}" errors="{errors.from_kind_id}" ref="fields"></kor-input> <kor-input if="{possible_kinds}" name="to_kind_id" type="select" options="{possible_kinds}" label="{tcap(\'activerecord.attributes.relation.to_kind_id\')}" riot-value="{relation.to_kind_id}" errors="{errors.to_kind_id}" ref="fields"></kor-input> <kor-input name="parent_ids" type="select" options="{possible_parents}" multiple="{true}" label="{tcap(\'activerecord.attributes.relation.parent\')}" riot-value="{relation.parent_ids}" errors="{errors.parent_ids}" ref="fields"></kor-input> <kor-input name="abstract" type="checkbox" label="{tcap(\'activerecord.attributes.relation.abstract\')}" riot-value="{relation.abstract}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var create, fetch, fetchPossibleKinds, fetchPossibleParents, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
+    tag.on("before-mount", function() {
+        if (!tag.isRelationAdmin()) {
+            return wApp.bus.trigger("access-denied");
+        }
+    });
     tag.on("mount", function() {
         tag.errors = {};
         if (tag.opts.id) {
@@ -11991,7 +13644,6 @@ riot.tag2("kor-relation-editor", '<div class="kor-layout-left kor-layout-large">
         });
     };
     create = function() {
-        console.log(values());
         return Zepto.ajax({
             type: "POST",
             url: "/relations",
@@ -12011,9 +13663,7 @@ riot.tag2("kor-relation-editor", '<div class="kor-layout-left kor-layout-large">
     };
     values = function() {
         var field, i, len, ref, result;
-        result = {
-            lock_version: tag.relation.lock_version
-        };
+        result = {};
         ref = tag.refs["fields"];
         for (i = 0, len = ref.length; i < len; i++) {
             field = ref[i];
@@ -12073,13 +13723,17 @@ riot.tag2("kor-relation-editor", '<div class="kor-layout-left kor-layout-large">
     };
 });
 
-riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right"> <a href="#" title="{t(\'verbs.merge\')}" onclick="{toggleMerge}"> <i class="fa fa-compress" aria-hidden="true"></i> </a> <a href="#/relations/new" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.relation\')}})}"> <i class="fa fa-plus-square"></i> </a> </div> <h1> {tcap(\'activerecord.models.relation\', {count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-input name="terms" label="{tcap(\'search_term\')}" onkeyup="{delayedSubmit}"></kor-input> <div class="hr"></div> </form> <div show="{merge}"> <div class="hr"></div> <kor-relation-merger ref="merger" on-done="{mergeDone}"></kor-relation-merger> <div class="hr"></div> </div> <div if="{filteredRecords && !filteredRecords.length}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.relation.other\'}})} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th> {tcap(\'activerecord.attributes.relation.name\')} <span if="{schema == \'null\' || !schema}"> ({t(\'no_schema\')}) </span> <span if="{schema && schema != \'null\'}"> ({tcap(\'activerecord.attributes.relation.schema\')}: {schema}) </span> </th> <th> {tcap(\'activerecord.attributes.relation.from_kind_id\')}<br> {tcap(\'activerecord.attributes.relation.to_kind_id\')} </th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="text-right buttons"> <a if="{merge}" href="#" onclick="{addToMerge}" title="{t(\'add_to_merge\')}"><i class="fa fa-compress"></i></a> <a href="#" onclick="{invert}" title="{t(\'verbs.invert\')}"><i class="fa fa-exchange"></i></a> <a href="#/relations/{relation.id}"><i class="fa fa-edit"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
+riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right" if="{isRelationAdmin()}"> <a href="#" title="{t(\'verbs.merge\')}" onclick="{toggleMerge}"><i class="fa fa-compress" aria-hidden="true"></i></a> <a href="#/relations/new" title="{t(\'verbs.add\')}"><i class="fa fa-plus-square"></i></a> </div> <h1> {tcap(\'activerecord.models.relation\', {count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-input name="terms" label="{tcap(\'search_term\')}" onkeyup="{delayedSubmit}"></kor-input> <div class="hr"></div> </form> <div show="{merge}"> <div class="hr"></div> <kor-relation-merger ref="merger" on-done="{mergeDone}"></kor-relation-merger> <div class="hr"></div> </div> <div if="{filteredRecords && !filteredRecords.length}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.relation.other\'}})} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th> {tcap(\'activerecord.attributes.relation.name\')} <span if="{schema == \'null\' || !schema}"> ({t(\'no_schema\')}) </span> <span if="{schema && schema != \'null\'}"> ({tcap(\'activerecord.attributes.relation.schema\')}: {schema}) </span> </th> <th> {tcap(\'activerecord.attributes.relation.from_kind_id\')}<br> {tcap(\'activerecord.attributes.relation.to_kind_id\')} </th> <th if="{isRelationAdmin()}"></th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}/edit"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="kor-text-right buttons" if="{isRelationAdmin()}"> <a href="#/relations/{relation.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a if="{merge}" href="#" onclick="{addToMerge}" title="{t(\'add_to_merge\')}"><i class="fa fa-compress"></i></a> <a href="#" onclick="{invert}" title="{t(\'verbs.invert\')}"><i class="fa fa-exchange"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
     var fetch, fetchKinds, filter_records, groupAndSortRecords, tag, typeCompare;
     tag = this;
-    tag.requireRoles = [ "relation_admin" ];
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
+        tag.title(tag.t("activerecord.models.relation", {
+            count: "other"
+        }));
         fetch();
         return fetchKinds();
     });
@@ -12228,20 +13882,31 @@ riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right
     };
 });
 
-riot.tag2("kor-search", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector name="collection_id" multiple="{true}" riot-value="{criteria.collection_id}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" riot-value="{criteria.kind_id}" ref="fields"></kor-kind-selector> <kor-input name="terms" label="{tcap(\'nouns.term\', {count: \'other\'})}" riot-value="{criteria.terms}" ref="fields"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.entity.name\')}" riot-value="{criteria.name}" ref="fields"></kor-input> <kor-input name="tags" label="{tcap(\'nouns.tag\', {count: \'other\'})}" riot-value="{criteria.tags}" ref="fields"></kor-input> <kor-input name="dating" label="{tcap(\'activerecord.models.entity_dating\')}" riot-value="{criteria.dating}" ref="fields"></kor-input> <div class="kor-text-right"> <kor-input type="submit" riot-value="{tcap(\'verbs.search\')}"></kor-input> </div> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search_results\')}</h1> </div> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <virtual if="{data && data.total > 0}"> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}"></kor-pagination> <kor-search-result each="{entity in data.records}" entity="{entity}"></kor-search-result> </virtual> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector name="collection_id" multiple="{true}" riot-value="{criteria.collection_id}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" riot-value="{criteria.kind_id}" ref="fields" onchange="{selectKind}" include-media="{true}"></kor-kind-selector> <kor-input if="{elastic()}" name="terms" label="{tcap(\'all_fields\')}" riot-value="{criteria.terms}" ref="fields" help="{tcap(\'help.terms_query\')}"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.entity.name\')}" riot-value="{criteria.name}" ref="fields" help="{tcap(\'help.name_query\')}"></kor-input> <kor-input name="tags" label="{tcap(\'nouns.tag\', {count: \'other\'})}" riot-value="{criteria.tags}" ref="fields"></kor-input> <kor-input name="dating" label="{tcap(\'activerecord.models.entity_dating\')}" riot-value="{criteria.dating}" ref="fields"></kor-input> <virtual if="{isMedia(kind)}"> <hr> <kor-input name="file_name" label="{tcap(\'activerecord.attributes.medium.file_name\')}" riot-value="{criteria.file_name}" ref="fields"></kor-input> <kor-input if="{mime_types}" name="file_type" label="{tcap(\'activerecord.attributes.medium.file_type\')}" type="select" options="{mime_types}" placeholder="{t(\'all\')}" riot-value="{criteria.file_type}" ref="fields"></kor-input> <kor-input name="file_size" label="{tcap(\'activerecord.attributes.medium.file_size\')}" riot-value="{criteria.file_size}" ref="fields" help="{tcap(\'help.file_size_query\')}"></kor-input> <kor-input name="datahash" label="{tcap(\'activerecord.attributes.medium.datahash\')}" riot-value="{criteria.datahash}" ref="fields"></kor-input> </virtual> <virtual if="{elastic()}"> <virtual if="{kind && kind.fields.length}"> <hr> <kor-input each="{field in kind.fields}" label="{field.search_label}" name="dataset_{field.name}" riot-value="{criteria[\'dataset_\' + field.name]}" ref="fields"></kor-input> </virtual> <hr> <kor-input name="property" label="{tcap(\'activerecord.attributes.entity.properties\')}" riot-value="{criteria.property}" ref="fields"></kor-input> <kor-input name="related" label="{tcap(\'by_related_entities\')}" riot-value="{criteria.related}" ref="fields"></kor-input> </virtual> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.search\')}"></kor-input> </div> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search_results\')}</h1> </div> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <div class="search-results" if="{data && data.total > 0}"> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="top"></kor-pagination> <div class="kor-search-results"> <kor-search-result each="{entity in data.records}" entity="{entity}"></kor-search-result> </div> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="bottom"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("before-mount", function() {
+        fetchMimeTypes();
         tag.criteria = urlParams();
     });
     tag.on("mount", function() {
-        fetch();
-        tag.on("routing:query", fetch);
+        tag.title(tag.t("nouns.search"));
+        tag.on("routing:query", queryUpdate);
+        queryUpdate();
     });
     tag.on("unmount", function() {
-        tag.off("routing:query", fetch);
+        tag.off("routing:query", queryUpdate);
     });
+    var queryUpdate = function() {
+        tag.criteria = urlParams();
+        if (tag.criteria["kind_id"]) {
+            fetchKind(tag.criteria["kind_id"]);
+        }
+        tag.tags["kor-collection-selector"].reset();
+        fetch();
+    };
     tag.submit = function(event) {
         event.preventDefault();
         wApp.routing.query(params(), true);
@@ -12250,6 +13915,27 @@ riot.tag2("kor-search", '<div class="kor-layout-left kor-layout-small"> <div cla
         wApp.routing.query({
             page: newPage
         });
+    };
+    tag.selectKind = function(event) {
+        var id = Zepto(event.target).val();
+        if (id && id != "0") {
+            fetchKind(id);
+            wApp.routing.query({
+                kind_id: id
+            });
+        } else {
+            tag.kind = null;
+            tag.update();
+        }
+    };
+    tag.elastic = function() {
+        return wApp.info.data.elastic;
+    };
+    tag.isMedia = function(kind) {
+        if (!kind) {
+            return false;
+        }
+        return kind.id === wApp.info.data.medium_kind_id;
     };
     var params = function() {
         var results = {
@@ -12273,10 +13959,29 @@ riot.tag2("kor-search", '<div class="kor-layout-left kor-layout-small"> <div cla
         results["collection_id"] = wApp.utils.toIdArray(results["collection_id"]);
         return results;
     };
+    var fetchKind = function(id) {
+        Zepto.ajax({
+            url: "/kinds/" + id,
+            data: {
+                include: "fields"
+            },
+            success: function(data) {
+                tag.kind = data;
+                tag.update();
+            }
+        });
+    };
+    var fetchMimeTypes = function() {
+        Zepto.ajax({
+            url: "/statistics",
+            success: function(data) {
+                tag.mime_types = Object.keys(data.mime_counts).sort();
+                tag.update();
+            }
+        });
+    };
     var fetch = function() {
-        tag.criteria = urlParams();
         var params = Zepto.extend({}, tag.criteria, {
-            no_media: true,
             include: "related",
             related_kind_id: wApp.info.data.medium_kind_id,
             related_per_page: 4
@@ -12292,13 +13997,17 @@ riot.tag2("kor-search", '<div class="kor-layout-left kor-layout-small"> <div cla
     };
 });
 
-riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </h1> <form onsubmit="{submit}" if="{values && groups && relations}"> <h2>{tcap(\'settings.branding_and_display\')}</h2> <kor-input name="maintainer_name" label="{nameFor(\'maintainer_name\')}" riot-value="{valueWithDefaults(\'maintainer_name\')}" ref="fields"></kor-input> <kor-input name="maintainer_mail" label="{nameFor(\'maintainer_mail\')}" riot-value="{valueWithDefaults(\'maintainer_mail\')}" ref="fields"></kor-input> <kor-input name="welcome_title" label="{nameFor(\'welcome_title\')}" riot-value="{valueWithDefaults(\'welcome_title\')}" ref="fields"></kor-input> <kor-input name="welcome_text" label="{nameFor(\'welcome_text\')}" type="textarea" riot-value="{valueWithDefaults(\'welcome_text\')}" ref="fields"></kor-input> <kor-input name="legal_text" label="{nameFor(\'legal_text\')}" type="textarea" riot-value="{valueWithDefaults(\'legal_text\')}" ref="fields"></kor-input> <kor-input name="about_text" label="{nameFor(\'about_text\')}" type="textarea" riot-value="{valueWithDefaults(\'about_text\')}" ref="fields"></kor-input> <kor-input name="help_text" label="{nameFor(\'help_text\')}" type="textarea" riot-value="{valueWithDefaults(\'help_text\')}" ref="fields"></kor-input> <kor-input name="custom_css_file" label="{nameFor(\'custom_css_file\')}" riot-value="{valueWithDefaults(\'custom_css_file\')}" ref="fields"></kor-input> <kor-input name="env_auth_button_label" label="{nameFor(\'env_auth_button_label\')}" riot-value="{valueWithDefaults(\'env_auth_button_label\')}" ref="fields"></kor-input> <kor-input name="search_entity_name" label="{nameFor(\'search_entity_name\')}" riot-value="{valueWithDefaults(\'search_entity_name\')}" ref="fields"></kor-input> <kor-input name="kind_dating_label" label="{nameFor(\'kind_dating_label\')}" riot-value="{valueWithDefaults(\'kind_dating_label\')}" ref="fields"></kor-input> <kor-input name="kind_name_label" label="{nameFor(\'kind_name_label\')}" riot-value="{valueWithDefaults(\'kind_name_label\')}" ref="fields"></kor-input> <kor-input name="kind_distinct_name_label" label="{nameFor(\'kind_distinct_name_label\')}" riot-value="{valueWithDefaults(\'kind_distinct_name_label\')}" ref="fields"></kor-input> <kor-input name="relationship_dating_label" label="{nameFor(\'relationship_dating_label\')}" riot-value="{valueWithDefaults(\'relationship_dating_label\')}" ref="fields"></kor-input> <kor-input name="primary_relations" label="{nameFor(\'primary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'primary_relations\')}" ref="fields"></kor-input> <kor-input name="secondary_relations" label="{nameFor(\'secondary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'secondary_relations\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.behavior\')}</h2> <kor-input name="default_locale" label="{nameFor(\'default_locale\')}" type="select" options="{wApp.i18n.locales()}" riot-value="{valueWithDefaults(\'default_locale\')}" ref="fields"></kor-input> <kor-input name="current_history_length" label="{nameFor(\'current_history_length\')}" riot-value="{valueWithDefaults(\'current_history_length\')}" ref="fields" type="number"></kor-input> <kor-input name="max_foreground_group_download_size" label="{nameFor(\'max_foreground_group_download_size\')}" riot-value="{valueWithDefaults(\'max_foreground_group_download_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_file_upload_size" label="{nameFor(\'max_file_upload_size\')}" riot-value="{valueWithDefaults(\'max_file_upload_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_results_per_request" label="{nameFor(\'max_results_per_request\')}" riot-value="{valueWithDefaults(\'max_results_per_request\')}" ref="fields" type="number"></kor-input> <kor-input name="max_included_results_per_result" label="{nameFor(\'max_included_results_per_result\')}" riot-value="{valueWithDefaults(\'max_included_results_per_result\')}" ref="fields" type="number"></kor-input> <kor-input name="session_lifetime" label="{nameFor(\'session_lifetime\')}" riot-value="{valueWithDefaults(\'session_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="publishment_lifetime" label="{nameFor(\'publishment_lifetime\')}" riot-value="{valueWithDefaults(\'publishment_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="default_groups" label="{nameFor(\'default_groups\')}" type="select" multiple="{true}" options="{groups}" riot-value="{valueWithDefaults(\'default_groups\')}" ref="fields"></kor-input> <kor-input name="fail_on_update_errors" label="{nameFor(\'fail_on_update_errors\')}" type="checkbox" riot-value="{valueWithDefaults(\'fail_on_update_errors\')}" ref="fields"></kor-input> <kor-input name="max_download_group_size" label="{nameFor(\'max_download_group_size\')}" riot-value="{valueWithDefaults(\'max_download_group_size\')}" ref="fields" type="number"></kor-input> <h2>{tcap(\'settings.other\')}</h2> <kor-input name="sources_release" label="{nameFor(\'sources_release\')}" riot-value="{valueWithDefaults(\'sources_release\')}" ref="fields"></kor-input> <kor-input name="sources_pre_release" label="{nameFor(\'sources_pre_release\')}" riot-value="{valueWithDefaults(\'sources_pre_release\')}" ref="fields"></kor-input> <kor-input name="sources_default" label="{nameFor(\'sources_default\')}" riot-value="{valueWithDefaults(\'sources_default\')}" ref="fields"></kor-input> <kor-input name="repository_uuid" label="{nameFor(\'repository_uuid\')}" riot-value="{valueWithDefaults(\'repository_uuid\')}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </h1> <form onsubmit="{submit}" if="{values && groups && relations}"> <h2>{tcap(\'settings.branding_and_display\')}</h2> <hr> <kor-input name="maintainer_name" label="{nameFor(\'maintainer_name\')}" riot-value="{valueWithDefaults(\'maintainer_name\')}" ref="fields"></kor-input> <kor-input name="maintainer_mail" label="{nameFor(\'maintainer_mail\')}" riot-value="{valueWithDefaults(\'maintainer_mail\')}" ref="fields"></kor-input> <kor-input name="welcome_title" label="{nameFor(\'welcome_title\')}" riot-value="{valueWithDefaults(\'welcome_title\')}" ref="fields"></kor-input> <kor-input name="welcome_text" label="{nameFor(\'welcome_text\')}" type="textarea" riot-value="{valueWithDefaults(\'welcome_text\')}" ref="fields"></kor-input> <kor-input name="legal_text" label="{nameFor(\'legal_text\')}" type="textarea" riot-value="{valueWithDefaults(\'legal_text\')}" ref="fields"></kor-input> <kor-input name="about_text" label="{nameFor(\'about_text\')}" type="textarea" riot-value="{valueWithDefaults(\'about_text\')}" ref="fields"></kor-input> <kor-input name="custom_css_file" label="{nameFor(\'custom_css_file\')}" riot-value="{valueWithDefaults(\'custom_css_file\')}" ref="fields"></kor-input> <kor-input name="env_auth_button_label" label="{nameFor(\'env_auth_button_label\')}" riot-value="{valueWithDefaults(\'env_auth_button_label\')}" ref="fields"></kor-input> <kor-input name="search_entity_name" label="{nameFor(\'search_entity_name\')}" riot-value="{valueWithDefaults(\'search_entity_name\')}" ref="fields"></kor-input> <kor-input name="kind_dating_label" label="{nameFor(\'kind_dating_label\')}" riot-value="{valueWithDefaults(\'kind_dating_label\')}" ref="fields"></kor-input> <kor-input name="kind_name_label" label="{nameFor(\'kind_name_label\')}" riot-value="{valueWithDefaults(\'kind_name_label\')}" ref="fields"></kor-input> <kor-input name="kind_distinct_name_label" label="{nameFor(\'kind_distinct_name_label\')}" riot-value="{valueWithDefaults(\'kind_distinct_name_label\')}" ref="fields"></kor-input> <kor-input name="relationship_dating_label" label="{nameFor(\'relationship_dating_label\')}" riot-value="{valueWithDefaults(\'relationship_dating_label\')}" ref="fields"></kor-input> <kor-input name="primary_relations" label="{nameFor(\'primary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'primary_relations\')}" ref="fields"></kor-input> <kor-input name="secondary_relations" label="{nameFor(\'secondary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'secondary_relations\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.behavior\')}</h2> <hr> <kor-input name="default_locale" label="{nameFor(\'default_locale\')}" type="select" options="{wApp.i18n.locales()}" riot-value="{valueWithDefaults(\'default_locale\')}" ref="fields"></kor-input> <kor-input name="max_foreground_group_download_size" label="{nameFor(\'max_foreground_group_download_size\')}" riot-value="{valueWithDefaults(\'max_foreground_group_download_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_file_upload_size" label="{nameFor(\'max_file_upload_size\')}" riot-value="{valueWithDefaults(\'max_file_upload_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_results_per_request" label="{nameFor(\'max_results_per_request\')}" riot-value="{valueWithDefaults(\'max_results_per_request\')}" ref="fields" type="number"></kor-input> <kor-input name="max_included_results_per_result" label="{nameFor(\'max_included_results_per_result\')}" riot-value="{valueWithDefaults(\'max_included_results_per_result\')}" ref="fields" type="number"></kor-input> <kor-input name="session_lifetime" label="{nameFor(\'session_lifetime\')}" riot-value="{valueWithDefaults(\'session_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="publishment_lifetime" label="{nameFor(\'publishment_lifetime\')}" riot-value="{valueWithDefaults(\'publishment_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="default_groups" label="{nameFor(\'default_groups\')}" type="select" multiple="{true}" options="{groups}" riot-value="{valueWithDefaults(\'default_groups\')}" ref="fields"></kor-input> <kor-input name="max_download_group_size" label="{nameFor(\'max_download_group_size\')}" riot-value="{valueWithDefaults(\'max_download_group_size\')}" ref="fields" type="number"></kor-input> <h2>{tcap(\'settings.help\')}</h2> <hr> <kor-input name="help_general" label="{nameFor(\'help_general\')}" type="textarea" riot-value="{valueWithDefaults(\'help_general\')}" ref="fields"></kor-input> <kor-input name="help_search" type="textarea" label="{nameFor(\'help_search\')}" riot-value="{valueWithDefaults(\'help_search\')}" ref="fields"></kor-input> <kor-input name="help_upload" type="textarea" label="{nameFor(\'help_upload\')}" riot-value="{valueWithDefaults(\'help_upload\')}" ref="fields"></kor-input> <kor-input name="help_login" type="textarea" label="{nameFor(\'help_login\')}" riot-value="{valueWithDefaults(\'help_login\')}" ref="fields"></kor-input> <kor-input name="help_profile" type="textarea" label="{nameFor(\'help_profile\')}" riot-value="{valueWithDefaults(\'help_profile\')}" ref="fields"></kor-input> <kor-input name="help_new_entries" type="textarea" label="{nameFor(\'help_new_entries\')}" riot-value="{valueWithDefaults(\'help_entries\')}" ref="fields"></kor-input> <kor-input name="help_authority_groups" type="textarea" label="{nameFor(\'help_authority_groups\')}" riot-value="{valueWithDefaults(\'help_authority_groups\')}" ref="fields"></kor-input> <kor-input name="help_user_groups" type="textarea" label="{nameFor(\'help_user_groups\')}" riot-value="{valueWithDefaults(\'help_user_groups\')}" ref="fields"></kor-input> <kor-input name="help_clipboard" type="textarea" label="{nameFor(\'help_clipboard\')}" riot-value="{valueWithDefaults(\'help_clipboard\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.other\')}</h2> <hr> <kor-input name="sources_release" label="{nameFor(\'sources_release\')}" riot-value="{valueWithDefaults(\'sources_release\')}" ref="fields"></kor-input> <kor-input name="sources_pre_release" label="{nameFor(\'sources_pre_release\')}" riot-value="{valueWithDefaults(\'sources_pre_release\')}" ref="fields"></kor-input> <kor-input name="sources_default" label="{nameFor(\'sources_default\')}" riot-value="{valueWithDefaults(\'sources_default\')}" ref="fields"></kor-input> <kor-input name="repository_uuid" label="{nameFor(\'repository_uuid\')}" riot-value="{valueWithDefaults(\'repository_uuid\')}" ref="fields"></kor-input> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, fetchGroups, fetchRelations, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.errors = {};
     tag.on("mount", function() {
+        tag.title(tag.t("activerecord.models.setting", {
+            count: "other"
+        }));
         fetch();
         fetchGroups();
         return fetchRelations();
@@ -12331,7 +14040,10 @@ riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large">
             data: JSON.stringify({
                 settings: values(),
                 mtime: tag.mtime
-            })
+            }),
+            success: function(data) {
+                return wApp.bus.trigger("config-updated");
+            }
         });
     };
     values = function() {
@@ -12361,6 +14073,9 @@ riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large">
             success: function(data) {
                 tag.groups = data.records;
                 return tag.update();
+            },
+            error: function() {
+                return wApp.bus.trigger("access-denied");
             }
         });
     };
@@ -12375,11 +14090,13 @@ riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large">
     };
 });
 
-riot.tag2("kor-statistics", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.statistics\')}</h1> <p if="{data}">{validity()}</p> <table if="{data}"> <thead> <tr> <th>{tcap(\'activerecord.models.user\')}</th> <th>{data.user_count}</th> </tr> </thead> <tbody> <tr> <td>{tcap(\'logged_in_recently\')}</td> <td>{data.user_count_logged_in_recently}</td> </tr> <tr> <td>{tcap(\'logged_in_last_year\')}</td> <td>{data.user_count_logged_in_last_year}</td> </tr> <tr> <td>{tcap(\'created_recently\')}</td> <td>{data.user_count_created_recently}</td> </tr> </tbody> </table> <table if="{data}"> <thead> <tr> <th>{tcap(\'activerecord.models.entity\')}</th> <th>{data.entity_count}</th> </tr> </thead> <tbody> <tr each="{stat in data.entities_by_kind}"> <td>{stat.kind_name}</td> <td>{stat.count}</td> </tr> </tbody> </table> <table if="{data}"> <thead> <tr> <th>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</th> <th>{data.relationship_count}</th> </tr> </thead> <tbody> <tr each="{stat in data.relationships_by_relation}"> <td>{stat.relation_name}</td> <td>{stat.count}</td> </tr> </tbody> </table> </div> </div> <div class="kor-layout-right"></div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-statistics", "<div class=\"kor-layout-left kor-layout-large\"> <div class=\"kor-content-box\"> <h1>{tcap('nouns.statistics')}</h1> <p if=\"{data}\">{validity()}</p> <table if=\"{data}\"> <thead> <tr> <th>{tcap('activerecord.models.user', {count: 'other'})}</th> <th>{data.user_count}</th> </tr> </thead> <tbody> <tr> <td>{tcap('logged_in_recently')}</td> <td>{data.user_count_logged_in_recently}</td> </tr> <tr> <td>{tcap('logged_in_last_year')}</td> <td>{data.user_count_logged_in_last_year}</td> </tr> <tr> <td>{tcap('created_recently')}</td> <td>{data.user_count_created_recently}</td> </tr> </tbody> </table> <table if=\"{data}\"> <thead> <tr> <th>{tcap('activerecord.models.entity', {count: 'other'})}</th> <th>{data.entity_count}</th> </tr> </thead> <tbody> <tr each=\"{stat in data.entities_by_kind}\"> <td>{stat.kind_name}</td> <td>{stat.count}</td> </tr> </tbody> </table> <table if=\"{data}\"> <thead> <tr> <th>{tcap('activerecord.models.relationship', {count: 'other'})}</th> <th>{data.relationship_count}</th> </tr> </thead> <tbody> <tr each=\"{stat in data.relationships_by_relation}\"> <td>{stat.relation_name}</td> <td>{stat.count}</td> </tr> </tbody> </table> </div> </div> <div class=\"kor-layout-right\"></div> <div class=\"clearfix\"></div>", "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
+        tag.title(tag.t("nouns.statistics"));
         fetch();
     });
     tag.validity = function() {
@@ -12400,13 +14117,15 @@ riot.tag2("kor-statistics", '<div class="kor-layout-left kor-layout-large"> <div
     };
 });
 
-riot.tag2("kor-upload", '<div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.mass_upload\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector policy="create" ref="cs"></kor-collection-selector> <kor-user-group-selector type="personal" riot-value="{l(new Date())}" ref="user-group-name"></kor-user-group-selector> <virtual if="{selection}"> {tcap(\'labels.relate_to_via\', {interpolations: {to: selection.display_name}})} <kor-relation-selector if="{selection}" source-kind-id="{wApp.info.data.medium_kind_id}" target-kind-id="{selection.kind_id}" ref="relation-selector"></kor-relation-selector> </virtual> <a class="trigger"> » {tcap(\'objects.add\', {interpolations: {o: \'nouns.file.other\'}})} </a> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <ul> <li each="{job in files()}"> <div class="pull-right"> <a ref="#" onclick="{remove}">x</a> </div> <strong>{job.name}</strong> <div> {hs(job.size)} <span show="{job.percent > 0}"> <span show="{job.percent < 100}"> {job.percent} </span> <span show="{job.percent == 100 && !job.error}"> ... {t(\'done\')} </span> </span> <div class="kor-error" if="{job.error}"> <strong>{job.error.parsed_response.message}: <div each="{errors, field in job.error.parsed_response.errors}"> <span>{errors.join(\', \')}</span> </div> </strong> </div> </div> </li> </ul> <form class="inline" onsubmit="{submit}"> <div class="text-right"> <kor-input type="submit" riot-value="{tcap(\'verbs.upload\')}"></kor-input> <kor-input type="submit" riot-value="{tcap(\'empty_list\')}" onclick="{abort}"></kor-input> </div> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-upload", '<kor-help-button key="upload"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'verbs.upload\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector policy="create" ref="cs"></kor-collection-selector> <kor-entity-group-selector type="user" riot-value="{l(new Date())}" ref="group"></kor-entity-group-selector> <div if="{selection}"> {tcap(\'labels.relate_to_via\', {interpolations: {to: selection.display_name}})}: <kor-relation-selector if="{selection}" source-kind-id="{wApp.info.data.medium_kind_id}" target-kind-id="{selection.kind_id}" ref="relation-selector"></kor-relation-selector> </div> <a class="trigger"> » {tcap(\'objects.add\', {interpolations: {o: \'nouns.file.other\'}})} </a> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <ul> <li each="{job in files()}"> <div class="pull-right"> <a ref="#" onclick="{remove}">x</a> </div> <strong>{job.name}</strong> <div> {hs(job.size)} <span show="{job.percent > 0}"> <span show="{job.percent < 100}"> {job.percent} </span> <span show="{job.percent == 100 && !job.error}"> ... {t(\'done\')} </span> </span> <div class="kor-error" if="{job.error}"> <strong>{job.error.parsed_response.message}: <div each="{errors, field in job.error.parsed_response.errors}"> <span>{errors.join(\', \')}</span> </div> </strong> </div> </div> </li> </ul> <form class="inline" onsubmit="{submit}"> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.upload\')}"></kor-input> <kor-input type="submit" label="{tcap(\'empty_list\')}" onclick="{abort}"></kor-input> </div> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
     var uploader = null;
     tag.on("mount", function() {
+        tag.title(tag.t("verbs.upload"));
         init();
     });
     tag.files = function() {
@@ -12425,9 +14144,10 @@ riot.tag2("kor-upload", '<div class="kor-layout-left kor-layout-small"> <div cla
         event.preventDefault();
         var params = {
             "entity[kind_id]": wApp.info.data.medium_kind_id,
-            "entity[collection_id]": tag.refs["cs"].val(),
-            user_group_name: tag.refs["user-group-name"].value(),
-            target_entity_id: wApp.clipboard.selection()
+            "entity[collection_id]": tag.refs["cs"].value(),
+            user_group_name: tag.refs["group"].value(),
+            target_entity_id: wApp.clipboard.selection(),
+            authenticity_token: wApp.session.csrfToken()
         };
         var rs = tag.refs["relation-selector"];
         if (rs) {
@@ -12442,8 +14162,7 @@ riot.tag2("kor-upload", '<div class="kor-layout-left kor-layout-small"> <div cla
     var relationSelectorValue = function() {
         return tag.refs["relation-selector"] ? tag.refs["relation-selector"].value() : nil;
     };
-    var fetchSelected = function() {
-        var id = wApp.clipboard.selection();
+    var fetchSelected = function(id) {
         Zepto.ajax({
             url: "/entities/" + id,
             success: function(data) {
@@ -12460,7 +14179,9 @@ riot.tag2("kor-upload", '<div class="kor-layout-left kor-layout-small"> <div cla
         });
     };
     var init = function() {
-        if (tag.hasSelection()) fetchSelected();
+        if (tag.hasSelection()) fetchSelected(wApp.clipboard.selection());
+        var id = wApp.routing.query()["relate_with"];
+        if (id) fetchSelected(id);
         uploader = new plupload.Uploader({
             browse_button: Zepto(".trigger")[0],
             url: "/entities",
@@ -12483,7 +14204,7 @@ riot.tag2("kor-upload", '<div class="kor-layout-left kor-layout-small"> <div cla
         });
         uploader.bind("Error", function(up, error) {
             if (error.code == -600) {
-                var message = tag.t("errors.file_too_big", {
+                var message = tag.t("messages.file_too_big", {
                     interpolations: {
                         file: error.file.name,
                         size: (error.file.origSize / 1024 / 1024).toFixed(2),
@@ -12492,7 +14213,6 @@ riot.tag2("kor-upload", '<div class="kor-layout-left kor-layout-small"> <div cla
                 });
                 window.alert(message);
             } else {
-                console.log(error);
                 error.parsed_response = JSON.parse(error.response);
                 error.file.error = error;
                 tag.update();
@@ -12502,24 +14222,22 @@ riot.tag2("kor-upload", '<div class="kor-layout-left kor-layout-small"> <div cla
     };
 });
 
-riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1 show="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <h1 show="{!opts.id}"> {tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.personal\')}" name="make_personal" type="checkbox" riot-value="{data.personal}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.active\')}" name="active" type="checkbox" ref="fields" riot-value="{data.active}"></kor-input> <div class="expires-at"> <kor-input label="{tcap(\'activerecord.attributes.user.expires_at\')}" name="expires_at" ref="fields" riot-value="{valueForDate(data.expires_at)}" errors="{errors.expires_at}" type="{\'date\'}"></kor-input> <button onclick="{expiresIn(0)}"> {tcap(\'activerecord.attributes.user.does_not_expire\')} </button> <button onclick="{expiresIn(7)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {interpolations: {amount: 7}})} </button> <button onclick="{expiresIn(30)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {interpolations: {amount: 30}})} </button> <button onclick="{expiresIn(180)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {interpolations: {amount: 180}})} </button> <div class="clearfix"></div> </div> <div class="hr"></div> <kor-input if="{credentials}" label="{tcap(\'activerecord.attributes.user.groups\')}" name="group_ids" type="select" options="{credentials.records}" multiple="{true}" ref="fields" riot-value="{data.group_ids}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.authority_group_admin\')}" name="authority_group_admin" type="checkbox" ref="fields" riot-value="{data.authority_group_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.relation_admin\')}" name="relation_admin" type="checkbox" ref="fields" riot-value="{data.relation_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.kind_admin\')}" name="kind_admin" type="checkbox" ref="fields" riot-value="{data.kind_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.admin\')}" name="admin" type="checkbox" ref="fields" riot-value="{data.admin}"></kor-input> <div class="hr"></div> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1 show="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <h1 show="{!opts.id}"> {tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.user\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.personal\')}" name="make_personal" type="checkbox" ref="fields" riot-value="{data.personal}" errors="{errors.make_personal}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.active\')}" name="active" type="checkbox" ref="fields" riot-value="{data.active}"></kor-input> <div class="expires-at"> <kor-input label="{tcap(\'activerecord.attributes.user.expires_at\')}" name="expires_at" ref="fields" riot-value="{valueForDate(data.expires_at)}" errors="{errors.expires_at}" type="{\'date\'}"></kor-input> <button onclick="{expiresIn(0)}"> {tcap(\'activerecord.attributes.user.does_not_expire\')} </button> <button onclick="{expiresIn(7)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {interpolations: {amount: 7}})} </button> <button onclick="{expiresIn(30)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {interpolations: {amount: 30}})} </button> <button onclick="{expiresIn(180)}"> {tcap(\'activerecord.attributes.user.expires_in_days\', {interpolations: {amount: 180}})} </button> <div class="clearfix"></div> </div> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.parent_username\')}" name="parent_username" type="text" ref="fields" riot-value="{data.parent_username}" errors="{errors.parent_username}"></kor-input> <div class="hr"></div> <kor-input if="{credentials}" label="{tcap(\'activerecord.attributes.user.groups\')}" name="group_ids" type="select" options="{credentials.records}" multiple="{true}" ref="fields" riot-value="{data.group_ids}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.authority_group_admin\')}" name="authority_group_admin" type="checkbox" ref="fields" riot-value="{data.authority_group_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.relation_admin\')}" name="relation_admin" type="checkbox" ref="fields" riot-value="{data.relation_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.kind_admin\')}" name="kind_admin" type="checkbox" ref="fields" riot-value="{data.kind_admin}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.admin\')}" name="admin" type="checkbox" ref="fields" riot-value="{data.admin}"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var create, expiresAtTag, fetchCredentials, fetchUser, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
-        var h;
         tag.errors = {};
-        if (tag.hasRole("admin")) {
+        if (tag.isAdmin()) {
             return Zepto.when(fetchCredentials(), fetchUser()).then(function() {
                 tag.loaded = true;
                 return tag.update();
             });
         } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
+            return wApp.bus.trigger("access-denied");
         }
     });
     tag.submit = function(event) {
@@ -12527,10 +14245,7 @@ riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show
         event.preventDefault();
         p = tag.opts.id ? update() : create();
         p.done(function(data) {
-            var h;
-            if (h = tag.opts.handlers.doneHandler) {
-                return h();
-            }
+            return wApp.routing.path("/users");
         });
         p.fail(function(xhr) {
             tag.errors = JSON.parse(xhr.responseText).errors;
@@ -12546,8 +14261,8 @@ riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show
             event.preventDefault();
             if (days) {
                 date = new Date();
-                date.setTime(date.getTime() + days * 24 * 60 * 60 * 1e3);
-                return expiresAtTag().set(strftime("%Y-%m-%d", date));
+                date = new Date(date.getTime() + days * 24 * 60 * 60 * 1e3);
+                return expiresAtTag().set([ date.getUTCFullYear(), ("00" + (date.getUTCMonth() + 1)).substr(-2, 2), ("00" + date.getUTCDate()).substr(-2, 2) ].join("-"));
             } else {
                 return expiresAtTag().set(void 0);
             }
@@ -12574,7 +14289,7 @@ riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show
             return Zepto.ajax({
                 url: "/users/" + tag.opts.id,
                 data: {
-                    include: "security"
+                    include: "all"
                 },
                 success: function(data) {
                     tag.data = data;
@@ -12582,7 +14297,9 @@ riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show
                 }
             });
         } else {
-            tag.data = {};
+            tag.data = {
+                lock_version: 0
+            };
             return tag.update();
         }
     };
@@ -12627,11 +14344,12 @@ riot.tag2("kor-user-editor", '<div class="kor-layout-left kor-layout-large" show
     };
 });
 
-riot.tag2("kor-user-group-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user_group\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.user_group\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user_group.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-user-group-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.user_group\'}})} </h1> <h1 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.user_group\'}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user_group.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var create, fetch, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("before-mount", function() {
         tag.errors = {};
         return tag.data = {};
@@ -12667,7 +14385,6 @@ riot.tag2("kor-user-group-editor", '<div class="kor-layout-left kor-layout-large
         });
     };
     create = function() {
-        console.log(values());
         return Zepto.ajax({
             type: "POST",
             url: "/user_groups",
@@ -12692,17 +14409,36 @@ riot.tag2("kor-user-group-editor", '<div class="kor-layout-left kor-layout-large
     };
 });
 
-riot.tag2("kor-user-groups", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <a href="#/groups/user/new" class="pull-right"><i class="plus"></i></a> <h1>{tcap(\'activerecord.models.user_group\', {count: \'other\'})}</h1> <table> <thead> <th>{tcap(\'activerecord.attributes.user_group.name\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{user_group in data.records}"> <td>{user_group.name}</td> <td class="right"> <a href="#/groups/user/{user_group.id}/edit"><i class="pen"></i></a> <a href="#/groups/user/{user_group.id}/destroy" onclick="{onDeleteClicked}"><i class="x"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-user-groups", '<kor-help-button key="user_groups"></kor-help-button> <div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <a if="{!opts.type}" href="#/groups/user/new" class="pull-right" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.user_group\')}})}"><i class="fa fa-plus-square"></i></a> <h1> <virtual if="{!opts.type}">{tcap(\'activerecord.models.user_group\', {count: \'other\'})}</virtual> <virtual if="{opts.type == \'shared\'}">{tcap(\'nouns.shared_user_group\')}</virtual> </h1> <kor-nothing-found data="{data}"></kor-nothing-found> <table if="{data && data.total > 0}"> <thead> <th>{tcap(\'activerecord.attributes.user_group.name\')}</th> <th if="{opts.type == \'shared\'}">{tcap(\'activerecord.attributes.user_group.owner\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{user_group in data.records}"> <td> <a href="#/groups/user/{user_group.id}">{user_group.name}</a> </td> <td if="{opts.type == \'shared\'}"> {user_group.owner.display_name} </td> <td class="right"> <virtual if="{mine(user_group)}"> <a href="#/groups/user/{user_group.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a href="#/groups/user/{user_group.id}/destroy" onclick="{onDeleteClicked}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> <a href="#/groups/user/{user_group.id}/share" onclick="{onShareClicked}" title="{t(\'verbs.\' + (user_group.shared ? \'unshare\' : \'share\'))}"><i class="{\'fa fa-lock\': !user_group.shared, \'fa fa-unlock\': user_group.shared}"></i></a> </virtual> </td> </tr> </tbody> </table> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
+        if (tag.opts.type == "shared") {
+            tag.title(tag.tcap("nouns.shared_user_group"));
+        } else {
+            tag.title(tag.tcap("activerecord.models.user_group"));
+        }
         fetch();
     });
     tag.onDeleteClicked = function(event) {
         event.preventDefault();
         if (wApp.utils.confirm()) destroy(event.item.user_group.id);
+    };
+    tag.onShareClicked = function(event) {
+        event.preventDefault();
+        var group = event.item.user_group;
+        var verb = group.shared ? "unshare" : "share";
+        Zepto.ajax({
+            type: "PATCH",
+            url: "/user_groups/" + group.id + "/" + verb,
+            success: fetch
+        });
+    };
+    tag.mine = function(group) {
+        return group.user_id == tag.session().user.id;
     };
     var destroy = function(id) {
         Zepto.ajax({
@@ -12713,7 +14449,10 @@ riot.tag2("kor-user-groups", '<div class="kor-layout-left kor-layout-large"> <di
     };
     var fetch = function() {
         Zepto.ajax({
-            url: "/user_groups",
+            url: tag.opts.type == "shared" ? "/user_groups/shared" : "user_groups",
+            data: {
+                include: "owner"
+            },
             success: function(data) {
                 tag.data = data;
                 tag.update();
@@ -12722,22 +14461,27 @@ riot.tag2("kor-user-groups", '<div class="kor-layout-left kor-layout-large"> <di
     };
 });
 
-riot.tag2("kor-users", '<div class="kor-content-box"> <div class="kor-layout-commands"> <a href="#/users/new"><i class="plus"></i></a> </div> <h1>{tcap(\'activerecord.models.user\', {count: \'other\'})}</h1> <form onsubmit="{search}" class="inline"> <kor-input label="{t(\'nouns.search\')}" ref="search" riot-value="{opts.query.search}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <thead> <tr> <th class="tiny">{t(\'activerecord.attributes.user.personal\')}</th> <th class="small">{t(\'activerecord.attributes.user.name\')}</th> <th class="small">{t(\'activerecord.attributes.user.full_name\')}</th> <th>{t(\'activerecord.attributes.user.email\')}</th> <th class="tiny right"> {t(\'activerecord.attributes.user.created_at\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.last_login\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.expires_at\')} </th> <th class="tiny buttons"></th> </tr> </thead> <tbody> <tr each="{user in data.records}"> <td><i show="{user.personal}" class="fa fa-check"></i></td> <td>{user.name}</td> <td>{user.full_name}</td> <td class="force-wrap"> <a href="mailto:{user.email}">{user.email}</a> </td> <td class="right">{l(user.created_at)}</td> <td class="right">{l(user.last_login)}</td> <td class="right">{l(user.expires_at)}</td> <td class="right nobreak"> <a onclick="{resetLoginAttempts(user.id)}"> <i class="three_bars"></i> </a> <a onclick="{resetPassword(user.id)}"> <i class="reset_password"></i> </a> <a href="#/users/{user.id}/edit"><i class="pen"></i></a> <a onclick="{destroy(user.id)}"><i class="x"></i></a> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+riot.tag2("kor-users", '<div class="kor-content-box"> <div class="kor-layout-commands"> <a href="#/users/new" title="{t(\'verbs.add\')}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.user\', {count: \'other\'})}</h1> <form onsubmit="{search}" class="inline"> <kor-input label="{t(\'nouns.search\')}" ref="search" riot-value="{opts.query.search}"></kor-input> </form> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <table if="{data}"> <thead> <tr> <th class="tiny">{t(\'activerecord.attributes.user.personal\')}</th> <th class="small">{t(\'activerecord.attributes.user.name\')}</th> <th class="small">{t(\'activerecord.attributes.user.full_name\')}</th> <th>{t(\'activerecord.attributes.user.email\')}</th> <th class="tiny right"> {t(\'activerecord.attributes.user.created_at\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.last_login\')} </th> <th class="tiny right"> {t(\'activerecord.attributes.user.expires_at\')} </th> <th class="tiny buttons"></th> </tr> </thead> <tbody> <tr each="{user in data.records}"> <td><i show="{user.personal}" class="fa fa-check"></i></td> <td>{user.name}</td> <td>{user.full_name}</td> <td class="force-wrap"> <a href="mailto:{user.email}">{user.email}</a> </td> <td class="right">{l(user.created_at)}</td> <td class="right">{l(user.last_login)}</td> <td class="right">{l(user.expires_at)}</td> <td class="right nobreak"> <a onclick="{resetLoginAttempts(user.id)}" title="{t(\'reset_login_attempts\')}"><i class="fa fa-unlock"></i></a> <a if="{user.name != \'admin\' && user.name != \'guest\'}" href="#" onclick="{resetPassword(user.id)}" title="{t(\'reset_password\')}"><i class="fa fa-key"></i></a> <a href="#/users/{user.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a href="#" onclick="{destroy(user.id)}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
     var fetch, queryUpdate, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
-    tag.on("mount", function() {
-        var h;
-        if (tag.hasRole("admin")) {
-            fetch();
-            return tag.on("routing:query", fetch);
-        } else {
-            if (h = tag.opts.handlers.accessDenied) {
-                return h();
-            }
+    tag.mixin(wApp.mixins.page);
+    tag.on("before-mount", function() {
+        if (!tag.isAdmin()) {
+            return wApp.bus.trigger("access-denied");
         }
+    });
+    tag.on("mount", function() {
+        tag.title(tag.t("activerecord.models.user", {
+            count: "other"
+        }));
+        fetch();
+        return tag.on("routing:query", fetch);
+    });
+    tag.on("unmount", function() {
+        return tag.off("routing:query", fetch);
     });
     fetch = function(newOpts) {
         return Zepto.ajax({
@@ -12800,25 +14544,25 @@ riot.tag2("kor-users", '<div class="kor-content-box"> <div class="kor-layout-com
         });
     };
     queryUpdate = function(newQuery) {
-        var h;
-        if (h = tag.opts.handlers.queryUpdate) {
-            return h(newQuery);
-        }
+        return wApp.bus.trigger("query-update", newQuery);
     };
 });
 
-riot.tag2("kor-welcome", '<div class="kor-content-box"> <h1>{config().welcome_title}</h1> <div class="target"></div> <div class="teaser" if="{currentUser()}"> <span>{t(\'pages.random_entities\')}</span> <div class="hr"></div> <kor-gallery-grid entities="{entities()}"></kor-gallery-grid> </div> </div>', "", "", function(opts) {
+riot.tag2("kor-welcome", '<div class="kor-content-box"> <h1>{config().welcome_title}</h1> <div class="target"></div> <div class="teaser" if="{currentUser() && !isGuest()}"> <span>{tcap(\'pages.random_entities\')}</span> <div class="hr"></div> <kor-gallery-grid entities="{entities()}"></kor-gallery-grid> </div> </div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.config);
+    tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
         Zepto(tag.root).find(".target").html(tag.config().welcome_html);
         return Zepto.ajax({
-            url: "/entities/random",
+            url: "/entities",
             data: {
-                include: "gallery_data"
+                include: "gallery_data",
+                sort: "random",
+                per_page: 4
             },
             success: function(data) {
                 tag.data = data;
@@ -12831,7 +14575,7 @@ riot.tag2("kor-welcome", '<div class="kor-content-box"> <h1>{config().welcome_ti
     };
 });
 
-riot.tag2("kor-pagination", '<virtual if="{isActive()}"> <span>{t(\'nouns.page\')}</span> <a show="{!isFirst()}" onclick="{toPrevious}"><i class="icon pager_left"></i></a> <kor-input riot-value="{currentPage()}" onchange="{inputChanged}" ref="manual" type="{\'number\'}"></kor-input> {t(\'of\', {interpolations: {amount: totalPages()}})} <a show="{!isLast()}" onclick="{toNext}"><i class="icon pager_right"></i></a> </virtual> <virtual if="{opts.perPageControl}"> <img src="images/vertical_dots.gif"> <kor-input type="select" options="{perPageOptions()}" riot-value="{opts.perPage}" onchange="{selectChanged}" ref="select"></kor-input> {t(\'results_per_page\')} </virtual>', "", "", function(opts) {
+riot.tag2("kor-pagination", '<virtual if="{isActive()}"> <button onclick="{inputChanged}"> {t(\'goto\', {interpolations: {where: \'\'}})} </button> <span>{t(\'nouns.page\')}</span> <a title="{t(\'previous\')}" show="{!isFirst()}" onclick="{toPrevious}" href="#"><i class="fa fa-arrow-left"></i></a> <kor-input riot-value="{currentPage()}" onchange="{inputChanged}" name="page" ref="manual" type="{\'number\'}"></kor-input> {t(\'of\', {interpolations: {amount: totalPages()}})} <a title="{t(\'next\')}" show="{!isLast()}" onclick="{toNext}" href="#"><i class="fa fa-arrow-right"></i></a> </virtual> <virtual if="{opts.perPageControl}"> <img src="images/vertical_dots.gif"> <kor-input type="select" options="{perPageOptions()}" riot-value="{opts.perPage}" onchange="{selectChanged}" ref="select"></kor-input> {t(\'results_per_page\')} </virtual>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -12874,6 +14618,10 @@ riot.tag2("kor-pagination", '<virtual if="{isActive()}"> <span>{t(\'nouns.page\'
         if (new_page !== tag.currentPage() && new_page >= 1 && new_page <= tag.totalPages()) {
             if (Zepto.isFunction(tag.opts.onPaginate)) {
                 return tag.opts.onPaginate(new_page, tag.opts.perPage);
+            } else {
+                return wApp.routing.query({
+                    page: new_page
+                });
             }
         }
     };
@@ -12961,7 +14709,7 @@ riot.tag2("kor-properties-editor", '<div class="header"> <button onclick="{add}"
     };
 });
 
-riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{pageUpdate}"></kor-pagination> {opts.name} <a onclick="{toggle}" class="toggle"> <i show="{!expanded}" class="triangle_up"></i> <i show="{expanded}" class="triangle_down"></i> </a> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}"></kor-relationship> </virtual>', "", "", function(opts) {
+riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{pageUpdate}"></kor-pagination> {opts.name} <a if="{expandable()}" title="{expanded ? t(\'verbs.collapse\') : t(\'verbs.expand\')}" onclick="{toggle}" class="toggle" href="#"> <i show="{!expanded}" class="fa fa-chevron-up"></i> <i show="{expanded}" class="fa fa-chevron-down"></i> </a> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}"></kor-relationship> </virtual>', "", "", function(opts) {
     var fetch, tag, updateExpansion;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -12970,6 +14718,7 @@ riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="
     tag.mixin(wApp.mixins.info);
     tag.on("mount", function() {
         var base;
+        wApp.bus.on("relationship-created", fetch);
         wApp.bus.on("relationship-updated", fetch);
         wApp.bus.on("relationship-deleted", fetch);
         (base = tag.opts).query || (base.query = {});
@@ -12977,8 +14726,23 @@ riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="
     });
     tag.on("unmount", function() {
         wApp.bus.off("relationship-deleted", fetch);
-        return wApp.bus.off("relationship-updated", fetch);
+        wApp.bus.off("relationship-updated", fetch);
+        return wApp.bus.off("relationship-created", fetch);
     });
+    tag.expandable = function() {
+        var i, len, r, ref;
+        if (!tag.data) {
+            return false;
+        }
+        ref = tag.data.records;
+        for (i = 0, len = ref.length; i < len; i++) {
+            r = ref[i];
+            if (r.media_relations > 0) {
+                return true;
+            }
+        }
+        return false;
+    };
     tag.toggle = function(event) {
         event.preventDefault();
         tag.expanded = !tag.expanded;
@@ -12993,11 +14757,13 @@ riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="
     };
     fetch = function() {
         return Zepto.ajax({
-            url: "/entities/" + tag.opts.entity.id + "/relationships",
+            url: "/relationships",
             data: {
+                from_entity_id: tag.opts.entity.id,
                 page: tag.opts.query.page,
                 relation_name: tag.opts.name,
-                except_to_kind_id: tag.info().medium_kind_id
+                except_to_kind_id: tag.info().medium_kind_id,
+                include: "all"
             },
             success: function(data) {
                 tag.data = data;
@@ -13020,7 +14786,7 @@ riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="
     };
 });
 
-riot.tag2("kor-relation-merger", '{t(\'messages.relation_merger_prompt\')} <ul if="{ids(true).length > 0}"> <li each="{relation, id in relations}"> <a href="#" onclick="{setAsTarget}">{relation.name} / {relation.reverse_name}</a> ({relation.id}) <i if="{relation.id == target}" class="fa fa-star"></i> <a title="{t(\'verbs.remove\')}" href="#" onclick="{removeRelation}"><i class="fa fa-times"></i></a> </li> </ul> <div class="text-right" if="{valid()}"> <button onclick="{check}">{t(\'verbs.check\')}</button> <button onclick="{merge}">{t(\'verbs.merge\')}</button> </div>', "", "", function(opts) {
+riot.tag2("kor-relation-merger", '{t(\'messages.relation_merger_prompt\')} <ul if="{ids(true).length > 0}"> <li each="{relation, id in relations}"> <a href="#" onclick="{setAsTarget}">{relation.name} / {relation.reverse_name}</a> ({relation.id}) <i if="{relation.id == target}" class="fa fa-star"></i> <a title="{t(\'verbs.remove\')}" href="#" onclick="{removeRelation}"><i class="fa fa-times"></i></a> </li> </ul> <div class="kor-text-right" if="{valid()}"> <button onclick="{check}">{t(\'verbs.check\')}</button> <button onclick="{merge}">{t(\'verbs.merge\')}</button> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -13099,7 +14865,7 @@ riot.tag2("kor-relation-merger", '{t(\'messages.relation_merger_prompt\')} <ul i
     };
 });
 
-riot.tag2("kor-relation-selector", '<kor-input if="{relationNames && relationNames.length > 0}" name="relation_name" label="{tcap(\'activerecord.models.relation\')}" type="select" placeholder="{t(\'nothing_selected\')}" options="{relationNames}" riot-value="{opts.riotValue}" errors="{opts.errors}" ref="input" onchange="{onchange}"></kor-input> <span if="{relationNames && relationNames.length == 0}" class="error">{t(\'messages.no_relations_provided\')}</span>', "", "", function(opts) {
+riot.tag2("kor-relation-selector", '<kor-input if="{relationNames && relationNames.length > 0}" name="relation_name" label="{tcap(\'activerecord.models.relation\')}" type="select" placeholder="{t(\'nothing_selected\')}" options="{relationNames}" riot-value="{opts.riotValue}" errors="{opts.errors}" ref="input" onchange="{onchange}"></kor-input> <em if="{relationNames && relationNames.length == 0}" class="error">{t(\'messages.no_relations_provided\')}</em>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -13117,7 +14883,8 @@ riot.tag2("kor-relation-selector", '<kor-input if="{relationNames && relationNam
         }
     };
     tag.value = function() {
-        return tag.refs.input.value();
+        var i = tag.refs.input;
+        return i ? i.value() : null;
     };
     var fetch = function() {
         Zepto.ajax({
@@ -13134,7 +14901,7 @@ riot.tag2("kor-relation-selector", '<kor-input if="{relationNames && relationNam
     };
 });
 
-riot.tag2("kor-relationship", '<div class="part"> <virtual if="{!editorActive}"> <div class="kor-layout-commands"> <virtual if="{allowedToEdit()}"> <kor-clipboard-control entity="{to()}" if="{to().medium_id}"></kor-clipboard-control> <a onclick="{edit}" title="{t(\'objects.edit\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="pen"></i></a> <a onclick="{delete}" title="{t(\'objects.delete\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="x"></i></a> </virtual> </div> <kor-entity no-clipboard="{true}" entity="{relationship.to}"></kor-entity> <a if="{relationship.media_relations > 0}" onclick="{toggle}" class="toggle"> <i show="{!expanded}" class="triangle_up"></i> <i show="{expanded}" class="triangle_down"></i> </a> <virtual if="{relationship.properties.length > 0}"> <hr> <div each="{property in relationship.properties}">{property}</div> </virtual> <virtual if="{relationship.datings.length > 0}"> <hr> <div each="{dating in relationship.datings}"> {dating.label}: <strong>{dating.dating_string}</strong> </div> </virtual> <div class="clearfix"></div> <virtual if="{expanded && data}"> <kor-pagination page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="clearfix"></div> </virtual> </virtual> </div> <table class="media-relations" if="{expanded && data && !editorActive}"> <tbody> <tr each="{row in wApp.utils.inGroupsOf(3, data.records)}"> <td each="{relationship in row}"> <a href="#/entities/{relationship.to.id}"> <img riot-src="{relationship.to.medium.url.thumbnail}"> </a> </td> </tr> </tbody> </table>', "", "", function(opts) {
+riot.tag2("kor-relationship", '<div class="part"> <virtual if="{!editorActive}"> <div class="kor-layout-commands"> <virtual if="{allowedToEdit()}"> <kor-clipboard-control entity="{to()}" if="{to().medium_id}"></kor-clipboard-control> <a href="#" onclick="{edit}" title="{t(\'objects.edit\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-pencil"></i></a> <a href="#" onclick="{delete}" title="{t(\'objects.delete\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-trash"></i></a> </virtual> </div> <kor-entity no-clipboard="{true}" entity="{relationship.to}"></kor-entity> <a if="{relationship.media_relations > 0}" title="{expanded ? t(\'verbs.collapse\') : t(\'verbs.expand\')}" onclick="{toggle}" class="toggle" href="#"> <i show="{!expanded}" class="fa fa-chevron-up"></i> <i show="{expanded}" class="fa fa-chevron-down"></i> </a> <virtual if="{relationship.properties.length > 0}"> <hr> <div each="{property in relationship.properties}">{property}</div> </virtual> <virtual if="{relationship.datings.length > 0}"> <hr> <div each="{dating in relationship.datings}"> {dating.label}: <strong>{dating.dating_string}</strong> </div> </virtual> <div class="clearfix"></div> <virtual if="{expanded && data}"> <kor-pagination page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="clearfix"></div> </virtual> </virtual> </div> <table class="media-relations" if="{expanded && data && !editorActive}"> <tbody> <tr each="{row in wApp.utils.inGroupsOf(3, data.records, null)}"> <td each="{relationship in row}"> <virtual if="{relationship}"> <div class="kor-text-right"> <kor-clipboard-control entity="{relationship.to}"></kor-clipboard-control> </div> <a href="#/entities/{relationship.to.id}"> <img class="medium" riot-src="{relationship.to.medium.url.thumbnail}"> </a> </virtual> </td> </tr> </tbody> </table>', "", "", function(opts) {
     var fetchPage, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -13169,7 +14936,8 @@ riot.tag2("kor-relationship", '<div class="part"> <virtual if="{!editorActive}">
             directedRelationship: tag.relationship
         });
     };
-    tag["delete"] = function() {
+    tag["delete"] = function(event) {
+        event.preventDefault();
         if (confirm(tag.t("confirm.sure"))) {
             return Zepto.ajax({
                 type: "DELETE",
@@ -13186,12 +14954,14 @@ riot.tag2("kor-relationship", '<div class="part"> <virtual if="{!editorActive}">
     };
     fetchPage = function() {
         return Zepto.ajax({
-            url: "/entities/" + tag.to().id + "/relationships",
+            url: "/relationships",
             data: {
                 page: tag.opts.query.page,
                 per_page: 9,
                 relation_name: tag.opts.name,
-                to_kind_id: tag.info().medium_kind_id
+                to_kind_id: tag.info().medium_kind_id,
+                from_entity_id: tag.to().id,
+                include: "to,properties,datings"
             },
             success: function(data) {
                 tag.data = data;
@@ -13201,10 +14971,11 @@ riot.tag2("kor-relationship", '<div class="part"> <virtual if="{!editorActive}">
     };
 });
 
-riot.tag2("kor-relationship-editor", '<div class="kor-content-box" if="{relationship}"> <h1 if="{relationship.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.relationship\'}})} </h1> <h1 if="{!relationship.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.relationship\'}})} </h1> <form onsubmit="{save}" onreset="{cancel}" if="{relationship}"> <kor-relation-selector source-kind-id="{sourceKindId}" target-kind-id="{targetKindId}" riot-value="{relationship.relation_name}" errors="{errors.relation_id}" ref="relationName" onchange="{relationChanged}"></kor-relation-selector> <hr> <kor-entity-selector relation-name="{relationship.relation_name}" riot-value="{relationship.to_id}" errors="{errors.to_id}" ref="targetId" onchange="{targetChanged}"></kor-entity-selector> <hr> <kor-properties-editor properties="{relationship.properties}" ref="properties"></kor-properties-editor> <hr> <kor-datings-editor riot-value="{relationship.datings}" ref="datings" errors="{errors.datings}" for="relationship"></kor-datings-editor> <hr> <kor-input type="submit" riot-value="{tcap(\'verbs.save\')}"></kor-input> <kor-input type="reset" riot-value="{tcap(\'cancel\')}"></kor-input> </form> </div>', "", "", function(opts) {
+riot.tag2("kor-relationship-editor", '<div class="kor-content-box" if="{relationship}"> <h1 if="{relationship.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.relationship\'}})} </h1> <h1 if="{!relationship.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.relationship\'}})} </h1> <form onsubmit="{save}" onreset="{cancel}" if="{relationship}"> <kor-input name="lock_version" riot-value="{relationship.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-relation-selector source-kind-id="{sourceKindId}" target-kind-id="{targetKindId}" riot-value="{relationship.relation_name}" errors="{errors.relation_id}" ref="relationName" onchange="{relationChanged}"></kor-relation-selector> <hr> <kor-entity-selector relation-name="{relationship.relation_name}" riot-value="{relationship.to_id}" errors="{errors.to_id}" ref="targetId" onchange="{targetChanged}"></kor-entity-selector> <hr> <kor-properties-editor properties="{relationship.properties}" ref="properties"></kor-properties-editor> <hr> <kor-datings-editor riot-value="{relationship.datings}" ref="datings" errors="{errors.datings}" for="relationship" default-dating-label="{config().relationship_dating_label}"></kor-datings-editor> <hr> <kor-input type="submit"></kor-input> <kor-input type="reset" label="{tcap(\'cancel\')}"></kor-input> </form> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.editor);
     tag.resource = {
         singular: "relationship",
@@ -13283,10 +15054,54 @@ riot.tag2("kor-relationship-editor", '<div class="kor-content-box" if="{relation
     };
 });
 
-riot.tag2("kor-search-result", '<a href="#/entities/{opts.entity.id}" class="to-entity"> <kor-clipboard-control entity="{opts.entity}"></kor-clipboard-control> <div class="labels"> <div class="name">{opts.entity.display_name}</div> <div class="kind">{opts.entity.kind_name}</div> </div> <div class="media" if="{opts.entity.related.length > 0}"> <kor-entity each="{rel in opts.entity.related}" entity="{rel.to}" no-content-type="{true}"></kor-entity> <div class="clearfix"></div> </div> </a>', "", "", function(opts) {
+riot.tag2("kor-search-result", '<a href="#/entities/{opts.entity.id}" class="to-entity"> <kor-clipboard-control entity="{opts.entity}"></kor-clipboard-control> <div class="labels"> <virtual if="{!opts.entity.medium_id}"> <div class="name">{opts.entity.display_name}</div> <div class="kind">{opts.entity.kind_name}</div> </virtual> <virtual if="{opts.entity.medium_id}"> <img riot-src="{opts.entity.medium.url.icon}"> </virtual> </div> <div class="media" if="{opts.entity.related.length > 0}"> <kor-entity each="{rel in opts.entity.related}" entity="{rel.to}" no-content-type="{true}"></kor-entity> <div class="clearfix"></div> </div> </a>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+});
+
+riot.tag2("kor-sort-by", '<a href="#" onclick="{click}"><yield></yield>{directionIndicator()}</a>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.click = function(event) {
+        event.preventDefault();
+        var newQuery = {};
+        if (currentPage()) {
+            newQuery["page"] = 1;
+        }
+        if (currentSort() != tag.opts.key) {
+            newQuery["sort"] = tag.opts.key;
+            newQuery["direction"] = "asc";
+        } else {
+            if (currentDirection() == "asc") {
+                newQuery["direction"] = "desc";
+            } else {
+                newQuery["direction"] = "asc";
+            }
+        }
+        wApp.routing.query(newQuery);
+    };
+    tag.directionIndicator = function() {
+        if (currentSort() == tag.opts.key) {
+            if (currentDirection() == "asc") {
+                return " ▴";
+            } else {
+                return " ▾";
+            }
+        } else {
+            return "";
+        }
+    };
+    var currentSort = function() {
+        return wApp.routing.query()["sort"];
+    };
+    var currentDirection = function() {
+        return wApp.routing.query()["direction"];
+    };
+    var currentPage = function() {
+        return wApp.routing.query()["page"];
+    };
 });
 
 riot.tag2("kor-sa-entity", '<div class="auth" if="{!authorized}"> <strong>Info</strong> <p> It seems you are not allowed to see this content. Please <a href="{login_url()}">login</a> to the kor installation first. </p> </div> <a href="{url()}" if="{authorized}" target="_blank"> <img if="{data.medium}" riot-src="{image_url()}"> <div if="{!data.medium}"> <h3>{data.display_name}</h3> <em if="{include(\'kind\')}"> {data.kind_name} <span show="{data.subtype}">({data.subtype})</span> </em> </div> </a>', "", "class=\"{'kor-style': opts.korStyle, 'kor': opts.korStyle}\"", function(opts) {
@@ -13354,121 +15169,143 @@ riot.tag2("kor-sa-entity", '<div class="auth" if="{!authorized}"> <strong>Info</
     };
 });
 
-riot.tag2("kor-submit", '<input type="submit" riot-value="{label()}">', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.label = function() {
-        var base;
-        (base = tag.opts).labelKey || (base.labelKey = "verbs.save");
-        return tag.t(tag.opts.labelKey, {
-            capitalize: true
-        });
-    };
-});
-
-riot.tag2("kor-synonyms-editor", '<kor-input label="{opts.label}" type="textarea" riot-value="{valueFromParent()}"></kor-input>', "", "", function(opts) {
-    var tag;
-    tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.valueFromParent = function() {
-        if (opts.riotValue) {
-            return opts.riotValue.join("\n");
-        } else {
-            return "";
-        }
-    };
-    tag.name = function() {
-        return tag.opts.name;
-    };
-    tag.value = function() {
-        var i, len, ref, results, s, text;
-        text = tag.tags["kor-input"].value();
-        if (text.match(/^\s*$/)) {
-            return [];
-        }
-        ref = text.split(/\n/);
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-            s = ref[i];
-            if (s) {
-                results.push(s);
-            }
-        }
-        return results;
-    };
-});
-
-riot.tag2("kor-user-group-selector", '<kor-input label="{tcap(\'activerecord.models.user_group\')}" name="{opts.name}" type="text" ref="input" riot-value="{opts.riotValue}"></kor-input>', "", "", function(opts) {
+riot.tag2("kor-synonyms-editor", '<kor-input label="{opts.label}" type="textarea" ref="field"></kor-input>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
-    var ac = null;
+    tag.name = function() {
+        return tag.opts.name;
+    };
+    tag.set = function(value) {
+        if (value) {
+            tag.refs["field"].set(value.join("\n"));
+        }
+    };
+    tag.value = function() {
+        var text = tag.tags["kor-input"].value();
+        if (text.match(/^\s*$/)) {
+            return [];
+        }
+        var lines = text.split("\n");
+        return lines.filter(function(e) {
+            return !!e;
+        });
+    };
+});
+
+riot.tag2("kor-user-selector", '<kor-input label="{label()}" name="{opts.name}" placeholder="{t(\'prompts.autocomplete\')}" ref="input"></kor-input>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
     tag.on("mount", function() {
-        ac = new autoComplete({
-            selector: Zepto(tag.root).find("input")[0],
-            source: function(term, response) {
-                Zepto.ajax({
-                    url: "/user_groups",
-                    data: {
-                        terms: term
-                    },
-                    success: function(data) {
-                        var strings = [];
-                        for (var i = 0; i < data.records.length; i++) strings.push(data.records[i].name);
-                        response(strings);
-                    }
-                });
+        input().on("keydown", function(event) {
+            var newValue = tag.refs.input.value();
+            if (newValue != tag.old_field_value) {
+                tag.old_field_value = newValue;
+                tag.user_id = null;
+                tag.update();
             }
         });
     });
+    tag.on("update", function() {});
+    tag.on("updated", function() {
+        input().tinyAutocomplete({
+            method: "get",
+            url: "/users",
+            queryProperty: "terms",
+            grouped: false,
+            itemTemplate: '<li class="autocomplete-item">{{full_name}}</li>',
+            onSelect: function(el, val) {
+                tag.user_id = val.id;
+                tag.refs.input.set(val.display_name);
+                tag.old_field_value = val.display_name;
+                Zepto(tag.root).trigger("change");
+            }
+        });
+        tag.autocomplete = input().tinyAutocomplete();
+    });
+    tag.label = function() {
+        if (tag.user_id) {
+            return tag.opts.label + " ✔";
+        } else {
+            return tag.opts.label;
+        }
+    };
+    tag.name = function() {
+        return tag.refs.input.name();
+    };
     tag.value = function() {
-        return tag.refs["input"].value();
+        return tag.user_id;
+    };
+    tag.set = function(user_id) {
+        tag.user_id = user_id;
+        fetch();
+    };
+    var input = function() {
+        return Zepto(tag.refs.input.root).find("input");
+    };
+    var fetch = function() {
+        Zepto.ajax({
+            url: "/users/" + tag.user_id,
+            success: function(data) {
+                tag.refs.input.set(data.display_name);
+                tag.old_field_value = data.display_name;
+            },
+            error: function(xhr) {
+                tag.refs.input.set("");
+                xhr.noMessaging = true;
+            }
+        });
     };
 });
 
 riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div class="w-content"></div> </div> <w-modal ref="modal"></w-modal> <w-messaging></w-messaging>', "", "", function(opts) {
-    var redirectTo, tag;
+    var accessDenied, goBack, pageTitleHandler, queryUpdate, redirectTo, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.auth);
+    window.kor = tag;
     tag.on("mount", function() {
         wApp.bus.on("routing:path", tag.routeHandler);
         wApp.bus.on("routing:query", tag.queryHandler);
+        wApp.bus.on("page-title", pageTitleHandler);
+        wApp.bus.on("access-denied", accessDenied);
+        wApp.bus.on("go-back", goBack);
+        wApp.bus.on("query-update", queryUpdate);
         if (tag.opts.routing) {
             return wApp.routing.setup();
         }
     });
     tag.on("unmount", function() {
+        wApp.bus.off("page-title", pageTitleHandler);
         wApp.bus.off("routing:query", tag.queryHandler);
         wApp.bus.off("routing:path", tag.routeHandler);
+        wApp.bus.off("access-denied", accessDenied);
+        wApp.bus.off("go-back", goBack);
+        wApp.bus.off("query-update", queryUpdate);
         if (tag.opts.routing) {
             return wApp.routing.tearDown();
         }
     });
+    pageTitleHandler = function(newTitle) {
+        var nv;
+        nv = newTitle ? newTitle : "ConedaKOR";
+        return Zepto("head title").html(nv);
+    };
+    accessDenied = function() {
+        return tag.mountTag("kor-access-denied");
+    };
+    goBack = function() {
+        return wApp.routing.back();
+    };
+    queryUpdate = function(newQuery) {
+        return wApp.routing.query(newQuery);
+    };
     tag.routeHandler = function(parts) {
         var m, opts, path, tagName;
         tagName = "kor-loading";
         opts = {
-            query: parts["hash_query"],
-            handlers: {
-                accessDenied: function() {
-                    return tag.mountTag("kor-access-denied");
-                },
-                queryUpdate: function(newQuery) {
-                    return wApp.routing.query(newQuery);
-                },
-                doneHandler: function() {
-                    return wApp.routing.back();
-                },
-                pageTitleUpdate: function(newTitle) {
-                    var nv;
-                    nv = newTitle ? "KOR: " + newTitle : "ConedaKOR";
-                    return Zepto("title").html(nv);
-                }
-            }
+            query: parts["hash_query"]
         };
         path = parts["hash_path"];
         tagName = function() {
@@ -13531,18 +15368,51 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                         } else if (m = path.match(/^\/entities\/([0-9]+)\/edit$/)) {
                             opts["id"] = parseInt(m[1]);
                             return "kor-entity-editor";
+                        } else if (m = path.match(/^\/credentials\/([0-9]+)\/edit$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-credential-editor";
                         } else if (m = path.match(/^\/collections\/([0-9]+)\/edit$/)) {
                             opts["id"] = parseInt(m[1]);
                             return "kor-collection-editor";
+                        } else if (m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/new$/)) {
+                            opts["parentId"] = parseInt(m[1]);
+                            return "kor-admin-group-category-editor";
+                        } else if (m = path.match(/^\/groups\/categories\/([0-9]+)\/edit$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            return "kor-admin-group-category-editor";
+                        } else if (m = path.match(/^\/groups\/categories(?:\/([0-9]+))?$/)) {
+                            if (m[1]) {
+                                opts["parentId"] = parseInt(m[1]);
+                            }
+                            return "kor-admin-group-categories";
+                        } else if (m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/admin\/([0-9]+)\/edit$/)) {
+                            opts["categoryId"] = parseInt(m[1]);
+                            opts["id"] = parseInt(m[2]);
+                            return "kor-admin-group-editor";
+                        } else if (m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/admin\/new$/)) {
+                            opts["categoryId"] = parseInt(m[1]);
+                            return "kor-admin-group-editor";
+                        } else if (m = path.match(/^\/groups\/admin\/([0-9]+)$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            opts["type"] = "authority";
+                            return "kor-entity-group";
                         } else if (m = path.match(/^\/groups\/user\/([0-9]+)\/edit$/)) {
                             opts["id"] = parseInt(m[1]);
                             return "kor-user-group-editor";
+                        } else if (m = path.match(/^\/groups\/user\/([0-9]+)$/)) {
+                            opts["id"] = parseInt(m[1]);
+                            opts["type"] = "user";
+                            return "kor-entity-group";
                         } else if (m = path.match(/^\/relations\/([0-9]+)\/edit$/)) {
                             opts["id"] = parseInt(m[1]);
                             return "kor-relation-editor";
                         } else if (m = path.match(/^\/media\/([0-9]+)$/)) {
                             opts["id"] = parseInt(m[1]);
                             return "kor-medium-page";
+                        } else if (m = path.match(/^\/pub\/([0-9]+)\/([0-9a-f]+)$/)) {
+                            opts["userId"] = parseInt(m[1]);
+                            opts["uuid"] = m[2];
+                            return "kor-publishment";
                         } else {
                             switch (path) {
                               case "/clipboard":
@@ -13578,6 +15448,12 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                               case "/kinds/new":
                                 return "kor-kind-editor";
 
+                              case "/credentials":
+                                return "kor-credentials";
+
+                              case "/credentials/new":
+                                return "kor-credential-editor";
+
                               case "/collections":
                                 return "kor-collections";
 
@@ -13593,6 +15469,10 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
                               case "/groups/user":
                                 return "kor-user-groups";
 
+                              case "/groups/shared":
+                                opts["type"] = "shared";
+                                return "kor-user-groups";
+
                               case "/relations/new":
                                 return "kor-relation-editor";
 
@@ -13604,6 +15484,12 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
 
                               case "/password-recovery":
                                 return "kor-password-recovery";
+
+                              case "/groups/published":
+                                return "kor-publishments";
+
+                              case "/groups/published/new":
+                                return "kor-publishment-editor";
 
                               default:
                                 return "kor-search";
@@ -13635,19 +15521,27 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
         if (tagName) {
             element = Zepto(tag.root).find(".w-content");
             mountIt = function() {
+                wApp.bus.trigger("page-title");
                 tag.mountedTag = riot.mount(element[0], tagName, opts)[0];
-                element.animate({
-                    opacity: 1
-                }, 200);
+                if (wApp.info.data.env !== "test") {
+                    element.animate({
+                        opacity: 1
+                    }, 200);
+                }
                 return wApp.utils.scrollToTop();
             };
             if (tag.mountedTag) {
-                return element.animate({
-                    opacity: 0
-                }, 200, function() {
+                if (wApp.info.data.env !== "test") {
+                    return element.animate({
+                        opacity: 0
+                    }, 200, function() {
+                        tag.mountedTag.unmount(true);
+                        return mountIt();
+                    });
+                } else {
                     tag.mountedTag.unmount(true);
                     return mountIt();
-                });
+                }
             } else {
                 return mountIt();
             }
@@ -13688,66 +15582,46 @@ riot.tag2("w-app-loader", '<div class="app" ref="target"> <div class="kor-loadin
         }
     };
     var mountApp = function() {
+        updateLayout();
         var opts = {
             routing: true
         };
         tag.mountedApp = riot.mount(tag.refs.target, "w-app", opts)[0];
-        console.log("application (re)loaded");
+        console.log("ConedaKOR frontend loaded");
     };
-    wApp.bus.on("reload-app", reloadApp);
+    var updateLayout = function() {
+        var meta = Zepto("meta[http-equiv=content-language]");
+        var locale = wApp.session.current.locale;
+        meta.attr("content", locale);
+        var m = Zepto("<meta>").attr("name", "description").attr("content", wApp.i18n.t(locale, "meta.description"));
+        meta.after(m);
+        m = Zepto("<meta>").attr("name", "author").attr("content", wApp.i18n.t(locale, "meta.author"));
+        meta.after(m);
+        m = Zepto("<meta>").attr("name", "description").attr("keywords", wApp.i18n.t(locale, "meta.keywords"));
+        meta.after(m);
+        var url = wApp.info.data.custom_css;
+        if (url) {
+            var link = Zepto('<link rel="stylesheet" href="' + url + '">');
+            Zepto("head").append(link);
+        }
+    };
     tag.on("mount", function() {
+        wApp.bus.on("reload-app", reloadApp);
         wApp.bus.trigger("reload-app");
+    });
+    tag.on("unmount", function() {
+        wApp.bus.off("reload-app", reloadApp);
     });
 });
 
-riot.tag2("w-bar-chart", '<svg riot-width="{width()}" riot-height="{height()}"> <rect class="bg" riot-width="{width()}" riot-height="{height()}"></rect> <g each="{value, i in sortedItems()}"> <rect class="bar" x="0" riot-y="{yFor(i)}" height="30" riot-width="{widthPercentFor(value)}%"></rect> <text x="5" riot-y="{yForText(i)}" class="label"> {value.label} ({value.value}) </text> </g> </svg>', "", "", function(opts) {
-    var base, max, tag;
-    tag = this;
-    (base = tag.opts).items || (base.items = []);
-    max = 0;
-    tag.max = function() {
-        var v;
-        return max || (max = opts.items.length > 0 ? Math.max.apply(Math, function() {
-            var j, len, ref, results;
-            ref = opts.items;
-            results = [];
-            for (j = 0, len = ref.length; j < len; j++) {
-                v = ref[j];
-                results.push(v.value);
-            }
-            return results;
-        }()) : 0);
-    };
-    tag.width = function() {
-        return tag.opts.width || "100%";
-    };
-    tag.height = function() {
-        return Math.max(tag.opts.items.length * 35 - 5, 0);
-    };
-    tag.widthPercentFor = function(value) {
-        return value.value / tag.max() * 100;
-    };
-    tag.sortedItems = function() {
-        return tag.opts.items.sort(function(a, b) {
-            return b.value - a.value;
-        });
-    };
-    tag.yFor = function(i) {
-        return i * (30 + 5);
-    };
-    tag.yForText = function(i) {
-        return 20 + i * (30 + 5);
-    };
-});
-
-riot.tag2("kor-header", '<a href="#/" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <kor-loading></kor-loading> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <span if="{currentUser()}"> <img src="images/vertical_dots.gif"> {t(\'logged_in_as\')}: <strong>{currentUser().display_name}</strong> <span if="{!isGuest()}"> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </span> </span> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-header", '<a href="#/" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <kor-loading></kor-loading> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <span if="{currentUser()}"> <img src="images/vertical_dots.gif"> {t(\'logged_in_as\')}: <strong>{currentUser().display_name}</strong> <a href="#/profile" title="{tcap(\'edit_self\')}"><i class="fa fa-wrench"></i></a> <span if="{!isGuest()}"> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </span> </span> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.info);
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 });
 
-riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/profile">{tcap(\'edit_self\')}</a> </li> <li show="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#/new-media">{tcap(\'pages.new_media\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.search\')}</a> </li> </ul> <ul show="{currentUser()}"> <li> <a href="#" onclick="{toggleGroups}"> {tcap(\'nouns.group\', {count: \'other\'})} </a> <ul show="{showGroups}" class="submenu"> <li> <a href="#/groups/authority"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> <li show="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.shared\')} </a> </li> </ul> </li> </ul> <ul show="{isLoggedIn() && allowedTo(\'create\')}"> <li> <kor-input if="{kinds}" type="select" onchange="{newEntity}" options="{kinds.records}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.entity.one\'}})}" ref="kind_id"></kor-input> </li> <li show="{isLoggedIn()}"> <a href="#/upload">{tcap(\'nouns.mass_upload\')}</a> </li> </ul> <ul show="{isLoggedIn()}"> <li show="{allowedTo(\'delete\')}"> <a href="#/entities/invalid">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/entities/recent">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li show="{allowedTo(\'edit\')}"> <a href="#/entities/isolated">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> <ul show="{hasAnyRole()}"> <li> <a href="#" onclick="{toggleConfig}"> {tcap(\'nouns.config\', {count: \'other\'})} </a> <ul show="{showConfig}" class="submenu"> <li show="{hasRole(\'admin\')}"> <a href="#/settings"> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </a> </li> <li show="{hasRole(\'relation_admin\')}"> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li show="{hasRole(\'kind_admin\')}"> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li show="{hasRole(\'admin\')}"> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> </li> </ul> <ul> <li> <a href="#/statistics">{tcap(\'nouns.statistics\')}</a> </li> <li> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li show="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer_mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
+riot.tag2("kor-menu", '<ul> <li if="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li if="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> </ul> <ul if="{currentUser()}"> <li> <a href="#/new-media">{tcap(\'pages.new_media\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.search\')}</a> </li> </ul> <div class="header">{tcap(\'nouns.group\', {count: \'other\'})}</div> <ul> <li> <a href="#/groups/categories"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\', {count: \'other\'})} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.published\', {count: \'other\'})} </a> </li> </ul> <virtual if="{isLoggedIn() && (allowedTo(\'create\'))}"> <div class="header">{tcap(\'verbs.create\')}</div> <ul> <li> <kor-input if="{kinds && kinds.records.length > 0}" name="new_entity_type" type="select" onchange="{newEntity}" options="{kinds.records}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.entity.one\'}})}" ref="kind_id"></kor-input> </li> <li if="{isLoggedIn()}"> <a href="#/upload">{tcap(\'verbs.upload\')}</a> </li> <li> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> </ul> </virtual> <virtual if="{isLoggedIn() && (allowedTo(\'delete\') || allowedTo(\'edit\'))}"> <div class="header">{tcap(\'verbs.edit\')}</div> <ul> <li if="{allowedTo(\'delete\')}"> <a href="#/entities/invalid">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/recent">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/isolated">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> </virtual> <div if="{isAdmin()}" class="header">{tcap(\'nouns.administration\')}</div> <ul if="{isAdmin()}"> <li> <a href="#/settings"> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </a> </li> <li> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> <ul> <li if="{hasHelp()}"> <a href="#/help" onclick="{showHelp}">{tcap(\'nouns.help\')}</a> </li> <li> <a href="#/statistics">{tcap(\'nouns.statistics\')}</a> </li> <li> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li if="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer_mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
     var fetchKinds, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -13761,15 +15635,12 @@ riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(
     tag.on("umount", function() {
         return wApp.bus.off("reload-kinds", fetchKinds);
     });
-    tag.toggleGroups = function(event) {
+    tag.showHelp = function(event) {
         event.preventDefault();
-        tag.showGroups = !tag.showGroups;
-        return tag.update();
+        return wApp.config.showHelp("general");
     };
-    tag.toggleConfig = function(event) {
-        event.preventDefault();
-        tag.showConfig = !tag.showConfig;
-        return tag.update();
+    tag.hasHelp = function() {
+        return wApp.config.hasHelp("general");
     };
     tag.newEntity = function(event) {
         var kind_id;
@@ -13781,6 +15652,9 @@ riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(
     fetchKinds = function() {
         return $.ajax({
             url: "/kinds",
+            data: {
+                no_media: true
+            },
             success: function(data) {
                 tag.kinds = data;
                 return tag.update();
@@ -13790,7 +15664,7 @@ riot.tag2("kor-menu", '<ul> <li show="{!isLoggedIn()}"> <a href="#/login">{tcap(
 });
 
 riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'error\': error(message), \'notice\': notice(message)}"> <i show="{notice(message)}" class="fa fa-warning"></i> <i show="{error(message)}" class="fa fa-info-circle"></i> {message.content} </div>', "", "", function(opts) {
-    var ajaxCompleteHandler, self;
+    var ajaxCompleteHandler, duration, self;
     self = this;
     self.on("mount", function() {
         self.messages = [];
@@ -13804,16 +15678,23 @@ riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'er
             type: type,
             content: message
         });
-        window.setTimeout(self.drop, self.opts.duration || 3e3);
+        window.setTimeout(self.drop, duration());
         return self.update();
     });
+    duration = function() {
+        if (wApp.info.data.env === "test") {
+            return 3e3;
+        } else {
+            return 3e3;
+        }
+    };
     ajaxCompleteHandler = function(event, request, options) {
         var contentType, data, e, type;
         contentType = request.getResponseHeader("content-type");
         if (contentType && contentType.match(/^application\/json/) && request.response) {
             try {
                 data = JSON.parse(request.response);
-                if (data.message) {
+                if (data.message && !request.noMessaging) {
                     type = request.status >= 200 && request.status < 300 ? "notice" : "error";
                     return wApp.bus.trigger("message", type, data.message);
                 }

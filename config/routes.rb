@@ -16,12 +16,12 @@ Rails.application.routes.draw do
   get '/resolve(/:kind)/:id', to: 'identifiers#resolve'
   get '/env_auth', to: 'session#env_auth'
 
-  scope '/media', controller: 'media', defaults: { format: 'json' } do
+  scope '/media', controller: 'media', defaults: {format: 'json'} do
     patch 'transform/:id/:transformation/:operation', action: 'transform'
     get(
       ':disposition/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension',
       action: 'show',
-      constraints: { disposition: /images|download/ }
+      constraints: {disposition: /images|download/}
     )
   end
 
@@ -150,7 +150,7 @@ Rails.application.routes.draw do
 
   scope 'oai-pmh', format: 'xml', as: 'oai_pmh', via: [:get, :post] do
     ['entities', 'relationships', 'kinds', 'relations'].each do |res|
-      scope controller: "oai_pmh/#{res}", defaults: { format: 'xml' } do
+      scope controller: "oai_pmh/#{res}", defaults: {format: 'xml'} do
         match res, to: "oai_pmh/#{res}#identify", constraints: OaiPmhVerbConstraint.new('Identify')
         match res, to: "oai_pmh/#{res}#list_sets", constraints: OaiPmhVerbConstraint.new('ListSets')
         match res, to: "oai_pmh/#{res}#list_metadata_formats", constraints: OaiPmhVerbConstraint.new('ListMetadataFormats')

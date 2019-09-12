@@ -12,7 +12,7 @@ RSpec.describe Iiif::MediaController, type: :controller do
   end
 
   it 'should not GET show' do
-    get 'show', params: { id: picture_a.id }
+    get 'show', params: {id: picture_a.id}
     expect(response).to be_forbidden
   end
 
@@ -22,7 +22,7 @@ RSpec.describe Iiif::MediaController, type: :controller do
     end
 
     it 'should GET show' do
-      get 'show', params: { id: picture_a.id }
+      get 'show', params: {id: picture_a.id}
       expect(response).to be_success
       expect(json['label']).to eq('entity 6')
     end

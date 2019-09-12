@@ -1,7 +1,7 @@
 class EntityGroup < ApplicationRecord
   self.abstract_class = true
 
-  scope :named_like, lambda { |pattern| where("name LIKE ?", "%#{pattern}%") }
+  scope :named_like, lambda{ |pattern| where("name LIKE ?", "%#{pattern}%") }
 
   validates :name,
     :presence => true,
@@ -18,7 +18,7 @@ class EntityGroup < ApplicationRecord
   def add_entities(new_entities)
     new_entities = [new_entities] unless new_entities.is_a? Array
     ids = entity_ids
-    new_entities.reject { |e| self.entity_ids.include? e.id }.each do |e|
+    new_entities.reject{ |e| self.entity_ids.include? e.id }.each do |e|
       entities << e
     end
   end

@@ -4,7 +4,7 @@ class UnifyDataset < ActiveRecord::Migration
       if entity.attachment['dataset'].present?
         keys = entity.dataset.keys & (entity.attachment['dataset'] || {}).keys
 
-        if keys.empty? || keys.all? { |k| entity.dataset[k] == entity.attachment['dataset'][k] }
+        if keys.empty? || keys.all?{ |k| entity.dataset[k] == entity.attachment['dataset'][k] }
           new_value = entity.attachment
           new_value['fields'] ||= {}
           new_value['fields'].merge! new_value['dataset'] || {}

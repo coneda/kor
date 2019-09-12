@@ -30,11 +30,11 @@ class Entity < ApplicationRecord
   accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
 
   validates :name,
-    :presence => { :if => :needs_name? },
-    :uniqueness => { :scope => [:kind_id, :distinct_name], :allow_blank => true },
+    :presence => {:if => :needs_name?},
+    :uniqueness => {:scope => [:kind_id, :distinct_name], :allow_blank => true},
     :white_space => true
   validates :distinct_name,
-    :uniqueness => { :scope => [:kind_id, :name], :allow_blank => true },
+    :uniqueness => {:scope => [:kind_id, :name], :allow_blank => true},
     :white_space => true
   validates :kind, :uuid, :collection_id, presence: true
   validates :no_name_statement, inclusion: {
@@ -105,7 +105,7 @@ class Entity < ApplicationRecord
   end
 
   def field_hashes
-    fields.map { |field| field.serializable_hash }
+    fields.map{ |field| field.serializable_hash }
   end
 
   def synonyms
@@ -220,7 +220,7 @@ class Entity < ApplicationRecord
 
   def self.allowed(user, policy = :view)
     collections = Kor::Auth.authorized_collections(user, policy)
-    where("entities.collection_id IN (?)", collections.map { |c| c.id })
+    where("entities.collection_id IN (?)", collections.map{ |c| c.id })
   end
 
   # re-enable this for display
@@ -288,7 +288,7 @@ class Entity < ApplicationRecord
     @media ||= outgoing_relationships.
       by_to_kind(Kind.medium_kind_id).
       allowed(user).
-      map { |dr| dr.to }
+      map{ |dr| dr.to }
   end
 
   # TODO: this used to grab the content type for media, removed because its
@@ -344,7 +344,7 @@ class Entity < ApplicationRecord
     !!medium_id || !!medium || kind_id == Kind.medium_kind_id
   end
 
-  scope :by_ordered_id_array, lambda { |*ids|
+  scope :by_ordered_id_array, lambda{ |*ids|
     if ids.present? && ids.flatten.compact.present?
       ids = ids.flatten.compact
       where(id: ids).order("FIELD(id,#{ids.join(',')})")
@@ -352,39 +352,39 @@ class Entity < ApplicationRecord
       none
     end
   }
-  scope :by_relation_name, lambda { |relation_name|
+  scope :by_relation_name, lambda{ |relation_name|
     return all if relation_name.blank?
 
     where(kind_id: Relation.to_entity_kind_ids(relation_name))
   }
-  scope :by_id, lambda { |id| id.present? ? where(id: id) : all }
-  scope :by_uuid, lambda { |uuid| uuid.present? ? where(uuid: uuid) : all }
-  scope :created_after, lambda { |time| time.present? ? where("created_at > ?", time) : all }
-  scope :created_before, lambda { |time| time.present? ? where("created_at < ?", time) : all }
-  scope :updated_after, lambda { |time| time.present? ? where("updated_at > ?", time) : all }
-  scope :updated_before, lambda { |time| time.present? ? where("updated_at < ?", time) : all }
-  scope :only_kinds, lambda { |ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
-  scope :except_kinds, lambda { |ids| ids.present? ? where("entities.kind_id NOT IN (?)", ids) : all }
-  scope :latest, lambda { |*args| where("created_at > ?", (args.first || 2.weeks).ago) }
-  scope :within_collections, lambda { |ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
-  scope :media, lambda { only_kinds(Kind.medium_kind_id) }
-  scope :without_media, lambda { except_kinds(Kind.medium_kind_id) }
-  scope :by_subtype, lambda { |subtype| subtype.present? ? where(subtype: subtype) : all }
-  scope :by_comment, lambda { |comment| comment.present? ? where('comment LIKE ?', "%#{comment}%") : all }
-  scope :created_by, lambda { |id| id.present? ? where(creator_id: id) : all }
-  scope :updated_by, lambda { |id| id.present? ? where(updater_id: id) : all }
-  scope :named_like, lambda { |terms|
+  scope :by_id, lambda{ |id| id.present? ? where(id: id) : all }
+  scope :by_uuid, lambda{ |uuid| uuid.present? ? where(uuid: uuid) : all }
+  scope :created_after, lambda{ |time| time.present? ? where("created_at > ?", time) : all }
+  scope :created_before, lambda{ |time| time.present? ? where("created_at < ?", time) : all }
+  scope :updated_after, lambda{ |time| time.present? ? where("updated_at > ?", time) : all }
+  scope :updated_before, lambda{ |time| time.present? ? where("updated_at < ?", time) : all }
+  scope :only_kinds, lambda{ |ids| ids.present? ? where("entities.kind_id IN (?)", ids) : all }
+  scope :except_kinds, lambda{ |ids| ids.present? ? where("entities.kind_id NOT IN (?)", ids) : all }
+  scope :latest, lambda{ |*args| where("created_at > ?", (args.first || 2.weeks).ago) }
+  scope :within_collections, lambda{ |ids| ids.present? ? where("entities.collection_id IN (?)", ids) : all }
+  scope :media, lambda{ only_kinds(Kind.medium_kind_id) }
+  scope :without_media, lambda{ except_kinds(Kind.medium_kind_id) }
+  scope :by_subtype, lambda{ |subtype| subtype.present? ? where(subtype: subtype) : all }
+  scope :by_comment, lambda{ |comment| comment.present? ? where('comment LIKE ?', "%#{comment}%") : all }
+  scope :created_by, lambda{ |id| id.present? ? where(creator_id: id) : all }
+  scope :updated_by, lambda{ |id| id.present? ? where(updater_id: id) : all }
+  scope :named_like, lambda{ |terms|
     if terms.present?
       terms = terms.split(/\s+/)
-      sql = terms.map { |_t| 'name LIKE ? OR distinct_name LIKE ?' }.join(' OR ')
-      values = terms.map { |t| "%#{t}%" }
+      sql = terms.map{ |_t| 'name LIKE ? OR distinct_name LIKE ?' }.join(' OR ')
+      values = terms.map{ |t| "%#{t}%" }
       values = values + values
       where("(#{sql})", *values)
     else
       all
     end
   }
-  scope :dated_in, lambda { |datings|
+  scope :dated_in, lambda{ |datings|
     datings = [datings] unless datings.is_a?(Array)
 
     results = all
@@ -407,26 +407,26 @@ class Entity < ApplicationRecord
     end
     results
   }
-  scope :load_fully, lambda { joins(:kind, :collection).includes(:medium) }
-  scope :isolated, lambda { |activate|
+  scope :load_fully, lambda{ joins(:kind, :collection).includes(:medium) }
+  scope :isolated, lambda{ |activate|
     return all unless activate.present?
 
     joins("LEFT JOIN directed_relationships rels ON entities.id = rels.from_id").
       where("rels.id IS NULL")
   }
-  scope :within_authority_groups, lambda { |ids|
+  scope :within_authority_groups, lambda{ |ids|
     return all unless ids.present?
 
     joins('LEFT JOIN authority_groups_entities ae ON ae.entity_id = id').
       where('ae.authority_group_id IN (?)', ids)
   }
-  scope :within_user_groups, lambda { |ids|
+  scope :within_user_groups, lambda{ |ids|
     return all unless ids.present?
 
     joins('LEFT JOIN entities_user_groups eu ON eu.entity_id = id').
       where('eu.user_group_id IN (?)', ids)
   }
-  scope :within_system_groups, lambda { |ids|
+  scope :within_system_groups, lambda{ |ids|
     return all unless ids.present?
 
     joins('LEFT JOIN entities_system_groups es ON es.entity_id = id').
@@ -450,31 +450,31 @@ class Entity < ApplicationRecord
     op = {equal: '=', smaller: '<=', larger: '>='}[mode]
 
     includes(:medium).
-    references(:media).
-    where("media.image_file_size #{op} :s OR media.document_file_size #{op} :s", s: size)
+      references(:media).
+      where("media.image_file_size #{op} :s OR media.document_file_size #{op} :s", s: size)
   end
 
   def self.by_file_type(type)
     return all if type.blank?
 
     includes(:medium).
-    references(:media).
-    where('media.image_content_type = :t OR media.document_content_type = :t', t: type)
+      references(:media).
+      where('media.image_content_type = :t OR media.document_content_type = :t', t: type)
   end
 
   def self.by_file_name(name)
     return all if name.blank?
 
     includes(:medium).
-    references(:media).
-    where('media.image_file_name = :n OR media.document_file_name = :n', n: name)
+      references(:media).
+      where('media.image_file_name = :n OR media.document_file_name = :n', n: name)
   end
 
   def self.by_datahash(hash)
     return all if hash.blank?
 
     includes(:medium).
-    references(:media).
-    where('media.datahash = ?', hash)
+      references(:media).
+      where('media.datahash = ?', hash)
   end
 end

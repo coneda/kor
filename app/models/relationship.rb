@@ -90,27 +90,27 @@ class Relationship < ApplicationRecord
     end
   end
 
-  scope :with_ends, lambda {
+  scope :with_ends, lambda{
     joins("LEFT JOIN entities AS froms ON froms.id = relationships.from_id").
       joins("LEFT JOIN entities AS tos ON tos.id = relationships.to_id")
   }
-  scope :allowed, lambda { |user, policy|
-    collection_ids = Kor::Auth.authorized_collections(user, policy).map { |c| c.id }
+  scope :allowed, lambda{ |user, policy|
+    collection_ids = Kor::Auth.authorized_collections(user, policy).map{ |c| c.id }
     with_ends.where(
       "froms.collection_id in (:ids) AND tos.collection_id in (:ids)",
       :ids => collection_ids
     )
   }
-  scope :updated_after, lambda { |time| time.present? ? where("relationships.updated_at >= ?", time) : all }
-  scope :updated_before, lambda { |time| time.present? ? where("relationships.updated_at <= ?", time) : all }
-  scope :inconsistent, lambda {
+  scope :updated_after, lambda{ |time| time.present? ? where("relationships.updated_at >= ?", time) : all }
+  scope :updated_before, lambda{ |time| time.present? ? where("relationships.updated_at <= ?", time) : all }
+  scope :inconsistent, lambda{
     all.
       joins('LEFT JOIN entities froms ON froms.id = relationships.from_id').
       joins('LEFT JOIN entities tos ON tos.id = relationships.to_id').
       joins('LEFT JOIN relations r ON relationships.relation_id = r.id').
       where('froms.kind_id != r.from_kind_id OR tos.kind_id != r.to_kind_id')
   }
-  scope :dated_in, lambda { |dating|
+  scope :dated_in, lambda{ |dating|
     if dating.present?
       if parsed = Dating.parse(dating)
         joins(:datings).

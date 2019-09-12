@@ -68,17 +68,17 @@ class Kor::Dating::Transform < Parslet::Transform
     }
   end
 
-  rule(:date => { :from => simple(:from), :to => simple(:to) }) do
-    { :from => from, :to => to }
+  rule(:date => {:from => simple(:from), :to => simple(:to)}) do
+    {:from => from, :to => to}
   end
 
-  rule(:from => { :from => simple(:first_from), :to => simple(:first_to) }, :to => { :from => simple(:last_from), :to => simple(:last_to) }) do
-    { :from => first_from, :to => last_to }
+  rule(:from => {:from => simple(:first_from), :to => simple(:first_to)}, :to => {:from => simple(:last_from), :to => simple(:last_to)}) do
+    {:from => first_from, :to => last_to}
   end
 
   [:century, :date_interval, :year, :year_interval, :interval, :century_interval, :century_part].each do |key|
-    rule(key => { :from => simple(:from), :to => simple(:to) }) do
-      { :from => from, :to => to }
+    rule(key => {:from => simple(:from), :to => simple(:to)}) do
+      {:from => from, :to => to}
     end
   end
 

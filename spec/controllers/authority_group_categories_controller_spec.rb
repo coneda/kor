@@ -9,7 +9,7 @@ RSpec.describe AuthorityGroupCategoriesController, type: :controller do
   end
 
   it 'should GET show' do
-    get :show, params: { id: archive.id }
+    get :show, params: {id: archive.id}
     expect(response).to be_success
     expect(json['name']).to eq('archive')
     expect(json['ancestors']).to be_nil
@@ -19,13 +19,13 @@ RSpec.describe AuthorityGroupCategoriesController, type: :controller do
     AuthorityGroupCategory.create! name: 'sub archive', parent_id: archive.id
     get :flat
     expect_collection_response
-    names = json['records'].map { |e| e['name'] }
+    names = json['records'].map{ |e| e['name'] }
     expect(names).to include('archive', 'sub archive')
   end
 
   it 'should GET flat (with ancestors)' do
     AuthorityGroupCategory.create! name: 'sub archive', parent_id: archive.id
-    get :flat, params: { include: 'ancestors' }
+    get :flat, params: {include: 'ancestors'}
     expect_collection_response
     expect(json['records'][0]['name']).to eq('archive')
     expect(json['records'][0]['ancestors']).to be_empty
@@ -35,27 +35,27 @@ RSpec.describe AuthorityGroupCategoriesController, type: :controller do
   end
 
   it 'should GET show with additions' do
-    get :show, params: { id: archive.id, include: 'ancestors' }
+    get :show, params: {id: archive.id, include: 'ancestors'}
     expect(json['ancestors']).to be_a(Array)
   end
 
   it 'should not POST create' do
-    post :create, params: { 
-      authority_group_category: { name: 'seminar 2018' }
+    post :create, params: {
+      authority_group_category: {name: 'seminar 2018'}
     }
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
-    patch :update, params: { 
+    patch :update, params: {
       id: archive.id,
-      authority_group_category: { name: 'professor' }
+      authority_group_category: {name: 'professor'}
     }
     expect(response).to be_forbidden
   end
 
   it 'should not DELETE destroy' do
-    delete :destroy, params: { id: archive.id }
+    delete :destroy, params: {id: archive.id}
     expect(response).to be_forbidden
   end
 
@@ -65,7 +65,7 @@ RSpec.describe AuthorityGroupCategoriesController, type: :controller do
     end
 
     it 'should POST create' do
-      post :create, params: { 
+      post :create, params: {
         authority_group_category: {
           name: 'professor',
           parent_id: archive.id
@@ -78,7 +78,7 @@ RSpec.describe AuthorityGroupCategoriesController, type: :controller do
 
     it 'should PATCH update' do
       id = archive.id
-      patch :update, params: { 
+      patch :update, params: {
         id: id,
         authority_group_category: {
           name: 'old archive'
@@ -91,7 +91,7 @@ RSpec.describe AuthorityGroupCategoriesController, type: :controller do
 
     it 'should DELETE destroy' do
       id = archive.id
-      delete :destroy, params: { id: id }
+      delete :destroy, params: {id: id}
       expect_deleted_response
       expect(AuthorityGroupCategory.find_by(id: id)).to be_nil
     end

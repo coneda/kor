@@ -52,7 +52,6 @@ class MediaController < JsonController
     end
   end
 
-
   protected
 
     def param_to_style(param)
@@ -69,11 +68,11 @@ class MediaController < JsonController
       if raw = request.headers['Range']
         type, values = raw.split('=')
         if type == 'bytes'
-          result = values.split('-').map{|s| s.to_i}
+          result = values.split('-').map{ |s| s.to_i }
           return nil unless result[1]
+
           result
         end
       end
     end
-
 end

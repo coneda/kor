@@ -39,12 +39,12 @@ class Kind < ApplicationRecord
     end
   end
 
-  default_scope lambda { order(:name) }
-  scope :without_media, lambda { where('id != ?', Kind.medium_kind_id) }
-  scope :updated_after, lambda { |time| time.present? ? where("updated_at >= ?", time) : all }
-  scope :updated_before, lambda { |time| time.present? ? where("updated_at <= ?", time) : all }
-  scope :allowed, lambda { |_user, _policies| all }
-  scope :active, lambda { where(abstract: [false, nil]) }
+  default_scope lambda{ order(:name) }
+  scope :without_media, lambda{ where('id != ?', Kind.medium_kind_id) }
+  scope :updated_after, lambda{ |time| time.present? ? where("updated_at >= ?", time) : all }
+  scope :updated_before, lambda{ |time| time.present? ? where("updated_at <= ?", time) : all }
+  scope :allowed, lambda{ |_user, _policies| all }
+  scope :active, lambda{ where(abstract: [false, nil]) }
 
   before_validation :generate_uuid
 
@@ -118,15 +118,15 @@ class Kind < ApplicationRecord
   end
 
   def self.find_ids(ids)
-    find_all_by_id(ids).map { |k| k.id }
+    find_all_by_id(ids).map{ |k| k.id }
   end
 
   def self.all_ids
-    all.collect { |k| k.id }
+    all.collect{ |k| k.id }
   end
 
   def self.for_select
-    all.collect { |k| [k.name, k.id] }.sort do |x, y|
+    all.collect{ |k| [k.name, k.id] }.sort do |x, y|
       x.first <=> y.first
     end
   end

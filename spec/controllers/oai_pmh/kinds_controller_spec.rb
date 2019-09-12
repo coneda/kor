@@ -4,26 +4,26 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   include XmlHelper
 
   it "should respond to 'Identify'" do
-    get '/oai-pmh/kinds.xml', params: { verb: 'Identify' }
+    get '/oai-pmh/kinds.xml', params: {verb: 'Identify'}
     expect(response).to be_success
-    expect { Hash.from_xml response.body }.not_to raise_error
+    expect{ Hash.from_xml response.body }.not_to raise_error
 
-    post '/oai-pmh/kinds.xml', params: { verb: 'Identify' }
+    post '/oai-pmh/kinds.xml', params: {verb: 'Identify'}
     expect(response).to be_success
-    expect { Hash.from_xml response.body }.not_to raise_error
+    expect{ Hash.from_xml response.body }.not_to raise_error
 
     doc = parse_xml(response.body)
     expect(doc.xpath("//xmlns:deletedRecord").first.text).to eq('persistent')
   end
 
   it "should respond to 'ListMetadataFormats'" do
-    get '/oai-pmh/kinds.xml', params: { verb: 'ListMetadataFormats' }
+    get '/oai-pmh/kinds.xml', params: {verb: 'ListMetadataFormats'}
     expect(response).to be_success
-    expect { Hash.from_xml response.body }.not_to raise_error
+    expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListIdentifiers'" do
-    get '/oai-pmh/kinds.xml', params: { verb: 'ListIdentifiers' }
+    get '/oai-pmh/kinds.xml', params: {verb: 'ListIdentifiers'}
 
     identifiers = parse_xml(response.body).xpath("//xmlns:identifier")
 
@@ -31,7 +31,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   end
 
   it "should respond to 'ListRecords'" do
-    get '/oai-pmh/kinds.xml', params: { 
+    get '/oai-pmh/kinds.xml', params: {
       verb: 'ListRecords', metadataPrefix: 'kor'
     }
 
@@ -125,10 +125,10 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   end
 
   it "should return 'noRecordsMatch' if the criteria do not yield any records" do
-    Kind.all.each { |r| r.really_destroy! }
+    Kind.all.each{ |r| r.really_destroy! }
     admin = User.admin
 
-    get '/oai-pmh/kinds.xml', params: { verb: 'ListIdentifiers' }
+    get '/oai-pmh/kinds.xml', params: {verb: 'ListIdentifiers'}
     verify_oaipmh_error 'noRecordsMatch'
 
     get '/oai-pmh/kinds.xml', params: {

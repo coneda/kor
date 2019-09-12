@@ -30,7 +30,7 @@ class Kor::Statistics::Exif < Kor::Statistics::Simple
   end
 
   def self.exif_for(medium)
-    result = { :make => nil, :model => nil }
+    result = {:make => nil, :model => nil}
 
     file = medium.medium.image.path :original
     content_type = medium.medium.content_type.split('/').last.downcase
@@ -42,7 +42,7 @@ class Kor::Statistics::Exif < Kor::Statistics::Simple
       nil
     end
 
-    { :make => parser.make, :model => parser.model }
+    {:make => parser.make, :model => parser.model}
   rescue
     result
   end

@@ -21,8 +21,8 @@ RSpec.describe Field do
     works.update fields: [
       Field.new(name: 'viaf_id', show_label: 'stack', is_identifier: true)
     ]
-    mona_lisa.update dataset: { 'viaf_id' => '1234' }
-    last_supper.update dataset: { 'viaf_id' => '5678' }
+    mona_lisa.update dataset: {'viaf_id' => '1234'}
+    last_supper.update dataset: {'viaf_id' => '5678'}
 
     works.fields.first.update name: 'viaf'
 

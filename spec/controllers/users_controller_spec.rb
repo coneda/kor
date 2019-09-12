@@ -9,7 +9,7 @@ RSpec.describe UsersController, type: :controller do
   end
 
   it 'should not GET show' do
-    get :show, params: { id: User.guest.id }
+    get :show, params: {id: User.guest.id}
     expect(response).to be_forbidden
   end
 
@@ -19,31 +19,31 @@ RSpec.describe UsersController, type: :controller do
   end
 
   it 'should not POST create' do
-    post :create, params: { user: { name: 'wendig', email: 'info@wendig.io' } }
+    post :create, params: {user: {name: 'wendig', email: 'info@wendig.io'}}
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH update' do
     patch :update, params: {
-      id: User.admin.id, user: { email: 'info@wendig.io' }
+      id: User.admin.id, user: {email: 'info@wendig.io'}
     }
     expect(response).to be_forbidden
   end
 
   it 'should not DELETE destroy' do
-    delete :destroy, params: { id: User.admin.id }
+    delete :destroy, params: {id: User.admin.id}
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH reset_password' do
     user = User.find_by! name: 'jdoe'
-    patch :reset_password, params: { id: user.id }
+    patch :reset_password, params: {id: user.id}
     expect(response).to be_forbidden
   end
 
   it 'should not PATCH reset_login_attempts' do
     user = User.find_by! name: 'jdoe'
-    patch :reset_login_attempts, params: { id: user.id }
+    patch :reset_login_attempts, params: {id: user.id}
     expect(response).to be_forbidden
   end
 
@@ -69,7 +69,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it 'should PATCH update_me (but not change permissions)' do
-      patch :update_me, params: { user: { locale: 'de', admin: true } }
+      patch :update_me, params: {user: {locale: 'de', admin: true}}
       expect_updated_response
       user = User.find_by!(name: 'jdoe')
       expect(user.locale).to eq('de')
@@ -78,19 +78,19 @@ RSpec.describe UsersController, type: :controller do
 
     it 'should not GET show' do
       user = User.find_by! name: 'jdoe'
-      get :show, params: { id: user.id }
+      get :show, params: {id: user.id}
       expect(response).to be_forbidden
     end
 
     it 'should not PATCH reset_password' do
       user = User.find_by! name: 'jdoe'
-      patch :reset_password, params: { id: user.id }
+      patch :reset_password, params: {id: user.id}
       expect(response).to be_forbidden
     end
 
     it 'should not PATCH reset_login_attempts' do
       user = User.find_by! name: 'jdoe'
-      patch :reset_login_attempts, params: { id: user.id }
+      patch :reset_login_attempts, params: {id: user.id}
       expect(response).to be_forbidden
     end
 
@@ -112,7 +112,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'should GET show' do
       user = User.find_by! name: 'jdoe'
-      get :show, params: { id: user.id }
+      get :show, params: {id: user.id}
       expect(response).to be_success
       expect(json['name']).to eq('jdoe')
       expect(json['permissions']).to be_nil
@@ -120,7 +120,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'should GET show with additions' do
       user = User.find_by! name: 'jdoe'
-      get :show, params: { id: user.id, include: 'permissions' }
+      get :show, params: {id: user.id, include: 'permissions'}
       expect(response).to be_success
       expect(json['name']).to eq('jdoe')
       expect(json['permissions']).to be_a(Hash)
@@ -128,7 +128,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'should POST create' do
       post :create, params: {
-        user: { name: 'wendig', email: 'info@wendig.io' }
+        user: {name: 'wendig', email: 'info@wendig.io'}
       }
       expect_created_response
       User.find_by!(name: 'wendig')
@@ -138,7 +138,7 @@ RSpec.describe UsersController, type: :controller do
     it 'should PATCH update' do
       user = User.find_by! name: 'jdoe'
       patch :update, params: {
-        id: user.id, user: { name: 'john', admin: true }
+        id: user.id, user: {name: 'john', admin: true}
       }
       expect_updated_response
       expect(user.reload.name).to eq('john')
@@ -147,7 +147,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'should DELETE destroy' do
       user = User.find_by! name: 'jdoe'
-      delete :destroy, params: { id: user.id }
+      delete :destroy, params: {id: user.id}
       expect_deleted_response
       expect(User.find_by(id: user.id)).to be_nil
     end
@@ -155,7 +155,7 @@ RSpec.describe UsersController, type: :controller do
     it 'should PATCH reset_password' do
       user = User.find_by! name: 'jdoe'
       pwd = user.password
-      patch :reset_password, params: { id: user.id }
+      patch :reset_password, params: {id: user.id}
       expect(response).to be_success
       expect(user.reload.password).not_to eq(pwd)
       expect(ActionMailer::Base.deliveries.size).to eq(1)
@@ -165,7 +165,7 @@ RSpec.describe UsersController, type: :controller do
       user = User.find_by! name: 'jdoe'
       user.add_login_attempt
       user.save
-      patch :reset_login_attempts, params: { id: user.id }
+      patch :reset_login_attempts, params: {id: user.id}
       expect(response).to be_success
       expect(user.reload.login_attempts).to be_empty
     end

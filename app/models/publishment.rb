@@ -21,5 +21,5 @@ class Publishment < ApplicationRecord
     self.valid_until = Kor.publishment_expiry_time unless self.valid_until
   end
 
-  scope :owned_by, lambda { |user| where(:user_id => user.id) }
+  scope :owned_by, lambda{ |user| where(:user_id => user.id) }
 end

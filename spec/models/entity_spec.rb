@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe Entity do
   it "should accept nested attributes for entity datings" do
     leonardo.update datings_attributes: [
-      { label: 'Datierung', dating_string: "15. Jahrhundert" },
-      { label: 'Datierung', dating_string: "15.12.1933" }
+      {label: 'Datierung', dating_string: "15. Jahrhundert"},
+      {label: 'Datierung', dating_string: "15.12.1933"}
     ]
     expect(leonardo.datings.count).to eql(3)
   end
@@ -58,16 +58,16 @@ RSpec.describe Entity do
     entity = FactoryGirl.create :jack
 
     entity.update_attributes(
-      :dataset => { "some" => "value" },
+      :dataset => {"some" => "value"},
       :synonyms => ["john"],
-      :properties => [{ 'label' => 'page', 'value' => 144 }]
+      :properties => [{'label' => 'page', 'value' => 144}]
     )
 
     entity.reload
 
-    expect(entity.dataset).to eq({ "some" => "value" })
+    expect(entity.dataset).to eq({"some" => "value"})
     expect(entity.synonyms).to eq(["john"])
-    expect(entity.properties).to eq([{ 'label' => 'page', 'value' => 144 }])
+    expect(entity.properties).to eq([{'label' => 'page', 'value' => 144}])
   end
 
   it "should validate the dataset" do
@@ -79,8 +79,8 @@ RSpec.describe Entity do
 
   it "should validate entity properties with the mongo class validator" do
     entity = FactoryGirl.build :jack, :properties => [
-      { 'label' => 'age' },
-      { 'value' => 12.7 }
+      {'label' => 'age'},
+      {'value' => 12.7}
     ]
     expect(entity.valid?).to be_falsey
     expect(entity.errors.full_messages).to include('further properties need a value')
@@ -89,8 +89,8 @@ RSpec.describe Entity do
 
   it "should retrieve unsaved mongo values without a kind" do
     entity = Entity.new
-    entity.properties = [{ 'label' => 'test', 'value' => 'test_value' }]
-    expect(entity.properties).to eq([{ 'label' => 'test', 'value' => 'test_value' }])
+    entity.properties = [{'label' => 'test', 'value' => 'test_value'}]
+    expect(entity.properties).to eq([{'label' => 'test', 'value' => 'test_value'}])
   end
 
   it "should have correct attachment values after saving" do
@@ -102,7 +102,7 @@ RSpec.describe Entity do
     people = Kind.where(name: "Person").first
     people.fields << FactoryGirl.create(:isbn)
 
-    entity = FactoryGirl.build :jack, dataset: { 'isbn' => 'invalid ISBN' }
+    entity = FactoryGirl.build :jack, dataset: {'isbn' => 'invalid ISBN'}
     expect(entity.save).to be_falsey
     expect(entity.errors.full_messages).to include("Dataset isbn is invalid")
   end
@@ -151,15 +151,15 @@ RSpec.describe Entity do
   end
 
   specify "relationships should be destroyed along with the entity" do
-    expect {
+    expect{
       leonardo.destroy
-    }.to change { Relationship.count }.by(-2)
+    }.to change{ Relationship.count }.by(-2)
   end
 
   specify "directed relationships should be destroyed along with the entity" do
-    expect {
+    expect{
       leonardo.destroy
-    }.to change { DirectedRelationship.count }.by(-4)
+    }.to change{ DirectedRelationship.count }.by(-4)
   end
 
   it 'should retrieve entities by an array of ids keeping the order' do
@@ -171,11 +171,11 @@ RSpec.describe Entity do
     expect(Entity.by_ordered_id_array(ds.id, ml.id).pluck(:id)).to eq([ds.id, ml.id])
     expect(Entity.by_ordered_id_array([ds.id, ml.id]).pluck(:id)).to eq([ds.id, ml.id])
 
-    expect {
+    expect{
       Entity.includes(:kind).by_relation_name('related to').by_ordered_id_array(1, 2).to_a
     }.not_to raise_error
 
-    expect {
+    expect{
       Entity.by_ordered_id_array([]).to_a
     }.not_to raise_error
   end

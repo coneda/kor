@@ -204,7 +204,7 @@ module Kor
           'default_groups'
         ]
         integer_arrays.each do |ia|
-          @attributes[ia] = self[ia].map { |i| i.to_i }
+          @attributes[ia] = self[ia].map{ |i| i.to_i }
         end
       end
 

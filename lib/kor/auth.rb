@@ -57,10 +57,10 @@ module Kor::Auth
 
           mail_candidates =
             var_to_array(source['mail']).
-              map { |km| env[km] }.
-              select { |e| e.present? } +
+              map{ |km| env[km] }.
+              select{ |e| e.present? } +
             var_to_array(source['domain']).
-              map { |d| "#{username}@#{d}" }
+              map{ |d| "#{username}@#{d}" }
 
           if mail_candidates.empty?
             Rails.logger.info "no valid mail address found"

@@ -25,7 +25,7 @@ end
 
 RSpec.shared_examples 'a kor search' do
   it 'should raise an exception for unknown keys' do
-    expect {
+    expect{
       described_class.new(jdoe, some: 'thing')
     }.to raise_error(Kor::Exception), '[:some] is not a valid search key'
   end
@@ -61,7 +61,7 @@ RSpec.shared_examples 'a kor search' do
     search = described_class.new(
       admin,
       except_kind_id: media.id,
-      sort: { column: 'updated_at', direction: 'desc' }
+      sort: {column: 'updated_at', direction: 'desc'}
     )
     expect(search.total).to eq(5)
     expect(search.records.first).to eq(monalisa)
@@ -309,19 +309,19 @@ RSpec.describe Kor::Search do
     end
 
     it 'should raise an exception for elasticsearch-only criteria' do
-      expect {
+      expect{
         described_class.new(admin, terms: 'lis*')
       }.to raise_error(Kor::Exception, 'terms is only supported with elasticsearch')
 
-      expect {
-        described_class.new(admin, dataset: { 'gnd_id' => '12345' })
+      expect{
+        described_class.new(admin, dataset: {'gnd_id' => '12345'})
       }.to raise_error(Kor::Exception, 'dataset is only supported with elasticsearch')
 
-      expect {
-        described_class.new(admin, property: { 'age' => '41' })
+      expect{
+        described_class.new(admin, property: {'age' => '41'})
       }.to raise_error(Kor::Exception, 'property is only supported with elasticsearch')
 
-      expect {
+      expect{
         described_class.new(admin, related: 'mona')
       }.to raise_error(Kor::Exception, 'related is only supported with elasticsearch')
     end
@@ -432,10 +432,10 @@ RSpec.describe Kor::Search do
     end
 
     it 'should search by dataset' do
-      search = described_class.new(admin, dataset: { 'gnd_id' => '123456789' })
+      search = described_class.new(admin, dataset: {'gnd_id' => '123456789'})
       expect(search.total).to eq(1)
 
-      search = described_class.new(admin, dataset: { 'gnd_id' => 'xxxx' })
+      search = described_class.new(admin, dataset: {'gnd_id' => 'xxxx'})
       expect(search.total).to eq(0)
     end
 

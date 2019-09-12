@@ -38,7 +38,7 @@ class Fields::Select < Field
         'name' => 'subtype',
         'type' => 'select',
         'options' => ['select', 'multiselect']
-      },{
+      }, {
         'name' => 'values',
         'type' => 'textarea'
       }

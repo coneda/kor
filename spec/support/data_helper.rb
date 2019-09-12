@@ -228,7 +228,7 @@ module DataHelper
       dataset: {
         'gnd_id' => '123456789'
       },
-      properties: [{ 'label' => 'Epoche', 'value' => 'Renaissance' }]
+      properties: [{'label' => 'Epoche', 'value' => 'Renaissance'}]
     )
     mona_lisa = FactoryGirl.create(:mona_lisa,
       created_at: Time.mktime(2016, 10, 19, 17),

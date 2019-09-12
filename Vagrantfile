@@ -27,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "dev.v4.0", primary: true do |c|
     c.vm.box = 'generic/debian10'
-    
+
     if RUBY_PLATFORM.match(/darwin/)
       c.vm.synced_folder ".", "/vagrant", type: "nfs"
       c.vm.network "private_network", type: "dhcp"

@@ -47,7 +47,7 @@ module TestHelper
 
     use_elastic = (
       framework == :rspec && test.metadata[:elastic] ||
-      framework == :cucumber && test.tags.any? { |st| st.name == '@elastic' }
+      framework == :cucumber && test.tags.any?{ |st| st.name == '@elastic' }
     )
 
     if use_elastic
@@ -85,7 +85,7 @@ module TestHelper
         c.configure_rspec_metadata!
       end
 
-      c.default_cassette_options = { :record => :new_episodes }
+      c.default_cassette_options = {:record => :new_episodes}
       c.allow_http_connections_when_no_cassette = true
 
       c.ignore_request do |r|
