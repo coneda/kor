@@ -14,7 +14,6 @@ services:
   - elasticsearch
 
 before_install:
-  - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 6B05F25D762E3157
   - sudo apt-get -qq update
   - sudo apt-get install -y libav-tools imagemagick chromium-chromedriver
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.12.deb 
@@ -33,5 +32,6 @@ install:
 script:
   - mysql -e 'CREATE DATABASE kor_test;'
   - bundle exec rake db:test:load
+  - pwd
   - bundle exec rspec spec/ --tag ~travis:false --format=documentation
-  - bundle exec cucumber features/ --format=pretty --tags "~@notravis" --no-strict --retry 3
+  - bundle exec cucumber features/ --format=pretty --tags "not @notravis" --no-strict --retry 3
