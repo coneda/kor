@@ -15,7 +15,7 @@ RSpec.describe FieldsController, type: :controller do
     get :types
     expect(response).to be_success
     expect(json).to be_a(Array)
-    expect(json[0]['name']).to eq('Fields::Select')
+    expect(json.map{|f| f['name']}).to include('Fields::Select')
   end
 
   it 'should GET show with additions' do

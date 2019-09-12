@@ -3,12 +3,12 @@
 rm -f tmp/brakeman.html tmp/rubocop.html
 
 # run brakeman -I to manage config/brakeman.ignore
-# brakeman
-# xdg-open tmp/brakeman.html
+brakeman
+xdg-open tmp/brakeman.html
 
 rubocop -D -E -S \
   -C false \
   -f html \
   -o tmp/rubocop.html
 
-# xdg-open tmp/rubocop.html 
+xdg-open tmp/rubocop.html 

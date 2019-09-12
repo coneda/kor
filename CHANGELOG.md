@@ -11,7 +11,8 @@ commit history and the closed issues on GitHub.
 
 This is a major release with many bug fixes, new features and some removed
 features. For all the details please refer to the
-[milestone summary](https://github.com/coneda/kor/milestone/9?closed=1).
+[milestone summary](https://github.com/coneda/kor/milestone/9?closed=1). Here
+are some highlights:
 
 * the elasticsearch query_string syntax is now available to users via the
   "Terms" field
