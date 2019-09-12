@@ -37,6 +37,7 @@ group :test do
   gem 'simplecov', require: false
   gem 'vcr'
   gem 'webmock'
+  gem 'puma'
 end
 
 group :development do
@@ -50,12 +51,10 @@ end
 group :test, :development do
   gem 'byebug'
   gem 'pry'
-  gem 'thin'
 end
 
 group :production do
   gem 'exception_notification'
-  gem 'puma'
 end
 
 group :import_export do
