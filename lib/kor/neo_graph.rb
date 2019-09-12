@@ -1,5 +1,5 @@
 class Kor::NeoGraph
-  def initialize(user, options = {})
+  def initialize(user)
     @user = user
     @options = Rails.configuration.database_configuration[Rails.env]['neo']
     @transactions = []

@@ -56,10 +56,10 @@ class Kor::Import::Excel < Kor::Export::Excel
             log "file #{file}, row #{i + 2} destroying entity id #{row[0]}"
             entity.destroy unless @options[:simulate]
           else
-            synonyms = json_parse(row[13], [])
-            dataset = json_parse(row[16], {})
-            properties = json_parse(row[17], [])
-            datings = synchronize_datings(entity, json_parse(row[15], []))
+            synonyms = json_parse(row[13])
+            dataset = json_parse(row[16])
+            properties = json_parse(row[17])
+            datings = synchronize_datings(entity, json_parse(row[15]))
 
             if synonyms.nil? || dataset.nil? || properties.nil?
               log "error parsing json"
@@ -141,7 +141,7 @@ class Kor::Import::Excel < Kor::Export::Excel
     end
   end
 
-  def json_parse(string, default = nil)
+  def json_parse(string)
     JSON.parse(string)
   rescue
     log "couldn't parse '#{string}'"

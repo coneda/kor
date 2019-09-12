@@ -24,7 +24,6 @@ RSpec.describe IdentifiersController, type: :controller do
   end
 
   it 'should resolve an entity by a identifier value including a dot' do
-    people = Kind.find_by! name: 'person'
     leonardo = Entity.find_by! name: 'Leonardo'
     leonardo.dataset['gnd_id'] = 'BMN_2002.33a-b_view1_bw'
     leonardo.save!

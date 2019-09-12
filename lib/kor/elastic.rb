@@ -379,7 +379,7 @@ class Kor::Elastic
   end
 
   def by_user(user)
-    ids = ::Kor::Auth.authorized_collections(@user).pluck(:id)
+    ids = ::Kor::Auth.authorized_collections(user).pluck(:id)
     if ids.empty?
       none
     else

@@ -228,11 +228,11 @@ class Medium < ApplicationRecord
     end
 
     if disposition == 'download'
-      result.gsub! /\/images\//, '/download/'
+      result.gsub!(/\/images\//, '/download/')
     end
 
     # revert escaping, see https://github.com/thoughtbot/paperclip/issues/1945
-    result.gsub! /%3F/, '?'
+    result.gsub!(/%3F/, '?')
 
     result
   end

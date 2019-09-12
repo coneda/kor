@@ -69,3 +69,43 @@ Layout/SpaceBeforeBlockBraces:
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
   EnforcedStyleForEmptyBraces: no_space
+
+Lint/AmbiguousRegexpLiteral:
+  Exclude:
+    - 'features/step_definitions/*.rb'
+
+Lint/AssignmentInCondition:
+  Enabled: false
+
+Lint/Debugger:
+  Exclude:
+    - 'features/**/*.rb'
+    - 'spec/**/*.rb'
+    - 'features/support/kor.rb'
+    - 'lib/kor/import/**/*.rb'
+    - 'lib/kor/export/**/*.rb'
+    - 'lib/kor/neo_graph.rb'
+    - 'lib/kor/tasks.rb'
+
+Lint/UnusedMethodArgument:
+  Exclude:
+    - 'app/controllers/json_controller.rb'
+    - 'app/models/entity.rb'
+    - 'app/models/field.rb'
+    - 'app/models/kind.rb'
+    - 'app/models/relationship.rb'
+    - 'config/initializers/paperclip.rb'
+    - 'lib/kor.rb'
+    - 'lib/kor/media/transformations/base.rb'
+    - 'lib/kor/neo_graph.rb'
+    - 'lib/kor/tasks.rb'
+    - 'lib/kor/zip_file.rb'
+    - 'lib/paperclip_processors/audio.rb'
+    - 'lib/paperclip_processors/video.rb'
+
+Lint/UselessAssignment:
+  Exclude:
+    - 'app/controllers/entities_controller.rb'
+    - 'app/controllers/json_controller.rb'
+    - 'features/support/kor.rb'
+    

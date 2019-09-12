@@ -94,11 +94,11 @@ class Relation < ApplicationRecord
     self.children = Relation.where(id: values).to_a
   end
 
-  def removable(cache = {})
-    child_ids.empty? && relationship_count(cache) == 0
+  def removable
+    child_ids.empty? && relationship_count == 0
   end
 
-  def relationship_count(cache = {})
+  def relationship_count
     relationships.count
   end
 

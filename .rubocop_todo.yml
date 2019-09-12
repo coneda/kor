@@ -6,46 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 69
-Lint/AmbiguousRegexpLiteral:
-  Exclude:
-    - 'app/models/medium.rb'
-    - 'features/step_definitions/database_should_steps.rb'
-    - 'features/step_definitions/database_steps.rb'
-    - 'features/step_definitions/general_steps.rb'
-    - 'features/step_definitions/session_steps.rb'
-    - 'features/step_definitions/setup_steps.rb'
-    - 'features/step_definitions/web_steps.rb'
-
-# Offense count: 34
-# Configuration parameters: AllowSafeAssignment.
-Lint/AssignmentInCondition:
-  Enabled: false
-
-# Offense count: 7
-Lint/Debugger:
-  Exclude:
-    - 'features/step_definitions/general_steps.rb'
-    - 'features/support/kor.rb'
-    - 'lib/kor/import/erlangen_crm.rb'
-    - 'lib/kor/neo_graph.rb'
-    - 'lib/kor/tasks.rb'
-    - 'spec/support/test_helper.rb'
-
-# Offense count: 35
-# Cop supports --auto-correct.
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
-Lint/UnusedMethodArgument:
-  Enabled: false
-
-# Offense count: 5
-Lint/UselessAssignment:
-  Exclude:
-    - 'app/controllers/entities_controller.rb'
-    - 'app/controllers/json_controller.rb'
-    - 'app/models/entity_group.rb'
-    - 'features/support/kor.rb'
-    - 'spec/controllers/identifiers_controller_spec.rb'
 
 # Offense count: 106
 Metrics/AbcSize:

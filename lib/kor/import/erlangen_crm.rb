@@ -127,7 +127,7 @@ class Kor::Import::ErlangenCrm
 
   protected
 
-    def properties(base = nil)
+    def properties
       conds = [
         "self::owl:ObjectProperty",
         "self::owl:TransitiveProperty",
