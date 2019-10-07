@@ -43,21 +43,33 @@
     })
 
     tag.on('updated', function() {
-      input().tinyAutocomplete({
-        method: 'get',
-        url: '/users',
-        queryProperty: 'terms',
-        grouped: false,
-        itemTemplate: '<li class="autocomplete-item">{{full_name}}</li>',
-        onSelect: function(el, val) {
-          tag.user_id = val.id;
-          tag.refs.input.set(val.display_name);
-          tag.old_field_value = val.display_name;
-          Zepto(tag.root).trigger('change');
-        }
-      });
+      var input = tag.refs.input.input()[0];
 
-      tag.autocomplete = input().tinyAutocomplete();
+      autocomplete({
+        input: input,
+        debounceWaitMs: 300,
+        onSelect: function(item, input, event) {
+          event.preventDefault();
+          tag.user_id = item.id;
+          tag.refs.input.set(item.display_name);
+          tag.old_field_value = item.display_name;
+          Zepto(tag.root).trigger('change');
+        },
+        fetch: function(text, update) {
+          Zepto.ajax({
+            url: '/users',
+            data: {terms: text},
+            success: function(data) {
+              update(data.records);
+            }
+          });
+        },
+        render: function(item, currentValue) {
+          var div = document.createElement("div");
+          div.textContent = item.display_name;
+          return div;
+        },
+      })
     })
 
     tag.label = function() {

@@ -184,6 +184,13 @@ class Entity < ApplicationRecord
     end
   end
 
+  def update_wikidata
+    qid = dataset['wikidata_id']
+    if qid.present?
+      Kor::Import::WikiData.find(qid).update(self)
+    end
+  end
+
   def cache_key(*timestamp_names)
     timestamp = [
       created_at,

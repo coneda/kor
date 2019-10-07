@@ -13,6 +13,7 @@
       value={valueFromParent()}
       checked={checkedFromParent()}
       placeholder={opts.placeholder}
+      autocomplete={opts.wikidata ? 'off' : null}
     />
     <textarea
       if={opts.type == 'textarea'}
@@ -57,12 +58,12 @@
       <img if={item.image_url} src={item.image_url} />
     </label>
   </virtual>
+  <div if={opts.help && showHelp} class="help" ref="help"></div>
   <div class="errors" if={opts.errors}>
     <div each={e in opts.errors}>
       {e}
     </div>
   </div>
-  <div if={opts.help && showHelp} class="help" ref="help"></div>
 
   <script type="text/coffee">
     tag = this
@@ -71,6 +72,7 @@
 
     tag.on 'mount', ->
       Zepto(tag.root).find('input, textarea, select').focus() if tag.opts.autofocus
+      wApp.wikidata.setup(tag) if tag.opts.wikidata
 
     tag.name = -> tag.opts.name
 
@@ -134,6 +136,9 @@
       tag.showHelp = !tag.showHelp
       tag.update()
       Zepto(tag.refs.help).html(tag.opts.help) if tag.showHelp
+
+    tag.input = ->
+      Zepto(tag.root).find('input, select, textarea')
 
   </script>
 </kor-input>

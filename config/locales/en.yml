@@ -84,6 +84,8 @@ en:
   day: day
   before: before
   after: after
+  existing_entities: existing entities
+  wikidata_items: wikidata items
 
   help:
     terms_query: |
@@ -113,6 +115,24 @@ en:
       larger than the given amount of bytes or with '-' to find smaller
       files. Add KB, MB, GB, or TB to change the unit. Some examples:
       <code>+50MB<br />-100KB<br />+1GB</code>
+    wikidata_integration: |
+      Enter a two character language code here (e.g. de, it, fr, es, ...). It
+      will be used to query wikidata to provide an autocomplete when creating
+      new entities using the wikidata api. Selecting items will prefill the
+      entity name and comment. If a wikidata_id field exists on the respective
+      entity type, it is also prefilled and when saving, relationships are
+      created to all existing entities according to wikidata properties. Leave
+      blank to deactivate the integration.
+    create_missing_relations: |
+      With this setting, importing from wikidata creates new relations as
+      needed, otherwise, only relationships of existing types are created.
+    generator_directive: |
+      For examples, please see
+      <a
+        href="https://github.com/coneda/kor_leitfaden_ffm/wiki#generatoren-definieren"
+        target="_blank"
+        rel="noopener"
+      >our documentation</a>
 
   search_term:
     one: search term
@@ -252,6 +272,8 @@ en:
       primary_relations: 'primary relations'
       secondary_relations: 'secondary relations'
       repository_uuid: 'override the generated repository UUID'
+      wikidata_integration: 'use the wikidata integration'
+      create_missing_relations: 'create missing relations?'
 
       help_general: general help text (menu)
       help_search: search help text

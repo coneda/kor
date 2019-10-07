@@ -131,6 +131,8 @@ class EntitiesController < JsonController
           end
         end
 
+        @entity.update_wikidata
+
         @record = @entity
         render_created @entity
       else
@@ -171,6 +173,7 @@ class EntitiesController < JsonController
 
       if @entity.save
         SystemGroup.find_or_create_by(:name => 'invalid').remove_entities @entity
+        @entity.update_wikidata
         render_updated @entity
       else
         render_422 build_nested_errors(@entity)

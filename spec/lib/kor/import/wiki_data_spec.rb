@@ -1,36 +1,16 @@
 require "rails_helper"
 
 RSpec.describe Kor::Import::WikiData, vcr: true do
-  it "should find a record by GND (P227 = 118640445)" do
-    skip 'api endpoint not available anymore'
-    result = subject.find_by_attribute("227", "118640445")
-    expect(result["items"].first).to eq(762)
-  end
-
-  it "should find a record by ULAN (P245 = 500010879)" do
-    skip 'api endpoint not available anymore'
-    result = subject.find_by_attribute("245", "500010879")
-    expect(result["items"].first).to eq(762)
-  end
-
-  it "should find a record by Sandrart id (P1422 = 195)" do
-    skip 'api endpoint not available anymore'
-    result = subject.find_by_attribute("1422", "195")
-    expect(result["items"].first).to eq(762)
-  end
-
   it "should retrieve GND, ULAN and Sandrart ids for Q762" do
-    expect(subject.attribute_for("Q762", "P227")).to eq("118640445")
-    expect(subject.attribute_for("Q762", "P245")).to eq("500010879")
-    expect(subject.attribute_for("Q762", "P1422")).to eq("195")
+    item = described_class.find('Q762')
+
+    expect(item.property_value("P227")).to eq("118640445")
+    expect(item.property_value("P245")).to eq("500010879")
+    expect(item.property_value("P1422")).to eq("195")
   end
 
   it "should make SPARQL queries" do
     query = "
-      PREFIX wd: <http://www.wikidata.org/entity/>
-      PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
       SELECT ?id ?label
       WHERE {
         ?id wdt:P31 wd:Q19847637 .
@@ -38,71 +18,55 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
       }
     "
 
-    response = subject.sparql(query)
+    response = described_class.sparql(query)
     expect(response.status).to be_between(200, 299)
   end
 
   it 'should retrieve identifier types' do
-    results = subject.identifier_types
+    results = described_class.identifier_types
     expect(results).to include('id' => '227', 'label' => 'GND ID')
     expect(results).to include('id' => '245', "label" => 'ULAN ID')
     expect(results).to include('id' => '4119', "label" => 'NLS Geographic Names Place ID')
   end
 
   it "should retrieve all identifiers for Q762" do
-    results = subject.identifiers_for("Q762")
-    expect(results.size).to eq(84)
-    expect(results).to include("id" => "866", "label" => "Perlentaucher ID", "value" => "leonardo-da-vinci")
-    expect(results).to include("id" => "3219", "label" => "Encyclopædia Universalis Online ID", "value" => "leonard-de-vinci")
-    expect(results).to include("id" => "245", "label" => "ULAN ID", "value" => "500010879")
+    item = described_class.find('Q762')
+    expect(item.identifiers.size).to eq(210)
+    expect(item.identifiers).to include("id" => "866", "label" => "Perlentaucher ID", "value" => "leonardo-da-vinci")
+    expect(item.identifiers).to include("id"=>"214", "label"=>"VIAF ID", "value"=>"24604287")
+    expect(item.identifiers).to include("id" => "245", "label" => "ULAN ID", "value" => "500010879")
   end
 
   it "should retrieve all identifiers P31:Q19847637" do
-    results = subject.identifier_types
-    expect(results.size).to eq(1498)
+    results = described_class.identifier_types
+    expect(results.size).to eq(5622)
     expect(results).to include("id" => "1992", "label" => "Plazi ID")
     expect(results).to include("id" => "1461", "label" => "Patientplus ID")
   end
 
   it 'should find all properties linking other wikidata items' do
-    results = subject.internal_properties_for('Q762')
+    item = described_class.find('Q762')
 
-    expect(results).to include(
+    expect(item.properties).to include(
       'id' => 'P20', 'label' => 'place of death', 'values' => ['Q1122731']
     )
-    expect(results).to include(
+    expect(item.properties).to include(
       'id' => 'P735', 'label' => 'given name', 'values' => ['Q18220847']
     )
-    expect(results).to include(
-      'id' => 'P972', 'label' => 'catalog', 'values' => ['Q5460604']
+    expect(item.properties).to include(
+      "id"=>"P19", "label"=>"place of birth", "values"=>["Q154184"]
     )
   end
 
   context 'import' do
-    it 'should simulate the import of an item' do
-      results = subject.preflight(User.admin, 'default', 'Q762', 'person')
-      expect(results['success']).to eq(true)
-      expect(results['entity']['name']).to eq('Leonardo da Vinci')
-      expect(results['entity']['kind_id']).to eq(people.id)
-      expect(results['entity']['dataset']['wikidata_id']).to eq('Q762')
-
-      expect(Entity.count).to eq(7)
-      expect(Relation.count).to eq(6)
-      expect(Relationship.count).to eq(7)
-    end
-
     it 'should import an item' do
-      results = subject.import(User.admin, 'default', 'Q762', 'person')
-
-      expect(results['success']).to eq(true)
-      expect(results['message']).to eq('item has been imported')
+      item = described_class.find('Q762')
+      item.import(default, people)
 
       e = Entity.find_by!(name: 'Leonardo da Vinci')
       expect(e.dataset['wikidata_id']).to eq('Q762')
       expect(e.kind_name).to eq('person')
       expect(e.collection.name).to eq('Default')
-      expect(e.id).to eq(results['entity']['id'])
-      expect(e.uuid).to eq(results['entity']['uuid'])
     end
 
     it 'should import the associations between known items' do
@@ -110,15 +74,22 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
       leonardo.destroy
       mona_lisa.destroy
       last_supper.destroy
+      expect(Relation.count).to be(6)
+      expect(Relationship.count).to be(1)
 
-      results = subject.import(User.admin, 'default', 'Q762', 'person')
-      expect(results['success']).to eq(true)
+      # leonardo
+      described_class.find('Q762').import(default, people)
+      expect(Relationship.count).to be(1)
 
-      results = subject.import(User.admin, 'default', 'Q12418', 'work')
-      expect(results['message']).to eq('item has been imported')
+      # mona lisa
+      described_class.find('Q12418').import(default, works)
+      expect(Relation.count).to be(7)
+      expect(Relationship.count).to be(2)
 
-      results = subject.import(User.admin, 'default', 'Q128910', 'work')
-      expect(results['message']).to eq('item has been imported')
+      # the last supper
+      described_class.find('Q128910').import(default, works)
+      expect(Relation.count).to be(7)
+      expect(Relationship.count).to be(3)
 
       # he's imported as 'Leonardo da Vinci' from wikidata
       leonardo = Entity.find_by!(name: 'Leonardo da Vinci')
@@ -130,8 +101,54 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
       expect(rel.relationships.first.to_id).to eq(leonardo.id)
       expect(rel.relationships.last.from_id).to eq(last_supper.id)
       expect(rel.relationships.last.to_id).to eq(leonardo.id)
+      expect(rel.identifier).to eq('P170')
+      expect(rel.reverse_identifier).to eq('iP170')
     end
 
-    it 'should not touch existing entities'
+    it 'should not create new associations if told not to' do
+      leonardo.destroy
+      mona_lisa.destroy
+      last_supper.destroy
+      expect(Relation.count).to be(6)
+      expect(Relationship.count).to be(1)
+
+      Kor.settings['create_missing_relations'] = false
+
+      # leonardo
+      described_class.find('Q762').import(default, people)
+      expect(Relationship.count).to be(1)
+
+      # mona lisa
+      described_class.find('Q12418').import(default, works)
+      expect(Relation.count).to be(6)
+      expect(Relationship.count).to be(1)
+
+      # the last supper
+      described_class.find('Q128910').import(default, works)
+      expect(Relation.count).to be(6)
+      expect(Relationship.count).to be(1)
+    end
+
+    it 'should not touch existing entities' do
+      entities = Entity.all.to_a
+      before = Time.now
+
+      described_class.find('Q762').import(default, people)
+      entities.each do |entity|
+        expect(entity.updated_at).to be < before
+      end
+    end
+  end
+
+  context 'update' do
+    it 'should update an existing entity' do
+      described_class.find('Q762').update(leonardo)
+      expect(leonardo.name).to eq('Leonardo')
+
+      described_class.find('Q762').update(leonardo, attributes: true)
+      leonardo = Entity.find_by!(name: 'Leonardo da Vinci')
+      expect(leonardo.comment).to eq('Italian Renaissance polymath')
+      expect(leonardo.dataset['wikidata_id']).to eq('Q762')
+    end
   end
 end

@@ -12,7 +12,7 @@ http_interactions:
       Accept:
       - "*/*"
       Date:
-      - Tue, 01 Oct 2019 20:57:19 GMT
+      - Tue, 01 Oct 2019 20:57:20 GMT
       Content-Type:
       - application/x-www-form-urlencoded
       Cookie:
@@ -46,11 +46,11 @@ http_interactions:
       Content-Type:
       - application/json; charset=UTF-8
       X-Varnish:
-      - 34625575, 3560171, 775654899, 585811962 572714527
+      - 34625575, 3560171, 775654899, 586754290 572714527
       Age:
-      - '787'
+      - '788'
       X-Cache:
-      - cp1089 pass, cp2010 pass, cp4028 miss, cp4027 hit/7
+      - cp1089 pass, cp2010 pass, cp4028 miss, cp4027 hit/8
       X-Cache-Status:
       - hit-front
       Server-Timing:
@@ -705,7 +705,7 @@ http_interactions:
         da Vinci","badges":[],"url":"https://zh-min-nan.wikipedia.org/wiki/Leonardo_da_Vinci"},"zh_yuewiki":{"site":"zh_yuewiki","title":"\u9054\u6587\u897f","badges":[],"url":"https://zh-yue.wikipedia.org/wiki/%E9%81%94%E6%96%87%E8%A5%BF"},"zhwiki":{"site":"zhwiki","title":"\u5217\u5965\u7eb3\u591a\u00b7\u8fbe\u00b7\u82ac\u5947","badges":[],"url":"https://zh.wikipedia.org/wiki/%E5%88%97%E5%A5%A5%E7%BA%B3%E5%A4%9A%C2%B7%E8%BE%BE%C2%B7%E8%8A%AC%E5%A5%87"},"zhwikiquote":{"site":"zhwikiquote","title":"\u674e\u5967\u7d0d\u591a\u00b7\u9054\u6587\u897f","badges":[],"url":"https://zh.wikiquote.org/wiki/%E6%9D%8E%E5%A5%A7%E7%B4%8D%E5%A4%9A%C2%B7%E9%81%94%E6%96%87%E8%A5%BF"},"zuwiki":{"site":"zuwiki","title":"Leonardo
         da Vinci","badges":[],"url":"https://zu.wikipedia.org/wiki/Leonardo_da_Vinci"}}}}}'
     http_version: 
-  recorded_at: Tue, 01 Oct 2019 20:57:19 GMT
+  recorded_at: Tue, 01 Oct 2019 20:57:20 GMT
 - request:
     method: get
     uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20%20%20SELECT%20?id%20$label%0A%20%20%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20.%0A%20%20%20%20%20%20%20%20%20%20%20FILTER(lang(?label)%20=%20%27en%27)%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20VALUES%20(?id)%20%7B(wd:P27)%20(wd:P937)%20(wd:P460)%20(wd:P1576)%20(wd:P800)%20(wd:P21)%20(wd:P25)%20(wd:P1066)%20(wd:P20)%20(wd:P1196)%20(wd:P39)%20(wd:P1412)%20(wd:P5008)%20(wd:P22)%20(wd:P106)%20(wd:P910)%20(wd:P101)%20(wd:P859)%20(wd:P802)%20(wd:P31)%20(wd:P135)%20(wd:P136)%20(wd:P108)%20(wd:P140)%20(wd:P1343)%20(wd:P19)%20(wd:P6379)%20(wd:P735)%20(wd:P119)%20(wd:P509)%20(wd:P551)%7D%0A%20%20%20%20%20%20
@@ -718,7 +718,7 @@ http_interactions:
       Accept:
       - "*/*"
       Date:
-      - Tue, 01 Oct 2019 20:57:19 GMT
+      - Tue, 01 Oct 2019 20:57:20 GMT
       Content-Type:
       - application/x-www-form-urlencoded
       Cookie:
@@ -732,7 +732,7 @@ http_interactions:
       Server:
       - nginx/1.13.6
       Date:
-      - Tue, 01 Oct 2019 20:57:19 GMT
+      - Tue, 01 Oct 2019 20:56:24 GMT
       Content-Type:
       - application/sparql-results+xml;charset=utf-8
       X-Served-By:
@@ -744,17 +744,17 @@ http_interactions:
       Vary:
       - Accept, Accept-Encoding
       X-Varnish:
-      - 379854794, 509525959, 580672521
+      - 380471201, 309794848 258086008, 586327956
       Accept-Ranges:
       - bytes
       Age:
-      - '0'
+      - '56'
       X-Cache:
-      - cp2012 pass, cp4029 miss, cp4027 pass
+      - cp2012 pass, cp4031 hit/2, cp4027 pass
       X-Cache-Status:
-      - miss
+      - hit-local
       Server-Timing:
-      - cache;desc="miss"
+      - cache;desc="hit-local"
       Strict-Transport-Security:
       - max-age=106384710; includeSubDomains; preload
       X-Analytics:
@@ -799,789 +799,39 @@ http_interactions:
         name='label'>\n\t\t\t\t<literal xml:lang='en'>genre</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P140</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>religion</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P460</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>said to be the same as</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P509</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>cause of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P551</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>residence</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P735</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>given name</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P460</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>said to be the same as</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P800</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>notable work</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P802</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>student</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P937</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>work location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P735</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>given name</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P551</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>residence</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P859</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>sponsor</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P910</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>topic's main category</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1066</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>student of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1196</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>manner of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P802</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>student</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P937</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>work location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1343</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>described by source</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1412</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>languages spoken, written or
         signed</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1066</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>student of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1576</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>lifestyle</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1196</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>manner of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P5008</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>on focus list of Wikimedia project</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
         name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P6379</uri>\n\t\t\t</binding>\n\t\t\t<binding
         name='label'>\n\t\t\t\t<literal xml:lang='en'>has works in the collection</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
-    http_version: 
-  recorded_at: Tue, 01 Oct 2019 20:57:19 GMT
-- request:
-    method: get
-    uri: https://www.wikidata.org/wiki/Special:EntityData/Q12418.json
-    body:
-      encoding: UTF-8
-      string: ''
-    headers:
-      User-Agent:
-      - HTTPClient/1.0 (2.8.3, ruby 2.5.5 (2019-03-15))
-      Accept:
-      - "*/*"
-      Date:
-      - Tue, 01 Oct 2019 20:57:19 GMT
-      Content-Type:
-      - application/x-www-form-urlencoded
-      Cookie:
-      - WMF-Last-Access=01-Oct-2019; WMF-Last-Access-Global=01-Oct-2019; GeoIP=US:CA:San_Diego:32.74:-117.17:v4
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Tue, 01 Oct 2019 20:57:19 GMT
-      Server:
-      - mw1322.eqiad.wmnet
-      X-Powered-By:
-      - PHP/7.2.22-1+0~20190902.26+debian9~1.gbpd64eb7+wmf1
-      X-Content-Type-Options:
-      - nosniff
-      P3p:
-      - CP="See https://www.wikidata.org/wiki/Special:CentralAutoLogin/P3P for more
-        info."
-      Access-Control-Allow-Origin:
-      - "*"
-      X-Frame-Options:
-      - DENY
-      Vary:
-      - Accept-Encoding
-      Last-Modified:
-      - Thu, 26 Sep 2019 08:49:54 GMT
-      Backend-Timing:
-      - D=139313 t=1569963439679919
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Varnish:
-      - 35915892, 12300434, 308358518, 586656230
-      Age:
-      - '0'
-      X-Cache:
-      - cp1083 pass, cp2010 pass, cp4031 miss, cp4027 miss
-      X-Cache-Status:
-      - miss
-      Server-Timing:
-      - cache;desc="miss"
-      Strict-Transport-Security:
-      - max-age=106384710; includeSubDomains; preload
-      X-Analytics:
-      - WMF-Last-Access=01-Oct-2019;WMF-Last-Access-Global=01-Oct-2019;https=1
-      X-Client-Ip:
-      - 70.179.22.74
-      Cache-Control:
-      - private, s-maxage=0, max-age=0, must-revalidate
-      Accept-Ranges:
-      - bytes
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-    body:
-      encoding: UTF-8
-      string: '{"entities":{"Q12418":{"pageid":14002,"ns":0,"title":"Q12418","lastrevid":1020324094,"modified":"2019-09-26T08:49:54Z","type":"item","id":"Q12418","labels":{"fr":{"language":"fr","value":"La
-        Joconde"},"es":{"language":"es","value":"Mona Lisa"},"en":{"language":"en","value":"Mona
-        Lisa"},"af":{"language":"af","value":"Mona Lisa"},"am":{"language":"am","value":"\u121e\u1293
-        \u120a\u12db"},"ar":{"language":"ar","value":"\u0645\u0648\u0646\u0627\u0644\u064a\u0632\u0627"},"az":{"language":"az","value":"Mona
-        Liza"},"mk":{"language":"mk","value":"\u041c\u043e\u043d\u0430 \u041b\u0438\u0437\u0430"},"be":{"language":"be","value":"\u041c\u043e\u043d\u0430
-        \u041b\u0456\u0437\u0430"},"zh":{"language":"zh","value":"\u8499\u5a1c\u4e3d\u838e"},"de":{"language":"de","value":"Mona
-        Lisa"},"hu":{"language":"hu","value":"Mona Lisa"},"mr":{"language":"mr","value":"\u092e\u094b\u0928\u093e\u0932\u093f\u0938\u093e"},"eo":{"language":"eo","value":"La
-        Gioconda"},"ca":{"language":"ca","value":"La Gioconda"},"id":{"language":"id","value":"Mona
-        Lisa"},"is":{"language":"is","value":"M\u00f3na L\u00edsa"},"it":{"language":"it","value":"La
-        Gioconda"},"lt":{"language":"lt","value":"Mona Liza"},"nl":{"language":"nl","value":"Mona
-        Lisa"},"ru":{"language":"ru","value":"\u041c\u043e\u043d\u0430 \u041b\u0438\u0437\u0430"},"ja":{"language":"ja","value":"\u30e2\u30ca\u30fb\u30ea\u30b6"},"cs":{"language":"cs","value":"Mona
-        Lisa"},"eu":{"language":"eu","value":"Gioconda"},"sv":{"language":"sv","value":"Mona
-        Lisa"},"el":{"language":"el","value":"\u039c\u03cc\u03bd\u03b1 \u039b\u03af\u03b6\u03b1"},"hi":{"language":"hi","value":"\u092e\u0949\u0928\u093e
-        \u0932\u093f\u0938\u093e"},"cy":{"language":"cy","value":"Mona Lisa"},"ro":{"language":"ro","value":"Gioconda"},"la":{"language":"la","value":"Iucunda"},"bg":{"language":"bg","value":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430"},"bn":{"language":"bn","value":"\u09ae\u09cb\u09a8\u09be
-        \u09b2\u09bf\u09b8\u09be"},"bo":{"language":"bo","value":"\u0f58\u0f7c\u0f0b\u0f53\u0f0b\u0f63\u0f72\u0f0b\u0f66\u0f0d"},"br":{"language":"br","value":"Mona
-        Lisa"},"bs":{"language":"bs","value":"Mona Lisa"},"cbk-zam":{"language":"cbk-zam","value":"Monalisa"},"da":{"language":"da","value":"Mona
-        Lisa"},"et":{"language":"et","value":"Mona Lisa"},"fa":{"language":"fa","value":"\u0645\u0648\u0646\u0627\u0644\u06cc\u0632\u0627"},"fi":{"language":"fi","value":"Mona
-        Lisa"},"frr":{"language":"frr","value":"Mona Lisa"},"fy":{"language":"fy","value":"Mona
-        Lisa"},"gl":{"language":"gl","value":"Mona Lisa"},"he":{"language":"he","value":"\u05de\u05d5\u05e0\u05d4
-        \u05dc\u05d9\u05d6\u05d4"},"hr":{"language":"hr","value":"Mona Lisa"},"hy":{"language":"hy","value":"\u0544\u0578\u0576\u0561
-        \u053c\u056b\u0566\u0561"},"ilo":{"language":"ilo","value":"Mona Lisa"},"jv":{"language":"jv","value":"Monalisa"},"ka":{"language":"ka","value":"\u10db\u10dd\u10dc\u10d0
-        \u10da\u10d8\u10d6\u10d0"},"kk":{"language":"kk","value":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430"},"kn":{"language":"kn","value":"\u0cae\u0ccb\u0ca8
-        \u0cb2\u0cc0\u0cb8"},"ko":{"language":"ko","value":"\ubaa8\ub098\ub9ac\uc790"},"ksh":{"language":"ksh","value":"Mona
-        Lisa"},"ku":{"language":"ku","value":"Mona L\u00eeza"},"lb":{"language":"lb","value":"Mona
-        Lisa"},"lv":{"language":"lv","value":"Mona Liza"},"ml":{"language":"ml","value":"\u0d2e\u0d4b\u0d23\u0d3e\u0d32\u0d3f\u0d38"},"mn":{"language":"mn","value":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430"},"ms":{"language":"ms","value":"Mona Lisa"},"mt":{"language":"mt","value":"Mona
-        Lisa"},"ne":{"language":"ne","value":"\u092e\u094b\u0928\u093e \u0932\u093f\u091c\u093e"},"oc":{"language":"oc","value":"La
-        Joconda"},"pl":{"language":"pl","value":"Mona Lisa"},"pnb":{"language":"pnb","value":"\u0645\u0648\u0646\u0627
-        \u0644\u06cc\u0632\u0627"},"pt":{"language":"pt","value":"Mona Lisa"},"scn":{"language":"scn","value":"Gioconda"},"sh":{"language":"sh","value":"Mona
-        Lisa"},"si":{"language":"si","value":"\u0db8\u0ddc\u0db1\u0dcf\u0dbd\u0dd2\u0dc3\u0dcf"},"sk":{"language":"sk","value":"Mona
-        L\u00edza"},"sl":{"language":"sl","value":"Mona Liza"},"so":{"language":"so","value":"Mona
-        Lisa"},"sq":{"language":"sq","value":"Mona Liza"},"sr":{"language":"sr","value":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430"},"sw":{"language":"sw","value":"Mona Lisa"},"ta":{"language":"ta","value":"\u0bae\u0bcb\u0ba9\u0bbe
-        \u0bb2\u0bbf\u0b9a\u0bbe"},"te":{"language":"te","value":"\u0c2e\u0c4b\u0c28\u0c3e\u0c32\u0c3f\u0c38\u0c3e"},"th":{"language":"th","value":"\u0e42\u0e21\u0e19\u0e32\u0e25\u0e34\u0e0b\u0e32"},"tl":{"language":"tl","value":"Mona
-        Lisa"},"tr":{"language":"tr","value":"Mona Lisa"},"uk":{"language":"uk","value":"\u041c\u043e\u043d\u0430
-        \u041b\u0456\u0437\u0430"},"ur":{"language":"ur","value":"\u0645\u0648\u0646\u0627
-        \u0644\u06cc\u0632\u06c1"},"uz":{"language":"uz","value":"Mona Lisa"},"vec":{"language":"vec","value":"Zoconda"},"vi":{"language":"vi","value":"Mona
-        Lisa"},"war":{"language":"war","value":"Mona Lisa"},"zu":{"language":"zu","value":"Mona
-        Lisa"},"nb":{"language":"nb","value":"Mona Lisa"},"nn":{"language":"nn","value":"Mona
-        Lisa"},"sr-ec":{"language":"sr-ec","value":"\u041c\u043e\u043d\u0430 \u041b\u0438\u0437\u0430"},"be-tarask":{"language":"be-tarask","value":"\u041c\u043e\u043d\u0430
-        \u041b\u0456\u0437\u0430"},"ckb":{"language":"ckb","value":"\u0645\u06c6\u0646\u0627\u0644\u06cc\u0632\u0627"},"en-ca":{"language":"en-ca","value":"Mona
-        Lisa"},"en-gb":{"language":"en-gb","value":"Mona Lisa"},"pt-br":{"language":"pt-br","value":"Mona
-        Lisa"},"pa":{"language":"pa","value":"\u0a2e\u0a4b\u0a28\u0a3e \u0a32\u0a40\u0a1c\u0a3c\u0a3e"},"sr-el":{"language":"sr-el","value":"Mona
-        Liza"},"zh-hant":{"language":"zh-hant","value":"\u8499\u5a1c\u9e97\u838e"},"yue":{"language":"yue","value":"\u8499\u5a1c\u9e97\u838e"},"sco":{"language":"sco","value":"Mona
-        Lisa"},"nov":{"language":"nov","value":"Mona Lisa"},"pih":{"language":"pih","value":"Mona
-        Lisa"},"ba":{"language":"ba","value":"\u041c\u043e\u043d\u0430 \u041b\u0438\u0437\u0430"},"li":{"language":"li","value":"Mona
-        Lisa"},"fo":{"language":"fo","value":"Mona Lisa"},"lo":{"language":"lo","value":"\u0ea5\u0eb2\u0ec2\u0e8a\u0e81\u0ebb\u0e87"},"zh-hk":{"language":"zh-hk","value":"\u8499\u5a1c\u9e97\u838e"},"zh-cn":{"language":"zh-cn","value":"\u8499\u5a1c\u4e3d\u838e"},"zh-hans":{"language":"zh-hans","value":"\u8499\u5a1c\u4e3d\u838e"},"zh-mo":{"language":"zh-mo","value":"\u8499\u5a1c\u9e97\u838e"},"zh-my":{"language":"zh-my","value":"\u8499\u5a1c\u4e3d\u838e"},"zh-sg":{"language":"zh-sg","value":"\u8499\u5a1c\u4e3d\u838e"},"zh-tw":{"language":"zh-tw","value":"\u8499\u5a1c\u9e97\u838e"},"cv":{"language":"cv","value":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430"},"co":{"language":"co","value":"Giuconda"},"as":{"language":"as","value":"\u09ae\u09a8\u09be\u09b2\u09bf\u099b\u09be"},"sd":{"language":"sd","value":"\u0645\u0648\u0646\u0627
-        \u0644\u064a\u0632\u0627"},"my":{"language":"my","value":"\u1019\u102d\u102f\u1014\u102c\u101c\u102e\u1006\u102c"},"bcl":{"language":"bcl","value":"Mona
-        Lisa"},"rue":{"language":"rue","value":"\u041c\u043e\u043d\u0430 \u041b\u0456\u0437\u0430"},"ast":{"language":"ast","value":"La
-        Gioconda"},"hif":{"language":"hif","value":"Mona Lisa"},"ga":{"language":"ga","value":"An
-        Mona Lisa"},"or":{"language":"or","value":"\u0b2e\u0b4b\u0b28\u0b3e \u0b32\u0b3f\u0b38\u0b3e"},"ps":{"language":"ps","value":"\u0645\u0648\u0646\u0627\u0644\u06cc\u0632\u0627"},"mai":{"language":"mai","value":"\u092e\u094b\u0928\u093e
-        \u0932\u093f\u091c\u093e"},"gor":{"language":"gor","value":"Mona Lisa"},"nan":{"language":"nan","value":"Mona
-        Lisa"},"wuu":{"language":"wuu","value":"\u8499\u5a1c\u4e3d\u838e"},"hyw":{"language":"hyw","value":"\u053c\u056b\u0566\u0561
-        \u057f\u0567\u056c \u0543\u0578\u0584\u0578\u0576\u057f\u0585"},"su":{"language":"su","value":"Mona
-        Lisa"}},"descriptions":{"fr":{"language":"fr","value":"tableau de L\u00e9onard
-        de Vinci"},"en":{"language":"en","value":"painting by Leonardo da Vinci"},"es":{"language":"es","value":"cuadro
-        de Leonardo da Vinci"},"af":{"language":"af","value":"n w\u00eareldberoemde
-        olieverfskildery, geskilder deur Leonardo da Vinci"},"az":{"language":"az","value":"Leonardo
-        da Vin\u00e7inin \u00e7\u0259kdiyi \u015f\u0259kil"},"de":{"language":"de","value":"\u00d6lgem\u00e4lde
-        von Leonardo da Vinci"},"zh":{"language":"zh","value":"\u5217\u5965\u7eb3\u591a\u00b7\u8fbe\u00b7\u82ac\u5947\u6240\u7e6a\u7684\u9e97\u838e\u00b7\u55ac\u5bae\u591a\u7684\u8096\u50cf\u753b\u3002"},"eo":{"language":"eo","value":"pentra\u0135o
-        de Leonardo da Vinci pri virino kun mistera rideto"},"is":{"language":"is","value":"ol\u00edum\u00e1lverk
-        \u00e1 asparfj\u00f6l eftir Leonardo da Vinci"},"it":{"language":"it","value":"dipinto
-        a olio su tavola di pioppo di Leonardo da Vinci"},"nl":{"language":"nl","value":"olieverfschilderij
-        van Leonardo da Vinci"},"sv":{"language":"sv","value":"m\u00e5lning av Leonardo
-        da Vinci"},"ro":{"language":"ro","value":"pictur\u0103 celebr\u0103 a lui
-        Leonardo da Vinci"},"la":{"language":"la","value":"pictura quam Leonardus
-        Vincius inter annos 1503 et 1506 fecit"},"ko":{"language":"ko","value":"16\uc138\uae30
-        \ub974\ub124\uc0c1\uc2a4 \uc2dc\ub300\uc5d0 \ub808\uc624\ub098\ub974\ub3c4
-        \ub2e4 \ube48\uce58\uac00 \uadf8\ub9b0 \ucd08\uc0c1\ud654"},"ja":{"language":"ja","value":"\u30ec\u30aa\u30ca\u30eb\u30c9\u30fb\u30c0\u30fb\u30f4\u30a3\u30f3\u30c1\u306b\u3088\u308b\u7d75\u753b"},"nb":{"language":"nb","value":"maleri
-        av Leonardo da Vinci"},"nn":{"language":"nn","value":"maleri av Leonardo da
-        Vinci"},"da":{"language":"da","value":"maleri af Leonardo da Vinci"},"hu":{"language":"hu","value":"Leonardo
-        da Vinci festm\u00e9nye"},"el":{"language":"el","value":"\u03ad\u03c1\u03b3\u03bf
-        \u03b6\u03c9\u03b3\u03c1\u03b1\u03c6\u03b9\u03ba\u03ae\u03c2 \u03c4\u03bf\u03c5
-        \u039b\u03b5\u03bf\u03bd\u03ac\u03c1\u03bd\u03c4\u03bf \u03bd\u03c4\u03b1
-        \u0392\u03af\u03bd\u03c4\u03c3\u03b9"},"cs":{"language":"cs","value":"obraz
-        od Leonarda da Vinci"},"fi":{"language":"fi","value":"Leonardo da Vincin maalaus"},"ca":{"language":"ca","value":"pintura
-        de Leonardo da Vinci"},"sr":{"language":"sr","value":"\u0441\u043b\u0438\u043a\u0430
-        \u041b\u0435\u043e\u043d\u0430\u0440\u0434\u0430 \u0434\u0430 \u0412\u0438\u043d\u0447\u0438\u0458\u0430"},"sr-ec":{"language":"sr-ec","value":"\u0441\u043b\u0438\u043a\u0430
-        \u041b\u0435\u043e\u043d\u0430\u0440\u0434\u0430 \u0434\u0430 \u0412\u0438\u043d\u0447\u0438\u0458\u0430"},"sr-el":{"language":"sr-el","value":"slika
-        Leonarda da Vin\u010dija"},"pt":{"language":"pt","value":"quadro de Leonardo
-        da Vinci"},"ru":{"language":"ru","value":"\u043a\u0430\u0440\u0442\u0438\u043d\u0430
-        \u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e \u0434\u0430 \u0412\u0438\u043d\u0447\u0438"},"zh-hant":{"language":"zh-hant","value":"\u9054\u6587\u897f\u756b\u4f5c"},"cy":{"language":"cy","value":"peintiad
-        gan Leonardo da Vinci"},"en-gb":{"language":"en-gb","value":"painting by Leonardo
-        da Vinci"},"hy":{"language":"hy","value":"\u053c\u0565\u0578\u0576\u0561\u0580\u0564\u0578
-        \u0564\u0561 \u054e\u056b\u0576\u0579\u056b\u056b \u0576\u056f\u0561\u0580\u0568"},"br":{"language":"br","value":"taolenn
-        gant Leonardo da Vinci"},"mk":{"language":"mk","value":"\u0441\u043b\u0438\u043a\u0430
-        \u043d\u0430 \u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e \u0434\u0430
-        \u0412\u0438\u043d\u0447\u0438"},"he":{"language":"he","value":"\u05e6\u05d9\u05d5\u05e8
-        \u05e9\u05dc \u05dc\u05d0\u05d5\u05e0\u05e8\u05d3\u05d5 \u05d3\u05d4 \u05d5\u05d9\u05e0\u05e6''\u05d9"},"te":{"language":"te","value":"\u0c32\u0c3f\u0c2f\u0c4a\u0c28\u0c3e\u0c30\u0c4d\u0c21\u0c4b
-        \u0c21\u0c3e \u0c35\u0c3f\u0c02\u0c1a\u0c40 \u0c17\u0c40\u0c38\u0c3f\u0c28
-        \u0c2a\u0c4d\u0c30\u0c2a\u0c02\u0c1a \u0c2a\u0c4d\u0c30\u0c16\u0c4d\u0c2f\u0c3e\u0c24
-        \u0c1a\u0c3f\u0c24\u0c4d\u0c30\u0c02"},"eu":{"language":"eu","value":"Leonardo
-        da Vinciren margolana"},"sq":{"language":"sq","value":"piktur\u00eb nga Leonardo
-        da Vinci"},"pt-br":{"language":"pt-br","value":"pintura de Leonardo da Vinci"},"pa":{"language":"pa","value":"\u0a2b\u0a30\u0a3e\u0a02\u0a38
-        \u0a26\u0a3e \u0a2e\u0a38\u0a3c\u0a39\u0a42\u0a30 \u0a1a\u0a3f\u0a71\u0a24\u0a30"},"tr":{"language":"tr","value":"Leonardo
-        da Vinci''nin tablosu"},"ar":{"language":"ar","value":"\u0644\u0648\u062d\u0629
-        \u0644\u0644\u064a\u0648\u0646\u0627\u0631\u062f\u0648 \u062f\u0627\u0646\u0641\u0634\u064a"},"uk":{"language":"uk","value":"\u043a\u0430\u0440\u0442\u0438\u043d\u0430
-        \u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e \u0434\u0430 \u0412\u0456\u043d\u0447\u0456"},"pl":{"language":"pl","value":"obraz
-        Leonarda da Vinci"},"lv":{"language":"lv","value":"Leonardo da Vin\u010di
-        glezna 16. gadsimta s\u0101kum\u0101"},"ml":{"language":"ml","value":"\u0d32\u0d3f\u0d2f\u0d28\u0d3e\u0d21\u0d4b
-        \u0d21\u0d3e \u0d35\u0d3f\u0d1e\u0d4d\u0d1a\u0d3f \u0d30\u0d1a\u0d3f\u0d1a\u0d4d\u0d1a
-        \u0d1a\u0d3f\u0d24\u0d4d\u0d30\u0d02"},"sk":{"language":"sk","value":"obraz
-        Leonarda da Vinciho"},"ga":{"language":"ga","value":"picti\u00far de chuid
-        Leonardo da Vinci"},"zh-tw":{"language":"zh-tw","value":"\u9054\u6587\u897f\u756b\u4f5c"},"bn":{"language":"bn","value":"\u09b2\u09bf\u0993\u09a8\u09be\u09b0\u09cd\u09a6\u09cb
-        \u09a6\u09be \u09ad\u09bf\u099e\u09cd\u099a\u09bf\u09b0 \u099a\u09bf\u09a4\u09cd\u09b0\u0995\u09b0\u09cd\u09ae"}},"aliases":{"fr":[{"language":"fr","value":"Mona
-        Lisa"},{"language":"fr","value":"Portrait de Mona Lisa"},{"language":"fr","value":"Portrait
-        de Lisa Gherardini, \u00e9pouse de Francesco del Giocondo"},{"language":"fr","value":"La
-        Gioconda"},{"language":"fr","value":"Monna Lisa"},{"language":"fr","value":"Joconde"}],"en":[{"language":"en","value":"La
-        Joconde"},{"language":"en","value":"La Gioconda"}],"es":[{"language":"es","value":"La
-        Gioconda"},{"language":"es","value":"La Mona Lisa"},{"language":"es","value":"Gioconda"},{"language":"es","value":"La
-        Joconde"}],"am":[{"language":"am","value":"\u120b \u1306\u12ae\u1295\u12f3"}],"ar":[{"language":"ar","value":"\u0627\u0644\u062c\u064a\u0648\u0643\u0627\u0646\u062f\u0627"}],"az":[{"language":"az","value":"Cakonda"}],"mk":[{"language":"mk","value":"\u040f\u043e\u043a\u043e\u043d\u0434\u0430"}],"be":[{"language":"be","value":"\u0414\u0436\u0430\u043a\u043e\u043d\u0434\u0430"},{"language":"be","value":"\u041f\u0430\u0440\u0442\u0440\u044d\u0442
-        \u0441\u043f\u0430\u0434\u0430\u0440\u044b\u043d\u0456 \u041b\u0456\u0437\u044b
-        \u0414\u0436\u0430\u043a\u043e\u043d\u0434\u044b"}],"eo":[{"language":"eo","value":"La
-        \u011cokonda"},{"language":"eo","value":"Mona Lisa"},{"language":"eo","value":"Mona
-        Liza"}],"ca":[{"language":"ca","value":"Mona Lisa"}],"id":[{"language":"id","value":"La
-        Gioconda"}],"it":[{"language":"it","value":"Monna Lisa"}],"lt":[{"language":"lt","value":"D\u017eokonda"}],"ru":[{"language":"ru","value":"\u0414\u0436\u043e\u043a\u043e\u0301\u043d\u0434\u0430"},{"language":"ru","value":"Mona
-        Lisa"},{"language":"ru","value":"Joconde"},{"language":"ru","value":"\u0414\u0436\u043e\u043a\u043e\u043d\u0434\u0430"}],"cs":[{"language":"cs","value":"Gioconda"}],"eu":[{"language":"eu","value":"Mona
-        Lisa"}],"sv":[{"language":"sv","value":"La Gioconda"}],"el":[{"language":"el","value":"\u03a0\u03bf\u03c1\u03c4\u03c1\u03b1\u03af\u03c4\u03bf
-        \u03c4\u03b7\u03c2 \u039b\u03af\u03b6\u03b1 \u0393\u03ba\u03b5\u03c1\u03b1\u03c1\u03bd\u03c4\u03af\u03bd\u03b9"},{"language":"el","value":"\u03a4\u03b6\u03bf\u03ba\u03cc\u03bd\u03c4\u03b1"},{"language":"el","value":"\u03a4\u03b6\u03b9\u03bf\u03ba\u03cc\u03bd\u03c4\u03b1"}],"cy":[{"language":"cy","value":"Monna
-        Lisa"}],"ro":[{"language":"ro","value":"Mona Lisa"}],"la":[{"language":"la","value":"Mona
-        Lisa"}],"oc":[{"language":"oc","value":"Mona Lisa"}],"nb":[{"language":"nb","value":"La
-        Gioconda"}],"or":[{"language":"or","value":"\u0b2e\u0b4b\u0b28\u0b3e\u0b32\u0b3f\u0b38\u0b3e"}],"tr":[{"language":"tr","value":"La
-        Joconde"},{"language":"tr","value":"La Gioconda"}],"uk":[{"language":"uk","value":"\u0414\u0436\u043e\u043a\u043e\u043d\u0434\u0430"},{"language":"uk","value":"Mona
-        Lisa"}],"hu":[{"language":"hu","value":"La Gioconda"}],"zh":[{"language":"zh","value":"\u8499\u5a1c\u9e97\u838e"}],"lv":[{"language":"lv","value":"D\u017eokonda"}],"bn":[{"language":"bn","value":"\u09b2\u09be
-        \u099c\u09cb\u0995\u09cb\u09a8\u09a6\u09be"}]},"claims":{"P18":[{"mainsnak":{"snaktype":"value","property":"P18","datavalue":{"value":"Mona
-        Lisa, by Leonardo da Vinci, from C2RMF retouched.jpg","type":"string"},"datatype":"commonsMedia"},"type":"statement","id":"q12418$C6FA7BA6-A852-4BC3-9EC8-56C969019754","rank":"normal","references":[{"hash":"fa278ebfc458360e5aed63d5058cca83c46134f1","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":328,"id":"Q328"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P31":[{"mainsnak":{"snaktype":"value","property":"P31","datavalue":{"value":{"entity-type":"item","numeric-id":3305213,"id":"Q3305213"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"q12418$DD432D35-3CFA-4D71-9F93-4C6FE610A787","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P31","datavalue":{"value":{"entity-type":"item","numeric-id":63982751,"id":"Q63982751"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$7deb8704-46bd-ff6b-657c-24a1fc059134","rank":"normal"}],"P170":[{"mainsnak":{"snaktype":"value","property":"P170","datavalue":{"value":{"entity-type":"item","numeric-id":762,"id":"Q762"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"q12418$2E0B47A1-1915-44F8-AB71-28FF037C2E43","rank":"normal","references":[{"hash":"021ec5b9bde864bcce7560f452fe8574eb71b9f5","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"http://musee.louvre.fr/oal/joconde/indexFR.html","type":"string"},"datatype":"url"}]},"snaks-order":["P854"]}]}],"P571":[{"mainsnak":{"snaktype":"value","property":"P571","datavalue":{"value":{"time":"+1503-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":8,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"},"type":"statement","qualifiers":{"P1319":[{"snaktype":"value","property":"P1319","hash":"75d846ac00aaa140dafdec3802d5eefd046d155f","datavalue":{"value":{"time":"+1503-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"}],"P1326":[{"snaktype":"value","property":"P1326","hash":"ff331530ede727f78cadd9eb83ea9672baab51d8","datavalue":{"value":{"time":"+1506-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"}]},"qualifiers-order":["P1319","P1326"],"id":"Q12418$8EDF7B01-3F71-4DA7-8B52-8C26242F0293","rank":"normal","references":[{"hash":"1bef4aad1b851acbd8fe550dd1b7801a83a19f01","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"http://agorha.inha.fr/inhaprod/jsp/reference.jsp?reference=INHA__OEUVRE__12544","type":"string"},"datatype":"url"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-10-14T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P813"]}]}],"P186":[{"mainsnak":{"snaktype":"value","property":"P186","datavalue":{"value":{"entity-type":"item","numeric-id":296955,"id":"Q296955"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"q12418$B76F63CF-7E3D-435F-8694-7F743F494B71","rank":"preferred"},{"mainsnak":{"snaktype":"value","property":"P186","datavalue":{"value":{"entity-type":"item","numeric-id":291034,"id":"Q291034"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"741c2f726bfd42522b6ee31f850ec9ff7d4b7c41","datavalue":{"value":{"entity-type":"item","numeric-id":861259,"id":"Q861259"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P518"],"id":"Q12418$053f412b-4541-92f8-ebba-f73c568f5c9b","rank":"preferred"},{"mainsnak":{"snaktype":"value","property":"P186","datavalue":{"value":{"entity-type":"item","numeric-id":287,"id":"Q287"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"12ae0a0f7de28abc9dfe19c20268652d851024cd","datavalue":{"value":{"entity-type":"item","numeric-id":1737943,"id":"Q1737943"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P580":[{"snaktype":"value","property":"P580","hash":"6e28a675ab3fe57e87f145cf0986e02219b8f112","datavalue":{"value":{"time":"+1951-01-01T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"qualifiers-order":["P518","P580"],"id":"Q12418$76f83465-4049-4741-6eb3-ca180b346625","rank":"normal","references":[{"hash":"021ec5b9bde864bcce7560f452fe8574eb71b9f5","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"http://musee.louvre.fr/oal/joconde/indexFR.html","type":"string"},"datatype":"url"}]},"snaks-order":["P854"]}]}],"P195":[{"mainsnak":{"snaktype":"value","property":"P195","datavalue":{"value":{"entity-type":"item","numeric-id":3044768,"id":"Q3044768"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P217":[{"snaktype":"value","property":"P217","hash":"4c9b54b41a4dbe77feb2f6b6bd0e56025cbdd908","datavalue":{"value":"INV.
-        779","type":"string"},"datatype":"string"}]},"qualifiers-order":["P217"],"id":"q12418$7F4C12E8-F8D3-4E33-9BD8-AEFC454C7FDE","rank":"normal","references":[{"hash":"05116b7aa79082c9a2f07d97b6d0d910b691342e","snaks":{"P347":[{"snaktype":"value","property":"P347","datavalue":{"value":"000PE025604","type":"string"},"datatype":"external-id"}]},"snaks-order":["P347"]},{"hash":"c8471727f44af9e2a635658cb5fadf279ce0e89f","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.louvre.fr/en/oeuvre-notices/mona-lisa-portrait-lisa-gherardini-wife-francesco-del-giocondo","type":"string"},"datatype":"url"}]},"snaks-order":["P854"]}]}],"P88":[{"mainsnak":{"snaktype":"value","property":"P88","datavalue":{"value":{"entity-type":"item","numeric-id":1395822,"id":"Q1395822"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"q12418$239AAF7E-AC0D-4B3E-8DE8-BCAC9228954E","rank":"normal","references":[{"hash":"881f36f2079fc5c05c05c2cea722c14619a8d0c4","snaks":{"P248":[{"snaktype":"value","property":"P248","datavalue":{"value":{"entity-type":"item","numeric-id":809825,"id":"Q809825"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P347":[{"snaktype":"value","property":"P347","datavalue":{"value":"000PE025604","type":"string"},"datatype":"external-id"}]},"snaks-order":["P248","P347"]}]}],"P1071":[{"mainsnak":{"snaktype":"value","property":"P1071","datavalue":{"value":{"entity-type":"item","numeric-id":2044,"id":"Q2044"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$90621bde-4baa-ebf5-d509-b934b3831375","rank":"normal"}],"P495":[{"mainsnak":{"snaktype":"value","property":"P495","datavalue":{"value":{"entity-type":"item","numeric-id":38,"id":"Q38"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$8d4ab278-46f1-7513-af76-32f4425786a8","rank":"normal"}],"P127":[{"mainsnak":{"snaktype":"value","property":"P127","datavalue":{"value":{"entity-type":"item","numeric-id":142,"id":"Q142"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"q12418$AABCC68B-E48E-4E29-BEFA-04969D58BDF2","rank":"preferred","references":[{"hash":"05116b7aa79082c9a2f07d97b6d0d910b691342e","snaks":{"P347":[{"snaktype":"value","property":"P347","datavalue":{"value":"000PE025604","type":"string"},"datatype":"external-id"}]},"snaks-order":["P347"]}]},{"mainsnak":{"snaktype":"value","property":"P127","datavalue":{"value":{"entity-type":"item","numeric-id":129857,"id":"Q129857"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P580":[{"snaktype":"value","property":"P580","hash":"a17761696f6a8f2b21f72f4df244b74fdb35bcf5","datavalue":{"value":{"time":"+1519-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"}]},"qualifiers-order":["P580"],"id":"Q12418$3815b54c-41ae-055d-122e-192699fbcb09","rank":"normal"}],"P793":[{"mainsnak":{"snaktype":"value","property":"P793","datavalue":{"value":{"entity-type":"item","numeric-id":22340494,"id":"Q22340494"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P585":[{"snaktype":"value","property":"P585","hash":"0c30a299bc614d8f3fe8535cb7797aaba2288dce","datavalue":{"value":{"time":"+1519-01-01T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}],"P642":[{"snaktype":"value","property":"P642","hash":"94035f40205d3e1132a637eac4471fba0eec64e9","datavalue":{"value":{"entity-type":"item","numeric-id":129857,"id":"Q129857"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P585","P642"],"id":"Q12418$f280c3a3-4a80-b0f8-36f2-3c6792e4d96e","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P793","datavalue":{"value":{"entity-type":"item","numeric-id":61266859,"id":"Q61266859"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P585":[{"snaktype":"value","property":"P585","hash":"797313cbfdf0ef72ecaa9211fb3f2c65cfb1da5c","datavalue":{"value":{"time":"+1911-08-21T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}],"P642":[{"snaktype":"value","property":"P642","hash":"c3556980b2fb129f038a3dcbec948da7ffb361b3","datavalue":{"value":{"entity-type":"item","numeric-id":361362,"id":"Q361362"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P276":[{"snaktype":"value","property":"P276","hash":"126fcf30d730ee8f1f7c4eeb1e4c1943a165770d","datavalue":{"value":{"entity-type":"item","numeric-id":1075988,"id":"Q1075988"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P582":[{"snaktype":"value","property":"P582","hash":"41cf7f1dcbc4c88371e64e269f377d925579538d","datavalue":{"value":{"time":"+1913-12-10T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"qualifiers-order":["P585","P642","P276","P582"],"id":"q12418$fa589ef7-476b-f009-f733-406920a8fdf2","rank":"normal"}],"P136":[{"mainsnak":{"snaktype":"value","property":"P136","datavalue":{"value":{"entity-type":"item","numeric-id":134307,"id":"Q134307"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$17d2ec7a-4710-b013-1fdd-50e78328b80f","rank":"normal"}],"P180":[{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":11879536,"id":"Q11879536"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"a72a593056f6b44ebbd1b673449ac64cde9e465b","datavalue":{"value":{"entity-type":"item","numeric-id":2533752,"id":"Q2533752"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P1354":[{"snaktype":"value","property":"P1354","hash":"c10cac91a790cfecfec95f5678a2918877b30a1d","datavalue":{"value":{"entity-type":"item","numeric-id":14130,"id":"Q14130"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P6022":[{"snaktype":"value","property":"P6022","hash":"a034bddce04c738c116a0d2d56eb51abd1ce32d4","datavalue":{"value":{"entity-type":"item","numeric-id":487,"id":"Q487"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},{"snaktype":"value","property":"P6022","hash":"3655e10802b8ab00be0f981d499e46ff4e1e79ce","datavalue":{"value":{"entity-type":"item","numeric-id":1144593,"id":"Q1144593"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},{"snaktype":"value","property":"P6022","hash":"9fd90921e74a893c983a2560d4e40bb4a8c45d38","datavalue":{"value":{"entity-type":"item","numeric-id":19983456,"id":"Q19983456"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P1884":[{"snaktype":"value","property":"P1884","hash":"be7e8dd7c1d16ddb9180d820fdf58a52bbab4143","datavalue":{"value":{"entity-type":"item","numeric-id":2367101,"id":"Q2367101"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P518","P1354","P6022","P1884"],"id":"q12418$A26B2373-DFA7-4CAF-9D67-71F1E2E3C330","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":527,"id":"Q527"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"8f17eefa8cab847ceb2b0755b0eaf29e25d31b72","datavalue":{"value":{"entity-type":"item","numeric-id":13217555,"id":"Q13217555"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P462":[{"snaktype":"value","property":"P462","hash":"3851a14a1908cfb67bacdc7a7d9338787bb7d701","datavalue":{"value":{"entity-type":"item","numeric-id":3133,"id":"Q3133"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P518","P462"],"id":"q12418$e177d21d-4cda-a086-3933-6f54dfb731f2","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":15324,"id":"Q15324"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"8f17eefa8cab847ceb2b0755b0eaf29e25d31b72","datavalue":{"value":{"entity-type":"item","numeric-id":13217555,"id":"Q13217555"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P518"],"id":"q12418$e4879aa4-4375-983c-822d-2bba0b0bcbee","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":12280,"id":"Q12280"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"8f17eefa8cab847ceb2b0755b0eaf29e25d31b72","datavalue":{"value":{"entity-type":"item","numeric-id":13217555,"id":"Q13217555"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},{"snaktype":"value","property":"P518","hash":"52ace4ad9994fc31e0c6ed4a24357f2ec43e3c52","datavalue":{"value":{"entity-type":"item","numeric-id":14565199,"id":"Q14565199"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P518"],"id":"q12418$8FD166AA-37B3-4A86-BD77-F145ACA9BF27","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":2822867,"id":"Q2822867"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"a72a593056f6b44ebbd1b673449ac64cde9e465b","datavalue":{"value":{"entity-type":"item","numeric-id":2533752,"id":"Q2533752"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P518"],"id":"q12418$BEF4A50C-8A43-47C8-BA64-DCAF093F76CF","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":107425,"id":"Q107425"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"8f17eefa8cab847ceb2b0755b0eaf29e25d31b72","datavalue":{"value":{"entity-type":"item","numeric-id":13217555,"id":"Q13217555"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P2079":[{"snaktype":"value","property":"P2079","hash":"b890cc084fd7b930a9e265fd14d8ae9ac3c55398","datavalue":{"value":{"entity-type":"item","numeric-id":210788,"id":"Q210788"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P518","P2079"],"id":"q12418$d7312b7d-4e68-c15d-d9a4-6e9dc182d6ab","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":8502,"id":"Q8502"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"8f17eefa8cab847ceb2b0755b0eaf29e25d31b72","datavalue":{"value":{"entity-type":"item","numeric-id":13217555,"id":"Q13217555"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P518"],"id":"Q12418$8723f7cc-45ca-0cb2-a7dc-34c7a1e2f0ff","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":19983456,"id":"Q19983456"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$7fe01ddc-41bd-fcf5-e95e-8cbf28633bff","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":153032,"id":"Q153032"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$8b9f2ca0-4529-7136-fc45-b3e9dfbfd4c2","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":467,"id":"Q467"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P1114":[{"snaktype":"value","property":"P1114","hash":"9d780ee198074963faf438f66fe68ee4315db6dd","datavalue":{"value":{"amount":"+1","unit":"1"},"type":"quantity"},"datatype":"quantity"}]},"qualifiers-order":["P1114"],"id":"Q12418$645cf251-4680-0b31-814f-1ed5256d0ece","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":5,"id":"Q5"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P1114":[{"snaktype":"value","property":"P1114","hash":"9d780ee198074963faf438f66fe68ee4315db6dd","datavalue":{"value":{"amount":"+1","unit":"1"},"type":"quantity"},"datatype":"quantity"}]},"qualifiers-order":["P1114"],"id":"Q12418$a95f962c-4217-f047-9ae9-4ace971256cb","rank":"normal"}],"P608":[{"mainsnak":{"snaktype":"value","property":"P608","datavalue":{"value":{"entity-type":"item","numeric-id":14619895,"id":"Q14619895"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"q12418$46dad587-4658-af2b-cb18-48a7a18a333b","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P608","datavalue":{"value":{"entity-type":"item","numeric-id":14619896,"id":"Q14619896"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"q12418$e18ef191-4322-5c83-d769-2f9b6caa37b4","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P608","datavalue":{"value":{"entity-type":"item","numeric-id":15087813,"id":"Q15087813"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$2c695ad0-4449-a5b2-2ad2-e17d7f54a1b7","rank":"normal"}],"P1212":[{"mainsnak":{"snaktype":"value","property":"P1212","datavalue":{"value":"14153","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$e7b416ea-45b7-4400-3e49-943e98c8c9cc","rank":"normal"}],"P347":[{"mainsnak":{"snaktype":"value","property":"P347","datavalue":{"value":"000PE025604","type":"string"},"datatype":"external-id"},"type":"statement","id":"q12418$6FADAEB4-D625-45A3-8D37-727EC8EECA8E","rank":"normal"}],"P856":[{"mainsnak":{"snaktype":"value","property":"P856","datavalue":{"value":"http://www.louvre.fr/oeuvre-notices/portrait-de-lisa-gherardini-epouse-de-francesco-del-giocondo","type":"string"},"datatype":"url"},"type":"statement","qualifiers":{"P407":[{"snaktype":"value","property":"P407","hash":"d197d0a5efa4b4c23a302a829dd3ef43684fe002","datavalue":{"value":{"entity-type":"item","numeric-id":150,"id":"Q150"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P407"],"id":"Q12418$a9b6d720-4b72-0cca-0914-66b21d283b2a","rank":"preferred"}],"P910":[{"mainsnak":{"snaktype":"value","property":"P910","datavalue":{"value":{"entity-type":"item","numeric-id":13369744,"id":"Q13369744"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$7D19A1E2-FF9B-4A29-A472-C17243347FD4","rank":"normal"}],"P373":[{"mainsnak":{"snaktype":"value","property":"P373","datavalue":{"value":"Mona
-        Lisa","type":"string"},"datatype":"string"},"type":"statement","id":"q12418$4121C5C9-3225-4542-AE36-16EDE11D638D","rank":"normal"}],"P227":[{"mainsnak":{"snaktype":"value","property":"P227","datavalue":{"value":"4074156-4","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$91CCBFC4-0627-45FD-832B-FF28EF0FF3FC","rank":"normal","references":[{"hash":"9a24f7c0208b05d6be97077d855671d1dfdbc0dd","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":48183,"id":"Q48183"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P214":[{"mainsnak":{"snaktype":"value","property":"P214","datavalue":{"value":"180757281","type":"string"},"datatype":"external-id"},"type":"statement","id":"q12418$C1FFB3C4-6196-4FA9-A041-E36A3A4FD007","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P214","datavalue":{"value":"259855831","type":"string"},"datatype":"external-id"},"type":"statement","qualifiers":{"P2241":[{"snaktype":"value","property":"P2241","hash":"ffbc337f8bdd349237a9dee387c40a65880c1768","datavalue":{"value":{"entity-type":"item","numeric-id":1263068,"id":"Q1263068"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P2241"],"id":"q12418$5106FE46-9EC4-439A-9309-22662683D77B","rank":"deprecated"}],"P268":[{"mainsnak":{"snaktype":"value","property":"P268","datavalue":{"value":"11944800v","type":"string"},"datatype":"external-id"},"type":"statement","id":"q12418$96f908ed-4450-afbc-7b7f-56b50c89f00a","rank":"normal","references":[{"hash":"d4bd87b862b12d99d26e86472d44f26858dee639","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":8447,"id":"Q8447"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P727":[{"mainsnak":{"snaktype":"value","property":"P727","datavalue":{"value":"03919/public_mistral_joconde_fr_ACTION_CHERCHER_FIELD_1_REF_VALUE_1_000PE025604","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$b8808d63-44fe-da11-b3e3-c8faf5103457","rank":"normal"}],"P646":[{"mainsnak":{"snaktype":"value","property":"P646","datavalue":{"value":"/m/0jbg2","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$A5D88FCF-36CF-49F7-B188-F22B53481C56","rank":"normal","references":[{"hash":"2b00cb481cddcac7623114367489b5c194901c4a","snaks":{"P248":[{"snaktype":"value","property":"P248","datavalue":{"value":{"entity-type":"item","numeric-id":15241312,"id":"Q15241312"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P577":[{"snaktype":"value","property":"P577","datavalue":{"value":{"time":"+2013-10-28T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P248","P577"]}]}],"P244":[{"mainsnak":{"snaktype":"value","property":"P244","datavalue":{"value":"n98092274","type":"string"},"datatype":"external-id"},"type":"statement","id":"q12418$dc52a675-4442-7c95-82fb-36df3f5e018c","rank":"normal"}],"P269":[{"mainsnak":{"snaktype":"value","property":"P269","datavalue":{"value":"027396797","type":"string"},"datatype":"external-id"},"type":"statement","id":"q12418$c5440eaa-475a-e9c2-7bf1-5b8fa8e33722","rank":"normal"}],"P409":[{"mainsnak":{"snaktype":"value","property":"P409","datavalue":{"value":"35300571","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$70E38096-AADD-49A4-8437-9367EBD0292D","rank":"normal","references":[{"hash":"d4bd87b862b12d99d26e86472d44f26858dee639","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":8447,"id":"Q8447"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P135":[{"mainsnak":{"snaktype":"value","property":"P135","datavalue":{"value":{"entity-type":"item","numeric-id":1474884,"id":"Q1474884"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$3D034BA1-FA97-45FE-BA08-B4FE6B632171","rank":"normal"}],"P276":[{"mainsnak":{"snaktype":"value","property":"P276","datavalue":{"value":{"entity-type":"item","numeric-id":10292830,"id":"Q10292830"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$67BBD0F2-0DBE-42A5-9874-ED80A10CC824","rank":"preferred","references":[{"hash":"debd170a6984f13ec678274dbaeb4acadcb4020a","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"http://cartelfr.louvre.fr/cartelfr/visite?srv=car_not_frame&idNotice=14153","type":"string"},"datatype":"url"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-09-23T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P813"]}]},{"mainsnak":{"snaktype":"value","property":"P276","datavalue":{"value":{"entity-type":"item","numeric-id":19675,"id":"Q19675"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P580":[{"snaktype":"value","property":"P580","hash":"3d6925d97cf6e9ea9eaed02c0aad6786836f1a21","datavalue":{"value":{"time":"+1797-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"qualifiers-order":["P580"],"id":"Q12418$e1246307-4255-c803-42d7-8dc60bfddb83","rank":"normal"}],"P2048":[{"mainsnak":{"snaktype":"value","property":"P2048","datavalue":{"value":{"amount":"+77","unit":"http://www.wikidata.org/entity/Q174728"},"type":"quantity"},"datatype":"quantity"},"type":"statement","id":"Q12418$b4004341-4231-c50f-b70f-b29c0c1e4e20","rank":"normal"}],"P2049":[{"mainsnak":{"snaktype":"value","property":"P2049","datavalue":{"value":{"amount":"+53","unit":"http://www.wikidata.org/entity/Q174728"},"type":"quantity"},"datatype":"quantity"},"type":"statement","id":"Q12418$5a9b61a4-423f-05d5-58ad-857cfa0ac5bf","rank":"normal"}],"P2344":[{"mainsnak":{"snaktype":"value","property":"P2344","datavalue":{"value":"12544","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$447ebea5-4345-c75c-b399-dd898e2a5bef","rank":"normal"}],"P973":[{"mainsnak":{"snaktype":"value","property":"P973","datavalue":{"value":"http://www.louvre.fr/oeuvre-notices/portrait-de-lisa-gherardini-epouse-de-francesco-del-giocondo","type":"string"},"datatype":"url"},"type":"statement","qualifiers":{"P407":[{"snaktype":"value","property":"P407","hash":"d197d0a5efa4b4c23a302a829dd3ef43684fe002","datavalue":{"value":{"entity-type":"item","numeric-id":150,"id":"Q150"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P407"],"id":"Q12418$3a8fe78a-442a-2765-0616-c95f7e8f0a59","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P973","datavalue":{"value":"https://www.louvre.fr/en/oeuvre-notices/mona-lisa-\u2013-portrait-lisa-gherardini-wife-francesco-del-giocondo","type":"string"},"datatype":"url"},"type":"statement","qualifiers":{"P407":[{"snaktype":"value","property":"P407","hash":"daf1c4fcb58181b02dff9cc89deb084004ddae4b","datavalue":{"value":{"entity-type":"item","numeric-id":1860,"id":"Q1860"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P407"],"id":"Q12418$2d24d663-47fa-7286-794b-fbd2e3a7a2c5","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P973","datavalue":{"value":"https://www.louvre.fr/jp/oeuvre-notices/\u300a\u30d5\u30e9\u30f3\u30c1\u30a7\u30b9\u30b3\u30fb\u30c7\u30eb\u30fb\u30b8\u30e7\u30b3\u30f3\u30c9\u306e\u59bb\u3001\u30ea\u30fc\u30b6\u30fb\u30b2\u30e9\u30eb\u30c7\u30a3\u30fc\u30cb\u306e\u8096\u50cf\u300b","type":"string"},"datatype":"url"},"type":"statement","qualifiers":{"P407":[{"snaktype":"value","property":"P407","hash":"d858d1b9f6e6e383f38dfbe706d102f056c07312","datavalue":{"value":{"entity-type":"item","numeric-id":5287,"id":"Q5287"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P407"],"id":"Q12418$5f0aff08-48a1-1de6-f076-6d1807f42493","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P973","datavalue":{"value":"https://www.louvre.fr/zh/oeuvre-notices/\u300a\u8499\u5a1c\u4e3d\u838e\u300b","type":"string"},"datatype":"url"},"type":"statement","qualifiers":{"P407":[{"snaktype":"value","property":"P407","hash":"3b709b2817635b16b858f8f82bac4fe9941fd313","datavalue":{"value":{"entity-type":"item","numeric-id":9192,"id":"Q9192"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P407"],"id":"Q12418$4fa97e4c-4eaa-88e1-2cbc-ab4facf6ae8e","rank":"normal"}],"P17":[{"mainsnak":{"snaktype":"value","property":"P17","datavalue":{"value":{"entity-type":"item","numeric-id":142,"id":"Q142"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$35316E9B-ED05-4DFF-8CE2-C8E6861CED27","rank":"normal"}],"P3417":[{"mainsnak":{"snaktype":"value","property":"P3417","datavalue":{"value":"Mona-Lisa","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$7D8D7604-9D0A-46BA-80B5-26CD59C884D8","rank":"normal"}],"P528":[{"mainsnak":{"snaktype":"value","property":"P528","datavalue":{"value":"22","type":"string"},"datatype":"string"},"type":"statement","qualifiers":{"P972":[{"snaktype":"value","property":"P972","hash":"bc40f6804f6a0eb88dee5486533f2c94408d074c","datavalue":{"value":{"entity-type":"item","numeric-id":35556353,"id":"Q35556353"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P972"],"id":"Q12418$52f752ed-4e02-ae84-be25-bc2189710924","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P528","datavalue":{"value":"7","type":"string"},"datatype":"string"},"type":"statement","qualifiers":{"P972":[{"snaktype":"value","property":"P972","hash":"ec6f1390c34596bfb32131217cb6e06e144d7ac5","datavalue":{"value":{"entity-type":"item","numeric-id":41634361,"id":"Q41634361"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P972"],"id":"Q12418$8cf6d035-4d5a-8a45-3b16-7edf122c48f9","rank":"normal"}],"P1417":[{"mainsnak":{"snaktype":"value","property":"P1417","datavalue":{"value":"topic/Mona-Lisa-painting","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$220058A5-3D5C-48B9-BE00-15BBA02F277F","rank":"normal"}],"P2581":[{"mainsnak":{"snaktype":"value","property":"P2581","datavalue":{"value":"03571983n","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$D7782C3E-DA32-4634-B453-752619169BDD","rank":"normal","references":[{"hash":"248ac337a217a5f5eed7139a82a4e60931611af0","snaks":{"P248":[{"snaktype":"value","property":"P248","datavalue":{"value":{"entity-type":"item","numeric-id":4837690,"id":"Q4837690"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P248"]}]}],"P3219":[{"mainsnak":{"snaktype":"value","property":"P3219","datavalue":{"value":"la-joconde-portrait-de-mona-lisa","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$C1E55D86-94BA-4927-B8EA-5F13B3AA9D33","rank":"normal"}],"P1476":[{"mainsnak":{"snaktype":"value","property":"P1476","datavalue":{"value":{"text":"La
-        Gioconda","language":"it"},"type":"monolingualtext"},"datatype":"monolingualtext"},"type":"statement","id":"Q12418$6f02ff6e-4dfc-741e-4609-553afa558dfa","rank":"normal"}],"P3222":[{"mainsnak":{"snaktype":"value","property":"P3222","datavalue":{"value":"mona-lisa","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$7FE6477F-4E06-40A7-8ECD-BB6BA700C528","rank":"normal"}],"P1669":[{"mainsnak":{"snaktype":"value","property":"P1669","datavalue":{"value":"700000213","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$74D66435-2597-459D-A0BB-304E62A5E966","rank":"normal"}],"P4761":[{"mainsnak":{"snaktype":"value","property":"P4761","datavalue":{"value":"leonard-de-vinci_la-joconde_huile-sur-bois_1503","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$02E0AA28-7F39-4634-B25C-8734B377E726","rank":"normal"}],"P1257":[{"mainsnak":{"snaktype":"value","property":"P1257","datavalue":{"value":"61BB2(Lisa
-        del Giocondo)11","type":"string"},"datatype":"string"},"type":"statement","id":"Q12418$4b8ecef0-4865-3a3f-dd49-62ce7ba0c71f","rank":"normal"}],"P349":[{"mainsnak":{"snaktype":"value","property":"P349","datavalue":{"value":"001103889","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$939b6b25-46df-0128-8993-d360325682f0","rank":"normal"}],"P691":[{"mainsnak":{"snaktype":"value","property":"P691","datavalue":{"value":"aun2006372368","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$da3e8503-49e4-f0a5-2468-cd4a311306a5","rank":"normal"}],"P6216":[{"mainsnak":{"snaktype":"value","property":"P6216","datavalue":{"value":{"entity-type":"item","numeric-id":19652,"id":"Q19652"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P459":[{"snaktype":"value","property":"P459","hash":"8f1a08d7359ea45500b600d7ad0f13a7f032145e","datavalue":{"value":{"entity-type":"item","numeric-id":29940705,"id":"Q29940705"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P1001":[{"snaktype":"value","property":"P1001","hash":"91dce20cb7cf8d03dc976a70e56b19939881d751","datavalue":{"value":{"entity-type":"item","numeric-id":60332278,"id":"Q60332278"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P459","P1001"],"id":"Q12418$f55d2db5-42a8-3007-1303-bc69a5556983","rank":"normal"}],"P5905":[{"mainsnak":{"snaktype":"value","property":"P5905","datavalue":{"value":"4055-59011","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$2B879F0A-3112-4F1B-8CFF-BA6EF40AB6B4","rank":"normal"}],"P6332":[{"mainsnak":{"snaktype":"value","property":"P6332","datavalue":{"value":"la-joconde","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$7acc1145-44fd-2863-7da8-5648ad98e1b3","rank":"normal"}],"P6002":[{"mainsnak":{"snaktype":"value","property":"P6002","datavalue":{"value":"leonardo-da-vinci/mona-lisa","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$65d52927-489a-3b8c-3a3a-ff56148601c6","rank":"normal"}],"P6573":[{"mainsnak":{"snaktype":"value","property":"P6573","datavalue":{"value":"Mona_Lisa","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$273D772D-D831-45DF-9E41-4C2C8AF15456","rank":"normal"}],"P217":[{"mainsnak":{"snaktype":"value","property":"P217","datavalue":{"value":"INV.
-        779","type":"string"},"datatype":"string"},"type":"statement","qualifiers":{"P195":[{"snaktype":"value","property":"P195","hash":"cf5993de5bca62759f45fec6b851138536e3ed4a","datavalue":{"value":{"entity-type":"item","numeric-id":3044768,"id":"Q3044768"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P195"],"id":"q12418$9131E8B4-0804-4F4A-96DE-AC409421057B","rank":"normal","references":[{"hash":"c8471727f44af9e2a635658cb5fadf279ce0e89f","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.louvre.fr/en/oeuvre-notices/mona-lisa-portrait-lisa-gherardini-wife-francesco-del-giocondo","type":"string"},"datatype":"url"}]},"snaks-order":["P854"]}]}],"P1343":[{"mainsnak":{"snaktype":"value","property":"P1343","datavalue":{"value":{"entity-type":"item","numeric-id":66362718,"id":"Q66362718"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P304":[{"snaktype":"value","property":"P304","hash":"0ac8e3e96381980861e966d108ea725bf69cddcf","datavalue":{"value":"135","type":"string"},"datatype":"string"}]},"qualifiers-order":["P304"],"id":"Q12418$adbdfcbd-4056-c482-b4c6-4f3b14971b85","rank":"normal"}],"P921":[{"mainsnak":{"snaktype":"value","property":"P921","datavalue":{"value":{"entity-type":"item","numeric-id":11879536,"id":"Q11879536"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q12418$f864dd3a-4315-9623-5584-e7656f88188d","rank":"normal"}],"P1296":[{"mainsnak":{"snaktype":"value","property":"P1296","datavalue":{"value":"0030055","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q12418$1FDD69C2-0F9A-40B7-AF48-4FF48A106878","rank":"normal"}]},"sitelinks":{"afwiki":{"site":"afwiki","title":"Mona
-        Lisa","badges":[],"url":"https://af.wikipedia.org/wiki/Mona_Lisa"},"amwiki":{"site":"amwiki","title":"\u121e\u1293
-        \u120a\u12db","badges":[],"url":"https://am.wikipedia.org/wiki/%E1%88%9E%E1%8A%93_%E1%88%8A%E1%8B%9B"},"arwiki":{"site":"arwiki","title":"\u0645\u0648\u0646\u0627\u0644\u064a\u0632\u0627","badges":[],"url":"https://ar.wikipedia.org/wiki/%D9%85%D9%88%D9%86%D8%A7%D9%84%D9%8A%D8%B2%D8%A7"},"astwiki":{"site":"astwiki","title":"La
-        Gioconda","badges":[],"url":"https://ast.wikipedia.org/wiki/La_Gioconda"},"aswiki":{"site":"aswiki","title":"\u09ae\u09a8\u09be\u09b2\u09bf\u099b\u09be","badges":[],"url":"https://as.wikipedia.org/wiki/%E0%A6%AE%E0%A6%A8%E0%A6%BE%E0%A6%B2%E0%A6%BF%E0%A6%9B%E0%A6%BE"},"azwiki":{"site":"azwiki","title":"Mona
-        Liza","badges":["Q17437798"],"url":"https://az.wikipedia.org/wiki/Mona_Liza"},"bawiki":{"site":"bawiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430","badges":[],"url":"https://ba.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D0%B8%D0%B7%D0%B0"},"bclwiki":{"site":"bclwiki","title":"Mona
-        Lisa","badges":[],"url":"https://bcl.wikipedia.org/wiki/Mona_Lisa"},"be_x_oldwiki":{"site":"be_x_oldwiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0456\u0437\u0430","badges":[],"url":"https://be-tarask.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D1%96%D0%B7%D0%B0"},"bewiki":{"site":"bewiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0456\u0437\u0430","badges":[],"url":"https://be.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D1%96%D0%B7%D0%B0"},"bgwiki":{"site":"bgwiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430","badges":[],"url":"https://bg.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D0%B8%D0%B7%D0%B0"},"bnwiki":{"site":"bnwiki","title":"\u09ae\u09cb\u09a8\u09be
-        \u09b2\u09bf\u09b8\u09be","badges":[],"url":"https://bn.wikipedia.org/wiki/%E0%A6%AE%E0%A7%8B%E0%A6%A8%E0%A6%BE_%E0%A6%B2%E0%A6%BF%E0%A6%B8%E0%A6%BE"},"bowiki":{"site":"bowiki","title":"\u0f58\u0f7c\u0f0b\u0f53\u0f0b\u0f63\u0f72\u0f0b\u0f66\u0f0d","badges":[],"url":"https://bo.wikipedia.org/wiki/%E0%BD%98%E0%BD%BC%E0%BC%8B%E0%BD%93%E0%BC%8B%E0%BD%A3%E0%BD%B2%E0%BC%8B%E0%BD%A6%E0%BC%8D"},"brwiki":{"site":"brwiki","title":"Mona
-        Lisa","badges":[],"url":"https://br.wikipedia.org/wiki/Mona_Lisa"},"bswiki":{"site":"bswiki","title":"Mona
-        Lisa","badges":[],"url":"https://bs.wikipedia.org/wiki/Mona_Lisa"},"cawiki":{"site":"cawiki","title":"La
-        Gioconda","badges":["Q17437796"],"url":"https://ca.wikipedia.org/wiki/La_Gioconda"},"cbk_zamwiki":{"site":"cbk_zamwiki","title":"Monalisa","badges":[],"url":"https://cbk-zam.wikipedia.org/wiki/Monalisa"},"ckbwiki":{"site":"ckbwiki","title":"\u0645\u06c6\u0646\u0627\u0644\u06cc\u0632\u0627","badges":[],"url":"https://ckb.wikipedia.org/wiki/%D9%85%DB%86%D9%86%D8%A7%D9%84%DB%8C%D8%B2%D8%A7"},"cowiki":{"site":"cowiki","title":"Giuconda","badges":[],"url":"https://co.wikipedia.org/wiki/Giuconda"},"cswiki":{"site":"cswiki","title":"Mona
-        Lisa","badges":[],"url":"https://cs.wikipedia.org/wiki/Mona_Lisa"},"cswikiquote":{"site":"cswikiquote","title":"Mona
-        Lisa","badges":[],"url":"https://cs.wikiquote.org/wiki/Mona_Lisa"},"cvwiki":{"site":"cvwiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430","badges":[],"url":"https://cv.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D0%B8%D0%B7%D0%B0"},"cywiki":{"site":"cywiki","title":"Mona
-        Lisa","badges":[],"url":"https://cy.wikipedia.org/wiki/Mona_Lisa"},"dawiki":{"site":"dawiki","title":"Mona
-        Lisa","badges":[],"url":"https://da.wikipedia.org/wiki/Mona_Lisa"},"dewiki":{"site":"dewiki","title":"Mona
-        Lisa","badges":[],"url":"https://de.wikipedia.org/wiki/Mona_Lisa"},"elwiki":{"site":"elwiki","title":"\u039c\u03cc\u03bd\u03b1
-        \u039b\u03af\u03b6\u03b1","badges":[],"url":"https://el.wikipedia.org/wiki/%CE%9C%CF%8C%CE%BD%CE%B1_%CE%9B%CE%AF%CE%B6%CE%B1"},"enwiki":{"site":"enwiki","title":"Mona
-        Lisa","badges":[],"url":"https://en.wikipedia.org/wiki/Mona_Lisa"},"eowiki":{"site":"eowiki","title":"La
-        Gioconda","badges":[],"url":"https://eo.wikipedia.org/wiki/La_Gioconda"},"eswiki":{"site":"eswiki","title":"La
-        Gioconda","badges":["Q17437796"],"url":"https://es.wikipedia.org/wiki/La_Gioconda"},"etwiki":{"site":"etwiki","title":"Mona
-        Lisa","badges":[],"url":"https://et.wikipedia.org/wiki/Mona_Lisa"},"euwiki":{"site":"euwiki","title":"Gioconda","badges":[],"url":"https://eu.wikipedia.org/wiki/Gioconda"},"fawiki":{"site":"fawiki","title":"\u0645\u0648\u0646\u0627\u0644\u06cc\u0632\u0627","badges":[],"url":"https://fa.wikipedia.org/wiki/%D9%85%D9%88%D9%86%D8%A7%D9%84%DB%8C%D8%B2%D8%A7"},"fiwiki":{"site":"fiwiki","title":"Mona
-        Lisa","badges":["Q17559452"],"url":"https://fi.wikipedia.org/wiki/Mona_Lisa"},"fowiki":{"site":"fowiki","title":"Mona
-        Lisa","badges":[],"url":"https://fo.wikipedia.org/wiki/Mona_Lisa"},"frrwiki":{"site":"frrwiki","title":"Mona
-        Lisa","badges":[],"url":"https://frr.wikipedia.org/wiki/Mona_Lisa"},"frwiki":{"site":"frwiki","title":"La
-        Joconde","badges":[],"url":"https://fr.wikipedia.org/wiki/La_Joconde"},"frwikiquote":{"site":"frwikiquote","title":"La
-        Joconde","badges":[],"url":"https://fr.wikiquote.org/wiki/La_Joconde"},"fywiki":{"site":"fywiki","title":"Mona
-        Lisa","badges":[],"url":"https://fy.wikipedia.org/wiki/Mona_Lisa"},"gawiki":{"site":"gawiki","title":"An
-        Mona Lisa","badges":[],"url":"https://ga.wikipedia.org/wiki/An_Mona_Lisa"},"glwiki":{"site":"glwiki","title":"Mona
-        Lisa","badges":[],"url":"https://gl.wikipedia.org/wiki/Mona_Lisa"},"gorwiki":{"site":"gorwiki","title":"Mona
-        Lisa","badges":[],"url":"https://gor.wikipedia.org/wiki/Mona_Lisa"},"hewiki":{"site":"hewiki","title":"\u05de\u05d5\u05e0\u05d4
-        \u05dc\u05d9\u05d6\u05d4","badges":[],"url":"https://he.wikipedia.org/wiki/%D7%9E%D7%95%D7%A0%D7%94_%D7%9C%D7%99%D7%96%D7%94"},"hifwiki":{"site":"hifwiki","title":"Mona
-        Lisa","badges":[],"url":"https://hif.wikipedia.org/wiki/Mona_Lisa"},"hiwiki":{"site":"hiwiki","title":"\u092e\u094b\u0928\u093e
-        \u0932\u0940\u091c\u093c\u093e","badges":[],"url":"https://hi.wikipedia.org/wiki/%E0%A4%AE%E0%A5%8B%E0%A4%A8%E0%A4%BE_%E0%A4%B2%E0%A5%80%E0%A4%9C%E0%A4%BC%E0%A4%BE"},"hrwiki":{"site":"hrwiki","title":"Mona
-        Lisa","badges":[],"url":"https://hr.wikipedia.org/wiki/Mona_Lisa"},"huwiki":{"site":"huwiki","title":"Mona
-        Lisa (festm\u00e9ny)","badges":[],"url":"https://hu.wikipedia.org/wiki/Mona_Lisa_(festm%C3%A9ny)"},"hywiki":{"site":"hywiki","title":"\u0544\u0578\u0576\u0561
-        \u053c\u056b\u0566\u0561","badges":[],"url":"https://hy.wikipedia.org/wiki/%D5%84%D5%B8%D5%B6%D5%A1_%D4%BC%D5%AB%D5%A6%D5%A1"},"hywwiki":{"site":"hywwiki","title":"\u053c\u056b\u0566\u0561
-        \u057f\u0567\u056c \u0543\u0578\u0584\u0578\u0576\u057f\u0585","badges":[],"url":"https://hyw.wikipedia.org/wiki/%D4%BC%D5%AB%D5%A6%D5%A1_%D5%BF%D5%A7%D5%AC_%D5%83%D5%B8%D6%84%D5%B8%D5%B6%D5%BF%D6%85"},"idwiki":{"site":"idwiki","title":"Mona
-        Lisa","badges":[],"url":"https://id.wikipedia.org/wiki/Mona_Lisa"},"ilowiki":{"site":"ilowiki","title":"Mona
-        Lisa","badges":[],"url":"https://ilo.wikipedia.org/wiki/Mona_Lisa"},"iswiki":{"site":"iswiki","title":"M\u00f3na
-        L\u00edsa","badges":[],"url":"https://is.wikipedia.org/wiki/M%C3%B3na_L%C3%ADsa"},"itwiki":{"site":"itwiki","title":"Gioconda","badges":[],"url":"https://it.wikipedia.org/wiki/Gioconda"},"itwikiquote":{"site":"itwikiquote","title":"Gioconda","badges":[],"url":"https://it.wikiquote.org/wiki/Gioconda"},"jawiki":{"site":"jawiki","title":"\u30e2\u30ca\u30fb\u30ea\u30b6","badges":[],"url":"https://ja.wikipedia.org/wiki/%E3%83%A2%E3%83%8A%E3%83%BB%E3%83%AA%E3%82%B6"},"jvwiki":{"site":"jvwiki","title":"Monalisa","badges":[],"url":"https://jv.wikipedia.org/wiki/Monalisa"},"kawiki":{"site":"kawiki","title":"\u10db\u10dd\u10dc\u10d0
-        \u10da\u10d8\u10d6\u10d0","badges":[],"url":"https://ka.wikipedia.org/wiki/%E1%83%9B%E1%83%9D%E1%83%9C%E1%83%90_%E1%83%9A%E1%83%98%E1%83%96%E1%83%90"},"kkwiki":{"site":"kkwiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430","badges":[],"url":"https://kk.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D0%B8%D0%B7%D0%B0"},"knwiki":{"site":"knwiki","title":"\u0cae\u0ccb\u0ca8
-        \u0cb2\u0cc0\u0cb8","badges":[],"url":"https://kn.wikipedia.org/wiki/%E0%B2%AE%E0%B3%8B%E0%B2%A8_%E0%B2%B2%E0%B3%80%E0%B2%B8"},"kowiki":{"site":"kowiki","title":"\ubaa8\ub098\ub9ac\uc790","badges":[],"url":"https://ko.wikipedia.org/wiki/%EB%AA%A8%EB%82%98%EB%A6%AC%EC%9E%90"},"kshwiki":{"site":"kshwiki","title":"Mona
-        Lisa (Beld)","badges":[],"url":"https://ksh.wikipedia.org/wiki/Mona_Lisa_(Beld)"},"kuwiki":{"site":"kuwiki","title":"Mona
-        L\u00eeza","badges":[],"url":"https://ku.wikipedia.org/wiki/Mona_L%C3%AEza"},"lawiki":{"site":"lawiki","title":"Iucunda","badges":[],"url":"https://la.wikipedia.org/wiki/Iucunda"},"lbwiki":{"site":"lbwiki","title":"Mona
-        Lisa","badges":[],"url":"https://lb.wikipedia.org/wiki/Mona_Lisa"},"liwiki":{"site":"liwiki","title":"Mona
-        Lisa","badges":[],"url":"https://li.wikipedia.org/wiki/Mona_Lisa"},"lowiki":{"site":"lowiki","title":"\u0ea5\u0eb2\u0ec2\u0e8a\u0e81\u0ebb\u0e87","badges":[],"url":"https://lo.wikipedia.org/wiki/%E0%BA%A5%E0%BA%B2%E0%BB%82%E0%BA%8A%E0%BA%81%E0%BA%BB%E0%BA%87"},"ltwiki":{"site":"ltwiki","title":"Mona
-        Liza","badges":[],"url":"https://lt.wikipedia.org/wiki/Mona_Liza"},"lvwiki":{"site":"lvwiki","title":"Mona
-        Liza","badges":[],"url":"https://lv.wikipedia.org/wiki/Mona_Liza"},"maiwiki":{"site":"maiwiki","title":"\u092e\u094b\u0928\u093e
-        \u0932\u093f\u091c\u093e","badges":[],"url":"https://mai.wikipedia.org/wiki/%E0%A4%AE%E0%A5%8B%E0%A4%A8%E0%A4%BE_%E0%A4%B2%E0%A4%BF%E0%A4%9C%E0%A4%BE"},"mkwiki":{"site":"mkwiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430","badges":[],"url":"https://mk.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D0%B8%D0%B7%D0%B0"},"mlwiki":{"site":"mlwiki","title":"\u0d2e\u0d4b\u0d23\u0d3e\u0d32\u0d3f\u0d38","badges":[],"url":"https://ml.wikipedia.org/wiki/%E0%B4%AE%E0%B5%8B%E0%B4%A3%E0%B4%BE%E0%B4%B2%E0%B4%BF%E0%B4%B8"},"mnwiki":{"site":"mnwiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430","badges":[],"url":"https://mn.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D0%B8%D0%B7%D0%B0"},"mrwiki":{"site":"mrwiki","title":"\u092e\u094b\u0928\u093e\u0932\u093f\u0938\u093e","badges":[],"url":"https://mr.wikipedia.org/wiki/%E0%A4%AE%E0%A5%8B%E0%A4%A8%E0%A4%BE%E0%A4%B2%E0%A4%BF%E0%A4%B8%E0%A4%BE"},"mswiki":{"site":"mswiki","title":"Mona
-        Lisa","badges":[],"url":"https://ms.wikipedia.org/wiki/Mona_Lisa"},"mtwiki":{"site":"mtwiki","title":"Mona
-        Lisa","badges":[],"url":"https://mt.wikipedia.org/wiki/Mona_Lisa"},"mywiki":{"site":"mywiki","title":"\u1019\u102d\u102f\u1014\u102c\u101c\u102e\u1006\u102c","badges":[],"url":"https://my.wikipedia.org/wiki/%E1%80%99%E1%80%AD%E1%80%AF%E1%80%94%E1%80%AC%E1%80%9C%E1%80%AE%E1%80%86%E1%80%AC"},"newiki":{"site":"newiki","title":"\u092e\u094b\u0928\u093e
-        \u0932\u093f\u091c\u093e","badges":[],"url":"https://ne.wikipedia.org/wiki/%E0%A4%AE%E0%A5%8B%E0%A4%A8%E0%A4%BE_%E0%A4%B2%E0%A4%BF%E0%A4%9C%E0%A4%BE"},"nlwiki":{"site":"nlwiki","title":"Mona
-        Lisa","badges":[],"url":"https://nl.wikipedia.org/wiki/Mona_Lisa"},"nnwiki":{"site":"nnwiki","title":"Mona
-        Lisa","badges":[],"url":"https://nn.wikipedia.org/wiki/Mona_Lisa"},"nowiki":{"site":"nowiki","title":"Mona
-        Lisa","badges":[],"url":"https://no.wikipedia.org/wiki/Mona_Lisa"},"ocwiki":{"site":"ocwiki","title":"La
-        Gioconda","badges":[],"url":"https://oc.wikipedia.org/wiki/La_Gioconda"},"pawiki":{"site":"pawiki","title":"\u0a2e\u0a4b\u0a28\u0a3e
-        \u0a32\u0a40\u0a1c\u0a3c\u0a3e","badges":[],"url":"https://pa.wikipedia.org/wiki/%E0%A8%AE%E0%A9%8B%E0%A8%A8%E0%A8%BE_%E0%A8%B2%E0%A9%80%E0%A8%9C%E0%A8%BC%E0%A8%BE"},"plwiki":{"site":"plwiki","title":"Mona
-        Lisa","badges":[],"url":"https://pl.wikipedia.org/wiki/Mona_Lisa"},"plwikiquote":{"site":"plwikiquote","title":"Mona
-        Lisa","badges":[],"url":"https://pl.wikiquote.org/wiki/Mona_Lisa"},"pnbwiki":{"site":"pnbwiki","title":"\u0645\u0648\u0646\u0627
-        \u0644\u06cc\u0632\u0627","badges":[],"url":"https://pnb.wikipedia.org/wiki/%D9%85%D9%88%D9%86%D8%A7_%D9%84%DB%8C%D8%B2%D8%A7"},"pswiki":{"site":"pswiki","title":"\u0645\u0648\u0646\u0627\u0644\u06cc\u0632\u0627","badges":[],"url":"https://ps.wikipedia.org/wiki/%D9%85%D9%88%D9%86%D8%A7%D9%84%DB%8C%D8%B2%D8%A7"},"ptwiki":{"site":"ptwiki","title":"Mona
-        Lisa","badges":[],"url":"https://pt.wikipedia.org/wiki/Mona_Lisa"},"rowiki":{"site":"rowiki","title":"Gioconda","badges":[],"url":"https://ro.wikipedia.org/wiki/Gioconda"},"ruewiki":{"site":"ruewiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0456\u0437\u0430","badges":[],"url":"https://rue.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D1%96%D0%B7%D0%B0"},"ruwiki":{"site":"ruwiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430","badges":[],"url":"https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D0%B8%D0%B7%D0%B0"},"ruwikinews":{"site":"ruwikinews","title":"\u041a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u044f:\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430","badges":[],"url":"https://ru.wikinews.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D0%B8%D0%B7%D0%B0"},"scnwiki":{"site":"scnwiki","title":"Gioconda","badges":[],"url":"https://scn.wikipedia.org/wiki/Gioconda"},"scowiki":{"site":"scowiki","title":"Mona
-        Lisa","badges":[],"url":"https://sco.wikipedia.org/wiki/Mona_Lisa"},"sdwiki":{"site":"sdwiki","title":"\u0645\u0648\u0646\u0627
-        \u0644\u064a\u0632\u0627","badges":[],"url":"https://sd.wikipedia.org/wiki/%D9%85%D9%88%D9%86%D8%A7_%D9%84%D9%8A%D8%B2%D8%A7"},"shwiki":{"site":"shwiki","title":"Mona
-        Lisa","badges":[],"url":"https://sh.wikipedia.org/wiki/Mona_Lisa"},"simplewiki":{"site":"simplewiki","title":"Mona
-        Lisa","badges":[],"url":"https://simple.wikipedia.org/wiki/Mona_Lisa"},"siwiki":{"site":"siwiki","title":"\u0db8\u0ddc\u0db1\u0dcf\u0dbd\u0dd2\u0dc3\u0dcf","badges":[],"url":"https://si.wikipedia.org/wiki/%E0%B6%B8%E0%B7%9C%E0%B6%B1%E0%B7%8F%E0%B6%BD%E0%B7%92%E0%B7%83%E0%B7%8F"},"skwiki":{"site":"skwiki","title":"Mona
-        L\u00edza","badges":[],"url":"https://sk.wikipedia.org/wiki/Mona_L%C3%ADza"},"slwiki":{"site":"slwiki","title":"Mona
-        Liza","badges":[],"url":"https://sl.wikipedia.org/wiki/Mona_Liza"},"sowiki":{"site":"sowiki","title":"Mona
-        Lisa","badges":[],"url":"https://so.wikipedia.org/wiki/Mona_Lisa"},"sqwiki":{"site":"sqwiki","title":"Mona
-        Liza","badges":[],"url":"https://sq.wikipedia.org/wiki/Mona_Liza"},"srwiki":{"site":"srwiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0438\u0437\u0430","badges":[],"url":"https://sr.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D0%B8%D0%B7%D0%B0"},"suwiki":{"site":"suwiki","title":"Mona
-        Lisa","badges":[],"url":"https://su.wikipedia.org/wiki/Mona_Lisa"},"svwiki":{"site":"svwiki","title":"Mona
-        Lisa","badges":[],"url":"https://sv.wikipedia.org/wiki/Mona_Lisa"},"swwiki":{"site":"swwiki","title":"Mona
-        Lisa","badges":[],"url":"https://sw.wikipedia.org/wiki/Mona_Lisa"},"tawiki":{"site":"tawiki","title":"\u0bae\u0bcb\u0ba9\u0bbe
-        \u0bb2\u0bbf\u0b9a\u0bbe","badges":[],"url":"https://ta.wikipedia.org/wiki/%E0%AE%AE%E0%AF%8B%E0%AE%A9%E0%AE%BE_%E0%AE%B2%E0%AE%BF%E0%AE%9A%E0%AE%BE"},"tewiki":{"site":"tewiki","title":"\u0c2e\u0c4b\u0c28\u0c3e\u0c32\u0c3f\u0c38\u0c3e","badges":[],"url":"https://te.wikipedia.org/wiki/%E0%B0%AE%E0%B1%8B%E0%B0%A8%E0%B0%BE%E0%B0%B2%E0%B0%BF%E0%B0%B8%E0%B0%BE"},"thwiki":{"site":"thwiki","title":"\u0e42\u0e21\u0e19\u0e32\u0e25\u0e34\u0e0b\u0e32","badges":[],"url":"https://th.wikipedia.org/wiki/%E0%B9%82%E0%B8%A1%E0%B8%99%E0%B8%B2%E0%B8%A5%E0%B8%B4%E0%B8%8B%E0%B8%B2"},"tlwiki":{"site":"tlwiki","title":"Mona
-        Lisa","badges":[],"url":"https://tl.wikipedia.org/wiki/Mona_Lisa"},"trwiki":{"site":"trwiki","title":"Mona
-        Lisa","badges":[],"url":"https://tr.wikipedia.org/wiki/Mona_Lisa"},"ukwiki":{"site":"ukwiki","title":"\u041c\u043e\u043d\u0430
-        \u041b\u0456\u0437\u0430","badges":[],"url":"https://uk.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0_%D0%9B%D1%96%D0%B7%D0%B0"},"urwiki":{"site":"urwiki","title":"\u0645\u0648\u0646\u0627
-        \u0644\u06cc\u0632\u0627","badges":[],"url":"https://ur.wikipedia.org/wiki/%D9%85%D9%88%D9%86%D8%A7_%D9%84%DB%8C%D8%B2%D8%A7"},"uzwiki":{"site":"uzwiki","title":"Mona
-        Lisa","badges":[],"url":"https://uz.wikipedia.org/wiki/Mona_Lisa"},"vecwiki":{"site":"vecwiki","title":"Zoconda","badges":[],"url":"https://vec.wikipedia.org/wiki/Zoconda"},"viwiki":{"site":"viwiki","title":"Mona
-        Lisa","badges":[],"url":"https://vi.wikipedia.org/wiki/Mona_Lisa"},"warwiki":{"site":"warwiki","title":"Mona
-        Lisa","badges":[],"url":"https://war.wikipedia.org/wiki/Mona_Lisa"},"wuuwiki":{"site":"wuuwiki","title":"\u8499\u5a1c\u4e3d\u838e","badges":[],"url":"https://wuu.wikipedia.org/wiki/%E8%92%99%E5%A8%9C%E4%B8%BD%E8%8E%8E"},"zh_min_nanwiki":{"site":"zh_min_nanwiki","title":"Mona
-        Lisa","badges":[],"url":"https://zh-min-nan.wikipedia.org/wiki/Mona_Lisa"},"zh_yuewiki":{"site":"zh_yuewiki","title":"\u8499\u5a1c\u9e97\u838e","badges":[],"url":"https://zh-yue.wikipedia.org/wiki/%E8%92%99%E5%A8%9C%E9%BA%97%E8%8E%8E"},"zhwiki":{"site":"zhwiki","title":"\u8499\u5a1c\u4e3d\u838e","badges":[],"url":"https://zh.wikipedia.org/wiki/%E8%92%99%E5%A8%9C%E4%B8%BD%E8%8E%8E"},"zuwiki":{"site":"zuwiki","title":"Mona
-        Lisa","badges":[],"url":"https://zu.wikipedia.org/wiki/Mona_Lisa"}}}}}'
-    http_version: 
-  recorded_at: Tue, 01 Oct 2019 20:57:19 GMT
-- request:
-    method: get
-    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20%20%20SELECT%20?id%20$label%0A%20%20%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20.%0A%20%20%20%20%20%20%20%20%20%20%20FILTER(lang(?label)%20=%20%27en%27)%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20VALUES%20(?id)%20%7B(wd:P31)%20(wd:P170)%20(wd:P186)%20(wd:P195)%20(wd:P88)%20(wd:P1071)%20(wd:P495)%20(wd:P127)%20(wd:P793)%20(wd:P136)%20(wd:P180)%20(wd:P608)%20(wd:P910)%20(wd:P135)%20(wd:P276)%20(wd:P17)%20(wd:P6216)%20(wd:P1343)%20(wd:P921)%7D%0A%20%20%20%20%20%20
-    body:
-      encoding: UTF-8
-      string: ''
-    headers:
-      User-Agent:
-      - HTTPClient/1.0 (2.8.3, ruby 2.5.5 (2019-03-15))
-      Accept:
-      - "*/*"
-      Date:
-      - Tue, 01 Oct 2019 20:57:20 GMT
-      Content-Type:
-      - application/x-www-form-urlencoded
-      Cookie:
-      - WMF-Last-Access-Global=01-Oct-2019; GeoIP=US:CA:San_Diego:32.74:-117.17:v4;
-        WMF-Last-Access=01-Oct-2019
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - nginx/1.13.6
-      Date:
-      - Tue, 01 Oct 2019 20:57:20 GMT
-      Content-Type:
-      - application/sparql-results+xml;charset=utf-8
-      X-Served-By:
-      - wdqs2002
-      Access-Control-Allow-Origin:
-      - "*"
-      Cache-Control:
-      - public, max-age=300
-      Vary:
-      - Accept, Accept-Encoding
-      X-Varnish:
-      - 40610481, 845748965, 585219742
-      Accept-Ranges:
-      - bytes
-      Age:
-      - '0'
-      X-Cache:
-      - cp2006 pass, cp4027 miss, cp4027 pass
-      X-Cache-Status:
-      - miss
-      Server-Timing:
-      - cache;desc="miss"
-      Strict-Transport-Security:
-      - max-age=106384710; includeSubDomains; preload
-      X-Analytics:
-      - WMF-Last-Access=01-Oct-2019;WMF-Last-Access-Global=01-Oct-2019;https=1
-      X-Client-Ip:
-      - 70.179.22.74
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-    body:
-      encoding: UTF-8
-      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
-        name='id'/>\n\t\t<variable name='label'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P17</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>country</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P31</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>instance of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P88</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>commissioned by</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P127</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>owned by</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P135</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>movement</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P136</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>genre</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P170</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>creator</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P180</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>depicts</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P186</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>material used</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P195</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>collection</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P276</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P495</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>country of origin</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P608</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>exhibition history</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P793</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>significant event</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P910</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>topic's main category</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P921</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>main subject</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1071</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>location of final assembly</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1343</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>described by source</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P6216</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>copyright status</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
-    http_version: 
-  recorded_at: Tue, 01 Oct 2019 20:57:20 GMT
-- request:
-    method: get
-    uri: https://www.wikidata.org/wiki/Special:EntityData/Q128910.json
-    body:
-      encoding: UTF-8
-      string: ''
-    headers:
-      User-Agent:
-      - HTTPClient/1.0 (2.8.3, ruby 2.5.5 (2019-03-15))
-      Accept:
-      - "*/*"
-      Date:
-      - Tue, 01 Oct 2019 20:57:20 GMT
-      Content-Type:
-      - application/x-www-form-urlencoded
-      Cookie:
-      - WMF-Last-Access=01-Oct-2019; WMF-Last-Access-Global=01-Oct-2019; GeoIP=US:CA:San_Diego:32.74:-117.17:v4
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Tue, 01 Oct 2019 20:57:20 GMT
-      Server:
-      - mw1262.eqiad.wmnet
-      X-Powered-By:
-      - PHP/7.2.22-1+0~20190902.26+debian9~1.gbpd64eb7+wmf1
-      X-Content-Type-Options:
-      - nosniff
-      P3p:
-      - CP="See https://www.wikidata.org/wiki/Special:CentralAutoLogin/P3P for more
-        info."
-      Access-Control-Allow-Origin:
-      - "*"
-      X-Frame-Options:
-      - DENY
-      Vary:
-      - Accept-Encoding
-      Last-Modified:
-      - Sun, 29 Sep 2019 13:01:02 GMT
-      Backend-Timing:
-      - D=114696 t=1569963440496312
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Varnish:
-      - 18925468, 174906576, 780775849, 582565661
-      Age:
-      - '0'
-      X-Cache:
-      - cp1083 pass, cp2019 pass, cp4028 miss, cp4027 miss
-      X-Cache-Status:
-      - miss
-      Server-Timing:
-      - cache;desc="miss"
-      Strict-Transport-Security:
-      - max-age=106384710; includeSubDomains; preload
-      X-Analytics:
-      - WMF-Last-Access=01-Oct-2019;WMF-Last-Access-Global=01-Oct-2019;https=1
-      X-Client-Ip:
-      - 70.179.22.74
-      Cache-Control:
-      - private, s-maxage=0, max-age=0, must-revalidate
-      Accept-Ranges:
-      - bytes
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-    body:
-      encoding: UTF-8
-      string: '{"entities":{"Q128910":{"pageid":130901,"ns":0,"title":"Q128910","lastrevid":1022426912,"modified":"2019-09-29T13:01:02Z","type":"item","id":"Q128910","labels":{"zh-hans":{"language":"zh-hans","value":"\u6700\u540e\u7684\u665a\u9910"},"zh-hant":{"language":"zh-hant","value":"\u6700\u5f8c\u7684\u665a\u9910"},"zh-hk":{"language":"zh-hk","value":"\u6700\u5f8c\u7684\u665a\u9910"},"zh-cn":{"language":"zh-cn","value":"\u6700\u540e\u7684\u665a\u9910"},"zh-sg":{"language":"zh-sg","value":"\u6700\u540e\u7684\u665a\u9910"},"zh-tw":{"language":"zh-tw","value":"\u6700\u5f8c\u7684\u665a\u9910"},"pl":{"language":"pl","value":"Ostatnia
-        Wieczerza"},"eu":{"language":"eu","value":"Azken Afaria"},"bs":{"language":"bs","value":"Posljednja
-        ve\u010dera"},"ta":{"language":"ta","value":"\u0b87\u0bb1\u0bc1\u0ba4\u0bbf
-        \u0b87\u0bb0\u0bbe\u0bb5\u0bc1\u0ba3\u0bb5\u0bc1"},"af":{"language":"af","value":"Die
-        Laaste Avondmaal"},"et":{"language":"et","value":"P\u00fcha \u00f5htus\u00f6\u00f6maaeg"},"bn":{"language":"bn","value":"\u09a6\u09cd\u09af\u09be
-        \u09b2\u09be\u09b8\u09cd\u099f \u09b8\u09be\u09aa\u09be\u09b0"},"br":{"language":"br","value":"L''Ultima
-        Cena"},"sq":{"language":"sq","value":"Darka e Fundit"},"el":{"language":"el","value":"\u039f
-        \u039c\u03c5\u03c3\u03c4\u03b9\u03ba\u03cc\u03c2 \u0394\u03b5\u03af\u03c0\u03bd\u03bf\u03c2"},"mt":{"language":"mt","value":"L-A\u0127\u0127ar
-        \u010aena"},"ar":{"language":"ar","value":"\u0627\u0644\u0639\u0634\u0627\u0621
-        \u0627\u0644\u0623\u062e\u064a\u0631"},"nl":{"language":"nl","value":"Het
-        Laatste Avondmaal"},"sv":{"language":"sv","value":"Nattvarden"},"pt":{"language":"pt","value":"A
-        \u00daltima Ceia"},"eo":{"language":"eo","value":"La Lasta Vesperman\u011do"},"ru":{"language":"ru","value":"\u0422\u0430\u0439\u043d\u0430\u044f
-        \u0432\u0435\u0447\u0435\u0440\u044f"},"sr-el":{"language":"sr-el","value":"Tajna
-        ve\u010dera"},"sr-ec":{"language":"sr-ec","value":"\u0422\u0430\u0458\u043d\u0430
-        \u0432\u0435\u0447\u0435\u0440\u0430"},"tr":{"language":"tr","value":"Son
-        Ak\u015fam Yeme\u011fi"},"mk":{"language":"mk","value":"\u0422\u0430\u0458\u043d\u0430\u0442\u0430
-        \u0432\u0435\u0447\u0435\u0440\u0430"},"fi":{"language":"fi","value":"Pyh\u00e4
-        ehtoollinen"},"uk":{"language":"uk","value":"\u0422\u0430\u0439\u043d\u0430
-        \u0432\u0435\u0447\u0435\u0440\u044f"},"az":{"language":"az","value":"Sonuncu
-        \u015fam yem\u0259yi"},"hr":{"language":"hr","value":"Posljednja ve\u010dera"},"da":{"language":"da","value":"Den
-        sidste nadver"},"fr":{"language":"fr","value":"La C\u00e8ne"},"he":{"language":"he","value":"\u05d4\u05e1\u05e2\u05d5\u05d3\u05d4
-        \u05d4\u05d0\u05d7\u05e8\u05d5\u05e0\u05d4"},"it":{"language":"it","value":"Ultima
-        Cena"},"li":{"language":"li","value":"L\u00e8tste aovendmaol"},"gl":{"language":"gl","value":"A
-        \u00daltima Cea"},"de":{"language":"de","value":"Das Abendmahl"},"ml":{"language":"ml","value":"\u0d05\u0d28\u0d4d\u0d24\u0d4d\u0d2f\u0d24\u0d3f\u0d30\u0d41\u0d35\u0d24\u0d4d\u0d24\u0d3e\u0d34\u0d02"},"ja":{"language":"ja","value":"\u6700\u5f8c\u306e\u6669\u9910"},"vi":{"language":"vi","value":"B\u1eefa
-        \u0103n t\u1ed1i cu\u1ed1i c\u00f9ng"},"yue":{"language":"yue","value":"\u6700\u5f8c\u665a\u9910"},"sh":{"language":"sh","value":"Posljednja
-        ve\u010dera"},"scn":{"language":"scn","value":"\u00d9rtima cena"},"sk":{"language":"sk","value":"Posledn\u00e1
-        ve\u010dera"},"ro":{"language":"ro","value":"Cina cea de Tain\u0103"},"th":{"language":"th","value":"\u0e1e\u0e23\u0e30\u0e01\u0e23\u0e30\u0e22\u0e32\u0e2b\u0e32\u0e23\u0e21\u0e37\u0e49\u0e2d\u0e2a\u0e38\u0e14\u0e17\u0e49\u0e32\u0e22"},"ca":{"language":"ca","value":"El
-        Sant Sopar"},"la":{"language":"la","value":"Ultima Cena"},"ilo":{"language":"ilo","value":"Ti
-        Maudi a Pangrabii"},"cy":{"language":"cy","value":"Y Swper Olaf"},"sl":{"language":"sl","value":"Zadnja
-        ve\u010derja"},"war":{"language":"war","value":"An Urhi nga Pangiklop"},"cs":{"language":"cs","value":"Posledn\u00ed
-        ve\u010de\u0159e"},"fa":{"language":"fa","value":"\u0634\u0627\u0645 \u0622\u062e\u0631"},"bg":{"language":"bg","value":"\u0422\u0430\u0439\u043d\u0430\u0442\u0430
-        \u0432\u0435\u0447\u0435\u0440\u044f"},"ka":{"language":"ka","value":"\u10e1\u10d0\u10d8\u10d3\u10e3\u10db\u10da\u10dd
-        \u10e1\u10d4\u10e0\u10dd\u10d1\u10d0"},"zu":{"language":"zu","value":"The
-        Last Supper"},"lt":{"language":"lt","value":"Paskutin\u0117 vakarien\u0117"},"lv":{"language":"lv","value":"Sv\u0113tais
-        vakar\u0113diens"},"hy":{"language":"hy","value":"\u053d\u0578\u0580\u0570\u0580\u0564\u0561\u057e\u0578\u0580
-        \u0568\u0576\u0569\u0580\u056b\u0584"},"zh":{"language":"zh","value":"\u6700\u540e\u7684\u665a\u9910"},"sr":{"language":"sr","value":"\u0422\u0430\u0458\u043d\u0430
-        \u0432\u0435\u0447\u0435\u0440\u0430"},"ko":{"language":"ko","value":"\ucd5c\ud6c4\uc758
-        \ub9cc\ucc2c"},"nb":{"language":"nb","value":"Nattverden"},"kn":{"language":"kn","value":"\u0cb2\u0cbe\u0cb8\u0ccd\u0c9f\u0ccd
-        \u0cb8\u0caa\u0ccd\u0caa\u0cb0\u0ccd"},"si":{"language":"si","value":"\u0d85\u0dc0\u0dc3\u0db1\u0dca
-        \u0db7\u0ddd\u0da2\u0db1 \u0dc3\u0d82\u0d9c\u0dca\u200d\u0dbb\u0dc4\u0dba"},"ga":{"language":"ga","value":"An
-        Suip\u00e9ar D\u00e9anach"},"be":{"language":"be","value":"\u0422\u0430\u0439\u043d\u0430\u044f
-        \u0432\u044f\u0447\u044d\u0440\u0430"},"mr":{"language":"mr","value":"\u0926
-        \u0932\u093e\u0938\u094d\u091f \u0938\u092a\u0930"},"kk":{"language":"kk","value":"\u0416\u0430\u0441\u044b\u0440\u044b\u043d
-        \u043a\u0435\u0448\u043a\u0456\u043b\u0456\u043a"},"hu":{"language":"hu","value":"Az
-        utols\u00f3 vacsora"},"id":{"language":"id","value":"Perjamuan Terakhir"},"wuu":{"language":"wuu","value":"\u6700\u540e\u7684\u665a\u9910"},"nan":{"language":"nan","value":"Ch\u00f2e-\u0101u
-        \u00ea \u00c0n-pn\u0304g"},"en":{"language":"en","value":"The Last Supper"},"es":{"language":"es","value":"La
-        \u00daltima Cena"}},"descriptions":{"nl":{"language":"nl","value":"Leonardo
-        da Vinci"},"de":{"language":"de","value":"Gem\u00e4lde von Leonardo da Vinci"},"fi":{"language":"fi","value":"Leonardo
-        da Vincin sein\u00e4maalaus"},"fr":{"language":"fr","value":"fresque de L\u00e9onard
-        de Vinci"},"gl":{"language":"gl","value":"Pintura mural feita por Leonardo
-        da Vinci"},"it":{"language":"it","value":"affresco di Leonardo da Vinci"},"ja":{"language":"ja","value":"\u30ec\u30aa\u30ca\u30eb\u30c9\u30fb\u30c0\u30fb\u30f4\u30a3\u30f3\u30c1\u306b\u3088\u308b\u7d75\u753b"},"hu":{"language":"hu","value":"Leonardo
-        da Vinci fresk\u00f3ja"},"sv":{"language":"sv","value":"muralm\u00e5lning
-        av Leonardo da Vinci"},"es":{"language":"es","value":"Pintura Mural de Leonardo
-        da Vinci"},"id":{"language":"id","value":"Lukisan dinding oleh Leonardo da
-        Vinci"},"ru":{"language":"ru","value":"\u0444\u0440\u0435\u0441\u043a\u0430
-        \u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e \u0434\u0430 \u0412\u0438\u043d\u0447\u0438"},"sk":{"language":"sk","value":"n\u00e1stenn\u00e1
-        ma\u013eba Leonarda da Vinciho"},"en":{"language":"en","value":"mural painting
-        by Leonardo da Vinci"},"pt":{"language":"pt","value":"fresco de Leonardo da
-        Vinci"},"he":{"language":"he","value":"\u05e6\u05d9\u05d5\u05e8 \u05de\u05d0\u05ea
-        \u05dc\u05d0\u05d5\u05e0\u05e8\u05d3\u05d5 \u05d3\u05d4 \u05d5\u05d9\u05e0\u05e6''\u05d9"}},"aliases":{"zh":[{"language":"zh","value":"\u6700\u5f8c\u7684\u665a\u9910"}],"es":[{"language":"es","value":"El
-        Cenacolo"},{"language":"es","value":"Cenacolo"},{"language":"es","value":"Il
-        cenacolo"},{"language":"es","value":"La \u00faltima Cena"},{"language":"es","value":"La
-        Ultima Cena"}],"ta":[{"language":"ta","value":"\u0b95\u0b9f\u0bc8\u0b9a\u0bbf
-        \u0bb5\u0bbf\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1"}],"bn":[{"language":"bn","value":"\u09a6\u09cd\u09af
-        \u09b2\u09be\u09b8\u09cd\u099f \u09b8\u09be\u09aa\u09be\u09b0"}],"br":[{"language":"br","value":"Il
-        Cenacolo"}],"el":[{"language":"el","value":"\u039c\u03c5\u03c3\u03c4\u03b9\u03ba\u03cc\u03c2
-        \u0394\u03b5\u03af\u03c0\u03bd\u03bf\u03c2"}],"nl":[{"language":"nl","value":"Fresco
-        ''Het laatste avondmaal'' van Leonardo Da Vinci"},{"language":"nl","value":"Laatste
-        Avondmaal"}],"sv":[{"language":"sv","value":"Den sista m\u00e5ltiden"}],"eo":[{"language":"eo","value":"La
-        Sankta Man\u011do"}],"fi":[{"language":"fi","value":"Viimeinen ehtoollinen"}],"uk":[{"language":"uk","value":"\u0422\u0430\u0454\u043c\u043d\u0430
-        \u0432\u0435\u0447\u0435\u0440\u044f"}],"fr":[{"language":"fr","value":"La
-        Cene"}],"it":[{"language":"it","value":"Cenacolo vinciano"},{"language":"it","value":"L''ultima
-        cena"},{"language":"it","value":"L''Ultima Cena"},{"language":"it","value":"Il
-        Cenacolo"}],"li":[{"language":"li","value":"L\u00e8tste aovendete"},{"language":"li","value":"L\u00e8ste
-        aovendmaol"}],"de":[{"language":"de","value":"Das Letzte Abendmahl"}],"ml":[{"language":"ml","value":"The
-        Last Supper"}],"yue":[{"language":"yue","value":"The Last Supper"},{"language":"yue","value":"\u6700\u5f8c\u7684\u665a\u9910"},{"language":"yue","value":"Il
-        Cenacolo or L''Ultima Cena"},{"language":"yue","value":"\u6700\u5f8c\u5605\u665a\u9910"}],"sh":[{"language":"sh","value":"Tajna
-        ve\u010dera"}],"scn":[{"language":"scn","value":"L''ultima cena"},{"language":"scn","value":"L''\u00f9rtima
-        cena"}],"ro":[{"language":"ro","value":"Cina cea de taina"}],"th":[{"language":"th","value":"The
-        Last Supper"}],"ca":[{"language":"ca","value":"L''\u00daltim Sopar"},{"language":"ca","value":"Sant
-        Sopar"}],"la":[{"language":"la","value":"Postrema coena"},{"language":"la","value":"Postrema
-        cena"}],"fa":[{"language":"fa","value":"\u0634\u0627\u0645 \u0627\u062e\u0631"}],"en":[{"language":"en","value":"Il
-        Cenacolo"},{"language":"en","value":"L''Ultima Cena"},{"language":"en","value":"Cenacolo
-        vinciano"},{"language":"en","value":"L''ultima cena"}],"gl":[{"language":"gl","value":"Il
-        cenacolo"}],"id":[{"language":"id","value":"Il Cenacolo or L''Ultima Cena"}]},"claims":{"P144":[{"mainsnak":{"snaktype":"value","property":"P144","datavalue":{"value":{"entity-type":"item","numeric-id":9165882,"id":"Q9165882"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P958":[{"snaktype":"value","property":"P958","hash":"bf28c418db10690dff66619d247246be9eaf2683","datavalue":{"value":"21","type":"string"},"datatype":"string"}]},"qualifiers-order":["P958"],"id":"Q128910$52db72ed-4a94-bb8c-d8fa-0519b94e8869","rank":"normal","references":[{"hash":"fa278ebfc458360e5aed63d5058cca83c46134f1","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":328,"id":"Q328"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P135":[{"mainsnak":{"snaktype":"value","property":"P135","datavalue":{"value":{"entity-type":"item","numeric-id":4692,"id":"Q4692"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$3eb11a03-4500-f82f-3dc9-6bd2ab369477","rank":"normal"}],"P276":[{"mainsnak":{"snaktype":"value","property":"P276","datavalue":{"value":{"entity-type":"item","numeric-id":244952,"id":"Q244952"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$342ec3d3-4eda-a4c3-7693-d480926c83cd","rank":"normal"}],"P88":[{"mainsnak":{"snaktype":"value","property":"P88","datavalue":{"value":{"entity-type":"item","numeric-id":236853,"id":"Q236853"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$7e67a724-479d-14f8-1676-ce6746219559","rank":"normal"}],"P373":[{"mainsnak":{"snaktype":"value","property":"P373","datavalue":{"value":"Last
-        Supper by Leonardo da Vinci","type":"string"},"datatype":"string"},"type":"statement","id":"q128910$336D0E38-7400-419C-A039-7FED055290E5","rank":"normal"}],"P227":[{"mainsnak":{"snaktype":"value","property":"P227","datavalue":{"value":"4195043-4","type":"string"},"datatype":"external-id"},"type":"statement","id":"q128910$9FB7E519-8978-456A-84F6-FEB707D4EDFA","rank":"normal","references":[{"hash":"9a24f7c0208b05d6be97077d855671d1dfdbc0dd","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":48183,"id":"Q48183"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P625":[{"mainsnak":{"snaktype":"value","property":"P625","datavalue":{"value":{"latitude":45.466666666667,"longitude":9.1708333333333,"altitude":null,"precision":null,"globe":"http://www.wikidata.org/entity/Q2"},"type":"globecoordinate"},"datatype":"globe-coordinate"},"type":"statement","id":"q128910$E8251DFC-3AD4-4E7B-9797-F6AA56C2E075","rank":"normal","references":[{"hash":"fa278ebfc458360e5aed63d5058cca83c46134f1","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":328,"id":"Q328"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P136":[{"mainsnak":{"snaktype":"value","property":"P136","datavalue":{"value":{"entity-type":"item","numeric-id":2414609,"id":"Q2414609"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"q128910$EBA07535-D7D6-45E8-8E4D-699D434155C8","rank":"normal"}],"P18":[{"mainsnak":{"snaktype":"value","property":"P18","datavalue":{"value":"The
-        Last Supper Leonardo Da Vinci High Resolution size 32x16.jpg","type":"string"},"datatype":"commonsMedia"},"type":"statement","qualifiers":{"P180":[{"snaktype":"value","property":"P180","hash":"21838fbd17ac9cc02f1145719560d8395c9e609e","datavalue":{"value":{"entity-type":"item","numeric-id":302,"id":"Q302"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P2677":[{"snaktype":"value","property":"P2677","hash":"407c95627ee0d7a1ef29da629f843a562c2649aa","datavalue":{"value":"pct:42.9,47.7,15.7,24.6","type":"string"},"datatype":"string"}]},"qualifiers-order":["P180","P2677"],"id":"Q128910$CEC3A3B8-BC7C-4BE1-8334-10949597533B","rank":"normal"}],"P31":[{"mainsnak":{"snaktype":"value","property":"P31","datavalue":{"value":{"entity-type":"item","numeric-id":219423,"id":"Q219423"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$c90a2094-4e9a-0235-8570-9ccaf4ad17e2","rank":"normal","references":[{"hash":"9a24f7c0208b05d6be97077d855671d1dfdbc0dd","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":48183,"id":"Q48183"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P646":[{"mainsnak":{"snaktype":"value","property":"P646","datavalue":{"value":"/m/0jnz3","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$5A881C96-3432-4C13-8F54-59C64F3E3603","rank":"normal","references":[{"hash":"2b00cb481cddcac7623114367489b5c194901c4a","snaks":{"P248":[{"snaktype":"value","property":"P248","datavalue":{"value":{"entity-type":"item","numeric-id":15241312,"id":"Q15241312"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P577":[{"snaktype":"value","property":"P577","datavalue":{"value":{"time":"+2013-10-28T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P248","P577"]}]}],"P170":[{"mainsnak":{"snaktype":"value","property":"P170","datavalue":{"value":{"entity-type":"item","numeric-id":762,"id":"Q762"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$BB577BEE-CF1E-4FA8-B435-88B1AEC0DA03","rank":"normal","references":[{"hash":"8f08ac3e0839bdbc4c6eb8d671e772deb12ba423","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":465,"id":"Q465"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P571":[{"mainsnak":{"snaktype":"value","property":"P571","datavalue":{"value":{"time":"+1490-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":8,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"},"type":"statement","qualifiers":{"P580":[{"snaktype":"value","property":"P580","hash":"3b207044832b7874248207300532260121c2b667","datavalue":{"value":{"time":"+1494-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"}],"P582":[{"snaktype":"value","property":"P582","hash":"c15eed7ebe45338192deb07f1c70efab374be0b1","datavalue":{"value":{"time":"+1498-00-00T00:00:00Z","timezone":0,"before":0,"after":0,"precision":9,"calendarmodel":"http://www.wikidata.org/entity/Q1985786"},"type":"time"},"datatype":"time"}]},"qualifiers-order":["P580","P582"],"id":"Q128910$5592579e-4ea1-a520-002a-085e4ebdc7ff","rank":"normal","references":[{"hash":"8ea571fd37a7897f09769b2995adee54ff3545bb","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"http://legraziemilano.it/il-cenacolo/","type":"string"},"datatype":"url"}]},"snaks-order":["P854"]},{"hash":"740ea39b047e6a232551e14584830ff8b86eebc7","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.milan-museum.com/leonardo-last-supper-cenacolo.php","type":"string"},"datatype":"url"}],"P1476":[{"snaktype":"value","property":"P1476","datavalue":{"value":{"text":"Leonardo''s
-        Last Supper","language":"en"},"type":"monolingualtext"},"datatype":"monolingualtext"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-12-08T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P1476","P813"]}]}],"P180":[{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":302,"id":"Q302"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$8D003101-6265-4194-A5C0-79F41D36B33E","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":8441,"id":"Q8441"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$69A1F1F1-8139-4928-B3D6-E6B78A58CAF3","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":51633,"id":"Q51633"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$c423e420-4f43-596e-3f3e-f73677ca6ee5","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43982,"id":"Q43982"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$1c7a8fcc-445e-2776-db4e-4556d2c2deec","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":44047,"id":"Q44047"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$a3f41e9f-4679-18b0-c2b3-ae022e5d0a5b","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43399,"id":"Q43399"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$4fc6b893-4a2c-2c83-047d-fe85e8db1e9a","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":81018,"id":"Q81018"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$fc0975b7-460f-1744-0ff8-39a2eea17e6a","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":33923,"id":"Q33923"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$ed8138c8-4879-b25f-f9e6-7628c4029a2f","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":44015,"id":"Q44015"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$226694e7-41db-acdc-7084-aaf43d557b7a","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43669,"id":"Q43669"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$b4e4486a-4d6d-70b6-b390-2990a443dd50","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43999,"id":"Q43999"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d8b25f97-41c4-da11-2b3f-ca5aad67f88b","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43675,"id":"Q43675"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$3af4b3ed-4728-6eb0-8c41-dda62595f42d","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43600,"id":"Q43600"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$49ec978d-44a9-e2f4-b038-b9305bd865e5","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":43945,"id":"Q43945"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d704451e-467a-3556-ed74-32b33175e20d","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":12871,"id":"Q12871"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d7a38112-49c9-0101-15a1-e3730cdc9d93","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":14748,"id":"Q14748"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d145cad0-4d31-6ea7-c12c-0aad0e14e25c","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":536168,"id":"Q536168"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$0b95921c-4bc6-d452-cde4-ce5c8507c64a","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":57216,"id":"Q57216"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$8a7351d4-44e1-dfb8-a668-3d134478f4d9","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":7802,"id":"Q7802"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$4644f340-40a1-4cdd-a085-b9e4334dab11","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":81727,"id":"Q81727"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$e46aa686-472d-bf2f-a326-bd8f515666c2","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":32489,"id":"Q32489"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$834bebc3-4ecf-9c3e-61af-44dbe577dc5c","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":35473,"id":"Q35473"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$1c925d09-4f17-391d-4319-4dd884c24c18","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":5,"id":"Q5"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P1114":[{"snaktype":"value","property":"P1114","hash":"fd0a7e0ce34ba026871a72058af1e571bd225333","datavalue":{"value":{"amount":"+13","unit":"1"},"type":"quantity"},"datatype":"quantity"}]},"qualifiers-order":["P1114"],"id":"Q128910$fb09516f-4929-2b1f-f3a0-5b4edf474770","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":282,"id":"Q282"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$1f38ebd1-4565-b5c0-c8ed-1647c391aaa8","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":2100893,"id":"Q2100893"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$33ed496e-4692-9ead-8f5d-d0faa765bf5b","rank":"normal"},{"mainsnak":{"snaktype":"value","property":"P180","datavalue":{"value":{"entity-type":"item","numeric-id":201714,"id":"Q201714"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$505a6639-4ace-cafa-c770-9e67359bbb19","rank":"normal"}],"P195":[{"mainsnak":{"snaktype":"value","property":"P195","datavalue":{"value":{"entity-type":"item","numeric-id":244952,"id":"Q244952"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$656EE408-6DC5-4969-8ED8-D2D4B3F87A0A","rank":"normal","references":[{"hash":"b3fd5e254143d8b52cd96cff43af9af5e3a82358","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":199693,"id":"Q199693"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P2048":[{"mainsnak":{"snaktype":"value","property":"P2048","datavalue":{"value":{"amount":"+460","unit":"http://www.wikidata.org/entity/Q174728","upperBound":"+461","lowerBound":"+459"},"type":"quantity"},"datatype":"quantity"},"type":"statement","id":"Q128910$8e34231d-4ecc-5e42-ff31-2e3a35b515fe","rank":"normal","references":[{"hash":"740ea39b047e6a232551e14584830ff8b86eebc7","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.milan-museum.com/leonardo-last-supper-cenacolo.php","type":"string"},"datatype":"url"}],"P1476":[{"snaktype":"value","property":"P1476","datavalue":{"value":{"text":"Leonardo''s
-        Last Supper","language":"en"},"type":"monolingualtext"},"datatype":"monolingualtext"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-12-08T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P1476","P813"]}]}],"P2049":[{"mainsnak":{"snaktype":"value","property":"P2049","datavalue":{"value":{"amount":"+880","unit":"http://www.wikidata.org/entity/Q174728","upperBound":"+883","lowerBound":"+877"},"type":"quantity"},"datatype":"quantity"},"type":"statement","id":"Q128910$04262991-4794-dbc1-a25b-529688c97b1d","rank":"normal","references":[{"hash":"740ea39b047e6a232551e14584830ff8b86eebc7","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.milan-museum.com/leonardo-last-supper-cenacolo.php","type":"string"},"datatype":"url"}],"P1476":[{"snaktype":"value","property":"P1476","datavalue":{"value":{"text":"Leonardo''s
-        Last Supper","language":"en"},"type":"monolingualtext"},"datatype":"monolingualtext"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-12-08T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P1476","P813"]}]}],"P856":[{"mainsnak":{"snaktype":"value","property":"P856","datavalue":{"value":"http://legraziemilano.it/il-cenacolo/","type":"string"},"datatype":"url"},"type":"statement","id":"Q128910$BA1756AA-58E2-45C6-958A-4382C50BB888","rank":"normal","references":[{"hash":"fa278ebfc458360e5aed63d5058cca83c46134f1","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":328,"id":"Q328"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P921":[{"mainsnak":{"snaktype":"value","property":"P921","datavalue":{"value":{"entity-type":"item","numeric-id":51633,"id":"Q51633"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$1752ff68-44a7-a301-5aeb-4735ccf1e1a6","rank":"normal"}],"P2079":[{"mainsnak":{"snaktype":"value","property":"P2079","datavalue":{"value":{"entity-type":"item","numeric-id":2263612,"id":"Q2263612"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$d3cae30a-44d8-34e2-70e0-5838aed40739","rank":"normal","references":[{"hash":"740ea39b047e6a232551e14584830ff8b86eebc7","snaks":{"P854":[{"snaktype":"value","property":"P854","datavalue":{"value":"https://www.milan-museum.com/leonardo-last-supper-cenacolo.php","type":"string"},"datatype":"url"}],"P1476":[{"snaktype":"value","property":"P1476","datavalue":{"value":{"text":"Leonardo''s
-        Last Supper","language":"en"},"type":"monolingualtext"},"datatype":"monolingualtext"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2017-12-08T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P854","P1476","P813"]},{"hash":"9a24f7c0208b05d6be97077d855671d1dfdbc0dd","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":48183,"id":"Q48183"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P143"]}]}],"P131":[{"mainsnak":{"snaktype":"value","property":"P131","datavalue":{"value":{"entity-type":"item","numeric-id":490,"id":"Q490"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$473e2091-4d63-ed9d-8753-394dcf828bb4","rank":"normal"}],"P3855":[{"mainsnak":{"snaktype":"value","property":"P3855","datavalue":{"value":"3o210-01279","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$adf3a42d-42c8-3bfe-a3d0-c83df05b19fe","rank":"normal"}],"P528":[{"mainsnak":{"snaktype":"value","property":"P528","datavalue":{"value":"6","type":"string"},"datatype":"string"},"type":"statement","qualifiers":{"P972":[{"snaktype":"value","property":"P972","hash":"ec6f1390c34596bfb32131217cb6e06e144d7ac5","datavalue":{"value":{"entity-type":"item","numeric-id":41634361,"id":"Q41634361"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P972"],"id":"Q128910$1ebf06fc-4cfc-c082-6f95-83516f1ffed3","rank":"normal"}],"P2581":[{"mainsnak":{"snaktype":"value","property":"P2581","datavalue":{"value":"03599114n","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$B6A4508D-6EBF-4FD4-B9B7-C492821DDFCF","rank":"normal","references":[{"hash":"248ac337a217a5f5eed7139a82a4e60931611af0","snaks":{"P248":[{"snaktype":"value","property":"P248","datavalue":{"value":{"entity-type":"item","numeric-id":4837690,"id":"Q4837690"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P248"]}]}],"P17":[{"mainsnak":{"snaktype":"value","property":"P17","datavalue":{"value":{"entity-type":"item","numeric-id":38,"id":"Q38"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$172AF0AC-CF3A-4B2E-BDD3-A4542041D040","rank":"normal","references":[{"hash":"0bb614dc8e34e0367e88a8229ffcb91ce258fe01","snaks":{"P3452":[{"snaktype":"value","property":"P3452","datavalue":{"value":{"entity-type":"item","numeric-id":128910,"id":"Q128910"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P3452"]}]}],"P186":[{"mainsnak":{"snaktype":"value","property":"P186","datavalue":{"value":{"entity-type":"item","numeric-id":175166,"id":"Q175166"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$4DB053A4-6D44-41B4-8F0F-A1EBBF72CF8B","rank":"normal","references":[{"hash":"c0e4205a96d14a6834e94917867995f6973e0bb9","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":565,"id":"Q565"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2018-07-09T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}],"P4656":[{"snaktype":"value","property":"P4656","datavalue":{"value":"https://commons.wikimedia.org/wiki/File:\u00daltima_Cena_-_Da_Vinci_5.jpg","type":"string"},"datatype":"url"}]},"snaks-order":["P143","P813","P4656"]}]},{"mainsnak":{"snaktype":"value","property":"P186","datavalue":{"value":{"entity-type":"item","numeric-id":1514256,"id":"Q1514256"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P518":[{"snaktype":"value","property":"P518","hash":"741c2f726bfd42522b6ee31f850ec9ff7d4b7c41","datavalue":{"value":{"entity-type":"item","numeric-id":861259,"id":"Q861259"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P518"],"id":"Q128910$89AAF4DB-7E2B-4BD0-BA8D-DECFA5B9184D","rank":"normal","references":[{"hash":"c0e4205a96d14a6834e94917867995f6973e0bb9","snaks":{"P143":[{"snaktype":"value","property":"P143","datavalue":{"value":{"entity-type":"item","numeric-id":565,"id":"Q565"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2018-07-09T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}],"P4656":[{"snaktype":"value","property":"P4656","datavalue":{"value":"https://commons.wikimedia.org/wiki/File:\u00daltima_Cena_-_Da_Vinci_5.jpg","type":"string"},"datatype":"url"}]},"snaks-order":["P143","P813","P4656"]}]}],"P269":[{"mainsnak":{"snaktype":"value","property":"P269","datavalue":{"value":"02850223X","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$C8236B75-A1A9-443C-A1A5-E3398AEE3AB0","rank":"normal","references":[{"hash":"837e1d0f7c1147934945538b1223db7cd97a7fdb","snaks":{"P248":[{"snaktype":"value","property":"P248","datavalue":{"value":{"entity-type":"item","numeric-id":54919,"id":"Q54919"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P214":[{"snaktype":"value","property":"P214","datavalue":{"value":"175915680","type":"string"},"datatype":"external-id"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2018-10-07T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P248","P214","P813"]}]}],"P268":[{"mainsnak":{"snaktype":"value","property":"P268","datavalue":{"value":"12032553h","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$05C1A018-18BA-47C9-A0CC-8C9F455532C7","rank":"normal","references":[{"hash":"837e1d0f7c1147934945538b1223db7cd97a7fdb","snaks":{"P248":[{"snaktype":"value","property":"P248","datavalue":{"value":{"entity-type":"item","numeric-id":54919,"id":"Q54919"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P214":[{"snaktype":"value","property":"P214","datavalue":{"value":"175915680","type":"string"},"datatype":"external-id"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2018-10-07T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P248","P214","P813"]}]}],"P214":[{"mainsnak":{"snaktype":"value","property":"P214","datavalue":{"value":"175915680","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$F77C0D5D-DB96-4B16-AD15-84FB641E161A","rank":"normal","references":[{"hash":"837e1d0f7c1147934945538b1223db7cd97a7fdb","snaks":{"P248":[{"snaktype":"value","property":"P248","datavalue":{"value":{"entity-type":"item","numeric-id":54919,"id":"Q54919"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}],"P214":[{"snaktype":"value","property":"P214","datavalue":{"value":"175915680","type":"string"},"datatype":"external-id"}],"P813":[{"snaktype":"value","property":"P813","datavalue":{"value":{"time":"+2018-10-07T00:00:00Z","timezone":0,"before":0,"after":0,"precision":11,"calendarmodel":"http://www.wikidata.org/entity/Q1985727"},"type":"time"},"datatype":"time"}]},"snaks-order":["P248","P214","P813"]}]}],"P4969":[{"mainsnak":{"snaktype":"value","property":"P4969","datavalue":{"value":{"entity-type":"item","numeric-id":4003124,"id":"Q4003124"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$C60682EF-236B-4B76-BA3D-D5788268947A","rank":"normal","references":[{"hash":"7317de8b1ac88ba5ef15fbb1d4a69eedfdbef973","snaks":{"P3452":[{"snaktype":"value","property":"P3452","datavalue":{"value":{"entity-type":"item","numeric-id":4003124,"id":"Q4003124"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P3452"]}]},{"mainsnak":{"snaktype":"value","property":"P4969","datavalue":{"value":{"entity-type":"item","numeric-id":29130277,"id":"Q29130277"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$8068C6A6-9232-40F7-81DF-B96286AD5AB1","rank":"normal","references":[{"hash":"e58fe07f49812f115cdea631169beed4784aaa3d","snaks":{"P3452":[{"snaktype":"value","property":"P3452","datavalue":{"value":{"entity-type":"item","numeric-id":29130277,"id":"Q29130277"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P3452"]}]},{"mainsnak":{"snaktype":"value","property":"P4969","datavalue":{"value":{"entity-type":"item","numeric-id":33080871,"id":"Q33080871"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","id":"Q128910$DA0AF522-6690-4475-B8CF-881047545BC2","rank":"normal","references":[{"hash":"03c4e79a55fe8e0594cda16f57096b4daadcd637","snaks":{"P3452":[{"snaktype":"value","property":"P3452","datavalue":{"value":{"entity-type":"item","numeric-id":33080871,"id":"Q33080871"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"snaks-order":["P3452"]}]}],"P1417":[{"mainsnak":{"snaktype":"value","property":"P1417","datavalue":{"value":"topic/Last-Supper-fresco-by-Leonardo-da-Vinci","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$F24510CD-988B-4CA5-839E-76B3CEF14293","rank":"normal"}],"P1343":[{"mainsnak":{"snaktype":"value","property":"P1343","datavalue":{"value":{"entity-type":"item","numeric-id":66362718,"id":"Q66362718"},"type":"wikibase-entityid"},"datatype":"wikibase-item"},"type":"statement","qualifiers":{"P304":[{"snaktype":"value","property":"P304","hash":"e99d3ae44ee723b9557a5ebaa5808c2525fc28c2","datavalue":{"value":"127","type":"string"},"datatype":"string"}]},"qualifiers-order":["P304"],"id":"Q128910$01720e23-455d-92eb-a15e-4771779be7fd","rank":"normal"}],"P949":[{"mainsnak":{"snaktype":"value","property":"P949","datavalue":{"value":"001787319","type":"string"},"datatype":"external-id"},"type":"statement","id":"Q128910$60aa8bbf-4f56-d575-9a0e-580a00c75c72","rank":"normal"}],"P217":[{"mainsnak":{"snaktype":"value","property":"P217","datavalue":{"value":"LXVI:B.79","type":"string"},"datatype":"string"},"type":"statement","qualifiers":{"P195":[{"snaktype":"value","property":"P195","hash":"edd484ccae3ff0b0d071fad537d2310309e92d18","datavalue":{"value":{"entity-type":"item","numeric-id":4346239,"id":"Q4346239"},"type":"wikibase-entityid"},"datatype":"wikibase-item"}]},"qualifiers-order":["P195"],"id":"Q128910$DFD5373E-91AB-4929-B168-DBA719D443C7","rank":"normal"}]},"sitelinks":{"afwiki":{"site":"afwiki","title":"Die
-        Laaste Avondmaal (Leonardo)","badges":[],"url":"https://af.wikipedia.org/wiki/Die_Laaste_Avondmaal_(Leonardo)"},"arwiki":{"site":"arwiki","title":"\u0627\u0644\u0639\u0634\u0627\u0621
-        \u0627\u0644\u0623\u062e\u064a\u0631 (\u0644\u0648\u062d\u0629)","badges":[],"url":"https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D8%B9%D8%B4%D8%A7%D8%A1_%D8%A7%D9%84%D8%A3%D8%AE%D9%8A%D8%B1_(%D9%84%D9%88%D8%AD%D8%A9)"},"azwiki":{"site":"azwiki","title":"Sonuncu
-        \u015fam yem\u0259yi (Leonardo da Vin\u00e7i)","badges":["Q17437796"],"url":"https://az.wikipedia.org/wiki/Sonuncu_%C5%9Fam_yem%C9%99yi_(Leonardo_da_Vin%C3%A7i)"},"bewiki":{"site":"bewiki","title":"\u0422\u0430\u0439\u043d\u0430\u044f
-        \u0432\u044f\u0447\u044d\u0440\u0430 (\u041b\u0435\u0430\u043d\u0430\u0440\u0434\u0430
-        \u0434\u0430 \u0412\u0456\u043d\u0447\u044b)","badges":[],"url":"https://be.wikipedia.org/wiki/%D0%A2%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D0%B2%D1%8F%D1%87%D1%8D%D1%80%D0%B0_(%D0%9B%D0%B5%D0%B0%D0%BD%D0%B0%D1%80%D0%B4%D0%B0_%D0%B4%D0%B0_%D0%92%D1%96%D0%BD%D1%87%D1%8B)"},"bgwiki":{"site":"bgwiki","title":"\u0422\u0430\u0439\u043d\u0430\u0442\u0430
-        \u0432\u0435\u0447\u0435\u0440\u044f (\u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e
-        \u0434\u0430 \u0412\u0438\u043d\u0447\u0438)","badges":[],"url":"https://bg.wikipedia.org/wiki/%D0%A2%D0%B0%D0%B9%D0%BD%D0%B0%D1%82%D0%B0_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D1%8F_(%D0%9B%D0%B5%D0%BE%D0%BD%D0%B0%D1%80%D0%B4%D0%BE_%D0%B4%D0%B0_%D0%92%D0%B8%D0%BD%D1%87%D0%B8)"},"bnwiki":{"site":"bnwiki","title":"\u09a6\u09cd\u09af
-        \u09b2\u09be\u09b8\u09cd\u099f \u09b8\u09be\u09aa\u09be\u09b0 (\u09b2\u09bf\u0993\u09a8\u09be\u09b0\u09cd\u09a6\u09cb
-        \u09a6\u09be \u09ad\u09bf\u099e\u09cd\u099a\u09bf)","badges":[],"url":"https://bn.wikipedia.org/wiki/%E0%A6%A6%E0%A7%8D%E0%A6%AF_%E0%A6%B2%E0%A6%BE%E0%A6%B8%E0%A7%8D%E0%A6%9F_%E0%A6%B8%E0%A6%BE%E0%A6%AA%E0%A6%BE%E0%A6%B0_(%E0%A6%B2%E0%A6%BF%E0%A6%93%E0%A6%A8%E0%A6%BE%E0%A6%B0%E0%A7%8D%E0%A6%A6%E0%A7%8B_%E0%A6%A6%E0%A6%BE_%E0%A6%AD%E0%A6%BF%E0%A6%9E%E0%A7%8D%E0%A6%9A%E0%A6%BF)"},"brwiki":{"site":"brwiki","title":"L''Ultima
-        Cena (Leonardo)","badges":[],"url":"https://br.wikipedia.org/wiki/L%27Ultima_Cena_(Leonardo)"},"bswiki":{"site":"bswiki","title":"Posljednja
-        ve\u010dera","badges":[],"url":"https://bs.wikipedia.org/wiki/Posljednja_ve%C4%8Dera"},"cawiki":{"site":"cawiki","title":"La
-        Santa Cena (Leonardo da Vinci)","badges":[],"url":"https://ca.wikipedia.org/wiki/La_Santa_Cena_(Leonardo_da_Vinci)"},"commonswiki":{"site":"commonswiki","title":"Category:Last
-        Supper by Leonardo da Vinci","badges":[],"url":"https://commons.wikimedia.org/wiki/Category:Last_Supper_by_Leonardo_da_Vinci"},"cswiki":{"site":"cswiki","title":"Posledn\u00ed
-        ve\u010de\u0159e (da Vinci)","badges":[],"url":"https://cs.wikipedia.org/wiki/Posledn%C3%AD_ve%C4%8De%C5%99e_(da_Vinci)"},"cswikiquote":{"site":"cswikiquote","title":"Posledn\u00ed
-        ve\u010de\u0159e","badges":[],"url":"https://cs.wikiquote.org/wiki/Posledn%C3%AD_ve%C4%8De%C5%99e"},"cywiki":{"site":"cywiki","title":"Y
-        Swper Olaf (Leonardo)","badges":[],"url":"https://cy.wikipedia.org/wiki/Y_Swper_Olaf_(Leonardo)"},"dawiki":{"site":"dawiki","title":"Den
-        sidste nadver (Leonardo)","badges":[],"url":"https://da.wikipedia.org/wiki/Den_sidste_nadver_(Leonardo)"},"dewiki":{"site":"dewiki","title":"Das
-        Abendmahl (Leonardo da Vinci)","badges":[],"url":"https://de.wikipedia.org/wiki/Das_Abendmahl_(Leonardo_da_Vinci)"},"elwiki":{"site":"elwiki","title":"\u039f
-        \u039c\u03c5\u03c3\u03c4\u03b9\u03ba\u03cc\u03c2 \u0394\u03b5\u03af\u03c0\u03bd\u03bf\u03c2
-        (\u039d\u03c4\u03b1 \u0392\u03af\u03bd\u03c4\u03c3\u03b9)","badges":[],"url":"https://el.wikipedia.org/wiki/%CE%9F_%CE%9C%CF%85%CF%83%CF%84%CE%B9%CE%BA%CF%8C%CF%82_%CE%94%CE%B5%CE%AF%CF%80%CE%BD%CE%BF%CF%82_(%CE%9D%CF%84%CE%B1_%CE%92%CE%AF%CE%BD%CF%84%CF%83%CE%B9)"},"enwiki":{"site":"enwiki","title":"The
-        Last Supper (Leonardo)","badges":[],"url":"https://en.wikipedia.org/wiki/The_Last_Supper_(Leonardo)"},"eowiki":{"site":"eowiki","title":"La
-        Lasta Vesperman\u011do (Leonardo)","badges":[],"url":"https://eo.wikipedia.org/wiki/La_Lasta_Vesperman%C4%9Do_(Leonardo)"},"eswiki":{"site":"eswiki","title":"La
-        \u00faltima cena (Leonardo da Vinci)","badges":[],"url":"https://es.wikipedia.org/wiki/La_%C3%BAltima_cena_(Leonardo_da_Vinci)"},"etwiki":{"site":"etwiki","title":"P\u00fcha
-        \u00f5htus\u00f6\u00f6maaeg (Leonardo da Vinci)","badges":[],"url":"https://et.wikipedia.org/wiki/P%C3%BCha_%C3%B5htus%C3%B6%C3%B6maaeg_(Leonardo_da_Vinci)"},"euwiki":{"site":"euwiki","title":"Azken
-        Afaria (Leonardo da Vinci)","badges":[],"url":"https://eu.wikipedia.org/wiki/Azken_Afaria_(Leonardo_da_Vinci)"},"fawiki":{"site":"fawiki","title":"\u0634\u0627\u0645
-        \u0622\u062e\u0631 (\u062f\u0627 \u0648\u06cc\u0646\u0686\u06cc)","badges":[],"url":"https://fa.wikipedia.org/wiki/%D8%B4%D8%A7%D9%85_%D8%A2%D8%AE%D8%B1_(%D8%AF%D8%A7_%D9%88%DB%8C%D9%86%DA%86%DB%8C)"},"fiwiki":{"site":"fiwiki","title":"Pyh\u00e4
-        ehtoollinen","badges":[],"url":"https://fi.wikipedia.org/wiki/Pyh%C3%A4_ehtoollinen"},"frwiki":{"site":"frwiki","title":"La
-        C\u00e8ne (L\u00e9onard de Vinci)","badges":[],"url":"https://fr.wikipedia.org/wiki/La_C%C3%A8ne_(L%C3%A9onard_de_Vinci)"},"gawiki":{"site":"gawiki","title":"An
-        Suip\u00e9ar D\u00e9anach (Leonardo da Vinci)","badges":[],"url":"https://ga.wikipedia.org/wiki/An_Suip%C3%A9ar_D%C3%A9anach_(Leonardo_da_Vinci)"},"glwiki":{"site":"glwiki","title":"A
-        \u00daltima Cea (Leonardo)","badges":[],"url":"https://gl.wikipedia.org/wiki/A_%C3%9Altima_Cea_(Leonardo)"},"hewiki":{"site":"hewiki","title":"\u05d4\u05e1\u05e2\u05d5\u05d3\u05d4
-        \u05d4\u05d0\u05d7\u05e8\u05d5\u05e0\u05d4 (\u05e6\u05d9\u05d5\u05e8)","badges":[],"url":"https://he.wikipedia.org/wiki/%D7%94%D7%A1%D7%A2%D7%95%D7%93%D7%94_%D7%94%D7%90%D7%97%D7%A8%D7%95%D7%A0%D7%94_(%D7%A6%D7%99%D7%95%D7%A8)"},"hiwiki":{"site":"hiwiki","title":"\u0926
-        \u0932\u093e\u0938\u094d\u091f \u0938\u092a\u0930","badges":[],"url":"https://hi.wikipedia.org/wiki/%E0%A4%A6_%E0%A4%B2%E0%A4%BE%E0%A4%B8%E0%A5%8D%E0%A4%9F_%E0%A4%B8%E0%A4%AA%E0%A4%B0"},"hrwiki":{"site":"hrwiki","title":"Posljednja
-        ve\u010dera (Leonardo)","badges":[],"url":"https://hr.wikipedia.org/wiki/Posljednja_ve%C4%8Dera_(Leonardo)"},"huwiki":{"site":"huwiki","title":"Az
-        utols\u00f3 vacsora (da Vinci-festm\u00e9ny)","badges":[],"url":"https://hu.wikipedia.org/wiki/Az_utols%C3%B3_vacsora_(da_Vinci-festm%C3%A9ny)"},"hywiki":{"site":"hywiki","title":"\u053d\u0578\u0580\u0570\u0580\u0564\u0561\u057e\u0578\u0580
-        \u0568\u0576\u0569\u0580\u056b\u0584 (\u053c\u0565\u0578\u0576\u0561\u0580\u0564\u0578
-        \u0564\u0561 \u054e\u056b\u0576\u0579\u056b)","badges":[],"url":"https://hy.wikipedia.org/wiki/%D4%BD%D5%B8%D6%80%D5%B0%D6%80%D5%A4%D5%A1%D5%BE%D5%B8%D6%80_%D5%A8%D5%B6%D5%A9%D6%80%D5%AB%D6%84_(%D4%BC%D5%A5%D5%B8%D5%B6%D5%A1%D6%80%D5%A4%D5%B8_%D5%A4%D5%A1_%D5%8E%D5%AB%D5%B6%D5%B9%D5%AB)"},"idwiki":{"site":"idwiki","title":"Perjamuan
-        Terakhir (Leonardo da Vinci)","badges":[],"url":"https://id.wikipedia.org/wiki/Perjamuan_Terakhir_(Leonardo_da_Vinci)"},"ilowiki":{"site":"ilowiki","title":"Ti
-        Maudi a Pangrabii (Leonardo da Vinci)","badges":[],"url":"https://ilo.wikipedia.org/wiki/Ti_Maudi_a_Pangrabii_(Leonardo_da_Vinci)"},"iowiki":{"site":"iowiki","title":"La
-        Lasta Supeo","badges":[],"url":"https://io.wikipedia.org/wiki/La_Lasta_Supeo"},"itwiki":{"site":"itwiki","title":"Ultima
-        Cena (Leonardo)","badges":[],"url":"https://it.wikipedia.org/wiki/Ultima_Cena_(Leonardo)"},"itwikiquote":{"site":"itwikiquote","title":"Ultima
-        Cena (Leonardo)","badges":[],"url":"https://it.wikiquote.org/wiki/Ultima_Cena_(Leonardo)"},"jawiki":{"site":"jawiki","title":"\u6700\u5f8c\u306e\u6669\u9910
-        (\u30ec\u30aa\u30ca\u30eb\u30c9)","badges":[],"url":"https://ja.wikipedia.org/wiki/%E6%9C%80%E5%BE%8C%E3%81%AE%E6%99%A9%E9%A4%90_(%E3%83%AC%E3%82%AA%E3%83%8A%E3%83%AB%E3%83%89)"},"kawiki":{"site":"kawiki","title":"\u10e1\u10d0\u10d8\u10d3\u10e3\u10db\u10da\u10dd
-        \u10e1\u10d4\u10e0\u10dd\u10d1\u10d0 (\u10da\u10d4\u10dd\u10dc\u10d0\u10e0\u10d3\u10dd
-        \u10d3\u10d0 \u10d5\u10d8\u10dc\u10e9\u10d8)","badges":[],"url":"https://ka.wikipedia.org/wiki/%E1%83%A1%E1%83%90%E1%83%98%E1%83%93%E1%83%A3%E1%83%9B%E1%83%9A%E1%83%9D_%E1%83%A1%E1%83%94%E1%83%A0%E1%83%9D%E1%83%91%E1%83%90_(%E1%83%9A%E1%83%94%E1%83%9D%E1%83%9C%E1%83%90%E1%83%A0%E1%83%93%E1%83%9D_%E1%83%93%E1%83%90_%E1%83%95%E1%83%98%E1%83%9C%E1%83%A9%E1%83%98)"},"kkwiki":{"site":"kkwiki","title":"\u0416\u0430\u0441\u044b\u0440\u044b\u043d
-        \u043a\u0435\u0448\u043a\u0456\u043b\u0456\u043a (\u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e
-        \u0434\u0430 \u0412\u0438\u043d\u0447\u0438)","badges":[],"url":"https://kk.wikipedia.org/wiki/%D0%96%D0%B0%D1%81%D1%8B%D1%80%D1%8B%D0%BD_%D0%BA%D0%B5%D1%88%D0%BA%D1%96%D0%BB%D1%96%D0%BA_(%D0%9B%D0%B5%D0%BE%D0%BD%D0%B0%D1%80%D0%B4%D0%BE_%D0%B4%D0%B0_%D0%92%D0%B8%D0%BD%D1%87%D0%B8)"},"knwiki":{"site":"knwiki","title":"\u0cb2\u0cbe\u0cb8\u0ccd\u0c9f\u0ccd
-        \u0cb8\u0caa\u0ccd\u0caa\u0cb0\u0ccd","badges":[],"url":"https://kn.wikipedia.org/wiki/%E0%B2%B2%E0%B2%BE%E0%B2%B8%E0%B3%8D%E0%B2%9F%E0%B3%8D_%E0%B2%B8%E0%B2%AA%E0%B3%8D%E0%B2%AA%E0%B2%B0%E0%B3%8D"},"kowiki":{"site":"kowiki","title":"\ucd5c\ud6c4\uc758
-        \ub9cc\ucc2c (\ub808\uc624\ub098\ub974\ub3c4 \ub2e4 \ube48\uce58)","badges":[],"url":"https://ko.wikipedia.org/wiki/%EC%B5%9C%ED%9B%84%EC%9D%98_%EB%A7%8C%EC%B0%AC_(%EB%A0%88%EC%98%A4%EB%82%98%EB%A5%B4%EB%8F%84_%EB%8B%A4_%EB%B9%88%EC%B9%98)"},"lawiki":{"site":"lawiki","title":"Ultima
-        Cena (Leonardus)","badges":[],"url":"https://la.wikipedia.org/wiki/Ultima_Cena_(Leonardus)"},"liwiki":{"site":"liwiki","title":"L\u00e8tste
-        aovendmaol","badges":[],"url":"https://li.wikipedia.org/wiki/L%C3%A8tste_aovendmaol"},"ltwiki":{"site":"ltwiki","title":"Paskutin\u0117
-        vakarien\u0117 (Leonardas da Vin\u010dis)","badges":[],"url":"https://lt.wikipedia.org/wiki/Paskutin%C4%97_vakarien%C4%97_(Leonardas_da_Vin%C4%8Dis)"},"lvwiki":{"site":"lvwiki","title":"Sv\u0113tais
-        vakar\u0113diens (glezna)","badges":[],"url":"https://lv.wikipedia.org/wiki/Sv%C4%93tais_vakar%C4%93diens_(glezna)"},"mkwiki":{"site":"mkwiki","title":"\u0422\u0430\u0458\u043d\u0430\u0442\u0430
-        \u0432\u0435\u0447\u0435\u0440\u0430 (\u0441\u043b\u0438\u043a\u0430)","badges":[],"url":"https://mk.wikipedia.org/wiki/%D0%A2%D0%B0%D1%98%D0%BD%D0%B0%D1%82%D0%B0_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D0%B0_(%D1%81%D0%BB%D0%B8%D0%BA%D0%B0)"},"mlwiki":{"site":"mlwiki","title":"\u0d05\u0d28\u0d4d\u0d24\u0d4d\u0d2f\u0d24\u0d3f\u0d30\u0d41\u0d35\u0d24\u0d4d\u0d24\u0d3e\u0d34\u0d02
-        (\u0d32\u0d3f\u0d2f\u0d28\u0d3e\u0d7c\u0d21\u0d4b \u0d21\u0d3e \u0d35\u0d3f\u0d1e\u0d4d\u0d1a\u0d3f)","badges":[],"url":"https://ml.wikipedia.org/wiki/%E0%B4%85%E0%B4%A8%E0%B5%8D%E0%B4%A4%E0%B5%8D%E0%B4%AF%E0%B4%A4%E0%B4%BF%E0%B4%B0%E0%B5%81%E0%B4%B5%E0%B4%A4%E0%B5%8D%E0%B4%A4%E0%B4%BE%E0%B4%B4%E0%B4%82_(%E0%B4%B2%E0%B4%BF%E0%B4%AF%E0%B4%A8%E0%B4%BE%E0%B5%BC%E0%B4%A1%E0%B5%8B_%E0%B4%A1%E0%B4%BE_%E0%B4%B5%E0%B4%BF%E0%B4%9E%E0%B5%8D%E0%B4%9A%E0%B4%BF)"},"mrwiki":{"site":"mrwiki","title":"\u0926
-        \u0932\u093e\u0938\u094d\u091f \u0938\u092a\u0930","badges":[],"url":"https://mr.wikipedia.org/wiki/%E0%A4%A6_%E0%A4%B2%E0%A4%BE%E0%A4%B8%E0%A5%8D%E0%A4%9F_%E0%A4%B8%E0%A4%AA%E0%A4%B0"},"mtwiki":{"site":"mtwiki","title":"L-A\u0127\u0127ar
-        \u010aena (Leonardo)","badges":[],"url":"https://mt.wikipedia.org/wiki/L-A%C4%A7%C4%A7ar_%C4%8Aena_(Leonardo)"},"mywiki":{"site":"mywiki","title":"\u1014\u1031\u102c\u1000\u103a\u1006\u102f\u1036\u1038\u100a\u1005\u102c
-        (\u1015\u1014\u103a\u1038\u1001\u103b\u102e)","badges":[],"url":"https://my.wikipedia.org/wiki/%E1%80%94%E1%80%B1%E1%80%AC%E1%80%80%E1%80%BA%E1%80%86%E1%80%AF%E1%80%B6%E1%80%B8%E1%80%8A%E1%80%85%E1%80%AC_(%E1%80%95%E1%80%94%E1%80%BA%E1%80%B8%E1%80%81%E1%80%BB%E1%80%AE)"},"nlwiki":{"site":"nlwiki","title":"Het
-        Laatste Avondmaal (Leonardo da Vinci)","badges":[],"url":"https://nl.wikipedia.org/wiki/Het_Laatste_Avondmaal_(Leonardo_da_Vinci)"},"nowiki":{"site":"nowiki","title":"Nattverden
-        (Leonardo)","badges":[],"url":"https://no.wikipedia.org/wiki/Nattverden_(Leonardo)"},"plwiki":{"site":"plwiki","title":"Ostatnia
-        Wieczerza (obraz Leonarda da Vinci)","badges":[],"url":"https://pl.wikipedia.org/wiki/Ostatnia_Wieczerza_(obraz_Leonarda_da_Vinci)"},"plwikiquote":{"site":"plwikiquote","title":"Ostatnia
-        Wieczerza","badges":[],"url":"https://pl.wikiquote.org/wiki/Ostatnia_Wieczerza"},"ptwiki":{"site":"ptwiki","title":"A
-        \u00daltima Ceia (Leonardo da Vinci)","badges":[],"url":"https://pt.wikipedia.org/wiki/A_%C3%9Altima_Ceia_(Leonardo_da_Vinci)"},"rowiki":{"site":"rowiki","title":"Cina
-        cea de Tain\u0103 (Leonardo da Vinci)","badges":[],"url":"https://ro.wikipedia.org/wiki/Cina_cea_de_Tain%C4%83_(Leonardo_da_Vinci)"},"ruwiki":{"site":"ruwiki","title":"\u0422\u0430\u0439\u043d\u0430\u044f
-        \u0432\u0435\u0447\u0435\u0440\u044f (\u0444\u0440\u0435\u0441\u043a\u0430
-        \u041b\u0435\u043e\u043d\u0430\u0440\u0434\u043e \u0434\u0430 \u0412\u0438\u043d\u0447\u0438)","badges":[],"url":"https://ru.wikipedia.org/wiki/%D0%A2%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D1%8F_(%D1%84%D1%80%D0%B5%D1%81%D0%BA%D0%B0_%D0%9B%D0%B5%D0%BE%D0%BD%D0%B0%D1%80%D0%B4%D0%BE_%D0%B4%D0%B0_%D0%92%D0%B8%D0%BD%D1%87%D0%B8)"},"scnwiki":{"site":"scnwiki","title":"\u00d9rtima
-        cena (Liunardu)","badges":[],"url":"https://scn.wikipedia.org/wiki/%C3%99rtima_cena_(Liunardu)"},"shwiki":{"site":"shwiki","title":"Posljednja
-        ve\u010dera (Leonardo)","badges":[],"url":"https://sh.wikipedia.org/wiki/Posljednja_ve%C4%8Dera_(Leonardo)"},"simplewiki":{"site":"simplewiki","title":"The
-        Last Supper","badges":[],"url":"https://simple.wikipedia.org/wiki/The_Last_Supper"},"siwiki":{"site":"siwiki","title":"\u0d85\u0dc0\u0dc3\u0db1\u0dca
-        \u0db7\u0ddd\u0da2\u0db1 \u0dc3\u0d82\u0d9c\u0dca\u200d\u0dbb\u0dc4\u0dba
-        (\u0da0\u0dd2\u0dad\u0dca\u200d\u0dbb\u0dba)","badges":[],"url":"https://si.wikipedia.org/wiki/%E0%B6%85%E0%B7%80%E0%B7%83%E0%B6%B1%E0%B7%8A_%E0%B6%B7%E0%B7%9D%E0%B6%A2%E0%B6%B1_%E0%B7%83%E0%B6%82%E0%B6%9C%E0%B7%8A%E2%80%8D%E0%B6%BB%E0%B7%84%E0%B6%BA_(%E0%B6%A0%E0%B7%92%E0%B6%AD%E0%B7%8A%E2%80%8D%E0%B6%BB%E0%B6%BA)"},"skwiki":{"site":"skwiki","title":"Posledn\u00e1
-        ve\u010dera (Leonardo da Vinci)","badges":[],"url":"https://sk.wikipedia.org/wiki/Posledn%C3%A1_ve%C4%8Dera_(Leonardo_da_Vinci)"},"slwiki":{"site":"slwiki","title":"Zadnja
-        ve\u010derja (Leonardo da Vinci)","badges":[],"url":"https://sl.wikipedia.org/wiki/Zadnja_ve%C4%8Derja_(Leonardo_da_Vinci)"},"sqwiki":{"site":"sqwiki","title":"Darka
-        e Fundit","badges":[],"url":"https://sq.wikipedia.org/wiki/Darka_e_Fundit"},"srwiki":{"site":"srwiki","title":"\u0422\u0430\u0458\u043d\u0430
-        \u0432\u0435\u0447\u0435\u0440\u0430 (\u0444\u0440\u0435\u0441\u043a\u0430)","badges":[],"url":"https://sr.wikipedia.org/wiki/%D0%A2%D0%B0%D1%98%D0%BD%D0%B0_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D0%B0_(%D1%84%D1%80%D0%B5%D1%81%D0%BA%D0%B0)"},"svwiki":{"site":"svwiki","title":"Nattvarden","badges":[],"url":"https://sv.wikipedia.org/wiki/Nattvarden"},"tawiki":{"site":"tawiki","title":"\u0b87\u0bb1\u0bc1\u0ba4\u0bbf
-        \u0b87\u0bb0\u0bbe\u0bb5\u0bc1\u0ba3\u0bb5\u0bc1 (\u0bb2\u0bbf\u0baf\u0bca\u0ba9\u0bbe\u0bb0\u0bcd\u0b9f\u0bcb
-        \u0b9f\u0bbe \u0bb5\u0bbf\u0ba9\u0bcd\u0b9a\u0bbf)","badges":[],"url":"https://ta.wikipedia.org/wiki/%E0%AE%87%E0%AE%B1%E0%AF%81%E0%AE%A4%E0%AE%BF_%E0%AE%87%E0%AE%B0%E0%AE%BE%E0%AE%B5%E0%AF%81%E0%AE%A3%E0%AE%B5%E0%AF%81_(%E0%AE%B2%E0%AE%BF%E0%AE%AF%E0%AF%8A%E0%AE%A9%E0%AE%BE%E0%AE%B0%E0%AF%8D%E0%AE%9F%E0%AF%8B_%E0%AE%9F%E0%AE%BE_%E0%AE%B5%E0%AE%BF%E0%AE%A9%E0%AF%8D%E0%AE%9A%E0%AE%BF)"},"thwiki":{"site":"thwiki","title":"\u0e2d\u0e32\u0e2b\u0e32\u0e23\u0e04\u0e48\u0e33\u0e21\u0e37\u0e49\u0e2d\u0e2a\u0e38\u0e14\u0e17\u0e49\u0e32\u0e22
-        (\u0e40\u0e25\u0e42\u0e2d\u0e19\u0e32\u0e23\u0e4c\u0e42\u0e14)","badges":[],"url":"https://th.wikipedia.org/wiki/%E0%B8%AD%E0%B8%B2%E0%B8%AB%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B9%88%E0%B8%B3%E0%B8%A1%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A2_(%E0%B9%80%E0%B8%A5%E0%B9%82%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%94)"},"trwiki":{"site":"trwiki","title":"Son
-        Ak\u015fam Yeme\u011fi (tablo)","badges":[],"url":"https://tr.wikipedia.org/wiki/Son_Ak%C5%9Fam_Yeme%C4%9Fi_(tablo)"},"ukwiki":{"site":"ukwiki","title":"\u0422\u0430\u0439\u043d\u0430
-        \u0432\u0435\u0447\u0435\u0440\u044f (\u043a\u0430\u0440\u0442\u0438\u043d\u0430
-        \u0434\u0430 \u0412\u0456\u043d\u0447\u0456)","badges":[],"url":"https://uk.wikipedia.org/wiki/%D0%A2%D0%B0%D0%B9%D0%BD%D0%B0_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D1%8F_(%D0%BA%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D0%B0_%D0%B4%D0%B0_%D0%92%D1%96%D0%BD%D1%87%D1%96)"},"viwiki":{"site":"viwiki","title":"B\u1eefa
-        \u0103n t\u1ed1i cu\u1ed1i c\u00f9ng (Leonardo da Vinci)","badges":[],"url":"https://vi.wikipedia.org/wiki/B%E1%BB%AFa_%C4%83n_t%E1%BB%91i_cu%E1%BB%91i_c%C3%B9ng_(Leonardo_da_Vinci)"},"warwiki":{"site":"warwiki","title":"An
-        Urhi nga Pangiklop (Leonardo da Vinci)","badges":[],"url":"https://war.wikipedia.org/wiki/An_Urhi_nga_Pangiklop_(Leonardo_da_Vinci)"},"wuuwiki":{"site":"wuuwiki","title":"\u6700\u540e\u4e2a\u665a\u9910
-        (\u8fbe\u82ac\u5947)","badges":[],"url":"https://wuu.wikipedia.org/wiki/%E6%9C%80%E5%90%8E%E4%B8%AA%E6%99%9A%E9%A4%90_(%E8%BE%BE%E8%8A%AC%E5%A5%87)"},"zh_min_nanwiki":{"site":"zh_min_nanwiki","title":"Ch\u00f2e-\u0101u
-        \u00ea \u00c0n-pn\u0304g (Leonardo da Vinci)","badges":[],"url":"https://zh-min-nan.wikipedia.org/wiki/Ch%C3%B2e-%C4%81u_%C3%AA_%C3%80n-pn%CC%84g_(Leonardo_da_Vinci)"},"zh_yuewiki":{"site":"zh_yuewiki","title":"\u6700\u5f8c\u665a\u9910","badges":[],"url":"https://zh-yue.wikipedia.org/wiki/%E6%9C%80%E5%BE%8C%E6%99%9A%E9%A4%90"},"zhwiki":{"site":"zhwiki","title":"\u6700\u540e\u7684\u665a\u9910
-        (\u8fbe\u82ac\u5947)","badges":[],"url":"https://zh.wikipedia.org/wiki/%E6%9C%80%E5%90%8E%E7%9A%84%E6%99%9A%E9%A4%90_(%E8%BE%BE%E8%8A%AC%E5%A5%87)"},"zuwiki":{"site":"zuwiki","title":"The
-        Last Supper","badges":[],"url":"https://zu.wikipedia.org/wiki/The_Last_Supper"}}}}}'
-    http_version: 
-  recorded_at: Tue, 01 Oct 2019 20:57:20 GMT
-- request:
-    method: get
-    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20%20%20SELECT%20?id%20$label%0A%20%20%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20.%0A%20%20%20%20%20%20%20%20%20%20%20FILTER(lang(?label)%20=%20%27en%27)%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20VALUES%20(?id)%20%7B(wd:P144)%20(wd:P135)%20(wd:P276)%20(wd:P88)%20(wd:P136)%20(wd:P31)%20(wd:P170)%20(wd:P180)%20(wd:P195)%20(wd:P921)%20(wd:P2079)%20(wd:P131)%20(wd:P17)%20(wd:P186)%20(wd:P4969)%20(wd:P1343)%7D%0A%20%20%20%20%20%20
-    body:
-      encoding: UTF-8
-      string: ''
-    headers:
-      User-Agent:
-      - HTTPClient/1.0 (2.8.3, ruby 2.5.5 (2019-03-15))
-      Accept:
-      - "*/*"
-      Date:
-      - Tue, 01 Oct 2019 20:57:20 GMT
-      Content-Type:
-      - application/x-www-form-urlencoded
-      Cookie:
-      - WMF-Last-Access-Global=01-Oct-2019; GeoIP=US:CA:San_Diego:32.74:-117.17:v4;
-        WMF-Last-Access=01-Oct-2019
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - nginx/1.13.6
-      Date:
-      - Tue, 01 Oct 2019 20:56:30 GMT
-      Content-Type:
-      - application/sparql-results+xml;charset=utf-8
-      X-Served-By:
-      - wdqs2003
-      Access-Control-Allow-Origin:
-      - "*"
-      Cache-Control:
-      - public, max-age=300
-      Vary:
-      - Accept, Accept-Encoding
-      X-Varnish:
-      - 321213101, 308324998 306791725, 582565669
-      Accept-Ranges:
-      - bytes
-      Age:
-      - '50'
-      X-Cache:
-      - cp2012 pass, cp4031 hit/1, cp4027 pass
-      X-Cache-Status:
-      - hit-local
-      Server-Timing:
-      - cache;desc="hit-local"
-      Strict-Transport-Security:
-      - max-age=106384710; includeSubDomains; preload
-      X-Analytics:
-      - WMF-Last-Access=01-Oct-2019;WMF-Last-Access-Global=01-Oct-2019;https=1
-      X-Client-Ip:
-      - 70.179.22.74
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-    body:
-      encoding: UTF-8
-      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
-        name='id'/>\n\t\t<variable name='label'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P17</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>country</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P31</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>instance of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P88</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>commissioned by</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P131</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>located in the administrative
-        territorial entity</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P135</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>movement</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P136</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>genre</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P144</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>based on</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P170</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>creator</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P180</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>depicts</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P186</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>material used</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P195</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>collection</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P276</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P921</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>main subject</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1343</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>described by source</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P2079</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>fabrication method</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
-        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P4969</uri>\n\t\t\t</binding>\n\t\t\t<binding
-        name='label'>\n\t\t\t\t<literal xml:lang='en'>derivative work</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
     http_version: 
   recorded_at: Tue, 01 Oct 2019 20:57:20 GMT
 recorded_with: VCR 4.0.0

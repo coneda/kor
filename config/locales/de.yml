@@ -85,6 +85,8 @@ de:
   day: Tag
   before: vor
   after: nach
+  existing_entities: bestehende Entitäten
+  wikidata_items: Wikidata-Einträge
 
   help:
     terms_query: |
@@ -116,6 +118,25 @@ de:
       Dateigröße und mit '-' nach kleineren. Fügen Sie KB, MB, GB, or TB an, um
       eine andere Einheit zu verwenden. Zum Beispiel:
       <code>+50MB<br />-100KB<br />+1GB</code>
+    wikidata_integration: |
+      Verwenden Sie den standardisierten Zwei-Zeichen-Code (e.g. de, it, fr, es,
+      ...). Wikidata wird dadurch in der entsprechenden Sprache abgefragt und
+      die Autovervollständigung für neue Entitäten wird mit den Resultaten
+      angereichert. Durch Auswahl eines Resultates wird der Entitätsname und das
+      Kommentar-Feld vorausgefüllt. Existiert am Entitätstyp ein wikidata_id
+      Feld, wird auch dieses vorausgefüllt und die bestehenden Entitäten werden
+      gemäß der Properties in Wikidata verknüpft. Lassen Sie diese
+      Konfigurationsoption leer, um die Integration zu deaktivieren.
+    create_missing_relations: |
+      Bei der Wikidataintegration werden durch diese Einstellung neue Relationen
+      angelegt, wenn sie noch nicht existieren.
+    generator_directive: |
+      Für Beispiele siehe
+      <a
+        href="https://github.com/coneda/kor_leitfaden_ffm/wiki#generatoren-definieren"
+        target="_blank"
+        rel="noopener"
+      >unsere Dokumentation</a>
 
   search_term: 
     one: Suchbegriff
@@ -265,6 +286,8 @@ de:
       primary_relations: primäre Relationen
       secondary_relations: sekundäre Relationen
       repository_uuid: die generierte UUID für diese Installation ändern
+      wikidata_integration: 'Wikidata-Integration verwenden'
+      create_missing_relations: 'fehlende Relationen anlegen?'
 
       help_general: genereller Hilfetext (Menu)
       help_search: Hilfetext zur Suche

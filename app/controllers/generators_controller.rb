@@ -36,6 +36,7 @@ class GeneratorsController < JsonController
     render_deleted @record
   end
 
+
   protected
 
     def generator_params

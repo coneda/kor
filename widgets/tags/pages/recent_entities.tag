@@ -177,7 +177,9 @@
         include: 'kind,users,collection,technical',
         per_page: 10,
         date: strftime('%Y-%m-%d'),
-        recent: true
+        recent: true,
+        sort: 'created_at',
+        direction: 'desc'
       }
     }
       

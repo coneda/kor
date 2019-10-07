@@ -19,6 +19,7 @@
     <kor-input
       name="directive"
       label={tcap('activerecord.attributes.generator.directive')}
+      help={tcap('help.generator_directive')}
       type="textarea"
       riot-value={data.directive}
       errors={errors.directive}

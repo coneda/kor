@@ -202,6 +202,24 @@
           ref="fields"
         />
 
+        <kor-input
+          name="wikidata_integration"
+          label={nameFor('wikidata_integration')}
+          help={tcap('help.wikidata_integration')}
+          type="text"
+          riot-value={valueWithDefaults('wikidata_integration')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="create_missing_relations"
+          label={nameFor('create_missing_relations')}
+          help={tcap('help.create_missing_relations')}
+          type="checkbox"
+          riot-value={valueWithDefaults('create_missing_relations')}
+          ref="fields"
+        />
+
         <h2>{tcap('settings.help')}</h2>
         <hr />
 

@@ -78,5 +78,16 @@
         field.type == 'Fields::Regex'
       )
     }
+
+    tag.inputByName = function(name) {
+      var inputs = wApp.utils.toArray(tag.tags['kor-input']);
+      for (var i = 0; i < inputs.length; i++) {
+        var field = inputs[i];
+        if (field.name() === name) {
+          return field;
+        }
+      }
+      return null;
+    }
   </script>
 </kor-dataset-fields>

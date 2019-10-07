@@ -905,12 +905,23 @@ kor-input {
     border: 1px solid $kor-input-border;
     padding: 0.5rem;
     margin-top: -1px;
-    margin-bottom: 2rem;
 
     code {
       display: block;
       color: white;
       margin-bottom: 1rem;
+    }
+  }
+
+  &[type=checkbox] {
+    .help {
+      border: none;
+    }
+  }
+
+  &[type=textarea] {
+    .help {
+      margin-top: -5px;
     }
   }
 }

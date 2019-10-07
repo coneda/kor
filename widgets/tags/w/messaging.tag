@@ -33,7 +33,8 @@
         3000
 
     ajaxCompleteHandler = (event, request, options) ->
-      contentType = request.getResponseHeader('content-type')
+      contentType = if request.getResponseHeader
+        request.getResponseHeader('content-type')
 
       if contentType && contentType.match(/^application\/json/) && request.response
         try

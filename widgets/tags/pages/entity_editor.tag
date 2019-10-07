@@ -42,12 +42,13 @@
           />
 
           <kor-input
-            label={tcap('activerecord.attributes.entity.name')}
             if={hasName()}
+            label={tcap('activerecord.attributes.entity.name')}
             name="name"
             ref="fields"
             value={data.name}
             errors={errors.name}
+            wikidata={config().wikidata_integration}
           />
 
           <kor-input
@@ -144,6 +145,7 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.page)
+    tag.mixin(wApp.mixins.config)
 
     tag.on 'before-mount', ->
       tag.errors = {}
@@ -156,6 +158,9 @@
         {label: tag.t('values.no_name_statements.enter_name'), value: 'enter_name'}
       ]
 
+      wApp.bus.on 'wikidata-item-selected', wikidataItemSelected
+      wApp.bus.on 'existing-entity-selected', existingEntitySelected
+
     tag.on 'mount', ->
       checkPermissions()
 
@@ -164,6 +169,8 @@
       fetch(tag.opts.kindId)
 
     tag.on 'unmount', ->
+      wApp.bus.off 'existing-entity-selected', existingEntitySelected
+      wApp.bus.off 'wikidata-item-selected', wikidataItemSelected
       wApp.bus.off 'routing:query', queryHandler
 
     tag.submit = (event) ->
@@ -263,6 +270,24 @@
       for f in tag.refs.fields
         results[f.name()] = f.value()
       results
+
+    wikidataItemSelected = (item) ->
+      inputByName('name').set(item.name);
+      inputByName('comment').set(item.description);
+      if t = inputByName('dataset').inputByName('wikidata_id')
+        t.set(item.id)
+
+    existingEntitySelected = (entity) ->
+      console.log(arguments);
+      wApp.routing.path('/entities/' + entity.id);
+
+    inputByName = (name) ->
+      console.log(tag)
+      console.log(tag.tags)
+      for f in tag.refs.fields
+        if f.name() == name
+          return f
+      null
 
   </script>
 

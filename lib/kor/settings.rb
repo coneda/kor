@@ -152,7 +152,10 @@ module Kor
         'primary_relations' => [],
         'secondary_relations' => [],
 
-        'repository_uuid' => nil
+        'repository_uuid' => nil,
+
+        'wikidata_integration' => '',
+        'create_missing_relations' => true
       }
     end
 

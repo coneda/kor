@@ -1,33 +1,179 @@
 class Kor::Import::WikiData
-  def initialize(locale = 'en')
-    @locale = locale
+  def initialize(data)
+    @data = data
   end
 
-  def find(id)
-    request "get", "https://www.wikidata.org/wiki/Special:EntityData/#{id}.json"
+  def self.find(qid)
+    data = request(
+      'get', "https://www.wikidata.org/wiki/Special:EntityData/#{qid}.json"
+    )
+    new(data['entities'].values.first)
   end
 
-  # def find_by_attribute(name, value)
-  #   request "get", "https://wdq.wmflabs.org/api?q=STRING[#{name}:\"#{value}\"]"
-  # end
-
-  def attribute_for(id, attribute)
-    response = find(id)
-    response["entities"][id]["claims"][attribute].first["mainsnak"]["datavalue"]["value"]
+  def qid
+    @data['id']
   end
 
-  def identifier_types
+  def label
+    @data['labels'][self.class.locale]['value']
+  end
+
+  def description
+    @data['descriptions'][self.class.locale]['value']
+  end
+
+  def aliases
+    # TODO
+  end
+
+  def revision
+    @data['lastrevid']
+  end
+
+  def entity
+    @entity ||= Identifier.resolve(qid, 'wikidata_id')
+  end
+
+  def property_value(pid)
+    @data["claims"][pid].first["mainsnak"]["datavalue"]["value"]
+  end
+
+  def properties
+    @properties ||= begin
+      results = []
+      @data['claims'].each do |pid, claims|
+        props = claims.select do |c| 
+          c['mainsnak']['datatype'] == 'wikibase-item' &&
+          c['mainsnak']['snaktype'] == 'value'
+        end
+
+        if !props.empty?
+          values = props.map{ |i| i['mainsnak']['datavalue']['value']['id'] }
+          results << {'id' => pid, 'values' => values}
+        end
+      end
+
+      ids = results.map{ |r| r['id'] }
+      labels = self.class.labels_for(ids)
+      results.each do |r|
+        label = labels.find{ |l| l['id'] == r['id'] }
+        binding.pry unless label
+        r['label'] = label['label']
+      end
+
+      results
+    end
+  end
+
+  def identifiers
+    @identifiers ||= begin
+      results = []
+      self.class.identifier_types.each do |i|
+        if part = @data["claims"]["P#{i['id']}"]
+          results << i.merge(
+            'value' => part.first['mainsnak']['datavalue']['value']
+          )
+        end
+      end
+      results
+    end
+  end
+
+  def entity_properties
+    @entity_properties ||= properties.map do |r|
+      values = r['values'].select{ |v| Identifier.resolve(v, 'wikidata_id') }
+      r['values'] = values
+      r
+    end.reject{ |r| r['values'].empty? }
+  end
+
+  def import(collection, kind)
+    entity = Entity.create!(
+      collection_id: collection.id,
+      kind_id: kind.id,
+      name: self.label,
+      comment: self.description,
+      dataset: {'wikidata_id' => qid}
+    )
+
+    update_relationships(entity)
+  end
+
+  def update(entity, opts = {})
+    opts.reverse_merge! attributes: false
+
+    if opts[:attributes]
+      entity.update(
+        name: self.label,
+        comment: self.description,
+        dataset: entity.dataset.merge('wikidata_id' => qid)
+      )
+    end
+
+    update_relationships(entity)
+  end
+
+  def update_relationships(entity)
+    self.entity_properties.each do |r|
+      targets = r['values'].map do |qid|
+        Identifier.resolve(qid, 'wikidata_id')
+      end
+
+      targets.each do |target|
+        # try normal direction
+        attrs = {
+          identifier: r['id'],
+          from_kind_id: entity.kind_id,
+          to_kind_id: target.kind_id
+        }
+        relation = Relation.find_by(attrs)
+
+        # try reverse direction
+        unless relation
+          attrs = {
+            reverse_identifier: r['id'],
+            from_kind_id: entity.kind_id,
+            to_kind_id: target.kind_id
+          }
+          relation = Relation.find_by(attrs)
+        end
+
+        # fall back to creating a new relation
+        unless relation
+          if Kor.settings['create_missing_relations']
+            attrs.update(
+              identifier: r['id'],
+              reverse_identifier: "i#{r['id']}",
+              name: r['label'],
+              reverse_name: "inverse of '#{r['label']}'",
+              from_kind_id: entity.kind_id,
+              to_kind_id: target.kind_id
+            )
+            relation = Relation.create!(attrs)
+          end
+        end
+
+        if relation
+          attrs = {from_id: entity.id, to_id: target.id}
+          Relationship.find_or_create_by!(attrs) do |rel|
+            rel.relation_id = relation.id
+          end
+        end
+      end
+    end
+  end
+
+  def self.sparql(query)
+    request 'get', 'https://query.wikidata.org/sparql', query: query
+  end
+
+  # retrieves items of type identifer (Q19595382, Q19847637 or Q18614948)
+  def self.identifier_types
     query = "
-      PREFIX wd: <http://www.wikidata.org/entity/>
-      PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
       SELECT ?id ?label
       WHERE {
-        {?id wdt:P31 wd:Q19595382} UNION
-        {?id wdt:P31 wd:Q19847637} UNION
-        {?id wdt:P31 wd:Q18614948}.
-        ?id rdfs:label ?label filter (lang(?label) = '#{@locale}') .
+        ?id wdt:P31/wdt:P279* wd:Q19847637 .
+        ?id rdfs:label ?label filter (lang(?label) = '#{locale}') .
       }
     "
     xml = sparql(query).body
@@ -40,147 +186,34 @@ class Kor::Import::WikiData
     end
   end
 
-  def labels_for(ids)
-    values = ids.map{ |i| "(wd:#{i})" }.join(' ')
-    query = "
-      PREFIX wd: <http://www.wikidata.org/entity/>
-      PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-      SELECT ?id $label
-      WHERE {
-         ?id rdfs:label ?label .
-         FILTER(lang(?label) = '#{@locale}')
-      }
-      VALUES (?id) {#{values}}
-    "
-    xml = sparql(query).body
-    doc = Nokogiri::XML(xml)
-    doc.xpath("//xmlns:result").map do |r|
-      {
-        "id" => r.xpath("xmlns:binding[@name='id']/xmlns:uri").text.split("/").last,
-        "label" => r.xpath("xmlns:binding[@name='label']/xmlns:literal").text
-      }
-    end
-  end
-
-  def identifiers_for(id)
-    item = find(id)
-    results = []
-    identifier_types.each do |i|
-      if part = item["entities"][id]["claims"]["P#{i['id']}"]
-        results << i.merge(
-          'value' => part.first['mainsnak']['datavalue']['value']
-        )
-      end
-    end
-    results
-  end
-
-  def internal_properties_for(item)
-    item = find(item) if item.is_a?(String)
-
-    results = []
-    item['entities'].values.first['claims'].each do |pid, claims|
-      internal = claims.select{ |c| c['mainsnak']['datatype'] == 'wikibase-item' }
-
-      if !internal.empty?
-        values = internal.map{ |i| i['mainsnak']['datavalue']['value']['id'] }
-        results << {'id' => pid, 'values' => values}
-      end
-    end
-
-    ids = results.map{ |r| r['id'] }
-    labels = labels_for(ids)
-    results.each do |r|
-      r['label'] = labels.find{ |l| l['id'] == r['id'] }['label']
-    end
-
-    results
-  end
-
-  def sparql(query)
-    request "get", "https://query.wikidata.org/sparql", :query => query
-  end
-
-  def preflight(user, collection, id, kind)
-    entity = Identifier.resolve(id, 'wikidata_id')
-    collection = user.authorized_collections(:create).find_by(name: collection)
-    kind = Kind.find_by(name: kind)
-
-    # unless kind
-    #   results = {
-    #     'success' => false,
-    #     'message' => 'kind not found'
-    #   }
-    # end
-
-    item = find(id)
-    label = item['entities'][id]['labels'][@locale]['value']
-    rels = internal_properties_for(item).map do |r|
-      values = r['values'].select{ |v| Identifier.resolve(v, 'wikidata_id') }
-      r['values'] = values
-      r
-    end.reject{ |r| r['values'].empty? }
-
-    results = {
-      'success' => true,
-      'message' => 'item can be imported',
-      'entity' => {
-        'collection_id' => collection.id,
-        'kind_id' => kind.id,
-        'id' => (entity ? entity.id : nil),
-        'name' => label,
-        'dataset' => {'wikidata_id' => id}
-      },
-      'relationships' => rels
-    }
-
-    results
-  end
-
-  def import(user, collection, id, kind)
-    pd = preflight(user, collection, id, kind)
-    if pd['success']
-      entity = Entity.create(pd['entity'])
-      rels = []
-      pd['relationships'].each do |r|
-        targets = {}
-        r['values'].each{ |v| targets[v] = Identifier.resolve(v, 'wikidata_id') }
-
-        targets.each do |_tid, target|
-          relation = Relation.find_or_create_by!(
-            name: r['label'],
-            reverse_name: "inverse of '#{r['label']}'",
-            from_kind_id: entity.kind_id,
-            to_kind_id: target.kind_id
-          )
-
-          rels << Relationship.find_or_create_by(from_id: entity.id, to_id: target.id) do |rel|
-            rel.relation_id = relation.id
-          end
-        end
-      end
-      pd['message'] = 'item has been imported'
-      pd['entity'].merge!(
-        'id' => entity.id,
-        'uuid' => entity.uuid
-      )
-      pd['relationships'] = rels.map do |r|
-        {
-          'id' => r.id,
-          'from_id' => r.from_id,
-          'to_id' => r.to_id,
-          'relation_id' => r.relation_id
-        }
-      end
-    end
-    pd
-  end
 
   protected
 
-    def request(method, url, params = {}, body = nil, headers = {}, redirect_count = 10)
+    def self.locale
+      I18n.locale.to_s
+    end
+
+    def self.labels_for(ids)
+      values = ids.map{ |i| "(wd:#{i})" }.join(' ')
+      query = "
+        SELECT ?id $label
+        WHERE {
+           ?id rdfs:label ?label .
+           FILTER(lang(?label) = '#{locale}')
+        }
+        VALUES (?id) {#{values}}
+      "
+      xml = sparql(query).body
+      doc = Nokogiri::XML(xml)
+      doc.xpath("//xmlns:result").map do |r|
+        {
+          "id" => r.xpath("xmlns:binding[@name='id']/xmlns:uri").text.split("/").last,
+          "label" => r.xpath("xmlns:binding[@name='label']/xmlns:literal").text
+        }
+      end
+    end
+
+    def self.request(method, url, params = {}, body = nil, headers = {}, redirect_count = 10)
       @client ||= HTTPClient.new
 
       response = @client.request(method, url, params, headers, body)
@@ -193,6 +226,10 @@ class Kor::Import::WikiData
         )
       end
 
+      if response.status != 200
+        raise Kor::Exception, "wikidata returned status #{response.status}\n#{response.body}"
+      end
+
       begin
         JSON.load(response.body)
       rescue JSON::ParserError
@@ -200,16 +237,4 @@ class Kor::Import::WikiData
       end
     end
 
-    def id_for_entity(entity)
-      entity.kind.fields.each do |f|
-        f.entity = entity
-        if f.wikidata_id && f.value
-          response = find_by_attribute(f.wikidata_id, f.value)
-          id = response["items"].first.to_s
-          return id if id.present?
-        end
-      end
-
-      nil
-    end
 end

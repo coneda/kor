@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ -d /vagrant ]; then
+  cd /vagrant
+  bundle exec rails s -b 0.0.0.0
+else
+  vagrant ssh -c "/vagrant/bin/dev"
+fi
