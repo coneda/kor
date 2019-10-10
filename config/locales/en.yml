@@ -133,6 +133,10 @@ en:
         target="_blank"
         rel="noopener"
       >our documentation</a>
+    relation_identifier: |
+      This can be used in combination with the wikidata integration: Set the
+      wikidata property ID here and imported entries from wikipedia and their
+      relationships will be matched against it.
 
   search_term:
     one: search term
@@ -1017,6 +1021,8 @@ en:
         url: schema url
       relation:
         schema: schema
+        identifier: ID
+        reverse_identifier: reverse ID
         name: name
         reverse_name: inversion
         description: description

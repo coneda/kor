@@ -1049,6 +1049,8 @@ de:
         url: Schema Url
       relation:
         schema: Schema
+        identifier: ID
+        reverse_identifier: ID der Umkehrung
         name: Name
         reverse_name: Umkehrung
         description: Beschreibung

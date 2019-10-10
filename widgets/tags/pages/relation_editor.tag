@@ -21,6 +21,24 @@
           label={tcap('activerecord.attributes.relation.schema')}
           ref="fields"
         />
+
+        <kor-input
+          name="identifier"
+          label={tcap('activerecord.attributes.relation.identifier')}
+          riot-value={relation.identifier}
+          errors={errors.identifier}
+          ref="fields"
+          help={tcap('help.relation_identifier')}
+        />
+
+        <kor-input
+          name="reverse_identifier"
+          label={tcap('activerecord.attributes.relation.reverse_identifier')}
+          riot-value={relation.reverse_identifier}
+          errors={errors.reverse_identifier}
+          ref="fields"
+          help={tcap('help.relation_identifier')}
+        />
         
         <kor-input
           name="name"
