@@ -342,8 +342,9 @@
         tag.errors = {}
       p.fail (xhr) ->
         tag.errors = JSON.parse(xhr.responseText).errors
+      p.always ->
+        tag.update()
         wApp.utils.scrollToTop()
-      p.always -> tag.update()
 
     update = ->
       Zepto.ajax(
