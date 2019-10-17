@@ -1,24 +1,40 @@
 class UserMailer < ActionMailer::Base
-  self.default from: Kor.settings['maintainer_mail']
+  # self.default from: Kor.settings['maintainer_mail']
 
   def reset_password(user)
     @user = user
-    mail(:to => user.email, :subject => I18n.t("mailer.subjects.password_reset"))
+    mail(
+      from: Kor.settings['maintainer_mail'],
+      to: user.email,
+      subject: I18n.t("mailer.subjects.password_reset")
+    )
   end
 
   def account_created(user)
     @user = user
-    mail(:to => user.email, :subject => I18n.t("mailer.subjects.account_created"))
+    mail(
+      from: Kor.settings['maintainer_mail'],
+      to: user.email,
+      subject: I18n.t("mailer.subjects.account_created")
+    )
   end
 
   def upcoming_expiry(user)
     @user = user
-    mail(:to => user.email, :subject => I18n.t("mailer.subjects.upcoming_expiry"))
+    mail(
+      from: Kor.settings['maintainer_mail'],
+      to: user.email,
+      subject: I18n.t("mailer.subjects.upcoming_expiry")
+    )
   end
 
   def download_ready(download)
     @user = download.user
     @download = download
-    mail(:to => @user.email, :subject => I18n.t("mailer.subjects.download_ready"))
+    mail(
+      from: Kor.settings['maintainer_mail'],
+      to: @user.email,
+      subject: I18n.t("mailer.subjects.download_ready")
+    )
   end
 end
