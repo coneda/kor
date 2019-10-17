@@ -1,5 +1,5 @@
 class DirectedRelationshipsController < JsonController
-  skip_before_action :legal, :auth
+  skip_before_action :auth
 
   def index
     if user = (current_user || User.guest)

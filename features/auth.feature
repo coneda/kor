@@ -58,3 +58,13 @@ Feature: Authentication and Authorization
     And I fill in "Password" with "admin"
     And I press "Login"
     Then I should see "Settings"
+
+ Scenario: Try accessing the app without accepted terms
+   Given user "jdoe" didn't accept the terms
+   And I am logged in as "jdoe"
+   Then I should see "You have to accept our terms of use"
+   And I should see "enter a legal notice here"
+   When I press "Accept terms"
+   Then I should see "you have accepted the terms of use"
+   When I go to the search page
+   Then I should see "Search" within ".w-content"

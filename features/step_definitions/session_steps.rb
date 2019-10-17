@@ -16,7 +16,7 @@ Given /^I am logged in as "([^\"]*)"/ do |user|
   fill_in 'Password', with: user
   click_button 'Login'
   expect(page).to have_text('you have been logged in')
-  page.refresh
+  # page.refresh
   expect(page).to have_text("logged in as: ")
 end
 

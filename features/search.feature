@@ -68,6 +68,7 @@ Feature: search
     When I press "ok"
     Then I should see "Collections: private"
     When I press "Search"
+    Then I should see "Collections: private"
     And I go back
     Then I should see "Collections: all" within widget "kor-collection-selector"
 

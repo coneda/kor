@@ -1,5 +1,6 @@
 class PublishmentsController < JsonController
-  skip_before_action :auth, only: 'show'
+  skip_before_action :auth, only: [:show]
+  skip_before_action :legal, only: [:show]
 
   def extend_publishment
     @publishment = Publishment.owned_by(current_user).find(params[:id])

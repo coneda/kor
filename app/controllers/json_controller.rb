@@ -126,7 +126,8 @@ class JsonController < BaseController
     # redirects to the legal page if terms have not been accepted
     def legal
       if current_user && !current_user.guest? && !current_user.terms_accepted
-        redirect_to :controller => 'static', :action => 'legal'
+        @code = 'terms-not-accepted'
+        render_403 I18n.t('messages.accept_terms_prompt')
       end
     end
 

@@ -1,5 +1,6 @@
 class RelationsController < JsonController
-  skip_before_action :auth, :only => ['index', 'names', 'show']
+  skip_before_action :auth, :only => [:index, :names, :show]
+  skip_before_action :legal, only: [:index, :names, :show]
 
   def index
     params[:include] = param_to_array(params[:include], ids: false)

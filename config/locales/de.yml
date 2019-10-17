@@ -792,6 +792,7 @@ de:
 
       Viele Grüße,
       user: %{user}
+    accept_terms_prompt: Sie müssen die Nutzungsbedingungen akzeptieren
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

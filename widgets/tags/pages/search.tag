@@ -188,6 +188,8 @@
 
     var queryUpdate = function() {
       tag.criteria = urlParams();
+      tag.update();
+      
       if (tag.criteria['kind_id']) {
         fetchKind(tag.criteria['kind_id']);
       }

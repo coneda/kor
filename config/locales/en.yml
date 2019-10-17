@@ -762,6 +762,7 @@ en:
 
       Kind regards,
       user: %{user}
+    accept_terms_prompt: You have to accept our terms of use
 
   labels:
     relate_to_via: relate all files with "%{to}" via

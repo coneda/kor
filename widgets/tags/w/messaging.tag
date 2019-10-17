@@ -26,11 +26,7 @@
       window.setTimeout(self.drop, duration())
       self.update()
 
-    duration = ->
-      if wApp.info.data.env == 'test'
-        3000
-      else
-        3000
+    duration = -> 3000
 
     ajaxCompleteHandler = (event, request, options) ->
       contentType = request.getResponseHeader('content-type')
@@ -42,7 +38,10 @@
           if data.message && !request.noMessaging
             type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
             wApp.bus.trigger 'message', type, data.message
-            
+
+          if data.code
+            wApp.bus.trigger 'server-code', data.code
+
         catch e
           # TODO: should this be console.error?
           console.log e, request

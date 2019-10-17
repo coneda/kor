@@ -10,6 +10,7 @@
     var tag = this;
 
     var reloadApp = function() {
+      console.log('reloading app');
       unmount();
 
       var preloaders = wApp.setup();

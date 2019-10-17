@@ -7,7 +7,7 @@
       <div if={!termsAccepted()}>
         <div class="hr"></div>
 
-        <button>
+        <button onclick={submit}>
           {tcap('commands.accept_terms')}
         </button>
       </div>
@@ -29,6 +29,14 @@
 
     tag.termsAccepted = ->
       tag.currentUser() && tag.currentUser().terms_accepted
+
+    tag.submit = ->
+      Zepto.ajax(
+        url: '/users/accept_terms'
+        type: 'PATCH'
+        success: (data) ->
+          wApp.bus.trigger('reload-session')
+      )
       
   </script>
 </kor-legal>

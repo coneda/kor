@@ -33,6 +33,7 @@ class WikidataController < BaseController
 
   protected
 
+    # TODO: why not like the other controllers?
     def authorization
       unless !!current_user
         render json: {message: I18n.t('messages.access_denied')}, status: 403

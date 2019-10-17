@@ -1,5 +1,6 @@
 class CollectionsController < JsonController
   skip_before_action :auth, only: [:index]
+  skip_before_action :legal, only: [:index]
 
   def index
     if current_user.admin?

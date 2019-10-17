@@ -11,3 +11,7 @@ end
 if @record
   json.id @record.id
 end
+
+if @code
+  json.code @code
+end
