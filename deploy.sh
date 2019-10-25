@@ -116,6 +116,8 @@ function setup {
   remote "mkdir -p $DEPLOY_TO/shared/tmp/pids"
   remote "mkdir -p $DEPLOY_TO/shared/data"
   remote "mkdir -p $DEPLOY_TO/shared/log"
+
+  upload ".env.example" "$SHARED_PATH/env"
 }
 
 function exist {
