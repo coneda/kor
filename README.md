@@ -754,6 +754,12 @@ headless testing, you may use phantomjs by setting an environment variable:
 
     HEADLESS=true bundle exec cucumber features/
 
+Some tests have external dependencies and are therefore unreliable. We excluded
+them from the default test suite. To force running them, set an environment
+variable like this:
+
+    KOR_BRITTLE=true bundle exec rspec spec/
+
 #### Coverage reports
 
 You may run rspec or cucumber tests with the `COVERAGE` environment variable

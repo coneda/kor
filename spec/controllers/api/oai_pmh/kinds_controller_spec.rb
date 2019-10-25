@@ -73,24 +73,26 @@ describe Api::OaiPmh::KindsController, :type => :controller do
     expect(items.first.xpath("//kor:name").text).to eq("Person")
   end
 
-  it "should return XML that validates against the OAI-PMH schema" do
-    people = Kind.where(:name => "Person").first
-    people.update_attributes fields: [
-      Field.new(name: 'gnd', show_label: 'GND-ID')
-    ]
+  if ENV['KOR_BRITTLE'] == 'true'
+    it "should return XML that validates against the OAI-PMH schema" do
+      people = Kind.where(:name => "Person").first
+      people.update_attributes fields: [
+        Field.new(name: 'gnd', show_label: 'GND-ID')
+      ]
 
-    # yes this sucks, check out
-    # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
-    # for a reason why it has to be done like this
-    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
-    get(:get_record,
-      format: :xml,
-      identifier: people.uuid,
-      metadataPrefix: 'kor'
-    )
-    doc = parse_xml(response.body)
-    
-    expect(xsd.validate(doc)).to be_empty
+      # yes this sucks, check out
+      # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
+      # for a reason why it has to be done like this
+      xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
+      get(:get_record,
+        format: :xml,
+        identifier: people.uuid,
+        metadataPrefix: 'kor'
+      )
+      doc = parse_xml(response.body)
+      
+      expect(xsd.validate(doc)).to be_empty
+    end
   end
 
   it "should disseminate oai_dc and kor metadata formats on GetRecord requests" do

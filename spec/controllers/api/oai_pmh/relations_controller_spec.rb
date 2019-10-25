@@ -74,21 +74,23 @@ describe Api::OaiPmh::RelationsController, :type => :controller do
     expect(items.first.xpath("//kor:reverse-name").text).to eq("has been created by")
   end
 
-  it "should return XML that validates against the OAI-PMH schema" do
-    relation = Relation.where(:name => "has created").first
+  if ENV['KOR_BRITTLE'] == 'true'
+    it "should return XML that validates against the OAI-PMH schema" do
+      relation = Relation.where(:name => "has created").first
 
-    # yes this suck, check out 
-    # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
-    # for a reason why it has to be done like this
-    xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
-    get(:get_record,
-      format: :xml,
-      identifier: relation.uuid,
-      metadataPrefix: 'kor'
-    )
-    doc = parse_xml(response.body)
+      # yes this suck, check out 
+      # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
+      # for a reason why it has to be done like this
+      xsd = Nokogiri::XML::Schema(File.read "#{Rails.root}/tmp/oai_pmh_validator.xsd")
+      get(:get_record,
+        format: :xml,
+        identifier: relation.uuid,
+        metadataPrefix: 'kor'
+      )
+      doc = parse_xml(response.body)
 
-    expect(xsd.validate(doc)).to be_empty
+      expect(xsd.validate(doc)).to be_empty
+    end
   end
 
   it "should disseminate oai_dc and kor metadata formats on GetRecord requests" do

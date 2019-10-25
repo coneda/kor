@@ -580,7 +580,7 @@ de:
       hi: "Hallo %{username}"
       best_regards: "mit freundlichen Grüßen"
       upcoming_expiry: |
-        Ihr Zugang im KOR-System %{url} läuft am %{date} ab. Bitte setzten Sie
+        Ihr Zugang im KOR-System %{url} läuft um %{date} ab. Bitte setzen Sie
         sich rechtzeitig mit dem Administrator in Verbindung.
       account_created: |
         Im KOR-System %{url} wurde ein Zugang für Sie eingerichtet.
