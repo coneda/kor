@@ -83,7 +83,10 @@ class Kor::Import::WikiData
 
     results = []
     item['entities'].values.first['claims'].each do |pid, claims|
-      internal = claims.select{|c| c['mainsnak']['datatype'] == 'wikibase-item'}
+      internal = claims.select do |c|
+        c['mainsnak']['datatype'] == 'wikibase-item' &&
+        c['mainsnak']['datavalue']
+      end
 
       if !internal.empty?
         values = internal.map{|i| i['mainsnak']['datavalue']['value']['id']}

@@ -79,4 +79,14 @@ describe Relationship do
     expect(Relationship.dated_in("1850 bis 1950").count).to eq(1)
   end
 
+  it 'should be (manually) validatable before saving' do
+    leonardo = FactoryGirl.create :leonardo
+    mona_lisa = FactoryGirl.create :mona_lisa
+    has_created = FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
+
+    relationship = Relationship.relate(leonardo.id, 'has created', mona_lisa.id)
+    expect(relationship.valid?).to be(true)
+    expect(relationship.save).to be(true)
+  end
+
 end
