@@ -112,9 +112,7 @@ class Kind < ApplicationRecord
   end
 
   def self.medium_kind_id
-    @medium_kind_id ||= if m = select(:id).medium_kind
-      m.id
-    end
+    where(uuid: MEDIA_UUID).pluck(:id).first
   end
 
   def self.find_ids(ids)

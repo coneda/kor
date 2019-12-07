@@ -278,12 +278,10 @@
         t.set(item.id)
 
     existingEntitySelected = (entity) ->
-      console.log(arguments);
+      # console.log(arguments);
       wApp.routing.path('/entities/' + entity.id);
 
     inputByName = (name) ->
-      console.log(tag)
-      console.log(tag.tags)
       for f in tag.refs.fields
         if f.name() == name
           return f
