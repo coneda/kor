@@ -40,8 +40,8 @@ class Dating < ActiveRecord::Base
     parsed = self.class.parse(value)
     
     if parsed
-      self[:from_day] ||= self.class.julian_date_for(parsed[:from])
-      self[:to_day] ||= self.class.julian_date_for(parsed[:to])
+      self[:from_day] = self.class.julian_date_for(parsed[:from])
+      self[:to_day] = self.class.julian_date_for(parsed[:to])
     end
   end
   
