@@ -123,10 +123,9 @@ class JsonController < BaseController
       require_role 'kind_admin'
     end
 
-    # redirects to the legal page if terms have not been accepted
     def legal
       if current_user && !current_user.guest? && !current_user.terms_accepted
-        redirect_to :controller => 'static', :action => 'legal'
+        render_400 I18n.t('messages.exception_ocurred')
       end
     end
 

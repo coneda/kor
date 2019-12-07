@@ -153,6 +153,7 @@ en:
     autocomplete: "... start typing ..."
     please_select: "please select"
     please_select_transit: "please select a transit area on the left"
+    password: keep current password or generate one
 
   values:
     no_name_statements:
@@ -788,6 +789,7 @@ en:
 
       Kind regards,
       user: %{user}
+    must_accept_terms: please accept the terms of use
 
   labels:
     relate_to_via: relate all files with "%{to}" via
@@ -952,6 +954,7 @@ en:
         default_collection_id: default collection
         api_key: API key
         locale: Language
+        notify: send notification and access information to user
       entity:
         display_name: name
         updater: updated by
@@ -1077,7 +1080,7 @@ en:
         exclusion: "is not available"
         invalid: "is invalid"
         record_invalid: "is invalid"
-        confirmation: "does not agree with confirmation"
+        confirmation: "does not match"
         accepted: "has to be accepted"
         empty: "has to be filled in"
         blank: "has to be filled in"

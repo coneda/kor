@@ -59,3 +59,8 @@ Given 'the search api expects to receive the params' do |table|
     hash_including(values)
   ).and_call_original
 end
+
+Then /^(no|\d+) emails? should have been sent$/ do |amount|
+  amount = (amount == 'no' ? 0 : amount.to_i)
+  expect(ActionMailer::Base.deliveries.count).to eq(amount)
+end

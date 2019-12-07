@@ -89,7 +89,10 @@ class UsersController < JsonController
     @record = User.new(user_params)
 
     if @record.save
-      UserMailer.account_created(@record).deliver_now
+      if params[:notify]
+        UserMailer.account_created(@record).deliver_now
+      end
+
       render_created @record
     else
       render_422 @record.errors
@@ -110,7 +113,7 @@ class UsersController < JsonController
 
     def me_params
       params.fetch(:user, {}).permit(
-        :full_name, :name, :email, :password, :plain_password_confirmation,
+        :full_name, :name, :email, :plain_password, :plain_password_confirmation,
         :locale, :home_page, :default_collection_id, :api_key, :lock_version
       )
     end

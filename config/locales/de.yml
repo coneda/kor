@@ -153,6 +153,7 @@ de:
     autocomplete: "... geben Sie einen Teil des Gesuchten ein ..."
     please_select: "bitte auswählen"
     please_select_transit: "bitte wählen Sie links einen Transitbereich"
+    password: derzeitigs Passwort beibehalten oder neues generieren
 
   values:
     no_name_statements:
@@ -815,6 +816,7 @@ de:
 
       Viele Grüße,
       user: %{user}
+    must_accept_terms: bitte akzeptieren Sie die Nutzungsbedingungen
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
@@ -979,6 +981,7 @@ de:
         default_collection_id: Voreingestellte Sammlung
         api_key: API key
         locale: Sprache
+        notify: Benachtichtigung mit Zugangsdaten an Benutzer senden
       entity:
         display_name: Name
         updater: aktualisiert von
@@ -1105,7 +1108,7 @@ de:
         exclusion: "ist nicht verfügbar"
         invalid: "ist ungültig"
         record_invalid: "ist ungültig"
-        confirmation: "stimmt nicht mit der Bestätigung überein"
+        confirmation: "stimmt nicht überein"
         accepted: "muss akzeptiert werden"
         empty: "muss ausgefüllt werden"
         blank: "muss ausgefüllt werden"

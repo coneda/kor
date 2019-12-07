@@ -96,7 +96,7 @@ class User < ApplicationRecord
 
   def generate_secrets
     self.activation_hash = User.generate_activation_hash if self[:activation_hash].blank?
-    self.password = User.generate_password if self[:password].blank?
+    self.password = self.plain_password || User.generate_password
     self.api_key = SecureRandom.hex(48)
   end
 

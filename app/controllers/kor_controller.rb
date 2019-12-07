@@ -1,4 +1,6 @@
 class KorController < JsonController
+  skip_before_action :legal
+
   def index
     # just a dummy
     render nothing: true, layout: false

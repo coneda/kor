@@ -30,12 +30,11 @@
         />
 
         <kor-input
-          label={tcap('activerecord.attributes.user.password')}
-          name="password"
+          label={tcap('activerecord.attributes.user.plain_password')}
+          name="plain_password"
           type="password"
           ref="fields"
-          value={data.password}
-          errors={errors.password}
+          errors={errors.plain_password}
         />
 
         <kor-input

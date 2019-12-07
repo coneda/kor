@@ -58,3 +58,6 @@ Feature: Authentication and Authorization
     And I fill in "Password" with "admin"
     And I press "Login"
     Then I should see "Settings"
+
+  Scenario: Log in without having terms accepted
+    When I debug # fix this!

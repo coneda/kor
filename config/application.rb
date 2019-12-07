@@ -108,3 +108,4 @@ end
 # TODO: document rubocop usage: bundle exec rubocop -D -E -R -S
 # TODO: remove brittle check from oai schema tests
 # TODO: allow (relation specific) default dating label for relations
+# TODO: newly created users should be activated by default

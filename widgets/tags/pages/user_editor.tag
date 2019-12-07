@@ -41,6 +41,24 @@
         />
 
         <kor-input
+          label={tcap('activerecord.attributes.user.plain_password')}
+          placeholder={tcap('prompts.password')}
+          name="plain_password"
+          type="password"
+          ref="fields"
+          errors={errors.plain_password}
+        />
+
+        <kor-input
+          label={tcap('activerecord.attributes.user.plain_password_confirmation')}
+          placeholder={tcap('prompts.password')}
+          name="plain_password_confirmation"
+          type="password"
+          ref="fields"
+          errors={errors.plain_password_confirmation}
+        />
+
+        <kor-input
           label={tcap('activerecord.attributes.user.email')}
           name="email"
           ref="fields"
@@ -155,6 +173,16 @@
 
         <div class="hr"></div>
 
+        <kor-input
+          label={tcap('activerecord.attributes.user.notify')}
+          name="notify"
+          type="checkbox"
+          ref="notify"
+          value={data.admin}
+        />
+
+        <div class="hr"></div>
+
         <kor-input type="submit" />
       </form>
     </div>
@@ -235,7 +263,10 @@
       Zepto.ajax(
         type: 'POST'
         url: "/users"
-        data: JSON.stringify(user: values())
+        data: JSON.stringify(
+          user: values()
+          notify: tag.refs.notify.value()
+        )
       )
 
     update = ->

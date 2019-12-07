@@ -1,5 +1,6 @@
 class SettingsController < JsonController
   skip_before_action :auth, only: 'show'
+  skip_before_action :legal
 
   def show
     @settings = Kor.settings
