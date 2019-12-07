@@ -10,16 +10,24 @@ class Kor::Import::WikiData
     new(data['entities'].values.first)
   end
 
+  def locale
+    @locale || I18n.locale.to_s
+  end
+
+  def locale=(value)
+    @locale = value
+  end
+
   def qid
     @data['id']
   end
 
   def label
-    @data['labels'][self.class.locale]['value']
+    @data['labels'][locale]['value']
   end
 
   def description
-    @data['descriptions'][self.class.locale]['value']
+    @data['descriptions'][locale]['value']
   end
 
   def aliases
@@ -54,10 +62,9 @@ class Kor::Import::WikiData
       end
 
       ids = results.map{ |r| r['id'] }
-      labels = self.class.labels_for(ids)
+      labels = self.class.labels_for(ids, locale)
       results.each do |r|
         label = labels.find{ |l| l['id'] == r['id'] }
-        binding.pry unless label
         r['label'] = label['label']
       end
 
@@ -68,7 +75,7 @@ class Kor::Import::WikiData
   def identifiers
     @identifiers ||= begin
       results = []
-      self.class.identifier_types.each do |i|
+      self.class.identifier_types(locale).each do |i|
         if part = @data["claims"]["P#{i['id']}"]
           results << i.merge(
             'value' => part.first['mainsnak']['datavalue']['value']
@@ -87,16 +94,19 @@ class Kor::Import::WikiData
     end.reject{ |r| r['values'].empty? }
   end
 
-  def import(collection, kind)
-    entity = Entity.create!(
+  def import(user, collection, kind)
+    entity = Entity.create(
       collection_id: collection.id,
       kind_id: kind.id,
       name: self.label,
       comment: self.description,
-      dataset: {'wikidata_id' => qid}
+      dataset: {'wikidata_id' => qid},
+      creator: user
     )
 
     update_relationships(entity)
+
+    entity
   end
 
   def update(entity, opts = {})
@@ -168,7 +178,7 @@ class Kor::Import::WikiData
   end
 
   # retrieves items of type identifer (Q19595382, Q19847637 or Q18614948)
-  def self.identifier_types
+  def self.identifier_types(locale)
     query = "
       SELECT ?id ?label
       WHERE {
@@ -189,11 +199,7 @@ class Kor::Import::WikiData
 
   protected
 
-    def self.locale
-      I18n.locale.to_s
-    end
-
-    def self.labels_for(ids)
+    def self.labels_for(ids, locale)
       values = ids.map{ |i| "(wd:#{i})" }.join(' ')
       query = "
         SELECT ?id $label

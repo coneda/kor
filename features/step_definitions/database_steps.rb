@@ -381,3 +381,7 @@ end
 Given("the setting {string} is {string}") do |key, value|
   Kor.settings.update key => value
 end
+
+Given("user {string} didn't accept the terms of use") do |string|
+  User.find_by!(name: string).update_column :terms_accepted, false
+end

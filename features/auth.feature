@@ -60,4 +60,8 @@ Feature: Authentication and Authorization
     Then I should see "Settings"
 
   Scenario: Log in without having terms accepted
-    When I debug # fix this!
+    Given user "jdoe" didn't accept the terms of use
+    And I am logged in as "jdoe"
+    Then I should see "legal notice"
+    When I press "Accept terms"
+    Then I should see "Search"

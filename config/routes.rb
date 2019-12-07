@@ -163,7 +163,6 @@ Rails.application.routes.draw do
   end
 
   scope 'wikidata', format: 'json', controller: 'wikidata' do
-    post 'preflight', action: 'preflight'
     post 'import', action: 'import'
   end
 end

@@ -1,5 +1,5 @@
 class KindsController < JsonController
-  skip_before_action :auth, only: [:index, :show]
+  skip_before_action :auth, :legal, only: [:index, :show]
 
   def index
     @records = Kind.all

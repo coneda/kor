@@ -137,6 +137,10 @@ de:
         target="_blank"
         rel="noopener"
       >unsere Dokumentation</a>
+    relation_identifier: |
+      Diese Einstellung greift im Zusammenhang mit der Wikidata Integration:
+      Geben Sie hier die Wikidata Property ID (also etwa P31) an, sodass diese
+      Relation bei zukünftigen Abgleichen mit Wikidata zugeordnet werden kann.
 
   search_term: 
     one: Suchbegriff

@@ -132,6 +132,16 @@ RSpec.describe UsersController, type: :controller do
       }
       expect_created_response
       User.find_by!(name: 'wendig')
+      expect(ActionMailer::Base.deliveries.size).to eq(0)
+    end
+
+    it 'should POST create (with notification)' do
+      post :create, params: {
+        user: {name: 'wendig', email: 'info@wendig.io'},
+        notify: true
+      }
+      expect_created_response
+      User.find_by!(name: 'wendig')
       expect(ActionMailer::Base.deliveries.size).to eq(1)
     end
 

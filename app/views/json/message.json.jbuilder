@@ -11,3 +11,7 @@ end
 if @record
   json.id @record.id
 end
+
+if @opts
+  json.no_messaging @opts[:no_messaging]
+end

@@ -23,7 +23,7 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
   end
 
   it 'should retrieve identifier types' do
-    results = described_class.identifier_types
+    results = described_class.identifier_types('en')
     expect(results).to include('id' => '227', 'label' => 'GND ID')
     expect(results).to include('id' => '245', "label" => 'ULAN ID')
     expect(results).to include('id' => '4119', "label" => 'NLS Geographic Names Place ID')
@@ -38,7 +38,7 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
   end
 
   it "should retrieve all identifiers P31:Q19847637" do
-    results = described_class.identifier_types
+    results = described_class.identifier_types('en')
     expect(results.size).to eq(5622)
     expect(results).to include("id" => "1992", "label" => "Plazi ID")
     expect(results).to include("id" => "1461", "label" => "Patientplus ID")
@@ -61,7 +61,7 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
   context 'import' do
     it 'should import an item' do
       item = described_class.find('Q762')
-      item.import(default, people)
+      item.import(User.admin, default, people)
 
       e = Entity.find_by!(name: 'Leonardo da Vinci')
       expect(e.dataset['wikidata_id']).to eq('Q762')
@@ -78,16 +78,16 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
       expect(Relationship.count).to be(1)
 
       # leonardo
-      described_class.find('Q762').import(default, people)
+      described_class.find('Q762').import(User.admin, default, people)
       expect(Relationship.count).to be(1)
 
       # mona lisa
-      described_class.find('Q12418').import(default, works)
+      described_class.find('Q12418').import(User.admin, default, works)
       expect(Relation.count).to be(7)
       expect(Relationship.count).to be(2)
 
       # the last supper
-      described_class.find('Q128910').import(default, works)
+      described_class.find('Q128910').import(User.admin, default, works)
       expect(Relation.count).to be(7)
       expect(Relationship.count).to be(3)
 
@@ -115,16 +115,16 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
       Kor.settings['create_missing_relations'] = false
 
       # leonardo
-      described_class.find('Q762').import(default, people)
+      described_class.find('Q762').import(User.admin, default, people)
       expect(Relationship.count).to be(1)
 
       # mona lisa
-      described_class.find('Q12418').import(default, works)
+      described_class.find('Q12418').import(User.admin, default, works)
       expect(Relation.count).to be(6)
       expect(Relationship.count).to be(1)
 
       # the last supper
-      described_class.find('Q128910').import(default, works)
+      described_class.find('Q128910').import(User.admin, default, works)
       expect(Relation.count).to be(6)
       expect(Relationship.count).to be(1)
     end
@@ -133,7 +133,7 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
       entities = Entity.all.to_a
       before = Time.now
 
-      described_class.find('Q762').import(default, people)
+      described_class.find('Q762').import(User.admin, default, people)
       entities.each do |entity|
         expect(entity.updated_at).to be < before
       end

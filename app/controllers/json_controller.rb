@@ -42,7 +42,8 @@ class JsonController < BaseController
       render template: 'json/message', status: 200
     end
 
-    def render_400(message)
+    def render_400(message, opts = {})
+      @opts = opts
       @message = message
       render template: 'json/message', status: 400
     end
@@ -125,7 +126,7 @@ class JsonController < BaseController
 
     def legal
       if current_user && !current_user.guest? && !current_user.terms_accepted
-        render_400 I18n.t('messages.exception_ocurred')
+        render_400 I18n.t('messages.must_accept_terms'), no_messaging: true
       end
     end
 
