@@ -185,9 +185,11 @@ class Entity < ApplicationRecord
   end
 
   def update_wikidata
-    qid = dataset['wikidata_id']
-    if qid.present?
-      Kor::Import::WikiData.find(qid).update(self)
+    if Kor.settings['wikidata_integration'].present?
+      qid = dataset['wikidata_id']
+      if qid.present?
+        Kor::Import::WikiData.find(qid).update(self)
+      end
     end
   end
 

@@ -42,7 +42,7 @@
       // }
     })
 
-    tag.on('updated', function() {
+    tag.one('updated', function() {
       var input = tag.refs.input.input()[0];
 
       autocomplete({

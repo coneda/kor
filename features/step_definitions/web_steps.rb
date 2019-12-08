@@ -329,5 +329,5 @@ Then(/^I should see mirador link with a usable href$/) do
 end
 
 When("I select autocomplete option {string}") do |string|
-  find('li.autocomplete-item', text: string).click
+  find('.autocomplete div', text: string).click
 end
