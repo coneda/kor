@@ -385,3 +385,7 @@ end
 Given("user {string} didn't accept the terms of use") do |string|
   User.find_by!(name: string).update_column :terms_accepted, false
 end
+
+Given("{string} has tag {string}") do |name, tag|
+  Entity.find_by!(name: name).update tag_list: tag.split(/\s,\s/)
+end

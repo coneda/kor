@@ -3,7 +3,11 @@
     <span class="field">
       {tcap('activerecord.models.tag', {count: 'other'})}:
     </span>
-    <span class="value">{opts.entity.tags.join(', ')}</span>
+    <span class="value">
+      <a
+        each={tag in opts.entity.tags}
+        href="#/search?tags={tag}"
+      >{tag}</a>
   </virtual>
 
   <virtual if={opts.enableEditor}>

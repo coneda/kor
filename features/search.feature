@@ -102,3 +102,16 @@ Feature: search
       | smaller_than | 307200 |
     And I press "Search"
     Then I should see "logged in as"
+
+  Scenario: Tags as search links
+    Given "Leonardo" has tag "inventor"
+    And I am logged in as "admin"
+    And I am on the search page
+    When I select "person" from "Entity type"
+    And I click "Leonardo"
+    Given the search api expects to receive the params
+      | name | value    |
+      | tags | inventor |
+    When I follow "inventor"
+    Then I should see "Leonardo" within ".search-results"
+    And field "Tags" should have value "inventor"
