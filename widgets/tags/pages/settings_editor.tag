@@ -8,7 +8,7 @@
 
       <form onsubmit={submit} if={values && groups && relations}>
         <h2>{tcap('settings.branding_and_display')}</h2>
-        <hr />
+        <div class="hr"></div>
 
         <kor-input
           name="maintainer_name"
@@ -125,7 +125,7 @@
         />
 
         <h2>{tcap('settings.behavior')}</h2>
-        <hr />
+        <div class="hr"></div>
 
         <kor-input
           name="default_locale"
@@ -221,7 +221,7 @@
         />
 
         <h2>{tcap('settings.help')}</h2>
-        <hr />
+        <div class="hr"></div>
 
         <kor-input
           name="help_general"
@@ -296,7 +296,7 @@
         />
 
         <h2>{tcap('settings.other')}</h2>
-        <hr />
+        <div class="hr"></div>
 
         <kor-input
           name="sources_release"

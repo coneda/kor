@@ -48,11 +48,11 @@ h2:first-child, h3:first-child {
   margin-top: 0rem;
 }
 
-hr {
-  border: none;
-  height: 1px;
-  background-color: $kor-notice;
-}
+// hr {
+//   border: none;
+//   height: 1px;
+//   background-color: $kor-notice;
+// }
 
 table {
   width: 100%;
@@ -947,6 +947,10 @@ kor-input {
     display: inline-block;
     width: 50%;
     margin-left: -4px;
+  }
+
+  td {
+    line-height: normal;
   }
 
   td:first-child {

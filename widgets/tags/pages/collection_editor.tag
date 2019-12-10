@@ -18,7 +18,7 @@
         />
 
         <virtual if={credentials}>
-          <hr />
+          <div class="hr"></div>
 
           <kor-input
             each={policy in policies}
@@ -32,7 +32,7 @@
           />
         </virtual>
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input type="submit" />
       </form>

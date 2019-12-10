@@ -29,7 +29,7 @@
           errors={errors.authority_group_category_id}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input type="submit" />
       </form>

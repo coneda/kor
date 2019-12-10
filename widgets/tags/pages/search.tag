@@ -54,7 +54,7 @@
         />
 
         <virtual if={isMedia(kind)}>
-          <hr />
+          <div class="hr"></div>
 
           <kor-input
             name="file_name"
@@ -92,7 +92,7 @@
 
         <virtual if={elastic()}>
           <virtual if={kind && kind.fields.length}>
-            <hr />
+            <div class="hr"></div>
 
             <kor-input
               each={field in kind.fields}
@@ -103,7 +103,7 @@
             />
           </virtual>
 
-          <hr />
+          <div class="hr"></div>
 
           <kor-input
             name="property"

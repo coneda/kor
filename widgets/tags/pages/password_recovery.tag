@@ -20,7 +20,7 @@
         </div>
       </form>
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-login-info />
     </div>

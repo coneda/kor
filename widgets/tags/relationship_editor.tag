@@ -25,7 +25,7 @@
         onchange={relationChanged}
       />
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-entity-selector
         relation-name={relationship.relation_name}
@@ -35,14 +35,14 @@
         onchange={targetChanged}
       />
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-properties-editor
         properties={relationship.properties}
         ref="properties"
       />
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-datings-editor
         value={relationship.datings}
@@ -52,7 +52,7 @@
         default-dating-label={config().relationship_dating_label}
       />
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-input type="submit" />
       <kor-input type="reset" label={tcap('cancel')} />

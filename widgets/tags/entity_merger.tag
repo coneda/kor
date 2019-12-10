@@ -82,7 +82,7 @@
         value={combined.synonyms}
       />
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-input
         each={values, key in combined.dataset}
@@ -93,7 +93,7 @@
         ref="dataset"
       />
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-datings-editor
         if={kind}
@@ -105,7 +105,7 @@
         kind={kind}
       />
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-entity-properties-editor
         label={tcap('activerecord.attributes.entity.properties')}
@@ -114,7 +114,7 @@
         value={combined.properties}
       />
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-input type="submit" />
     </form>

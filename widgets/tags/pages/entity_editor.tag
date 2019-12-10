@@ -27,7 +27,7 @@
           errors={errors.collection_id}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <virtual if={!isMedium()}>
           <kor-input
@@ -60,7 +60,7 @@
             errors={errors.distinct_name}
           />
 
-          <hr />
+          <div class="hr"></div>
         </virtual>
 
         <kor-input
@@ -97,7 +97,7 @@
           errors={errors.comment}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-synonyms-editor
           label={tcap('activerecord.attributes.entity.synonyms')}
@@ -106,7 +106,7 @@
           value={data.synonyms}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-datings-editor
           if={kind}
@@ -120,7 +120,7 @@
           default-dating-label={kind.dating_label}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-entity-properties-editor
           label={tcap('activerecord.attributes.entity.properties')}
@@ -129,7 +129,7 @@
           value={data.properties}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input type="submit" />
       </form>

@@ -13,7 +13,7 @@
       title={t('none')}
     >{t('none')}</a>
 
-    <hr />
+    <div class="hr"></div>
 
     <virtual each={choice in opts.choices}>
       <kor-input
@@ -26,7 +26,7 @@
       <div class="clearfix"></div>
     </virtual>
 
-    <hr />
+    <div class="hr"></div>
 
     <div class="kor-text-right">
       <button onclick={cancel}>{t('cancel')}</button>

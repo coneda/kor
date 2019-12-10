@@ -6,7 +6,7 @@
     {opts.ids.length} {t('activerecord.models.entity', {count: 'other'})}
   </div>
 
-  <hr />
+  <div class="hr"></div>
 
   <a 
     class="action"

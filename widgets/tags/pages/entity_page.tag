@@ -170,7 +170,7 @@
           <span class="value">{data.degree}</span>
         </div>
 
-        <hr />
+        <div class="hr"></div>
 
         <div class="kor-text-right kor-api-links">
           <a

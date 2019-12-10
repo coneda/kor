@@ -13,7 +13,7 @@
           {config()['env_auth_button_label']}
         </a>
 
-        <hr />
+        <div class="hr"></div>
       </div>
 
       <form class="form" method="POST" action='#/login' onsubmit={submit}>
@@ -39,7 +39,7 @@
         {tcap('password_forgotten_question')}
       </a>
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-login-info />
     </div>

@@ -3,7 +3,6 @@
     <div class="kor-content-box">
       <h1>{tcap('nouns.new_entity', {count: 'other'})}</h1>
 
-
       <form onchange={submit} onsubmit={submit}>
         <kor-collection-selector
           name="collection_id"
@@ -73,7 +72,7 @@
         page-update-handler={pageUpdate}
       />
 
-      <hr />
+      <div class="hr"></div>
 
       <span show={data && data.total == 0}>
         {tcap('objects.none_found', {interpolations: {o: 'activerecord.models.entity.other'}})}
@@ -98,9 +97,16 @@
         </thead>
         <tbody>
           <tr each={entity in data.records}>
-            <td>
-              <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a>
+            <td if={!isMedium(entity)}>
+              <a href="#/entities/{entity.id}" class="name">{entity.display_name}</a><br />
               <span class="kind">{entity.kind.name}</span>
+            </td>
+            <td if={isMedium(entity)}>
+              <a
+                href="#/entities/{entity.id}"
+                class="name"
+                style="display: block"
+              ><img src={entity.medium.url.thumbnail} /></a>
             </td>
             <td>{entity.collection.name}</td>
             <td>
@@ -115,7 +121,7 @@
         </tbody>
       </table>
 
-      <hr />
+      <div class="hr"></div>
 
       <kor-pagination
         if={data}
@@ -136,12 +142,6 @@
     tag.mixin(wApp.mixins.auth);
     tag.mixin(wApp.mixins.page);
     tag.mixin(wApp.mixins.form);
-
-    window.t = tag;
-
-    // tag.on('before-mount', function() {
-    //   set();
-    // })
 
     tag.on('mount', function() {
       if (tag.allowedTo('edit')) {
@@ -172,6 +172,10 @@
       wApp.routing.query(formParams());
     }
 
+    tag.isMedium = function(entity) {
+      return entity.kind_id === wApp.info.data.medium_kind_id;
+    }
+
     var defaultParams = function() {
       return {
         include: 'kind,users,collection,technical',
@@ -200,8 +204,6 @@
     }
 
     var fetch = function() {
-      // set();
-
       Zepto.ajax({
         url: '/entities',
         data: query(),

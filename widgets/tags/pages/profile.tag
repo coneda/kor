@@ -45,7 +45,7 @@
           errors={errors.plain_password_confirmation}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input
           label={tcap('activerecord.attributes.user.api_key')}
@@ -56,7 +56,7 @@
           errors={errors.api_key}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input
           label={tcap('activerecord.attributes.user.locale')}
@@ -67,7 +67,7 @@
           value={data.locale}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input
           if={collections}
@@ -79,7 +79,7 @@
           value={data.default_collection_id}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input type="submit" />
       </form>

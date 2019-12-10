@@ -20,7 +20,7 @@ shows all entities as possible targets -->
           onchange={relationChanged}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-entity-selector
           relation-name={relation_name}
@@ -29,13 +29,13 @@ shows all entities as possible targets -->
           onchange={targetChanged}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-properties-editor
           ref="properties"
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-datings-editor
           ref="datings"
@@ -43,7 +43,7 @@ shows all entities as possible targets -->
           for="relationship"
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input type="submit" />
       </virtual>

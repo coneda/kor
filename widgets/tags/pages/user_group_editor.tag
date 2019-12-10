@@ -18,7 +18,7 @@
           errors={errors.name}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input type="submit" />
       </form>

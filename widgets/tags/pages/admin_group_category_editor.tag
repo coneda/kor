@@ -30,7 +30,7 @@
           errors={errors.parent_id}
         />
 
-        <hr />
+        <div class="hr"></div>
 
         <kor-input type="submit" />
       </form>

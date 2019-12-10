@@ -35,12 +35,12 @@
       </a>
 
       <virtual if={relationship.properties.length > 0}>
-        <hr />
+        <div class="hr"></div>
         <div each={property in relationship.properties}>{property}</div>
       </virtual>
 
       <virtual if={relationship.datings.length > 0}>
-        <hr />
+        <div class="hr"></div>
         <div each={dating in relationship.datings}>
           {dating.label}: <strong>{dating.dating_string}</strong>
         </div>
