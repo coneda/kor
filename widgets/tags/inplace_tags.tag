@@ -5,9 +5,9 @@
     </span>
     <span class="value">
       <a
-        each={tag in opts.entity.tags}
+        each={tag, i in opts.entity.tags}
         href="#/search?tags={tag}"
-      >{tag}</a>
+      >{i === 0 ? '' : ', '}{tag}</a>
   </virtual>
 
   <virtual if={opts.enableEditor}>
