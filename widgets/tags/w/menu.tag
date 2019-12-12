@@ -63,13 +63,13 @@
         <a href="#/upload">{tcap('verbs.upload')}</a>
       </li>
       <li>
-        <a href="#/relations">
-          {tcap('activerecord.models.relation.other')}
+        <a href="#/kinds">
+          {tcap('activerecord.models.kind.other')}
         </a>
       </li>
       <li>
-        <a href="#/kinds">
-          {tcap('activerecord.models.kind.other')}
+        <a href="#/relations">
+          {tcap('activerecord.models.relation.other')}
         </a>
       </li>
     </ul>
@@ -79,14 +79,14 @@
     <div class="header">{tcap('verbs.edit')}</div>
 
     <ul>
-      <li if={allowedTo('delete')}>
-        <a href="#/entities/invalid">{tcap('nouns.invalid_entity', {count: 'other'})}</a>
-      </li>
       <li if={allowedTo('edit')}>
         <a href="#/entities/recent">{tcap('nouns.new_entity', {count: 'other'})}</a>
       </li>
       <li if={allowedTo('edit')}>
         <a href="#/entities/isolated">{tcap('nouns.isolated_entity', {count: 'other'})}</a>
+      </li>
+      <li if={allowedTo('delete')}>
+        <a href="#/entities/invalid">{tcap('nouns.invalid_entity', {count: 'other'})}</a>
       </li>
     </ul>
   </virtual>

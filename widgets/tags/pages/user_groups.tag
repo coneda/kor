@@ -11,7 +11,7 @@
       ><i class="fa fa-plus-square"></i></a>
       <h1>
         <virtual if={!opts.type}>{tcap('activerecord.models.user_group', {count: 'other'})}</virtual>
-        <virtual if={opts.type == 'shared'}>{tcap('nouns.shared_user_group')}</virtual>
+        <virtual if={opts.type == 'shared'}>{tcap('nouns.shared_user_group', {count: 'other'})}</virtual>
       </h1>
       
       <kor-nothing-found data={data} />

@@ -164,7 +164,7 @@ end
 Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |shared, name, pub|
   unless UserGroup.find_by_name(name)
     step "I am on the user groups page"
-    step "I follow \"create personal group\""
+    step "I follow \"create personal collection\""
     step "I fill in \"Name\" with \"#{name}\""
     step "I press \"Save\""
     step "I should see \"has been created\""
@@ -177,9 +177,9 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
       pub_name = pub.gsub(/.*\"([^\"]+)\".*/, "\\1")
 
       step "I go to the publishments page"
-      step "I follow \"create published group\""
+      step "I follow \"create published collection\""
       step "I fill in \"Name\" with \"#{pub_name}\""
-      step "I select \"#{name}\" from \"Personal group\""
+      step "I select \"#{name}\" from \"Personal collection\""
       step "I press \"Save\""
     end
   end

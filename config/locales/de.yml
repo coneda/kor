@@ -41,7 +41,7 @@ de:
   password_reset_question: "Neues Passwort anfordern?"
   password_reset: "Neues Passwort anfordern"
   password_forgotten_question: "Passwort vergessen?"
-  select_collections: Sammlungen wählen
+  select_collections: Domänen wählen
   apply: anwenden
   cancel: abbrechen
   ok: ok
@@ -49,7 +49,7 @@ de:
   empty_list: "Liste leeren"
   results_for: Ergebnisse für
   some_images: Eine Auswahl der zugehörigen Medien
-  edit_personal_collections: persönliche Sammlungen bearbeiten
+  edit_personal_collections: persönliche Domänen bearbeiten
   logged_in_recently: "Vor kurzem eingeloggt (<= 30 Tage)"
   logged_in_last_year: "Im vergangenen Jahr eingeloggt (<= 365 Tage)"
   created_recently: "Vor kurzem erstellt (<= 30 Tage)"
@@ -224,9 +224,9 @@ de:
     merge: "verschmelzen"
     mass_relate: "verknüpfen mit"
     mass_delete: löschen
-    add_to_authority_group: "einer globalen Gruppe hinzufügen"
-    add_to_user_group: "einer eigenen Gruppe hinzufügen"
-    move_to_collection: "In Sammlung verschieben"
+    add_to_authority_group: einer globalen Sammlung hinzufügen
+    add_to_user_group: einer eigenen Sammlung hinzufügen
+    move_to_collection: "In Domäne verschieben"
 
   datings:
     default:
@@ -251,7 +251,7 @@ de:
       about_text: Text für das Impressum
       max_file_upload_size: maximale Dateigröße bei Uploads [MB]
       max_foreground_group_download_size: |
-        maximale Dateigröße für den Zip-Download von Gruppen im Vordergrund
+        maximale Dateigröße für den Zip-Download von Sammlungen im Vordergrund
         [MB]. Darüber hinaus wird der Zip-Download im Hintergrund generiert und
         bei Fertigstellung erhält der Nutzer eine Benachrichtigung per E-Mail.
       max_results_per_request: maximale Anzahl von Resultaten pro Request
@@ -285,7 +285,7 @@ de:
       relationship_dating_label: |
         Standardbeschriftung von Datierungen für neue Relationen
       default_groups: neue Benutzer automatisch diesen Gruppen zuweisen
-      max_download_group_size: Maximum der herunterladbaren Gruppengröße [MB]
+      max_download_group_size: Maximum der herunterladbaren Sammlungsgröße [MB]
       search_entity_name: |
         Standardbeschriftung für den Entitätsnamen auf der Suchseite
       primary_relations: primäre Relationen
@@ -300,8 +300,8 @@ de:
       help_login: Hilfetext zur Anmeldung
       help_profile: Hilfetext zum Profil
       help_new_entries: Hilfetext zu 'Neue Einträge'
-      help_authority_groups: Hilfetext zu globalen Gruppen
-      help_user_groups: Hilfetext zur benutzereigenen Gruppen
+      help_authority_groups: Hilfetext zu globalen Sammlungen
+      help_user_groups: Hilfetext zur benutzereigenen Sammlungen
       help_clipboard: Hilfetext zur Zwischenablage
 
   pages:
@@ -466,11 +466,11 @@ de:
     the_target_entity: "die Zielentität"
     the_source_entity: "die Quellentität"
     browser: "Browser"
-    user_groups: "eigene Gruppen"
+    user_groups: "eigene Sammlungen"
     group:
-      one: "Gruppe"
-      other: "Gruppen"
-    public_groups: "öffentliche Gruppen"
+      one: Sammlung
+      other: Sammlungen
+    public_groups: öffentliche Sammlungen
     clipboard: "Zwischenablage"
     file_upload: "Dateiupload"
     transit:
@@ -504,15 +504,15 @@ de:
       one: "Abbildung"
       other: "Abbildungen"
     authority_group:
-      one: "globale Gruppe"
-      other: "globale Gruppen"
+      one: globale Sammlung
+      other: globale Sammlungen
     config: Administration
     user_group:
-      one: "eigene Gruppe"
-      other: "eigene Gruppen"
+      one: eigene Sammlung
+      other: eigene Sammlungen
     shared_user_group:
-      one: "freigegebene Gruppe"
-      other: "freigegebene Gruppen"
+      one: freigegebene Sammlung
+      other: freigegebene Sammlungen
     synonym:
       one: "Synonym"
       other: "Synonyme"
@@ -619,7 +619,7 @@ de:
     create_failed_group_success: |
       Die Entität %o wurde nicht angelegt, weil ein Medium mit denselben
       Dateiinhalt bereits existiert. Die existierende Entität wurde in die
-      Gruppe %ug aufgenommen. Beachten Sie, dass die Entität dort nur sichtbar
+      Sammlung %ug aufgenommen. Beachten Sie, dass die Entität dort nur sichtbar
       wird, wenn Sie über die entsprechenden Rechte an der Entität verfügen.
     could_merge: "die ausgewählten %{o} können zusammengeführt werden"
     invert_success: "%{o} wurde invertiert"
@@ -647,17 +647,23 @@ de:
 
   confirm:
     sure: Sind Sie sicher?
-    delete_collection: "Die Sammlung wirklich löschen?"
+    delete_collection: "Die Domäne wirklich löschen?"
     delete_relationship: "Die Verknüpfung wirklich löschen?"
     delete_relation: "Die Relation wirklich löschen?"
     delete_entity: "Die Entität wirklich löschen?"
-    delete_entity_with_groups: "Die Entität wirklich löschen? Folgende Globale Gruppen enthalten die Entität: %{authority_groups}"
+    delete_entity_with_groups: |
+      Die Entität wirklich löschen? Folgende globale Sammlungen enthalten die
+      Entität: %{authority_groups}
     delete_user: "Den Benutzer wirklich löschen?"
-    delete_user_group: "Die eigene Gruppe wirklich löschen?"
-    remove_from_user_group: "Die Entität wirklich aus der eigenen Gruppe entfernen?"
-    delete_authority_group: "Die globale Gruppe wirklich löschen?"
-    delete_authority_group_category: "Die Kategorie wirklich löschen (Alle Unterkategorien gehen verloren, aber alle Entiäten bleiben bestehen)?"
-    remove_from_authority_group: "Die Entitäten wirklich aus der globalen Gruppe entfernen?"
+    delete_user_group: Die eigene Sammlung wirklich löschen?
+    remove_from_user_group: |
+      Die Entität wirklich aus der eigenen Sammlung entfernen?
+    delete_authority_group: Die globale Sammlung wirklich löschen?
+    delete_authority_group_category: |
+      Die Kategorie wirklich löschen (Alle Unterkategorien und Sammlungen gehen
+      verloren, aber alle Entitäten bleiben bestehen)?
+    remove_from_authority_group: |
+      Die Entitäten wirklich aus der globalen Sammlung entfernen?
     delete_kind: "Den Entitätstyp wirklich löschen (WARNUNG: Alle entsprechenden Entitäten gehen verloren)?"
     reset_clipboard: "Sind Sie sicher, dass Sie die Zwischenablage leeren wollen?"
     long_time_warning: "Diese Operation kann mehrere Minuten dauern, wollen Sie trotzdem fortfahren?"
@@ -715,7 +721,7 @@ de:
       Das Zusammenführen von Entitäten ist nur für 10 oder weniger Entitäten
       möglich
     clipboard_too_many_elements: "Die Zwischenablage kann nur 500 Elemente beinhalten"
-    collection_not_empty_on_delete: "Die Sammlung '%{name}' kann nicht gelöscht werden, weil sie nicht leer ist"
+    collection_not_empty_on_delete: "Die Domäne '%{name}' kann nicht gelöscht werden, weil sie nicht leer ist"
     creating_zip_file: "Zip-Datei wird erstellt, Sie erhalten eine Email, sobald der Download bereit steht"
     date_parsing_failed: "Das angegebene Datum wurde nicht erkannt"
     destination_not_given: "Sie müssen eine Entität als Ziel auswählen"
@@ -723,9 +729,10 @@ de:
       eine gleichnamige Entität existiert bereits. wollen Sie diese stattdessen
       %{edit_link} oder %{show_link}?
     entities_added_to_group: |
-      Die Entitäten sind in die angegebene Gruppe übernommen worden
+      Die Entitäten sind in die angegebene Sammlung übernommen worden
     entities_destroyed: "die Entitäten wurden gelöscht"
-    entities_moved_to_collection: "Die Entitäten wurden in Sammlung '%{o}' verschoben"
+    entities_moved_to_collection: |
+      Die Entitäten wurden in die Domäne '%{o}' verschoben
     exception_ocurred: |
       Der Zeitpunkt und der Zustand der Anwendung wurden zum Zweck der späteren
       Nachvollziehbarkeit aufgezeichnet. Bitte kontaktieren Sie bei Bedarf den
@@ -751,20 +758,21 @@ de:
       die Seite neu. Vermutlich sind die Entitäten in der Zwischenzeit gelöscht
       worden
     move_denied: |
-      Änderungen der Sammlung erfordern Löschrechte für die ehemalige Sammlung
-      und Erstellungsrechte für die neue Sammlung.
+      Änderungen der Domäne erfordern Löschrechte für die ehemalige Domäne
+      und Erstellungsrechte für die neue Domäne.
     must_select_1_or_more_entities: Sie müssen mindestens eine Entität auswählen
     must_select_2_or_more_entities: |
       Sie müssen mindestens zwei Entitäten auswählen
-    no_authority_groups: "Es sind keine globalen Gruppen vorhanden"
+    no_authority_groups: Es sind keine globalen Sammlung vorhanden
     no_clipboard_action_selected: "Sie haben keine Aktion ausgewählt"
-    no_entities_in_group: "In dieser Gruppe befinden sich keine herunterladbaren Entitäten"
-    no_entities_in_usergroup: "es befinden sich keine Entitäten in dieser Gruppe"
+    no_entities_in_group: |
+      In dieser Sammlung befinden sich keine herunterladbaren Entitäten
+    no_entities_in_usergroup: |
+      es befinden sich keine Entitäten in dieser Sammlung
     no_entries_available: "es sind keine Einträge vorhanden"
     no_exceptions_recorded: "es wurden keine Ausnahmen registriert"
     no_relations_provided: "Für diese Kombination ist keine Relation vorgesehen"
-    no_systemgroups: "es sind keine globalen Gruppen vorhanden"
-    no_user_groups: "Es sind keine eigenen Gruppen vorhanden"
+    no_user_groups: "Es sind keine eigenen Sammlungen vorhanden"
     no_usergroups: "es sind keine Benutzergruppen vorhanden"
     none_found: "es wurden keine %{o} gefunden"
     not_allowed_action: "Sie haben nicht die nötigen Rechte, um diese Aktion durchzuführen"
@@ -862,8 +870,8 @@ de:
         one: Benutzergruppe
         other: Benutzergruppen
       collection:
-        one: Sammlung
-        other: Sammlungen
+        one: Domäne
+        other: Domänen
       entity:
         one: Entität
         other: Entitäten
@@ -889,8 +897,8 @@ de:
         one: Tag
         other: Tags
       authority_group:
-        one: Globale Gruppe
-        other: Globale Gruppen
+        one: globale Sammlung
+        other: globale Sammlungen
         specifier:
           one: globale
           other: globale
@@ -898,8 +906,8 @@ de:
         one: Verzeichnis
         other: Verzeichnisse
       user_group:
-        one: Eigene Gruppe
-        other: Eigene Gruppen
+        one: eigene Sammlung
+        other: eigene Sammlungen
         specifier:
           one: eigene
           other: eigene
@@ -955,7 +963,7 @@ de:
         download_originals: Diesen Gruppen den Download der Originale erlauben
       user:
         parent_username: Berechtigungen erben von
-        personal: eigene Sammlung
+        personal: eigene Domäne
         username: Benutzername
         name: Benutzername
         full_name: vollständiger Name
@@ -972,17 +980,16 @@ de:
         does_not_expire: läuft nicht aus
         expires_in_days: läuft in %{amount} Tagen aus
         last_login: zuletzt angemeldet
-        authority_group_admin: Verwaltung von globalen Gruppen
+        authority_group_admin: Verwaltung von globalen Sammlungen
         kind_admin: Verwaltung von Entitätstypen
         admin: Verwaltung von Zugriffsrechten
         relation_admin: anlegen und ändern von Relationen
         developer: Entwickler
-        authority_group_admin: Verwaltung von globalen Gruppen
         kind_admin: Verwaltung von Entitätstypen
         relation_admin: anlegen und ändern von Relationen
         last_login: letzte Anmeldung
         home_page: Startseite
-        default_collection_id: Voreingestellte Sammlung
+        default_collection_id: Voreingestellte Domäne
         api_key: API key
         locale: Sprache
         notify: Benachtichtigung mit Zugangsdaten an Benutzer senden
@@ -991,7 +998,7 @@ de:
         updater: aktualisiert von
         tag_list: Tags
         content_type: Dateityp
-        collection_id: Sammlung
+        collection_id: Domäne
         master_data: Stammdaten
         authority_groups: Globale Gruppen
         created_at: erstellt
@@ -1002,15 +1009,15 @@ de:
         kind_admin: Verwaltung von Entitätstypen
         credential_admin: anlegen und ändern von Benutzergruppen
         user_admin: Benutzerverwaltung
-        collection_admin: anlegen und ändern von Sammlungen
+        collection_admin: anlegen und ändern von Domänen
         relation_admin: anlegen und ändern von Relationen
         developer: Entwickler
         expires_at: läuft aus
         created_at: erstellt
         last_login: letzte Anmeldung
         home_page: Startseite
-        default_collection: Voreingestellte Sammlung
-        collection_id: Sammlung
+        default_collection: Voreingestellte Domäne
+        collection_id: Domäne
         kind: Entitätstyp
         name: Name
         naming_options: Optionen zur Eingabe
@@ -1079,18 +1086,18 @@ de:
         wikidata_id: Wikidata ID
       publishment:
         name: Bezeichnung
-        group: zu veröffentlichende Gruppe
+        group: zu veröffentlichende Sammlung
         valid_until: gültig bis
         link: Link
       user_group:
         name: Name
         owner: Besitzer
         shared:
-          one: freigegeben Gruppe
-          other: freigegebene Gruppen
+          one: freigegeben Sammlung
+          other: freigegebene Sammlung
         published:
-          one: öffentlich freigeben Gruppe
-          other: öffentlich freigebene Gruppen
+          one: öffentlich freigeben Sammlung
+          other: öffentlich freigebene Sammlungen
       authority_group:
         name: Name
       authority_group_category:
@@ -1101,13 +1108,17 @@ de:
         header: "bei der Eingabe sind Fehler aufgetreten"
 
       messages:
-        personal_collection_not_empty: "Konnte die persönliche Sammlung nicht löschen, da sie noch Entitäten enthält"
+        personal_collection_not_empty: |
+          Die persönliche Domäne konnte nicht gelöscht werden, da sie noch
+          Entitäten enthält
         template_and_parent: "Es ist entweder nur 'Template' oder die Vaterrolle möglich"
         needs_value: "benötigen einen Wert"
         needs_label: "benötigen einen Bezeichner"
         file_exists: "eine inhaltlich gleiche Datei wurde bereits hochgeladen"
         file_must_be_set: "eine Datei muss ausgewählt werden"
-        needed_for_disambiguation: "muss zur Unterscheidung angegeben werden (Konflikt mit Sammlung '%{collection}')"
+        needed_for_disambiguation: |
+          muss zur Unterscheidung angegeben werden (Konflikt mit Domäne
+          '%{collection}')
         inclusion: "ist kein gültiger Wert"
         exclusion: "ist nicht verfügbar"
         invalid: "ist ungültig"

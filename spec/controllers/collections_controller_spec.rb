@@ -96,7 +96,7 @@ RSpec.describe CollectionsController, type: :controller do
       other_id = Collection.find_by!(name: 'private').id
       post :merge, params: {id: id, collection_id: other_id}
       expect(response).to be_success
-      expect(json['message']).to match(/have been moved to collection/)
+      expect(json['message']).to match(/have been moved to domain/)
       # it doesn't actually delete the source collection
       expect(Collection.count).to eq(2)
       expect(Collection.find_by!(name: 'Default').entities.count).to eq(0)

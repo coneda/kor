@@ -60,16 +60,16 @@ Feature: search
   Scenario: using browser back function to restore previous criteria and results
     Given I am logged in as "admin"
     And I am on the search page
-    Then I should see "Collections: all"
+    Then I should see "Domains: all"
     Then I should see "Search"
     When I fill in "Name" with "mona"
     When I follow "edit" within "kor-collection-selector"
     And I uncheck "Default"
     When I press "ok"
-    Then I should see "Collections: private"
+    Then I should see "Domains: private"
     When I press "Search"
     And I go back
-    Then I should see "Collections: all" within widget "kor-collection-selector"
+    Then I should see "Domains: all" within widget "kor-collection-selector"
 
   Scenario: searching for media
     Given I am logged in as "admin"

@@ -40,7 +40,7 @@ en:
   password_forgotten_question: "forgot your password?"
   password_reset_question: "request new password?"
   password_reset: "request new password"
-  select_collections: select collection
+  select_collections: select domains
   apply: apply
   cancel: cancel
   ok: ok
@@ -48,7 +48,7 @@ en:
   empty_list: "empty list"
   results_for: results for
   some_images: selection of associated media
-  edit_personal_collections: edit personal collections
+  edit_personal_collections: edit personal domains
   logged_in_recently: "logged in recently (<= 30 days)"
   logged_in_last_year: "logged in within the last year (<= 365 days)"
   created_recently: "created recently (<= 30 days)"
@@ -210,7 +210,7 @@ en:
     arrows_right: "move"
     private: "approvals"
     public: "undo approval"
-    zip: "download group as zip file"
+    zip: "download collection as zip file"
     pager_right: page forward
     pager_left: page back
 
@@ -220,9 +220,9 @@ en:
     merge: "merge"
     mass_relate: relate with
     mass_delete: delete
-    add_to_authority_group: "add to a global group"
-    add_to_user_group: "add to one of your own groups"
-    move_to_collection: "move to collection"
+    add_to_authority_group: "add to a global collection"
+    add_to_user_group: "add to one of your own collections"
+    move_to_collection: move to domains
 
   datings:
     default:
@@ -246,7 +246,8 @@ en:
       legal_text: text for terms of use
       about_text: text for imprint
       max_file_upload_size: "maximum file size for uploads [MB]"
-      max_foreground_group_download_size: "maximum download size for foreground groups [MB]"
+      max_foreground_group_download_size: 
+        maximum size for foreground downloads of collections [MB]"
       max_results_per_request: "maxium number of results per request"
       max_included_results_per_result: "maximum number of included objects per result"
       sources_release: 'source code url for the closest release'
@@ -272,7 +273,7 @@ en:
       kind_distinct_name_label: "default distinct name label for new kinds"
       relationship_dating_label: "default dating label for new relations"
       default_groups: "default user groups for new users"
-      max_download_group_size: "maximum downloadable group size [MB]"
+      max_download_group_size: maximum downloadable collection size [MB]
       search_entity_name: 'label for the entity name on the search page'
       primary_relations: 'primary relations'
       secondary_relations: 'secondary relations'
@@ -286,8 +287,8 @@ en:
       help_login: login help text
       help_profile: profile help text
       help_new_entries: new entries help text
-      help_authority_groups: admin groups help text
-      help_user_groups: user groups help text
+      help_authority_groups: global collection help text
+      help_user_groups: user collection help text
       help_clipboard: clipboard help text
 
 
@@ -406,12 +407,12 @@ en:
       one: "link"
       other: "links"
     publishment:
-      one: "published group"
-      other: "published groups"
+      one: "published collection"
+      other: "published collection"
     invalid:
       other: "invalid"
     section:
-      one: "technical group"
+      one: "technical collection"
     last_login: "last login"
     entity:
       one: entity
@@ -453,11 +454,11 @@ en:
     the_target_entity: "the traget entity"
     the_source_entity: "the source entity"
     browser: "browser"
-    user_groups: "personal groups"
+    user_groups: "personal collections"
     group:
-      one: "group"
-      other: "groups"
-    public_groups: "public groups"
+      one: "collection"
+      other: "collections"
+    public_groups: "public collection"
     clipboard: "clipboard"
     file_upload: "file upload"
     transit:
@@ -491,15 +492,15 @@ en:
       one: "image"
       other: "images"
     authority_group:
-      one: "global group"
-      other: "global groups"
+      one: "global collection"
+      other: "global collections"
     config: admin
     user_group:
-      one: "personal group"
-      other: "personal groups"
+      one: "personal collection"
+      other: "personal collections"
     shared_user_group:
-      one: "shared group"
-      other: "shared groups"
+      one: "shared collection"
+      other: "shared collections"
     synonym:
       one: "synonym"
       other: "synonyms"
@@ -604,7 +605,7 @@ en:
     relate_all_to: "all selected entities will be related with %{o}"
     create_failed_group_success: |
       The entity %o was not created because a medium with the same data
-      already exists. It was transferred into the user group %ug. Please
+      already exists. It was transferred into the user collection %ug. Please
       be aware that the existing medium entity can only be seen if you have
       sufficient permissions.
     merge_success: "%{o} has been merged successfully"
@@ -630,22 +631,28 @@ en:
 
   confirm:
     sure: Are you sure?
-    delete_collection: "Do you really want to delete this collection?"
+    delete_collection: "Do you really want to delete this domain?"
     delete_relationship: "Do you really want to delete this relationship?"
     delete_relation: "Do you really want to delete this relation?"
     delete_entity: "Dou you really want to delete this entity?"
-    delete_entity_with_groups: "Dou you really want to delete this entity? The following global groups contain the entity: %{authority_groups}"
+    delete_entity_with_groups: |
+      Do you really want to delete this entity? The following global collections
+      contain the entity: %{authority_groups}
     delete_user: "Do you really want to delete this user?"
-    delete_user_group: "Do you really want to delete this personal group?"
-    remove_from_user_group: "Do you really want to remove this entity from the personal group?"
-    delete_authority_group: "Do you really want to delete this global group?"
-    delete_authority_group_category: "Do you really want to delete this category (all sub categories will be lost, all entities will persist)?"
-    remove_from_authority_group: "Do you really want to remove this entity from the global group?"
+    delete_user_group: "Do you really want to delete this personal collection?"
+    remove_from_user_group: |
+      Do you really want to remove this entity from the personal collection?
+    delete_authority_group: Do you really want to delete this global collection?
+    delete_authority_group_category: |
+      Do you really want to delete this category (all sub categories and 
+      collections will be lost, all entities will persist)?
+    remove_from_authority_group: |
+      Do you really want to remove this entity from the global collection?
     delete_kind: "Do you really want to delete this entity type (WARNING: All correspondent entities entities will be lost)?"
     reset_clipboard: "Do you really want to empty the clipboard?"
     long_time_warning: |
       This operation could take several minutes. Therefore, parts of the process will be done in the background. Do you want to continue?
-    delete_publishment: "Do you really want to delete this published group?"
+    delete_publishment: Do you really want to delete this published collection?
     general: "Are you sure?"
 
   prompt:
@@ -695,16 +702,17 @@ en:
     cant_mass_relate_more_than_10_entities: "you can't mass relate more than 10 entities"
     cant_merge_more_than_10_entities: "you can't merge more than 10 entities"
     clipboard_too_many_elements: "the clipboard can only contain 500 elements"
-    collection_not_empty_on_delete: "the collection '%{name}' can't be deleted, because it is not empty"
+    collection_not_empty_on_delete: "the domain '%{name}' can't be deleted, because it is not empty"
     creating_zip_file: "Zip file will be created. You will receive an email as soon as the download is ready."
     date_parsing_failed: "the entered date could not be identified"
     destination_not_given: "you have to chose an entity as a target"
     edit_existing_entity: |
       Identical entity already exists. Do you want to
       %{edit_link} or %{show_link} instead?
-    entities_added_to_group: "the entities have been added to the selected entity group"
+    entities_added_to_group: |
+      the entities have been added to the selected collection"
     entities_destroyed: "the entity has been deleted"
-    entities_moved_to_collection: "all entities have been moved to collection '%{o}'"
+    entities_moved_to_collection: "all entities have been moved to domain '%{o}'"
     exception_ocurred: "an unexpected error has occurred"
     file_too_big: "the file '%{file}' is too big (%{size}MB) and can't be uploaded. The maximum allowed size is %{max}MB"
     following_relationship: "the following relationship should be applied or created"
@@ -724,21 +732,20 @@ en:
     merge_success: "the entities have been merged successfully"
     missing_entities_to_merge: "some entities in your selection couldn't be found, please refresh the clipboard and try again"
     move_denied: |
-      moving an entity from one collection to another requires the 'delete'
-      permission in the source collection and the 'create' permission in the
-      target collection
+      moving an entity from one domain to another requires the 'delete'
+      permission in the source domain and the 'create' permission in the
+      target domain
     must_select_1_or_more_entities: "you must select at least one entity"
     must_select_2_or_more_entities: "you can only merge two or more entities"
-    no_authority_groups: "there are no global groups available"
+    no_authority_groups: there are no global collection available
     no_clipboard_action_selected: "you have not selected an action"
-    no_entities_in_group: "There are no entities to download in this group"
-    no_entities_in_usergroup: "there is no entity in this group"
+    no_entities_in_group: There are no entities to download in this collection
+    no_entities_in_usergroup: there is no entity in this collection
     no_entries_available: "there are no entries available"
     no_exceptions_recorded: "There are no exceptions recorded"
-    no_systemgroups: "there are no global groups available"
     no_relations_provided: "There is no relation provided for this combination of entity types"
-    no_user_groups: "there are no personal groups available"
-    no_usergroups: "there are no user groups available"
+    no_user_groups: there are no personal collection available
+    no_usergroups: there are no user collections available
     none_found: "%{o} not found"
     not_allowed_action: "you do not have enough rights to perform this action"
     not_found: "The requested resource could not be found"
@@ -773,9 +780,11 @@ en:
       This data was collected at %{date} and it is recalculated at least every
       24 hours.
     terms_accepted: "you have accepted the terms of use"
-    too_many_entities_for_zip: "the group contains too many images"
+    too_many_entities_for_zip: the collection contains too many images
     too_many_login_attempts: "the user has been blocked temporarily because of too many login attempts"
-    upload_duplicate: "The transferred image already exists. It has been added to the selected group."
+    upload_duplicate: |
+      The transferred image already exists. It has been added to the selected
+      collection.
     upload_success: "the file has been transferred successfully"
     user_or_pass_refused: "username or password could not be found"
     report_entity_subject: metadata incorrect
@@ -832,8 +841,8 @@ en:
         one: user group
         other: user groups
       collection:
-        one: collection
-        other: collections
+        one: domain
+        other: domains
       entity:
         one: entity
         other: entities
@@ -844,8 +853,8 @@ en:
         one: entity type
         other: entity types
       publishment:
-        one: published group
-        other: published groups
+        one: published collection
+        other: published collections
         specifier:
           one: published
           other: published
@@ -859,8 +868,8 @@ en:
         one: tag
         other: tags
       authority_group:
-        one: global group
-        other: global groups
+        one: global collection
+        other: global collections
         specifier:
           one: global
           other: global
@@ -868,8 +877,8 @@ en:
         one: directory
         other: directories
       user_group:
-        one: personal group
-        other: personal groups
+        one: personal collection
+        other: personal collections
         specifier:
           one: personal
           other: personal
@@ -925,7 +934,7 @@ en:
         download_originals: allow these groups to download original media
       user:
         parent_username: inherit permissions from
-        personal: personal collection
+        personal: personal domain
         username: username
         name: username
         full_name: full name
@@ -942,16 +951,15 @@ en:
         does_not_expire: doesn't expire
         expires_in_days: expires in %{amount} days
         last_login: last login
-        authority_group_admin: administration of global groups
+        authority_group_admin: administration of global collections
         kind_admin: administration of entity types
         admin: configure permissions
         relation_admin: create and edit relations
-        authority_group_admin: administration of global groups
         kind_admin: administration of entity types
         relation_admin: create and edit relations
         last_login: last login
         home_page: home page
-        default_collection_id: default collection
+        default_collection_id: default domain
         api_key: API key
         locale: Language
         notify: send notification and access information to user
@@ -961,26 +969,26 @@ en:
         creator: created by
         tag_list: tags
         content_type: file type
-        collection_id: collection
+        collection_id: domain
         master_data: master data
-        authority_groups: global groups
+        authority_groups: global collections
         created_at: created at
         updated_at: updated at
         expires_at: expires at
         last_login: last login
-        authority_group_admin: administration of global groups
+        authority_group_admin: administration of global collections
         kind_admin: administration of entity types
         credential_admin: create and edit user groups
         user_admin: user administration
-        collection_admin: create and edit collections
+        collection_admin: create and edit domains
         relation_admin: acreate and edit relations
         developer: developer
         expires_at: expires at
         created_at: created at
         last_login: last login
         home_page: home page
-        default_collection: default collection
-        collection_id: collection
+        default_collection: default domain
+        collection_id: domain
         kind: entity type
         name: name
         naming_options: naming options
@@ -1047,18 +1055,18 @@ en:
         wikidata_id: Wikidata ID
       publishment:
         name: name
-        group: group to be released
+        group: collection to be released
         valid_until: valid until
         link: link
       user_group:
         name: name
         owner: owner
         shared:
-          one: shared group
-          other: shared groups
+          one: shared collection
+          other: shared collections
         published:
-          one: published group
-          other: published groups
+          one: published collection
+          other: published collections
       authority_group:
         name: name
       authority_group_category:
@@ -1069,13 +1077,16 @@ en:
         header: "the input contains errors and the record could not be saved"
 
       messages:
-        personal_collection_not_empty: "The personal collection could not be deleted because it still contains entities"
+        personal_collection_not_empty: |
+          The personal domain could not be deleted because it still contains
+          entities
         template_and_parent: "Only 'template' or parent is possible"
         needs_value: "need a value"
         needs_label: "need a label"
         file_exists: "a file with identical content already exists"
         file_must_be_set: "please select a file"
-        needed_for_disambiguation: "is needed for determination (conflict with collection '%{collection}')"
+        needed_for_disambiguation: |
+          is needed for determination (conflict with domain '%{collection}')
         inclusion: "is not a valid value"
         exclusion: "is not available"
         invalid: "is invalid"

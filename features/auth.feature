@@ -30,6 +30,7 @@ Feature: Authentication and Authorization
     Given I am logged in as "admin"
     And the session has expired
     And I reload the page
+    Then I should see "logged in as: guest"
     When I go to the entity page for "Mona Lisa"
     Then I should not see "Mona Lisa"
     And I should see "Access denied"
@@ -42,12 +43,12 @@ Feature: Authentication and Authorization
     And I should see "Mona Lisa"
     Then I should be on the entity page for "Mona Lisa"
 
-  Scenario: Show only global groups when not logged in
+  Scenario: Show only global collections when not logged in
     And I am on the root page
-    Then I should see "Global groups"
-    And I should not see "Personal groups"
-    And I should not see "Shared groups"
-    And I should not see "Published groups"
+    Then I should see "Global collections"
+    And I should not see "Personal collections"
+    And I should not see "Shared collections"
+    And I should not see "Published collections"
 
   Scenario: I should 'returned to' my original location after successful login
     Given I go to the config page

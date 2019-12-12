@@ -5,7 +5,7 @@
                       <%= root_url + 'schema/1.1/kor.xsd' %>"
 >
   <kor:id><%= record.uuid %></kor:id>
-  <kor:collection id="<%= record.collection_id %>"><%= record.collection.name %></kor:collection>
+  <kor:domain id="<%= record.collection_id %>"><%= record.collection.name %></kor:domain>
   <kor:created-at><%= timestamp record.created_at %></kor:created-at>
   <kor:updated-at><%= timestamp record.updated_at %></kor:updated-at>
 

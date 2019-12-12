@@ -9,6 +9,6 @@ Feature: Session
   Scenario: update the menu when the session is expired
     Given I am logged in as "admin"
     When I travel "3.hours"
-    And I follow "Personal groups"
+    And I follow "Personal collections"
     Then I should see "You are not logged in"
-    And I should not see "Personal groups" within widget "kor-menu"
+    And I should not see "Personal collections" within widget "kor-menu"

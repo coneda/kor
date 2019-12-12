@@ -1,16 +1,16 @@
-Feature: Collection selector
-  Scenario: One collection available
+Feature: domain selector
+  Scenario: One domain available
     And I am logged in as "jdoe"
     And I am on the search page
-    Then I should not see "Collections" within "form"
+    Then I should not see "Domains" within "form"
     When I fill in "Name" with "Mona Lisa"
     And I press "Search"
     Then I should see "Mona Lisa" within "kor-search-result"
 
-  Scenario: Three collections available
+  Scenario: Three domains available
     And I am logged in as "admin"
     When I am on the search page
-    Then I should see "Collections: all"
+    Then I should see "Domains: all"
     When I follow "edit" within "kor-collection-selector"
     Then checkbox "Default" should be checked
     Then checkbox "private" should be checked
@@ -19,7 +19,7 @@ Feature: Collection selector
     Then I should see "Mona Lisa" within ".search-results"
     And I should see "The Last Supper" within ".search-results"
     
-  Scenario: Search only one collection
+  Scenario: Search only one domain
     And I am logged in as "admin"
     When I am on the search page
     And I select "private" from the collections selector

@@ -27,7 +27,7 @@ Feature: Media
     And I go to the entity page for medium "picture_a"
     Then I should see "medium"
     When I follow "edit"
-    And I select "private" from "Collection"
+    And I select "private" from "Domain"
     And I press "Save"
     Then I should see "has been changed"
     And medium "picture_a" should be in collection "private"
@@ -37,7 +37,7 @@ Feature: Media
     When I go to the new entries page
     Then I should see "New entries"
     Then I should see "File type: image/jpeg"
-    When I follow "Global groups"
+    When I follow "Global collections"
     And I follow "lecture"
     Then I should see "File type: image/jpeg"
 

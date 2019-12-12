@@ -267,7 +267,7 @@ RSpec.describe EntitiesController, type: :controller do
         id: last_supper.id, entity: {collection_id: default.id}
       }
       expect(response.status).to eq(403)
-      expect(json['message']).to match(/moving an entity from one collection/)
+      expect(json['message']).to match(/moving an entity from one domain/)
     end
   end
 

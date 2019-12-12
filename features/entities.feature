@@ -42,14 +42,6 @@ Feature: Entities
     And I should see "Alter: 12"
     And I should see "Synonyms: La Gioconde"
 
-  Scenario: I don't see the select as current link when I have no edit rights for no collection
-    Given the entity "Mona Lisa" of kind "Werk/Werke"
-    And user "john" is allowed to "view" collection "default" via credential "users"
-    And I am logged in as "john"
-    When I go to the entity page for "Mona Lisa"
-    And I should see "Mona Lisa"
-    Then I should not see element "a[kor-current-button]"
-    
   Scenario: I see the add to clipboard link
     And I am logged in as "jdoe"
     When I go to the entity page for "Mona Lisa"
@@ -67,7 +59,7 @@ Feature: Entities
     Then I should be on the entity page for "La Gioconde"
     And I should see "La Gioconde"
 
-  Scenario: Try to create an entity with the same name twice (same collection)
+  Scenario: Try to create an entity with the same name twice (same domain)
     Given I am logged in as "admin"
     And I go to the new "location-Entity" page
     And I fill in "Name" with "Paris"
@@ -75,17 +67,17 @@ Feature: Entities
     And I should see "is already taken"
     And I should see error "is invalid" on field "Distinguished name"
   
-  Scenario: Try to create an entity with the same name twice (different collections)
+  Scenario: Try to create an entity with the same name twice (different domains)
     Given I am logged in as "admin"
     And I go to the new "location-Entity" page
     And I fill in "Name" with "Paris"
     And I press "Save"
     Then I should see "is already taken"
     And I should see error "is invalid" on field "Distinguished name"
-    When I select "private" from "Collection"
+    When I select "private" from "Domain"
     And I press "Save"
     Then I should see "is already taken"
-    And I should see error "is needed for determination (conflict with collection 'Default')" on field "Distinguished name"
+    And I should see error "is needed for determination (conflict with domain 'Default')" on field "Distinguished name"
 
   Scenario: When paginating relationships, images should have a button bar
     Given I am logged in as "admin"
