@@ -84,3 +84,11 @@ Feature: datings
     And I press "Save"
     Then entity "Mona Lisa" should have dating "created in: 1503"
     And entity "Mona Lisa" should have dating "revised in: 1508"
+
+  Scenario: handling leap years
+    Given the entity "Mona Lisa" of kind "work/works"
+    And entity "Mona Lisa" has dating "created in: 1503"
+    And I go to the edit page for "entity" "Mona Lisa"
+    And I fill in "[name*=dating_string]" with "29.2.1994" within "#datings .ats .attachment:nth-child(1)"
+    And I press "Save"
+    Then I should see "1994 is not a leap year"

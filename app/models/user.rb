@@ -295,6 +295,7 @@ class User < ActiveRecord::Base
   end
 
   # ----------------------------------------------------------------- search ---
+  # TODO: this doesn't include users with name == NULL (?)
   scope :without_predefined, lambda { where("name NOT IN (?)", ["admin", "guest"]) }
   scope :without_admin, lambda { where("name NOT LIKE ?", "admin") }
   scope :search, lambda { |search_string|

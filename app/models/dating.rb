@@ -31,6 +31,8 @@ class Dating < ActiveRecord::Base
   
   def parsable?
     self.class.parse(dating_string) ? true : false
+  rescue Kor::Exception => e
+    errors.add :dating_string, e.message
   end
   
   
@@ -43,6 +45,8 @@ class Dating < ActiveRecord::Base
       self[:from_day] = self.class.julian_date_for(parsed[:from])
       self[:to_day] = self.class.julian_date_for(parsed[:to])
     end
+  rescue Kor::Exception => e
+    errors.add :dating_string, e.message
   end
   
   def from_day=(value)

@@ -15,17 +15,17 @@
     <div class="string" ng-hide="directed_relationship.to | is_medium">
       <a href="/blaze#/entities/{{directed_relationship.to.id}}">
         <strong ng-bind="directed_relationship.to | entity_display_name"></strong>
-      </a>
 
-      <span class="nowrap">
-        <span class="text italic" ng-bind="directed_relationship.to.kind_name"></span>
-        <span class="relationship_switch" ng-show="directed_relationship.media_relations > 0">
-          <a href="#" ng-click="switch(false, null, $event)">
-            <img alt="Triangle_up" src="<%= image_path('triangle_up.gif') %>" ng-hide="visible">
-            <img alt="Triangle_down" src="<%= image_path('triangle_down.gif') %>" ng-show="visible">
-          </a>
+        <span class="nowrap">
+          <span class="text italic" ng-bind="directed_relationship.to.kind_name"></span>
+          <span class="relationship_switch" ng-show="directed_relationship.media_relations > 0">
+            <a href="#" ng-click="switch(false, null, $event)">
+              <img alt="Triangle_up" src="<%= image_path('triangle_up.gif') %>" ng-hide="visible">
+              <img alt="Triangle_down" src="<%= image_path('triangle_down.gif') %>" ng-show="visible">
+            </a>
+          </span>
         </span>
-      </span>
+      </a>
     </div>
   
     <div class="commands">

@@ -89,15 +89,23 @@ class Kor::Import::WikiData
       end
 
       if !internal.empty?
-        values = internal.map{|i| i['mainsnak']['datavalue']['value']['id']}
+        values = internal.map do |i|
+          if i['mainsnak']['datavalue']
+            i['mainsnak']['datavalue']['value']['id']
+          else
+            nil
+          end
+        end.compact
         results << {'id' => pid, 'values' => values}
       end
     end
 
     ids = results.map{|r| r['id']}
     labels = labels_for(ids)
+
     results.each do |r|
-      r['label'] = labels.find{|l| l['id'] == r['id']}['label']
+      label = labels.find{|l| l['id'] == r['id']} || {'label' => 'related to'}
+      r['label'] = label['label']
     end
 
     results

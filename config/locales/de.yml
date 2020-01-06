@@ -66,6 +66,7 @@ de:
   inherited_from: vererbt von
   no_schema: ohne Schema
   add_to_merge: zusammenführen
+  not_leap_year: "%{year} ist kein Schaltjahr"
 
   search_term: 
     one: Suchbegriff

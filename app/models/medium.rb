@@ -143,13 +143,15 @@ class Medium < ActiveRecord::Base
   end
 
   def content_type(style = :original)
-    if style == :original
+    result = if style == :original
       document.content_type || image.content_type
     elsif image_style?(style)
       "image/jpg"
     else
       custom_styles[style.to_sym][:content_type]
-    end.downcase
+    end
+
+    result.is_a?(String) ? result.downcase : 'application/octet-stream'
   end
   
   def file_size
@@ -180,7 +182,12 @@ class Medium < ActiveRecord::Base
   end
   
   def original_extension
-    File.extname(original.original_filename).gsub('.', '').downcase
+    if original.original_filename
+      File.extname(original.original_filename).gsub('.', '').downcase
+    else
+      # dummy
+      'tif'
+    end
   end
   
   def style_extension(style = :original)

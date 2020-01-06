@@ -467,3 +467,7 @@ Then(/^entity "([^"]*)" should (not )?have dating "([^"]*)"$/) do |name, negatio
     expect(result).to be_truthy
   end
 end
+
+Given(/^the user "([^"]*)" has not accepted the terms of use$/) do |name|
+  User.find_by!(name: name).update terms_accepted: false
+end

@@ -99,7 +99,7 @@ Feature: Kinds
     Then the select "Parent type" should have value "Actor,Person"
 
 
-  @javascript
+  @javascript @wip
   Scenario: should not show itself as possible parent
     And the kind "Artist/Artists"
     And I am logged in as "admin"

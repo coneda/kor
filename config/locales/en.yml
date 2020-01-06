@@ -65,6 +65,7 @@ en:
   inherited_from: inherited from
   no_schema: no schema
   add_to_merge: add to merge
+  not_leap_year: "%{year} is not a leap year"
 
   search_term:
     one: search term

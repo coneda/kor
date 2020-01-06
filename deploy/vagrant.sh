@@ -11,7 +11,7 @@ function system_updates {
 function install_requirements {
   apt-get install -y \
     git-core build-essential libmysqlclient-dev libcurl4-openssl-dev ruby-dev \
-    libxml2-dev libxslt-dev imagemagick libav-tools zip
+    libxml2-dev libxslt-dev imagemagick libav-tools ffmpeg zip
 }
 
 function install_test_requirements {
@@ -30,7 +30,7 @@ function install_dev_requirements {
   install_requirements
   install_test_requirements
   apt-get install -y \
-    libmysqlclient-dev imagemagick libav-tools zip openjdk-8-jre chromium-browser
+    libmysqlclient-dev imagemagick libav-tools ffmpeg zip openjdk-8-jre chromium-browser
 }
 
 function install_prod_requirements {
