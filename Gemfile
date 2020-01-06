@@ -49,7 +49,7 @@ group :test do
   gem 'cucumber-rails', require: false
   gem 'selenium-webdriver'
   gem 'rspec-rails', '~> 3.5.2'
-  gem 'capybara', '~> 2.18.0'
+  gem 'capybara'
   gem 'database_cleaner'
   gem 'vcr'
   gem 'webmock'
