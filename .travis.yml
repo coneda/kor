@@ -18,7 +18,7 @@ before_install:
   - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.6/elasticsearch-2.4.6.deb
   - sudo dpkg -i --force-confnew elasticsearch-2.4.6.deb
   - sudo service elasticsearch restart
-  - wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
+  - wget https://chromedriver.storage.googleapis.com/80.0.3987.16/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - sudo ln -sfn $(pwd)/chromedriver /usr/local/bin/chromedriver
   - nvm install v6.13.0

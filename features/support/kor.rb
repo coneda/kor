@@ -52,7 +52,7 @@ Capybara.javascript_driver = :selenium
 # Capybara.javascript_driver = :selenium_chrome
 
 if ENV['HEADLESS']
-  Capybara.javascript_driver = :selenium_headless
+  Capybara.javascript_driver = :selenium_chrome_headless
   # Capybara.register_driver :headless_chrome do |app|
   #   capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
   #     chromeOptions: {args: ['headless', 'disable-gpu']}
