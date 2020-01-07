@@ -4,19 +4,21 @@ Feature: search
   use a search
   
 
-  @javascript @wip
+  @javascript @elastic
   Scenario: do simple search based on title
     Given I am logged in as "admin"
     Given the entity "Bamberg" of kind "Ort/Orte"
     And the entity "Bamberger Apokalypse" of kind "Werk/Werke"
     When I go to the simple search page
     And I fill in "search_terms" with "Bamberg"
+    # wait for the autocomplete:
+    Then I should see "Bamberg"
     And I press the "enter" key
     Then I should see "Bamberg" within ".entity_list"
     And I should see "Bamberger Apokalypse" within ".entity_list"
 
   
-  @javascript
+  @javascript @elastic
   Scenario: do exact simple search
     Given I am logged in as "admin"
     Given the entity "Bamberger Apokalypse" of kind "Werk/Werke"
@@ -25,12 +27,14 @@ Feature: search
     Then I should be on the simple search page
 
 
-  @javascript @wip
+  @javascript @elastic
   Scenario: do simple search based on relationship
     Given I am logged in as "admin"
     Given the triple "Werk/Werke" "Bamberger Apokalypse" "befindet sich in/ist Ort von" "Ort/Orte" "Bamberg"
     When I go to the simple search page
     And I fill in "search_terms" with "Apokalypse"
+    # wait for the autocomplete:
+    Then I should see "Apokalypse"
     And I press "Search"
     Then I should see "Bamberg" within ".entity_list"
     And I should see "Bamberger Apokalypse" within ".entity_list"

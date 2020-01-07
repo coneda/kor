@@ -425,3 +425,10 @@ Then(/^I should see mirador link with a usable href$/) do
   expect(href).to match(/^http:\/\/127.0.0.1:\d+\/mirador\?manifest=http:\/\/127.0.0.1:\d+\/mirador\/\d+$/)
 end
 
+When("I press the {string} key") do |string|
+  case string
+  when 'enter' then find('body').send_keys(:enter)
+  else
+    raise "unknown key: '#{string}'"
+  end
+end
