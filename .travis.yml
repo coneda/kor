@@ -35,5 +35,5 @@ script:
   - cp deploy/database.travis.yml config/database.yml
   - bundle exec rake db:test:load
   - bundle exec rspec spec/ --tag "~travis:false" --format=documentation
-  - bundle exec cucumber --retry 3 --format=pretty --tags "~@notravis" features/
+  - bundle exec cucumber --retry 3 --format=pretty --tags "not @notravis" features/
   

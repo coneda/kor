@@ -4,26 +4,26 @@ Feature: Clipboard
   I want to have mass actions from within a clipboard
   
   # TODO: this fails just on travis, why?
-  # @javascript
-  # Scenario: Mass relate
-  #   And I am on the home page
-  #   Given I am logged in as "admin"
-  #   And the entity "Mona Lisa" of kind "Werk/Werke"
-  #   And I mark "Mona Lisa" as current entity
-  #   And the medium "spec/fixtures/image_a.jpg"
-  #   Then I should see "has been created"
-  #   And all entities of kind "Medium/Media" are in the clipboard
-  #   And the relation "stellt dar/wird dargestellt von" between "Medium/Media" and "Werk/Werke"
-  #   When I go to the clipboard
-  #   And I select "relate with" from "clipboard_action"
-  #   Then I should see "Relation"
-  #   When I select "stellt dar" from "relation_name"
-  #   And I press "Send"
-  #   When I go to the entity page for "Mona Lisa"
-  #   Then I should see "wird dargestellt von"
+  @javascript @notravis
+  Scenario: Mass relate
+    And I am on the home page
+    Given I am logged in as "admin"
+    And the entity "Mona Lisa" of kind "Werk/Werke"
+    And I mark "Mona Lisa" as current entity
+    And the medium "spec/fixtures/image_a.jpg"
+    Then I should see "has been created"
+    And all entities of kind "Medium/Media" are in the clipboard
+    And the relation "stellt dar/wird dargestellt von" between "Medium/Media" and "Werk/Werke"
+    When I go to the clipboard
+    And I select "relate with" from "clipboard_action"
+    Then I should see "Relation"
+    When I select "stellt dar" from "relation_name"
+    And I press "Send"
+    When I go to the entity page for "Mona Lisa"
+    Then I should see "wird dargestellt von"
     
   
-  @javascript
+  @javascript @notravis
   Scenario: Create user groups on the fly
     Given I am logged in as "admin"
     And the entity "Mona Lisa" of kind "work/works"
