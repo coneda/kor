@@ -56,7 +56,7 @@ Feature: Inplace relationship editor
     Then I should see "Mona Lisa"
     When I click element "[data-name=pen]" within ".relationship"
     And I click button "Add" within ".relationship .properties"
-    And I fill in ".property input" with "this is almost certain"
+    And I fill in "value" with "this is almost certain" within ".property"
     And I press "Save"
     And I should not see "Edit relationship"
     And I should see "Relationship has been changed"

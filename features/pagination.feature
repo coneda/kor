@@ -46,7 +46,7 @@ Feature: Pagination
     And the current js page should be "2"
     And I should see "16" gallery items
 
-    When I fill in ".pagination input[type=number]" with "1"
+    When I fill in "page" with "1" within ".pagination"
     And I press "go to"
     And I should see "16" gallery items
     And the current js page should be "1"
