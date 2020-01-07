@@ -5,6 +5,17 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history on GitHub.
 
+## Version 3.0.4
+
+This is just a bugfix release. This includes all bugfixes from the (never
+released) v3.1 branch, some of which are without corresponding issues:
+
+* fixes handling of leap years for datings
+* fixes accepting terms of use
+
+The [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.4+).
+Shows the remaining bigfixes.
+
 ## Version 3.0.3
 
 This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.3+).
