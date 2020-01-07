@@ -4,7 +4,7 @@ Feature: search
   use a search
   
 
-  @javascript @elastic
+  @javascript @elastic @notravis
   Scenario: do simple search based on title
     Given I am logged in as "admin"
     Given the entity "Bamberg" of kind "Ort/Orte"
