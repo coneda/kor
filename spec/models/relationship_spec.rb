@@ -73,4 +73,11 @@ RSpec.describe Relationship do
     expect(Relationship.dated_in("1890").count).to eql(1)
     expect(Relationship.dated_in("1850 bis 1950").count).to eq(1)
   end
+
+  it 'should be (manually) validatable before saving' do
+    relationship = Relationship.relate(leonardo.id, 'has created', mona_lisa.id)
+    expect(relationship.valid?).to be(true)
+    expect(relationship.save).to be(true)
+  end
+
 end

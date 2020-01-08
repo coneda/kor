@@ -23,3 +23,13 @@ Feature: User administration
     And I go to the users page
     When I follow "edit" within the row for user "John Doe"
     Then I should see "jdoe"'s API Key
+
+
+  @javascript
+  Scenario: Accept terms of use
+    Given the user "jdoe"
+    Given the user "jdoe" has not accepted the terms of use
+    And I am logged in as "jdoe"
+    Then I should see "Terms of use"
+    When I follow "accept terms"
+    Then I should see "You have accepted the terms of use"

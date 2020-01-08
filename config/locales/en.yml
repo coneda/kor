@@ -84,6 +84,7 @@ en:
   day: day
   before: before
   after: after
+  not_leap_year: "%{year} is not a leap year"
 
   help:
     terms_query: |
@@ -637,7 +638,7 @@ en:
       hi: "Hello %{username}"
       best_regards: "Best regards"
       upcoming_expiry: |
-        Your KOR-Account %{url} expires at %{date}. 
+        Your KOR-Account for the KOR system at %{url} expires at %{date}. 
         Please contact the administrator to extend your account.
       account_created: |
         An Account has been created for you in KOR system %{url}.

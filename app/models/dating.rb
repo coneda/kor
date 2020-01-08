@@ -30,6 +30,8 @@ class Dating < ApplicationRecord
 
   def parsable?
     self.class.parse(dating_string) ? true : false
+  rescue Kor::Exception => e
+    errors.add :dating_string, e.message
   end
 
   def dating_string=(value)
@@ -37,9 +39,11 @@ class Dating < ApplicationRecord
     parsed = self.class.parse(value)
 
     if parsed
-      self[:from_day] ||= self.class.julian_date_for(parsed[:from])
-      self[:to_day] ||= self.class.julian_date_for(parsed[:to])
+      self[:from_day] = self.class.julian_date_for(parsed[:from])
+      self[:to_day] = self.class.julian_date_for(parsed[:to])
     end
+  rescue Kor::Exception => e
+    errors.add :dating_string, e.message
   end
 
   def from_day=(value)

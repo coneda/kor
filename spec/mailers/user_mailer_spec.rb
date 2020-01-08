@@ -17,4 +17,26 @@ RSpec.describe UserMailer do
     described_class.reset_password(jdoe).deliver_now
     expect(ActionMailer::Base.deliveries[0].from[0]).to eq('admin@wendig.io')
   end
+
+  it "should send mails with the user's locale if available" do
+    expires_at = 2.days.from_now
+    admin.update_attributes expires_at: expires_at
+
+    expect(admin.locale).to be_nil
+    expect(Kor.settings['default_locale']).to eq('en')
+    expect(I18n.default_locale).to eq(:en)
+
+    described_class.upcoming_expiry(admin).deliver_now
+    mail = ActionMailer::Base.deliveries.last
+    expect(mail.body).to include(expires_at.strftime('%Y-%m-%d'))
+    expect(mail.body).to include('http://example.com')
+    expect(mail.body).to include('Please contact the administrator')
+
+    admin.update_attributes locale: 'de'
+    described_class.upcoming_expiry(admin).deliver_now
+    mail = ActionMailer::Base.deliveries.last
+    expect(mail.body).to include(expires_at.strftime('%Y-%m-%d'))
+    expect(mail.body).to include('http://example.com')
+    expect(mail.body).to include('mit dem Administrator in Verbindung')
+  end
 end

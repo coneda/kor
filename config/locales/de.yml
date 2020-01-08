@@ -85,6 +85,7 @@ de:
   day: Tag
   before: vor
   after: nach
+  not_leap_year: "%{year} ist kein Schaltjahr"
 
   help:
     terms_query: |
@@ -652,8 +653,8 @@ de:
       hi: "Hallo %{username}"
       best_regards: "mit freundlichen Grüßen"
       upcoming_expiry: |
-        Ihr Zugang im KOR-System %{url} läuft am %{date} ab. Bitte setzten Sie
-        sich rechtzeitig mit dem Administrator in Verbindung.
+        Ihr Zugang für das KOR-System %{url} läuft am %{date} ab. Bitte setzen
+        Sie sich rechtzeitig mit dem Administrator in Verbindung.
       account_created: |
         Im KOR-System %{url} wurde ein Zugang für Sie eingerichtet.
       password_reset: |

@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-ActiveRecord::Schema.define(version: 20181204034411) do
+ActiveRecord::Schema.define(version: 20191207011036) do
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4,   default: 0
     t.integer  "parent_id",    limit: 4
