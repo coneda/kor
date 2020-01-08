@@ -113,11 +113,13 @@ class Kor::Import::WikiData
 
     update_relationships(entity)
 
+    related_update
+
     entity
   end
 
   def update(entity, opts = {})
-    opts.reverse_merge! attributes: false
+    opts.reverse_merge! attributes: false, recursive: true
 
     if opts[:attributes]
       entity.update(
@@ -128,6 +130,21 @@ class Kor::Import::WikiData
     end
 
     update_relationships(entity)
+
+    # we also need to find all existing wikidata ids in the database and ask
+    # for relationships to this entity from wikidata so we can update our
+    # graph
+    if opts[:recursive]
+      related_update
+    end
+  end
+
+  def related_update
+    candidates = Identifier.where(kind: 'wikidata_id').pluck(:value).uniq
+    self.class.related(qid, candidates).each do |other_qid|
+      entity = Identifier.resolve(other_qid, 'wikidata_id')
+      self.class.find(other_qid).update(entity, recursive: false)
+    end
   end
 
   def update_relationships(entity)
@@ -201,6 +218,25 @@ class Kor::Import::WikiData
         "label" => r.xpath("xmlns:binding[@name='label']/xmlns:literal").text
       }
     end
+  end
+
+  # finds all related item ids included within a set of candidates
+  def self.related(target, candidates)
+    candidates = candidates.map{|c| "wd:#{c}"}.join(', ')
+    query = "
+      SELECT ?item ?rel
+      WHERE 
+      {
+        { ?item ?rel wd:#{target} } UNION
+        { wd:Q5580 ?rel ?item }
+        FILTER(?item IN (#{candidates}))
+      }
+    "
+    xml = sparql(query).body
+    doc = Nokogiri::XML(xml)
+
+    uris = doc.xpath("//xmlns:result/xmlns:binding[@name='item']/xmlns:uri")
+    uris.map{ |r| r.text.split('/').last }.uniq
   end
 
 

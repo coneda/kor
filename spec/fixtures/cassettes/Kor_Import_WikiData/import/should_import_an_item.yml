@@ -834,4 +834,74 @@ http_interactions:
         name='label'>\n\t\t\t\t<literal xml:lang='en'>described by source</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
     http_version: 
   recorded_at: Tue, 01 Oct 2019 20:57:21 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20SELECT%20?item%20?rel%0A%20%20%20%20%20%20WHERE%20%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%7B%20?item%20?rel%20wd:Q762%20%7D%20UNION%0A%20%20%20%20%20%20%20%20%7B%20wd:Q5580%20?rel%20?item%20%7D%0A%20%20%20%20%20%20%20%20FILTER(?item%20IN%20(wd:Q762))%0A%20%20%20%20%20%20%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.5.7 (2019-10-01))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 08 Jan 2020 20:06:33 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access=08-Jan-2020; WMF-Last-Access-Global=08-Jan-2020
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.13.6
+      Date:
+      - Wed, 08 Jan 2020 20:06:33 GMT
+      Content-Type:
+      - application/sparql-results+xml;charset=utf-8
+      X-First-Solution-Millis:
+      - '4'
+      X-Served-By:
+      - wdqs2003
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      X-Envoy-Upstream-Service-Time:
+      - '19'
+      X-Ats-Timestamp:
+      - '1578513993'
+      Vary:
+      - Accept, Accept-Encoding
+      X-Varnish:
+      - '107743938'
+      Age:
+      - '0'
+      X-Cache:
+      - cp4031 miss, cp4028 pass
+      X-Cache-Status:
+      - pass
+      Server-Timing:
+      - cache;desc="pass"
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      X-Analytics:
+      - WMF-Last-Access=08-Jan-2020;WMF-Last-Access-Global=08-Jan-2020;https=1
+      X-Client-Ip:
+      - 70.179.22.74
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='item'/>\n\t\t<variable name='rel'/>\n\t</head>\n\t<results>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Wed, 08 Jan 2020 20:06:33 GMT
 recorded_with: VCR 4.0.0

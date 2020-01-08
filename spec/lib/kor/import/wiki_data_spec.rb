@@ -83,20 +83,20 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
 
       # mona lisa
       described_class.find('Q12418').import(User.admin, default, works)
-      expect(Relation.count).to be(7)
-      expect(Relationship.count).to be(2)
+      expect(Relation.count).to be(8)
+      expect(Relationship.count).to be(3)
 
       # the last supper
       described_class.find('Q128910').import(User.admin, default, works)
-      expect(Relation.count).to be(7)
-      expect(Relationship.count).to be(3)
+      expect(Relation.count).to be(8)
+      expect(Relationship.count).to be(5)
 
       # he's imported as 'Leonardo da Vinci' from wikidata
       leonardo = Entity.find_by!(name: 'Leonardo da Vinci')
       rel = Relation.find_by!(name: 'creator')
 
-      expect(Relation.count).to eq(7)
-      expect(Relationship.count).to eq(3)
+      expect(Relation.count).to eq(8)
+      expect(Relationship.count).to eq(5)
       expect(rel.relationships.first.from_id).to eq(mona_lisa.id)
       expect(rel.relationships.first.to_id).to eq(leonardo.id)
       expect(rel.relationships.last.from_id).to eq(last_supper.id)
@@ -137,6 +137,52 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
       entities.each do |entity|
         expect(entity.updated_at).to be < before
       end
+    end
+
+    it 'should find reated items out of a set of candidates' do
+      result = described_class.related('Q5580', ['Q1362177', 'Q42', 'Q1234'])
+      expect(result).to eq(['Q1362177'])
+    end
+
+    # Q5580 and Q1362177 are related in two ways, one in each direction
+    it 'should import A. Dürer (Q5580) and then Melencolia I (Q1362177)' do
+      item = described_class.find('Q5580')
+      item.import(User.admin, default, people)
+      duerer = Entity.last
+
+      item = described_class.find('Q1362177')
+      item.import(User.admin, default, people)
+      melencolia = Entity.last
+
+      r = duerer.outgoing_relationships[0]
+      expect([r.relation_name, r.to_id]).to eq(["inverse of 'creator'", melencolia.id])
+      r = duerer.outgoing_relationships[1]
+      expect([r.relation_name, r.to_id]).to eq(["notable work", melencolia.id])
+
+      r = melencolia.outgoing_relationships[0]
+      expect([r.relation_name, r.to_id]).to eq(['creator', duerer.id])
+      r = melencolia.outgoing_relationships[1]
+      expect([r.relation_name, r.to_id]).to eq(["inverse of 'notable work'", duerer.id])
+    end
+
+    it 'should import Melencolia I and then Albrecht Dürer' do
+      item = described_class.find('Q1362177')
+      item.import(User.admin, default, people)
+      melencolia = Entity.last
+
+      item = described_class.find('Q5580')
+      item.import(User.admin, default, people)
+      duerer = Entity.last
+
+      r = duerer.outgoing_relationships[0]
+      expect([r.relation_name, r.to_id]).to eq(["notable work", melencolia.id])
+      r = duerer.outgoing_relationships[1]
+      expect([r.relation_name, r.to_id]).to eq(["inverse of 'creator'", melencolia.id])
+
+      r = melencolia.outgoing_relationships[0]
+      expect([r.relation_name, r.to_id]).to eq(["inverse of 'notable work'", duerer.id])
+      r = melencolia.outgoing_relationships[1]
+      expect([r.relation_name, r.to_id]).to eq(['creator', duerer.id])
     end
   end
 
