@@ -25,6 +25,7 @@ Feature: Clipboard
     And I follow "create new"
     And I fill in "Name" with "Neue Gruppe"
     And I press "Save"
+    Then I should see "Neue Gruppe has been created"
     When I go to the clipboard
     And I follow "all"
     And I follow "Add to a global group"
