@@ -331,3 +331,11 @@ end
 When("I select autocomplete option {string}") do |string|
   find('.autocomplete div', text: string).click
 end
+
+When("I press the {string} key") do |string|
+  case string
+  when 'enter' then find('body').send_keys(:enter)
+  else
+    raise "unknown key: '#{string}'"
+  end
+end

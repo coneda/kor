@@ -62,6 +62,10 @@ class Kor::Dating::Transform < Parslet::Transform
   end
 
   rule(:day => simple(:day), :month => simple(:month), :yearnum => simple(:yearnum)) do
+    if !Date.leap?(yearnum.to_i) && month.to_i == 2 && day.to_i == 29
+      raise Kor::Exception, I18n.t('not_leap_year', year: yearnum.to_i)
+    end
+
     {
       :from => Date.new(yearnum.to_i, month.to_i, day.to_i),
       :to => Date.new(yearnum.to_i, month.to_i, day.to_i),

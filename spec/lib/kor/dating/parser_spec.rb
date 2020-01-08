@@ -6,6 +6,8 @@ RSpec::Matchers.define :parse do |input|
       parser.parse input
     rescue Parslet::ParseFailed
       false
+    rescue Kor::Exception => e
+      false
     end
   end
 end
@@ -214,5 +216,20 @@ RSpec.describe Kor::Dating::Parser do
     expect(subject.transform("1. Drittel 16. Jh.")).to eql(:from => Date.new(1500, 1, 1), :to => Date.new(1533, 12, 31))
     expect(subject.transform("2. Drittel 16. Jh.")).to eql(:from => Date.new(1533, 1, 1), :to => Date.new(1566, 12, 31))
     expect(subject.transform("3. Drittel 16. Jh.")).to eql(:from => Date.new(1566, 1, 1), :to => Date.new(1599, 12, 31))
+  end
+
+  it 'should deal with leap years' do
+    expect(subject).to parse('29.2.1996')
+
+    # parsing should work, but the transform should fail
+    expect(subject).to parse('29.2.1994')
+
+    expect{
+      subject.transform('29.2.1994')
+    }.to raise_error(Kor::Exception, '1994 is not a leap year')
+
+    expect{
+      expect(subject.transform('29.2.1994 bis 1.2.2013')).to eq(nil)
+    }.to raise_error(Kor::Exception, '1994 is not a leap year')
   end
 end

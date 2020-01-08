@@ -86,6 +86,7 @@ en:
   after: after
   existing_entities: existing entities
   wikidata_items: wikidata items
+  not_leap_year: "%{year} is not a leap year"
 
   help:
     terms_query: |
@@ -671,7 +672,7 @@ en:
       hi: "Hello %{username}"
       best_regards: "Best regards"
       upcoming_expiry: |
-        Your KOR-Account %{url} expires at %{date}. 
+        Your KOR-Account for the KOR system at %{url} expires at %{date}. 
         Please contact the administrator to extend your account.
       account_created: |
         An Account has been created for you in KOR system %{url}.
@@ -779,7 +780,7 @@ en:
     statistics_validity: |
       This data was collected at %{date} and it is recalculated at least every
       24 hours.
-    terms_accepted: "you have accepted the terms of use"
+    terms_accepted: "You have accepted the terms of use"
     too_many_entities_for_zip: the collection contains too many images
     too_many_login_attempts: "the user has been blocked temporarily because of too many login attempts"
     upload_duplicate: |
@@ -798,7 +799,7 @@ en:
 
       Kind regards,
       user: %{user}
-    must_accept_terms: please accept the terms of use
+    accept_terms_prompt: You have to accept our terms of use
 
   labels:
     relate_to_via: relate all files with "%{to}" via

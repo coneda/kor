@@ -126,7 +126,8 @@ class JsonController < BaseController
 
     def legal
       if current_user && !current_user.guest? && !current_user.terms_accepted
-        render_400 I18n.t('messages.must_accept_terms'), no_messaging: true
+        @code = 'terms-not-accepted'
+        render_403 I18n.t('messages.accept_terms_prompt')
       end
     end
 

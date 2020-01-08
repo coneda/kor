@@ -87,6 +87,7 @@ de:
   after: nach
   existing_entities: bestehende Entitäten
   wikidata_items: Wikidata-Einträge
+  not_leap_year: "%{year} ist kein Schaltjahr"
 
   help:
     terms_query: |
@@ -686,8 +687,8 @@ de:
       hi: "Hallo %{username}"
       best_regards: "mit freundlichen Grüßen"
       upcoming_expiry: |
-        Ihr Zugang im KOR-System %{url} läuft am %{date} ab. Bitte setzten Sie
-        sich rechtzeitig mit dem Administrator in Verbindung.
+        Ihr Zugang für das KOR-System %{url} läuft am %{date} ab. Bitte setzen
+        Sie sich rechtzeitig mit dem Administrator in Verbindung.
       account_created: |
         Im KOR-System %{url} wurde ein Zugang für Sie eingerichtet.
       password_reset: |
@@ -828,7 +829,7 @@ de:
 
       Viele Grüße,
       user: %{user}
-    must_accept_terms: bitte akzeptieren Sie die Nutzungsbedingungen
+    accept_terms_prompt: Sie müssen die Nutzungsbedingungen akzeptieren
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

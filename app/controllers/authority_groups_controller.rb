@@ -1,5 +1,5 @@
 class AuthorityGroupsController < JsonController
-  skip_before_action :auth, only: ['download_images', 'index', 'show']
+  skip_before_action :auth, only: [:download_images, :index, :show]
 
   def index
     @records = AuthorityGroup.search(params[:terms])

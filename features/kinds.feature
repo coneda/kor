@@ -20,6 +20,9 @@ Feature: Kinds
     Then I should see "literature" within widget "kor-kinds"
     When I follow "edit" within the row for kind "literature"
     Then field "Default label for datings" should have value "Publication date"
+    When I select "literature" from "new_entity_type"
+    Then I should see field "Title"
+    And I should see field "Subtitle"
 
   Scenario: edit kind
     Given I am logged in as "admin"

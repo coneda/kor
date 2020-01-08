@@ -52,11 +52,18 @@ class Kor::Import::WikiData
       @data['claims'].each do |pid, claims|
         props = claims.select do |c| 
           c['mainsnak']['datatype'] == 'wikibase-item' &&
-          c['mainsnak']['snaktype'] == 'value'
+          c['mainsnak']['snaktype'] == 'value' &&
+          c['mainsnak']['datavalue']
         end
 
         if !props.empty?
-          values = props.map{ |i| i['mainsnak']['datavalue']['value']['id'] }
+          values = props.map do |i|
+            if i['mainsnak']['datavalue']
+              i['mainsnak']['datavalue']['value']['id']
+            else
+              nil
+            end
+          end.compact
           results << {'id' => pid, 'values' => values}
         end
       end
@@ -64,7 +71,7 @@ class Kor::Import::WikiData
       ids = results.map{ |r| r['id'] }
       labels = self.class.labels_for(ids, locale)
       results.each do |r|
-        label = labels.find{ |l| l['id'] == r['id'] }
+        label = labels.find{ |l| l['id'] == r['id'] } || {'label' => 'related to'}
         r['label'] = label['label']
       end
 

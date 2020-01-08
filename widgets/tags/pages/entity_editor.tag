@@ -43,7 +43,7 @@
 
           <kor-input
             if={hasName()}
-            label={tcap('activerecord.attributes.entity.name')}
+            label={nameLabel()}
             name="name"
             ref="fields"
             value={data.name}
@@ -53,7 +53,7 @@
 
           <kor-input
             if={hasName()}
-            label={tcap('activerecord.attributes.entity.distinct_name')}
+            label={distinctNameLabel()}
             name="distinct_name"
             ref="fields"
             value={data.distinct_name}
@@ -196,6 +196,11 @@
     tag.nameLabel = ->
       return '' unless tag.kind
       wApp.utils.capitalize tag.kind.name_label
+
+    tag.distinctNameLabel = ->
+      return '' unless tag.kind
+      wApp.utils.capitalize tag.kind.distinct_name_label
+      
 
     checkPermissions = ->
       policy = if tag.opts.id then 'edit' else 'create'

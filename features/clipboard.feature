@@ -15,22 +15,23 @@ Feature: Clipboard
 
   Scenario: add to user group
   
-  # Scenario: Create user groups on the fly
-  #   Given I am logged in as "admin"
-  #   And the user group "Alte Gruppe"
-  #   And I put "Mona Lisa" into the clipboard
-  #   When I go to the clipboard
-  #   And I follow "all"
-  #   And I follow "Add to a global group"
-  #   And I follow "create new"
-  #   And I fill in "Name" with "Neue Gruppe"
-  #   And I press "Save"
-  #   When I go to the clipboard
-  #   And I follow "all"
-  #   And I follow "Add to a global group"
-  #   And I select "Neue Gruppe" from "Global group"
-  #   And I press "Save"
-  #   Then I should see "entities have been added to the selected entity group"
+  Scenario: Create user groups on the fly
+    Given I am logged in as "admin"
+    And the user group "Alte Gruppe"
+    And I put "Mona Lisa" into the clipboard
+    When I go to the clipboard
+    And I follow "all"
+    And I follow "Add to a global group"
+    And I follow "create new"
+    And I fill in "Name" with "Neue Gruppe"
+    And I press "Save"
+    Then I should see "Neue Gruppe has been created"
+    When I go to the clipboard
+    And I follow "all"
+    And I follow "Add to a global group"
+    And I select "Neue Gruppe" from "Global group"
+    And I press "Save"
+    Then I should see "entities have been added to the selected entity group"
 
   Scenario: Mass relate entities
     Given I am logged in as "admin"
@@ -67,6 +68,7 @@ Feature: Clipboard
     And I should see "have been related"
     Then "Leonardo" should have "created" "Mona Lisa"
 
+  # TODO: why is this commented out?
   # Scenario: Select entities by kind
   #   Given I am logged in as "admin"
   #   And the kind "Person/People"

@@ -14,11 +14,13 @@
 # Deploy
 
 function deploy {
-  if ! which npm > /dev/null ; then
-    echo "WARNING, npm was not found so some assets can't be compiled. As a"
-    echo "fallback, the assets included within the youngest release in this"
-    echo "branch will be deployed. However, they will most probably not work,"
-    echo "if you are not deploying this release"
+  if [ "$BUILD_FRONTEND" = "true" ]; then
+    if ! which npm > /dev/null ; then
+      echo "WARNING, npm was not found so some assets can't be compiled. As a"
+      echo "fallback, the assets included within the youngest release in this"
+      echo "branch will be deployed. However, they will most probably not work,"
+      echo "if you are not deploying this release"
+    fi
   fi
 
   if ! exist "$DEPLOY_TO/shared"; then
@@ -48,14 +50,16 @@ function deploy {
 
   within_do $CURRENT_PATH "RAILS_ENV=production bundle exec rake tmp:clear"
 
-  if which npm > /dev/null ; then
-    local "npm install"
-    local "npm run build"
-    upload "public/*.js" "$CURRENT_PATH/public/"
-    upload "public/*.css" "$CURRENT_PATH/public/"
-    upload "public/fonts/" "$CURRENT_PATH/public/fonts/"
-    upload "public/images/" "$CURRENT_PATH/public/images/"
-    upload "public/index.html" "$CURRENT_PATH/public/index.html"
+  if [ "$BUILD_FRONTEND" = "true" ]; then
+    if which npm > /dev/null ; then
+      local "npm install"
+      local "npm run build"
+      upload "public/*.js" "$CURRENT_PATH/public/"
+      upload "public/*.css" "$CURRENT_PATH/public/"
+      upload "public/fonts/" "$CURRENT_PATH/public/fonts/"
+      upload "public/images/" "$CURRENT_PATH/public/images/"
+      upload "public/index.html" "$CURRENT_PATH/public/index.html"
+    fi
   fi
 
   remote "touch $CURRENT_PATH/tmp/restart.txt"
@@ -113,9 +117,7 @@ function setup {
   remote "mkdir -p $DEPLOY_TO/shared/data"
   remote "mkdir -p $DEPLOY_TO/shared/log"
 
-  git show $COMMIT:config/database.yml.example > tmp/database.yml.example
-  upload tmp/database.yml.example "$SHARED_PATH/database.yml"
-  rm tmp/database.yml.example
+  upload ".env.example" "$SHARED_PATH/env"
 }
 
 function exist {

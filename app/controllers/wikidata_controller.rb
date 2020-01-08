@@ -32,10 +32,7 @@ class WikidataController < JsonController
 
   protected
 
-    def import_params
-
-    end
-
+    # TODO: why not like the other controllers?
     def authorization
       unless !!current_user
         render json: {message: I18n.t('messages.access_denied')}, status: 403

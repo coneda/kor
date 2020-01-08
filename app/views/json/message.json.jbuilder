@@ -15,3 +15,7 @@ end
 if @opts
   json.no_messaging @opts[:no_messaging]
 end
+
+if @code
+  json.code @code
+end

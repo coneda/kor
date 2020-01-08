@@ -23,6 +23,7 @@
       wApp.bus.on 'access-denied', accessDenied
       wApp.bus.on 'go-back', goBack
       wApp.bus.on 'query-update', queryUpdate
+      wApp.bus.on 'server-code', serverCodeHandler
       if tag.opts.routing
         wApp.routing.setup()
 
@@ -33,6 +34,7 @@
       wApp.bus.off 'access-denied', accessDenied
       wApp.bus.off 'go-back', goBack
       wApp.bus.off 'query-update', queryUpdate
+      wApp.bus.off 'server-code', serverCodeHandler
       if tag.opts.routing
         wApp.routing.tearDown()
 
@@ -41,6 +43,10 @@
       Zepto('head title').html nv
 
     accessDenied = -> tag.mountTag 'kor-access-denied'
+    serverCodeHandler = (code) ->
+      if code == 'terms-not-accepted'
+        redirectTo '/legal'
+        # tag.mountTag 'kor-legal'
     goBack = -> wApp.routing.back()
     queryUpdate = (newQuery) -> wApp.routing.query(newQuery)
 

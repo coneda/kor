@@ -54,3 +54,12 @@ Feature: User administration
     Then I should see "Welcome"
     When I am logged in as "hmustermann"
     Then I should see "hmustermann"
+
+  Scenario: Accept terms of use
+    Given the user "jdoe"
+    And user "jdoe" didn't accept the terms
+    And I am logged in as "jdoe"
+    Then I should see "You have to accept our terms of use"
+    And I should see "enter a legal notice here"
+    When I click "Accept terms"
+    Then I should see "You have accepted the terms of use"
