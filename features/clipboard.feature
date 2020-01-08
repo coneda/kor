@@ -21,17 +21,17 @@ Feature: Clipboard
     And I put "Mona Lisa" into the clipboard
     When I go to the clipboard
     And I follow "all"
-    And I follow "Add to a global group"
+    And I follow "Add to a global collection"
     And I follow "create new"
     And I fill in "Name" with "Neue Gruppe"
     And I press "Save"
     Then I should see "Neue Gruppe has been created"
     When I go to the clipboard
     And I follow "all"
-    And I follow "Add to a global group"
-    And I select "Neue Gruppe" from "Global group"
+    And I follow "Add to a global collection"
+    And I select "Neue Gruppe" from "Global collection"
     And I press "Save"
-    Then I should see "entities have been added to the selected entity group"
+    Then I should see "entities have been added to the selected collection"
 
   Scenario: Mass relate entities
     Given I am logged in as "admin"

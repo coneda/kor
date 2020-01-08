@@ -69,6 +69,16 @@ RSpec.describe AuthorityGroupsController, type: :controller do
       expect(response).to redirect_to("/downloads/#{uuid}")
     end
 
+    # it 'should GET download_images (delayed processing)' do
+    #   Kor.settings['max_foreground_group_download_size'] = 0
+
+    #   lecture.entities << picture_a
+
+    #   get :download_images, params: {id: lecture.id}
+    #   uuid = Download.first.uuid
+    #   expect(response).to redirect_to("/downloads/#{uuid}")
+    # end
+
     it 'should POST create' do
       post :create, params: {
         authority_group: {

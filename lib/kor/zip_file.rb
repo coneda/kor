@@ -91,7 +91,7 @@ class Kor::ZipFile
   end
 
   def background?
-    package_size / 1024 / 1024 > Kor.settings['max_foreground_group_download_size']
+    package_size.to_f / 1024 / 1024 > Kor.settings['max_foreground_group_download_size']
   end
 
   def run(command)
