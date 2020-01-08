@@ -105,7 +105,6 @@ Feature: datings
     Given the entity "Mona Lisa" of kind "work/works"
     And entity "Mona Lisa" has dating "created in: 1503"
     And I go to the edit page for "entity" "Mona Lisa"
-    And I debug
     And I fill in "Dating" with "29.2.1994" within "kor-datings-editor li:nth-child(1)"
     And I press "Save"
     Then I should see "1994 is not a leap year"
