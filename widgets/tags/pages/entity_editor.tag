@@ -219,7 +219,7 @@
         datings: []
       }
 
-    fetch = (kind_id) ->
+    fetch = (kindId) ->
       if tag.opts.id
         Zepto.ajax(
           url: "/entities/#{tag.opts.id}"
@@ -229,12 +229,15 @@
             fetchKind()
         )
       else
-        tag.data = {
-          kind_id: kind_id,
-          no_name_statement: 'enter_name',
-          tags: []
-        }
-        fetchKind()
+        if tag.opts.cloneId
+          fetchClone()
+        else
+          tag.data = {
+            kind_id: kindId,
+            no_name_statement: 'enter_name',
+            tags: []
+          }
+          fetchKind()
 
     fetchKind = ->
       Zepto.ajax(
@@ -251,6 +254,17 @@
         success: (data) ->
           tag.collections = data.records
           tag.update()
+      )
+
+    fetchClone = ->
+      Zepto.ajax(
+        url: '/entities/' + tag.opts.cloneId + '?include=all'
+        success: (data) ->
+          for d in data.datings
+            delete d.id
+
+          tag.data = data
+          fetchKind()
       )
 
     create = ->

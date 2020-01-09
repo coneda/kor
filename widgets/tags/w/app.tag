@@ -101,6 +101,7 @@
               # TODO: can this be done somewhere else? smarter?
               else if m = path.match(/^\/entities\/new$/)
                 opts['kindId'] = parts['hash_query']['kind_id']
+                opts['cloneId'] = parts['hash_query']['clone_id']
                 'kor-entity-editor'
               else if m = path.match(/^\/entities\/([0-9]+)\/edit$/)
                 opts['id'] = parseInt(m[1])

@@ -11,11 +11,16 @@
           ><i class="fa fa-pencil"></i></a>
         </virtual>
         <a
+          if={!data.medium && allowedTo('create')}
+          href="#/entities/new?kind_id={data.kind_id}&clone_id={data.id}"
+          title={t('verbs.clone')}
+        ><i class="fa fa-copy"></i></a>
+        <a
           href={reportUrl()}
           title={ tcap('objects.report', {interpolations: {o: 'activerecord.models.entity'}}) }
         ><i class="fa fa-exclamation"></i></a>
         <a
-          if={allowedTo('edit', data.collection_id)}
+          if={allowedTo('delete', data.collection_id)}
           href="#/entities/{data.id}"
           onclick={delete}
           title={t('verbs.delete')}

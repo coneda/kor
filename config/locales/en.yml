@@ -197,6 +197,7 @@ en:
     mark: mark
     expand: expand
     collapse: collapse
+    clone: clone
 
   title_verbs:
     pen: "edit"

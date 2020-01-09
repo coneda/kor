@@ -389,3 +389,15 @@ end
 Given("user {string} didn't accept the terms") do |name|
   User.find_by!(name: name).update terms_accepted: false
 end
+
+Given("{string} {string} has these attributes") do |klass, name, table|
+  object = klass.constantize.find_by!(name: name)
+  table.hashes.each do |r|
+    object.assign_attributes(r['attribute'].to_sym => r['value'])
+  end
+  object.save!
+end
+
+Given("{string} has distinct name {string}") do |entity, distinct_name|
+  Entity.find_by!(name: entity).update distinct_name: distinct_name
+end

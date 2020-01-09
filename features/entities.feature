@@ -34,6 +34,8 @@ Feature: Entities
     And I should see "Synonyms: La Bella | La Gioconde"
     
     When I follow "edit"
+    Then field "Synonyms" should match value "La Bella"
+    Then field "Synonyms" should match value "La Gioconde"
     And I fill in synonyms with "La Gioconde"
     And I press "Save"
     Then I should see "has been changed"

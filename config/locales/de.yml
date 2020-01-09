@@ -201,6 +201,7 @@ de:
     mark: in Zwischenablage aufnehmen
     expand: ausklappen
     collapse: einklappen
+    clone: kopieren
 
   title_verbs:
     pen: "bearbeiten"
