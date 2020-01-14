@@ -123,7 +123,7 @@
     <li>
       <a href="#/statistics">{tcap('nouns.statistics')}</a>
     </li>
-    <li>
+    <li if={hasLegal()}>
       <a href="#/legal">{tcap('legal')}</a>
     </li>
     <li>
@@ -154,6 +154,7 @@
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
     tag.mixin(wApp.mixins.config)
+    window.t = tag
 
     tag.on 'mount', ->
       wApp.bus.on 'reload-kinds', fetchKinds
@@ -166,7 +167,8 @@
       event.preventDefault()
       wApp.config.showHelp('general')
 
-    tag.hasHelp = -> return wApp.config.hasHelp('general');
+    tag.hasHelp = -> wApp.config.hasHelp('general')
+    tag.hasLegal = -> !!wApp.info.data.legal_html
 
     tag.newEntity = (event) ->
       event.preventDefault()

@@ -4,6 +4,7 @@ json.info do
   json.revision Kor.commit
   json.operator Kor.settings['maintainer_name']
   json.email Kor.settings['maintainer_mail']
+  json.legal_html Kor.settings['legal_html']
   # TODO: imeplement this:
   # json.federation_auth Kor.federation_auth?
   json.url root_url

@@ -24,3 +24,16 @@ Feature: Welcome
     Given I am logged in as "jdoe"
     And I am on the home page
     Then I should see a link "Report a problem" leading to "admin@example.com"
+
+  Scenario: Show the terms of use (don't show when empty)
+    Given I am on the home page
+    And I click "Terms of use"
+    Then I should see "enter a legal notice here"
+
+    Given I am logged in as "admin"
+    When I click "Settings"
+    And I fill in "Text for terms of use" with ""
+    And I click "Save"
+    Then I should see "changed"
+    When I reload the page
+    Then I should not see "Terms of use" within "kor-menu"
