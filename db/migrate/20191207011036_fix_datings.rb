@@ -11,7 +11,7 @@ class FixDatings < ActiveRecord::Migration
     end
 
     RelationshipDating.find_each do |rd|
-      parsed = rd.class.parse(ed.dating_string)
+      parsed = rd.class.parse(rd.dating_string)
       if parsed
         rd.update_columns(
           from_day: rd.class.julian_date_for(parsed[:from]),
