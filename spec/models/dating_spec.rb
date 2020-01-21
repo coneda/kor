@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Dating do
   it 'should persist julian dates on updates' do
     dating = EntityDating.create(label: 'Dating', dating_string: '1533')
-    
+
     expect(dating.from_day).to eq(2280987)
     expect(dating.to_day).to eq(2281351)
 

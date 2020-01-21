@@ -89,13 +89,14 @@ module TestHelper
       c.allow_http_connections_when_no_cassette = true
 
       c.ignore_request do |r|
-        elastic_uri = URI.parse(ENV['ELASTIC_URL'])
         uri = URI.parse(r.uri)
 
-        uri.port == 7055 || (
+        [7055, 9515].include?(uri.port) || begin
+          elastic_uri = URI.parse(ENV['ELASTIC_URL'])
+
           elastic_uri.host == uri.host &&
-          elastic_uri.port == uri.port
-        )
+            elastic_uri.port == uri.port
+        end
       end
     end
   end

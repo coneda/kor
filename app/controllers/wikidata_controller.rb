@@ -29,7 +29,6 @@ class WikidataController < JsonController
     end
   end
 
-
   protected
 
     # TODO: why not like the other controllers?

@@ -1,6 +1,6 @@
 class GeneratorsController < JsonController
   skip_before_action :legal
-  
+
   before_action do
     @kind = Kind.find(params[:kind_id])
     @generators = @kind.generators
@@ -37,7 +37,6 @@ class GeneratorsController < JsonController
     @record.destroy
     render_deleted @record
   end
-
 
   protected
 

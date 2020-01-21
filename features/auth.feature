@@ -77,6 +77,8 @@ Feature: Authentication and Authorization
    And I fill in "Username" with "hmustermann"
    And I fill in "Password" with "123456"
    And I press "Login"
+   Then I should see "you have been logged in"
+   And I should see "logged in as: Hans Mustermann"
    When I follow "Edit profile"
    Then I should see "Hans Mustermann"
    Then I should not see "Repeat password"

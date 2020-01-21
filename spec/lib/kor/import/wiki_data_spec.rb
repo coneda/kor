@@ -33,7 +33,7 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
     item = described_class.find('Q762')
     expect(item.identifiers.size).to eq(210)
     expect(item.identifiers).to include("id" => "866", "label" => "Perlentaucher ID", "value" => "leonardo-da-vinci")
-    expect(item.identifiers).to include("id"=>"214", "label"=>"VIAF ID", "value"=>"24604287")
+    expect(item.identifiers).to include("id" => "214", "label" => "VIAF ID", "value" => "24604287")
     expect(item.identifiers).to include("id" => "245", "label" => "ULAN ID", "value" => "500010879")
   end
 
@@ -54,7 +54,7 @@ RSpec.describe Kor::Import::WikiData, vcr: true do
       'id' => 'P735', 'label' => 'given name', 'values' => ['Q18220847']
     )
     expect(item.properties).to include(
-      "id"=>"P19", "label"=>"place of birth", "values"=>["Q154184"]
+      "id" => "P19", "label" => "place of birth", "values" => ["Q154184"]
     )
   end
 

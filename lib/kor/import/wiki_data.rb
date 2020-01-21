@@ -14,9 +14,7 @@ class Kor::Import::WikiData
     @locale || I18n.locale.to_s
   end
 
-  def locale=(value)
-    @locale = value
-  end
+  attr_write :locale
 
   def qid
     @data['id']
@@ -52,16 +50,14 @@ class Kor::Import::WikiData
       @data['claims'].each do |pid, claims|
         props = claims.select do |c|
           c['mainsnak']['datatype'] == 'wikibase-item' &&
-          c['mainsnak']['snaktype'] == 'value' &&
-          c['mainsnak']['datavalue']
+            c['mainsnak']['snaktype'] == 'value' &&
+            c['mainsnak']['datavalue']
         end
 
         if !props.empty?
           values = props.map do |i|
             if i['mainsnak']['datavalue']
               i['mainsnak']['datavalue']['value']['id']
-            else
-              nil
             end
           end.compact
           results << {'id' => pid, 'values' => values}
@@ -222,10 +218,10 @@ class Kor::Import::WikiData
 
   # finds all related item ids included within a set of candidates
   def self.related(target, candidates)
-    candidates = candidates.map{|c| "wd:#{c}"}.join(', ')
+    candidates = candidates.map{ |c| "wd:#{c}" }.join(', ')
     query = "
       SELECT ?item ?rel
-      WHERE 
+      WHERE
       {
         { ?item ?rel wd:#{target} } UNION
         { wd:Q5580 ?rel ?item }
@@ -239,51 +235,51 @@ class Kor::Import::WikiData
     uris.map{ |r| r.text.split('/').last }.uniq
   end
 
+  class << self
+    protected
 
-  protected
-
-    def self.labels_for(ids, locale)
-      values = ids.map{ |i| "(wd:#{i})" }.join(' ')
-      query = "
-        SELECT ?id $label
-        WHERE {
-           ?id rdfs:label ?label .
-           FILTER(lang(?label) = '#{locale}')
-        }
-        VALUES (?id) {#{values}}
-      "
-      xml = sparql(query).body
-      doc = Nokogiri::XML(xml)
-      doc.xpath("//xmlns:result").map do |r|
-        {
-          "id" => r.xpath("xmlns:binding[@name='id']/xmlns:uri").text.split("/").last,
-          "label" => r.xpath("xmlns:binding[@name='label']/xmlns:literal").text
-        }
-      end
-    end
-
-    def self.request(method, url, params = {}, body = nil, headers = {}, redirect_count = 10)
-      @client ||= HTTPClient.new
-
-      response = @client.request(method, url, params, headers, body)
-
-      if redirect_count > 0 && response.redirect?
-        response = request(
-          method, response.http_header['location'].first,
-          params, body, headers,
-          redirect_count - 1
-        )
+      def labels_for(ids, locale)
+        values = ids.map{ |i| "(wd:#{i})" }.join(' ')
+        query = "
+          SELECT ?id $label
+          WHERE {
+             ?id rdfs:label ?label .
+             FILTER(lang(?label) = '#{locale}')
+          }
+          VALUES (?id) {#{values}}
+        "
+        xml = sparql(query).body
+        doc = Nokogiri::XML(xml)
+        doc.xpath("//xmlns:result").map do |r|
+          {
+            "id" => r.xpath("xmlns:binding[@name='id']/xmlns:uri").text.split("/").last,
+            "label" => r.xpath("xmlns:binding[@name='label']/xmlns:literal").text
+          }
+        end
       end
 
-      if response.status != 200
-        raise Kor::Exception, "wikidata returned status #{response.status}\n#{response.body}"
-      end
+      def request(method, url, params = {}, body = nil, headers = {}, redirect_count = 10)
+        @client ||= HTTPClient.new
 
-      begin
-        JSON.load(response.body)
-      rescue JSON::ParserError
-        response
-      end
-    end
+        response = @client.request(method, url, params, headers, body)
 
+        if redirect_count > 0 && response.redirect?
+          response = request(
+            method, response.http_header['location'].first,
+            params, body, headers,
+            redirect_count - 1
+          )
+        end
+
+        if response.status != 200
+          raise Kor::Exception, "wikidata returned status #{response.status}\n#{response.body}"
+        end
+
+        begin
+          JSON.load(response.body)
+        rescue JSON::ParserError
+          response
+        end
+      end
+  end
 end

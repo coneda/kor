@@ -1,7 +1,6 @@
 class Generator < ApplicationRecord
-
   acts_as_list scope: [:kind_id], top_of_list: 0
-  default_scope { order(:position) }
+  default_scope{ order(:position) }
 
   belongs_to :kind, touch: true
 
@@ -13,7 +12,7 @@ class Generator < ApplicationRecord
   validates :directive, :presence => true
 
   def self.examples
-    return {
+    {
       'link_if_value_present' => "{{#entity.dataset.wikidata_id}}
 <a href=\"https://www.wikidata.org/wiki/{{entity.dataset.wikidata_id}}\">» Wikidata</a>
 {{/entity.dataset.wikidata_id}}"

@@ -1,11 +1,11 @@
 source 'https://rubygems.org'
 
 gem 'acts-as-taggable-on', '~> 4.0.0'
+gem 'acts_as_list'
 gem 'colorize'
 gem 'delayed_paperclip'
 gem 'dotenv'
 gem 'exifr', '1.1.1'
-gem 'acts_as_list'
 gem 'hirb'
 gem 'httpclient'
 gem 'jbuilder'
@@ -32,12 +32,12 @@ group :test do
   gem 'connection_pool'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
+  gem 'puma'
   gem 'rspec-rails', '~> 3.8.2'
   gem 'selenium-webdriver'
   gem 'simplecov', require: false
   gem 'vcr'
   gem 'webmock'
-  gem 'puma'
 end
 
 group :development do

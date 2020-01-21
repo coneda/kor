@@ -10,8 +10,6 @@ ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'] = '1'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-# Set the app root so that dotenv can make it available in .env files
-ENV['KOR_ROOT'] = File.expand_path(__dir__ + '/..')
 require File.expand_path(__dir__ + '/../dotenv')
 system "mkdir -p #{ENV['DATA_DIR']}"
 system "mkdir -p #{ENV['KOR_ROOT']}/tmp"

@@ -240,8 +240,6 @@ Then(/^field "([^"]*)" should match value "([^"]*)"$/) do |field, value|
   expect(page).to have_field(field, with: Regexp.new(value))
 end
 
-
-
 Then(/^I should see the prefilled dating "([^"]*)"$/) do |dating|
   label, value = dating.split(/: ?/)
   within "kor-datings-editor" do

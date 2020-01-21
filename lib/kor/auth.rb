@@ -1,7 +1,6 @@
 require "tmpdir"
 
 module Kor::Auth
-
   def self.authenticate(username, password)
     user = User.authenticate username, password
     return true if user
@@ -103,14 +102,14 @@ module Kor::Auth
   end
 
   def self.script_sources
-    (sources || {}).select do |key, source|
+    (sources || {}).select do |_key, source|
       type = source['type'] || 'script'
       type == 'script'
     end
   end
 
   def self.env_sources
-    (sources || {}).select do |key, source|
+    (sources || {}).select do |_key, source|
       source['type'] == 'env'
     end
   end
