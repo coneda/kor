@@ -801,6 +801,10 @@ en:
       Kind regards,
       user: %{user}
     accept_terms_prompt: You have to accept our terms of use
+    federation_password_reset_facility: |
+      You logged in with a federation single-sign-on portal. Therefore, you
+      can't change your password here. Please
+    federation_password_reset_prompt: change your password with them
 
   labels:
     relate_to_via: relate all files with "%{to}" via

@@ -16,7 +16,7 @@ services:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libav-tools imagemagick chromium-chromedriver
-  - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.12.deb 
+  - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.12.deb
   - sudo dpkg -i --force-confnew elasticsearch-5.6.12.deb
   - sudo service elasticsearch restart
   - nvm install v8.12.0

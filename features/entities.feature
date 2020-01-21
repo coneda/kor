@@ -96,8 +96,9 @@ Feature: Entities
     When I go to the entity page for "Mona Lisa"
     Then I should not see "The Last Supper"
     When I follow "logout"
-    And I am logged in as "admin"
-    When I go to the entity page for "Mona Lisa"
+    Then I should see "logged out successfully"
+    When I am logged in as "admin"
+    And I go to the entity page for "Mona Lisa"
     Then I should see "The Last Supper"
 
   Scenario: Don't show edit or delete buttons for unauthorized relationships

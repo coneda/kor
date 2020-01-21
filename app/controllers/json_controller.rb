@@ -14,6 +14,7 @@ class JsonController < BaseController
     def name_for(record)
       case record
       when String then record
+      when Generator then record.name
       when ApplicationRecord
         @record = record
         record.try(:display_name) ||

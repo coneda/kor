@@ -12,7 +12,7 @@ password = ENV["KOR_PASSWORD"]
 STDERR.puts username.inspect
 STDERR.puts password.inspect
 
-if username == "jdoe" && password == "234567"
+if username == "jdoe" && password == "123456"
   puts '{
     "email": "jdoe@coneda.net",
     "full_name": "John Gustav Doe"

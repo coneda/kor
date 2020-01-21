@@ -50,7 +50,7 @@ class Kor::Import::WikiData
     @properties ||= begin
       results = []
       @data['claims'].each do |pid, claims|
-        props = claims.select do |c| 
+        props = claims.select do |c|
           c['mainsnak']['datatype'] == 'wikibase-item' &&
           c['mainsnak']['snaktype'] == 'value' &&
           c['mainsnak']['datavalue']

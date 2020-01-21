@@ -2,8 +2,8 @@ Feature: Authentication and Authorization
 
   Scenario: show the login page unless there is a guest account
   Scenario: with a guest account, without authentication, show the expert search
-  Scenario: with no guest account, when authenticated, show the expert search  
-  
+  Scenario: with no guest account, when authenticated, show the expert search
+
   Scenario: Reset password with wrong email address
     When I go to the login page
     And I follow "Forgot your password?"
@@ -18,7 +18,7 @@ Feature: Authentication and Authorization
     And I fill in "Please enter your email address" with "jdoe@coneda.net"
     And I press "Reset"
     Then I should see "A new password has been created and sent to the entered email address"
-    
+
   Scenario: Reset admin password
     When I go to the login page
     And I follow "Forgot your password?"
@@ -69,3 +69,15 @@ Feature: Authentication and Authorization
    Then I should see "You have accepted the terms of use"
    When I go to the search page
    Then I should see "Search" within ".w-content"
+
+ Scenario: Login with env auth and use 'forgot password'
+   Given the user "hmustermann"
+   And the user "ldap"
+   When I am on the login page
+   And I fill in "Username" with "hmustermann"
+   And I fill in "Password" with "123456"
+   And I press "Login"
+   When I follow "Edit profile"
+   Then I should see "Hans Mustermann"
+   Then I should not see "Repeat password"
+   And I should see a link "change your password with them" leading to "https://idp.example.com/change_password"

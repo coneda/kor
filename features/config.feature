@@ -6,7 +6,7 @@ Feature: Config
     And I should see "Behavior"
     And I should see "Other"
     And I should see "Maintainer organization"
-    
+
   Scenario: Change a configuration option
     Given I am logged in as "admin"
     And I am on the config page

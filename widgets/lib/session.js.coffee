@@ -8,7 +8,7 @@ wApp.session = {
           wApp.session.current = data.session
           riot.update()
       )
-    
+
     wApp.bus.on 'reload-session', reload
     reload()
 

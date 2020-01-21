@@ -68,7 +68,7 @@ Feature: search
     When I press "ok"
     Then I should see "Domains: private"
     When I press "Search"
-    Then I should see "Collections: private"
+    Then I should see "Domains: private"
     And I go back
     Then I should see "Domains: all" within widget "kor-collection-selector"
 

@@ -89,6 +89,16 @@ class Kor::Elastic
         },
         'mappings' => {
           "entities" => {
+            "dynamic_templates": [
+              {
+                "dataset": {
+                  "path_match": "dataset.*",
+                  "mapping": {
+                    "type": "text"
+                  }
+                }
+              }
+            ],
             "properties" => {
               "name" => {"type" => "text"},
               "distinct_name" => {"type" => "text"},
@@ -190,7 +200,7 @@ class Kor::Elastic
     end
     scope.find_in_batches do |batch|
       data = []
-      batch.map do |e|
+      batch.each do |e|
         data << JSON.dump('index' => {'_id' => e.uuid})
         data << JSON.dump(data_for(e, options))
         progress.increment if options[:progress]

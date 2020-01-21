@@ -115,6 +115,7 @@ class User < ApplicationRecord
     end
   end
 
+  attr_accessor :auth_source
   attr_accessor :extension
   attr_accessor :custom_extension
   attr_accessor :plain_password

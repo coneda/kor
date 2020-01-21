@@ -33,7 +33,7 @@ RSpec.describe Kor::Auth do
   end
 
   it "should pass username and password directly via env vars" do
-    user = described_class.login "jdoe", '234567'
+    user = described_class.login "jdoe", '123456'
     expect(user.name).to eq("jdoe")
   end
 

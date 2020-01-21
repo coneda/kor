@@ -14,4 +14,3 @@ Feature: Configurable help
     Then I should see "Edit profile" within ".w-content"
     And I follow "help"
     Then I should see "this is how to use this!"
-    

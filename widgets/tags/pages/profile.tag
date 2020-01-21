@@ -29,21 +29,33 @@
           errors={errors.email}
         />
 
-        <kor-input
-          label={tcap('activerecord.attributes.user.plain_password')}
-          name="plain_password"
-          type="password"
-          ref="fields"
-          errors={errors.plain_password}
-        />
+        <div class="hr"></div>
 
-        <kor-input
-          label={tcap('activerecord.attributes.user.plain_password_confirmation')}
-          name="plain_password_confirmation"
-          type="password"
-          ref="fields"
-          errors={errors.plain_password_confirmation}
-        />
+        <virtual if={isFederationAuth()}>
+          {tcap('messages.federation_password_reset_facility')}
+          {tcap('please')}
+          <a href={passwordResetUrl()}>
+            {t('messages.federation_password_reset_prompt')}
+          </a>
+        </virtual>
+
+        <virtual if={!isFederationAuth()}>
+          <kor-input
+            label={tcap('activerecord.attributes.user.plain_password')}
+            name="plain_password"
+            type="password"
+            ref="fields"
+            errors={errors.plain_password}
+          />
+
+          <kor-input
+            label={tcap('activerecord.attributes.user.plain_password_confirmation')}
+            name="plain_password_confirmation"
+            type="password"
+            ref="fields"
+            errors={errors.plain_password_confirmation}
+          />
+        </virtual>
 
         <div class="hr"></div>
 
@@ -119,7 +131,7 @@
         tag.errors = JSON.parse(xhr.responseText).errors
         wApp.utils.scrollToTop()
       p.always -> tag.update()
-      
+
     tag.expiresIn = (days) ->
       (event) ->
         if days
@@ -131,6 +143,11 @@
 
     tag.valueForDate = (date) ->
       if date then strftime('%Y-%m-%d', new Date(date)) else ''
+
+    tag.isFederationAuth = -> !!wApp.session.current.auth_source
+
+    tag.passwordResetUrl = ->
+      wApp.session.current.auth_source.password_reset_url
 
     fetchUser = ->
       Zepto.ajax(

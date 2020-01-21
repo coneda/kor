@@ -5,6 +5,7 @@ gem 'colorize'
 gem 'delayed_paperclip'
 gem 'dotenv'
 gem 'exifr', '1.1.1'
+gem 'acts_as_list'
 gem 'hirb'
 gem 'httpclient'
 gem 'jbuilder'
@@ -17,7 +18,6 @@ gem 'RedCloth'
 gem 'responders', '~> 2.0'
 gem 'ruby-progressbar'
 gem 'semantic', git: 'https://github.com/jlindsey/semantic'
-gem 'test-unit'
 
 if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
   # TODO: all of these load activerecord on asset precompiliation so we load

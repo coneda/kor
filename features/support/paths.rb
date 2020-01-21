@@ -58,6 +58,7 @@ module NavigationHelpers
       name = $2.split('/').first
       object = klass.classify.constantize.find_by_name(name)
       "#/#{klass.pluralize}/#{object.id}/edit"
+    when /welcome page/ then "/"
     when /the path "([^\"]+)"/ then $1
     when /url "([^\"]+)"/ then $1
 

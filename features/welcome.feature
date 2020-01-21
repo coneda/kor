@@ -24,3 +24,22 @@ Feature: Welcome
     Given I am logged in as "jdoe"
     And I am on the home page
     Then I should see a link "Report a problem" leading to "admin@example.com"
+
+  Scenario: Don't show the clipboard to guests
+    And the entity "Mona Lisa" of kind "Werk/Werke"
+    And user "guest" is allowed to "view" collection "default" via credential "guests"
+    When I go to the welcome page
+    Then I should not see "Clipboard" within "kor-menu"
+    And I should not see "Session"
+    When I go to the entity page for "Mona Lisa"
+    Then I should not see "Clipboard"
+    And I should not see link "Target"
+
+  Scenario: Use custom html on the welcome page
+    When I am logged in as "admin"
+    And I should see "Admin" within widget "kor-menu"
+    And I follow "Settings"
+    And I fill in "welcome_text" with "<h1>Benvenuto!</h1><br/><br/><a href='https://custom.example.com'>custom</a>"
+    And I press "Save"
+    And I go to the welcome page
+    Then I should see a link "custom" leading to "https://custom.example.com"

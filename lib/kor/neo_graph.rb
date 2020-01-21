@@ -212,7 +212,7 @@ class Kor::NeoGraph
       if data["errors"].empty?
         data
       else
-        binding.pry
+        # binding.pry
         data
       end
     else

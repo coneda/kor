@@ -8,7 +8,7 @@ Feature: User administration
     Then I should be on the users page
     And I should not see "John Doe"
     Then there should be no "UserGroup" named "My Group"
-    
+
   Scenario: Have a sorted list of credentials within the user form
     Given I am logged in as "admin"
     And the credential "AAAs"

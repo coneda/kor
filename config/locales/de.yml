@@ -831,6 +831,10 @@ de:
       Viele Grüße,
       user: %{user}
     accept_terms_prompt: Sie müssen die Nutzungsbedingungen akzeptieren
+    federation_password_reset_facility: |
+      Sie haben sich über den Single-Sign-On Ihrer Institution angemeldet. Deshalb
+      können Sie Ihr Passwort hier nicht ändern. Bitte
+    federation_password_reset_prompt: ändern Sie Ihr Passwort über Ihre Institution
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
