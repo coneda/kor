@@ -272,8 +272,7 @@ Then /^I should (not )?see field "([^"]*)"(?: with value "([^"]*)")?$/ do |negat
 end
 
 Then("I should see error {string} on field {string}") do |error, field|
-  input = find("kor-input[label='#{field}']")
-  expect(input).to have_css('.errors', text: error)
+  expect(page).to have_css("kor-input[label='#{field}'] .errors", text: error)
 end
 
 When("I fill in synonyms with {string}") do |string|

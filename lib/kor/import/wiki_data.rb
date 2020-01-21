@@ -14,7 +14,7 @@ class Kor::Import::WikiData
     @locale || I18n.locale.to_s
   end
 
-  attr_write :locale
+  attr_writer :locale
 
   def qid
     @data['id']
