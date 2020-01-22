@@ -3502,4 +3502,816 @@ http_interactions:
         name='label'>\n\t\t\t\t<literal xml:lang='en'>writing language</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
     http_version: 
   recorded_at: Wed, 08 Jan 2020 20:06:39 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20SELECT%20?id%20$label%0A%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20.%0A%20%20%20%20%20%20%20%20%20FILTER(lang(?label)%20=%20%27en%27)%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20VALUES%20(?id)%20%7B(wd:P27)%20(wd:P937)%20(wd:P460)%20(wd:P1576)%20(wd:P800)%20(wd:P21)%20(wd:P25)%20(wd:P1066)%20(wd:P20)%20(wd:P1196)%20(wd:P39)%20(wd:P1412)%20(wd:P5008)%20(wd:P22)%20(wd:P106)%20(wd:P910)%20(wd:P101)%20(wd:P859)%20(wd:P802)%20(wd:P31)%20(wd:P135)%20(wd:P136)%20(wd:P108)%20(wd:P140)%20(wd:P1343)%20(wd:P19)%20(wd:P6379)%20(wd:P735)%20(wd:P119)%20(wd:P509)%20(wd:P551)%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.5.7 (2019-10-01))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 22 Jan 2020 00:02:52 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access=22-Jan-2020; WMF-Last-Access-Global=22-Jan-2020
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.13.6
+      Date:
+      - Wed, 22 Jan 2020 00:02:32 GMT
+      Content-Type:
+      - application/sparql-results+xml;charset=utf-8
+      X-First-Solution-Millis:
+      - '2'
+      X-Served-By:
+      - wdqs1005
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      X-Envoy-Upstream-Service-Time:
+      - '438'
+      X-Ats-Timestamp:
+      - '1579651373'
+      Vary:
+      - Accept, Accept-Encoding
+      X-Varnish:
+      - '1067188457'
+      Age:
+      - '21'
+      X-Cache:
+      - cp3062 hit, cp3052 pass
+      X-Cache-Status:
+      - hit-local
+      Server-Timing:
+      - cache;desc="hit-local"
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      X-Client-Ip:
+      - 141.2.30.241
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='id'/>\n\t\t<variable name='label'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P19</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>place of birth</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P20</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>place of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P22</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>father</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P21</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>sex or gender</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P27</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>country of citizenship</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P25</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>mother</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P31</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>instance of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P39</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>position held</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P101</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>field of work</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P106</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>occupation</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P108</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>employer</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P119</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>place of burial</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P135</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>movement</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P140</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>religion</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P136</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>genre</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P509</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>cause of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P460</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>said to be the same as</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P551</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>residence</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P735</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>given name</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P800</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>notable work</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P802</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>student</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P859</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>sponsor</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P910</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>topic's main category</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P937</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>work location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1066</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>student of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1343</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>described by source</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1412</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>languages spoken, written or
+        signed</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1196</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>manner of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P6379</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>has works in the collection</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1576</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>lifestyle</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P5008</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>on focus list of Wikimedia project</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Wed, 22 Jan 2020 00:02:53 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20SELECT%20?item%20?rel%0A%20%20%20%20%20%20WHERE%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%7B%20?item%20?rel%20wd:Q762%20%7D%20UNION%0A%20%20%20%20%20%20%20%20%7B%20wd:Q5580%20?rel%20?item%20%7D%0A%20%20%20%20%20%20%20%20FILTER(?item%20IN%20(wd:Q762))%0A%20%20%20%20%20%20%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.5.7 (2019-10-01))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 22 Jan 2020 00:02:53 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access=22-Jan-2020; WMF-Last-Access-Global=22-Jan-2020
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.13.6
+      Date:
+      - Wed, 22 Jan 2020 00:02:53 GMT
+      Content-Type:
+      - application/sparql-results+xml;charset=utf-8
+      X-First-Solution-Millis:
+      - '3'
+      X-Served-By:
+      - wdqs1007
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      X-Envoy-Upstream-Service-Time:
+      - '57'
+      X-Ats-Timestamp:
+      - '1579651373'
+      Vary:
+      - Accept, Accept-Encoding
+      X-Varnish:
+      - '1065682431'
+      Age:
+      - '0'
+      X-Cache:
+      - cp3056 miss, cp3052 pass
+      X-Cache-Status:
+      - pass
+      Server-Timing:
+      - cache;desc="pass"
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      X-Client-Ip:
+      - 141.2.30.241
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='item'/>\n\t\t<variable name='rel'/>\n\t</head>\n\t<results>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Wed, 22 Jan 2020 00:02:53 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20SELECT%20?id%20$label%0A%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20.%0A%20%20%20%20%20%20%20%20%20FILTER(lang(?label)%20=%20%27en%27)%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20VALUES%20(?id)%20%7B(wd:P31)%20(wd:P170)%20(wd:P186)%20(wd:P195)%20(wd:P88)%20(wd:P1071)%20(wd:P495)%20(wd:P127)%20(wd:P793)%20(wd:P136)%20(wd:P180)%20(wd:P608)%20(wd:P910)%20(wd:P135)%20(wd:P276)%20(wd:P17)%20(wd:P6216)%20(wd:P1343)%20(wd:P921)%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.5.7 (2019-10-01))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 22 Jan 2020 00:02:53 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access=22-Jan-2020; WMF-Last-Access-Global=22-Jan-2020
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.13.6
+      Date:
+      - Wed, 22 Jan 2020 00:02:54 GMT
+      Content-Type:
+      - application/sparql-results+xml;charset=utf-8
+      X-First-Solution-Millis:
+      - '2'
+      X-Served-By:
+      - wdqs1004
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      X-Envoy-Upstream-Service-Time:
+      - '886'
+      X-Ats-Timestamp:
+      - '1579651374'
+      Vary:
+      - Accept, Accept-Encoding
+      X-Varnish:
+      - '1048924195'
+      Age:
+      - '1'
+      X-Cache:
+      - cp3060 miss, cp3052 pass
+      X-Cache-Status:
+      - pass
+      Server-Timing:
+      - cache;desc="pass"
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      X-Client-Ip:
+      - 141.2.30.241
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='id'/>\n\t\t<variable name='label'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P88</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>commissioned by</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P17</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>country</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P127</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>owned by</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P135</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>movement</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P31</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>instance of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P136</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>genre</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P276</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P186</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>material used</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P495</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>country of origin</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P910</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>topic's main category</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P195</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>collection</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P170</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>creator</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P608</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>exhibition history</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P793</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>significant event</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P921</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>main subject</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1071</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>location of final assembly</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P180</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>depicts</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1343</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>described by source</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P6216</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>copyright status</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Wed, 22 Jan 2020 00:02:54 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20SELECT%20?item%20?rel%0A%20%20%20%20%20%20WHERE%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%7B%20?item%20?rel%20wd:Q12418%20%7D%20UNION%0A%20%20%20%20%20%20%20%20%7B%20wd:Q5580%20?rel%20?item%20%7D%0A%20%20%20%20%20%20%20%20FILTER(?item%20IN%20(wd:Q12418,%20wd:Q762))%0A%20%20%20%20%20%20%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.5.7 (2019-10-01))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 22 Jan 2020 00:02:54 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access=22-Jan-2020; WMF-Last-Access-Global=22-Jan-2020
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.13.6
+      Date:
+      - Wed, 22 Jan 2020 00:02:43 GMT
+      Content-Type:
+      - application/sparql-results+xml;charset=utf-8
+      X-First-Solution-Millis:
+      - '4'
+      X-Served-By:
+      - wdqs1004
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      Vary:
+      - Accept
+      X-Envoy-Upstream-Service-Time:
+      - '487'
+      Content-Length:
+      - '403'
+      X-Ats-Timestamp:
+      - '1579651375'
+      X-Varnish:
+      - '1044239298'
+      Age:
+      - '12'
+      X-Cache:
+      - cp3064 hit, cp3052 pass
+      X-Cache-Status:
+      - hit-local
+      Server-Timing:
+      - cache;desc="hit-local"
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      X-Client-Ip:
+      - 141.2.30.241
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='item'/>\n\t\t<variable name='rel'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
+        name='item'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/Q762</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='rel'>\n\t\t\t\t<uri>http://www.wikidata.org/prop/direct/P800</uri>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Wed, 22 Jan 2020 00:02:55 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20SELECT%20?id%20$label%0A%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20.%0A%20%20%20%20%20%20%20%20%20FILTER(lang(?label)%20=%20%27en%27)%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20VALUES%20(?id)%20%7B(wd:P27)%20(wd:P937)%20(wd:P460)%20(wd:P1576)%20(wd:P800)%20(wd:P21)%20(wd:P25)%20(wd:P1066)%20(wd:P20)%20(wd:P1196)%20(wd:P39)%20(wd:P1412)%20(wd:P5008)%20(wd:P22)%20(wd:P106)%20(wd:P910)%20(wd:P101)%20(wd:P859)%20(wd:P802)%20(wd:P31)%20(wd:P135)%20(wd:P136)%20(wd:P108)%20(wd:P140)%20(wd:P1343)%20(wd:P19)%20(wd:P6379)%20(wd:P735)%20(wd:P119)%20(wd:P509)%20(wd:P551)%20(wd:P6886)%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.5.7 (2019-10-01))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 22 Jan 2020 00:02:55 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access=22-Jan-2020; WMF-Last-Access-Global=22-Jan-2020
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.13.6
+      Date:
+      - Wed, 22 Jan 2020 00:02:55 GMT
+      Content-Type:
+      - application/sparql-results+xml;charset=utf-8
+      X-First-Solution-Millis:
+      - '2'
+      X-Served-By:
+      - wdqs1006
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      X-Envoy-Upstream-Service-Time:
+      - '761'
+      X-Ats-Timestamp:
+      - '1579651376'
+      Vary:
+      - Accept, Accept-Encoding
+      X-Varnish:
+      - '1067614343'
+      Age:
+      - '2'
+      X-Cache:
+      - cp3050 miss, cp3052 pass
+      X-Cache-Status:
+      - pass
+      Server-Timing:
+      - cache;desc="pass"
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      X-Client-Ip:
+      - 141.2.30.241
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='id'/>\n\t\t<variable name='label'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P22</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>father</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P21</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>sex or gender</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P140</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>religion</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P19</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>place of birth</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P136</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>genre</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P20</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>place of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P135</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>movement</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P25</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>mother</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P460</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>said to be the same as</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P859</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>sponsor</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P27</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>country of citizenship</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P910</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>topic's main category</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P802</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>student</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P509</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>cause of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1412</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>languages spoken, written or
+        signed</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P31</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>instance of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P551</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>residence</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P6379</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>has works in the collection</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P6886</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>writing language</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P937</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>work location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1066</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>student of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P39</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>position held</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P735</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>given name</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P101</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>field of work</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P106</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>occupation</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1196</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>manner of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P800</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>notable work</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1576</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>lifestyle</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P5008</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>on focus list of Wikimedia project</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1343</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>described by source</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P108</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>employer</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P119</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>place of burial</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Wed, 22 Jan 2020 00:02:56 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20SELECT%20?id%20$label%0A%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20.%0A%20%20%20%20%20%20%20%20%20FILTER(lang(?label)%20=%20%27en%27)%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20VALUES%20(?id)%20%7B(wd:P144)%20(wd:P135)%20(wd:P276)%20(wd:P88)%20(wd:P136)%20(wd:P31)%20(wd:P170)%20(wd:P180)%20(wd:P195)%20(wd:P921)%20(wd:P2079)%20(wd:P131)%20(wd:P17)%20(wd:P186)%20(wd:P4969)%20(wd:P1343)%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.5.7 (2019-10-01))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 22 Jan 2020 00:02:56 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access=22-Jan-2020; WMF-Last-Access-Global=22-Jan-2020
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.13.6
+      Date:
+      - Wed, 22 Jan 2020 00:02:56 GMT
+      Content-Type:
+      - application/sparql-results+xml;charset=utf-8
+      X-First-Solution-Millis:
+      - '2'
+      X-Served-By:
+      - wdqs1004
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      X-Envoy-Upstream-Service-Time:
+      - '367'
+      X-Ats-Timestamp:
+      - '1579651376'
+      Vary:
+      - Accept, Accept-Encoding
+      X-Varnish:
+      - '1053438837'
+      Age:
+      - '0'
+      X-Cache:
+      - cp3056 miss, cp3052 pass
+      X-Cache-Status:
+      - pass
+      Server-Timing:
+      - cache;desc="pass"
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      X-Client-Ip:
+      - 141.2.30.241
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='id'/>\n\t\t<variable name='label'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P17</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>country</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P31</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>instance of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P88</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>commissioned by</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P131</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>located in the administrative
+        territorial entity</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P144</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>based on</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P135</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>movement</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P136</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>genre</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P170</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>creator</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P180</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>depicts</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P186</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>material used</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P195</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>collection</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P276</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1343</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>described by source</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P921</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>main subject</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P2079</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>fabrication method</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P4969</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>derivative work</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Wed, 22 Jan 2020 00:02:56 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20SELECT%20?item%20?rel%0A%20%20%20%20%20%20WHERE%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%7B%20?item%20?rel%20wd:Q128910%20%7D%20UNION%0A%20%20%20%20%20%20%20%20%7B%20wd:Q5580%20?rel%20?item%20%7D%0A%20%20%20%20%20%20%20%20FILTER(?item%20IN%20(wd:Q12418,%20wd:Q128910,%20wd:Q762))%0A%20%20%20%20%20%20%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.5.7 (2019-10-01))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 22 Jan 2020 00:02:57 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access=22-Jan-2020; WMF-Last-Access-Global=22-Jan-2020
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.13.6
+      Date:
+      - Wed, 22 Jan 2020 00:02:57 GMT
+      Content-Type:
+      - application/sparql-results+xml;charset=utf-8
+      X-First-Solution-Millis:
+      - '14'
+      X-Served-By:
+      - wdqs1005
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      X-Envoy-Upstream-Service-Time:
+      - '95'
+      X-Ats-Timestamp:
+      - '1579651377'
+      Vary:
+      - Accept, Accept-Encoding
+      X-Varnish:
+      - '1063295407'
+      Age:
+      - '0'
+      X-Cache:
+      - cp3050 miss, cp3052 pass
+      X-Cache-Status:
+      - pass
+      Server-Timing:
+      - cache;desc="pass"
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      X-Client-Ip:
+      - 141.2.30.241
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='item'/>\n\t\t<variable name='rel'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
+        name='item'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/Q762</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='rel'>\n\t\t\t\t<uri>http://www.wikidata.org/prop/direct/P800</uri>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Wed, 22 Jan 2020 00:02:57 GMT
+- request:
+    method: get
+    uri: https://query.wikidata.org/sparql?query=%0A%20%20%20%20%20%20SELECT%20?id%20$label%0A%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20?id%20rdfs:label%20?label%20.%0A%20%20%20%20%20%20%20%20%20FILTER(lang(?label)%20=%20%27en%27)%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20VALUES%20(?id)%20%7B(wd:P27)%20(wd:P937)%20(wd:P460)%20(wd:P1576)%20(wd:P800)%20(wd:P21)%20(wd:P25)%20(wd:P1066)%20(wd:P20)%20(wd:P1196)%20(wd:P39)%20(wd:P1412)%20(wd:P5008)%20(wd:P22)%20(wd:P106)%20(wd:P910)%20(wd:P101)%20(wd:P859)%20(wd:P802)%20(wd:P31)%20(wd:P135)%20(wd:P136)%20(wd:P108)%20(wd:P140)%20(wd:P1343)%20(wd:P19)%20(wd:P6379)%20(wd:P735)%20(wd:P119)%20(wd:P509)%20(wd:P551)%20(wd:P6886)%7D%0A%20%20%20%20
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.8.3, ruby 2.5.7 (2019-10-01))
+      Accept:
+      - "*/*"
+      Date:
+      - Wed, 22 Jan 2020 00:02:57 GMT
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - WMF-Last-Access=22-Jan-2020; WMF-Last-Access-Global=22-Jan-2020
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.13.6
+      Date:
+      - Wed, 22 Jan 2020 00:02:58 GMT
+      Content-Type:
+      - application/sparql-results+xml;charset=utf-8
+      X-First-Solution-Millis:
+      - '2'
+      X-Served-By:
+      - wdqs1007
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=300
+      X-Envoy-Upstream-Service-Time:
+      - '641'
+      X-Ats-Timestamp:
+      - '1579651378'
+      Vary:
+      - Accept, Accept-Encoding
+      X-Varnish:
+      - '1052918319'
+      Age:
+      - '1'
+      X-Cache:
+      - cp3052 miss, cp3052 pass
+      X-Cache-Status:
+      - pass
+      Server-Timing:
+      - cache;desc="pass"
+      Strict-Transport-Security:
+      - max-age=106384710; includeSubDomains; preload
+      X-Client-Ip:
+      - 141.2.30.241
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<sparql xmlns='http://www.w3.org/2005/sparql-results#'>\n\t<head>\n\t\t<variable
+        name='id'/>\n\t\t<variable name='label'/>\n\t</head>\n\t<results>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P19</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>place of birth</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P22</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>father</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P25</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>mother</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P20</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>place of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P27</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>country of citizenship</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P21</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>sex or gender</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P31</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>instance of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P39</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>position held</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P101</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>field of work</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P106</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>occupation</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P108</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>employer</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P119</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>place of burial</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P135</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>movement</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P136</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>genre</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P140</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>religion</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P460</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>said to be the same as</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P735</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>given name</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P551</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>residence</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P802</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>student</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P800</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>notable work</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P859</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>sponsor</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P509</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>cause of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1066</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>student of</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1196</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>manner of death</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1343</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>described by source</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P910</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>topic's main category</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1412</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>languages spoken, written or
+        signed</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P937</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>work location</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P1576</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>lifestyle</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P5008</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>on focus list of Wikimedia project</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P6379</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>has works in the collection</literal>\n\t\t\t</binding>\n\t\t</result>\n\t\t<result>\n\t\t\t<binding
+        name='id'>\n\t\t\t\t<uri>http://www.wikidata.org/entity/P6886</uri>\n\t\t\t</binding>\n\t\t\t<binding
+        name='label'>\n\t\t\t\t<literal xml:lang='en'>writing language</literal>\n\t\t\t</binding>\n\t\t</result>\n\t</results>\n</sparql>\n"
+    http_version: 
+  recorded_at: Wed, 22 Jan 2020 00:02:58 GMT
 recorded_with: VCR 4.0.0

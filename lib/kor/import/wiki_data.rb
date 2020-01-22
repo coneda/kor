@@ -235,51 +235,47 @@ class Kor::Import::WikiData
     uris.map{ |r| r.text.split('/').last }.uniq
   end
 
-  class << self
-    protected
+  def self.labels_for(ids, locale)
+    values = ids.map{ |i| "(wd:#{i})" }.join(' ')
+    query = "
+      SELECT ?id $label
+      WHERE {
+         ?id rdfs:label ?label .
+         FILTER(lang(?label) = '#{locale}')
+      }
+      VALUES (?id) {#{values}}
+    "
+    xml = sparql(query).body
+    doc = Nokogiri::XML(xml)
+    doc.xpath("//xmlns:result").map do |r|
+      {
+        "id" => r.xpath("xmlns:binding[@name='id']/xmlns:uri").text.split("/").last,
+        "label" => r.xpath("xmlns:binding[@name='label']/xmlns:literal").text
+      }
+    end
+  end
 
-      def labels_for(ids, locale)
-        values = ids.map{ |i| "(wd:#{i})" }.join(' ')
-        query = "
-          SELECT ?id $label
-          WHERE {
-             ?id rdfs:label ?label .
-             FILTER(lang(?label) = '#{locale}')
-          }
-          VALUES (?id) {#{values}}
-        "
-        xml = sparql(query).body
-        doc = Nokogiri::XML(xml)
-        doc.xpath("//xmlns:result").map do |r|
-          {
-            "id" => r.xpath("xmlns:binding[@name='id']/xmlns:uri").text.split("/").last,
-            "label" => r.xpath("xmlns:binding[@name='label']/xmlns:literal").text
-          }
-        end
-      end
+  def self.request(method, url, params = {}, body = nil, headers = {}, redirect_count = 10)
+    @client ||= HTTPClient.new
 
-      def request(method, url, params = {}, body = nil, headers = {}, redirect_count = 10)
-        @client ||= HTTPClient.new
+    response = @client.request(method, url, params, headers, body)
 
-        response = @client.request(method, url, params, headers, body)
+    if redirect_count > 0 && response.redirect?
+      response = request(
+        method, response.http_header['location'].first,
+        params, body, headers,
+        redirect_count - 1
+      )
+    end
 
-        if redirect_count > 0 && response.redirect?
-          response = request(
-            method, response.http_header['location'].first,
-            params, body, headers,
-            redirect_count - 1
-          )
-        end
+    if response.status != 200
+      raise Kor::Exception, "wikidata returned status #{response.status}\n#{response.body}"
+    end
 
-        if response.status != 200
-          raise Kor::Exception, "wikidata returned status #{response.status}\n#{response.body}"
-        end
-
-        begin
-          JSON.load(response.body)
-        rescue JSON::ParserError
-          response
-        end
-      end
+    begin
+      JSON.load(response.body)
+    rescue JSON::ParserError
+      response
+    end
   end
 end
