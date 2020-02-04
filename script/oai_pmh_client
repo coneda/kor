@@ -17,18 +17,18 @@ module Kor
       @options = {
         delay: 0.2,
       }.merge options
+      if @options[:target_dir]
+        FileUtils.mkdir_p @options[:target_dir]
+      end
       @options[:log_file] ||= "#{@options[:target_dir]}/oai_pmh.log"
       @request_duration = 0
       @request_count = 0
       @log_file = File.open(@options[:log_file], 'w+')
       @log_file.sync = true
+      @rc = 0
     end
 
     def run
-      if @options[:target_dir]
-        FileUtils.mkdir_p @options[:target_dir]
-      end
-
       fetch 'kinds', 'kind'
       fetch 'relations', 'relation'
       fetch 'entities', 'entity'
@@ -61,7 +61,8 @@ module Kor
 
             unless pg
               total = rts.attr('completeListSize').value.to_i
-              pg = new_progress(total / per_page, type)
+              log "harvesting #{type}: #{total} entries"
+              pg = new_progress((total / per_page.to_f).ceil, type)
             end
           else
             resumptionToken = nil
@@ -71,7 +72,7 @@ module Kor
           if new_ids.size > 0
             ids += new_ids
           else
-            log "an xml document has been received but no ids could be found: #{doc.to_xml}"
+            #log "an xml document has been received but no ids could be found: #{doc.to_xml}"
           end
 
           # deleted_ids = doc.xpath(" ")
@@ -136,10 +137,17 @@ module Kor
         defaults = {'metadataPrefix' => 'kor', 'api_key' => @options[:api_key]}
         params = defaults.merge params
         response = request 'get', path, params
+        log "REQUEST: #{path} #{params.inspect}"
         if response.status < 200 || response.status > 499
           log "there was an error with the request [#{path} #{params.inspect}]: #{response.status}: #{response.body}"
           nil
         else
+          @rc += 1
+          dir = "#{@options[:target_dir]}/requests"
+          system "mkdir -p #{dir}"
+          File.open "#{dir}/#{@rc}.txt", 'w' do |f|
+            f.write response.body
+          end
           parse(response.body)
         end
       end
@@ -151,6 +159,9 @@ module Kor
             doc.root.add_namespace k, v
           end
         end
+        # we also add the kor namespace, in case a response page consists of
+        # only deleted entities
+        doc.root.add_namespace 'kor', 'https://coneda.net/XMLSchema/1.1/'
         doc
       end
 
@@ -179,7 +190,7 @@ module Kor
 end
 
 Kor::OaiPmhClient.new(
-  url: 'https://kor.example.com',
+  url: 'https://classicmayan.kor.de.dariah.eu/api',
   api_key: 'MY API KEY',
   target_dir: './kor_xml',
   continue: false
