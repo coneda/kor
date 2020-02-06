@@ -14,7 +14,7 @@ class Api::OaiPmh::BaseController < BaseController
   before_filter :ensure_identifier, only: [:get_record]
 
   def identify
-    @admin_email = User.admin.email
+    @admin_email = Kor.config['maintainer']['mail']
     @earliest_timestamp = earliest_timestamp
 
     render :template => "api/oai_pmh/identify"

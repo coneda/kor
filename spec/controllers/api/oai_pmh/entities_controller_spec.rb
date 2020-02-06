@@ -26,6 +26,8 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
     get :identify, :format => :xml
     expect(response).to be_success
     expect{Hash.from_xml response.body}.not_to raise_error
+    doc = parse_xml(response.body)
+    expect(doc.xpath('//xmlns:adminEmail').text).to eq('admin@example.com')
 
     post :identify, :format => :xml
     expect(response).to be_success
