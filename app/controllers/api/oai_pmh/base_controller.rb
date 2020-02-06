@@ -6,8 +6,12 @@ class Api::OaiPmh::BaseController < BaseController
 
   helper_method :timestamp, :base_url, :medium_url
 
-  before_filter :ensure_metadata_prefix, only: [:get_record, :list_records]
+  skip_before_filter :verify_authenticity_token
+
   before_filter :handle_resumption_token, only: [:list_identifiers, :list_records]
+  before_filter :ensure_metadata_prefix, only: [:get_record, :list_records]
+  before_filter :ensure_datestamp_format, only: [:list_identifiers, :list_records]
+  before_filter :ensure_identifier, only: [:get_record]
 
   def identify
     @admin_email = User.admin.email
@@ -26,7 +30,7 @@ class Api::OaiPmh::BaseController < BaseController
 
   def list_identifiers
     record_params = params.select do |k, v|
-      ["metadataPrefix", "from", "to", "set", "resumptionToken", 'page', 'per_page'].include?(k)
+      ["metadataPrefix", "from", "until", "set", "resumptionToken", 'page', 'per_page'].include?(k)
     end
 
     @records = query(record_params)
@@ -40,7 +44,7 @@ class Api::OaiPmh::BaseController < BaseController
 
   def list_records
     record_params = params.select do |k, v|
-      ["metadataPrefix", "from", "to", "set", "resumptionToken", 'page', 'per_page'].include?(k)
+      ["metadataPrefix", "from", "until", "set", "resumptionToken", 'page', 'per_page'].include?(k)
     end
 
     @records = query(record_params)
@@ -61,9 +65,13 @@ class Api::OaiPmh::BaseController < BaseController
 
 
     def ensure_metadata_prefix
-      available = ["kor", "oai_dc"]
-      unless available.include?(params[:metadataPrefix])
-        render_error 'cannotDisseminateFormat'
+      if params[:metadataPrefix].present?
+        available = ["kor", "oai_dc"]
+        unless available.include?(params[:metadataPrefix])
+          render_error 'cannotDisseminateFormat'
+        end
+      else
+        render_error 'badArgument', 'metadataPrefix has to be supplied'
       end
     end
 
@@ -78,13 +86,35 @@ class Api::OaiPmh::BaseController < BaseController
       end
     end
 
+    def ensure_datestamp_format
+      regex = /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ$/
+      
+      if params[:from].present?
+        unless params[:from].match(regex)
+          render_error 'badArgument', 'from has incorrect format'
+        end
+      end
+
+      if params[:until].present?
+        unless params[:until].match(regex)
+          render_error 'badArgument', 'until has incorrect format'
+        end
+      end
+    end
+
+    def ensure_identifier
+      unless params[:identifier].present?
+        render_error 'badArgument', 'identifier must be supplied'
+      end
+    end
+
     def render_error(code, description = nil)
       @code = code
       @description = description
 
       respond_to do |format|
         format.xml do
-          render template: 'api/oai_pmh/error', status: 400, layout: '../api/oai_pmh/base'
+          render template: 'api/oai_pmh/error', layout: '../api/oai_pmh/base'
         end
       end
     end
@@ -138,7 +168,7 @@ class Api::OaiPmh::BaseController < BaseController
 
       File.open "#{base_dir}/#{token}.json", "w" do |f|
         data = {}
-        ['page', 'per_page', 'from', 'until', 'set'].each do |k|
+        ['page', 'per_page', 'from', 'until', 'set', 'metadataPrefix'].each do |k|
           data[k] = params[k] if params[k]
         end
         f.write JSON.dump(data)

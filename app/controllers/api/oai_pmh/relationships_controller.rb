@@ -18,6 +18,7 @@ class Api::OaiPmh::RelationshipsController < Api::OaiPmh::BaseController
 
     def records
       Relationship.
+        order(:id).
         with_deleted.
         joins('LEFT JOIN relations rels ON rels.id = relationships.relation_id')
         # joins('LEFT JOIN entities froms ON froms.id = relationships.from_id').

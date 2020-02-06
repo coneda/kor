@@ -6,6 +6,6 @@
                       http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
 >
   <responseDate><%= timestamp Time.now %></responseDate>
-  <request verb="<%= action_name.classify %>"><%= base_url %></request>
+  <request verb="<%= params[:verb] %>"><%= base_url %></request>
   <%= yield %>
 </OAI-PMH>

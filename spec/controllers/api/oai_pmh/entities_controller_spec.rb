@@ -256,7 +256,7 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
     verify_oaipmh_error 'noSetHierarchy'
   end
 
-  it "should return 'cannotDisseminateFormat' if no format was specified" do
+  it "should return 'badArgument' if no format was specified" do
     leonardo = Entity.last
     admin = User.admin
 
@@ -265,14 +265,14 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
       :identifier => leonardo.uuid, 
       :api_key => admin.api_key
     )
-    verify_oaipmh_error 'cannotDisseminateFormat'
+    verify_oaipmh_error 'badArgument'
 
     get(:list_records,
       :format => :xml, 
       :api_key => admin.api_key
     )
 
-    verify_oaipmh_error 'cannotDisseminateFormat'
+    verify_oaipmh_error 'badArgument'
   end
 
   it "should return 'cannotDisseminateFormat' if the requested format doesn't exist" do
@@ -309,7 +309,7 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
       'kor' => 'https://coneda.net/XMLSchema/1.1/'
     }
 
-    zero = Time.now
+    zero = Time.now.utc
     Entity.update_all updated_at: (zero - 2.hours)
     55.times do |i|
       FactoryGirl.create :mona_lisa, name: "Mona Lisa #{i}", updated_at: (zero - i.minutes)
@@ -319,7 +319,7 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
       format: :xml,
       api_key: admin.api_key,
       metadataPrefix: 'kor',
-      from: (zero - 53.minutes).strftime('%Y-%m-%d %H:%M:%S')
+      from: (zero - 53.minutes).strftime('%Y-%m-%dT%H:%M:%SZ')
     )
 
     doc = parse_xml(response.body)
@@ -329,7 +329,6 @@ describe Api::OaiPmh::EntitiesController, :type => :controller do
     get(:list_records,
       format: :xml,
       api_key: admin.api_key,
-      metadataPrefix: 'kor',
       resumptionToken: token
     )
 
