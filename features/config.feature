@@ -24,3 +24,13 @@ Feature: Config
     Given the setting "env_auth_button_label" is ""
     When I go to the login page
     Then I should not see link "federated login"
+
+  Scenario: Change primary and secondary relations
+    Given I am logged in as "admin"
+    When I go to the config page
+    Then the select "Primary relations" should have value "shows"
+    And the select "Secondary relations" should have value "has been created by"
+    When I select "is related to" from "Secondary relations"
+    And I press "Save"
+    And I reload the page
+    Then the select "Secondary relations" should have value "has been created by,is related to"

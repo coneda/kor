@@ -387,9 +387,9 @@
 
     fetchRelations = ->
       Zepto.ajax(
-        url: "/relations"
+        url: "/relations/names"
         success: (data) ->
-          tag.relations = data.records
+          tag.relations = data
           tag.update()
       )
 
