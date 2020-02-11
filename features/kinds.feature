@@ -204,7 +204,6 @@ Feature: Kinds
     And kind "person" should have generator "new_activity_id"
     And kind "person" should not have generator "activity_id"
     When I go to the entity page for "Leonardo"
-    And I debug
     Then I should see "GND ID: 123456789"
     When I follow "edit"
     And I fill in "GND-ID" with ""
