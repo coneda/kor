@@ -5,6 +5,25 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history and the closed issues on GitHub.
 
+## Version 4.0.1
+
+This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.3+).
+
+* dropping angularjs previously prompted using riotjs for rendering custom
+  generators. The latter did actually not perform all required operations (e.g.
+  conditionals), therefore [EJS](https://ejs.co) is now used. This also
+  separates the concern of user templates from general rendering by other code.
+  However, this means that the syntax has to be changed once more:
+  ~~~html
+  <span if={entity.dataset.gnd_id}>{entity.dataset.gnd_id}</span>
+  ~~~
+  becomes
+  ~~~html
+  <% if (entity.dataset.gnd_id) { %>
+    <span><%= entity.dataset.gnd_id %></span>
+  <% } %>
+  ~~~
+
 ## Version 4.0.0
 
 ### User

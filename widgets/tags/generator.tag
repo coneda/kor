@@ -1,5 +1,4 @@
 <kor-generator>
-
   <script type="text/coffee">
     tag = this
 
@@ -16,7 +15,7 @@
     tag.on 'mount', update
     tag.on 'updated', update
 
-    render = riot.util.tmpl
-  </script>
+    render = ejs.render
 
+  </script>
 </kor-generator>
