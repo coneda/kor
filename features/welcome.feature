@@ -26,7 +26,6 @@ Feature: Welcome
     Then I should see a link "Report a problem" leading to "admin@example.com"
 
   Scenario: Don't show the clipboard to guests
-    And the entity "Mona Lisa" of kind "Werk/Werke"
     And user "guest" is allowed to "view" collection "default" via credential "guests"
     When I go to the welcome page
     Then I should not see "Clipboard" within "kor-menu"
@@ -43,3 +42,16 @@ Feature: Welcome
     And I press "Save"
     And I go to the welcome page
     Then I should see a link "custom" leading to "https://custom.example.com"
+
+  Scenario: Show the terms of use (don't show when empty)
+    Given I am on the home page
+    And I click "Terms of use"
+    Then I should see "enter a legal notice here"
+
+    Given I am logged in as "admin"
+    When I click "Settings"
+    And I fill in "Text for terms of use" with ""
+    And I click "Save"
+    Then I should see "changed"
+    When I reload the page
+    Then I should not see "Terms of use" within "kor-menu"

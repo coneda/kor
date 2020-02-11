@@ -198,10 +198,18 @@ Feature: Kinds
     And I follow "edit" within the row for generator "gnd"
     Then I should see "Edit generator"
     And I fill in "Name" with "new_activity_id"
+    And I fill in "Generator directive" with "<% if (entity.dataset.gnd_id) { %><span>GND ID: <%= entity.dataset.gnd_id %></span><% } %>"
     And I press "Save"
     Then I should see "has been changed"
     And kind "person" should have generator "new_activity_id"
     And kind "person" should not have generator "activity_id"
+    When I go to the entity page for "Leonardo"
+    And I debug
+    Then I should see "GND ID: 123456789"
+    When I follow "edit"
+    And I fill in "GND-ID" with ""
+    And I press "Save"
+    Then I should not see "GND ID:"
 
   Scenario: remove a generator
     And I am logged in as "admin"
