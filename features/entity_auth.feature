@@ -1,13 +1,4 @@
 Feature: Entity authentorization
-  # functionality dropped
-  # Scenario: Show the select as current link for viewable entities because he has edit rights in another collection
-  #   And user "joe" is allowed to "view/edit" collection "side" through credential "side_editors"
-  #   And user "joe" is allowed to "view" collection "main" through credential "main_viewers"
-  #   And the entity "Mona Lisa" of kind "Werk/Werke" inside collection "main"
-  #   When I go to the entity page for "Mona Lisa"
-  #   And I debug
-  #   Then I should see element "a[kor-to-current]"
-
   Scenario: show (jdoe)
     Given I am logged in as "jdoe"
     When I go to the entity page for "The Last Supper"
