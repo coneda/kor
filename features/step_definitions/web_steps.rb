@@ -236,6 +236,10 @@ Then(/^field "([^"]*)" should have value "([^"]*)"$/) do |field, value|
   expect(find_field(field).value).to eq(value)
 end
 
+Then("field {string} should contain {string}") do |field, value|
+  expect(find_field(field).value).to include(value)
+end
+
 Then(/^I should see the prefilled dating "([^"]*)"$/) do |dating|
   label, value = dating.split(/: ?/)
   within "kor-datings-editor" do

@@ -10,6 +10,10 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 
+    tag.on('mount', function() {
+      tag.set(tag.opts.riotValue)
+    })
+
     tag.name = function() {return tag.opts.name}
 
     tag.set = function(value) {
