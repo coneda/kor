@@ -72,7 +72,7 @@ are some highlights:
 
 ### User
 
-* custom help texts can now provided separately for each language
+* custom help texts can now be provided separately for each language
 * the welcome page can now be configured with textile and without any HTML
   sanitization
 * authentication sources can now specify a custom password management url. This
