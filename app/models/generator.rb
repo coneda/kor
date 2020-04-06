@@ -1,4 +1,7 @@
 class Generator < ApplicationRecord
+  acts_as_list scope: [:kind_id], top_of_list: 0
+  default_scope { order(:position) }
+
   belongs_to :kind, touch: true
 
   validates :name,

@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 ActiveRecord::Schema.define(version: 20191207011036) do
   create_table "authority_group_categories", force: :cascade do |t|
     t.integer  "lock_version", limit: 4,   default: 0
@@ -182,6 +180,7 @@ ActiveRecord::Schema.define(version: 20191207011036) do
     t.datetime "updated_at",                  null: false
     t.boolean  "is_identifier"
     t.string   "uuid",          limit: 255
+    t.integer  "position",      limit: 4
   end
 
   create_table "generators", force: :cascade do |t|
@@ -190,6 +189,7 @@ ActiveRecord::Schema.define(version: 20191207011036) do
     t.text     "directive",  limit: 65535
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
+    t.integer  "position",   limit: 4
   end
 
   create_table "identifiers", force: :cascade do |t|

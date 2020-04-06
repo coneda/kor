@@ -5,6 +5,13 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history and the closed issues on GitHub.
 
+## Version 4.1.0
+
+This is a feature release created for a specific issue (#83). All other features
+have been moved to 4.2.0
+
+* added custom ordering of dataset fields and generators
+
 ## Version 4.0.1
 
 This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.3+).

@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'acts-as-taggable-on', '~> 4.0.0'
+gem 'acts_as_list'
 gem 'colorize'
 gem 'delayed_paperclip'
 gem 'dotenv'
