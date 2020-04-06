@@ -3,7 +3,6 @@
     label={opts.label}
     type="textarea"
     ref="field"
-    value={valueFromParent()}
   />
 
   <script type="text/javascript">
@@ -11,9 +10,9 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 
-    tag.valueFromParent = function() {
-      return opts.riotValue.join("\n");
-    }
+    tag.on('mount', function() {
+      tag.set(tag.opts.riotValue)
+    })
 
     tag.name = function() {return tag.opts.name}
 

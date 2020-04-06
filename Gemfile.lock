@@ -49,7 +49,6 @@ GEM
       activerecord (>= 4.0)
     acts_as_list (0.9.16)
       activerecord (>= 3.0)
-      public_suffix (>= 2.0.2, < 4.0)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     arel (7.1.4)
@@ -309,6 +308,3 @@ DEPENDENCIES
   sql_origin
   vcr
   webmock
-
-BUNDLED WITH
-   2.1.2

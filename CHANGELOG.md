@@ -14,6 +14,13 @@ commit history and the closed issues on GitHub.
   also removes the password fields from the profile editor to prevent federation
   users to change their local passwords
 
+## Version 4.1.0
+
+This is a feature release created for a specific issue (#83). All other features
+have been moved to 4.2.0
+
+* added custom ordering of dataset fields and generators
+
 ## Version 4.0.1
 
 * dropping angularjs previously prompted using riotjs for rendering custom
