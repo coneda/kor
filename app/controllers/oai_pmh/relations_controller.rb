@@ -12,7 +12,7 @@ class OaiPmh::RelationsController < OaiPmh::BaseController
   protected
 
     def records
-      Relation.with_deleted
+      Relation.order(:id).with_deleted
     end
 
     def base_url

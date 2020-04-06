@@ -15,7 +15,7 @@ module Kor::Auth
 
       script_sources.each do |key, c|
         command = "bash -c \"#{c["script"]}\""
-        status = Bundler.with_clean_env do
+        status = Bundler.with_unbundled_env do
           system(
             {
               "KOR_USERNAME_FILE" => "#{dir}/username.txt",

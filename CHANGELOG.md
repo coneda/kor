@@ -7,7 +7,14 @@ commit history and the closed issues on GitHub.
 
 ## Version ???
 
-This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.3+).
+* custom help texts can now be provided separately for each language
+* the welcome page can now be configured with textile and without any HTML
+  sanitization
+* authentication sources can now specify a custom password management url. This
+  also removes the password fields from the profile editor to prevent federation
+  users to change their local passwords
+
+## Version 4.0.1
 
 * dropping angularjs previously prompted using riotjs for rendering custom
   generators. The latter did actually not perform all required operations (e.g.
@@ -68,21 +75,9 @@ are some highlights:
 * setting `DEBUG_FAILED=true` while running the cucumber test suite will drop
   to a `pry` session on test failures
 
-## Version 3.1.0
+## Version 3.0.5
 
-### User
-
-* custom help texts can now be provided separately for each language
-* the welcome page can now be configured with textile and without any HTML
-  sanitization
-* authentication sources can now specify a custom password management url. This
-  also removes the password fields from the profile editor to prevent federation
-  users to change their local passwords
-
-### Internal
-
-* added position to fields table to prepare for sorting UI in v4.0
-* added position to generators table to prepare for sorting UI in v4.0
+This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.5+).
 
 ## Version 3.0.4
 
