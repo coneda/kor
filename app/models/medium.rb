@@ -12,6 +12,7 @@ class Medium < ApplicationRecord
     :path => "#{ENV['DATA_DIR']}/media/:style/:id_partition/image.:style_extension",
     :url => "/media/images/:style/:id_partition/image.:style_extension",
     :default_url => lambda{ |attachment| attachment.instance.dummy_url },
+    :convert_options => {:all => "+profile '*'"},
     :styles => {
       :icon => ['80x80>', :jpg],
       :thumbnail => ['140x140>', :jpg],
