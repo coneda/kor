@@ -276,9 +276,11 @@
     tag.on 'mount', ->
       wApp.bus.on 'relationship-updated', fetch
       wApp.bus.on 'relationship-created', fetch
+      wApp.bus.on 'relationship-deleted', fetch
       fetch()
 
     tag.on 'unmount', ->
+      wApp.bus.off 'relationship-deleted', fetch
       wApp.bus.off 'relationship-created', fetch
       wApp.bus.off 'relationship-updated', fetch
 
