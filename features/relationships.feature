@@ -42,7 +42,6 @@ Feature: Inplace relationship editor
     And I select "is birth place of" from "Relation"
     And I click "Leonardo" within "kor-entity-selector"
     And I press "Save"
-    And I debug
     Then I should not see "Louvre" within "kor-relation[name='is birth place of']"
 
   Scenario: Add properties to an existing relationship
