@@ -20,12 +20,22 @@ RSpec.describe Relation do
   end
 
   it "should only return relation names available for a given 'from-kind'" do
-    works = Kind.find_by! name: 'work'
-    expect(Relation.available_relation_names(from_ids: works.id).size).to eql(4)
+    expect(Relation.available_relation_names(from_ids: works.id)).to include(
+      'is located in', 'is related to', 'is shown by', 'has been created by'
+    )
+  end
+
+  it "should return available relation names for to- and from-constraints" do
+    # ... instead of considering the constraints separately and effectively
+    # returning a union of relation names
+    names = Relation.available_relation_names(
+      from_ids: locations.id,
+      to_ids: works.id
+    )
+    expect(names).to eq(['is related to'])
   end
 
   it "should allow setting a custom uuid on creation" do
-    works = Kind.find_by! name: 'work'
     relation = Relation.create!(
       uuid: '65d89594-4baa-487c-ae77-78f31940cc03',
       from_kind_id: works.id,
@@ -56,9 +66,6 @@ RSpec.describe Relation do
   end
 
   it 'should update directed relationships when its symmetry changes' do
-    works = Kind.find_by! name: 'work'
-    last_supper = Entity.find_by! name: 'The Last Supper'
-    mona_lisa = Entity.find_by! name: 'Mona Lisa'
     relation = Relation.create!(
       from_kind_id: works.id,
       name: 'is equivalent to',
@@ -77,10 +84,6 @@ RSpec.describe Relation do
   end
 
   it "should get a list of filtered relation names" do
-    media = Kind.find_by!(name: 'medium')
-    people = Kind.find_by!(name: 'person')
-    works = Kind.find_by!(name: 'work')
-
     expect(Relation.available_relation_names).to eq(
       [
         'has been created by', 'has created', 'is located in', 'is location of',
@@ -123,21 +126,28 @@ RSpec.describe Relation do
 
     FactoryGirl.create :shows, from_kind_id: media.id, to_kind_id: people.id
     expect(Relation.available_relation_names(to_ids: [people.id, works.id])).to(
-      eq(['shows'])
+      eq([
+        'has been created by', 'has created', 'is location of', 'is related to',
+        'shows'
+      ])
     )
     expect(
       Relation.available_relation_names(
         from_ids: '',
         to_ids: [people.id, works.id]
       )
-    ).to eq(['shows'])
+    ).to eq([
+      'has been created by', 'has created', 'is location of', 'is related to',
+      'shows'
+    ])
+
+    # additional relation created above
     expect(Relation.available_relation_names(to_ids: [people.id, media.id])).to(
-      eq([])
+      eq(['has been created by', 'is shown by', 'shows'])
     )
   end
 
   it 'should not permit to be more restrictive on endpoints than the parent' do
-    people = Kind.find_by! name: 'person'
     artists = FactoryGirl.create(:kind, name: 'artist', plural_name: 'artists', parents: [people])
     artworks = FactoryGirl.create(:kind, name: 'artwork', plural_name: 'artworks')
     paintings = FactoryGirl.create(:kind, name: 'painting', plural_name: 'paintings', parents: [artworks])
@@ -172,12 +182,7 @@ RSpec.describe Relation do
   end
 
   it 'should allow inverting' do
-    works = Kind.find_by! name: 'work'
-    people = Kind.find_by! name: 'person'
     relation = Relation.find_by! name: 'has created'
-    mona_lisa = Entity.find_by! name: 'Mona Lisa'
-    last_supper = Entity.find_by! name: 'The Last Supper'
-    leonardo = Entity.find_by! name: 'Leonardo'
 
     relation.invert!
     relation.reload
@@ -215,8 +220,6 @@ RSpec.describe Relation do
   end
 
   it 'should allow merge checks' do
-    works = Kind.find_by! name: 'work'
-    people = Kind.find_by! name: 'person'
     relation = Relation.find_by(name: 'has created')
     other = FactoryGirl.create :has_created, from_kind_id: people.id, to_kind_id: works.id
     another = Relation.find_by(name: 'shows')
@@ -239,8 +242,6 @@ RSpec.describe Relation do
   end
 
   it 'should allow merges' do
-    works = Kind.find_by! name: 'work'
-    people = Kind.find_by! name: 'person'
     relation = Relation.find_by(name: 'has created')
     other = FactoryGirl.create :has_created, from_kind_id: people.id, to_kind_id: works.id
     relation.relationships.last.update_column(:relation_id, other.id)
@@ -262,8 +263,6 @@ RSpec.describe Relation do
   end
 
   it 'should merge relations with different names' do
-    works = Kind.find_by! name: 'work'
-    people = Kind.find_by! name: 'person'
     relation = Relation.find_by(name: 'has created')
     other = FactoryGirl.create(:relation,
       name: 'creator of',

@@ -53,7 +53,8 @@ Feature: Inplace relationship editor
     And I ignore the next confirmation box
     When I click icon "delete relationship"
     And I should see "relationship has been deleted"
-    And I should not see "Louvre" within "kor-relation"
+    And I should not see "Louvre" within "[data-is=kor-entity-page]"
+    And I should not see "is location of"
 
   Scenario: Change the relation on an existing relationship
     Given the relation "is known for/provides reputation to" between "location/locations" and "institution/institutions"
