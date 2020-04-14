@@ -34,6 +34,17 @@ Feature: Inplace relationship editor
     And I should not see "Create relationship"
     Then I should see "Der Schrei" within ".relations"
 
+  Scenario: create a second relationship
+    Given the relation "is birth place of/has birth place" between "location/locations" and "person/people"
+    Given I am logged in as "admin"
+    And I am on the entity page for "Paris"
+    When I click icon 'add relationship'
+    And I select "is birth place of" from "Relation"
+    And I click "Leonardo" within "kor-entity-selector"
+    And I press "Save"
+    And I debug
+    Then I should not see "Louvre" within "kor-relation[name='is birth place of']"
+
   Scenario: Add properties to an existing relationship
     Given I am logged in as "admin"
     When I go to the entity page for "Paris"

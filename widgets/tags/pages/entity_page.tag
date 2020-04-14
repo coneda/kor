@@ -113,7 +113,7 @@
             entity={data}
             name={name}
             total={count}
-            on-updated={reload}
+            ref="relations"
           />
         </div>
       </div>
@@ -359,6 +359,13 @@
         data: {include: 'all'}
         success: (data) ->
           tag.data = data
+
+          # nasty hack to force all the kor-relation tags to be remounted
+          rels = tag.data.relations
+          tag.data.relations = {}
+          tag.update()
+          tag.data.relations = rels
+
           tag.title tag.data.display_name
           linkify_properties()
           wApp.entityHistory.add(data.id)
