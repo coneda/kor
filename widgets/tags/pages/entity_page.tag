@@ -113,7 +113,7 @@
             entity={data}
             name={name}
             total={count}
-            on-updated={reload}
+            ref="relations"
           />
         </div>
       </div>
@@ -276,9 +276,11 @@
     tag.on 'mount', ->
       wApp.bus.on 'relationship-updated', fetch
       wApp.bus.on 'relationship-created', fetch
+      wApp.bus.on 'relationship-deleted', fetch
       fetch()
 
     tag.on 'unmount', ->
+      wApp.bus.off 'relationship-deleted', fetch
       wApp.bus.off 'relationship-created', fetch
       wApp.bus.off 'relationship-updated', fetch
 
@@ -357,6 +359,13 @@
         data: {include: 'all'}
         success: (data) ->
           tag.data = data
+
+          # nasty hack to force all the kor-relation tags to be remounted
+          rels = tag.data.relations
+          tag.data.relations = {}
+          tag.update()
+          tag.data.relations = rels
+
           tag.title tag.data.display_name
           linkify_properties()
           wApp.entityHistory.add(data.id)

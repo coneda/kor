@@ -104,7 +104,6 @@
 
       if (tag.relationship.id) {
         wApp.bus.trigger('relationship-updated');
-        h = tag.opts.onUpdated;
       } else {
         wApp.bus.trigger('relationship-created');
       }
