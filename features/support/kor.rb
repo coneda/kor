@@ -1,3 +1,8 @@
+require 'webdrivers'
+
+Webdrivers.cache_time = 86400 # 24 hours
+# Webdrivers.logger.level = :DEBUG
+
 class ActiveRecord::Base
   mattr_accessor :shared_connection
   @@shared_connection = nil
@@ -48,8 +53,8 @@ end
 Capybara.default_driver = :selenium
 
 if ENV['HEADLESS']
-  # Capybara.default_driver = :selenium_chrome_headless
-  Capybara.default_driver = :selenium_headless
+  Capybara.default_driver = :selenium_chrome_headless
+  # Capybara.default_driver = :selenium_headless
 end
 
 Around('@notravis') do |_scenario, block|

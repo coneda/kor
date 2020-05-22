@@ -6,6 +6,9 @@ env:
     - HEADLESS=true
     - DATABASE_URL="mysql2://travis@localhost/kor_test?encoding=utf8&collation=utf8_unicode_ci"
 
+addons:
+  chrome: stable
+
 services:
   - mysql
   - elasticsearch

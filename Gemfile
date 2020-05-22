@@ -34,6 +34,7 @@ group :test do
   gem 'database_cleaner'
   gem 'rspec-rails', '~> 3.8.2'
   gem 'selenium-webdriver'
+  gem 'webdrivers'
   gem 'simplecov', require: false
   gem 'vcr'
   gem 'webmock'
