@@ -48,7 +48,8 @@ end
 Capybara.default_driver = :selenium
 
 if ENV['HEADLESS']
-  Capybara.default_driver = :selenium_chrome_headless
+  # Capybara.default_driver = :selenium_chrome_headless
+  Capybara.default_driver = :selenium_headless
 end
 
 Around('@notravis') do |_scenario, block|
