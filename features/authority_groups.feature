@@ -53,6 +53,7 @@ Feature: authority groups
     And I press "Save"
     Then I should see "has been changed"
     And I should see "Mittachmahl" within "[data-is=kor-admin-group-categories]"
+    And I wait for "1" second
     And I should not see "archive" within "[data-is=kor-admin-group-categories]"
 
   Scenario: delete authority group category

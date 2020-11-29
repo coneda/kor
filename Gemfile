@@ -37,6 +37,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'simplecov', require: false
   gem 'vcr'
+  gem 'webdrivers'
   gem 'webmock'
   gem 'puma'
 end

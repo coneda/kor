@@ -14,7 +14,7 @@ Feature: Pagination
     Then I should see "work 00"
     And I should see "work 07"
     And I should not see "work 10"
-  
+
   Scenario: Paginate 33 items on the gallery
     Given I am logged in as "admin"
     And there are "31" media entities
@@ -30,6 +30,7 @@ Feature: Pagination
     And I should see "1" gallery item
     And the current js page should be "3"
 
+    And I wait for "1" second
     And I should see "1" gallery item
     When I click the first gallery item
     Then I should see "image/jpeg"
