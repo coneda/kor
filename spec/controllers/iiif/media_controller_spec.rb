@@ -26,5 +26,16 @@ RSpec.describe Iiif::MediaController, type: :controller do
       expect(response).to be_success
       expect(json['label']).to eq('entity 6')
     end
+
+    it 'should GET show with alternate manifest' do
+      Kor.settings.update(
+        'mirador_manifest_template' => 'spec/fixtures/manifest.json.jbuilder'
+      )
+
+      get 'show', params: {id: picture_a.id}
+      expect(response).to be_success
+      expect(json['id']).to eq(picture_a.id)
+      expect(json['label']).to eq('An alternate manifest')
+    end
   end
 end

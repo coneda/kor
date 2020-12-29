@@ -266,6 +266,12 @@ de:
       primary_relations: primäre Relationen
       secondary_relations: sekundäre Relationen
       repository_uuid: die generierte UUID für diese Installation ändern
+      mirador_page_template: |
+        (Absoluter) Pfad zu alternativem Template für die Seite zur Anzeige des
+        Mirador
+      mirador_manifest_template: |
+        (Absoluter) Pfad zu alternativem Template für die Manifest-Generierung
+        für die Mirador-Integration
 
       help_general: genereller Hilfetext (Menu)
       help_search: Hilfetext zur Suche

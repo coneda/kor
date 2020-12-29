@@ -147,6 +147,9 @@ module Kor
 
         'max_download_group_size' => 80,
 
+        'mirador_page_template' => nil,
+        'mirador_manifest_template' => nil,
+
         'search_entity_name' => 'Name / Title / UUID',
 
         'primary_relations' => [],

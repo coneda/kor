@@ -253,6 +253,12 @@ en:
       primary_relations: 'primary relations'
       secondary_relations: 'secondary relations'
       repository_uuid: 'override the generated repository UUID'
+      mirador_page_template: |
+        override the default page template for the mirador integration (absolute
+        path)
+      mirador_manifest_template: |
+        override the default manifest template for the mirador integration
+        (absolute path)
 
       help_general: general help text (menu)
       help_search: search help text

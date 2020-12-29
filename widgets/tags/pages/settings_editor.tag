@@ -202,6 +202,22 @@
           ref="fields"
         />
 
+        <kor-input
+          name="mirador_page_template"
+          label={nameFor('mirador_page_template')}
+          type="number"
+          riot-value={valueWithDefaults('mirador_page_template')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="mirador_manifest_template"
+          label={nameFor('mirador_page_template')}
+          type="number"
+          riot-value={valueWithDefaults('mirador_manifest_template')}
+          ref="fields"
+        />
+
         <h2>{tcap('settings.help')}</h2>
         <hr />
 

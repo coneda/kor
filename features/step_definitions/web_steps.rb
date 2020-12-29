@@ -35,6 +35,10 @@ When /^(?:|I )click button "([^"]*)"$/ do |locator|
   find_button(locator).click
 end
 
+When('I click element {string}') do |selector|
+  find(selector).click
+end
+
 When("I scroll down") do
   # sometimes, capybara doesn't correctly scroll to a button before clicking it
   sleep 1
@@ -342,4 +346,8 @@ When("I press the {string} key") do |string|
   else
     raise "unknown key: '#{string}'"
   end
+end
+
+Then('I should see page title {string}') do |title|
+  expect(page.title).to eq(title)
 end

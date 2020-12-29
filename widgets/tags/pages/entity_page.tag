@@ -217,7 +217,7 @@
           </span>
           |
           <a
-            href="{rootUrl()}mirador?manifest={rootUrl()}mirador/{data.id}"
+            href="{rootUrl()}mirador?id={data.id}&manifest={rootUrl()}mirador/{data.id}"
             onclick={openMirador}
           >{t('nouns.mirador')}</a>
           <br />
