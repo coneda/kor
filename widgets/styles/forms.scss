@@ -4,13 +4,13 @@ kor-input {
   }
 
   input, select, textarea {
-    border: 0.1rem solid $kor-input-border;
-    background-color: $kor-input-bg;
-    font-family: helvetica, arial;
+    border: var(--kor-input-border);
+    background-color: var(--kor-input-bg);
+    font-family: var(--kor-font);
     font-weight: bold;
     font-size: 1rem;
     line-height: 1.5rem;
-    color: $kor-shine;
+    color: var(--kor-shine);
     outline: none;
     height: 2rem;
   }
@@ -25,7 +25,7 @@ kor-input {
   }
 
   input:focus, textarea:focus {
-    background-color: $kor-input-bg-focus;
+    background-color: var(--kor-input-bg-focus);
   }
 
   input[type=submit], input[type=reset] {
@@ -36,17 +36,17 @@ kor-input {
     margin-bottom: 1rem;
 
     &:hover {
-      background-color: $kor-button-highlight;
+      background-color: var(--kor-button-highlight);
     }
   }
 
   .errors {
-    color: $kor-error;
+    color: var(--kor-error);
   }
 
   &.has-errors {
     input, select, textarea {
-      border-color: $kor-error;
+      border-color: var(--kor-error);
     }
   }
 }

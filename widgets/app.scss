@@ -1,6 +1,3 @@
-$background: #1e1e1e;
-$text: #bbbbbb;
-
 $kor-error: #cb1525;
 $kor-notice: #505050;
 $kor-bg: #1e1e1e;
@@ -8,41 +5,47 @@ $kor-bg-2: #292929;
 $kor-bg-3: #171717;
 $kor-text: #bbbbbb;
 $kor-shine: #ffffff;
-$kor-input-border: #565656;
+$kor-input-border: 0.1rem solid #565656;
 $kor-input-bg: #252525;
 $kor-input-bg-focus: #333333;
 $kor-button-highlight: #666666;
-$kor-line-gray: #505050;
+$kor-line-gray: #565656;
+$kor-box-shadow: #000000;
+$kor-menu-header: #777777;
+$kor-logo: #ffffff;
 
 $kor-font: helvetica, arial;
 $kor-font-size: 11px;
 $kor-line-height: 16px;
 $kor-small-font-size: 0.8rem;
 
-// @import '../public/vendor';
+:root {
+  --kor-error: #{$kor-error};
+  --kor-notice: #{$kor-notice};
+  --kor-bg: #{$kor-bg};
+  --kor-bg-2: #{$kor-bg-2};
+  --kor-bg-3: #{$kor-bg-3};
+  --kor-text: #{$kor-text};
+  --kor-shine: #{$kor-shine};
+  --kor-input-border: #{$kor-input-border};
+  --kor-input-bg: #{$kor-input-bg};
+  --kor-input-bg-focus: #{$kor-input-bg-focus};
+  --kor-button-highlight: #{$kor-button-highlight};
+  --kor-line-gray: #{$kor-line-gray};
+  --kor-box-shadow: #{$kor-box-shadow};
+  --kor-menu-header: #{$kor-menu-header};
+  --kor-font: #{$kor-font};
+  --kor-font-size: #{$kor-font-size};
+  --kor-line-height: #{$kor-line-height};
+  --kor-small-font-size: #{$kor-small-font-size};
+  --kor-logo: #{$kor-logo};
+}
 
-// @import 'styles/palette';
 
 @import 'styles/w/messaging';
 @import 'styles/w/modal';
-// @import 'styles/w/bar_chart';
 
 @import 'styles/layout';
 @import 'styles/app';
-// @import 'styles/header';
 @import 'styles/forms';
-// @import 'styles/icons';
-// @import 'styles/pages';
-// @import 'styles/notifications';
-// @import 'styles/search';
-// @import 'styles/application';
-// @import 'styles/entity';
-// @import 'styles/form';
-// @import 'styles/kinds';
-// @import 'styles/kind_editor';
-// @import 'styles/relations';
-// @import 'styles/menu';
 @import 'styles/modal';
-// @import 'styles/notifications';
-// @import 'styles/search';
-// @import 'styles/upload';

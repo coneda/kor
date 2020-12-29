@@ -3,15 +3,15 @@
 }
 
 html {
-  font-family: $kor-font;
-  font-size: $kor-font-size;
-  line-height: $kor-line-height;
-  color: $kor-text;
+  font-family: var(--kor-font);
+  font-size: var(--kor-font-size);
+  line-height: var(--kor-line-height);
+  color: var(--kor-text);
   
 }
 
 a {
-  color: $kor-shine;
+  color: var(--kor-shine);
   text-decoration: none;
   cursor: pointer
 }
@@ -22,14 +22,14 @@ a:hover {
 
 body {
   margin: 0rem;
-  background-color: $kor-bg;
+  background-color: var(--kor-bg);
 }
 
 h1 {
   font-size: 1.4rem;
   font-weight: bold;
   line-height: 1.8rem;
-  color: $kor-shine;
+  color: var(--kor-shine);
   margin-top: 0rem;
   margin-bottom: 3rem;
 }
@@ -51,7 +51,7 @@ h2:first-child, h3:first-child {
 hr {
   border: none;
   height: 1px;
-  background-color: $kor-notice;
+  background-color: var(--kor-line-gray);
 }
 
 table {
@@ -81,7 +81,7 @@ table {
   }
 
   td {
-    background-color: $kor-bg-2;
+    background-color: var(--kor-bg-2);
   }
 
   td.force-wrap {
@@ -92,16 +92,16 @@ table {
 button {
   border: none;
   cursor: pointer;
-  font-family: $kor-font;
+  font-family: var(--kor-font);
   font-weight: bold;
   font-size: 1rem;
   line-height: 1.5rem;
-  color: $kor-shine;
-  background-color: $kor-input-bg;
+  color: var(--kor-shine);
+  background-color: var(--kor-input-bg);
 }
 
 button:hover {
-  background-color: $kor-button-highlight;
+  background-color: var(--kor-button-highlight);
 }
 
 i {
@@ -119,7 +119,7 @@ i:last-child {
     position: relative;
     margin-left: 18rem;
     width: 72rem;
-    box-shadow: 0px 0px 25px #000000;
+    box-shadow: 0px 0px 25px var(--kor-box-shadow);
     margin-right: 0px;
     margin-bottom: 5rem;
 
@@ -149,14 +149,14 @@ kor-entity {
 
   .desc {
     a {
-      color: $kor-text;
+      color: var(--kor-text);
     }
   }
 
   &.medium {
     display: inline-block;
     height: 14.5rem;
-    font-size: $kor-small-font-size;
+    font-size: var(--kor-small-font-size);
     position: relative;
 
     kor-clipboard-control {
@@ -178,7 +178,7 @@ kor-entity {
 
     .content-type {
       font-weight: bold;
-      color: $kor-shine;
+      color: var(--kor-shine);
     }
   }
 
@@ -383,7 +383,7 @@ kor-relationship, [data-is=kor-relationship] {
 
   .part {
     padding: 1rem;
-    background-color: $kor-bg-2;
+    background-color: var(--kor-bg-2);
     margin-bottom: 0.1rem;
   }
 
@@ -392,13 +392,13 @@ kor-relationship, [data-is=kor-relationship] {
   }
 
   .media-relations {
-    background-color: $kor-bg;
+    background-color: var(--kor-bg);
     border-collapse: collapse;
 
     td {
       width: 33.3%;
       padding: 1rem;
-      border: 0.1rem solid $kor-bg;
+      border: 0.1rem solid var(--kor-bg);
 
       img {
         max-width: 10rem;
@@ -509,15 +509,15 @@ kor-generators {
 }
 
 .kor-shine {
-  color: $kor-shine;
+  color: var(--kor-shine);
 }
 
 .kor-error {
-  color: $kor-error;
+  color: var(--kor-error);
 }
 
 .kor-notice {
-  color: $kor-notice;
+  color: var(--kor-notice);
 }
 
 .kor-text-right {
@@ -567,7 +567,7 @@ kor-search, [data-is=kor-search] {
   }
 
   kor-pagination {
-    border-bottom: 1px solid $kor-bg-3;
+    border-bottom: 1px solid var(--kor-bg-3);
     padding-bottom: 1rem;
     padding-right: 1rem;
   }
@@ -579,7 +579,7 @@ kor-search, [data-is=kor-search] {
 
 kor-search-result {
   display: block;
-  border-bottom: 1px solid $kor-bg-3;
+  border-bottom: 1px solid var(--kor-bg-3);
 
   &:last-child {
     border-bottom: none;
@@ -592,7 +592,7 @@ kor-search-result {
   }
 
   a.to-entity:hover {
-    background-color: $kor-line-gray;
+    background-color: var(--kor-line-gray);
   }
 
   kor-clipboard-control {
@@ -609,7 +609,7 @@ kor-search-result {
   }
 
   div.kind {
-    color: $kor-text;
+    color: var(--kor-text);
     font-style: italic;
   }
 
@@ -618,14 +618,14 @@ kor-search-result {
     margin-bottom: 1rem;
     margin-left: 5rem;
     margin-right: 3rem;
-    background-color: $kor-bg-2;
+    background-color: var(--kor-bg-2);
   }
 
   kor-entity.medium {
     height: auto;
     float: left;
     padding: 1rem;
-    border-right: 1px solid $kor-bg;
+    border-right: 1px solid var(--kor-bg);
 
     a.to-medium {
       display: block;
@@ -656,6 +656,15 @@ kor-header, [data-is=kor-header] {
   .logo {
     display: block;
     float: left;
+
+    svg {
+      width: 73px;
+      height: 49px;
+
+      path {
+        fill: var(--kor-logo);
+      }
+    }
   }
 
   .session {
@@ -682,7 +691,7 @@ kor-upload, [data-is='kor-upload'] {
 
 kor-relations, [data-is=kor-relations] {
   .label, .name {
-    color: $kor-shine;
+    color: var(--kor-shine);
   }
 
   th:first-child {
@@ -704,7 +713,7 @@ kor-relation-merger, [data-is=kor-relation-merger] {
 kor-entity-page, [data-is=kor-entity-page] {
   .subtitle {
     font-size: 1rem;
-    color: $kor-text;
+    color: var(--kor-text);
   }
 
   .field {
@@ -713,12 +722,12 @@ kor-entity-page, [data-is=kor-entity-page] {
 
   span.value {
     font-weight: bold;
-    color: $kor-shine;
+    color: var(--kor-shine);
   }
 
   pre {
     margin: 0rem;
-    font-family: $kor-font;
+    font-family: var(--kor-font);
     white-space: pre-wrap;
   }
   
@@ -774,12 +783,12 @@ kor-menu {
   a {
     text-decoration: none;
     font-weight: bold;
-    color: $kor-text;
+    color: var(--kor-text);
   }
 
   .header {
     font-weight: bold;
-    color: #777777;
+    color: var(--kor-menu-header);
     margin-bottom: -0.5rem;
   }
 }
@@ -816,12 +825,12 @@ kor-entity-selector {
     }
 
     td.selected {
-      background-color: $kor-bg-3;
+      background-color: var(--kor-bg-3);
     }
   }
 
   .errors {
-    color: $kor-error;
+    color: var(--kor-error);
   }
 
   a.selected {
@@ -902,7 +911,7 @@ kor-input {
   }
 
   .help {
-    border: 1px solid $kor-input-border;
+    border: 1px solid var(--kor-input-border);
     padding: 0.5rem;
     margin-top: -1px;
     margin-bottom: 2rem;
