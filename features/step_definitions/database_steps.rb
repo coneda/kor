@@ -385,3 +385,7 @@ end
 Given("user {string} didn't accept the terms") do |name|
   User.find_by!(name: name).update terms_accepted: false
 end
+
+Given("user {string} has locale {string}") do |name, locale|
+  User.find_by!(name: name).update_attributes locale: locale
+end

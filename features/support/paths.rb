@@ -23,6 +23,7 @@ module NavigationHelpers
     when /the new user group page/ then '#/groups/user/new'
     when /the relations page/ then '#/relations'
     when /the upload page/ then '#/upload'
+    when 'the mirador page' then '/mirador'
     when /^page "(\d+)" of the gallery$/
       page = $1
       "#/new-media?page=#{page}"

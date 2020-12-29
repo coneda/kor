@@ -17,6 +17,8 @@ node_modules
 npm-debug.log
 widgets/tmp
 
+public/custom.css
+
 # Testing
 spec/.~lock*
 

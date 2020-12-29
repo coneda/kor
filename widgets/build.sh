@@ -23,14 +23,14 @@ function all {
 function watch {
   all || true
 
-  parallelshell \
-    "widgets/build.sh watch_vendor" \
-    "widgets/build.sh watch_lib" \
-    "widgets/build.sh watch_tags" \
-    "widgets/build.sh watch_css" \
-    "widgets/build.sh watch_app" \
-    "widgets/build.sh watch_html" \
-    "widgets/build.sh watch_images"
+  npm-run-all -p \
+    watch:vendor \
+    watch:lib \
+    watch:tags \
+    watch:css \
+    watch:app \
+    watch:html \
+    watch:images
 }
 
 function server {
