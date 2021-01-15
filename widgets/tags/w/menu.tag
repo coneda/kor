@@ -1,21 +1,24 @@
 <kor-menu>
 
-  <ul>
-    <li if={!isLoggedIn()}>
+  <ul if={!isLoggedIn()}>
+    <li>
       <a href="#/login">{tcap('nouns.login')}</a>
-    </li>
-
-    <li if={isLoggedIn()}>
-      <a href="#/clipboard">{tcap('nouns.clipboard')}</a>
     </li>
   </ul>
 
   <ul if={currentUser()}>
     <li>
-      <a href="#/new-media">{tcap('pages.new_media')}</a>
-    </li>
-    <li>
       <a href="#/search">{tcap('nouns.search')}</a>
+    </li>
+  </ul>
+
+  <ul>
+    <li if={isLoggedIn()}>
+      <a href="#/clipboard">{tcap('nouns.clipboard')}</a>
+    </li>
+
+    <li if={currentUser()}>
+      <a href="#/new-media">{tcap('pages.new_media')}</a>
     </li>
   </ul>
 

@@ -111,6 +111,14 @@ de:
       Um nach Teilbegriffen zu suchen, verwenden Sie * am Anfang oder Ende
       (oder beides) des jeweiligen Begriffs:
       <code>*zone</code> oder <code>quali*</code> oder <code>*vita*</code>
+    dating_query: |
+      Verwenden Sie Einzeldaten, Zeiträume und typische Ausdrücke aus der
+      Kunstgeschichte, wie:
+      <code>1792</code> oder
+      <code>1789 bis 1792</code> oder
+      <code>18. Jahrhundert</code> oder
+      <code>ca. 1800</code> oder
+      <code>nach 1792</code>
     date_input: Verwenden Sie das Format JJJJ-MM-TT
     file_size_query: |
       Mit vorangestelltem '+' suchen Sie nach allen Medien mit größerer

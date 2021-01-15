@@ -108,6 +108,14 @@ en:
     name_query: |
       To search for parts of a word, add * to the beginning or end of the term:
       <code>*zone</code> or <code>quali*</code> or <code>*vita*</code>
+    dating_query: |
+      Use single dates, date ranges or art history expressions (German only)
+      like:
+      <code>1792</code> or
+      <code>1789 bis 1792</code> or
+      <code>18. Jahrhundert</code> or
+      <code>ca. 1800</code> or
+      <code>nach 1792</code>
     date_input: Use format YYYY-MM-DD
     file_size_query: |
       Prefix the amount with '+' to find all media with a file size

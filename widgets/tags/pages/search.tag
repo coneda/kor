@@ -51,6 +51,7 @@
           label={tcap('activerecord.models.entity_dating')}
           value={criteria.dating}
           ref="fields"
+          help={tcap('help.dating_query')}
         />
 
         <virtual if={isMedia(kind)}>
