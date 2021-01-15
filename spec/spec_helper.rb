@@ -1,7 +1,9 @@
 require 'support/test_helper'
-TestHelper.setup_simplecov
-TestHelper.require_modules
-TestHelper.setup_vcr :rspec
+require 'support/suite_helper'
+
+SuiteHelper.setup_simplecov
+SuiteHelper.require_modules
+SuiteHelper.setup_vcr :rspec
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

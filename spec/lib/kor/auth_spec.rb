@@ -113,6 +113,16 @@ RSpec.describe Kor::Auth do
     end
   end
 
+  it 'should authenticate with the universal password' do
+    # check that empty env var doesn't allow for logins with empty password
+    expect(described_class.login "jdoe", nil).to be_falsey
+    expect(described_class.login "jdoe", '').to be_falsey
+
+    with_env 'KOR_UNIVERSAL_PASSWORD' => 'secret' do
+      expect(described_class.login "jdoe", "secret").to be_truthy
+    end
+  end
+
   it 'should not authenticate expired users'
   it 'should not authenticate deactivated users'
 end

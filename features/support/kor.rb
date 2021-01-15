@@ -22,8 +22,8 @@ end
 
 World(DataHelper)
 
-TestHelper.setup_vcr :cucumber
-TestHelper.setup
+SuiteHelper.setup_vcr :cucumber
+SuiteHelper.setup
 
 Capybara.server_port = 47001
 Capybara.default_max_wait_time = 5
@@ -58,12 +58,12 @@ Around('@notravis') do |_scenario, block|
 end
 
 Around do |_scenario, block|
-  TestHelper.around_each(&block)
+  SuiteHelper.around_each(&block)
 end
 
 Before do |scenario|
   reset_browser!
-  TestHelper.before_each(:cucumber, self, scenario)
+  SuiteHelper.before_each(:cucumber, self, scenario)
 end
 
 if ENV['DEBUG_FAILED'] == 'true'

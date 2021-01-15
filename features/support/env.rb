@@ -5,9 +5,9 @@
 # files.
 
 $: << File.expand_path(__dir__ + '/../../spec')
-require 'support/test_helper'
-TestHelper.setup_simplecov
-TestHelper.require_modules
+require 'support/suite_helper'
+SuiteHelper.setup_simplecov
+SuiteHelper.require_modules
 
 require 'cucumber/rails'
 require 'cucumber/rspec/doubles'
