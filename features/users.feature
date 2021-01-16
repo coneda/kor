@@ -26,8 +26,8 @@ Feature: User administration
 
   Scenario: Accept terms of use
     Given the user "jdoe"
-    Given the user "jdoe" has not accepted the terms of use
+    Given user "jdoe" didn't accept the terms
     And I am logged in as "jdoe"
     Then I should see "Terms of use"
-    When I follow "accept terms"
-    Then I should see "You have accepted the terms of use"
+    When I click button "Accept terms"
+    Then I should see "you have accepted the terms of use"

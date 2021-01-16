@@ -35,6 +35,14 @@
               r.name = names.join(' » ');
             }
           }
+
+          tag.groups.unshift({
+            name: tag.tcap('objects.create_group', {interpolations: {o: tag.opts.riotValue}}),
+            value: tag.opts.riotValue
+          })
+
+          console.log(tag.groups[0])
+
           tag.update();
         }
       })

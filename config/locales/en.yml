@@ -599,6 +599,7 @@ en:
     could_merge: "the selected %{o} could be merged"
     invert_success: "%{o} has been inverted"
     report: "report something about this %{o}"
+    create_group: "create or use group '%{o}'"
 
   move_contents_from: move content from %{o}
 

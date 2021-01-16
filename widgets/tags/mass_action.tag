@@ -8,47 +8,53 @@
 
   <hr />
 
-  <a 
-    class="action"
-    href="#"
-    onclick={merge}
-  >{tcap('clipboard_actions.merge')}</a>
+  <virtual if={opts.ids.length}>
+    <a
+      if={allowedTo('create') && allowedTo('delete')}
+      class="action"
+      href="#"
+      onclick={merge}
+    >{tcap('clipboard_actions.merge')}</a>
 
-  <a 
-    class="action"
-    href="#"
-    onclick={massRelate}
-  >{tcap('clipboard_actions.mass_relate')}</a>
+    <a
+      if={allowedTo('edit')}
+      class="action"
+      href="#"
+      onclick={massRelate}
+    >{tcap('clipboard_actions.mass_relate')}</a>
 
-  <a 
-    class="action"
-    href="#"
-    onclick={massDelete}
-  >{tcap('clipboard_actions.mass_delete')}</a>
+    <a
+      if={allowedTo('delete')}
+      class="action"
+      href="#"
+      onclick={massDelete}
+    >{tcap('clipboard_actions.mass_delete')}</a>
 
-  <a 
-    if={session().user.authority_group_admin}
-    class="action"
-    href="#"
-    onclick={addToAuthorityGroup}
-  >{tcap('clipboard_actions.add_to_authority_group')}</a>
+    <a
+      if={session().user.authority_group_admin}
+      class="action"
+      href="#"
+      onclick={addToAuthorityGroup}
+    >{tcap('clipboard_actions.add_to_authority_group')}</a>
 
-  <a 
-    class="action"
-    href="#"
-    onclick={addToUserGroup}
-  >{tcap('clipboard_actions.add_to_user_group')}</a>
+    <a
+      class="action"
+      href="#"
+      onclick={addToUserGroup}
+    >{tcap('clipboard_actions.add_to_user_group')}</a>
 
-  <a 
-    class="action"
-    href="#"
-    onclick={moveToCollection}
-  >{tcap('clipboard_actions.move_to_collection')}</a>
+    <!-- a
+      class="action"
+      href="#"
+      onclick={moveToCollection}
+    >{tcap('clipboard_actions.move_to_collection')}</a -->
+  </virtual>
 
 
   <script type="text/javascript">
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.auth);
     tag.mixin(wApp.mixins.i18n);
 
     tag.merge = function(event) {

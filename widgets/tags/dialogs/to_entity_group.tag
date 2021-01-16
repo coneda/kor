@@ -11,8 +11,17 @@
       <kor-input type="submit" />
     </form>
 
+    {opts.type}
+
     <a
+      if={opts.type == 'authority'}
       href="#/groups/categories/admin/new"
+      onclick={add}
+    >{t('create_new')}</a>
+
+    <a
+      if={opts.type == 'user'}
+      href="#/groups/user/new"
       onclick={add}
     >{t('create_new')}</a>
   </div>

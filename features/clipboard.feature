@@ -56,9 +56,6 @@ Feature: Clipboard
     And the relation "was created by/created" between "Work/Works" and "Person/People"
     And I put "Leonardo" into the clipboard
     And I go to the clipboard
-    And I follow "Relate with"
-    Then I should see "You must select at least one entity"
-    When I press "Cancel"
     And I follow "all"
     And I follow "Relate with"
     And I select "created" from "Relation"

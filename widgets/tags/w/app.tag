@@ -4,6 +4,7 @@
   <div>
     <kor-menu />
     <div class="w-content" />
+    <kor-footer />
   </div>
 
   <w-modal ref="modal" />

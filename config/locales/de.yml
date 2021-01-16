@@ -611,6 +611,7 @@ de:
     could_merge: "die ausgewählten %{o} können zusammengeführt werden"
     invert_success: "%{o} wurde invertiert"
     report: "diese %{o} melden"
+    create_group: "Gruppe '%{o}' erstellen"
 
   move_contents_from: Inhalte aus %{o} verschieben
 

@@ -1,12 +1,9 @@
 <kor-menu>
 
-  <ul if={!isLoggedIn()}>
-    <li>
+  <ul if={currentUser()}>
+    <li if={!isLoggedIn()}>
       <a href="#/login">{tcap('nouns.login')}</a>
     </li>
-  </ul>
-
-  <ul if={currentUser()}>
     <li>
       <a href="#/search">{tcap('nouns.search')}</a>
     </li>
@@ -157,7 +154,6 @@
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
     tag.mixin(wApp.mixins.config)
-    window.t = tag
 
     tag.on 'mount', ->
       wApp.bus.on 'reload-kinds', fetchKinds

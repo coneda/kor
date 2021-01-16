@@ -45,12 +45,15 @@
     tag.mixin(wApp.mixins.auth)
     tag.mixin(wApp.mixins.page)
 
-    tag.on 'before-mount', ->
+    tag.on 'before-mount', (e)->
       tag.errors = {}
       fetchCategories()
 
       if !tag.isAuthorityGroupAdmin()
         wApp.bus.trigger('access-denied')
+
+        # found no other way to prevent the tag mount
+        throw 'access denied'
 
     tag.on 'mount', ->
       if tag.opts.id

@@ -122,6 +122,7 @@ i:last-child {
     box-shadow: 0px 0px 25px var(--kor-box-shadow);
     margin-right: 0px;
     margin-bottom: 5rem;
+    min-height: 25rem;
 
     kor-help-button {
       display: block;
@@ -790,6 +791,18 @@ kor-menu {
     font-weight: bold;
     color: var(--kor-menu-header);
     margin-bottom: -0.5rem;
+  }
+}
+
+kor-footer {
+  width: 792px;
+  display: flex;
+  justify-content: center;
+  margin-left: 200px;
+  margin-bottom: 3rem;
+
+  a {
+    margin-right: 4rem;
   }
 }
 
