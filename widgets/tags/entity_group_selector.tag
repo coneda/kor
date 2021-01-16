@@ -12,9 +12,9 @@
   />  
 
   <script type="text/javascript">
-    var tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
+    var tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
 
     tag.on('mount', function() {
       Zepto.ajax({
@@ -36,10 +36,12 @@
             }
           }
 
-          tag.groups.unshift({
-            name: tag.tcap('objects.create_group', {interpolations: {o: tag.opts.riotValue}}),
-            value: tag.opts.riotValue
-          })
+          if (tag.opts.riotValue) {
+            tag.groups.unshift({
+              name: tag.tcap('objects.create_group', {interpolations: {o: tag.opts.riotValue}}),
+              value: tag.opts.riotValue
+            })
+          }
 
           console.log(tag.groups[0])
 
