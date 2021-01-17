@@ -1,6 +1,7 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
+  NewCops: enable
   DisplayCopNames: true
   DisplayStyleGuide: true
   ExtraDetails: true
@@ -10,10 +11,10 @@ AllCops:
     - '.git/**/*'
     - 'db/schema.rb'
 
-Layout/AlignArguments:
+Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
 
-Layout/AlignArray:
+Layout/ArrayAlignment:
   Exclude:
     - 'app/models/relation.rb'
 

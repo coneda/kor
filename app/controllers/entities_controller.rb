@@ -62,7 +62,7 @@ class EntitiesController < JsonController
     }
 
     if params[:file_size].present?
-      regex = /^([\+\-])?(\d+)\s*(kb|mb|gb|tb)?$/
+      regex = /^([+\-])?(\d+)\s*(kb|mb|gb|tb)?$/
       x, sign, size, unit = params[:file_size].downcase.match(regex).to_a
       if size
         if unit
@@ -134,15 +134,14 @@ class EntitiesController < JsonController
         @record = @entity
         render_created @entity
       else
-        if @entity.medium && @entity.medium.errors[:datahash].present?
-          if params[:user_group_name]
-            transit = UserGroup.owned_by(current_user).find_or_create_by(name: params[:user_group_name])
+        exists = @entity.medium && @entity.medium.errors[:datahash].present?
+        if exists && params[:user_group_name]
+          transit = UserGroup.owned_by(current_user).find_or_create_by(name: params[:user_group_name])
 
-            if transit
-              @entity = Medium.where(datahash: @entity.medium.datahash).first.entity
-              transit.add_entities @entity
-              render_created @entity and return
-            end
+          if transit
+            @entity = Medium.where(datahash: @entity.medium.datahash).first.entity
+            transit.add_entities @entity
+            render_created @entity and return
           end
         end
 

@@ -10,7 +10,7 @@ class Iiif::MediaController < JsonController
     # to make sure the right data is exposed
 
     alt = Kor.settings['mirador_page_template']
-    if alt.present? && File.exists?(alt)
+    if alt.present? && File.exist?(alt)
       render file: alt
     end
   end
@@ -25,7 +25,7 @@ class Iiif::MediaController < JsonController
       @thumb_width, @thumb_height = dimensions.split('x').map{ |v| v.to_i }
 
       alt = Kor.settings['mirador_manifest_template']
-      if alt.present? && File.exists?(alt)
+      if alt.present? && File.exist?(alt)
         render file: alt
       end
     else

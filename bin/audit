@@ -3,6 +3,8 @@
 rm -f tmp/brakeman.html tmp/rubocop.html
 
 # run brakeman -I to manage config/brakeman.ignore
+echo "haaalo"
+
 brakeman
 xdg-open tmp/brakeman.html
 

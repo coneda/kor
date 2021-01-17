@@ -2,7 +2,7 @@ class Field < ApplicationRecord
   serialize :settings, Hash
 
   acts_as_list scope: [:kind_id], top_of_list: 0
-  default_scope { order(:position) }
+  default_scope{ order(:position) }
   
   belongs_to :kind, touch: true
 

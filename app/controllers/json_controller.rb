@@ -193,7 +193,9 @@ class JsonController < BaseController
     end
 
     def zip_download(group, entities)
-      if !entities.empty?
+      if entities.empty?
+        render_200 I18n.t('messages.no_entities_in_group')
+      else
         zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/download.zip",
           :user_id => current_user.id,
           :file_name => "#{group.name}.zip"
@@ -210,8 +212,6 @@ class JsonController < BaseController
           download = zip_file.create_as_download
           redirect_to url_for(controller: 'downloads', action: 'show', uuid: download.uuid)
         end
-      else
-        render_200 I18n.t('messages.no_entities_in_group')
       end
     end
 end

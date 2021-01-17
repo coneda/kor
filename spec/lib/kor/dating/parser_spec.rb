@@ -6,7 +6,7 @@ RSpec::Matchers.define :parse do |input|
       parser.parse input
     rescue Parslet::ParseFailed
       false
-    rescue Kor::Exception => e
+    rescue Kor::Exception
       false
     end
   end
