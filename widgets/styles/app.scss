@@ -315,6 +315,16 @@ kor-user-editor, [data-is=kor-user-editor] {
   }
 }
 
+[data-is=kor-new-media] {
+  kor-pagination {
+    margin-top: 0.5rem;
+  }
+
+  kor-pagination.top {
+    margin-bottom: 0.5rem;
+  }
+}
+
 kor-clipboard-subselect-control {
   display: block;
   text-align: center;
