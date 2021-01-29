@@ -45,16 +45,13 @@ class Kor::Tasks
     end
 
     if config[:assume_yes] || response == "yes"
-      zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/terminal_download.zip",
-        :user_id => User.admin.id,
-        :file_name => "#{group.name}.zip"
+      zip_file = Kor::ZipFile.create(
+        User.admin.id,
+        group.class.name,
+        group.id,
+        group.entities.pluck(:id)
       )
-
-      group.entities.media.each do |e|
-        zip_file.add_entity e
-      end
-
-      download = zip_file.create_as_download
+      download = zip_file.build
       puts "Packaging complete, the zip file can be downloaded via"
       puts "#{Kor.root_url}/downloads/#{download.uuid}"
     end

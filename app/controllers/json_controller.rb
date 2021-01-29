@@ -194,24 +194,32 @@ class JsonController < BaseController
 
     def zip_download(group, entities)
       if !entities.empty?
-        zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/download.zip",
-          :user_id => current_user.id,
-          :file_name => "#{group.name}.zip"
-        )
+        args = [
+          current_user.id,
+          group.class.name,
+          group.id,
+          entities.pluck(:id)
+        ]
 
-        entities.each do |e|
-          zip_file.add_entity e
-        end
+        zip_file = Kor::ZipFile.create(*args)
 
         if zip_file.background?
-          zip_file.send_later :create_as_download
-          render_200 I18n.t('messages.creating_zip_file')
+          GenericJob.perform_later('constant', 'Kor::ZipFile', 'create!', *args)
+          flash[:notice] = I18n.t('messages.creating_zip_file')
+          redirect_to root_path(:anchor => group_path(group))
         else
-          download = zip_file.create_as_download
+          download = zip_file.build
           redirect_to url_for(controller: 'downloads', action: 'show', uuid: download.uuid)
         end
       else
         render_200 I18n.t('messages.no_entities_in_group')
+      end
+    end
+
+    def group_path(group)
+      case group
+      when UserGroup then "/groups/user/#{group.id}"
+      when AuthorityGroup then "/groups/admin/#{group.id}"
       end
     end
 end

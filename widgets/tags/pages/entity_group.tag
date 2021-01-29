@@ -8,6 +8,12 @@
         onclick={onMarkClicked}
       ><i class="fa fa-clipboard"></i></a>
       <a
+        if={opts.type == 'user'}
+        href="/user_groups/{opts.id}/download_images"
+        title={t('title_verbs.zip')}
+      ><i class="fa fa-download"></i></a>
+      <a
+        if={opts.type == 'authority'}
         href="/authority_groups/{opts.id}/download_images"
         title={t('title_verbs.zip')}
       ><i class="fa fa-download"></i></a>

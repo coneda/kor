@@ -1,4 +1,6 @@
-json.messages @messages
+if flash[:notice]
+  json.notice flash[:notice]
+end
 
 json.session do
   json.locale Kor.settings['default_locale']
@@ -14,4 +16,5 @@ json.session do
       }
     end
   end
+
 end
