@@ -68,6 +68,10 @@ are some highlights:
 * setting `DEBUG_FAILED=true` while running the cucumber test suite will drop
   to a `pry` session on test failures
 
+## Version 3.0.5
+
+This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.5+).
+
 ## Version 3.0.4
 
 This is just a bugfix release. This includes all bugfixes from the (never

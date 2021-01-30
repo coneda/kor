@@ -24,11 +24,13 @@ Feature: User administration
     Then I should see "jdoe"'s API Key
 
   Scenario: Accept terms of use
-    Given the user "jdoe" has not accepted the terms of use
+    Given user "jdoe" didn't accept the terms
     And I am logged in as "jdoe"
     Then I should see "Terms of use"
-    When I follow "accept terms"
-    Then I should see "You have accepted the terms of use"
+    When I press "Accept terms"
+    Then I should see "you have accepted the terms of use"
+    When I follow "Search"
+    Then I should see "Search results"
 
   Scenario: Reset a user's password
     Given I am logged in as "admin"

@@ -17,6 +17,7 @@ class OaiPmh::EntitiesController < OaiPmh::BaseController
 
     def records
       Entity.
+        order(:id).
         with_deleted.
         includes(:kind, :medium, :datings, :taggings)
     end

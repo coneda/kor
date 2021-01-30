@@ -32,13 +32,13 @@ group :test do
   gem 'connection_pool'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
+  gem 'puma'
   gem 'rspec-rails', '~> 3.8.2'
   gem 'selenium-webdriver'
-  gem 'webdrivers'
   gem 'simplecov', require: false
   gem 'vcr'
+  gem 'webdrivers'
   gem 'webmock'
-  gem 'puma'
 end
 
 group :development do

@@ -80,10 +80,10 @@ class BaseController < ApplicationController
       end
     end
 
-    def profile
+    def profile(&block)
       path = request.path.gsub("/", "_")
       path = "#{Rails.root}/tmp/profiles/#{path}"
-      PerfTools::CpuProfiler.start(path) do
+      PerfTools::CpuProfiler.start path do
         yield
       end
     end

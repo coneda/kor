@@ -1,6 +1,6 @@
 class FieldsController < JsonController
   skip_before_action :legal
-  
+
   def show
     @kind = Kind.find(params[:kind_id])
     @record = @kind.fields.find(params[:id])
