@@ -9,11 +9,9 @@ if inclusion.request?('counts')
   json.extract! record, :entity_count
 end
 
-if inclusion.request?('owner')
-  if record.owner
-    json.owner do
-      json.partial! 'users/customized', {record: record.owner}
-    end
+if inclusion.request?('owner') && record.owner
+  json.owner do
+    json.partial! 'users/customized', {record: record.owner}
   end
 end
 

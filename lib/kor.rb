@@ -14,7 +14,7 @@ module Kor
   end
 
   def self.source_code_url
-    if version.match(/\-pre$/)
+    if version.match(/-pre$/)
       if self.commit
         Kor.settings['sources_pre_release'].gsub(/\{\{commit\}\}/, Kor.commit)
       else

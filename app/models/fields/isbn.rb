@@ -1,9 +1,7 @@
 class Fields::Isbn < Field
   def validate_value
-    if value.present?
-      if !value.gsub('-', '').match(/^(978|979)?[0-9]{9}[0-9x]?$/)
-        return :invalid
-      end
+    if value.present? && !value.gsub('-', '').match(/^(978|979)?[0-9]{9}[0-9x]?$/)
+      return :invalid
     end
 
     true

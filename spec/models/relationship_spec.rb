@@ -79,5 +79,4 @@ RSpec.describe Relationship do
     expect(relationship.valid?).to be(true)
     expect(relationship.save).to be(true)
   end
-
 end

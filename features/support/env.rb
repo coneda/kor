@@ -4,7 +4,7 @@
 # instead of editing this one. Cucumber will automatically load all features/**/*.rb
 # files.
 
-$: << File.expand_path(__dir__ + '/../../spec')
+$: << File.expand_path("#{__dir__}/../../spec")
 require 'support/test_helper'
 TestHelper.setup_simplecov
 TestHelper.require_modules

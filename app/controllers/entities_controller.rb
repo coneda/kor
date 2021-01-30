@@ -135,7 +135,7 @@ class EntitiesController < JsonController
         render_created @entity
       else
         condition =
-          @entity.medium && 
+          @entity.medium &&
           @entity.medium.errors[:datahash].present? &&
           params[:user_group_name]
         if condition

@@ -28,7 +28,7 @@ class OaiPmh::BaseController < BaseController
   end
 
   def list_identifiers
-    record_params = params.select do |k, v|
+    record_params = params.select do |k, _v|
       ["metadataPrefix", "from", "until", "set", "resumptionToken", 'page', 'per_page'].include?(k)
     end
 
@@ -42,7 +42,7 @@ class OaiPmh::BaseController < BaseController
   end
 
   def list_records
-    record_params = params.select do |k, v|
+    record_params = params.select do |k, _v|
       ["metadataPrefix", "from", "until", "set", "resumptionToken", 'page', 'per_page'].include?(k)
     end
 
@@ -86,17 +86,13 @@ class OaiPmh::BaseController < BaseController
 
     def ensure_datestamp_format
       regex = /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ$/
-      
-      if params[:from].present?
-        unless params[:from].match(regex)
-          render_error 'badArgument', 'from has incorrect format'
-        end
+
+      if params[:from].present? && !params[:from].match(regex)
+        render_error 'badArgument', 'from has incorrect format'
       end
 
-      if params[:until].present?
-        unless params[:until].match(regex)
-          render_error 'badArgument', 'until has incorrect format'
-        end
+      if params[:until].present? && !params[:until].match(regex)
+        render_error 'badArgument', 'until has incorrect format'
       end
     end
 

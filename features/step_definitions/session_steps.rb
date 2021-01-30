@@ -1,4 +1,4 @@
-Given /^I am logged in as "([^\"]*)"/ do |user|
+Given /^I am logged in as "([^"]*)"/ do |user|
   reset_browser!
   # # for the reset to work, the browser's current url has to match our origin
   # visit '/info'
@@ -20,13 +20,13 @@ Given /^I am logged in as "([^\"]*)"/ do |user|
   expect(page).to have_text("logged in as: ")
 end
 
-Given /^the user "([^\"]*)"$/ do |user|
+Given /^the user "([^"]*)"$/ do |user|
   unless User.exists? :name => user
     FactoryGirl.create :user, :name => user, :password => user, :email => "#{user}@example.com"
   end
 end
 
-Given /^the user "([^\"]*)" has password "([^\"]*)"$/ do |username, password|
+Given /^the user "([^"]*)" has password "([^"]*)"$/ do |username, password|
   user = User.find_by!(name: username)
   user.update_attributes(
     password: password,
@@ -35,7 +35,7 @@ Given /^the user "([^\"]*)" has password "([^\"]*)"$/ do |username, password|
   )
 end
 
-Given /^the user "([^\"]*)" with credential "([^\"]*)"$/ do |user, credential|
+Given /^the user "([^"]*)" with credential "([^"]*)"$/ do |user, credential|
   step "the credential \"#{credential}\""
   step "the user \"#{user}\""
   user = User.find_by_name(user)
@@ -44,7 +44,7 @@ Given /^the user "([^\"]*)" with credential "([^\"]*)"$/ do |user, credential|
   user.save
 end
 
-Given /^I re\-login as "([^"]*)"$/ do |user|
+Given /^I re-login as "([^"]*)"$/ do |user|
   step "I log out"
   step "I am logged in as \"#{user}\""
 end
@@ -60,7 +60,7 @@ When(/^I put "(.*?)" into the clipboard$/) do |name|
   step "I should see a message containing \"has been added to the clipboard\""
 end
 
-When /^I travel "([^\"]*)"$/ do |time|
+When /^I travel "([^"]*)"$/ do |time|
   travel eval(time)
 end
 
@@ -76,7 +76,7 @@ Given /^the session is not forcibly expired anymore$/ do
   allow_any_instance_of(BaseController).to receive(:session_expired?).and_call_original
 end
 
-Given /^all entities of kind "([^\"]*)" are in the clipboard$/ do |kind|
+Given /^all entities of kind "([^"]*)" are in the clipboard$/ do |kind|
   Kind.find_by!(name: kind.split("/").first).entities.each do |entity|
     step "I go to the entity page for \"#{entity.uuid}\""
     step "I should see \"#{entity.name}\""

@@ -3,7 +3,10 @@ require "rails_helper"
 RSpec.describe Kor::Auth do
   it "should create users when they don't exist" do
     expect(User).to receive(:generate_password).exactly(:once)
-    user = described_class.authorize "hmustermann", "email" => "hmustermann@coneda.net"
+    user = described_class.authorize(
+      "hmustermann", 
+      additional_attributes: {"email" => "hmustermann@coneda.net"}
+    )
 
     expect(user.name).to eq("hmustermann")
   end
@@ -46,7 +49,12 @@ RSpec.describe Kor::Auth do
     it 'has mail attribute in config and finds a value for it' do
       env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
       expect(described_class).to receive(:authorize).with(
-        'jdoe', hash_including(email: 'jdoe@personal.com')
+        'jdoe',
+        additional_attributes: hash_including(email: 'jdoe@example.com')
+      )
+      expect(described_class).to receive(:authorize).with(
+        'jdoe',
+        additional_attributes: hash_including(email: 'jdoe@personal.com')
       )
       expect(described_class.env_login env)
     end
@@ -54,7 +62,8 @@ RSpec.describe Kor::Auth do
     it 'has mail attribute in config and finds no value for it' do
       env = {'REMOTE_USER' => 'jdoe'}
       expect(described_class).to receive(:authorize).with(
-        'jdoe', hash_including(:email => 'jdoe@example.com')
+        'jdoe',
+        additional_attributes: hash_including(:email => 'jdoe@example.com')
       )
       expect(described_class.env_login env)
     end
@@ -63,7 +72,8 @@ RSpec.describe Kor::Auth do
       described_class.sources['remoteuser'].delete 'mail'
       env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
       expect(described_class).to receive(:authorize).with(
-        'jdoe', hash_including(email: 'jdoe@example.com')
+        'jdoe',
+        additional_attributes: hash_including(email: 'jdoe@example.com')
       )
       expect(described_class.env_login env)
     end
@@ -72,7 +82,8 @@ RSpec.describe Kor::Auth do
       described_class.sources['remoteuser'].delete 'mail'
       env = {'REMOTE_USER' => 'jdoe'}
       expect(described_class).to receive(:authorize).with(
-        'jdoe', hash_including(:email => 'jdoe@example.com')
+        'jdoe',
+        additional_attributes: hash_including(:email => 'jdoe@example.com')
       )
       expect(described_class.env_login env)
     end

@@ -696,7 +696,7 @@ class Kor::Elastic
 
   def self.require_ok(response)
     if response.status < 200 || response.status >= 300
-      raise Exception.new("error", [response.status, response.headers, JSON.load(response.body)])
+      raise StandardError.new("error", [response.status, response.headers, JSON.load(response.body)])
     end
   end
 

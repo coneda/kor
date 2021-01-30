@@ -41,7 +41,7 @@ class Kor::Tasks
 
     response = unless config[:assume_yes]
       print "Continue [yes/no]? "
-      STDIN.gets.strip
+      $stdin.gets.strip
     end
 
     if config[:assume_yes] || response == "yes"
@@ -217,7 +217,7 @@ class Kor::Tasks
         maxes[i] ||= data.map{ |r| r[i].to_s.size }.max
         row << "#{field.to_s.ljust(maxes[i])}"
       end
-      puts '| ' + row.join(' | ') + ' |'
+      puts "| #{row.join(' | ')} |"
     end
   end
 end

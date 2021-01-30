@@ -16,5 +16,4 @@ json.session do
       }
     end
   end
-
 end

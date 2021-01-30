@@ -8,37 +8,37 @@ module HtmlSelectorsHelpers
   def selector_for(locator)
     case locator
 
-    when /the row for authority group category "([^\"]+)"/
+    when /the row for authority group category "([^"]+)"/
       [:css, '[data-is=kor-admin-group-categories] tr', {text: $1}]
 
-    when /the row for credential "([^\"]+)"/
+    when /the row for credential "([^"]+)"/
       [:css, '[data-is=kor-credentials] tr', {text: $1}]
 
-    when /the row for collection "([^\"]+)"/
+    when /the row for collection "([^"]+)"/
       [:css, '[data-is=kor-collections] tr', {text: $1}]
 
-    when /the row for authority group "([^\"]+)"/
+    when /the row for authority group "([^"]+)"/
       [:css, 'kor-admin-groups tr', {text: $1}]
 
-    when /the row for user "([^\"]+)"/
+    when /the row for user "([^"]+)"/
       [:css, '[data-is=kor-users] tr', {text: $1}]
 
-    when /the row for kind "([^\"]+)"/
+    when /the row for kind "([^"]+)"/
       [:css, '[data-is=kor-kinds] tr', {text: $1}]
 
-    when /the row for field "([^\"]+)"/
+    when /the row for field "([^"]+)"/
       [:css, 'kor-fields li', {text: $1}]
 
-    when /the row for generator "([^\"]+)"/
+    when /the row for generator "([^"]+)"/
       [:css, 'kor-generators li', {text: $1}]
 
-    when /the row for relation "([^\"]+)"/
+    when /the row for relation "([^"]+)"/
       [:css, '[data-is=kor-relations] tr', {text: $1}]
 
-    when /relation merger row for relation "([^\"]+)"/
+    when /relation merger row for relation "([^"]+)"/
       [:css, 'kor-relation-merger li', {text: $1}]
 
-    when /widget "([^\"]+)"/
+    when /widget "([^"]+)"/
       name = $1
       [:css, "#{name}, [data-is=#{name}]"]
 

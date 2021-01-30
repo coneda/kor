@@ -34,9 +34,10 @@ class Kor::Statistics::Exif < Kor::Statistics::Simple
 
     file = medium.medium.image.path :original
     content_type = medium.medium.content_type.split('/').last.downcase
-    parser = if content_type.match(/tiff?/)
+    parser = case content_type
+    when /tiff?/
       EXIFR::TIFF.new(file)
-    elsif content_type.match(/jpe?g/)
+    when /jpe?g/
       EXIFR::JPEG.new(file)
     else
       nil

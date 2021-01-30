@@ -5,8 +5,7 @@ class Kor::ZipFile
     @files = {}
   end
 
-  attr_reader :filename
-  attr_reader :options
+  attr_reader :filename, :options
 
   def self.create(user_id, group_klass, group_id, entity_ids)
     group = group_klass.constantize.find(group_id)

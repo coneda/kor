@@ -6,7 +6,7 @@ class AddSubtypeToEntities < ActiveRecord::Migration
 
     Entity.find_each do |e|
       if e.dataset_type && e.dataset_id
-        table_name = 'dataset_' + e.dataset_type.pluralize.underscore.split('_').last
+        table_name = "dataset_#{e.dataset_type.pluralize.underscore.split('_').last}"
         dataset = Kor.db.select_all("SELECT * FROM #{table_name} WHERE id = #{e.dataset_id}").first
         Entity.update_all("subtype = '#{dataset['subtype']}'", "id = #{e.id}") if dataset['subtype']
       end

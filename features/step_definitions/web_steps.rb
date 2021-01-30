@@ -70,7 +70,7 @@ Then /^(?:|I )should see "([^"]*)"(?: exactly "(\d+)" times?)?$/ do |text, amoun
   end
 end
 
-Then /^(?:|I )should not see "([^\"]*)"$/ do |text|
+Then /^(?:|I )should not see "([^"]*)"$/ do |text|
   expect(page).to have_no_content(text)
 end
 
@@ -87,7 +87,7 @@ Then /^(?:|I )should be on (.+)$/ do |page_name|
   end
 end
 
-Then /^I should (not )?see element "([^\"]*)"$/ do |yesno, selector|
+Then /^I should (not )?see element "([^"]*)"$/ do |yesno, selector|
   if yesno == 'not '
     if (elements = page.all(selector)).size > 0
       elements.each do |element|
@@ -101,7 +101,7 @@ Then /^I should (not )?see element "([^\"]*)"$/ do |yesno, selector|
   end
 end
 
-When /^I select "([^\"]*)" from the collections selector$/ do |collections|
+When /^I select "([^"]*)" from the collections selector$/ do |collections|
   names = collections.split('/')
   within('kor-collection-selector'){ click_link('edit') }
   click_link 'none'
@@ -115,7 +115,7 @@ Then /^I should see "([^"]*)" before "([^"]*)"$/ do |preceeding, following|
   expect(page.body).to match(/#{preceeding}.*#{following}/m)
 end
 
-When /^(?:|I )unselect "([^\"]*)" from "([^\"]*)"(?: within "([^\"]*)")?$/ do |value, field, selector|
+When /^(?:|I )unselect "([^"]*)" from "([^"]*)"(?: within "([^"]*)")?$/ do |value, field, selector|
   if selector
     within(:css, selector) do
       unselect(value, :from => field)
@@ -142,7 +142,7 @@ Then /^I should see the video player$/ do
   expect(page).to have_selector('video')
 end
 
-Then(/^I should (not )?see option "([^\"]+)"$/) do |negator, text|
+Then(/^I should (not )?see option "([^"]+)"$/) do |negator, text|
   if negator == "not "
     expect(page).not_to have_selector("option", :text => text)
   else
@@ -154,7 +154,7 @@ Then(/^I should see a link "(.*?)" leading to "(.*?)"$/) do |text, href|
   expect(page.find_link(text)['href']).to match(href)
 end
 
-Then(/^I should (not )?see link "([^\"]+)"$/) do |negate, text|
+Then(/^I should (not )?see link "([^"]+)"$/) do |negate, text|
   if negate.present?
     expect(page).not_to have_link(text, exact: true)
   else

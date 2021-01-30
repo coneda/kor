@@ -80,12 +80,10 @@ class BaseController < ApplicationController
       end
     end
 
-    def profile(&block)
+    def profile
       path = request.path.gsub("/", "_")
       path = "#{Rails.root}/tmp/profiles/#{path}"
-      PerfTools::CpuProfiler.start path do
-        yield
-      end
+      PerfTools::CpuProfiler.start path, &block
     end
 
     def set_default_url_options

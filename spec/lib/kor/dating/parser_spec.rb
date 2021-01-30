@@ -6,7 +6,7 @@ RSpec::Matchers.define :parse do |input|
       parser.parse input
     rescue Parslet::ParseFailed
       false
-    rescue Kor::Exception => e
+    rescue Kor::Exception
       false
     end
   end
@@ -224,12 +224,12 @@ RSpec.describe Kor::Dating::Parser do
     # parsing should work, but the transform should fail
     expect(subject).to parse('29.2.1994')
 
-    expect{
+    expect do
       subject.transform('29.2.1994')
-    }.to raise_error(Kor::Exception, '1994 is not a leap year')
+    end.to raise_error(Kor::Exception, '1994 is not a leap year')
 
-    expect{
+    expect do
       expect(subject.transform('29.2.1994 bis 1.2.2013')).to eq(nil)
-    }.to raise_error(Kor::Exception, '1994 is not a leap year')
+    end.to raise_error(Kor::Exception, '1994 is not a leap year')
   end
 end

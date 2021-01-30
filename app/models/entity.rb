@@ -198,6 +198,7 @@ class Entity < ApplicationRecord
   end
 
   attr_accessor :user_group_id
+
   def add_to_user_group
     if user_group_id
       user_group = UserGroup.find(user_group_id)
@@ -332,7 +333,7 @@ class Entity < ApplicationRecord
     elsif no_name_statement == 'enter_name'
       distinct_name.blank? ? name : "#{name} (#{distinct_name})".strip
     else
-      I18n.t('values.no_name_statements.' + no_name_statement).capitalize
+      I18n.t("values.no_name_statements.#{no_name_statement}").capitalize
     end
   end
 
