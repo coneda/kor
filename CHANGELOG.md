@@ -7,7 +7,7 @@ commit history and the closed issues on GitHub.
 
 ## Version 4.0.1
 
-This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.3+).
+This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?q=is%3Aissue+milestone%3Av4.0.1+is%3Aclosed).
 
 * dropping angularjs previously prompted using riotjs for rendering custom
   generators. The latter did actually not perform all required operations (e.g.

@@ -1,0 +1,4 @@
+#!/bin/bash -e
+
+bundle exec rspec spec/ --format=documentation
+bundle exec cucumber features/ --format=pretty --no-strict --retry 3
