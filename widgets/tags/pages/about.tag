@@ -16,7 +16,7 @@
 
     tag.on 'mount', ->
       tag.title(tag.t('about'))
-      Zepto(tag.root).find('.target').html tag.config().legal_html
+      Zepto(tag.root).find('.target').html tag.config().about_html
 
   </script>
 </kor-about>

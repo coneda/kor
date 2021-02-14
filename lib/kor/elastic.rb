@@ -76,14 +76,14 @@ class Kor::Elastic
                   'type' => 'asciifolding',
                   'preserve_original' => true
                 }
-              },
-              'tokenizer' => {
-                'gram' => {
-                  'type' => 'ngram',
-                  'min_gram' => 2,
-                  'max_gram' => 30
-                }
               }
+              # 'tokenizer' => {
+              #   'gram' => {
+              #     'type' => 'ngram',
+              #     'min_gram' => 2,
+              #     'max_gram' => 30
+              #   }
+              # }
             }
           }
         },
