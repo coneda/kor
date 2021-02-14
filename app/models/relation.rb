@@ -150,8 +150,8 @@ class Relation < ApplicationRecord
     tos = Array.wrap(tos).map{ |e| e.to_i }.uniq
 
     results = (
-      Relation.by_from(froms).by_to(tos).map{|r| r.name} + 
-      Relation.by_from(tos).by_to(froms).map{|r| r.reverse_name}
+      Relation.by_from(froms).by_to(tos).map{ |r| r.name } +
+      Relation.by_from(tos).by_to(froms).map{ |r| r.reverse_name }
     )
 
     results.sort.uniq

@@ -84,15 +84,13 @@ class Kor::Import::WikiData
     item['entities'].values.first['claims'].each do |pid, claims|
       internal = claims.select do |c|
         c['mainsnak']['datatype'] == 'wikibase-item' &&
-        c['mainsnak']['datavalue']
+          c['mainsnak']['datavalue']
       end
 
       if !internal.empty?
         values = internal.map do |i|
           if i['mainsnak']['datavalue']
             i['mainsnak']['datavalue']['value']['id']
-          else
-            nil
           end
         end.compact
         results << {'id' => pid, 'values' => values}
@@ -103,7 +101,7 @@ class Kor::Import::WikiData
     labels = labels_for(ids)
 
     results.each do |r|
-      label = labels.find{|l| l['id'] == r['id']} || {'label' => 'related to'}
+      label = labels.find{ |l| l['id'] == r['id'] } || {'label' => 'related to'}
       r['label'] = label['label']
     end
 
@@ -134,7 +132,7 @@ class Kor::Import::WikiData
       r
     end.reject{ |r| r['values'].empty? }
 
-    results = {
+    {
       'success' => true,
       'message' => 'item can be imported',
       'entity' => {
@@ -146,8 +144,6 @@ class Kor::Import::WikiData
       },
       'relationships' => rels
     }
-
-    results
   end
 
   def import(user, collection, id, kind)

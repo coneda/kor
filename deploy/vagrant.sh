@@ -146,7 +146,7 @@ function configure_dev {
   rbenv rehash
   # cp config/database.yml.example config/database.yml
   bundle exec rake db:drop db:setup
-  bundle exec rake db:test:load
+  RAILS_ENV=test bundle exec rake db:drop db:setup
   bundle exec bin/kor index-all
 }
 

@@ -43,7 +43,7 @@ module SuiteHelper
     system "cp -a #{Rails.root}/tmp/test.media.clone #{ENV['DATA_DIR']}/media"
 
     FactoryGirl.reload
-    Kor::Auth.sources(true)
+    Kor::Auth.sources(refresh: true)
 
     use_elastic = (
       framework == :rspec && test.metadata[:elastic] ||

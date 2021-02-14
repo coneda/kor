@@ -119,7 +119,7 @@ RSpec.describe Medium do
     end
 
     it "should not run the video processor for images" do
-      Dir["#{Rails.root}/lib/paperclip_processors/*"].each{ |f| require f }
+      Dir["#{Rails.root}/lib/paperclip_processors/*"].sort.each{ |f| require f }
 
       expect(Paperclip::Video).not_to receive(:make)
       expect(Paperclip::Audio).not_to receive(:make)

@@ -33,9 +33,9 @@ class Kor::CommandLine
 
     @command ||= @args.shift
 
-    if @command == "import" || @command == "export"
+    # if @command == "import" || @command == "export"
 
-    end
+    # end
 
     case @command
     when "export"
@@ -74,7 +74,7 @@ class Kor::CommandLine
   def validate
     @required.each do |r|
       if @config[r].nil?
-        STDERR.puts "please specify a value for '#{r}'"
+        $stderr.puts "please specify a value for '#{r}'"
         exit 1
       end
     end
@@ -136,7 +136,7 @@ class Kor::CommandLine
       when 'import-erlangen-crm' then task :import_erlangen_crm
       when 'import-test-data' then task :import_test_data
       else
-        STDERR.puts "command '#{@command}' is not known"
+        $stderr.puts "command '#{@command}' is not known"
         usage
       end
     end

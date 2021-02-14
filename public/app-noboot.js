@@ -8892,6 +8892,1049 @@ var route = function() {
     }(this, e);
 });
 
+(function(f) {
+    if (typeof exports === "object" && typeof module !== "undefined") {
+        module.exports = f();
+    } else if (typeof define === "function" && define.amd) {
+        define([], f);
+    } else {
+        var g;
+        if (typeof window !== "undefined") {
+            g = window;
+        } else if (typeof global !== "undefined") {
+            g = global;
+        } else if (typeof self !== "undefined") {
+            g = self;
+        } else {
+            g = this;
+        }
+        g.ejs = f();
+    }
+})(function() {
+    var define, module, exports;
+    return function() {
+        function r(e, n, t) {
+            function o(i, f) {
+                if (!n[i]) {
+                    if (!e[i]) {
+                        var c = "function" == typeof require && require;
+                        if (!f && c) return c(i, !0);
+                        if (u) return u(i, !0);
+                        var a = new Error("Cannot find module '" + i + "'");
+                        throw a.code = "MODULE_NOT_FOUND", a;
+                    }
+                    var p = n[i] = {
+                        exports: {}
+                    };
+                    e[i][0].call(p.exports, function(r) {
+                        var n = e[i][1][r];
+                        return o(n || r);
+                    }, p, p.exports, r, e, n, t);
+                }
+                return n[i].exports;
+            }
+            for (var u = "function" == typeof require && require, i = 0; i < t.length; i++) o(t[i]);
+            return o;
+        }
+        return r;
+    }()({
+        1: [ function(require, module, exports) {
+            "use strict";
+            var fs = require("fs");
+            var path = require("path");
+            var utils = require("./utils");
+            var scopeOptionWarned = false;
+            var _VERSION_STRING = require("../package.json").version;
+            var _DEFAULT_OPEN_DELIMITER = "<";
+            var _DEFAULT_CLOSE_DELIMITER = ">";
+            var _DEFAULT_DELIMITER = "%";
+            var _DEFAULT_LOCALS_NAME = "locals";
+            var _NAME = "ejs";
+            var _REGEX_STRING = "(<%%|%%>|<%=|<%-|<%_|<%#|<%|%>|-%>|_%>)";
+            var _OPTS_PASSABLE_WITH_DATA = [ "delimiter", "scope", "context", "debug", "compileDebug", "client", "_with", "rmWhitespace", "strict", "filename", "async" ];
+            var _OPTS_PASSABLE_WITH_DATA_EXPRESS = _OPTS_PASSABLE_WITH_DATA.concat("cache");
+            var _BOM = /^\uFEFF/;
+            exports.cache = utils.cache;
+            exports.fileLoader = fs.readFileSync;
+            exports.localsName = _DEFAULT_LOCALS_NAME;
+            exports.promiseImpl = new Function("return this;")().Promise;
+            exports.resolveInclude = function(name, filename, isDir) {
+                var dirname = path.dirname;
+                var extname = path.extname;
+                var resolve = path.resolve;
+                var includePath = resolve(isDir ? filename : dirname(filename), name);
+                var ext = extname(name);
+                if (!ext) {
+                    includePath += ".ejs";
+                }
+                return includePath;
+            };
+            function resolvePaths(name, paths) {
+                var filePath;
+                if (paths.some(function(v) {
+                    filePath = exports.resolveInclude(name, v, true);
+                    return fs.existsSync(filePath);
+                })) {
+                    return filePath;
+                }
+            }
+            function getIncludePath(path, options) {
+                var includePath;
+                var filePath;
+                var views = options.views;
+                var match = /^[A-Za-z]+:\\|^\//.exec(path);
+                if (match && match.length) {
+                    path = path.replace(/^\/*/, "");
+                    if (Array.isArray(options.root)) {
+                        includePath = resolvePaths(path, options.root);
+                    } else {
+                        includePath = exports.resolveInclude(path, options.root || "/", true);
+                    }
+                } else {
+                    if (options.filename) {
+                        filePath = exports.resolveInclude(path, options.filename);
+                        if (fs.existsSync(filePath)) {
+                            includePath = filePath;
+                        }
+                    }
+                    if (!includePath && Array.isArray(views)) {
+                        includePath = resolvePaths(path, views);
+                    }
+                    if (!includePath && typeof options.includer !== "function") {
+                        throw new Error('Could not find the include file "' + options.escapeFunction(path) + '"');
+                    }
+                }
+                return includePath;
+            }
+            function handleCache(options, template) {
+                var func;
+                var filename = options.filename;
+                var hasTemplate = arguments.length > 1;
+                if (options.cache) {
+                    if (!filename) {
+                        throw new Error("cache option requires a filename");
+                    }
+                    func = exports.cache.get(filename);
+                    if (func) {
+                        return func;
+                    }
+                    if (!hasTemplate) {
+                        template = fileLoader(filename).toString().replace(_BOM, "");
+                    }
+                } else if (!hasTemplate) {
+                    if (!filename) {
+                        throw new Error("Internal EJS error: no file name or template " + "provided");
+                    }
+                    template = fileLoader(filename).toString().replace(_BOM, "");
+                }
+                func = exports.compile(template, options);
+                if (options.cache) {
+                    exports.cache.set(filename, func);
+                }
+                return func;
+            }
+            function tryHandleCache(options, data, cb) {
+                var result;
+                if (!cb) {
+                    if (typeof exports.promiseImpl == "function") {
+                        return new exports.promiseImpl(function(resolve, reject) {
+                            try {
+                                result = handleCache(options)(data);
+                                resolve(result);
+                            } catch (err) {
+                                reject(err);
+                            }
+                        });
+                    } else {
+                        throw new Error("Please provide a callback function");
+                    }
+                } else {
+                    try {
+                        result = handleCache(options)(data);
+                    } catch (err) {
+                        return cb(err);
+                    }
+                    cb(null, result);
+                }
+            }
+            function fileLoader(filePath) {
+                return exports.fileLoader(filePath);
+            }
+            function includeFile(path, options) {
+                var opts = utils.shallowCopy({}, options);
+                opts.filename = getIncludePath(path, opts);
+                if (typeof options.includer === "function") {
+                    var includerResult = options.includer(path, opts.filename);
+                    if (includerResult) {
+                        if (includerResult.filename) {
+                            opts.filename = includerResult.filename;
+                        }
+                        if (includerResult.template) {
+                            return handleCache(opts, includerResult.template);
+                        }
+                    }
+                }
+                return handleCache(opts);
+            }
+            function rethrow(err, str, flnm, lineno, esc) {
+                var lines = str.split("\n");
+                var start = Math.max(lineno - 3, 0);
+                var end = Math.min(lines.length, lineno + 3);
+                var filename = esc(flnm);
+                var context = lines.slice(start, end).map(function(line, i) {
+                    var curr = i + start + 1;
+                    return (curr == lineno ? " >> " : "    ") + curr + "| " + line;
+                }).join("\n");
+                err.path = filename;
+                err.message = (filename || "ejs") + ":" + lineno + "\n" + context + "\n\n" + err.message;
+                throw err;
+            }
+            function stripSemi(str) {
+                return str.replace(/;(\s*$)/, "$1");
+            }
+            exports.compile = function compile(template, opts) {
+                var templ;
+                if (opts && opts.scope) {
+                    if (!scopeOptionWarned) {
+                        console.warn("`scope` option is deprecated and will be removed in EJS 3");
+                        scopeOptionWarned = true;
+                    }
+                    if (!opts.context) {
+                        opts.context = opts.scope;
+                    }
+                    delete opts.scope;
+                }
+                templ = new Template(template, opts);
+                return templ.compile();
+            };
+            exports.render = function(template, d, o) {
+                var data = d || {};
+                var opts = o || {};
+                if (arguments.length == 2) {
+                    utils.shallowCopyFromList(opts, data, _OPTS_PASSABLE_WITH_DATA);
+                }
+                return handleCache(opts, template)(data);
+            };
+            exports.renderFile = function() {
+                var args = Array.prototype.slice.call(arguments);
+                var filename = args.shift();
+                var cb;
+                var opts = {
+                    filename: filename
+                };
+                var data;
+                var viewOpts;
+                if (typeof arguments[arguments.length - 1] == "function") {
+                    cb = args.pop();
+                }
+                if (args.length) {
+                    data = args.shift();
+                    if (args.length) {
+                        utils.shallowCopy(opts, args.pop());
+                    } else {
+                        if (data.settings) {
+                            if (data.settings.views) {
+                                opts.views = data.settings.views;
+                            }
+                            if (data.settings["view cache"]) {
+                                opts.cache = true;
+                            }
+                            viewOpts = data.settings["view options"];
+                            if (viewOpts) {
+                                utils.shallowCopy(opts, viewOpts);
+                            }
+                        }
+                        utils.shallowCopyFromList(opts, data, _OPTS_PASSABLE_WITH_DATA_EXPRESS);
+                    }
+                    opts.filename = filename;
+                } else {
+                    data = {};
+                }
+                return tryHandleCache(opts, data, cb);
+            };
+            exports.Template = Template;
+            exports.clearCache = function() {
+                exports.cache.reset();
+            };
+            function Template(text, opts) {
+                opts = opts || {};
+                var options = {};
+                this.templateText = text;
+                this.mode = null;
+                this.truncate = false;
+                this.currentLine = 1;
+                this.source = "";
+                options.client = opts.client || false;
+                options.escapeFunction = opts.escape || opts.escapeFunction || utils.escapeXML;
+                options.compileDebug = opts.compileDebug !== false;
+                options.debug = !!opts.debug;
+                options.filename = opts.filename;
+                options.openDelimiter = opts.openDelimiter || exports.openDelimiter || _DEFAULT_OPEN_DELIMITER;
+                options.closeDelimiter = opts.closeDelimiter || exports.closeDelimiter || _DEFAULT_CLOSE_DELIMITER;
+                options.delimiter = opts.delimiter || exports.delimiter || _DEFAULT_DELIMITER;
+                options.strict = opts.strict || false;
+                options.context = opts.context;
+                options.cache = opts.cache || false;
+                options.rmWhitespace = opts.rmWhitespace;
+                options.root = opts.root;
+                options.includer = opts.includer;
+                options.outputFunctionName = opts.outputFunctionName;
+                options.localsName = opts.localsName || exports.localsName || _DEFAULT_LOCALS_NAME;
+                options.views = opts.views;
+                options.async = opts.async;
+                options.destructuredLocals = opts.destructuredLocals;
+                options.legacyInclude = typeof opts.legacyInclude != "undefined" ? !!opts.legacyInclude : true;
+                if (options.strict) {
+                    options._with = false;
+                } else {
+                    options._with = typeof opts._with != "undefined" ? opts._with : true;
+                }
+                this.opts = options;
+                this.regex = this.createRegex();
+            }
+            Template.modes = {
+                EVAL: "eval",
+                ESCAPED: "escaped",
+                RAW: "raw",
+                COMMENT: "comment",
+                LITERAL: "literal"
+            };
+            Template.prototype = {
+                createRegex: function() {
+                    var str = _REGEX_STRING;
+                    var delim = utils.escapeRegExpChars(this.opts.delimiter);
+                    var open = utils.escapeRegExpChars(this.opts.openDelimiter);
+                    var close = utils.escapeRegExpChars(this.opts.closeDelimiter);
+                    str = str.replace(/%/g, delim).replace(/</g, open).replace(/>/g, close);
+                    return new RegExp(str);
+                },
+                compile: function() {
+                    var src;
+                    var fn;
+                    var opts = this.opts;
+                    var prepended = "";
+                    var appended = "";
+                    var escapeFn = opts.escapeFunction;
+                    var ctor;
+                    if (!this.source) {
+                        this.generateSource();
+                        prepended += '  var __output = "";\n' + "  function __append(s) { if (s !== undefined && s !== null) __output += s }\n";
+                        if (opts.outputFunctionName) {
+                            prepended += "  var " + opts.outputFunctionName + " = __append;" + "\n";
+                        }
+                        if (opts.destructuredLocals && opts.destructuredLocals.length) {
+                            var destructuring = "  var __locals = (" + opts.localsName + " || {}),\n";
+                            for (var i = 0; i < opts.destructuredLocals.length; i++) {
+                                var name = opts.destructuredLocals[i];
+                                if (i > 0) {
+                                    destructuring += ",\n  ";
+                                }
+                                destructuring += name + " = __locals." + name;
+                            }
+                            prepended += destructuring + ";\n";
+                        }
+                        if (opts._with !== false) {
+                            prepended += "  with (" + opts.localsName + " || {}) {" + "\n";
+                            appended += "  }" + "\n";
+                        }
+                        appended += "  return __output;" + "\n";
+                        this.source = prepended + this.source + appended;
+                    }
+                    if (opts.compileDebug) {
+                        src = "var __line = 1" + "\n" + "  , __lines = " + JSON.stringify(this.templateText) + "\n" + "  , __filename = " + (opts.filename ? JSON.stringify(opts.filename) : "undefined") + ";" + "\n" + "try {" + "\n" + this.source + "} catch (e) {" + "\n" + "  rethrow(e, __lines, __filename, __line, escapeFn);" + "\n" + "}" + "\n";
+                    } else {
+                        src = this.source;
+                    }
+                    if (opts.client) {
+                        src = "escapeFn = escapeFn || " + escapeFn.toString() + ";" + "\n" + src;
+                        if (opts.compileDebug) {
+                            src = "rethrow = rethrow || " + rethrow.toString() + ";" + "\n" + src;
+                        }
+                    }
+                    if (opts.strict) {
+                        src = '"use strict";\n' + src;
+                    }
+                    if (opts.debug) {
+                        console.log(src);
+                    }
+                    if (opts.compileDebug && opts.filename) {
+                        src = src + "\n" + "//# sourceURL=" + opts.filename + "\n";
+                    }
+                    try {
+                        if (opts.async) {
+                            try {
+                                ctor = new Function("return (async function(){}).constructor;")();
+                            } catch (e) {
+                                if (e instanceof SyntaxError) {
+                                    throw new Error("This environment does not support async/await");
+                                } else {
+                                    throw e;
+                                }
+                            }
+                        } else {
+                            ctor = Function;
+                        }
+                        fn = new ctor(opts.localsName + ", escapeFn, include, rethrow", src);
+                    } catch (e) {
+                        if (e instanceof SyntaxError) {
+                            if (opts.filename) {
+                                e.message += " in " + opts.filename;
+                            }
+                            e.message += " while compiling ejs\n\n";
+                            e.message += "If the above error is not helpful, you may want to try EJS-Lint:\n";
+                            e.message += "https://github.com/RyanZim/EJS-Lint";
+                            if (!opts.async) {
+                                e.message += "\n";
+                                e.message += "Or, if you meant to create an async function, pass `async: true` as an option.";
+                            }
+                        }
+                        throw e;
+                    }
+                    var returnedFn = opts.client ? fn : function anonymous(data) {
+                        var include = function(path, includeData) {
+                            var d = utils.shallowCopy({}, data);
+                            if (includeData) {
+                                d = utils.shallowCopy(d, includeData);
+                            }
+                            return includeFile(path, opts)(d);
+                        };
+                        return fn.apply(opts.context, [ data || {}, escapeFn, include, rethrow ]);
+                    };
+                    if (opts.filename && typeof Object.defineProperty === "function") {
+                        var filename = opts.filename;
+                        var basename = path.basename(filename, path.extname(filename));
+                        try {
+                            Object.defineProperty(returnedFn, "name", {
+                                value: basename,
+                                writable: false,
+                                enumerable: false,
+                                configurable: true
+                            });
+                        } catch (e) {}
+                    }
+                    return returnedFn;
+                },
+                generateSource: function() {
+                    var opts = this.opts;
+                    if (opts.rmWhitespace) {
+                        this.templateText = this.templateText.replace(/[\r\n]+/g, "\n").replace(/^\s+|\s+$/gm, "");
+                    }
+                    this.templateText = this.templateText.replace(/[ \t]*<%_/gm, "<%_").replace(/_%>[ \t]*/gm, "_%>");
+                    var self = this;
+                    var matches = this.parseTemplateText();
+                    var d = this.opts.delimiter;
+                    var o = this.opts.openDelimiter;
+                    var c = this.opts.closeDelimiter;
+                    if (matches && matches.length) {
+                        matches.forEach(function(line, index) {
+                            var closing;
+                            if (line.indexOf(o + d) === 0 && line.indexOf(o + d + d) !== 0) {
+                                closing = matches[index + 2];
+                                if (!(closing == d + c || closing == "-" + d + c || closing == "_" + d + c)) {
+                                    throw new Error('Could not find matching close tag for "' + line + '".');
+                                }
+                            }
+                            self.scanLine(line);
+                        });
+                    }
+                },
+                parseTemplateText: function() {
+                    var str = this.templateText;
+                    var pat = this.regex;
+                    var result = pat.exec(str);
+                    var arr = [];
+                    var firstPos;
+                    while (result) {
+                        firstPos = result.index;
+                        if (firstPos !== 0) {
+                            arr.push(str.substring(0, firstPos));
+                            str = str.slice(firstPos);
+                        }
+                        arr.push(result[0]);
+                        str = str.slice(result[0].length);
+                        result = pat.exec(str);
+                    }
+                    if (str) {
+                        arr.push(str);
+                    }
+                    return arr;
+                },
+                _addOutput: function(line) {
+                    if (this.truncate) {
+                        line = line.replace(/^(?:\r\n|\r|\n)/, "");
+                        this.truncate = false;
+                    }
+                    if (!line) {
+                        return line;
+                    }
+                    line = line.replace(/\\/g, "\\\\");
+                    line = line.replace(/\n/g, "\\n");
+                    line = line.replace(/\r/g, "\\r");
+                    line = line.replace(/"/g, '\\"');
+                    this.source += '    ; __append("' + line + '")' + "\n";
+                },
+                scanLine: function(line) {
+                    var self = this;
+                    var d = this.opts.delimiter;
+                    var o = this.opts.openDelimiter;
+                    var c = this.opts.closeDelimiter;
+                    var newLineCount = 0;
+                    newLineCount = line.split("\n").length - 1;
+                    switch (line) {
+                      case o + d:
+                      case o + d + "_":
+                        this.mode = Template.modes.EVAL;
+                        break;
+
+                      case o + d + "=":
+                        this.mode = Template.modes.ESCAPED;
+                        break;
+
+                      case o + d + "-":
+                        this.mode = Template.modes.RAW;
+                        break;
+
+                      case o + d + "#":
+                        this.mode = Template.modes.COMMENT;
+                        break;
+
+                      case o + d + d:
+                        this.mode = Template.modes.LITERAL;
+                        this.source += '    ; __append("' + line.replace(o + d + d, o + d) + '")' + "\n";
+                        break;
+
+                      case d + d + c:
+                        this.mode = Template.modes.LITERAL;
+                        this.source += '    ; __append("' + line.replace(d + d + c, d + c) + '")' + "\n";
+                        break;
+
+                      case d + c:
+                      case "-" + d + c:
+                      case "_" + d + c:
+                        if (this.mode == Template.modes.LITERAL) {
+                            this._addOutput(line);
+                        }
+                        this.mode = null;
+                        this.truncate = line.indexOf("-") === 0 || line.indexOf("_") === 0;
+                        break;
+
+                      default:
+                        if (this.mode) {
+                            switch (this.mode) {
+                              case Template.modes.EVAL:
+                              case Template.modes.ESCAPED:
+                              case Template.modes.RAW:
+                                if (line.lastIndexOf("//") > line.lastIndexOf("\n")) {
+                                    line += "\n";
+                                }
+                            }
+                            switch (this.mode) {
+                              case Template.modes.EVAL:
+                                this.source += "    ; " + line + "\n";
+                                break;
+
+                              case Template.modes.ESCAPED:
+                                this.source += "    ; __append(escapeFn(" + stripSemi(line) + "))" + "\n";
+                                break;
+
+                              case Template.modes.RAW:
+                                this.source += "    ; __append(" + stripSemi(line) + ")" + "\n";
+                                break;
+
+                              case Template.modes.COMMENT:
+                                break;
+
+                              case Template.modes.LITERAL:
+                                this._addOutput(line);
+                                break;
+                            }
+                        } else {
+                            this._addOutput(line);
+                        }
+                    }
+                    if (self.opts.compileDebug && newLineCount) {
+                        this.currentLine += newLineCount;
+                        this.source += "    ; __line = " + this.currentLine + "\n";
+                    }
+                }
+            };
+            exports.escapeXML = utils.escapeXML;
+            exports.__express = exports.renderFile;
+            exports.VERSION = _VERSION_STRING;
+            exports.name = _NAME;
+            if (typeof window != "undefined") {
+                window.ejs = exports;
+            }
+        }, {
+            "../package.json": 6,
+            "./utils": 2,
+            fs: 3,
+            path: 4
+        } ],
+        2: [ function(require, module, exports) {
+            "use strict";
+            var regExpChars = /[|\\{}()[\]^$+*?.]/g;
+            exports.escapeRegExpChars = function(string) {
+                if (!string) {
+                    return "";
+                }
+                return String(string).replace(regExpChars, "\\$&");
+            };
+            var _ENCODE_HTML_RULES = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&#34;",
+                "'": "&#39;"
+            };
+            var _MATCH_HTML = /[&<>'"]/g;
+            function encode_char(c) {
+                return _ENCODE_HTML_RULES[c] || c;
+            }
+            var escapeFuncStr = "var _ENCODE_HTML_RULES = {\n" + '      "&": "&amp;"\n' + '    , "<": "&lt;"\n' + '    , ">": "&gt;"\n' + '    , \'"\': "&#34;"\n' + '    , "\'": "&#39;"\n' + "    }\n" + "  , _MATCH_HTML = /[&<>'\"]/g;\n" + "function encode_char(c) {\n" + "  return _ENCODE_HTML_RULES[c] || c;\n" + "};\n";
+            exports.escapeXML = function(markup) {
+                return markup == undefined ? "" : String(markup).replace(_MATCH_HTML, encode_char);
+            };
+            exports.escapeXML.toString = function() {
+                return Function.prototype.toString.call(this) + ";\n" + escapeFuncStr;
+            };
+            exports.shallowCopy = function(to, from) {
+                from = from || {};
+                for (var p in from) {
+                    to[p] = from[p];
+                }
+                return to;
+            };
+            exports.shallowCopyFromList = function(to, from, list) {
+                for (var i = 0; i < list.length; i++) {
+                    var p = list[i];
+                    if (typeof from[p] != "undefined") {
+                        to[p] = from[p];
+                    }
+                }
+                return to;
+            };
+            exports.cache = {
+                _data: {},
+                set: function(key, val) {
+                    this._data[key] = val;
+                },
+                get: function(key) {
+                    return this._data[key];
+                },
+                remove: function(key) {
+                    delete this._data[key];
+                },
+                reset: function() {
+                    this._data = {};
+                }
+            };
+            exports.hyphenToCamel = function(str) {
+                return str.replace(/-[a-z]/g, function(match) {
+                    return match[1].toUpperCase();
+                });
+            };
+        }, {} ],
+        3: [ function(require, module, exports) {}, {} ],
+        4: [ function(require, module, exports) {
+            (function(process) {
+                function normalizeArray(parts, allowAboveRoot) {
+                    var up = 0;
+                    for (var i = parts.length - 1; i >= 0; i--) {
+                        var last = parts[i];
+                        if (last === ".") {
+                            parts.splice(i, 1);
+                        } else if (last === "..") {
+                            parts.splice(i, 1);
+                            up++;
+                        } else if (up) {
+                            parts.splice(i, 1);
+                            up--;
+                        }
+                    }
+                    if (allowAboveRoot) {
+                        for (;up--; up) {
+                            parts.unshift("..");
+                        }
+                    }
+                    return parts;
+                }
+                exports.resolve = function() {
+                    var resolvedPath = "", resolvedAbsolute = false;
+                    for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+                        var path = i >= 0 ? arguments[i] : process.cwd();
+                        if (typeof path !== "string") {
+                            throw new TypeError("Arguments to path.resolve must be strings");
+                        } else if (!path) {
+                            continue;
+                        }
+                        resolvedPath = path + "/" + resolvedPath;
+                        resolvedAbsolute = path.charAt(0) === "/";
+                    }
+                    resolvedPath = normalizeArray(filter(resolvedPath.split("/"), function(p) {
+                        return !!p;
+                    }), !resolvedAbsolute).join("/");
+                    return (resolvedAbsolute ? "/" : "") + resolvedPath || ".";
+                };
+                exports.normalize = function(path) {
+                    var isAbsolute = exports.isAbsolute(path), trailingSlash = substr(path, -1) === "/";
+                    path = normalizeArray(filter(path.split("/"), function(p) {
+                        return !!p;
+                    }), !isAbsolute).join("/");
+                    if (!path && !isAbsolute) {
+                        path = ".";
+                    }
+                    if (path && trailingSlash) {
+                        path += "/";
+                    }
+                    return (isAbsolute ? "/" : "") + path;
+                };
+                exports.isAbsolute = function(path) {
+                    return path.charAt(0) === "/";
+                };
+                exports.join = function() {
+                    var paths = Array.prototype.slice.call(arguments, 0);
+                    return exports.normalize(filter(paths, function(p, index) {
+                        if (typeof p !== "string") {
+                            throw new TypeError("Arguments to path.join must be strings");
+                        }
+                        return p;
+                    }).join("/"));
+                };
+                exports.relative = function(from, to) {
+                    from = exports.resolve(from).substr(1);
+                    to = exports.resolve(to).substr(1);
+                    function trim(arr) {
+                        var start = 0;
+                        for (;start < arr.length; start++) {
+                            if (arr[start] !== "") break;
+                        }
+                        var end = arr.length - 1;
+                        for (;end >= 0; end--) {
+                            if (arr[end] !== "") break;
+                        }
+                        if (start > end) return [];
+                        return arr.slice(start, end - start + 1);
+                    }
+                    var fromParts = trim(from.split("/"));
+                    var toParts = trim(to.split("/"));
+                    var length = Math.min(fromParts.length, toParts.length);
+                    var samePartsLength = length;
+                    for (var i = 0; i < length; i++) {
+                        if (fromParts[i] !== toParts[i]) {
+                            samePartsLength = i;
+                            break;
+                        }
+                    }
+                    var outputParts = [];
+                    for (var i = samePartsLength; i < fromParts.length; i++) {
+                        outputParts.push("..");
+                    }
+                    outputParts = outputParts.concat(toParts.slice(samePartsLength));
+                    return outputParts.join("/");
+                };
+                exports.sep = "/";
+                exports.delimiter = ":";
+                exports.dirname = function(path) {
+                    if (typeof path !== "string") path = path + "";
+                    if (path.length === 0) return ".";
+                    var code = path.charCodeAt(0);
+                    var hasRoot = code === 47;
+                    var end = -1;
+                    var matchedSlash = true;
+                    for (var i = path.length - 1; i >= 1; --i) {
+                        code = path.charCodeAt(i);
+                        if (code === 47) {
+                            if (!matchedSlash) {
+                                end = i;
+                                break;
+                            }
+                        } else {
+                            matchedSlash = false;
+                        }
+                    }
+                    if (end === -1) return hasRoot ? "/" : ".";
+                    if (hasRoot && end === 1) {
+                        return "/";
+                    }
+                    return path.slice(0, end);
+                };
+                function basename(path) {
+                    if (typeof path !== "string") path = path + "";
+                    var start = 0;
+                    var end = -1;
+                    var matchedSlash = true;
+                    var i;
+                    for (i = path.length - 1; i >= 0; --i) {
+                        if (path.charCodeAt(i) === 47) {
+                            if (!matchedSlash) {
+                                start = i + 1;
+                                break;
+                            }
+                        } else if (end === -1) {
+                            matchedSlash = false;
+                            end = i + 1;
+                        }
+                    }
+                    if (end === -1) return "";
+                    return path.slice(start, end);
+                }
+                exports.basename = function(path, ext) {
+                    var f = basename(path);
+                    if (ext && f.substr(-1 * ext.length) === ext) {
+                        f = f.substr(0, f.length - ext.length);
+                    }
+                    return f;
+                };
+                exports.extname = function(path) {
+                    if (typeof path !== "string") path = path + "";
+                    var startDot = -1;
+                    var startPart = 0;
+                    var end = -1;
+                    var matchedSlash = true;
+                    var preDotState = 0;
+                    for (var i = path.length - 1; i >= 0; --i) {
+                        var code = path.charCodeAt(i);
+                        if (code === 47) {
+                            if (!matchedSlash) {
+                                startPart = i + 1;
+                                break;
+                            }
+                            continue;
+                        }
+                        if (end === -1) {
+                            matchedSlash = false;
+                            end = i + 1;
+                        }
+                        if (code === 46) {
+                            if (startDot === -1) startDot = i; else if (preDotState !== 1) preDotState = 1;
+                        } else if (startDot !== -1) {
+                            preDotState = -1;
+                        }
+                    }
+                    if (startDot === -1 || end === -1 || preDotState === 0 || preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
+                        return "";
+                    }
+                    return path.slice(startDot, end);
+                };
+                function filter(xs, f) {
+                    if (xs.filter) return xs.filter(f);
+                    var res = [];
+                    for (var i = 0; i < xs.length; i++) {
+                        if (f(xs[i], i, xs)) res.push(xs[i]);
+                    }
+                    return res;
+                }
+                var substr = "ab".substr(-1) === "b" ? function(str, start, len) {
+                    return str.substr(start, len);
+                } : function(str, start, len) {
+                    if (start < 0) start = str.length + start;
+                    return str.substr(start, len);
+                };
+            }).call(this, require("_process"));
+        }, {
+            _process: 5
+        } ],
+        5: [ function(require, module, exports) {
+            var process = module.exports = {};
+            var cachedSetTimeout;
+            var cachedClearTimeout;
+            function defaultSetTimout() {
+                throw new Error("setTimeout has not been defined");
+            }
+            function defaultClearTimeout() {
+                throw new Error("clearTimeout has not been defined");
+            }
+            (function() {
+                try {
+                    if (typeof setTimeout === "function") {
+                        cachedSetTimeout = setTimeout;
+                    } else {
+                        cachedSetTimeout = defaultSetTimout;
+                    }
+                } catch (e) {
+                    cachedSetTimeout = defaultSetTimout;
+                }
+                try {
+                    if (typeof clearTimeout === "function") {
+                        cachedClearTimeout = clearTimeout;
+                    } else {
+                        cachedClearTimeout = defaultClearTimeout;
+                    }
+                } catch (e) {
+                    cachedClearTimeout = defaultClearTimeout;
+                }
+            })();
+            function runTimeout(fun) {
+                if (cachedSetTimeout === setTimeout) {
+                    return setTimeout(fun, 0);
+                }
+                if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+                    cachedSetTimeout = setTimeout;
+                    return setTimeout(fun, 0);
+                }
+                try {
+                    return cachedSetTimeout(fun, 0);
+                } catch (e) {
+                    try {
+                        return cachedSetTimeout.call(null, fun, 0);
+                    } catch (e) {
+                        return cachedSetTimeout.call(this, fun, 0);
+                    }
+                }
+            }
+            function runClearTimeout(marker) {
+                if (cachedClearTimeout === clearTimeout) {
+                    return clearTimeout(marker);
+                }
+                if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+                    cachedClearTimeout = clearTimeout;
+                    return clearTimeout(marker);
+                }
+                try {
+                    return cachedClearTimeout(marker);
+                } catch (e) {
+                    try {
+                        return cachedClearTimeout.call(null, marker);
+                    } catch (e) {
+                        return cachedClearTimeout.call(this, marker);
+                    }
+                }
+            }
+            var queue = [];
+            var draining = false;
+            var currentQueue;
+            var queueIndex = -1;
+            function cleanUpNextTick() {
+                if (!draining || !currentQueue) {
+                    return;
+                }
+                draining = false;
+                if (currentQueue.length) {
+                    queue = currentQueue.concat(queue);
+                } else {
+                    queueIndex = -1;
+                }
+                if (queue.length) {
+                    drainQueue();
+                }
+            }
+            function drainQueue() {
+                if (draining) {
+                    return;
+                }
+                var timeout = runTimeout(cleanUpNextTick);
+                draining = true;
+                var len = queue.length;
+                while (len) {
+                    currentQueue = queue;
+                    queue = [];
+                    while (++queueIndex < len) {
+                        if (currentQueue) {
+                            currentQueue[queueIndex].run();
+                        }
+                    }
+                    queueIndex = -1;
+                    len = queue.length;
+                }
+                currentQueue = null;
+                draining = false;
+                runClearTimeout(timeout);
+            }
+            process.nextTick = function(fun) {
+                var args = new Array(arguments.length - 1);
+                if (arguments.length > 1) {
+                    for (var i = 1; i < arguments.length; i++) {
+                        args[i - 1] = arguments[i];
+                    }
+                }
+                queue.push(new Item(fun, args));
+                if (queue.length === 1 && !draining) {
+                    runTimeout(drainQueue);
+                }
+            };
+            function Item(fun, array) {
+                this.fun = fun;
+                this.array = array;
+            }
+            Item.prototype.run = function() {
+                this.fun.apply(null, this.array);
+            };
+            process.title = "browser";
+            process.browser = true;
+            process.env = {};
+            process.argv = [];
+            process.version = "";
+            process.versions = {};
+            function noop() {}
+            process.on = noop;
+            process.addListener = noop;
+            process.once = noop;
+            process.off = noop;
+            process.removeListener = noop;
+            process.removeAllListeners = noop;
+            process.emit = noop;
+            process.prependListener = noop;
+            process.prependOnceListener = noop;
+            process.listeners = function(name) {
+                return [];
+            };
+            process.binding = function(name) {
+                throw new Error("process.binding is not supported");
+            };
+            process.cwd = function() {
+                return "/";
+            };
+            process.chdir = function(dir) {
+                throw new Error("process.chdir is not supported");
+            };
+            process.umask = function() {
+                return 0;
+            };
+        }, {} ],
+        6: [ function(require, module, exports) {
+            module.exports = {
+                name: "ejs",
+                description: "Embedded JavaScript templates",
+                keywords: [ "template", "engine", "ejs" ],
+                version: "3.1.5",
+                author: "Matthew Eernisse <mde@fleegix.org> (http://fleegix.org)",
+                license: "Apache-2.0",
+                bin: {
+                    ejs: "./bin/cli.js"
+                },
+                main: "./lib/ejs.js",
+                jsdelivr: "ejs.min.js",
+                unpkg: "ejs.min.js",
+                repository: {
+                    type: "git",
+                    url: "git://github.com/mde/ejs.git"
+                },
+                bugs: "https://github.com/mde/ejs/issues",
+                homepage: "https://github.com/mde/ejs",
+                dependencies: {
+                    jake: "^10.6.1"
+                },
+                devDependencies: {
+                    browserify: "^16.5.1",
+                    eslint: "^6.8.0",
+                    "git-directory-deploy": "^1.5.1",
+                    jsdoc: "^3.6.4",
+                    "lru-cache": "^4.0.1",
+                    mocha: "^7.1.1",
+                    "uglify-js": "^3.3.16"
+                },
+                engines: {
+                    node: ">=0.10.0"
+                },
+                scripts: {
+                    test: "mocha"
+                }
+            };
+        }, {} ]
+    }, {}, [ 1 ])(1);
+});
+
 (function(window, $) {
     var TinyAutocomplete = function(el, options) {
         var that = this;
@@ -9255,7 +10298,6 @@ Zepto.extend(Zepto.ajaxSettings, {
     type: "GET",
     dataType: "json",
     contentType: "application/json",
-    accepts: "application/json",
     beforeSend: function(xhr, settings) {
         wApp.state.requests.push(xhr);
         wApp.bus.trigger("ajax-state-changed");
@@ -10762,7 +11804,7 @@ riot.tag2("kor-mass-relate", '<div class="kor-content-box"> <h1>{tcap(\'clipboar
     };
 });
 
-riot.tag2("kor-to-entity-group", '<div class="kor-content-box"> <h1>{title()}</h1> <form onsubmit="{submit}"> <kor-entity-group-selector type="{opts.type}" ref="group"></kor-entity-group-selector> <kor-input type="submit"></kor-input> </form> <a href="#/groups/categories/admin/new" onclick="{add}">{t(\'create_new\')}</a> </div>', "", "", function(opts) {
+riot.tag2("kor-to-entity-group", '<div class="kor-content-box"> <h1>{title()}</h1> <form onsubmit="{submit}"> <kor-entity-group-selector type="{opts.type}" ref="group"></kor-entity-group-selector> <kor-input type="submit"></kor-input> </form> {opts.type} <a if="{opts.type == \'authority\'}" href="#/groups/categories/admin/new" onclick="{add}">{t(\'create_new\')}</a> <a if="{opts.type == \'user\'}" href="#/groups/user/new" onclick="{add}">{t(\'create_new\')}</a> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -10827,6 +11869,17 @@ riot.tag2("kor-entity-group-selector", '<kor-input if="{groups}" label="{tcap(\'
                         r.name = names.join(" » ");
                     }
                 }
+                if (tag.opts.riotValue) {
+                    tag.groups.unshift({
+                        name: tag.tcap("objects.create_group", {
+                            interpolations: {
+                                o: tag.opts.riotValue
+                            }
+                        }),
+                        value: tag.opts.riotValue
+                    });
+                }
+                console.log(tag.groups[0]);
                 tag.update();
             }
         });
@@ -11342,7 +12395,7 @@ riot.tag2("kor-generator", "", "", "", function(opts) {
     };
     tag.on("mount", update);
     tag.on("updated", update);
-    render = riot.util.tmpl;
+    render = ejs.render;
 });
 
 riot.tag2("kor-help-button", '<a if="{hasHelp()}" href="#" onclick="{click}" title="{t(\'nouns.help\')}"><i class="fa fa-question-circle fa-2x"></i></a>', "", "", function(opts) {
@@ -11566,9 +12619,12 @@ riot.tag2("kor-login-info", '<div class="item"> <span class="kor-shine">ConedaKO
     tag.mixin(wApp.mixins.info);
 });
 
-riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amount"> {opts.ids.length} {t(\'activerecord.models.entity\', {count: \'other\'})} </div> <hr> <a class="action" href="#" onclick="{merge}">{tcap(\'clipboard_actions.merge\')}</a> <a class="action" href="#" onclick="{massRelate}">{tcap(\'clipboard_actions.mass_relate\')}</a> <a class="action" href="#" onclick="{massDelete}">{tcap(\'clipboard_actions.mass_delete\')}</a> <a if="{session().user.authority_group_admin}" class="action" href="#" onclick="{addToAuthorityGroup}">{tcap(\'clipboard_actions.add_to_authority_group\')}</a> <a class="action" href="#" onclick="{addToUserGroup}">{tcap(\'clipboard_actions.add_to_user_group\')}</a> <a class="action" href="#" onclick="{moveToCollection}">{tcap(\'clipboard_actions.move_to_collection\')}</a>', "", "", function(opts) {
+riot.tag2("kor-logo", '<?xml version="1.0" encoding="UTF-8" standalone="no"?> <?xml version="1.0" encoding="UTF-8" standalone="no"?> <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="51.114326mm" height="35.500031mm" viewbox="0 0 51.114326 35.500031" version="1.1" id="svg8" sodipodi:docname="logo.svg" inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"> <defs id="defs2"></defs> <sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="7.06159" inkscape:cx="106.4579" inkscape:cy="60.595407" inkscape:document-units="mm" inkscape:current-layer="layer1" inkscape:document-rotation="0" showgrid="false" fit-margin-top="0" fit-margin-left="0" fit-margin-right="0" fit-margin-bottom="0" inkscape:showpageshadow="true" inkscape:window-width="2560" inkscape:window-height="1373" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" /> <metadata id="metadata5"> <rdf:RDF> <cc:Work rdf:about=""> <dc:format>image/svg+xml</dc:format> <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /> <dc:title></dc:title> </cc:Work> </rdf:RDF> </metadata> <g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1" transform="translate(-57.804942,-140.95502)" class="fg"> <path d="m 99.919204,142.95509 c 0,1.10476 -0.89535,2.00022 -1.999897,2.00022 -1.104548,0 -2.00025,-0.89546 -2.00025,-2.00022 0,-1.10451 0.895702,-2.00007 2.00025,-2.00007 1.104547,0 1.999897,0.89556 1.999897,2.00007" style="stroke-width:0.0352778;stroke:none;fill-rule:nonzero;fill-opacity:1;" id="path863" mask="none"></path> <path d="m 99.919204,147.45506 c 0,1.10479 -0.89535,2.00021 -1.999897,2.00021 -1.104548,0 -2.00025,-0.89542 -2.00025,-2.00021 0,-1.10448 0.895702,-1.99994 2.00025,-1.99994 1.104547,0 1.999897,0.89546 1.999897,1.99994" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path865"></path> <path d="m 99.919204,151.95506 c 0,1.10475 -0.89535,2.00021 -1.999897,2.00021 -1.104548,0 -2.00025,-0.89546 -2.00025,-2.00021 0,-1.10452 0.895702,-1.99997 2.00025,-1.99997 1.104547,0 1.999897,0.89545 1.999897,1.99997" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path867"></path> <path d="m 99.919204,156.45502 c 0,1.10479 -0.89535,2.00025 -1.999897,2.00025 -1.104548,0 -2.00025,-0.89546 -2.00025,-2.00025 0,-1.10448 0.895702,-1.99979 2.00025,-1.99979 1.104547,0 1.999897,0.89531 1.999897,1.99979" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path869"></path> <path d="m 108.91927,156.45502 c 0,1.10479 -0.89535,2.00025 -1.9999,2.00025 -1.10454,0 -2.00025,-0.89546 -2.00025,-2.00025 0,-1.10448 0.89571,-1.99979 2.00025,-1.99979 1.10455,0 1.9999,0.89531 1.9999,1.99979" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path871"></path> <path d="m 99.919204,160.95502 c 0,1.10476 -0.89535,2.00021 -1.999897,2.00021 -1.104548,0 -2.00025,-0.89545 -2.00025,-2.00021 0,-1.10452 0.895702,-1.99997 2.00025,-1.99997 1.104547,0 1.999897,0.89545 1.999897,1.99997" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path873"></path> <path d="m 104.41924,160.95502 c 0,1.10476 -0.89535,2.00021 -1.9999,2.00021 -1.10455,0 -2.00025,-0.89545 -2.00025,-2.00021 0,-1.10452 0.8957,-1.99997 2.00025,-1.99997 1.10455,0 1.9999,0.89545 1.9999,1.99997" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path875"></path> <path d="m 99.919204,165.45498 c 0,1.10493 -0.89535,2.00025 -1.999897,2.00025 -1.104548,0 -2.00025,-0.89532 -2.00025,-2.00025 0,-1.10448 0.895702,-1.99993 2.00025,-1.99993 1.104547,0 1.999897,0.89545 1.999897,1.99993" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path877"></path> <path d="m 99.919204,169.95498 c 0,1.10476 -0.89535,2.00021 -1.999897,2.00021 -1.104548,0 -2.00025,-0.89545 -2.00025,-2.00021 0,-1.10451 0.895702,-1.99993 2.00025,-1.99993 1.104547,0 1.999897,0.89542 1.999897,1.99993" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path879"></path> <path d="m 104.41924,169.95498 c 0,1.10476 -0.89535,2.00021 -1.9999,2.00021 -1.10455,0 -2.00025,-0.89545 -2.00025,-2.00021 0,-1.10451 0.8957,-1.99993 2.00025,-1.99993 1.10455,0 1.9999,0.89542 1.9999,1.99993" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path881"></path> <path d="m 99.919204,174.45497 c 0,1.10477 -0.89535,2.00008 -1.999897,2.00008 -1.104548,0 -2.00025,-0.89531 -2.00025,-2.00008 0,-1.1045 0.895702,-1.99996 2.00025,-1.99996 1.104547,0 1.999897,0.89546 1.999897,1.99996" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path883"></path> <path d="m 108.91927,174.45497 c 0,1.10477 -0.89535,2.00008 -1.9999,2.00008 -1.10454,0 -2.00025,-0.89531 -2.00025,-2.00008 0,-1.1045 0.89571,-1.99996 2.00025,-1.99996 1.10455,0 1.9999,0.89546 1.9999,1.99996" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path885"></path> <path d="M 89.090548,176.45505 V 140.95502" style="stroke:#231f20;stroke-width:0.174066;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path887"></path> <path d="m 59.654271,147.65723 h -0.09536 c -0.962974,0 -1.753969,-0.78136 -1.753969,-1.74501 v -3.21264 c 0,-0.97247 0.790995,-1.74456 1.753969,-1.74456 h 0.09536 c 0.886767,0 1.610925,0.64805 1.725299,1.49694 v 0.0285 c 0,0.13342 -0.104726,0.23812 -0.228748,0.23812 -0.114378,0 -0.219111,-0.0854 -0.238404,-0.19981 -0.08544,-0.62011 -0.60978,-1.09665 -1.258147,-1.09665 h -0.09536 c -0.705281,0 -1.286814,0.57189 -1.286814,1.27745 v 3.21264 c 0,0.70594 0.581533,1.27783 1.286814,1.27783 h 0.09536 c 0.648367,0 1.172711,-0.47664 1.258147,-1.09664 0.01929,-0.11438 0.124026,-0.19982 0.238404,-0.19982 0.124022,0 0.228748,0.10474 0.228748,0.23788 v 0.0289 c -0.114374,0.84846 -0.838532,1.49683 -1.725299,1.49683" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path889"></path> <path d="m 65.361408,142.69958 c 0,-0.70556 -0.57217,-1.27745 -1.277443,-1.27745 h -0.09578 c -0.705273,0 -1.277408,0.57189 -1.277408,1.27745 v 3.21264 c 0,0.70594 0.572135,1.27783 1.277408,1.27783 h 0.09578 c 0.705273,0 1.277443,-0.57189 1.277443,-1.27783 z m -1.277443,4.95765 h -0.09578 c -0.962554,0 -1.744592,-0.78136 -1.744592,-1.74501 v -3.21264 c 0,-0.97247 0.782038,-1.74456 1.744592,-1.74456 h 0.09578 c 0.962554,0 1.744345,0.77209 1.744345,1.74456 v 3.21264 c 0,0.96365 -0.781791,1.74501 -1.744345,1.74501" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path891"></path> <path d="m 70.316843,147.65723 h -0.171556 c -0.06685,0 -0.190853,-0.0474 -0.238407,-0.16178 l -2.469445,-5.60642 v 5.52994 c 0,0.16245 -0.124037,0.23826 -0.237984,0.23826 -0.11437,0 -0.23883,-0.0758 -0.23883,-0.23826 v -6.22586 c 0,-0.12379 0.114652,-0.23809 0.23883,-0.23809 h 0.171133 c 0.05719,0 0.162348,0.048 0.210149,0.15275 l 2.488072,5.61513 v -5.52979 c 0,-0.16189 0.124001,-0.23809 0.238407,-0.23809 0.11437,0 0.238372,0.0762 0.238372,0.23809 v 6.2169 c 0,0.15211 -0.104705,0.24722 -0.228741,0.24722" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path893"></path> <path d="m 75.054119,147.60001 h -3.10776 c -0.133668,0 -0.238372,-0.11437 -0.238372,-0.23837 v -6.11106 c 0,-0.12376 0.104704,-0.23841 0.238372,-0.23841 h 3.10776 c 0.162349,0 0.238125,0.11465 0.238125,0.23841 0,0.11437 -0.07578,0.22849 -0.238125,0.22849 h -2.831465 v 2.46945 h 1.992666 c 0.161925,0 0.238407,0.124 0.238407,0.24803 0,0.11437 -0.07648,0.22875 -0.238407,0.22875 h -2.040185 v 2.70756 h 2.878984 c 0.162349,0 0.238125,0.11438 0.238125,0.22878 0,0.124 -0.07578,0.23837 -0.238125,0.23837" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path895"></path> <path d="m 79.422496,142.75676 c 0,-0.70555 -0.572135,-1.27769 -1.27769,-1.27769 h -1.372941 v 5.65379 h 1.372941 c 0.705555,0 1.27769,-0.57188 1.27769,-1.27783 z m -1.27769,4.84325 h -1.601294 c -0.133668,0 -0.238407,-0.11437 -0.238407,-0.23837 v -6.11106 c 0,-0.12376 0.104739,-0.23841 0.238407,-0.23841 h 1.601294 c 0.962801,0 1.744592,0.77212 1.744592,1.74459 v 3.09827 c 0,0.96365 -0.781791,1.74498 -1.744592,1.74498" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path897"></path> <path d="m 82.78394,141.90833 -1.172704,3.58426 h 2.326146 z m 2.020922,5.7489 c -0.09511,0 -0.181221,-0.0474 -0.21911,-0.17159 l -0.505072,-1.5259 h -2.621703 l -0.476815,1.5259 c -0.03831,0.12418 -0.124001,0.17159 -0.21911,0.17159 -0.124001,0 -0.238654,-0.0854 -0.238654,-0.22877 0,-0.0185 0,-0.0475 0.0095,-0.0756 l 2.021311,-6.226 c 0.03789,-0.12382 0.133245,-0.1718 0.228742,-0.1718 0.09511,0 0.181222,0.0572 0.21911,0.1718 l 2.030554,6.226 c 0.0096,0.0281 0.0096,0.0474 0.0096,0.0756 0,0.14333 -0.11437,0.22877 -0.238372,0.22877" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path899"></path> <path d="m 61.142828,156.13092 c -0.190722,0 -0.371659,-0.0863 -0.486036,-0.31503 l -1.220664,-2.51615 -0.523932,0.7717 v 1.50604 c 0,0.37208 -0.276983,0.55344 -0.553282,0.55344 -0.276296,0 -0.552593,-0.18136 -0.552593,-0.55344 v -5.59622 c 0,-0.37137 0.276297,-0.55259 0.552593,-0.55259 0.276299,0 0.553282,0.18122 0.553282,0.55259 v 2.12648 c 0,0 1.086584,-1.62073 1.649236,-2.44066 0.114378,-0.17142 0.28622,-0.23841 0.448137,-0.23841 0.285945,0 0.571896,0.23841 0.571896,0.54367 0,0.1047 -0.03789,0.20944 -0.10474,0.31432 l -1.325259,1.95474 1.506199,3.09852 c 0.03817,0.0854 0.05704,0.17089 0.05704,0.25686 0,0.31503 -0.285785,0.53414 -0.571881,0.53414" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path901"></path> <path d="m 64.88918,151.2973 c 0,-0.44771 -0.352778,-0.77237 -0.801088,-0.77237 h -0.08569 c -0.448274,0 -0.801052,0.33415 -0.801052,0.77237 v 2.95522 c 0,0.44856 0.362408,0.78204 0.801052,0.78204 h 0.08569 c 0.44831,0 0.801088,-0.33348 0.801088,-0.77241 z m -0.801088,4.83362 h -0.08569 c -1.048843,0 -1.90694,-0.82007 -1.90694,-1.86877 v -2.96485 c 0,-1.05833 0.858097,-1.86863 1.90694,-1.86863 h 0.08569 c 1.058333,0 1.906517,0.8103 1.906517,1.86863 v 2.95522 c 0,1.05833 -0.848184,1.8784 -1.906517,1.8784" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path903"></path> <path d="m 69.645753,151.39237 c 0,-0.44785 -0.324273,-0.81011 -0.772407,-0.81011 h -0.97222 v 1.70656 h 1.000901 c 0.428837,0 0.743726,-0.37194 0.743726,-0.81016 z m -0.02854,1.84038 1.000725,2.10717 c 0.03817,0.0854 0.06685,0.17089 0.06685,0.24737 0,0.31475 -0.295593,0.54363 -0.581554,0.54363 -0.190853,0 -0.371793,-0.0952 -0.476533,-0.32399 l -1.153689,-2.42175 h -0.571888 v 2.1923 c 0,0.37208 -0.276295,0.55344 -0.553261,0.55344 -0.276296,0 -0.552591,-0.18136 -0.552591,-0.55344 v -5.53833 c 0,-0.29559 0.257422,-0.55326 0.552591,-0.55326 h 1.496836 c 1.058333,0 1.906905,0.84815 1.906905,1.90648 v 0.0863 c 0,0.791 -0.448275,1.4683 -1.134392,1.75409" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path905"></path> </g> </svg>', "", "", function(opts) {});
+
+riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amount"> {opts.ids.length} {t(\'activerecord.models.entity\', {count: \'other\'})} </div> <hr> <virtual if="{opts.ids.length}"> <a if="{allowedTo(\'create\') && allowedTo(\'delete\')}" class="action" href="#" onclick="{merge}">{tcap(\'clipboard_actions.merge\')}</a> <a if="{allowedTo(\'edit\')}" class="action" href="#" onclick="{massRelate}">{tcap(\'clipboard_actions.mass_relate\')}</a> <a if="{allowedTo(\'delete\')}" class="action" href="#" onclick="{massDelete}">{tcap(\'clipboard_actions.mass_delete\')}</a> <a if="{session().user.authority_group_admin}" class="action" href="#" onclick="{addToAuthorityGroup}">{tcap(\'clipboard_actions.add_to_authority_group\')}</a> <a class="action" href="#" onclick="{addToUserGroup}">{tcap(\'clipboard_actions.add_to_user_group\')}</a> </virtual>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.auth);
     tag.mixin(wApp.mixins.i18n);
     tag.merge = function(event) {
         event.preventDefault();
@@ -11919,11 +12975,12 @@ riot.tag2("kor-admin-group-editor", '<div class="kor-layout-left kor-layout-larg
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
     tag.mixin(wApp.mixins.page);
-    tag.on("before-mount", function() {
+    tag.on("before-mount", function(e) {
         tag.errors = {};
         fetchCategories();
         if (!tag.isAuthorityGroupAdmin()) {
-            return wApp.bus.trigger("access-denied");
+            wApp.bus.trigger("access-denied");
+            throw "access denied";
         }
     });
     tag.on("mount", function() {
@@ -12395,7 +13452,7 @@ riot.tag2("kor-credentials", '<div class="kor-content-box"> <a href="#/credentia
     };
 });
 
-riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <hr> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.naming_options\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.name\')}" if="{hasName()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input if="{hasName()}" label="{tcap(\'activerecord.attributes.entity.distinct_name\')}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <hr> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.tag_list\')}" name="tag_list" ref="fields" riot-value="{data.tags.join(\', \')}" errors="{errors.tag_list}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields" errors="{errors.dataset}"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <hr> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}" default-dating-label="{kind.dating_label}"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <hr> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.naming_options\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}"></kor-input> <kor-input label="{nameLabel()}" if="{hasName()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input if="{hasName()}" label="{distinctNameLabel()}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <hr> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.tag_list\')}" name="tag_list" ref="fields" riot-value="{data.tags.join(\', \')}" errors="{errors.tag_list}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields" errors="{errors.dataset}"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <hr> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}" default-dating-label="{kind.dating_label}"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var checkPermissions, create, defaults, fetch, fetchCollections, fetchKind, queryHandler, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -12460,6 +13517,12 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
             return "";
         }
         return wApp.utils.capitalize(tag.kind.name_label);
+    };
+    tag.distinctNameLabel = function() {
+        if (!tag.kind) {
+            return "";
+        }
+        return wApp.utils.capitalize(tag.kind.distinct_name_label);
     };
     checkPermissions = function() {
         var policy;
@@ -12559,7 +13622,7 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
     };
 });
 
-riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-text-right pull-right group-commands"> <a if="{opts.type == \'user\' || opts.type == \'authority\'}" href="#" title="{t(\'add_to_clipboard\')}" onclick="{onMarkClicked}"><i class="fa fa-clipboard"></i></a> <a href="/authority_groups/{opts.id}/download_images" title="{t(\'title_verbs.zip\')}"><i class="fa fa-download"></i></a> </div> <h1> {tcap(\'activerecord.models.\' + opts.type + \'_group\')} <span if="{group}">"{group.name}"</span> </h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-text-right pull-right group-commands"> <a if="{opts.type == \'user\' || opts.type == \'authority\'}" href="#" title="{t(\'add_to_clipboard\')}" onclick="{onMarkClicked}"><i class="fa fa-clipboard"></i></a> <a if="{opts.type == \'user\'}" href="/user_groups/{opts.id}/download_images" title="{t(\'title_verbs.zip\')}"><i class="fa fa-download"></i></a> <a if="{opts.type == \'authority\'}" href="/authority_groups/{opts.id}/download_images" title="{t(\'title_verbs.zip\')}"><i class="fa fa-download"></i></a> </div> <h1> {tcap(\'activerecord.models.\' + opts.type + \'_group\')} <span if="{group}">"{group.name}"</span> </h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -12627,7 +13690,7 @@ riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-tex
     };
 });
 
-riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands page-commands"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <a href="#/entities/{data.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> </virtual> <a href="{reportUrl()}" title="{tcap(\'objects.report\', {interpolations: {o: \'activerecord.models.entity\'}})}"><i class="fa fa-exclamation"></i></a> <a if="{allowedTo(\'edit\', data.collection_id)}" href="#/entities/{data.id}" onclick="{delete}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{fieldValue(field.value)}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <a if="{property.url}" href="{property.value}" rel="noopener" target="_blank">» {property.label}</a> <virtual if="{!property.url}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </virtual> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box relations"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a href="#" onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom .meta" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.created_at}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span if="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updated_at}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span if="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <span class="value">{authorityGroups()}</span> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> <hr> <div class="kor-text-right kor-api-links"> <a href="/entities/{data.id}.json" target="_blank"><i class="fa fa-file-text"></i>{t(\'show_json\')}</a><br> <a href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank"><i class="fa fa-code"></i>{t(\'show_oai_pmh\')}</a> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}" title="{t(\'larger\')}"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}" title="{t(\'image_transformations.\' + op)}"><i class="fa fa-{opIcon(op)}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="{data.medium.url.normal}" target="_blank">{t(\'verbs.maximize\')}</a> </span> | <a href="{rootUrl()}mirador?manifest={rootUrl()}mirador/{data.id}" onclick="{openMirador}">{t(\'nouns.mirador\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="{data.medium.url.original.replace(/\\/images\\//, \'/download/\')}">{t(\'nouns.original\')}</a> | <a href="{data.medium.url.normal.replace(/\\/images\\//, \'/download/\')}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="#/upload?relate_with={data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands page-commands"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <a href="#/entities/{data.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> </virtual> <a href="{reportUrl()}" title="{tcap(\'objects.report\', {interpolations: {o: \'activerecord.models.entity\'}})}"><i class="fa fa-exclamation"></i></a> <a if="{allowedTo(\'edit\', data.collection_id)}" href="#/entities/{data.id}" onclick="{delete}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{fieldValue(field.value)}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <a if="{property.url}" href="{property.value}" rel="noopener" target="_blank">» {property.label}</a> <virtual if="{!property.url}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </virtual> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box relations"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a href="#" onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" ref="relations"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom .meta" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.created_at}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span if="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updated_at}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span if="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <span class="value">{authorityGroups()}</span> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> <hr> <div class="kor-text-right kor-api-links"> <a href="/entities/{data.id}.json" target="_blank"><i class="fa fa-file-text"></i>{t(\'show_json\')}</a><br> <a href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank"><i class="fa fa-code"></i>{t(\'show_oai_pmh\')}</a> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}" title="{t(\'larger\')}"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}" title="{t(\'image_transformations.\' + op)}"><i class="fa fa-{opIcon(op)}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="{data.medium.url.normal}" target="_blank">{t(\'verbs.maximize\')}</a> </span> | <a href="{rootUrl()}mirador?id={data.id}&manifest={rootUrl()}mirador/{data.id}" onclick="{openMirador}">{t(\'nouns.mirador\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="{data.medium.url.original.replace(/\\/images\\//, \'/download/\')}">{t(\'nouns.original\')}</a> | <a href="{data.medium.url.normal.replace(/\\/images\\//, \'/download/\')}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="#/upload?relate_with={data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, linkify_properties, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -12638,9 +13701,11 @@ riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="
     tag.on("mount", function() {
         wApp.bus.on("relationship-updated", fetch);
         wApp.bus.on("relationship-created", fetch);
+        wApp.bus.on("relationship-deleted", fetch);
         return fetch();
     });
     tag.on("unmount", function() {
+        wApp.bus.off("relationship-deleted", fetch);
         wApp.bus.off("relationship-created", fetch);
         return wApp.bus.off("relationship-updated", fetch);
     });
@@ -12754,7 +13819,12 @@ riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="
                 include: "all"
             },
             success: function(data) {
+                var rels;
                 tag.data = data;
+                rels = tag.data.relations;
+                tag.data.relations = {};
+                tag.update();
+                tag.data.relations = rels;
                 tag.title(tag.data.display_name);
                 linkify_properties();
                 return wApp.entityHistory.add(data.id);
@@ -13158,7 +14228,7 @@ riot.tag2("kor-kinds", '<div class="kor-content-box"> <a if="{isKindAdmin()}" hr
     };
 });
 
-riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> <div if="{!termsAccepted()}"> <div class="hr"></div> <button> {tcap(\'commands.accept_terms\')} </button> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="target"></div> <div if="{!termsAccepted()}"> <div class="hr"></div> <button onclick="{submit}"> {tcap(\'commands.accept_terms\')} </button> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -13171,6 +14241,15 @@ riot.tag2("kor-legal", '<div class="kor-layout-left kor-layout-large"> <div clas
     });
     tag.termsAccepted = function() {
         return tag.currentUser() && tag.currentUser().terms_accepted;
+    };
+    tag.submit = function() {
+        return Zepto.ajax({
+            url: "/users/accept_terms",
+            type: "PATCH",
+            success: function(data) {
+                return wApp.bus.trigger("reload-session");
+            }
+        });
     };
 });
 
@@ -13882,7 +14961,7 @@ riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right
     };
 });
 
-riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector name="collection_id" multiple="{true}" riot-value="{criteria.collection_id}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" riot-value="{criteria.kind_id}" ref="fields" onchange="{selectKind}" include-media="{true}"></kor-kind-selector> <kor-input if="{elastic()}" name="terms" label="{tcap(\'all_fields\')}" riot-value="{criteria.terms}" ref="fields" help="{tcap(\'help.terms_query\')}"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.entity.name\')}" riot-value="{criteria.name}" ref="fields" help="{tcap(\'help.name_query\')}"></kor-input> <kor-input name="tags" label="{tcap(\'nouns.tag\', {count: \'other\'})}" riot-value="{criteria.tags}" ref="fields"></kor-input> <kor-input name="dating" label="{tcap(\'activerecord.models.entity_dating\')}" riot-value="{criteria.dating}" ref="fields"></kor-input> <virtual if="{isMedia(kind)}"> <hr> <kor-input name="file_name" label="{tcap(\'activerecord.attributes.medium.file_name\')}" riot-value="{criteria.file_name}" ref="fields"></kor-input> <kor-input if="{mime_types}" name="file_type" label="{tcap(\'activerecord.attributes.medium.file_type\')}" type="select" options="{mime_types}" placeholder="{t(\'all\')}" riot-value="{criteria.file_type}" ref="fields"></kor-input> <kor-input name="file_size" label="{tcap(\'activerecord.attributes.medium.file_size\')}" riot-value="{criteria.file_size}" ref="fields" help="{tcap(\'help.file_size_query\')}"></kor-input> <kor-input name="datahash" label="{tcap(\'activerecord.attributes.medium.datahash\')}" riot-value="{criteria.datahash}" ref="fields"></kor-input> </virtual> <virtual if="{elastic()}"> <virtual if="{kind && kind.fields.length}"> <hr> <kor-input each="{field in kind.fields}" label="{field.search_label}" name="dataset_{field.name}" riot-value="{criteria[\'dataset_\' + field.name]}" ref="fields"></kor-input> </virtual> <hr> <kor-input name="property" label="{tcap(\'activerecord.attributes.entity.properties\')}" riot-value="{criteria.property}" ref="fields"></kor-input> <kor-input name="related" label="{tcap(\'by_related_entities\')}" riot-value="{criteria.related}" ref="fields"></kor-input> </virtual> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.search\')}"></kor-input> </div> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search_results\')}</h1> </div> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <div class="search-results" if="{data && data.total > 0}"> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="top"></kor-pagination> <div class="kor-search-results"> <kor-search-result each="{entity in data.records}" entity="{entity}"></kor-search-result> </div> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="bottom"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector name="collection_id" multiple="{true}" riot-value="{criteria.collection_id}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" riot-value="{criteria.kind_id}" ref="fields" onchange="{selectKind}" include-media="{true}"></kor-kind-selector> <kor-input if="{elastic()}" name="terms" label="{tcap(\'all_fields\')}" riot-value="{criteria.terms}" ref="fields" help="{tcap(\'help.terms_query\')}"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.entity.name\')}" riot-value="{criteria.name}" ref="fields" help="{tcap(\'help.name_query\')}"></kor-input> <kor-input name="tags" label="{tcap(\'nouns.tag\', {count: \'other\'})}" riot-value="{criteria.tags}" ref="fields"></kor-input> <kor-input name="dating" label="{tcap(\'activerecord.models.entity_dating\')}" riot-value="{criteria.dating}" ref="fields" help="{tcap(\'help.dating_query\')}"></kor-input> <virtual if="{isMedia(kind)}"> <hr> <kor-input name="file_name" label="{tcap(\'activerecord.attributes.medium.file_name\')}" riot-value="{criteria.file_name}" ref="fields"></kor-input> <kor-input if="{mime_types}" name="file_type" label="{tcap(\'activerecord.attributes.medium.file_type\')}" type="select" options="{mime_types}" placeholder="{t(\'all\')}" riot-value="{criteria.file_type}" ref="fields"></kor-input> <kor-input name="file_size" label="{tcap(\'activerecord.attributes.medium.file_size\')}" riot-value="{criteria.file_size}" ref="fields" help="{tcap(\'help.file_size_query\')}"></kor-input> <kor-input name="datahash" label="{tcap(\'activerecord.attributes.medium.datahash\')}" riot-value="{criteria.datahash}" ref="fields"></kor-input> </virtual> <virtual if="{elastic()}"> <virtual if="{kind && kind.fields.length}"> <hr> <kor-input each="{field in kind.fields}" label="{field.search_label}" name="dataset_{field.name}" riot-value="{criteria[\'dataset_\' + field.name]}" ref="fields"></kor-input> </virtual> <hr> <kor-input name="property" label="{tcap(\'activerecord.attributes.entity.properties\')}" riot-value="{criteria.property}" ref="fields"></kor-input> <kor-input name="related" label="{tcap(\'by_related_entities\')}" riot-value="{criteria.related}" ref="fields"></kor-input> </virtual> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.search\')}"></kor-input> </div> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search_results\')}</h1> </div> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <div class="search-results" if="{data && data.total > 0}"> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="top"></kor-pagination> <div class="kor-search-results"> <kor-search-result each="{entity in data.records}" entity="{entity}"></kor-search-result> </div> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="bottom"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -13901,6 +14980,7 @@ riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div c
     });
     var queryUpdate = function() {
         tag.criteria = urlParams();
+        tag.update();
         if (tag.criteria["kind_id"]) {
             fetchKind(tag.criteria["kind_id"]);
         }
@@ -13997,7 +15077,7 @@ riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div c
     };
 });
 
-riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </h1> <form onsubmit="{submit}" if="{values && groups && relations}"> <h2>{tcap(\'settings.branding_and_display\')}</h2> <hr> <kor-input name="maintainer_name" label="{nameFor(\'maintainer_name\')}" riot-value="{valueWithDefaults(\'maintainer_name\')}" ref="fields"></kor-input> <kor-input name="maintainer_mail" label="{nameFor(\'maintainer_mail\')}" riot-value="{valueWithDefaults(\'maintainer_mail\')}" ref="fields"></kor-input> <kor-input name="welcome_title" label="{nameFor(\'welcome_title\')}" riot-value="{valueWithDefaults(\'welcome_title\')}" ref="fields"></kor-input> <kor-input name="welcome_text" label="{nameFor(\'welcome_text\')}" type="textarea" riot-value="{valueWithDefaults(\'welcome_text\')}" ref="fields"></kor-input> <kor-input name="legal_text" label="{nameFor(\'legal_text\')}" type="textarea" riot-value="{valueWithDefaults(\'legal_text\')}" ref="fields"></kor-input> <kor-input name="about_text" label="{nameFor(\'about_text\')}" type="textarea" riot-value="{valueWithDefaults(\'about_text\')}" ref="fields"></kor-input> <kor-input name="custom_css_file" label="{nameFor(\'custom_css_file\')}" riot-value="{valueWithDefaults(\'custom_css_file\')}" ref="fields"></kor-input> <kor-input name="env_auth_button_label" label="{nameFor(\'env_auth_button_label\')}" riot-value="{valueWithDefaults(\'env_auth_button_label\')}" ref="fields"></kor-input> <kor-input name="search_entity_name" label="{nameFor(\'search_entity_name\')}" riot-value="{valueWithDefaults(\'search_entity_name\')}" ref="fields"></kor-input> <kor-input name="kind_dating_label" label="{nameFor(\'kind_dating_label\')}" riot-value="{valueWithDefaults(\'kind_dating_label\')}" ref="fields"></kor-input> <kor-input name="kind_name_label" label="{nameFor(\'kind_name_label\')}" riot-value="{valueWithDefaults(\'kind_name_label\')}" ref="fields"></kor-input> <kor-input name="kind_distinct_name_label" label="{nameFor(\'kind_distinct_name_label\')}" riot-value="{valueWithDefaults(\'kind_distinct_name_label\')}" ref="fields"></kor-input> <kor-input name="relationship_dating_label" label="{nameFor(\'relationship_dating_label\')}" riot-value="{valueWithDefaults(\'relationship_dating_label\')}" ref="fields"></kor-input> <kor-input name="primary_relations" label="{nameFor(\'primary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'primary_relations\')}" ref="fields"></kor-input> <kor-input name="secondary_relations" label="{nameFor(\'secondary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'secondary_relations\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.behavior\')}</h2> <hr> <kor-input name="default_locale" label="{nameFor(\'default_locale\')}" type="select" options="{wApp.i18n.locales()}" riot-value="{valueWithDefaults(\'default_locale\')}" ref="fields"></kor-input> <kor-input name="max_foreground_group_download_size" label="{nameFor(\'max_foreground_group_download_size\')}" riot-value="{valueWithDefaults(\'max_foreground_group_download_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_file_upload_size" label="{nameFor(\'max_file_upload_size\')}" riot-value="{valueWithDefaults(\'max_file_upload_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_results_per_request" label="{nameFor(\'max_results_per_request\')}" riot-value="{valueWithDefaults(\'max_results_per_request\')}" ref="fields" type="number"></kor-input> <kor-input name="max_included_results_per_result" label="{nameFor(\'max_included_results_per_result\')}" riot-value="{valueWithDefaults(\'max_included_results_per_result\')}" ref="fields" type="number"></kor-input> <kor-input name="session_lifetime" label="{nameFor(\'session_lifetime\')}" riot-value="{valueWithDefaults(\'session_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="publishment_lifetime" label="{nameFor(\'publishment_lifetime\')}" riot-value="{valueWithDefaults(\'publishment_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="default_groups" label="{nameFor(\'default_groups\')}" type="select" multiple="{true}" options="{groups}" riot-value="{valueWithDefaults(\'default_groups\')}" ref="fields"></kor-input> <kor-input name="max_download_group_size" label="{nameFor(\'max_download_group_size\')}" riot-value="{valueWithDefaults(\'max_download_group_size\')}" ref="fields" type="number"></kor-input> <h2>{tcap(\'settings.help\')}</h2> <hr> <kor-input name="help_general" label="{nameFor(\'help_general\')}" type="textarea" riot-value="{valueWithDefaults(\'help_general\')}" ref="fields"></kor-input> <kor-input name="help_search" type="textarea" label="{nameFor(\'help_search\')}" riot-value="{valueWithDefaults(\'help_search\')}" ref="fields"></kor-input> <kor-input name="help_upload" type="textarea" label="{nameFor(\'help_upload\')}" riot-value="{valueWithDefaults(\'help_upload\')}" ref="fields"></kor-input> <kor-input name="help_login" type="textarea" label="{nameFor(\'help_login\')}" riot-value="{valueWithDefaults(\'help_login\')}" ref="fields"></kor-input> <kor-input name="help_profile" type="textarea" label="{nameFor(\'help_profile\')}" riot-value="{valueWithDefaults(\'help_profile\')}" ref="fields"></kor-input> <kor-input name="help_new_entries" type="textarea" label="{nameFor(\'help_new_entries\')}" riot-value="{valueWithDefaults(\'help_entries\')}" ref="fields"></kor-input> <kor-input name="help_authority_groups" type="textarea" label="{nameFor(\'help_authority_groups\')}" riot-value="{valueWithDefaults(\'help_authority_groups\')}" ref="fields"></kor-input> <kor-input name="help_user_groups" type="textarea" label="{nameFor(\'help_user_groups\')}" riot-value="{valueWithDefaults(\'help_user_groups\')}" ref="fields"></kor-input> <kor-input name="help_clipboard" type="textarea" label="{nameFor(\'help_clipboard\')}" riot-value="{valueWithDefaults(\'help_clipboard\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.other\')}</h2> <hr> <kor-input name="sources_release" label="{nameFor(\'sources_release\')}" riot-value="{valueWithDefaults(\'sources_release\')}" ref="fields"></kor-input> <kor-input name="sources_pre_release" label="{nameFor(\'sources_pre_release\')}" riot-value="{valueWithDefaults(\'sources_pre_release\')}" ref="fields"></kor-input> <kor-input name="sources_default" label="{nameFor(\'sources_default\')}" riot-value="{valueWithDefaults(\'sources_default\')}" ref="fields"></kor-input> <kor-input name="repository_uuid" label="{nameFor(\'repository_uuid\')}" riot-value="{valueWithDefaults(\'repository_uuid\')}" ref="fields"></kor-input> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </h1> <form onsubmit="{submit}" if="{values && groups && relations}"> <h2>{tcap(\'settings.branding_and_display\')}</h2> <hr> <kor-input name="maintainer_name" label="{nameFor(\'maintainer_name\')}" riot-value="{valueWithDefaults(\'maintainer_name\')}" ref="fields"></kor-input> <kor-input name="maintainer_mail" label="{nameFor(\'maintainer_mail\')}" riot-value="{valueWithDefaults(\'maintainer_mail\')}" ref="fields"></kor-input> <kor-input name="welcome_title" label="{nameFor(\'welcome_title\')}" riot-value="{valueWithDefaults(\'welcome_title\')}" ref="fields"></kor-input> <kor-input name="welcome_text" label="{nameFor(\'welcome_text\')}" type="textarea" riot-value="{valueWithDefaults(\'welcome_text\')}" ref="fields"></kor-input> <kor-input name="legal_text" label="{nameFor(\'legal_text\')}" type="textarea" riot-value="{valueWithDefaults(\'legal_text\')}" ref="fields"></kor-input> <kor-input name="about_text" label="{nameFor(\'about_text\')}" type="textarea" riot-value="{valueWithDefaults(\'about_text\')}" ref="fields"></kor-input> <kor-input name="custom_css_file" label="{nameFor(\'custom_css_file\')}" riot-value="{valueWithDefaults(\'custom_css_file\')}" ref="fields"></kor-input> <kor-input name="env_auth_button_label" label="{nameFor(\'env_auth_button_label\')}" riot-value="{valueWithDefaults(\'env_auth_button_label\')}" ref="fields"></kor-input> <kor-input name="search_entity_name" label="{nameFor(\'search_entity_name\')}" riot-value="{valueWithDefaults(\'search_entity_name\')}" ref="fields"></kor-input> <kor-input name="kind_dating_label" label="{nameFor(\'kind_dating_label\')}" riot-value="{valueWithDefaults(\'kind_dating_label\')}" ref="fields"></kor-input> <kor-input name="kind_name_label" label="{nameFor(\'kind_name_label\')}" riot-value="{valueWithDefaults(\'kind_name_label\')}" ref="fields"></kor-input> <kor-input name="kind_distinct_name_label" label="{nameFor(\'kind_distinct_name_label\')}" riot-value="{valueWithDefaults(\'kind_distinct_name_label\')}" ref="fields"></kor-input> <kor-input name="relationship_dating_label" label="{nameFor(\'relationship_dating_label\')}" riot-value="{valueWithDefaults(\'relationship_dating_label\')}" ref="fields"></kor-input> <kor-input name="primary_relations" label="{nameFor(\'primary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'primary_relations\')}" ref="fields"></kor-input> <kor-input name="secondary_relations" label="{nameFor(\'secondary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'secondary_relations\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.behavior\')}</h2> <hr> <kor-input name="default_locale" label="{nameFor(\'default_locale\')}" type="select" options="{wApp.i18n.locales()}" riot-value="{valueWithDefaults(\'default_locale\')}" ref="fields"></kor-input> <kor-input name="max_foreground_group_download_size" label="{nameFor(\'max_foreground_group_download_size\')}" riot-value="{valueWithDefaults(\'max_foreground_group_download_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_file_upload_size" label="{nameFor(\'max_file_upload_size\')}" riot-value="{valueWithDefaults(\'max_file_upload_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_results_per_request" label="{nameFor(\'max_results_per_request\')}" riot-value="{valueWithDefaults(\'max_results_per_request\')}" ref="fields" type="number"></kor-input> <kor-input name="max_included_results_per_result" label="{nameFor(\'max_included_results_per_result\')}" riot-value="{valueWithDefaults(\'max_included_results_per_result\')}" ref="fields" type="number"></kor-input> <kor-input name="session_lifetime" label="{nameFor(\'session_lifetime\')}" riot-value="{valueWithDefaults(\'session_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="publishment_lifetime" label="{nameFor(\'publishment_lifetime\')}" riot-value="{valueWithDefaults(\'publishment_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="default_groups" label="{nameFor(\'default_groups\')}" type="select" multiple="{true}" options="{groups}" riot-value="{valueWithDefaults(\'default_groups\')}" ref="fields"></kor-input> <kor-input name="max_download_group_size" label="{nameFor(\'max_download_group_size\')}" riot-value="{valueWithDefaults(\'max_download_group_size\')}" ref="fields" type="number"></kor-input> <kor-input name="mirador_page_template" label="{nameFor(\'mirador_page_template\')}" riot-value="{valueWithDefaults(\'mirador_page_template\')}" ref="fields" type="number"></kor-input> <kor-input name="mirador_manifest_template" label="{nameFor(\'mirador_page_template\')}" riot-value="{valueWithDefaults(\'mirador_manifest_template\')}" ref="fields" type="number"></kor-input> <h2>{tcap(\'settings.help\')}</h2> <hr> <kor-input name="help_general" label="{nameFor(\'help_general\')}" type="textarea" riot-value="{valueWithDefaults(\'help_general\')}" ref="fields"></kor-input> <kor-input name="help_search" type="textarea" label="{nameFor(\'help_search\')}" riot-value="{valueWithDefaults(\'help_search\')}" ref="fields"></kor-input> <kor-input name="help_upload" type="textarea" label="{nameFor(\'help_upload\')}" riot-value="{valueWithDefaults(\'help_upload\')}" ref="fields"></kor-input> <kor-input name="help_login" type="textarea" label="{nameFor(\'help_login\')}" riot-value="{valueWithDefaults(\'help_login\')}" ref="fields"></kor-input> <kor-input name="help_profile" type="textarea" label="{nameFor(\'help_profile\')}" riot-value="{valueWithDefaults(\'help_profile\')}" ref="fields"></kor-input> <kor-input name="help_new_entries" type="textarea" label="{nameFor(\'help_new_entries\')}" riot-value="{valueWithDefaults(\'help_entries\')}" ref="fields"></kor-input> <kor-input name="help_authority_groups" type="textarea" label="{nameFor(\'help_authority_groups\')}" riot-value="{valueWithDefaults(\'help_authority_groups\')}" ref="fields"></kor-input> <kor-input name="help_user_groups" type="textarea" label="{nameFor(\'help_user_groups\')}" riot-value="{valueWithDefaults(\'help_user_groups\')}" ref="fields"></kor-input> <kor-input name="help_clipboard" type="textarea" label="{nameFor(\'help_clipboard\')}" riot-value="{valueWithDefaults(\'help_clipboard\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.other\')}</h2> <hr> <kor-input name="sources_release" label="{nameFor(\'sources_release\')}" riot-value="{valueWithDefaults(\'sources_release\')}" ref="fields"></kor-input> <kor-input name="sources_pre_release" label="{nameFor(\'sources_pre_release\')}" riot-value="{valueWithDefaults(\'sources_pre_release\')}" ref="fields"></kor-input> <kor-input name="sources_default" label="{nameFor(\'sources_default\')}" riot-value="{valueWithDefaults(\'sources_default\')}" ref="fields"></kor-input> <kor-input name="repository_uuid" label="{nameFor(\'repository_uuid\')}" riot-value="{valueWithDefaults(\'repository_uuid\')}" ref="fields"></kor-input> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, fetchGroups, fetchRelations, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -14026,11 +15106,11 @@ riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large">
             return tag.errors = {};
         });
         p.fail(function(xhr) {
-            tag.errors = JSON.parse(xhr.responseText).errors;
-            return wApp.utils.scrollToTop();
+            return tag.errors = JSON.parse(xhr.responseText).errors;
         });
         return p.always(function() {
-            return tag.update();
+            tag.update();
+            return wApp.utils.scrollToTop();
         });
     };
     update = function() {
@@ -14081,9 +15161,9 @@ riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large">
     };
     fetchRelations = function() {
         return Zepto.ajax({
-            url: "/relations",
+            url: "/relations/names",
             success: function(data) {
-                tag.relations = data.records;
+                tag.relations = data;
                 return tag.update();
             }
         });
@@ -14488,7 +15568,7 @@ riot.tag2("kor-users", '<div class="kor-content-box"> <div class="kor-layout-com
             url: "/users",
             data: {
                 include: "security,technical",
-                search_string: tag.opts.query.search,
+                terms: tag.opts.query.search,
                 page: tag.opts.query.page
             },
             success: function(data) {
@@ -14718,17 +15798,10 @@ riot.tag2("kor-relation", '<div class="name"> <kor-pagination if="{data}" page="
     tag.mixin(wApp.mixins.info);
     tag.on("mount", function() {
         var base;
-        wApp.bus.on("relationship-created", fetch);
-        wApp.bus.on("relationship-updated", fetch);
-        wApp.bus.on("relationship-deleted", fetch);
         (base = tag.opts).query || (base.query = {});
         return fetch();
     });
-    tag.on("unmount", function() {
-        wApp.bus.off("relationship-deleted", fetch);
-        wApp.bus.off("relationship-updated", fetch);
-        return wApp.bus.off("relationship-created", fetch);
-    });
+    tag.reFetch = fetch;
     tag.expandable = function() {
         var i, len, r, ref;
         if (!tag.data) {
@@ -15011,7 +16084,6 @@ riot.tag2("kor-relationship-editor", '<div class="kor-content-box" if="{relation
         tag.update();
         if (tag.relationship.id) {
             wApp.bus.trigger("relationship-updated");
-            h = tag.opts.onUpdated;
         } else {
             wApp.bus.trigger("relationship-created");
         }
@@ -15173,6 +16245,9 @@ riot.tag2("kor-synonyms-editor", '<kor-input label="{opts.label}" type="textarea
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        tag.set(tag.opts.riotValue);
+    });
     tag.name = function() {
         return tag.opts.name;
     };
@@ -15259,8 +16334,8 @@ riot.tag2("kor-user-selector", '<kor-input label="{label()}" name="{opts.name}" 
     };
 });
 
-riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div class="w-content"></div> </div> <w-modal ref="modal"></w-modal> <w-messaging></w-messaging>', "", "", function(opts) {
-    var accessDenied, goBack, pageTitleHandler, queryUpdate, redirectTo, tag;
+riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div class="w-content"></div> <kor-footer></kor-footer> </div> <w-modal ref="modal"></w-modal> <w-messaging></w-messaging>', "", "", function(opts) {
+    var accessDenied, goBack, pageTitleHandler, queryUpdate, redirectTo, serverCodeHandler, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.auth);
@@ -15272,6 +16347,7 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
         wApp.bus.on("access-denied", accessDenied);
         wApp.bus.on("go-back", goBack);
         wApp.bus.on("query-update", queryUpdate);
+        wApp.bus.on("server-code", serverCodeHandler);
         if (tag.opts.routing) {
             return wApp.routing.setup();
         }
@@ -15283,6 +16359,7 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
         wApp.bus.off("access-denied", accessDenied);
         wApp.bus.off("go-back", goBack);
         wApp.bus.off("query-update", queryUpdate);
+        wApp.bus.off("server-code", serverCodeHandler);
         if (tag.opts.routing) {
             return wApp.routing.tearDown();
         }
@@ -15294,6 +16371,11 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
     };
     accessDenied = function() {
         return tag.mountTag("kor-access-denied");
+    };
+    serverCodeHandler = function(code) {
+        if (code === "terms-not-accepted") {
+            return redirectTo("/legal");
+        }
     };
     goBack = function() {
         return wApp.routing.back();
@@ -15570,6 +16652,7 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
 riot.tag2("w-app-loader", '<div class="app" ref="target"> <div class="kor-loading-screen"> <img src="/images/loading.gif"><br> <strong>… loading …</strong> </div> </div>', "", "", function(opts) {
     var tag = this;
     var reloadApp = function() {
+        console.log("reloading app");
         unmount();
         var preloaders = wApp.setup();
         $.when.apply(null, preloaders).then(function() {
@@ -15602,8 +16685,14 @@ riot.tag2("w-app-loader", '<div class="app" ref="target"> <div class="kor-loadin
         var url = wApp.info.data.custom_css;
         if (url) {
             var link = Zepto('<link rel="stylesheet" href="' + url + '">');
+            link[0].onload = showBody;
             Zepto("head").append(link);
+        } else {
+            showBody();
         }
+    };
+    var showBody = function() {
+        Zepto("body").show();
     };
     tag.on("mount", function() {
         wApp.bus.on("reload-app", reloadApp);
@@ -15614,14 +16703,14 @@ riot.tag2("w-app-loader", '<div class="app" ref="target"> <div class="kor-loadin
     });
 });
 
-riot.tag2("kor-header", '<a href="#/" class="logo"> <img src="images/logo.gif"> </a> <div class="session"> <kor-loading></kor-loading> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <span if="{currentUser()}"> <img src="images/vertical_dots.gif"> {t(\'logged_in_as\')}: <strong>{currentUser().display_name}</strong> <a href="#/profile" title="{tcap(\'edit_self\')}"><i class="fa fa-wrench"></i></a> <span if="{!isGuest()}"> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </span> </span> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-header", '<a href="#/" class="logo"> <kor-logo></kor-logo> </a> <div class="session"> <kor-loading></kor-loading> <span> <strong>ConedaKOR</strong> {t(\'nouns.version\')} {info().version} </span> <span if="{currentUser()}"> <img src="images/vertical_dots.gif"> {t(\'logged_in_as\')}: <strong>{currentUser().display_name}</strong> <a href="#/profile" title="{tcap(\'edit_self\')}"><i class="fa fa-wrench"></i></a> <span if="{!isGuest()}"> <img src="images/vertical_dots.gif"> <kor-logout></kor-logout> </span> </span> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.info);
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
 });
 
-riot.tag2("kor-menu", '<ul> <li if="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li if="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> </ul> <ul if="{currentUser()}"> <li> <a href="#/new-media">{tcap(\'pages.new_media\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.search\')}</a> </li> </ul> <div class="header">{tcap(\'nouns.group\', {count: \'other\'})}</div> <ul> <li> <a href="#/groups/categories"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\', {count: \'other\'})} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.published\', {count: \'other\'})} </a> </li> </ul> <virtual if="{isLoggedIn() && (allowedTo(\'create\'))}"> <div class="header">{tcap(\'verbs.create\')}</div> <ul> <li> <kor-input if="{kinds && kinds.records.length > 0}" name="new_entity_type" type="select" onchange="{newEntity}" options="{kinds.records}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.entity.one\'}})}" ref="kind_id"></kor-input> </li> <li if="{isLoggedIn()}"> <a href="#/upload">{tcap(\'verbs.upload\')}</a> </li> <li> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> </ul> </virtual> <virtual if="{isLoggedIn() && (allowedTo(\'delete\') || allowedTo(\'edit\'))}"> <div class="header">{tcap(\'verbs.edit\')}</div> <ul> <li if="{allowedTo(\'delete\')}"> <a href="#/entities/invalid">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/recent">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/isolated">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> </virtual> <div if="{isAdmin()}" class="header">{tcap(\'nouns.administration\')}</div> <ul if="{isAdmin()}"> <li> <a href="#/settings"> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </a> </li> <li> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> <ul> <li if="{hasHelp()}"> <a href="#/help" onclick="{showHelp}">{tcap(\'nouns.help\')}</a> </li> <li> <a href="#/statistics">{tcap(\'nouns.statistics\')}</a> </li> <li> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li if="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer_mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
+riot.tag2("kor-menu", '<ul if="{currentUser()}"> <li if="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.search\')}</a> </li> </ul> <ul> <li if="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> <li if="{currentUser()}"> <a href="#/new-media">{tcap(\'pages.new_media\')}</a> </li> </ul> <div class="header">{tcap(\'nouns.group\', {count: \'other\'})}</div> <ul> <li> <a href="#/groups/categories"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\', {count: \'other\'})} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.published\', {count: \'other\'})} </a> </li> </ul> <virtual if="{isLoggedIn() && (allowedTo(\'create\'))}"> <div class="header">{tcap(\'verbs.create\')}</div> <ul> <li> <kor-input if="{kinds && kinds.records.length > 0}" name="new_entity_type" type="select" onchange="{newEntity}" options="{kinds.records}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.entity.one\'}})}" ref="kind_id"></kor-input> </li> <li if="{isLoggedIn()}"> <a href="#/upload">{tcap(\'verbs.upload\')}</a> </li> <li> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> </ul> </virtual> <virtual if="{isLoggedIn() && (allowedTo(\'delete\') || allowedTo(\'edit\'))}"> <div class="header">{tcap(\'verbs.edit\')}</div> <ul> <li if="{allowedTo(\'delete\')}"> <a href="#/entities/invalid">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/recent">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/isolated">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> </virtual> <div if="{isAdmin()}" class="header">{tcap(\'nouns.administration\')}</div> <ul if="{isAdmin()}"> <li> <a href="#/settings"> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </a> </li> <li> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> <ul> <li if="{hasHelp()}"> <a href="#/help" onclick="{showHelp}">{tcap(\'nouns.help\')}</a> </li> <li> <a href="#/statistics">{tcap(\'nouns.statistics\')}</a> </li> <li if="{hasLegal()}"> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li if="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer_mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
     var fetchKinds, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -15641,6 +16730,9 @@ riot.tag2("kor-menu", '<ul> <li if="{!isLoggedIn()}"> <a href="#/login">{tcap(\'
     };
     tag.hasHelp = function() {
         return wApp.config.hasHelp("general");
+    };
+    tag.hasLegal = function() {
+        return !!wApp.info.data.legal_html;
     };
     tag.newEntity = function(event) {
         var kind_id;
@@ -15682,11 +16774,7 @@ riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'er
         return self.update();
     });
     duration = function() {
-        if (wApp.info.data.env === "test") {
-            return 3e3;
-        } else {
-            return 3e3;
-        }
+        return 3e3;
     };
     ajaxCompleteHandler = function(event, request, options) {
         var contentType, data, e, type;
@@ -15696,7 +16784,13 @@ riot.tag2("w-messaging", '<div each="{message in messages}" class="message {\'er
                 data = JSON.parse(request.response);
                 if (data.message && !request.noMessaging) {
                     type = request.status >= 200 && request.status < 300 ? "notice" : "error";
-                    return wApp.bus.trigger("message", type, data.message);
+                    wApp.bus.trigger("message", type, data.message);
+                }
+                if (data.notice && !request.noMessaging) {
+                    wApp.bus.trigger("message", "notice", data.notice);
+                }
+                if (data.code) {
+                    return wApp.bus.trigger("server-code", data.code);
                 }
             } catch (error) {
                 e = error;

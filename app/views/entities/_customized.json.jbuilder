@@ -39,12 +39,10 @@ end
 
 # TODO: this should also be possible with edit rights and delete/create rights,
 # e.g. for merging
-if allowed_to?(:view_meta, entity.collection)
-  if inclusion.request?('technical')
-    json.uuid entity.uuid
-    json.created_at entity.created_at
-    json.updated_at entity.updated_at
-  end
+if allowed_to?(:view_meta, entity.collection) && inclusion.request?('technical')
+  json.uuid entity.uuid
+  json.created_at entity.created_at
+  json.updated_at entity.updated_at
 end
 
 if inclusion.request?('synonyms')

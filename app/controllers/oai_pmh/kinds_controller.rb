@@ -12,7 +12,7 @@ class OaiPmh::KindsController < OaiPmh::BaseController
   protected
 
     def records
-      Kind.with_deleted
+      Kind.order(:id).with_deleted
     end
 
     def base_url

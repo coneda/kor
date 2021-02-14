@@ -14,7 +14,7 @@ have been moved to 4.2.0
 
 ## Version 4.0.1
 
-This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.3+).
+This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?q=is%3Aissue+milestone%3Av4.0.1+is%3Aclosed).
 
 * dropping angularjs previously prompted using riotjs for rendering custom
   generators. The latter did actually not perform all required operations (e.g.
@@ -74,6 +74,10 @@ are some highlights:
 * upgraded to rails 5.0.7.1
 * setting `DEBUG_FAILED=true` while running the cucumber test suite will drop
   to a `pry` session on test failures
+
+## Version 3.0.5
+
+This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3Av3.0.5+).
 
 ## Version 3.0.4
 

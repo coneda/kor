@@ -59,3 +59,15 @@ Given 'the search api expects to receive the params' do |table|
     hash_including(values)
   ).and_call_original
 end
+
+Then("there should be {string} outgoing email") do |amount|
+  actual = ActionMailer::Base.deliveries.size
+  expect(actual).to eq(amount.to_i)
+end
+
+When("I click the download link in mail {string}") do |index|
+  mail = ActionMailer::Base.deliveries[index.to_i - 1]
+  link = mail.body.to_s.scan(%r{http://[^/]+/downloads[^\s]+}).first
+
+  visit link
+end

@@ -86,7 +86,9 @@ module Kor::Auth
               }
 
               Rails.logger.info "authorizing user #{username} with data #{data.inspect}"
-              return authorize(username, data)
+              user = authorize(username, additional_attributes: data)
+
+              return user if user
             end
           end
         else
@@ -112,7 +114,7 @@ module Kor::Auth
     end
   end
 
-  def self.authorize(username, additional_attributes = true)
+  def self.authorize(username, additional_attributes: true)
     user = User.includes(:groups).find_or_initialize_by(:name => username)
 
     if additional_attributes.is_a?(Hash)
@@ -141,7 +143,7 @@ module Kor::Auth
 
   def self.login(username, password)
     if attributes = authenticate(username, password)
-      authorize(username, attributes)
+      authorize(username, additional_attributes: attributes)
     end
   end
 
@@ -281,7 +283,7 @@ module Kor::Auth
     ['view', 'edit', 'create', 'delete', 'download_originals', 'tagging', 'view_meta']
   end
 
-  def self.sources(refresh = false)
+  def self.sources(refresh: false)
     @sources = nil if refresh
 
     @sources ||= begin

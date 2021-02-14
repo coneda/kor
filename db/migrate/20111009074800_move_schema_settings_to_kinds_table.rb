@@ -2,7 +2,7 @@ class MoveSchemaSettingsToKindsTable < ActiveRecord::Migration
   def self.up
     old_config_file = "#{Rails.root}/config/schema_definitions.yml"
     unless File.exist? old_config_file
-      old_config_file = File.expand_path(Rails.root + '../../shared/schema_definitions.yml')
+      old_config_file = File.expand_path("#{Rails.root}../../shared/schema_definitions.yml")
     end
 
     old_config = begin

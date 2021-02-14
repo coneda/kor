@@ -1,6 +1,6 @@
 module XmlHelper
   def verify_oaipmh_error(code)
-    expect(response).to have_http_status(400)
+    expect(response).to have_http_status(200)
     doc = Nokogiri::XML(response.body)
     doc.collect_namespaces.each{ |k, v| doc.root.add_namespace k, v }
     doc.xpath("//xmlns:error")

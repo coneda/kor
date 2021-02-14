@@ -1,9 +1,7 @@
 class Fields::Regex < Field
   def validate_value
-    if value.present?
-      if !value.match(matcher)
-        return :invalid
-      end
+    if value.present? && !value.match(matcher)
+      return :invalid
     end
 
     true

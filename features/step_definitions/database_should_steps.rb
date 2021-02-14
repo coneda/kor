@@ -1,4 +1,4 @@
-Then /^user "([^\"]*)" should have the following access rights$/ do |user, table|
+Then /^user "([^"]*)" should have the following access rights$/ do |user, table|
   user = User.find_by_name(user)
 
   results = []

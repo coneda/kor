@@ -24,4 +24,17 @@ RSpec.describe ActiveRecord do
 
     expect(group.entities.count).to eql(2)
   end
+
+  it 'sets updated_at when creating and deleting' do
+    mona_lisa = FactoryGirl.create :mona_lisa
+    ua1 = mona_lisa.updated_at
+    expect(ua1).to be_within(1.second).of(Time.now)
+
+    # due to mysql timestamp precision
+    sleep 1
+
+    mona_lisa.destroy
+    ua2 = mona_lisa.updated_at
+    expect(ua2).to be > ua1
+  end
 end

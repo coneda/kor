@@ -134,8 +134,11 @@ class EntitiesController < JsonController
         @record = @entity
         render_created @entity
       else
-        exists = @entity.medium && @entity.medium.errors[:datahash].present?
-        if exists && params[:user_group_name]
+        condition =
+          @entity.medium &&
+          @entity.medium.errors[:datahash].present? &&
+          params[:user_group_name]
+        if condition
           transit = UserGroup.owned_by(current_user).find_or_create_by(name: params[:user_group_name])
 
           if transit

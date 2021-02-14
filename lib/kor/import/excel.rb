@@ -23,9 +23,7 @@ class Kor::Import::Excel < Kor::Export::Excel
     end
   end
 
-  attr_accessor :file
-  attr_accessor :row
-  attr_accessor :entity
+  attr_accessor :file, :row, :entity
 
   def run
     if @options[:simulate]
@@ -182,10 +180,8 @@ class Kor::Import::Excel < Kor::Export::Excel
       end
     end
 
-    results = results.select do |dating|
+    results.select do |dating|
       dating_attributes.find{ |da| da['id'] == dating.id }
     end
-
-    results
   end
 end
