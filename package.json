@@ -31,7 +31,7 @@
   },
   "scripts": {
     "build": "widgets/build.sh",
-    "watch": "widgets/build.sh watch",
+    "dev": "widgets/build.sh watch",
     "watch:vendor": "widgets/build.sh watch_vendor",
     "watch:lib": "widgets/build.sh watch_lib",
     "watch:tags": "widgets/build.sh watch_tags",

@@ -19,7 +19,10 @@
     tag.on('mount', function() {
       Zepto.ajax({
         url: '/' + tag.opts.type + '_groups',
-        data: {include: 'directory'},
+        data: {
+          include: 'directory',
+          per_page: 500
+        },
         success: function(data) {
           tag.groups = data.records;
           for (var i = 0; i < data.records.length; i++) {
@@ -35,6 +38,12 @@
               r.name = names.join(' » ');
             }
           }
+
+          // sort the values (easier to to in JS because here, we can directly
+          // sort according to directory names first
+          tag.groups = tag.groups.sort((x, y) => {
+            return x.name.localeCompare(y.name)
+          })
 
           if (tag.opts.riotValue) {
             tag.groups.unshift({
