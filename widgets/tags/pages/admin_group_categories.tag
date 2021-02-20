@@ -107,7 +107,7 @@
     var fetch = function() {
       Zepto.ajax({
         url: '/authority_group_categories',
-        data: {parent_id: tag.opts.parentId},
+        data: {parent_id: tag.opts.parentId, per_page: 'max'},
         success: function(data) {
           tag.data = data;
           tag.update();

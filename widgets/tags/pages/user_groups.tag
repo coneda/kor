@@ -106,7 +106,10 @@
     var fetch = function() {
       Zepto.ajax({
         url: (tag.opts.type == 'shared' ? '/user_groups/shared' : 'user_groups'),
-        data: {include: 'owner'},
+        data: {
+          include: 'owner',
+          per_page: 'max'
+        },
         success: function(data) {
           tag.data = data;
           tag.update();

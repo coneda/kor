@@ -135,11 +135,22 @@ class JsonController < BaseController
       [(params[:page] || 1).to_i, 1].max
     end
 
+    def cap_per_page
+      true
+    end
+
     def per_page
-      return Kor.settings['max_results_per_request'] if params[:per_page] == 'max'
+      if params[:per_page] == 'max'
+        return 'max' unless cap_per_page
+
+        return Kor.settings['max_results_per_request']
+      end
+
+      from_param = (params[:per_page] || 10).to_i
+      from_param = 10 if from_param < 1
 
       @per_page = [
-        (params[:per_page] || 10).to_i,
+        from_param,
         Kor.settings['max_results_per_request']
       ].min
     end

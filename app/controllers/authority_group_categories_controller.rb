@@ -16,6 +16,7 @@ class AuthorityGroupCategoriesController < JsonController
 
 
     @total = @records.count
+    @records = @records.pageit(page, per_page)
     render template: 'json/index'
   end
 
@@ -68,5 +69,9 @@ class AuthorityGroupCategoriesController < JsonController
 
     def auth
       require_authority_group_admin
+    end
+
+    def cap_per_page
+      false
     end
 end

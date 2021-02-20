@@ -82,4 +82,8 @@ class AuthorityGroupsController < JsonController
         require_authority_group_admin
       end
     end
+
+    def cap_per_page
+      false
+    end
 end

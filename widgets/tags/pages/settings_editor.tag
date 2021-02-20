@@ -40,6 +40,14 @@
         />
 
         <kor-input
+          name="welcome_page_only_media"
+          label={nameFor('welcome_page_only_media')}
+          type="checkbox"
+          riot-value={valueWithDefaults('welcome_page_only_media')}
+          ref="fields"
+        />
+
+        <kor-input
           name="legal_text"
           label={nameFor('legal_text')}
           type="textarea"

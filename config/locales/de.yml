@@ -249,6 +249,7 @@ de:
       secondary_relationships: sekundäre Verkünfungen
       welcome_title: Titel der Willkommensseite
       welcome_text: Text der Willkommensseite
+      welcome_page_only_media: Nur Medien auf der Willkommensseite anzeigen
       session_lifetime: Frist für den Ablauf einer Nutzersitzung [in Sekunden]
       publishment_lifetime: Gültigkeit von "freigegeben Gruppen" [in Tagen]
       env_auth_button_label: |

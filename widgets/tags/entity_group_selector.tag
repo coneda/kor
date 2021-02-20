@@ -21,7 +21,7 @@
         url: '/' + tag.opts.type + '_groups',
         data: {
           include: 'directory',
-          per_page: 500
+          per_page: 'max'
         },
         success: function(data) {
           tag.groups = data.records;

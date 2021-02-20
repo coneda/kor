@@ -246,6 +246,7 @@ en:
       # sender_address: sender adress
       welcome_title: "title of welcome page"
       welcome_text: "text of welcome page"
+      welcome_page_only_media: "show only media on welcome page"
       session_lifetime: "session lifetime [seconds]"
       publishment_lifetime: "publishments lifetime [days]"
       env_auth_button_label: "label for federated login button (leave empty to hide button)"

@@ -12,26 +12,38 @@
     </div>
   </div>
 
-  <script type="text/coffee">
+  <script type="text/javascript">
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.config)
     tag.mixin(wApp.mixins.page)
 
-    tag.on 'mount', ->
-      Zepto(tag.root).find('.target').html tag.config().welcome_html
+    tag.on('mount', () => {
+      Zepto(tag.root).find('.target').html(tag.config().welcome_html)
 
-      Zepto.ajax(
-        url: '/entities'
-        data: {include: 'gallery_data', sort: 'random', per_page: 4}
-        success: (data) ->
+      Zepto.ajax({
+        url: '/entities',
+        data: {
+          include: 'gallery_data',
+          sort: 'random',
+          per_page: 4,
+          kind_id: (
+            tag.config()['welcome_page_only_media'] ?
+            wApp.info.data.medium_kind_id :
+            ''
+          )
+        },
+        success: (data) => {
           tag.data = data
           tag.update()
-      )
+        }
+      })
+    })
 
-    tag.entities = ->
-      (tag.data || {}).records || []
+    tag.entities = () => {
+      return (tag.data || {}).records || []
+    }
   </script>
 
 </kor-welcome>

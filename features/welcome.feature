@@ -8,12 +8,17 @@ Feature: Welcome
     And I should not see "Leonardo"
 
   Scenario: Welcome as a logged in user
+    Given the setting "welcome_page_only_media" is "false"
     Given I am logged in as "admin"
     And I am on the home page
     Then I should see "Welcome"
     And I should see "Welcome to ConedaKOR"
     And I should see "Randomly selected entries"
     And I should see a grid with "4" entities
+
+    Given the setting "welcome_page_only_media" is "true"
+    When I reload the page
+    And I should see a grid with "2" entities
 
   Scenario: Show the 'report a problem' link to admins
     Given I am logged in as "admin"
