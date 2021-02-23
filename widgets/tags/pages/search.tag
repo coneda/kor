@@ -34,7 +34,7 @@
 
         <kor-input
           name="name"
-          label={tcap('activerecord.attributes.entity.name')}
+          label={config()['search_entity_name']}
           value={criteria.name}
           ref="fields"
           help={tcap('help.name_query')}
@@ -172,6 +172,7 @@
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.page);
 
     tag.on('before-mount', function() {
