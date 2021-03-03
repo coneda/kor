@@ -114,6 +114,13 @@ Feature: authority groups
     And I should see "Brot" within "kor-admin-groups"
     And I should see "top level » Mittachmahl"
 
+    # move to top level
+    When I follow "edit"
+    And I select "none" from "Directory"
+    And I press "Save"
+    When I follow "Global groups"
+    And I should see "Brot" within "kor-admin-groups"
+
   Scenario: download zip file
     And the authority group "Natur"
     And the authority group "Natur" contains a medium

@@ -45,6 +45,8 @@
     tag.mixin(wApp.mixins.auth)
     tag.mixin(wApp.mixins.page)
 
+    window.t = tag
+
     tag.on 'before-mount', (e)->
       tag.errors = {}
       fetchCategories()
@@ -89,7 +91,7 @@
         url: '/authority_group_categories/flat'
         data: {include: 'ancestors'}
         success: (data) ->
-          results = [{value: '0', label: tag.t('none')}]
+          results = [{value: -1, label: tag.t('none')}]
           for r in data.records
             names = (a.name for a in r.ancestors)
             names.push(r.name)
@@ -109,6 +111,8 @@
       )
 
     update = ->
+      console.log(values())
+
       Zepto.ajax(
         type: 'PATCH'
         url: "/authority_groups/#{tag.opts.id}"
