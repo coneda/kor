@@ -105,7 +105,8 @@
     var fetch = function() {
       var params = {
         include: 'gallery_data,kind',
-        page: tag.opts.query.page
+        page: tag.opts.query.page,
+        per_page: 16
       }
 
       if (tag.opts.type == 'user') {params['user_group_id'] = tag.opts.id}

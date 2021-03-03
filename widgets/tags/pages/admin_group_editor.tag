@@ -69,7 +69,7 @@
       p = (if tag.opts.id then update() else create())
       p.done (data) ->
         tag.errors = {}
-        if id = values()['authority_group_category_id']
+        if (id = values()['authority_group_category_id']) && id != '-1'
           wApp.routing.path('/groups/categories/' + id)
         else
           wApp.routing.path('/groups/categories')
