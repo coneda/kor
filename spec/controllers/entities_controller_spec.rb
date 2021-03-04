@@ -23,6 +23,16 @@ RSpec.describe EntitiesController, type: :controller do
     expect_collection_response count: 0
   end
 
+  # see #318
+  it 'should GET index (with terms but no elasticsearch)' do
+    expect(Kor::Elastic).to receive(:available?).and_return(false)
+
+    get 'index', as: 'json', params: {terms: '*'}
+    expect(json).to eq(
+      'message' => 'terms is only supported with elasticsearch'
+    )
+  end
+
   it 'should GET existence' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     get 'existence', params: {ids: [mona_lisa.id]}

@@ -2,6 +2,7 @@
 class JsonController < BaseController
   rescue_from ActiveRecord::RecordNotFound, with: :render_record_not_found
   rescue_from ActiveRecord::StaleObjectError, with: :render_stale
+  rescue_from Kor::Exception, with: :render_kor_exception
 
   before_action :auth, :legal
 
@@ -68,6 +69,11 @@ class JsonController < BaseController
 
     def render_stale(exception)
       @message = I18n.t('messages.stale_update')
+      render template: 'json/message', status: 422
+    end
+
+    def render_kor_exception(exception)
+      @message = exception.message
       render template: 'json/message', status: 422
     end
 
