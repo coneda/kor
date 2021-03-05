@@ -908,6 +908,7 @@ de:
         search_label: Anzeige im Suchformular
         show_on_entity: Bei Entität anzeigen
         is_identifier: ist ein Identifier
+        mandatory: muss ausgefüllt werden
         regex: regulärer Ausdruck
         subtype: Untertyp
         values: Werteliste

@@ -879,6 +879,7 @@ en:
         search_label: label on search form
         show_on_entity: visible on entity page
         is_identifier: is identifier
+        mandatory: is mandatory
         regex: regular expression to use for validation
         subtype: Subtype
         values: Value list

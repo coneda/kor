@@ -26,7 +26,7 @@
       multiple={opts.multiple}
       disabled={opts.isDisabled}
     >
-      <option if={opts.placeholder} value={0}>{opts.placeholder}</option>
+      <option if={opts.placeholder !== undefined} value={placeholderValue()}>{opts.placeholder}</option>
       <option
         each={item in opts.options}
         value={item.id || item.value || item}
@@ -134,6 +134,12 @@
       tag.showHelp = !tag.showHelp
       tag.update()
       Zepto(tag.refs.help).html(tag.opts.help) if tag.showHelp
+
+    tag.placeholderValue = () ->
+      if opts.placeholderValue == undefined
+        0
+      else
+        opts.placeholderValue
 
   </script>
 </kor-input>

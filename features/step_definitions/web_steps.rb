@@ -280,6 +280,11 @@ Then("I should see error {string} on field {string}") do |error, field|
   expect(input).to have_css('.errors', text: error)
 end
 
+Then("I should not see error {string} on field {string}") do |error, field|
+  input = find("kor-input[label='#{field}']")
+  expect(input).to have_no_css('.errors', text: error)
+end
+
 When("I fill in synonyms with {string}") do |string|
   fill_in 'Synonyms', with: string.split('|').join("\n")
 end

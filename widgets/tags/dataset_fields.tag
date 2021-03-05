@@ -28,6 +28,8 @@
       errors={errorsFor(field)}
       type="select"
       options={field.values.split("\n")}
+      placeholder=""
+      placeholder-value=""
       multiple={field.subtype == 'multiselect'}
     />
   </virtual>

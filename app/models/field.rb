@@ -121,6 +121,10 @@ class Field < ApplicationRecord
   end
 
   def validate_value
+    if mandatory?
+      return :empty if value.blank?
+    end
+
     true
   end
 

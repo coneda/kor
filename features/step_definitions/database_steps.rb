@@ -82,6 +82,14 @@ Then /^entity "([^"]*)" should have dataset values? "([^"]*)" for "([^"]*)"$/ do
   expect(entity.dataset[name]).to eq(value)
 end
 
+Given('field {string} is mandatory') do |name|
+  Field.find_by(name: name).update_attributes mandatory: true
+end
+
+Given('select field {string} allows the values {string}') do |name, values|
+  Field.find_by(name: name).update_attributes values: values.split(/\s*,\s*/)
+end
+
 When /^the "([^"]*)" "([^"]*)" is updated behind the scenes$/ do |klass, name|
   item = klass.classify.constantize.find_by_name(name.split('/').first)
   item.update_column :lock_version, item.lock_version + 1

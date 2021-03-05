@@ -1,6 +1,6 @@
 json.extract!(record,
-  :type, :id, :name, :kind_id, :value, :is_identifier, :show_on_entity,
-  :show_label, :form_label, :search_label, :errors
+  :type, :id, :name, :kind_id, :value, :is_identifier, :mandatory,
+  :show_on_entity, :show_label, :form_label, :search_label, :errors
 )
 
 json.type record.class.name
