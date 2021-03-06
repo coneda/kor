@@ -1,5 +1,6 @@
 <kor-dataset-fields>
   <virtual each={field in opts.fields}>
+    <virtual if={!opts.onlyMandatory || field.mandatory}>
     <kor-input
       if={simple(field)}
       name={field.name}

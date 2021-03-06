@@ -57,3 +57,11 @@ Feature: Datasets
     And I press "Save"
     Then I should not see error "has to be filled in" on field "Cycle"
     Then I should not see error "has to be filled in" on field "Cycle"
+
+  Scenario: Mandatory field on medium when uploading
+    Given I am logged in as "admin"
+    And kind "Medium/Media" has field "cycle" of type "Fields::Select"
+    And field "cycle" is mandatory
+    When I follow "Upload"
+    Then I should see field "Cycle"
+    

@@ -28,6 +28,22 @@
           />
         </div>
 
+        <hr />
+
+        <kor-dataset-fields
+          if={mediumKind}
+          name="dataset"
+          fields={mediumKind.fields}
+          ref="dataset"
+          only-mandatory={!allFields}
+        />
+
+        <a onClick={toggleAllFields}>
+          {allFieldsLabel()}
+        </a>
+
+        <hr />
+
         <a class="trigger">
           » {tcap('objects.add', {interpolations: {o: 'nouns.file.other'}})}
         </a>
@@ -129,12 +145,37 @@
       if (rs) {
         params['relation_name'] = rs.value();
       }
+
+      const datasetValues = tag.refs.dataset.value()
+      for (const k in datasetValues) {
+        const p = 'entity[dataset][' + k + ']'
+        const v = datasetValues[k]
+        params[p] = v
+      }
+
+      // const fields = ($.isArray(tag.refs.fields) ? tag.refs.fields : [tag.refs.fields])
+      // for (const f in fields) {
+      //   const key = 'entity[' + f.name() + ']'
+      //   params[key] = f.value()
+      // }
+
       uploader.setOption('multipart_params', params);
       uploader.start();
     }
 
     tag.hasSelection = function() {
       return !!wApp.clipboard.selection();
+    }
+
+    tag.toggleAllFields = function(event) {
+      tag.allFields = !tag.allFields
+      tag.update()
+    }
+
+    tag.allFieldsLabel = function() {
+      return tag.allFields ? 
+        tag.tcap('show_only_mandatory_fields') : 
+        tag.tcap('show_all_fields')
     }
 
     var relationSelectorValue = function() {
@@ -162,6 +203,8 @@
     }
 
     var init = function() {
+      fetchMediumKind()
+
       if (tag.hasSelection())
         fetchSelected(wApp.clipboard.selection());
 
@@ -208,6 +251,17 @@
       });
 
       uploader.init();
+    }
+
+    var fetchMediumKind = function() {
+      $.ajax({
+        url: '/kinds/' + wApp.info.data.medium_kind_id,
+        data: {include: 'fields'},
+        success: function(data) {
+          tag.mediumKind = data
+          tag.update()
+        }
+      })
     }
   </script>
 </kor-upload>

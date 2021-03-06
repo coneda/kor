@@ -86,6 +86,8 @@ de:
   before: vor
   after: nach
   not_leap_year: "%{year} ist kein Schaltjahr"
+  show_all_fields: alle Felder anzeigen
+  show_only_mandatory_fields: nur Pflichtfelder anzeigen
 
   help:
     terms_query: |

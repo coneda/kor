@@ -85,6 +85,8 @@ en:
   before: before
   after: after
   not_leap_year: "%{year} is not a leap year"
+  show_all_fields: show all fields
+  show_only_mandatory_fields: show only mandatory fields
 
   help:
     terms_query: |
