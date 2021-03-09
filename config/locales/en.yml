@@ -87,6 +87,7 @@ en:
   not_leap_year: "%{year} is not a leap year"
   show_all_fields: show all fields
   show_only_mandatory_fields: show only mandatory fields
+  remove_all: remove all
 
   help:
     terms_query: |
@@ -782,6 +783,10 @@ en:
       Kind regards,
       user: %{user}
     accept_terms_prompt: You have to accept our terms of use
+    not_all_entities_deletable: |
+      you do not have enough permissions to delete some of the selected
+      entities
+    mass_destroy_success: the entities have been deleted
 
   labels:
     relate_to_via: relate all files with "%{to}" via

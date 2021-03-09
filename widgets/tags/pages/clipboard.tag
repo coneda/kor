@@ -4,7 +4,10 @@
   <div class="kor-layout-left kor-layout-large">
     <div class="kor-content-box">
       <div class="kor-layout-commands">
-        <a onclick={reset}><i class="fa fa-minus-square"></i></a>
+        <a
+          onclick={reset}
+          title={t('remove_all')}
+        ><i class="fa fa-minus-square"></i></a>
       </div>
       <h1>{tcap('nouns.clipboard')}</h1>
 
@@ -49,7 +52,7 @@
               </a>
             </td>
             <td class="right nobreak">
-              <a onclick={remove(entity.id)}><i class="minus"></i></a>
+              <a onclick={remove(entity.id)}><i class="fa fa-minus-square"></i></a>
             </td>
           </tr>
         </tbody>
@@ -70,11 +73,11 @@
   <div class="clearfix"></div>
   
   <script type="text/javascript">
-    var tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.mixin(wApp.mixins.page);
+    var tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.page)
 
     tag.on('mount', function() {
       tag.title(tag.t('nouns.clipboard'))
@@ -83,19 +86,19 @@
         tag.tcap('nouns.clipboard')
       );
 
-      wApp.bus.on('routing:query', fetch);
-      wApp.bus.on('clipboard-subselection-changed', tag.update);
+      wApp.bus.on('routing:query', fetch)
+      wApp.bus.on('clipboard-subselection-changed', tag.update)
 
       if (tag.currentUser() && !tag.isGuest()) {
         fetch()
       } else {
-        wApp.bus.trigger('access-denied');
+        wApp.bus.trigger('access-denied')
       }
     })
 
     tag.on('umount', function() {
-      wApp.bus.off('routing:query', fetch);
-      wApp.bus.off('clipboard-subselection-changed', tag.update);
+      wApp.bus.off('routing:query', fetch)
+      wApp.bus.off('clipboard-subselection-changed', tag.update)
     });
 
     tag.reload = function() {
@@ -103,30 +106,30 @@
     }
 
     tag.selectAll = function(event) {
-      event.preventDefault();
-      wApp.clipboard.subSelectAll();
+      event.preventDefault()
+      wApp.clipboard.subSelectAll()
     }
 
     tag.selectNone = function(event) {
-      event.preventDefault();
-      wApp.clipboard.resetSubSelection();
+      event.preventDefault()
+      wApp.clipboard.resetSubSelection()
     }
 
     tag.selectedIds = function() {
-      return wApp.clipboard.subSelection();
+      return wApp.clipboard.subSelection()
     }
 
     tag.reset = function(event) {
-      event.preventDefault();
-      wApp.clipboard.reset();
-      fetch();
+      event.preventDefault()
+      wApp.clipboard.reset()
+      fetch()
     }
       
     tag.remove = function(id) {
       return function(event) {
-        event.preventDefault();
-        wApp.clipboard.remove(id);
-        fetch();
+        event.preventDefault()
+        wApp.clipboard.remove(id)
+        fetch()
       }
     }
 
@@ -138,27 +141,27 @@
     }
 
     var urlParams = function() {
-      var results = wApp.routing.query();
-      results['id'] = wApp.clipboard.ids().join(',');
+      var results = wApp.routing.query()
+      results['id'] = wApp.clipboard.ids().join(',')
       return results;
     }
 
     var fetch = function() {
       wApp.clipboard.checkEntityExistence().then(function() {
-        var params = urlParams();
+        var params = urlParams()
 
         if (params['id'].length) {
           Zepto.ajax({
             url: '/entities',
             data: urlParams(),
             success: function(data) {
-              tag.data = data;
-              tag.update();
+              tag.data = data
+              tag.update()
             }
           })
         } else {
-          tag.data = null;
-          tag.update();
+          tag.data = null
+          tag.update()
         }
       })
     }

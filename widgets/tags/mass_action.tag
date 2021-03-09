@@ -77,7 +77,7 @@
         var data = {ids: wApp.clipboard.subSelection()};
         Zepto.ajax({
           type: 'DELETE',
-          url: '/tools/mass_delete',
+          url: '/entities/mass_destroy',
           data: JSON.stringify(data),
           success: function(data) {
             var ids = wApp.clipboard.subSelection();

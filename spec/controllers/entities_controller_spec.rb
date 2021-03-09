@@ -106,6 +106,12 @@ RSpec.describe EntitiesController, type: :controller do
     expect(response).to be_forbidden
   end
 
+  it 'should not DELETE mass_destroy' do
+    mona_lisa = Entity.find_by! name: 'Mona Lisa'
+    delete 'mass_destroy', params: {ids: [mona_lisa.id]}
+    expect(response).to be_forbidden
+  end
+
   context 'as jdoe' do
     before :each do
       current_user User.find_by!(name: 'jdoe')
@@ -218,6 +224,13 @@ RSpec.describe EntitiesController, type: :controller do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       delete 'destroy', params: {id: mona_lisa.id}
       expect(response).to be_forbidden
+    end
+
+    it 'should not DELETE mass_destroy' do
+      mona_lisa = Entity.find_by! name: 'Mona Lisa'
+      delete 'mass_destroy', params: {ids: [mona_lisa.id]}
+      expect(response).to be_forbidden
+      expect(json['message']).to match(/you do not have enough permissions/)
     end
   end
 
@@ -552,10 +565,18 @@ RSpec.describe EntitiesController, type: :controller do
       expect(paris.outgoing_relationships.by_to_entity(last_supper.id).size).to eq(1)
     end
 
-    it 'should not DELETE destroy' do
+    it 'should DELETE destroy' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       delete 'destroy', params: {id: mona_lisa.id}
       expect_deleted_response
+      expect(Entity.find_by id: mona_lisa.id).to be_nil
+    end
+
+    it 'should DELETE mass_destroy' do
+      mona_lisa = Entity.find_by! name: 'Mona Lisa'
+      delete 'mass_destroy', params: {ids: [mona_lisa.id]}
+      expect(response).to be_success
+      expect(json['message']).to match(/have been deleted/)
       expect(Entity.find_by id: mona_lisa.id).to be_nil
     end
 

@@ -65,6 +65,24 @@ Feature: Clipboard
     And I should see "have been related"
     Then "Leonardo" should have "created" "Mona Lisa"
 
+  Scenario: Mass delete
+  Given I am logged in as "admin"
+    And all entities of kind "Medium/Media" are in the clipboard
+    When I go to the clipboard
+    And I follow "all"
+    And I ignore the next confirmation box
+    And I follow "Delete"
+    Then I should see "entities have been deleted"
+
+  Scenario: Remove entity from clipboard
+  Given I am logged in as "admin"
+    And all entities of kind "Medium/Media" are in the clipboard
+    When I go to the clipboard
+    And I follow "all"
+    And I ignore the next confirmation box
+    And I follow "Remove"
+    And I debug
+
   # TODO: why is this commented out?
   # Scenario: Select entities by kind
   #   Given I am logged in as "admin"

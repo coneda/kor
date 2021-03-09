@@ -88,6 +88,7 @@ de:
   not_leap_year: "%{year} ist kein Schaltjahr"
   show_all_fields: alle Felder anzeigen
   show_only_mandatory_fields: nur Pflichtfelder anzeigen
+  remove_all: alle entfernen
 
   help:
     terms_query: |
@@ -812,6 +813,10 @@ de:
       Viele Grüße,
       user: %{user}
     accept_terms_prompt: Sie müssen die Nutzungsbedingungen akzeptieren
+    not_all_entities_deletable: |
+      Ihr Berechtigungen reichen nicht aus, um einige der ausgewählten Entitäten
+      zu löschen
+    mass_destroy_success: die Entitäten wurden gelöscht
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

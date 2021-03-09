@@ -28,15 +28,16 @@
           />
         </div>
 
-        <hr />
+        <virtual if={mediumKind && mediumKind.fields.length > 0}>
+          <hr />
 
-        <kor-dataset-fields
-          if={mediumKind}
-          name="dataset"
-          fields={mediumKind.fields}
-          ref="dataset"
-          only-mandatory={!allFields}
-        />
+          <kor-dataset-fields
+            name="dataset"
+            fields={mediumKind.fields}
+            ref="dataset"
+            only-mandatory={!allFields}
+          />
+        </virtual>
 
         <a onClick={toggleAllFields}>
           {allFieldsLabel()}

@@ -284,6 +284,17 @@ class EntitiesController < JsonController
     end
   end
 
+  def mass_destroy
+    @entities = Entity.find(params[:ids])
+
+    if allowed_to?(:delete, @entities.map{|e| e.collection_id})
+      @entities.each{|e| e.destroy}
+      render_200 I18n.t('messages.mass_destroy_success')
+    else
+      render_403 I18n.t('messages.not_all_entities_deletable')
+    end
+  end
+
   def existence
     ids = params[:ids]
     found_ids = Entity.allowed(current_user).where(id: ids).map{ |e| e.id }
