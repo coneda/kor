@@ -52,7 +52,11 @@
               </a>
             </td>
             <td class="right nobreak">
-              <a onclick={remove(entity.id)}><i class="fa fa-minus-square"></i></a>
+              <a
+                onclick={remove(entity.id)}
+                title={t('verbs.remove')}
+                href="#"
+              ><i class="fa fa-minus-square"></i></a>
             </td>
           </tr>
         </tbody>

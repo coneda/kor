@@ -76,7 +76,8 @@
         data: params,
         success: function(data) {
           if (data.total > data.page * data.per_page) {
-            tag.onMarkClicked(event, page + 1);
+            console.log(params)
+            tag.onMarkClicked(event, params['page'] + 1);
           } else {
             wApp.bus.trigger('message', 'notice', tag.t('objects.marked_entities_success'))
           }

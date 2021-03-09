@@ -737,6 +737,9 @@ de:
     mass_relation_success: alle Entitäten wurden verküpft
     medium_kind_not_deletable: Der Entitätstype 'Medium' kann nicht gelöscht werden
     merge_failure: "die Verschmelzung der Entitäten konnte nicht durchgeführt werden"
+    merge_access_denied_on_entities: |
+      Sie haben entweder keine Berechtigung, neue Entitäten zu erstellen oder
+      um die zu verschmelzenden Entitäten zu löschen
     merge_success: "die Entitäten wurden erfolgreich miteinander verschmolzen"
     missing_entities_to_merge: |
       Einige Entitäten in Ihrer Auswahl wurden nicht gefunden. Bitte laden Sie

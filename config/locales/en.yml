@@ -714,6 +714,9 @@ en:
     mass_relation_success: all entities have been related
     medium_kind_not_deletable: the medium kind can't be removed
     merge_failure: "the entities could not be merged"
+    merge_access_denied_on_entities: |
+      you are either not allowed to create new entities or to delete some of the
+      entities to be merged
     merge_success: "the entities have been merged successfully"
     missing_entities_to_merge: "some entities in your selection couldn't be found, please refresh the clipboard and try again"
     move_denied: |

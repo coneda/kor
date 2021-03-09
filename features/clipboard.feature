@@ -75,13 +75,12 @@ Feature: Clipboard
     Then I should see "entities have been deleted"
 
   Scenario: Remove entity from clipboard
-  Given I am logged in as "admin"
-    And all entities of kind "Medium/Media" are in the clipboard
+    Given I am logged in as "admin"
+    And I put "Leonardo" into the clipboard
     When I go to the clipboard
-    And I follow "all"
-    And I ignore the next confirmation box
-    And I follow "Remove"
-    And I debug
+    Then I should see "Leonardo" within "[data-is='kor-clipboard']"
+    And I follow "remove"
+    Then I should not see "Leonardo" within "[data-is='kor-clipboard']"
 
   # TODO: why is this commented out?
   # Scenario: Select entities by kind
