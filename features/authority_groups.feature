@@ -157,3 +157,19 @@ Feature: authority groups
     When I go to the clipboard
     Then I should see "Mona Lisa"
     And I should see "Leonardo"
+
+  Scenario: Remove entity
+    And I am logged in as "jdoe"
+    And the entity "Leonardo" is in authority group "lecture"
+    When I follow "Global groups"
+    And I follow "lecture"
+    Then I should see "Leonardo"
+    And I should not see link "remove"
+    When I re-login as "admin"
+    When I follow "Global groups"
+    And I follow "lecture"
+    Then I should see "Leonardo"
+    When I follow "remove" within the cell for entity "Mona Lisa"
+    Then I should see "have been removed"
+    When I follow "remove"
+    And I should see "No entities found"

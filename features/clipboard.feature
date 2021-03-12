@@ -82,6 +82,17 @@ Feature: Clipboard
     And I follow "remove"
     Then I should not see "Leonardo" within "[data-is='kor-clipboard']"
 
+  Scenario: Add entity to authority group
+    Given I am logged in as "admin"
+    And I put "Leonardo" into the clipboard
+    When I go to the clipboard
+    Then I should see "Leonardo" within "[data-is='kor-clipboard']"
+    When I follow "all"
+    And I follow "Add to a global group"
+    And I select "archive » seminar" from "Global group"
+    And I press "Save"
+    Then I should see "have been added to the selected entity group"
+
   # TODO: why is this commented out?
   # Scenario: Select entities by kind
   #   Given I am logged in as "admin"

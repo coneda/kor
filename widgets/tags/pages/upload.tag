@@ -139,7 +139,7 @@
         "entity[kind_id]": wApp.info.data.medium_kind_id,
         "entity[collection_id]": tag.refs['cs'].value(),
         "user_group_name": tag.refs['group'].value(),
-        "target_entity_id": wApp.clipboard.selection(),
+        "target_entity_id": wApp.routing.query()['relate_with'],
         'authenticity_token': wApp.session.csrfToken()
       };
       var rs = tag.refs['relation-selector'];
@@ -147,18 +147,14 @@
         params['relation_name'] = rs.value();
       }
 
-      const datasetValues = tag.refs.dataset.value()
-      for (const k in datasetValues) {
-        const p = 'entity[dataset][' + k + ']'
-        const v = datasetValues[k]
-        params[p] = v
+      if (tag.refs.dataset) {
+        const datasetValues = tag.refs.dataset.value()
+        for (const k in datasetValues) {
+          const p = 'entity[dataset][' + k + ']'
+          const v = datasetValues[k]
+          params[p] = v
+        }
       }
-
-      // const fields = ($.isArray(tag.refs.fields) ? tag.refs.fields : [tag.refs.fields])
-      // for (const f in fields) {
-      //   const key = 'entity[' + f.name() + ']'
-      //   params[key] = f.value()
-      // }
 
       uploader.setOption('multipart_params', params);
       uploader.start();

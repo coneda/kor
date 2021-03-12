@@ -37,7 +37,12 @@
       {tcap('objects.none_found', {interpolations: {o: 'activerecord.models.entity.other'}})}
     </span>
     
-    <kor-gallery-grid if={data} entities={data.records} />
+    <kor-gallery-grid
+      if={data}
+      entities={data.records}
+      authority-group-id={opts.type == 'authority' && group.id}
+      user-group-id={opts.type == 'user' && group.id}
+    />
 
     <div class="hr"></div>
 
@@ -59,9 +64,11 @@
     tag.on('mount', function() {
       fetchGroup()
       tag.on('routing:query', fetch)
+      wApp.bus.on('group-changed', fetch)
     })
 
     tag.on('unmount', function() {
+      wApp.bus.off('group-changed', fetch)
       tag.off('routing:query', fetch)
     })
 

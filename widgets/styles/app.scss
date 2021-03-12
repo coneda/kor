@@ -116,6 +116,10 @@ i:last-child {
   white-space: nowrap;
 }
 
+.text-right {
+  text-align: right;
+}
+
 [data-is=w-app] {
   padding: 2rem;
 
@@ -164,11 +168,10 @@ kor-entity {
     font-size: var(--kor-small-font-size);
     position: relative;
 
-    kor-clipboard-control {
-      font-size: 14px;
-      display: block;
+    .buttons {
+      font-size: 11px;
       text-align: right;
-      margin-bottom: 1rem;
+      margin-bottom: 1em;
     }
 
     a {
@@ -218,6 +221,10 @@ kor-gallery-grid, [data-is=kor-gallery-grid] {
   td {
     width: 25%;
     padding: 1.5rem;
+
+    .buttons {
+      margin-bottom: 1em;
+    }
   }
 
   kor-entity.medium {

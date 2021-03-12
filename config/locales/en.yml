@@ -696,6 +696,7 @@ en:
       Identical entity already exists. Do you want to
       %{edit_link} or %{show_link} instead?
     entities_added_to_group: "the entities have been added to the selected entity group"
+    entities_removed_from_group: "the entities have been removed from the selected entity group"
     entities_destroyed: "the entity has been deleted"
     entities_moved_to_collection: "all entities have been moved to collection '%{o}'"
     exception_ocurred: "an unexpected error has occurred"

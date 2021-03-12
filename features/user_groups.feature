@@ -132,3 +132,14 @@ Feature: usergroups
     And there should be "1" outgoing email
     When I click the download link in mail "1"
     # no error => we are happy
+
+  Scenario: Remove entity
+    And I am logged in as "jdoe"
+    And the entity "Leonardo" is in user group "nice"
+    When I follow "Personal groups"
+    And I follow "nice"
+    Then I should see "Leonardo"
+    When I follow "remove" within the cell for entity "Mona Lisa"
+    Then I should see "have been removed"
+    When I follow "remove"
+    And I should see "No entities found"

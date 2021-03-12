@@ -716,6 +716,8 @@ de:
       %{edit_link} oder %{show_link}?
     entities_added_to_group: |
       Die Entitäten sind in die angegebene Gruppe übernommen worden
+    entities_removed_from_group: |
+      Die Entitäten wurden aus der angegebene Gruppe entfernt
     entities_destroyed: "die Entitäten wurden gelöscht"
     entities_moved_to_collection: "Die Entitäten wurden in Sammlung '%{o}' verschoben"
     exception_ocurred: |

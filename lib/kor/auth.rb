@@ -172,11 +172,11 @@ module Kor::Auth
     Collection.where(id: result_ids)
   end
 
-  # def self.authorized_credentials(collection, policy = :view)
-  #   collection.grants.where(policy: policy).map do |grant|
-  #     grant.credential
-  #   end
-  # end
+  def self.authorized_credentials(collection, policy = :view)
+    collection.grants.where(policy: policy).map do |grant|
+      grant.credential
+    end
+  end
 
   def self.to_ids(objects)
     case objects
