@@ -83,7 +83,7 @@ RSpec.describe EntitiesController, type: :controller do
     last_supper = Entity.find_by! name: 'The Last Supper'
     post 'merge', params: {
       entity_ids: [mona_lisa.id, last_supper.id],
-      entity: {name: 'Mona Lisa'}
+      entity: {name: 'Mona Lisa', collection_id: default.id}
     }
     expect(response).to be_forbidden
   end
@@ -203,7 +203,7 @@ RSpec.describe EntitiesController, type: :controller do
       last_supper = Entity.find_by! name: 'The Last Supper'
       post 'merge', params: {
         entity_ids: [mona_lisa.id, last_supper.id],
-        entity: {name: 'Mona Lisa'}
+        entity: {name: 'Mona Lisa', collection_id: default.id}
       }
       expect(response).to be_forbidden
     end
@@ -538,11 +538,16 @@ RSpec.describe EntitiesController, type: :controller do
     end
 
     it 'should POST merge' do
+      Collection.create! name: 'Test Collection' # see #325
+
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
       post 'merge', params: {
         entity_ids: [mona_lisa.id, last_supper.id],
-        entity: {name: 'Mona Lisa'}
+        entity: {
+          name: 'Mona Lisa',
+          collection_id: default.id
+        }
       }
       expect(response).to be_success
       result = Entity.find(json['id'])
@@ -675,7 +680,8 @@ RSpec.describe EntitiesController, type: :controller do
           kind_id: works.id,
           dataset: {
             viaf_id: '1234'
-          }
+          },
+          collection_id: default.id
         }
       }
       expect(response).to be_success
@@ -701,7 +707,10 @@ RSpec.describe EntitiesController, type: :controller do
 
       post 'merge', params: {
         entity_ids: entity_ids,
-        entity: {medium_id: picture_a.medium_id}
+        entity: {
+          medium_id: picture_a.medium_id,
+          collection_id: default.id
+        }
       }
       expect(response).to be_success
       expect(Entity.all).not_to include(picture_b)
@@ -729,7 +738,8 @@ RSpec.describe EntitiesController, type: :controller do
         entity: {
           name: 'Mona Lisa',
           comment: 'comment 1',
-          kind_id: works.id
+          kind_id: works.id,
+          collection_id: default.id
         }
       }
       expect(response).to be_success
@@ -750,6 +760,7 @@ RSpec.describe EntitiesController, type: :controller do
         entity: {
           name: 'Leonardo',
           kind_id: works.id,
+          collection_id: default.id
         }
       }
       expect(response).to be_success

@@ -224,10 +224,10 @@ class EntitiesController < JsonController
     entities = Entity.find(params[:entity_ids])
     collections = entities.map{ |e| e.collection }.uniq
 
-    allowed_to_create = allowed_to?(:create)
+    allowed_to_create = allowed_to?(:create, entity_params[:collection_id])
     allowed_to_delete_requested_entities = allowed_to?(:delete, collections, :required => :all)
 
-    if allowed_to_create and allowed_to_delete_requested_entities
+    if allowed_to_create && allowed_to_delete_requested_entities
       if entities.map{ |e| e.kind.id }.uniq.size != 1
         render_422 nil, I18n.t('messages.only_same_kind')
       end
