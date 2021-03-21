@@ -71,3 +71,8 @@ When("I click the download link in mail {string}") do |index|
 
   visit link
 end
+
+Given('everthing is indexed') do
+  Kor::Elastic.index_all full: true
+  Kor::Elastic.refresh
+end

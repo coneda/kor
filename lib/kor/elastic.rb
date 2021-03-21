@@ -489,8 +489,8 @@ class Kor::Elastic
   def by_dataset(dataset)
     if dataset.present?
       dataset.each do |field, value|
-        @query['filter'] << {
-          'term' => {"dataset.#{field}" => value}
+        @query['must'] << {
+          'match' => {"dataset.#{field}" => value}
         }
       end
     end

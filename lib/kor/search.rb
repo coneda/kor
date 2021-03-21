@@ -116,35 +116,34 @@ class Kor::Search
       raise Kor::Exception, "#{surplus_keys.inspect} are not known search keys"
     end
 
-    if Kor::Elastic.available?
-      if (keys & active_record_keys).size > 0 && (keys & elastic_keys).size > 0
-        raise Kor::Exception, "any from #{elastic_keys.inspect} can't be combined with any from #{active_record_keys.inspect}. Received these keys: #{keys.inspect}"
-      end
-    else
+    if engine == 'active_record'
       elastic_keys.each do |k|
         if @criteria[k].present?
           raise Kor::Exception, "#{k} is only supported with elasticsearch"
         end
       end
     end
+
+    if engine == 'elastic'
+      active_record_keys.each do |k|
+        if @criteria[k].present?
+          raise Kor::Exception, "#{k} is only supported with active_record"
+        end
+      end
+    end
   end
 
   def preferred_engine
-    @criteria[:engine] || 'active_record'
+    @criteria[:engine]
   end
 
-  # use elastic only if we have to or if specified
+  # use elastic if available and enabled
   def engine
-    @engine ||= begin
-      if (keys & compat_keys).size == keys.size
-        return preferred_engine
-      end
+    return preferred_engine if preferred_engine.present?
 
-      if Kor::Elastic.enabled? && (keys & elastic_keys).size > 0
-        'elastic'
-      else
-        'active_record'
-      end
-    end
+    @engine ||= (Kor::Elastic.available? && Kor::Elastic.enabled? ?
+      'elastic' :
+      'active_record'
+    )
   end
 end
