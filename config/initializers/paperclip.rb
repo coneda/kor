@@ -18,6 +18,15 @@ Paperclip.interpolates :style_timestamp do |attachment, _style|
   end
 end
 
+# prevent paperclip's file spoofing checks
+module Paperclip
+  class MediaTypeSpoofDetector
+    def spoofed?
+      false
+    end
+  end
+end
+
 module Paperclip::Interpolations
   def id_partition(attachment, style_name)
     case id = attachment.instance.id

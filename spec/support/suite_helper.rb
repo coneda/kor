@@ -28,14 +28,9 @@ module SuiteHelper
   end
 
   def self.around_each(&block)
-    begin
-      DatabaseCleaner.start
-      yield
-      DatabaseCleaner.clean
-    rescue ActiveRecord::RecordInvalid => e
-      p e.record.errors.full_messages
-      binding.pry
-    end
+    DatabaseCleaner.start
+    yield
+    DatabaseCleaner.clean
   end
 
   def self.before_each(framework, scope, test)

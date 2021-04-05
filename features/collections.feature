@@ -7,9 +7,15 @@ Feature: collections page
     When I go to the collections page
     And I follow "create collection"
     And I fill in "Name" with "Socks"
+    When I select "admins" from "Allow these groups to edit"
+    When I select "students" from "Allow these groups to edit"
     And I press "Save"
     Then I should see "Socks" within widget "kor-collections"
     And there should be the collection named "Socks" in the database
+    When I go to the collections page
+    And I follow "edit" within the row for collection "Socks"
+    Then the select "Allow these groups to edit" should have value "admins,students"
+
 
   Scenario: edit collection
     Given I am logged in as "admin"
