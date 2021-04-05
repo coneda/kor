@@ -37,6 +37,7 @@ Feature: Fields
     And I press "Save"
     Then I should see "input contains errors"
     When I fill in "profession" with "weaver"
+    And I wait for "1" second
     And I press "Save"
     Then I should see "Leonardo has been changed"
     Then entity "Leonardo" should have dataset value "weaver" for "profession"
