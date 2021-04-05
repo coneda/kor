@@ -892,8 +892,9 @@ en:
         is_identifier: is identifier
         mandatory: is mandatory
         regex: regular expression to use for validation
-        subtype: Subtype
-        values: Value list
+        subtype: subtype
+        values: value list
+        help_text: help text
       generator:
         name: name
         show_label: attribute name on entity

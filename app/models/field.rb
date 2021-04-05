@@ -116,6 +116,25 @@ class Field < ApplicationRecord
     end
   end
 
+  def help_text
+    settings['help_text']
+  end
+
+  def help_text=(value)
+    if value.present?
+      settings['help_text'] = value
+    else
+      settings.delete('help_text')
+      nil
+    end
+  end
+
+  def help_text_html
+    return nil if help_text.blank?
+
+    RedCloth.new(help_text).to_html
+  end
+
   def human
     show_label.presence || name
   end

@@ -3,6 +3,7 @@ json.extract!(record,
   :show_on_entity, :show_label, :form_label, :search_label, :errors
 )
 
+json.help_text record.help_text_html
 json.type record.class.name
 
 if inclusion.request?('technical')

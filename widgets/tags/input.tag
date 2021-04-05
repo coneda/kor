@@ -4,6 +4,7 @@
     <a
       if={opts.help}
       href="#"
+      title={tcap('nouns.help')}
       onclick={toggleHelp}
     ><i class="fa fa-question-circle"></i></a>
     <input

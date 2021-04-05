@@ -924,6 +924,7 @@ de:
         regex: regulärer Ausdruck
         subtype: Untertyp
         values: Werteliste
+        help_text: Hilfetext
       generator:
         name: Name
         show_label: Attributname bei Entität

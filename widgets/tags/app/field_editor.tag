@@ -65,6 +65,15 @@
     />
 
     <kor-input
+      name="help_text"
+      type="textarea"
+      label={tcap('activerecord.attributes.field.help_text')}
+      value={data.help_text}
+      errors={errors.help_text}
+      ref="fields"
+    />
+
+    <kor-input
       name="mandatory"
       type="checkbox"
       label={tcap('activerecord.attributes.field.mandatory')}

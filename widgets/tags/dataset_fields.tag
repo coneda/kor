@@ -8,6 +8,7 @@
       riot-value={values()[field.name]}
       ref="fields"
       errors={errorsFor(field)}
+      help={field.help_text}
     />
 
     <kor-input
@@ -18,6 +19,7 @@
       ref="fields"
       errors={errorsFor(field)}
       type="textarea"
+      help={field.help_text}
     />
 
     <kor-input
@@ -32,6 +34,7 @@
       placeholder=""
       placeholder-value=""
       multiple={field.subtype == 'multiselect'}
+      help={field.help_text}
     />
   </virtual>
 
