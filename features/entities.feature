@@ -171,6 +171,7 @@ Feature: Entities
     Given I am logged in as "jdoe"
     When I go to the entity page for the first medium
     Then I should see "File size:"
+    Then I should not see "| enlargement | meta data"
     Then I should not see "File type of the original: image/jpeg"
 
     When I re-login as "admin"

@@ -225,7 +225,7 @@
           <a 
             if={allowedTo('download_originals', data.collection_id)}
             href={data.medium.url.original.replace(/\/images\//, '/download/')}
-          >{t('nouns.original')}</a> |
+          >{t('nouns.original')} |</a>
           <a href={data.medium.url.normal.replace(/\/images\//, '/download/')}>
             {t('nouns.enlargement')}
           </a> |
