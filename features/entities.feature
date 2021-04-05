@@ -1,4 +1,8 @@
 Feature: Entities
+
+  # we test with elasticsearch to make sure that the page forces
+  # engine=active_record
+  @elastic
   Scenario: Invalid entities
     Given I am logged in as "admin"
     And 40 invalid entities "Mona Lisa" of kind "Werk" inside collection "default"

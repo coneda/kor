@@ -24,6 +24,8 @@ class EntitiesController < JsonController
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
 
     criteria = {
+      engine: params[:engine],
+
       name: params[:name],
       id: params[:id],
       collection_id: params[:collection_id],
