@@ -25,7 +25,7 @@
         {data.display_name}
 
         <div class="subtitle">
-          <virtual if={data.medium}>
+          <virtual if={data.medium && allowedTo('download_originals', data.collection_id)}>
             <span class="field">
               {tcap('activerecord.attributes.medium.original_extension')}:
             </span>

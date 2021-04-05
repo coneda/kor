@@ -166,3 +166,14 @@ Feature: Entities
     And I fill in "Further properties" with "Wikipedia: https://en.wikipedia.org/wiki/Mona_Lisa"
     And I press "Save"
     Then I should see a link "» Wikipedia" leading to "https://en.wikipedia.org/wiki/Mona_Lisa"
+
+  Scenario: Don't show original file type without "original" permissions
+    Given I am logged in as "jdoe"
+    When I go to the entity page for the first medium
+    Then I should see "File size:"
+    Then I should not see "File type of the original: image/jpeg"
+
+    When I re-login as "admin"
+    And I go to the entity page for the first medium
+    Then I should see "File size:"
+    And I should see "File type of the original: image/jpeg"
