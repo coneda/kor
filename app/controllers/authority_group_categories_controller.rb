@@ -2,33 +2,35 @@ class AuthorityGroupCategoriesController < JsonController
   skip_before_action :auth, only: [:index, :show, :flat]
 
   def flat
-    @records = AuthorityGroupCategory.all
+    @records = records.all
     @total = @records.count
     render 'json/index'
   end
 
   def index
     @records = if params[:parent_id].present?
-      AuthorityGroupCategory.find(params[:parent_id]).children
+      records.find(params[:parent_id]).children
     else
-      AuthorityGroupCategory.roots
+      records.roots
     end
 
+
     @total = @records.count
+    @records = @records.pageit(page, per_page)
     render template: 'json/index'
   end
 
   def show
-    @record = AuthorityGroupCategory.find(params[:id])
+    @record = records.find(params[:id])
     render template: 'json/show'
   end
 
   def create
-    @record = AuthorityGroupCategory.new(authority_group_category_params)
+    @record = records.new(authority_group_category_params)
 
     if @record.save
       if params[:parent_id].present?
-        @record.move_to_child_of(AuthorityGroupCategory.find(params[:parent_id]))
+        @record.move_to_child_of(records.find(params[:parent_id]))
         @record.save
       end
 
@@ -39,7 +41,7 @@ class AuthorityGroupCategoriesController < JsonController
   end
 
   def update
-    @record = AuthorityGroupCategory.find(params[:id])
+    @record = records.find(params[:id])
 
     if @record.update_attributes(authority_group_category_params)
       render_updated @record
@@ -50,7 +52,7 @@ class AuthorityGroupCategoriesController < JsonController
 
   # make sure this destroys all authority groups and their member associations
   def destroy
-    @record = AuthorityGroupCategory.find(params[:id])
+    @record = records.find(params[:id])
     @record.destroy
     render_deleted @record
   end
@@ -61,7 +63,15 @@ class AuthorityGroupCategoriesController < JsonController
       params.require(:authority_group_category).permit(:name, :parent_id)
     end
 
+    def records
+      AuthorityGroupCategory.order(name: 'asc')
+    end
+
     def auth
       require_authority_group_admin
+    end
+
+    def cap_per_page
+      false
     end
 end

@@ -27,6 +27,7 @@ require 'rspec/rails'
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
+  config.include TestHelper
   config.include DataHelper
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -55,14 +56,14 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.before :suite do
-    TestHelper.setup
+    SuiteHelper.setup
   end
 
   config.around :each do |example|
-    TestHelper.around_each(&example)
+    SuiteHelper.around_each(&example)
   end
 
   config.before :each do |example|
-    TestHelper.before_each(:rspec, self, example)
+    SuiteHelper.before_each(:rspec, self, example)
   end
 end

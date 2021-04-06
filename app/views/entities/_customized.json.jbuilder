@@ -11,9 +11,13 @@ if entity.is_medium?
   json.medium_id entity.medium_id
 
   json.medium do
-    json.extract! entity.medium, :id, :file_size, :content_type
+    json.extract! entity.medium, :id, :file_size
     json.video entity.medium.video?
     json.audio entity.medium.audio?
+
+    if allowed_to?(:download_originals, entity.collection)
+      json.content_type entity.medium.content_type
+    end
 
     json.url do
       json.icon entity.medium.url(:icon)
@@ -39,12 +43,10 @@ end
 
 # TODO: this should also be possible with edit rights and delete/create rights,
 # e.g. for merging
-if allowed_to?(:view_meta, entity.collection)
-  if inclusion.request?('technical')
-    json.uuid entity.uuid
-    json.created_at entity.created_at
-    json.updated_at entity.updated_at
-  end
+if allowed_to?(:view_meta, entity.collection) && inclusion.request?('technical')
+  json.uuid entity.uuid
+  json.created_at entity.created_at
+  json.updated_at entity.updated_at
 end
 
 if inclusion.request?('synonyms')

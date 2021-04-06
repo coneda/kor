@@ -63,11 +63,11 @@ class Entity < ApplicationRecord
     if has_name_duplicates?
       duplicate_collection = find_name_duplicates.first.collection
 
-      if duplicate_collection.id != self.collection_id
+      if duplicate_collection.id == self.collection_id
+        errors.add :distinct_name
+      else
         message = I18n.t('activerecord.errors.messages.needed_for_disambiguation', :collection => duplicate_collection.name)
         errors.add :distinct_name, message
-      else
-        errors.add :distinct_name
       end
     end
   end
@@ -207,6 +207,7 @@ class Entity < ApplicationRecord
   end
 
   attr_accessor :user_group_id
+
   def add_to_user_group
     if user_group_id
       user_group = UserGroup.find(user_group_id)
@@ -341,7 +342,7 @@ class Entity < ApplicationRecord
     elsif no_name_statement == 'enter_name'
       distinct_name.blank? ? name : "#{name} (#{distinct_name})".strip
     else
-      I18n.t('values.no_name_statements.' + no_name_statement).capitalize
+      I18n.t("values.no_name_statements.#{no_name_statement}").capitalize
     end
   end
 

@@ -41,10 +41,6 @@ Rails.application.routes.draw do
       get 'statistics', action: 'statistics'
     end
 
-    scope 'tools', controller: 'tools' do
-      delete 'mass_delete', action: 'mass_delete'
-    end
-
     resource 'settings', only: ['show', 'update']
 
     resources :kinds, except: ['edit', 'new'] do
@@ -123,6 +119,7 @@ Rails.application.routes.draw do
         get 'multi_upload'
         post 'merge'
         post 'existence'
+        delete 'mass_destroy'
       end
 
       member do

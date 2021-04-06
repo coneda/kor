@@ -1,20 +1,20 @@
-Given /^the credential "([^\"]*)"$/ do |name|
+Given /^the credential "([^"]*)"$/ do |name|
   step "the credential \"#{name}\" described by \"\""
 end
 
-Given /^the credential "([^\"]*)" described by "([^\"]*)"$/ do |name, description|
+Given /^the credential "([^"]*)" described by "([^"]*)"$/ do |name, description|
   unless Credential.exists? :name => name
     Credential.create :name => name, :description => description
   end
 end
 
-Given /^the collection "([^\"]*)"$/ do |name|
+Given /^the collection "([^"]*)"$/ do |name|
   unless Collection.exists? :name => name
     Collection.create! :name => name
   end
 end
 
-Given /^the kind "([^\"]*)"(?: inheriting from "([^\"]*)")?$/ do |names, parents|
+Given /^the kind "([^"]*)"(?: inheriting from "([^"]*)")?$/ do |names, parents|
   components = names.split('/')
   singular = components[0..(components.size / 2 - 1)].join('/')
   plural = components[(components.size / 2)..-1].join('/')
@@ -27,7 +27,7 @@ Given /^the kind "([^\"]*)"(?: inheriting from "([^\"]*)")?$/ do |names, parents
   kind.save
 end
 
-Given /^the relation "([^\"]*)" inheriting from "([^\"]*)"?$/ do |names, parents|
+Given /^the relation "([^"]*)" inheriting from "([^"]*)"?$/ do |names, parents|
   name, reverse = names.split('/')
   reverse = name if reverse.blank?
   relation = Relation.new(
@@ -44,7 +44,7 @@ Given /^the medium "([^"]*)"$/ do |name|
   FactoryGirl.create name.to_sym
 end
 
-Given /^the entity "([^\"]*)" of kind "([^\"]*)"$/ do |name, kind|
+Given /^the entity "([^"]*)" of kind "([^"]*)"$/ do |name, kind|
   step "the kind \"#{kind}\""
   kind = Kind.find_by_name(kind.split('/').first)
 
@@ -82,6 +82,14 @@ Then /^entity "([^"]*)" should have dataset values? "([^"]*)" for "([^"]*)"$/ do
   expect(entity.dataset[name]).to eq(value)
 end
 
+Given('field {string} is mandatory') do |name|
+  Field.find_by(name: name).update_attributes mandatory: true
+end
+
+Given('select field {string} allows the values {string}') do |name, values|
+  Field.find_by(name: name).update_attributes values: values.split(/\s*,\s*/)
+end
+
 When /^the "([^"]*)" "([^"]*)" is updated behind the scenes$/ do |klass, name|
   item = klass.classify.constantize.find_by_name(name.split('/').first)
   item.update_column :lock_version, item.lock_version + 1
@@ -112,7 +120,7 @@ Given /^the (invalid )?entity "([^"]*)" of kind "([^"]*)" inside collection "([^
   entity.mark_invalid if invalid == "invalid "
 end
 
-Given /^(\d+) (invalid )?entities "([^\"]*)" of kind "([^\"]*)" inside collection "([^\"]*)"$/ do |count, invalid, entity, kind, collection|
+Given /^(\d+) (invalid )?entities "([^"]*)" of kind "([^"]*)" inside collection "([^"]*)"$/ do |count, invalid, entity, kind, collection|
   count.to_i.times do |i|
     step "the #{invalid}entity \"#{entity}_#{i}\" of kind \"#{kind}\" inside collection \"#{collection}\""
   end
@@ -122,7 +130,7 @@ Given /^the entity "([^"]*)" has the synonyms "([^"]*)"$/ do |entity, synonyms|
   Entity.find_by!(name: entity).update_attributes :synonyms => synonyms.split('/')
 end
 
-Given /^"([^\"]*)" has a (shared )?user group "([^\"]*)"$/ do |user_name, shared, group_name|
+Given /^"([^"]*)" has a (shared )?user group "([^"]*)"$/ do |user_name, shared, group_name|
   User.find_by!(name: user_name).user_groups.create!(
     name: group_name,
     shared: shared == 'shared '
@@ -161,7 +169,7 @@ Given /^the authority group categories structure "([^"]*)"$/ do |structure|
   end
 end
 
-Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |shared, name, pub|
+Given /^the (shared )?user group "([^"]*)"( published as "[^"]*")?$/ do |shared, name, pub|
   unless UserGroup.find_by_name(name)
     step "I am on the user groups page"
     step "I follow \"create personal collection\""
@@ -174,7 +182,7 @@ Given /^the (shared )?user group "([^\"]*)"( published as "[^\"]*")?$/ do |share
     end
 
     unless pub.blank?
-      pub_name = pub.gsub(/.*\"([^\"]+)\".*/, "\\1")
+      pub_name = pub.gsub(/.*"([^"]+)".*/, "\\1")
 
       step "I go to the publishments page"
       step "I follow \"create published collection\""
@@ -192,7 +200,7 @@ Given(/^the entity "([^"]*)" is in authority group "([^"]*)"$/) do |entity, grou
   ag.save
 end
 
-Then /^there should( not)? be the collection named "([^\"]*)" in the database$/ do |reverse, name|
+Then /^there should( not)? be the collection named "([^"]*)" in the database$/ do |reverse, name|
   if reverse == ' not'
     expect(Collection.find_by_name name).to be_nil
   else
@@ -228,7 +236,7 @@ Given /^the relation "([^"]*)" between "([^"]*)" and "([^"]*)"$/ do |relation, f
   )
 end
 
-Given /^the triple "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)" "([^\"]*)"$/ do |from_kind, from_name, relation, to_kind, to_name|
+Given /^the triple "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)"$/ do |from_kind, from_name, relation, to_kind, to_name|
   step "the relation \"#{relation}\" between \"#{from_kind}\" and \"#{to_kind}\""
   step "the entity \"#{from_name}\" of kind \"#{from_kind}\""
   step "the entity \"#{to_name}\" of kind \"#{to_kind}\""
@@ -260,7 +268,7 @@ Then(/^"(.*?)" should have "(.*?)" "(.*?)"$/) do |subject, relation, object|
   expect(normal || reverse).to be_truthy
 end
 
-Given /^the relationship "([^\"]*)" "([^\"]*)" "([^\"]*)"(?: with properties "([^\"]*)")?$/ do |from, name, to, props|
+Given /^the relationship "([^"]*)" "([^"]*)" "([^"]*)"(?: with properties "([^"]*)")?$/ do |from, name, to, props|
   from = Entity.find_by_name(from)
   to = Entity.find_by_name(to)
   props = (props || "").split("/")
@@ -365,7 +373,7 @@ end
 
 Then /^user "([^"]*)" should (not )?have the role "([^"]*)"$/ do |name, negation, role|
   user = User.find_by(name: name)
-  result = user.send((role + '?').to_sym)
+  result = user.send("#{role}?".to_sym)
   if negation
     expect(result).not_to be_truthy
   else
@@ -376,10 +384,6 @@ end
 Then("user {string} should not expire") do |name|
   user = User.find_by(name: name)
   expect(user.expires_at).to be_nil
-end
-
-Given("the setting {string} is {string}") do |key, value|
-  Kor.settings.update key => value
 end
 
 Given("{string} has tag {string}") do |name, tag|
@@ -400,4 +404,13 @@ end
 
 Given("{string} has distinct name {string}") do |entity, distinct_name|
   Entity.find_by!(name: entity).update distinct_name: distinct_name
+end
+
+Given("user {string} has locale {string}") do |name, locale|
+  User.find_by!(name: name).update_attributes locale: locale
+end
+
+Given('the entity {string} is in user group {string}') do |name, group|
+  entity = Entity.find_by! name: name
+  UserGroup.find_by!(name: group).add_entities(entity)
 end

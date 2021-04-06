@@ -68,6 +68,7 @@
       Zepto.ajax(
         url: '/entities'
         data: {
+          engine: 'active_record'
           invalid: true
           include: 'kind'
           page: tag.opts.query.page

@@ -70,7 +70,7 @@ class Collection < ApplicationRecord
 
     values.each do |policy, credential_ids|
       credential_ids.each do |id|
-        grants.find_or_create_by(policy: policy, credential_id: id)
+        grants.find_or_initialize_by(policy: policy, credential_id: id)
       end
     end
   end

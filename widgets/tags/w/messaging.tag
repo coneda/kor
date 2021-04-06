@@ -35,10 +35,13 @@
       if contentType && contentType.match(/^application\/json/) && request.response
         try
           data = JSON.parse(request.response)
-          
-          if data.message && !data.no_messaging && !request.noMessaging
+
+          if data.message && !request.noMessaging
             type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
             wApp.bus.trigger 'message', type, data.message
+
+          if data.notice && !request.noMessaging
+            wApp.bus.trigger 'message', 'notice', data.notice
 
           if data.code
             wApp.bus.trigger 'server-code', data.code

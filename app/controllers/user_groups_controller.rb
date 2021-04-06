@@ -119,4 +119,8 @@ class UserGroupsController < JsonController
     def user_group_params
       params.require(:user_group).permit(:name, :lock_version)
     end
+
+    def cap_per_page
+      false
+    end
 end

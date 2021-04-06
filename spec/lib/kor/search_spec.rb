@@ -1,28 +1,5 @@
 require 'rails_helper'
 
-RSpec.describe Kor::Search, elastic: true do
-  it 'should use correct engine' do
-    search = described_class.new(admin, terms: 'mona')
-    expect(search.engine).to eq('elastic')
-
-    search = described_class.new(admin, isolated: true)
-    expect(search.engine).to eq('active_record')
-
-    search = described_class.new(admin, name: 'mona')
-    expect(search.engine).to eq('active_record')
-
-    search = described_class.new(admin, terms: 'mona', engine: 'elastic')
-    expect(search.engine).to eq('elastic')
-
-    # not possible with elastic
-    search = described_class.new(admin, isolated: true, engine: 'elastic')
-    expect(search.engine).to eq('active_record')
-
-    search = described_class.new(admin, name: 'mona', engine: 'elastic')
-    expect(search.engine).to eq('elastic')
-  end
-end
-
 RSpec.shared_examples 'a kor search' do
   it 'should raise an exception for unknown keys' do
     expect{
@@ -247,6 +224,24 @@ RSpec.describe Kor::Search do
 
     it_behaves_like 'a kor search'
 
+    it 'should use correct engine' do
+      search = described_class.new(admin, isolated: true)
+      expect(search.engine).to eq('active_record')
+
+      search = described_class.new(admin, name: 'mona')
+      expect(search.engine).to eq('active_record')
+
+      # elastic is not available
+      expect{
+        search = described_class.new(admin, terms: 'mona', engine: 'elastic')
+      }.to raise_error(Kor::Exception)
+
+      # not possible with elastic and we have no elastic
+      expect{
+        search = described_class.new(admin, isolated: true, engine: 'elastic')
+      }.to raise_error(Kor::Exception)
+    end
+  
     it 'should search by name' do
       search = described_class.new(admin, name: 'ar')
       expect(search.total).to eq(2)
@@ -328,12 +323,31 @@ RSpec.describe Kor::Search do
   end
 
   context 'with elasticsearch', elastic: true do
-    before :each do
-      allow_any_instance_of(Kor::Search).to receive(:preferred_engine).and_return('elastic')
-    end
-
     # do all of the above
     it_behaves_like 'a kor search'
+
+    it 'should use correct engine' do
+      search = described_class.new(admin, terms: 'mona')
+      expect(search.engine).to eq('elastic')
+
+      # not possible with elastic
+      expect{
+        search = described_class.new(admin, isolated: true)
+      }.to raise_error(Kor::Exception)
+
+      search = described_class.new(admin, name: 'mona')
+      expect(search.engine).to eq('elastic')
+
+      expect{
+        search = described_class.new(admin, terms: 'mona', engine: 'active_record')
+      }.to raise_error(Kor::Exception)
+
+      search = described_class.new(admin, isolated: true, engine: 'active_record')
+      expect(search.engine).to eq('active_record')
+
+      search = described_class.new(admin, name: 'mona', engine: 'elastic')
+      expect(search.engine).to eq('elastic')
+    end
 
     it 'should search by name' do
       search = described_class.new(admin, name: 'ar')

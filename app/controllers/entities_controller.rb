@@ -24,6 +24,8 @@ class EntitiesController < JsonController
     params[:related_kind_id] = param_to_array(params[:related_kind_id])
 
     criteria = {
+      engine: params[:engine],
+
       name: params[:name],
       id: params[:id],
       collection_id: params[:collection_id],
@@ -62,7 +64,7 @@ class EntitiesController < JsonController
     }
 
     if params[:file_size].present?
-      regex = /^([\+\-])?(\d+)\s*(kb|mb|gb|tb)?$/
+      regex = /^([+\-])?(\d+)\s*(kb|mb|gb|tb)?$/
       x, sign, size, unit = params[:file_size].downcase.match(regex).to_a
       if size
         if unit
@@ -136,15 +138,17 @@ class EntitiesController < JsonController
         @record = @entity
         render_created @entity
       else
-        if @entity.medium && @entity.medium.errors[:datahash].present?
-          if params[:user_group_name]
-            transit = UserGroup.owned_by(current_user).find_or_create_by(name: params[:user_group_name])
+        condition =
+          @entity.medium &&
+          @entity.medium.errors[:datahash].present? &&
+          params[:user_group_name]
+        if condition
+          transit = UserGroup.owned_by(current_user).find_or_create_by(name: params[:user_group_name])
 
-            if transit
-              @entity = Medium.where(datahash: @entity.medium.datahash).first.entity
-              transit.add_entities @entity
-              render_created @entity and return
-            end
+          if transit
+            @entity = Medium.where(datahash: @entity.medium.datahash).first.entity
+            transit.add_entities @entity
+            render_created @entity and return
           end
         end
 
@@ -225,10 +229,10 @@ class EntitiesController < JsonController
     entities = Entity.find(params[:entity_ids])
     collections = entities.map{ |e| e.collection }.uniq
 
-    allowed_to_create = allowed_to?(:create)
+    allowed_to_create = allowed_to?(:create, entity_params[:collection_id])
     allowed_to_delete_requested_entities = allowed_to?(:delete, collections, :required => :all)
 
-    if allowed_to_create and allowed_to_delete_requested_entities
+    if allowed_to_create && allowed_to_delete_requested_entities
       if entities.map{ |e| e.kind.id }.uniq.size != 1
         render_422 nil, I18n.t('messages.only_same_kind')
       end
@@ -282,6 +286,17 @@ class EntitiesController < JsonController
       else
         render_403 I18n.t('messages.source_or_target_not_editable')
       end
+    end
+  end
+
+  def mass_destroy
+    @entities = Entity.find(params[:ids])
+
+    if allowed_to?(:delete, @entities.map{|e| e.collection_id})
+      @entities.each{|e| e.destroy}
+      render_200 I18n.t('messages.mass_destroy_success')
+    else
+      render_403 I18n.t('messages.not_all_entities_deletable')
     end
   end
 

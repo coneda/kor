@@ -17,4 +17,9 @@ class AuthorityGroup < EntityGroup
     joins('JOIN authority_groups_entities ge on authority_groups.id = ge.authority_group_id').
       where('ge.entity_id' => entity_ids)
   }
+
+  def authority_group_category_id=(value)
+    value = nil if [-1, '-1'].include?(value)
+    self[:authority_group_category_id] = value
+  end
 end

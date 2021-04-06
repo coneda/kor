@@ -64,3 +64,20 @@ Then /^(no|\d+) emails? should have been sent$/ do |amount|
   amount = (amount == 'no' ? 0 : amount.to_i)
   expect(ActionMailer::Base.deliveries.count).to eq(amount)
 end
+
+Then("there should be {string} outgoing email") do |amount|
+  actual = ActionMailer::Base.deliveries.size
+  expect(actual).to eq(amount.to_i)
+end
+
+When("I click the download link in mail {string}") do |index|
+  mail = ActionMailer::Base.deliveries[index.to_i - 1]
+  link = mail.body.to_s.scan(%r{http://[^/]+/downloads[^\s]+}).first
+
+  visit link
+end
+
+Given('everthing is indexed') do
+  Kor::Elastic.index_all full: true
+  Kor::Elastic.refresh
+end

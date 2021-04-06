@@ -34,7 +34,7 @@ class AuthorityGroupsController < JsonController
     entities = Entity.allowed(current_user).find(entity_ids)
     @record.remove_entities(entities)
 
-    render_200 I18n.t('messages.entities_added_to_group')
+    render_200 I18n.t('messages.entities_removed_from_group')
   end
 
   def show
@@ -81,5 +81,9 @@ class AuthorityGroupsController < JsonController
       else
         require_authority_group_admin
       end
+    end
+
+    def cap_per_page
+      false
     end
 end

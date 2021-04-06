@@ -5,24 +5,42 @@ class Kor::ZipFile
     @files = {}
   end
 
-  attr_reader :filename
-  attr_reader :options
+  attr_reader :filename, :options
 
-  def create_as_download
-    pack
-    download = downloadable!
-    destroy
+  def self.create(user_id, group_klass, group_id, entity_ids)
+    group = group_klass.constantize.find(group_id)
+    entities = Entity.find(entity_ids)
 
-    download
+    zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/download.zip",
+      :user_id => user_id,
+      :file_name => "#{group.name}.zip"
+    )
+
+    entities.each do |e|
+      zip_file.add_entity e
+    end
+
+    zip_file
   end
 
-  def downloadable!
-    Download.create(
+  def self.create!(user_id, group_klass, group_id, entity_ids)
+    zip_file = create(user_id, group_klass, group_id, entity_ids)
+    zip_file.build notify: true
+  end
+
+  def build(opts = {})
+    opts.reverse_merge! notify: false
+
+    pack
+    download = Download.create(
       :user_id => options[:user_id],
       :data => filename,
       :file_name => options[:file_name],
-      :notify_user => background?
+      :notify_user => opts[:notify]
     )
+    destroy
+
+    download
   end
 
   def add(source = nil, opts = {}, &block)

@@ -75,7 +75,7 @@ de:
   larger: vergrößern
   reset_login_attempts: Loginversuche zurücksetzen
   reset_password: Passwort zurücksetzen
-  by_related_entities: in verknüpften entitäten suchen
+  by_related_entities: in verknüpften Entitäten suchen
   edit_tags: tags bearbeiten
   show_json: JSON anzeigen
   show_oai_pmh: OAI-PMH anzeigen
@@ -88,6 +88,9 @@ de:
   existing_entities: bestehende Entitäten
   wikidata_items: Wikidata-Einträge
   not_leap_year: "%{year} ist kein Schaltjahr"
+  show_all_fields: alle Felder anzeigen
+  show_only_mandatory_fields: nur Pflichtfelder anzeigen
+  remove_all: alle entfernen
 
   help:
     terms_query: |
@@ -113,6 +116,14 @@ de:
       Um nach Teilbegriffen zu suchen, verwenden Sie * am Anfang oder Ende
       (oder beides) des jeweiligen Begriffs:
       <code>*zone</code> oder <code>quali*</code> oder <code>*vita*</code>
+    dating_query: |
+      Verwenden Sie Einzeldaten, Zeiträume und typische Ausdrücke aus der
+      Kunstgeschichte, wie:
+      <code>1792</code> oder
+      <code>1789 bis 1792</code> oder
+      <code>18. Jahrhundert</code> oder
+      <code>ca. 1800</code> oder
+      <code>nach 1792</code>
     date_input: Verwenden Sie das Format JJJJ-MM-TT
     file_size_query: |
       Mit vorangestelltem '+' suchen Sie nach allen Medien mit größerer
@@ -268,6 +279,7 @@ de:
       secondary_relationships: sekundäre Verkünfungen
       welcome_title: Titel der Willkommensseite
       welcome_text: Text der Willkommensseite
+      welcome_page_only_media: Nur Medien auf der Willkommensseite anzeigen
       session_lifetime: Frist für den Ablauf einer Nutzersitzung [in Sekunden]
       publishment_lifetime: Gültigkeit von "freigegeben Gruppen" [in Tagen]
       env_auth_button_label: |
@@ -295,6 +307,12 @@ de:
       repository_uuid: die generierte UUID für diese Installation ändern
       wikidata_integration: 'Wikidata-Integration verwenden'
       create_missing_relations: 'fehlende Relationen anlegen?'
+      mirador_page_template: |
+        (Absoluter) Pfad zu alternativem Template für die Seite zur Anzeige des
+        Mirador
+      mirador_manifest_template: |
+        (Absoluter) Pfad zu alternativem Template für die Manifest-Generierung
+        für die Mirador-Integration
 
       help_general: genereller Hilfetext (Menu)
       help_search: Hilfetext zur Suche
@@ -626,6 +644,7 @@ de:
     could_merge: "die ausgewählten %{o} können zusammengeführt werden"
     invert_success: "%{o} wurde invertiert"
     report: "diese %{o} melden"
+    create_group: "Gruppe '%{o}' erstellen"
 
   move_contents_from: Inhalte aus %{o} verschieben
 
@@ -731,7 +750,9 @@ de:
       eine gleichnamige Entität existiert bereits. wollen Sie diese stattdessen
       %{edit_link} oder %{show_link}?
     entities_added_to_group: |
-      Die Entitäten sind in die angegebene Sammlung übernommen worden
+      Die Entitäten sind in die angegebene Gruppe übernommen worden
+    entities_removed_from_group: |
+      Die Entitäten wurden aus der angegebene Gruppe entfernt
     entities_destroyed: "die Entitäten wurden gelöscht"
     entities_moved_to_collection: |
       Die Entitäten wurden in die Domäne '%{o}' verschoben
@@ -754,6 +775,9 @@ de:
     mass_relation_success: alle Entitäten wurden verküpft
     medium_kind_not_deletable: Der Entitätstype 'Medium' kann nicht gelöscht werden
     merge_failure: "die Verschmelzung der Entitäten konnte nicht durchgeführt werden"
+    merge_access_denied_on_entities: |
+      Sie haben entweder keine Berechtigung, neue Entitäten zu erstellen oder
+      um die zu verschmelzenden Entitäten zu löschen
     merge_success: "die Entitäten wurden erfolgreich miteinander verschmolzen"
     missing_entities_to_merge: |
       Einige Entitäten in Ihrer Auswahl wurden nicht gefunden. Bitte laden Sie
@@ -835,6 +859,10 @@ de:
       Sie haben sich über den Single-Sign-On Ihrer Institution angemeldet. Deshalb
       können Sie Ihr Passwort hier nicht ändern. Bitte
     federation_password_reset_prompt: ändern Sie Ihr Passwort über Ihre Institution
+    not_all_entities_deletable: |
+      Ihr Berechtigungen reichen nicht aus, um einige der ausgewählten Entitäten
+      zu löschen
+    mass_destroy_success: die Entitäten wurden gelöscht
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
@@ -933,9 +961,11 @@ de:
         search_label: Anzeige im Suchformular
         show_on_entity: Bei Entität anzeigen
         is_identifier: ist ein Identifier
+        mandatory: muss ausgefüllt werden
         regex: regulärer Ausdruck
         subtype: Untertyp
         values: Werteliste
+        help_text: Hilfetext
       generator:
         name: Name
         show_label: Attributname bei Entität

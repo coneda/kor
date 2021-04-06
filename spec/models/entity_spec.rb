@@ -219,4 +219,15 @@ RSpec.describe Entity do
     )
     expect(b).to be_valid
   end
+
+  it "should add tags 'tintenfass' and 'tintenfaß'" do
+    # The name column on tags has a unique key which uses the collation for
+    # checks of uniqueness. Therefore, we needed to change the collation to
+    # binary
+
+    expect{
+      mona_lisa.update_attributes tag_list: ['tintenfass']
+      mona_lisa.update_attributes tag_list: ['tintenfaß']
+    }.not_to raise_error
+  end
 end

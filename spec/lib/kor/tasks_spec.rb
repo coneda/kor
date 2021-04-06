@@ -29,10 +29,14 @@ RSpec.describe Kor::Tasks do
     expect(@out.last).to eq("http://localhost:47001/downloads/#{download.uuid}")
   end
 
-  it 'should import the erlangen CRM' do
-    Kor::Tasks.import_erlangen_crm
+  if ENV['BRITTLE'] == 'true'
+    # The task depends on external resources which change
 
-    people = Kind.find_by!(name: 'E21 Person')
-    expect(people.name).to eq('E21 Person')
+    it 'should import the erlangen CRM' do
+      Kor::Tasks.import_erlangen_crm
+
+      people = Kind.find_by!(name: 'E21 Person')
+      expect(people.name).to eq('E21 Person')
+    end
   end
 end

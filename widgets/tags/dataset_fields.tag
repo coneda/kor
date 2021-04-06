@@ -1,5 +1,6 @@
 <kor-dataset-fields>
   <virtual each={field in opts.fields}>
+    <virtual if={!opts.onlyMandatory || field.mandatory}>
     <kor-input
       if={simple(field)}
       name={field.name}
@@ -7,6 +8,7 @@
       riot-value={values()[field.name]}
       ref="fields"
       errors={errorsFor(field)}
+      help={field.help_text}
     />
 
     <kor-input
@@ -17,6 +19,7 @@
       ref="fields"
       errors={errorsFor(field)}
       type="textarea"
+      help={field.help_text}
     />
 
     <kor-input
@@ -28,7 +31,10 @@
       errors={errorsFor(field)}
       type="select"
       options={field.values.split("\n")}
+      placeholder=""
+      placeholder-value=""
       multiple={field.subtype == 'multiselect'}
+      help={field.help_text}
     />
   </virtual>
 

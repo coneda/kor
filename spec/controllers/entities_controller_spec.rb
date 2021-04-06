@@ -23,6 +23,16 @@ RSpec.describe EntitiesController, type: :controller do
     expect_collection_response count: 0
   end
 
+  # see #318
+  it 'should GET index (with terms but no elasticsearch)' do
+    expect(Kor::Elastic).to receive(:available?).and_return(false)
+
+    get 'index', as: 'json', params: {terms: '*'}
+    expect(json).to eq(
+      'message' => 'terms is only supported with elasticsearch'
+    )
+  end
+
   it 'should GET existence' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     get 'existence', params: {ids: [mona_lisa.id]}
@@ -73,7 +83,7 @@ RSpec.describe EntitiesController, type: :controller do
     last_supper = Entity.find_by! name: 'The Last Supper'
     post 'merge', params: {
       entity_ids: [mona_lisa.id, last_supper.id],
-      entity: {name: 'Mona Lisa'}
+      entity: {name: 'Mona Lisa', collection_id: default.id}
     }
     expect(response).to be_forbidden
   end
@@ -93,6 +103,12 @@ RSpec.describe EntitiesController, type: :controller do
   it 'should not DELETE destroy' do
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     delete 'destroy', params: {id: mona_lisa.id}
+    expect(response).to be_forbidden
+  end
+
+  it 'should not DELETE mass_destroy' do
+    mona_lisa = Entity.find_by! name: 'Mona Lisa'
+    delete 'mass_destroy', params: {ids: [mona_lisa.id]}
     expect(response).to be_forbidden
   end
 
@@ -187,7 +203,7 @@ RSpec.describe EntitiesController, type: :controller do
       last_supper = Entity.find_by! name: 'The Last Supper'
       post 'merge', params: {
         entity_ids: [mona_lisa.id, last_supper.id],
-        entity: {name: 'Mona Lisa'}
+        entity: {name: 'Mona Lisa', collection_id: default.id}
       }
       expect(response).to be_forbidden
     end
@@ -208,6 +224,13 @@ RSpec.describe EntitiesController, type: :controller do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       delete 'destroy', params: {id: mona_lisa.id}
       expect(response).to be_forbidden
+    end
+
+    it 'should not DELETE mass_destroy' do
+      mona_lisa = Entity.find_by! name: 'Mona Lisa'
+      delete 'mass_destroy', params: {ids: [mona_lisa.id]}
+      expect(response).to be_forbidden
+      expect(json['message']).to match(/you do not have enough permissions/)
     end
   end
 
@@ -515,11 +538,16 @@ RSpec.describe EntitiesController, type: :controller do
     end
 
     it 'should POST merge' do
+      Collection.create! name: 'Test Collection' # see #325
+
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       last_supper = Entity.find_by! name: 'The Last Supper'
       post 'merge', params: {
         entity_ids: [mona_lisa.id, last_supper.id],
-        entity: {name: 'Mona Lisa'}
+        entity: {
+          name: 'Mona Lisa',
+          collection_id: default.id
+        }
       }
       expect(response).to be_success
       result = Entity.find(json['id'])
@@ -542,10 +570,18 @@ RSpec.describe EntitiesController, type: :controller do
       expect(paris.outgoing_relationships.by_to_entity(last_supper.id).size).to eq(1)
     end
 
-    it 'should not DELETE destroy' do
+    it 'should DELETE destroy' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       delete 'destroy', params: {id: mona_lisa.id}
       expect_deleted_response
+      expect(Entity.find_by id: mona_lisa.id).to be_nil
+    end
+
+    it 'should DELETE mass_destroy' do
+      mona_lisa = Entity.find_by! name: 'Mona Lisa'
+      delete 'mass_destroy', params: {ids: [mona_lisa.id]}
+      expect(response).to be_success
+      expect(json['message']).to match(/have been deleted/)
       expect(Entity.find_by id: mona_lisa.id).to be_nil
     end
 
@@ -644,7 +680,8 @@ RSpec.describe EntitiesController, type: :controller do
           kind_id: works.id,
           dataset: {
             viaf_id: '1234'
-          }
+          },
+          collection_id: default.id
         }
       }
       expect(response).to be_success
@@ -670,7 +707,10 @@ RSpec.describe EntitiesController, type: :controller do
 
       post 'merge', params: {
         entity_ids: entity_ids,
-        entity: {medium_id: picture_a.medium_id}
+        entity: {
+          medium_id: picture_a.medium_id,
+          collection_id: default.id
+        }
       }
       expect(response).to be_success
       expect(Entity.all).not_to include(picture_b)
@@ -698,7 +738,8 @@ RSpec.describe EntitiesController, type: :controller do
         entity: {
           name: 'Mona Lisa',
           comment: 'comment 1',
-          kind_id: works.id
+          kind_id: works.id,
+          collection_id: default.id
         }
       }
       expect(response).to be_success
@@ -719,6 +760,7 @@ RSpec.describe EntitiesController, type: :controller do
         entity: {
           name: 'Leonardo',
           kind_id: works.id,
+          collection_id: default.id
         }
       }
       expect(response).to be_success

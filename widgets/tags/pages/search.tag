@@ -7,6 +7,7 @@
 
       <form onsubmit={submit}>
         <kor-collection-selector
+          show={allowedTo('create')}
           name="collection_id"
           multiple={true}
           value={criteria.collection_id}
@@ -33,7 +34,7 @@
 
         <kor-input
           name="name"
-          label={tcap('activerecord.attributes.entity.name')}
+          label={config()['search_entity_name']}
           value={criteria.name}
           ref="fields"
           help={tcap('help.name_query')}
@@ -51,6 +52,7 @@
           label={tcap('activerecord.models.entity_dating')}
           value={criteria.dating}
           ref="fields"
+          help={tcap('help.dating_query')}
         />
 
         <virtual if={isMedia(kind)}>
@@ -169,6 +171,8 @@
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.page);
 
     tag.on('before-mount', function() {

@@ -57,8 +57,15 @@
       var url = wApp.info.data.custom_css;
       if (url) {
         var link = Zepto('<link rel="stylesheet" href="' + url + '">');
+        link[0].onload = showBody;
         Zepto('head').append(link);
+      } else {
+        showBody()
       }
+    }
+
+    var showBody = function() {
+      Zepto('body').show()
     }
 
     tag.on('mount', function() {

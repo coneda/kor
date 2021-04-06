@@ -10,7 +10,37 @@ Feature: Fields
     And I should be on the entity page for "Van Gogh"
     And I should see "GND-ID: 667788"
 
-  Scenario: create a regex field and use it
+  Scenario: create a regex field and use it (with help text)
+    Given I am logged in as "admin"
+    And I follow "Entity types"
+    And I follow "person"
+    And I follow "add" within widget "kor-fields"
+    And I select "regex" from "Type"
+    And I fill in "Name" with "profession"
+    And I fill in "Label" with "profession"
+    And I fill in "Regular expression to use for validation" with "carpenter|weaver"
+    And I fill in "Help text" with "has to match the expression /carpenter|weaver/"
+    And I check "Visible on entity page"
+    And I press "Save"
+    Then I should see "profession has been created"
+    When I follow "profession" within widget "kor-fields"
+    And field "Regular expression to use for validation" should have value "carpenter|weaver"
+
+    When I go to the entity page for "Leonardo"
+    Then I should see "Leonardo"
+    When I follow "edit"
+
+    And I follow "Help" within "kor-input[name=profession]"
+    Then I should see "has to match the expression /carpenter|weaver/"
+
+    When I fill in "profession" with "trapper"
+    And I press "Save"
+    Then I should see "input contains errors"
+    When I fill in "profession" with "weaver"
+    And I wait for "1" second
+    And I press "Save"
+    Then I should see "Leonardo has been changed"
+    Then entity "Leonardo" should have dataset value "weaver" for "profession"
 
   Scenario: create select field and use it
     Given I am logged in as "admin"

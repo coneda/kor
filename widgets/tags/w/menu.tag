@@ -1,21 +1,21 @@
 <kor-menu>
 
-  <ul>
+  <ul if={currentUser()}>
     <li if={!isLoggedIn()}>
       <a href="#/login">{tcap('nouns.login')}</a>
     </li>
-
-    <li if={isLoggedIn()}>
-      <a href="#/clipboard">{tcap('nouns.clipboard')}</a>
+    <li>
+      <a href="#/search">{tcap('nouns.search')}</a>
     </li>
   </ul>
 
-  <ul if={currentUser()}>
-    <li>
-      <a href="#/new-media">{tcap('pages.new_media')}</a>
+  <ul>
+    <li if={isLoggedIn()}>
+      <a href="#/clipboard">{tcap('nouns.clipboard')}</a>
     </li>
-    <li>
-      <a href="#/search">{tcap('nouns.search')}</a>
+
+    <li if={currentUser()}>
+      <a href="#/new-media">{tcap('pages.new_media')}</a>
     </li>
   </ul>
 
@@ -154,7 +154,6 @@
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)
     tag.mixin(wApp.mixins.config)
-    window.t = tag
 
     tag.on 'mount', ->
       wApp.bus.on 'reload-kinds', fetchKinds

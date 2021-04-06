@@ -87,6 +87,9 @@ en:
   existing_entities: existing entities
   wikidata_items: wikidata items
   not_leap_year: "%{year} is not a leap year"
+  show_all_fields: show all fields
+  show_only_mandatory_fields: show only mandatory fields
+  remove_all: remove all
 
   help:
     terms_query: |
@@ -110,6 +113,14 @@ en:
     name_query: |
       To search for parts of a word, add * to the beginning or end of the term:
       <code>*zone</code> or <code>quali*</code> or <code>*vita*</code>
+    dating_query: |
+      Use single dates, date ranges or art history expressions (German only)
+      like:
+      <code>1792</code> or
+      <code>1789 bis 1792</code> or
+      <code>18. Jahrhundert</code> or
+      <code>ca. 1800</code> or
+      <code>nach 1792</code>
     date_input: Use format YYYY-MM-DD
     file_size_query: |
       Prefix the amount with '+' to find all media with a file size
@@ -265,6 +276,7 @@ en:
       # sender_address: sender adress
       welcome_title: "title of welcome page"
       welcome_text: "text of welcome page"
+      welcome_page_only_media: "show only media on welcome page"
       session_lifetime: "session lifetime [seconds]"
       publishment_lifetime: "publishments lifetime [days]"
       env_auth_button_label: "label for federated login button (leave empty to hide button)"
@@ -282,6 +294,12 @@ en:
       repository_uuid: 'override the generated repository UUID'
       wikidata_integration: 'use the wikidata integration'
       create_missing_relations: 'create missing relations?'
+      mirador_page_template: |
+        override the default page template for the mirador integration (absolute
+        path)
+      mirador_manifest_template: |
+        override the default manifest template for the mirador integration
+        (absolute path)
 
       help_general: general help text (menu)
       help_search: search help text
@@ -614,6 +632,7 @@ en:
     could_merge: "the selected %{o} could be merged"
     invert_success: "%{o} has been inverted"
     report: "report something about this %{o}"
+    create_group: "create or use group '%{o}'"
 
   move_contents_from: move content from %{o}
 
@@ -711,8 +730,8 @@ en:
     edit_existing_entity: |
       Identical entity already exists. Do you want to
       %{edit_link} or %{show_link} instead?
-    entities_added_to_group: |
-      the entities have been added to the selected collection"
+    entities_added_to_group: "the entities have been added to the selected collection"
+    entities_removed_from_group: "the entities have been removed from the selected collection"
     entities_destroyed: "the entity has been deleted"
     entities_moved_to_collection: "all entities have been moved to domain '%{o}'"
     exception_ocurred: "an unexpected error has occurred"
@@ -731,6 +750,9 @@ en:
     mass_relation_success: all entities have been related
     medium_kind_not_deletable: the medium kind can't be removed
     merge_failure: "the entities could not be merged"
+    merge_access_denied_on_entities: |
+      you are either not allowed to create new entities or to delete some of the
+      entities to be merged
     merge_success: "the entities have been merged successfully"
     missing_entities_to_merge: "some entities in your selection couldn't be found, please refresh the clipboard and try again"
     move_denied: |
@@ -805,6 +827,10 @@ en:
       You logged in with a federation single-sign-on portal. Therefore, you
       can't change your password here. Please
     federation_password_reset_prompt: change your password with them
+    not_all_entities_deletable: |
+      you do not have enough permissions to delete some of the selected
+      entities
+    mass_destroy_success: the entities have been deleted
 
   labels:
     relate_to_via: relate all files with "%{to}" via
@@ -904,9 +930,11 @@ en:
         search_label: label on search form
         show_on_entity: visible on entity page
         is_identifier: is identifier
+        mandatory: is mandatory
         regex: regular expression to use for validation
-        subtype: Subtype
-        values: Value list
+        subtype: subtype
+        values: value list
+        help_text: help text
       generator:
         name: name
         show_label: attribute name on entity

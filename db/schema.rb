@@ -1,4 +1,4 @@
-ActiveRecord::Schema.define(version: 20191207011036) do
+ActiveRecord::Schema.define(version: 20210305220358) do
 
   create_table "authority_group_categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.integer  "lock_version", default: 0
@@ -44,8 +44,8 @@ ActiveRecord::Schema.define(version: 20191207011036) do
 
   create_table "credentials", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.string  "name"
-    t.text    "description",  limit: 65535
-    t.integer "lock_version",               default: 0
+    t.text    "description",  limit: 16777215
+    t.integer "lock_version",                  default: 0
     t.index ["name"], name: "index_credentials_on_name", using: :btree
   end
 
@@ -58,10 +58,10 @@ ActiveRecord::Schema.define(version: 20191207011036) do
   end
 
   create_table "delayed_jobs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
-    t.integer  "priority",                 default: 0
-    t.integer  "attempts",                 default: 0
-    t.text     "handler",    limit: 65535
-    t.text     "last_error", limit: 65535
+    t.integer  "priority",                      default: 0
+    t.integer  "attempts",                      default: 0
+    t.text     "handler",    limit: 4294967295
+    t.text     "last_error", limit: 4294967295
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
@@ -101,19 +101,20 @@ ActiveRecord::Schema.define(version: 20191207011036) do
     t.string   "uuid"
     t.string   "name"
     t.string   "distinct_name"
-    t.text     "comment",           limit: 65535
+    t.text     "comment",           limit: 16777215
     t.integer  "kind_id"
     t.integer  "collection_id"
     t.integer  "creator_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",                    default: 0
+    t.integer  "lock_version",                       default: 0
     t.string   "no_name_statement"
     t.integer  "updater_id"
     t.string   "subtype"
     t.integer  "medium_id"
-    t.text     "attachment",        limit: 65535
+    t.text     "attachment",        limit: 16777215
     t.datetime "deleted_at"
+    t.index ["collection_id", "kind_id"], name: "collections_kinds", using: :btree
     t.index ["created_at"], name: "index_entities_on_created_at", using: :btree
     t.index ["creator_id"], name: "index_entities_on_user_id", using: :btree
     t.index ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
@@ -153,6 +154,7 @@ ActiveRecord::Schema.define(version: 20191207011036) do
     t.integer "from_day"
     t.integer "to_day"
     t.index ["entity_id"], name: "index_entity_datings_on_entity_id", using: :btree
+    t.index ["from_day", "to_day"], name: "timely", using: :btree
   end
 
   create_table "fields", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
@@ -162,20 +164,21 @@ ActiveRecord::Schema.define(version: 20191207011036) do
     t.string   "show_label"
     t.string   "form_label"
     t.string   "search_label"
-    t.text     "settings",      limit: 65535
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.text     "settings",      limit: 16777215
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
     t.boolean  "is_identifier"
     t.string   "uuid"
     t.integer  "position"
+    t.boolean  "mandatory"
   end
 
   create_table "generators", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.integer  "kind_id"
     t.string   "name"
-    t.text     "directive",  limit: 65535
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.text     "directive",  limit: 16777215
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
     t.integer  "position"
   end
 
@@ -199,11 +202,11 @@ ActiveRecord::Schema.define(version: 20191207011036) do
   create_table "kinds", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.string   "uuid"
     t.string   "name"
-    t.text     "description",  limit: 65535
-    t.text     "settings",     limit: 65535
+    t.text     "description",  limit: 16777215
+    t.text     "settings",     limit: 16777215
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",               default: 0
+    t.integer  "lock_version",                  default: 0
     t.string   "plural_name"
     t.datetime "deleted_at"
     t.boolean  "abstract"
@@ -252,8 +255,8 @@ ActiveRecord::Schema.define(version: 20191207011036) do
     t.string   "reverse_name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",                     default: 0
-    t.text     "description",        limit: 65535
+    t.integer  "lock_version",                  default: 0
+    t.text     "description",  limit: 16777215
     t.datetime "deleted_at"
     t.string   "url"
     t.boolean  "abstract"
@@ -284,10 +287,10 @@ ActiveRecord::Schema.define(version: 20191207011036) do
     t.integer  "relation_id"
     t.integer  "from_id"
     t.integer  "to_id"
-    t.text     "properties",   limit: 65535
+    t.text     "properties",   limit: 16777215
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",               default: 0
+    t.integer  "lock_version",                  default: 0
     t.integer  "normal_id"
     t.integer  "reversal_id"
     t.datetime "deleted_at"
@@ -321,7 +324,7 @@ ActiveRecord::Schema.define(version: 20191207011036) do
   end
 
   create_table "tags", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
-    t.string  "name"
+    t.string  "name",                       collation: "utf8_bin"
     t.integer "taggings_count", default: 0
     t.index ["name"], name: "index_tags_on_name", unique: true, using: :btree
   end
@@ -349,9 +352,9 @@ ActiveRecord::Schema.define(version: 20191207011036) do
     t.string   "locale"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",                        default: 0
+    t.integer  "lock_version",                           default: 0
     t.datetime "expires_at"
-    t.boolean  "terms_accepted",                      default: false
+    t.boolean  "terms_accepted",                         default: false
     t.string   "login_attempts"
     t.boolean  "relation_admin"
     t.boolean  "authority_group_admin"
@@ -363,7 +366,7 @@ ActiveRecord::Schema.define(version: 20191207011036) do
     t.integer  "credential_id"
     t.string   "parent_username"
     t.string   "api_key"
-    t.text     "storage",               limit: 65535
+    t.text     "storage",               limit: 16777215
     t.index ["name"], name: "index_users_on_name", unique: true, using: :btree
     t.index ["parent_username"], name: "index_users_on_parent_username", using: :btree
   end

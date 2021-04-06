@@ -30,7 +30,7 @@
         {data.display_name}
 
         <div class="subtitle">
-          <virtual if={data.medium}>
+          <virtual if={data.medium && allowedTo('download_originals', data.collection_id)}>
             <span class="field">
               {tcap('activerecord.attributes.medium.original_extension')}:
             </span>
@@ -222,7 +222,7 @@
           </span>
           |
           <a
-            href="{rootUrl()}mirador?manifest={rootUrl()}mirador/{data.id}"
+            href="{rootUrl()}mirador?id={data.id}&manifest={rootUrl()}mirador/{data.id}"
             onclick={openMirador}
           >{t('nouns.mirador')}</a>
           <br />
@@ -230,7 +230,7 @@
           <a 
             if={allowedTo('download_originals', data.collection_id)}
             href={data.medium.url.original.replace(/\/images\//, '/download/')}
-          >{t('nouns.original')}</a> |
+          >{t('nouns.original')} |</a>
           <a href={data.medium.url.normal.replace(/\/images\//, '/download/')}>
             {t('nouns.enlargement')}
           </a> |

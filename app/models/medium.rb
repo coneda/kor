@@ -74,11 +74,9 @@ class Medium < ApplicationRecord
   end
 
   before_validation do |m|
-    if m.document.file? && m.document.content_type.match(/^image\//)
-      unless m.image.file?
-        m.image = m.document
-        m.document.clear
-      end
+    if m.document.file? && m.document.content_type.match(/^image\//) && !m.image.file?
+      m.image = m.document
+      m.document.clear
     end
 
     if file = (m.to_file || m.to_file(:image))
@@ -101,10 +99,8 @@ class Medium < ApplicationRecord
   validate :validate_file_size
 
   def validate_no_two_images
-    if document.content_type && image.content_type
-      if document.content_type.match(/^image\//) && image.content_type.match(/^image\//)
-        errors.add :base, :no_two_images
-      end
+    if document.content_type && image.content_type && (document.content_type.match(/^image\//) && image.content_type.match(/^image\//))
+      errors.add :base, :no_two_images
     end
   end
 

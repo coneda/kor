@@ -12,14 +12,17 @@
   />  
 
   <script type="text/javascript">
-    var tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
+    var tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
 
     tag.on('mount', function() {
       Zepto.ajax({
         url: '/' + tag.opts.type + '_groups',
-        data: {include: 'directory'},
+        data: {
+          include: 'directory',
+          per_page: 'max'
+        },
         success: function(data) {
           tag.groups = data.records;
           for (var i = 0; i < data.records.length; i++) {
@@ -35,6 +38,22 @@
               r.name = names.join(' » ');
             }
           }
+
+          // sort the values (easier to to in JS because here, we can directly
+          // sort according to directory names first
+          tag.groups = tag.groups.sort((x, y) => {
+            return x.name.localeCompare(y.name)
+          })
+
+          if (tag.opts.riotValue) {
+            tag.groups.unshift({
+              name: tag.tcap('objects.create_group', {interpolations: {o: tag.opts.riotValue}}),
+              value: tag.opts.riotValue
+            })
+          }
+
+          console.log(tag.groups[0])
+
           tag.update();
         }
       })

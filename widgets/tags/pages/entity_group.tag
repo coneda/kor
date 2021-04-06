@@ -8,6 +8,12 @@
         onclick={onMarkClicked}
       ><i class="fa fa-clipboard"></i></a>
       <a
+        if={opts.type == 'user'}
+        href="/user_groups/{opts.id}/download_images"
+        title={t('title_verbs.zip')}
+      ><i class="fa fa-download"></i></a>
+      <a
+        if={opts.type == 'authority'}
         href="/authority_groups/{opts.id}/download_images"
         title={t('title_verbs.zip')}
       ><i class="fa fa-download"></i></a>
@@ -31,7 +37,12 @@
       {tcap('objects.none_found', {interpolations: {o: 'activerecord.models.entity.other'}})}
     </span>
     
-    <kor-gallery-grid if={data} entities={data.records} />
+    <kor-gallery-grid
+      if={data}
+      entities={data.records}
+      authority-group-id={opts.type == 'authority' && group.id}
+      user-group-id={opts.type == 'user' && group.id}
+    />
 
     <div class="hr"></div>
 
@@ -53,9 +64,11 @@
     tag.on('mount', function() {
       fetchGroup()
       tag.on('routing:query', fetch)
+      wApp.bus.on('group-changed', fetch)
     })
 
     tag.on('unmount', function() {
+      wApp.bus.off('group-changed', fetch)
       tag.off('routing:query', fetch)
     })
 
@@ -70,7 +83,8 @@
         data: params,
         success: function(data) {
           if (data.total > data.page * data.per_page) {
-            tag.onMarkClicked(event, page + 1);
+            console.log(params)
+            tag.onMarkClicked(event, params['page'] + 1);
           } else {
             wApp.bus.trigger('message', 'notice', tag.t('objects.marked_entities_success'))
           }
@@ -99,7 +113,8 @@
     var fetch = function() {
       var params = {
         include: 'gallery_data,kind',
-        page: tag.opts.query.page
+        page: tag.opts.query.page,
+        per_page: 16
       }
 
       if (tag.opts.type == 'user') {params['user_group_id'] = tag.opts.id}

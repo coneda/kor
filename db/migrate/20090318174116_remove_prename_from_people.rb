@@ -3,7 +3,7 @@ class RemovePrenameFromPeople < ActiveRecord::Migration
     people = Kind.find_by_name('Person')
     if people
       people.entities.each do |e|
-        e.name += ", " + e.dataset.prename
+        e.name += ", #{e.dataset.prename}"
         unless e.save
           e.save(false)
           Tag.invalid_tag.add_entities(e)

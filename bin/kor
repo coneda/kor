@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-KOR_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
+KOR_ROOT = File.expand_path("#{File.dirname(__FILE__)}/..")
 
 require "#{KOR_ROOT}/config/environment"
 

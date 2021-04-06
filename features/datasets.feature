@@ -43,3 +43,25 @@ Feature: Datasets
     Then I should be on the entity page for "Fräulein Smillas Gespür für Schnee"
     Then I should not see "Translation missing"
     And I should see "3499237016"
+
+  Scenario: Add a mandatory select field and create an entity
+    Given I am logged in as "admin"
+    And kind "Person/Personen" has field "cycle" of type "Fields::Select"
+    And field "cycle" is mandatory
+    And select field "cycle" allows the values "sun, moon"
+    When I go to the new "Person-Entity" page
+    Then I should see field "Cycle" with value ""
+    When I press "Save"
+    Then I should see error "has to be filled in" on field "Cycle"
+    When I select "sun" from "Cycle"
+    And I press "Save"
+    Then I should not see error "has to be filled in" on field "Cycle"
+    Then I should not see error "has to be filled in" on field "Cycle"
+
+  Scenario: Mandatory field on medium when uploading
+    Given I am logged in as "admin"
+    And kind "Medium/Media" has field "cycle" of type "Fields::Select"
+    And field "cycle" is mandatory
+    When I follow "Upload"
+    Then I should see field "Cycle"
+    

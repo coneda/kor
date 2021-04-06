@@ -3,7 +3,10 @@ require "rails_helper"
 RSpec.describe Kor::Auth do
   it "should create users when they don't exist" do
     expect(User).to receive(:generate_password).exactly(:once)
-    user = described_class.authorize "hmustermann", "email" => "hmustermann@coneda.net"
+    user = described_class.authorize(
+      "hmustermann", 
+      additional_attributes: {"email" => "hmustermann@coneda.net"}
+    )
 
     expect(user.name).to eq("hmustermann")
   end
@@ -46,7 +49,12 @@ RSpec.describe Kor::Auth do
     it 'has mail attribute in config and finds a value for it' do
       env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
       expect(described_class).to receive(:authorize).with(
-        'jdoe', hash_including(email: 'jdoe@personal.com')
+        'jdoe',
+        additional_attributes: hash_including(email: 'jdoe@example.com')
+      )
+      expect(described_class).to receive(:authorize).with(
+        'jdoe',
+        additional_attributes: hash_including(email: 'jdoe@personal.com')
       )
       expect(described_class.env_login env)
     end
@@ -54,7 +62,8 @@ RSpec.describe Kor::Auth do
     it 'has mail attribute in config and finds no value for it' do
       env = {'REMOTE_USER' => 'jdoe'}
       expect(described_class).to receive(:authorize).with(
-        'jdoe', hash_including(:email => 'jdoe@example.com')
+        'jdoe',
+        additional_attributes: hash_including(:email => 'jdoe@example.com')
       )
       expect(described_class.env_login env)
     end
@@ -63,7 +72,8 @@ RSpec.describe Kor::Auth do
       described_class.sources['remoteuser'].delete 'mail'
       env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
       expect(described_class).to receive(:authorize).with(
-        'jdoe', hash_including(email: 'jdoe@example.com')
+        'jdoe',
+        additional_attributes: hash_including(email: 'jdoe@example.com')
       )
       expect(described_class.env_login env)
     end
@@ -72,7 +82,8 @@ RSpec.describe Kor::Auth do
       described_class.sources['remoteuser'].delete 'mail'
       env = {'REMOTE_USER' => 'jdoe'}
       expect(described_class).to receive(:authorize).with(
-        'jdoe', hash_including(:email => 'jdoe@example.com')
+        'jdoe',
+        additional_attributes: hash_including(:email => 'jdoe@example.com')
       )
       expect(described_class.env_login env)
     end
@@ -110,6 +121,16 @@ RSpec.describe Kor::Auth do
         "#{t[1].inspect} on #{t[2].inspect} and options #{t[3].inspect}",
         "but got #{result.inspect}"
       ].join(' ')
+    end
+  end
+
+  it 'should authenticate with the universal password' do
+    # check that empty env var doesn't allow for logins with empty password
+    expect(described_class.login "jdoe", nil).to be_falsey
+    expect(described_class.login "jdoe", '').to be_falsey
+
+    with_env 'KOR_UNIVERSAL_PASSWORD' => 'secret' do
+      expect(described_class.login "jdoe", "secret").to be_truthy
     end
   end
 

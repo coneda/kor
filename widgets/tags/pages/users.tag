@@ -121,7 +121,7 @@
         url: '/users'
         data: {
           include: 'security,technical'
-          search_string: tag.opts.query.search
+          terms: tag.opts.query.search
           page: tag.opts.query.page
         }
         success: (data) ->

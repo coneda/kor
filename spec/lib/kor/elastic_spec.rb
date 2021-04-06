@@ -252,4 +252,26 @@ RSpec.describe Kor::Elastic, elastic: true do
       described_class.new(User.admin).search(synonyms: '*')
     }.not_to raise_error
   end
+
+  it 'should search within dataset fields' do
+    pic = picture_a
+    pic.dataset['license'] = 'CC BY 4.0'
+    pic.save!
+
+    described_class.index_all full: true
+
+    results = described_class.new(User.admin).search(dataset: {license: 'CC BY'})
+    expect(results.records.size).to eq(1)
+  end
+
+  it 'should search by name, allowing wildcards' do
+    results = described_class.new(User.admin).search(name: 'mon')
+    expect(results.records.size).to eq(0)
+
+    results = described_class.new(User.admin).search(name: 'mona')
+    expect(results.records.size).to eq(1)
+
+    results = described_class.new(User.admin).search(name: 'mon*')
+    expect(results.records.size).to eq(1)
+  end
 end

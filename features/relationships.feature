@@ -1,3 +1,4 @@
+@elastic
 Feature: Inplace relationship editor
   Scenario: Hide the editor if user has no permissions
     And I am logged in as "jdoe"
@@ -42,7 +43,6 @@ Feature: Inplace relationship editor
     And I select "is birth place of" from "Relation"
     And I click "Leonardo" within "kor-entity-selector"
     And I press "Save"
-    And I debug
     Then I should not see "Louvre" within "kor-relation[name='is birth place of']"
 
   Scenario: Add properties to an existing relationship
@@ -139,10 +139,11 @@ Feature: Inplace relationship editor
   Scenario: Paginate target entities
     Given I am logged in as "admin"
     And 10 entities "artwork" of kind "work/works" inside collection "default"
+    And everthing is indexed
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
     And I click icon "add relationship"
-    And I fill in "terms" with "supper"
+    And I fill in "terms" with "art*"
     Then I should not see "artwork_7"
     When I follow "next"
     Then I should see "artwork_7"

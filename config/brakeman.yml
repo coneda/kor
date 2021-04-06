@@ -2,6 +2,6 @@
 :output_format: :to_html
 :output_files:
 - tmp/brakeman.html
-:exit_on_warn: true
+:exit_on_warn: false
 :rails5: true
 :run_all_checks: true

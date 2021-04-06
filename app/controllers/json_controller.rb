@@ -2,6 +2,7 @@
 class JsonController < BaseController
   rescue_from ActiveRecord::RecordNotFound, with: :render_record_not_found
   rescue_from ActiveRecord::StaleObjectError, with: :render_stale
+  rescue_from Kor::Exception, with: :render_kor_exception
 
   before_action :auth, :legal
 
@@ -73,6 +74,11 @@ class JsonController < BaseController
       render template: 'json/message', status: 422
     end
 
+    def render_kor_exception(exception)
+      @message = exception.message
+      render template: 'json/message', status: 422
+    end
+
     def render_422(errors, message = nil)
       @errors = errors
       @message = message || I18n.t('activemodel.errors.template.header')
@@ -136,11 +142,22 @@ class JsonController < BaseController
       [(params[:page] || 1).to_i, 1].max
     end
 
+    def cap_per_page
+      true
+    end
+
     def per_page
-      return Kor.settings['max_results_per_request'] if params[:per_page] == 'max'
+      if params[:per_page] == 'max'
+        return 'max' unless cap_per_page
+
+        return Kor.settings['max_results_per_request']
+      end
+
+      from_param = (params[:per_page] || 10).to_i
+      from_param = 10 if from_param < 1
 
       @per_page = [
-        (params[:per_page] || 10).to_i,
+        from_param,
         Kor.settings['max_results_per_request']
       ].min
     end
@@ -194,25 +211,34 @@ class JsonController < BaseController
     end
 
     def zip_download(group, entities)
-      if !entities.empty?
-        zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/download.zip",
-          :user_id => current_user.id,
-          :file_name => "#{group.name}.zip"
-        )
-
-        entities.each do |e|
-          zip_file.add_entity e
-        end
-
-        if zip_file.background?
-          zip_file.send_later :create_as_download
-          render_200 I18n.t('messages.creating_zip_file')
-        else
-          download = zip_file.create_as_download
-          redirect_to url_for(controller: 'downloads', action: 'show', uuid: download.uuid)
-        end
-      else
+      if entities.empty?
         render_200 I18n.t('messages.no_entities_in_group')
+        return
+      end
+
+      args = [
+        current_user.id,
+        group.class.name,
+        group.id,
+        entities.pluck(:id)
+      ]
+
+      zip_file = Kor::ZipFile.create(*args)
+
+      if zip_file.background?
+        GenericJob.perform_later('constant', 'Kor::ZipFile', 'create!', *args)
+        flash[:notice] = I18n.t('messages.creating_zip_file')
+        redirect_to root_path(:anchor => group_path(group))
+      else
+        download = zip_file.build
+        redirect_to url_for(controller: 'downloads', action: 'show', uuid: download.uuid)
+      end
+    end
+
+    def group_path(group)
+      case group
+      when UserGroup then "/groups/user/#{group.id}"
+      when AuthorityGroup then "/groups/admin/#{group.id}"
       end
     end
 end

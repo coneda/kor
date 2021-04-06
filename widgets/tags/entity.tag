@@ -1,10 +1,18 @@
 <kor-entity class="{medium: isMedium()}">
 
   <virtual if={isMedium()}>
-    <kor-clipboard-control
-      if={!opts.noClipboard}
-      entity={opts.entity}
-    />
+    <div class="buttons">
+      <kor-clipboard-control
+        if={!opts.noClipboard}
+        entity={opts.entity}
+      />
+      <kor-remove-from-group
+        if={opts.authorityGroupId || opts.userGroupId}
+        type={opts.authorityGroupId ? 'authority' : 'user'}
+        group-id={opts.authorityGroupId || opts.userGroupId}
+        entity={opts.entity}
+      />
+    </div>
     
     <a href="#/entities/{opts.entity.id}" class="to-medium">
       <img riot-src={imageUrl()} />

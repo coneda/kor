@@ -23,16 +23,17 @@ module NavigationHelpers
     when /the new user group page/ then '#/groups/user/new'
     when /the relations page/ then '#/relations'
     when /the upload page/ then '#/upload'
+    when 'the mirador page' then '/mirador'
     when /^page "(\d+)" of the gallery$/
       page = $1
       "#/new-media?page=#{page}"
-    when /the authority group page for "([^\"]*)"/
+    when /the authority group page for "([^"]*)"/
       id = AuthorityGroup.find_by!(name: $1).id
       "#/groups/admin/#{id}"
-    when /the authority group category page for "([^\"]*)"/
+    when /the authority group category page for "([^"]*)"/
       id = AuthorityGroupCategory.find_by!(name: $1).id
       "#/groups/categories/#{id}"
-    when /the entity page for "([^\"]*)"/
+    when /the entity page for "([^"]*)"/
       name = $1
       entity = if name.size == 36
         Entity.find_by!(uuid: name)
@@ -44,23 +45,23 @@ module NavigationHelpers
       media = Kind.medium_kind.entities
       entity = ($1 == 'first' ? media.first : media.last)
       "#/entities/#{entity.id}"
-    when /the entity page for medium "([^\"]*)"/
+    when /the entity page for medium "([^"]*)"/
       entity = send($1.to_sym)
       "#/entities/#{entity.id}"
-    when /the new "([^\"]*)-Entity" page/
+    when /the new "([^"]*)-Entity" page/
       kind_id = Kind.find_by_name($1).id
       "#/entities/new?kind_id=#{kind_id}"
-    when /the user group "([^\"]*)"/
+    when /the user group "([^"]*)"/
       id = UserGroup.find_by!(name: $1).id
       "#/groups/user/#{id}"
-    when /the edit page for "([^\"]+)" "([^\"]+)"/
+    when /the edit page for "([^"]+)" "([^"]+)"/
       klass = $1
       name = $2.split('/').first
       object = klass.classify.constantize.find_by_name(name)
       "#/#{klass.pluralize}/#{object.id}/edit"
     when /welcome page/ then "/"
-    when /the path "([^\"]+)"/ then $1
-    when /url "([^\"]+)"/ then $1
+    when /the path "([^"]+)"/ then $1
+    when /url "([^"]+)"/ then $1
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

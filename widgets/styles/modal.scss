@@ -1,7 +1,7 @@
 .kor {
   w-modal, [data-is=w-modal] {
     .receiver {
-      background-color: #1e1e1e;
+      background-color: var(--kor-bg);
       max-height: 80%;
       overflow-y: auto;
     }

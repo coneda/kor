@@ -36,7 +36,7 @@ Feature: global collections
     Then I should be on the authority group categories page
     Then I should not see "lecture" within "kor-admin-groups"
 
-  Scenario: create  category
+  Scenario: create category
     Given I am logged in as "admin"
     When I go to the authority group categories page
     And I follow "create directory"
@@ -149,4 +149,20 @@ Feature: global collections
     When I go to the clipboard
     Then I should see "Mona Lisa"
     And I should see "Leonardo"
+
+  Scenario: Remove entity
+    And I am logged in as "jdoe"
+    And the entity "Leonardo" is in authority group "lecture"
+    When I follow "Global collections"
+    And I follow "lecture"
+    Then I should see "Leonardo"
+    And I should not see link "remove"
+    When I re-login as "admin"
+    When I follow "Global collections"
+    And I follow "lecture"
+    Then I should see "Leonardo"
+    When I follow "remove" within the cell for entity "Mona Lisa"
+    Then I should see "have been removed"
+    When I follow "remove"
+    And I should see "No entities found"
     

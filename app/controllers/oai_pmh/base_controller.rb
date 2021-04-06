@@ -6,8 +6,9 @@ class OaiPmh::BaseController < BaseController
   helper_method :timestamp, :base_url # , :medium_url
 
   skip_before_action :verify_authenticity_token
-  before_action :ensure_metadata_prefix, only: [:get_record, :list_records]
+
   before_action :handle_resumption_token, only: [:list_identifiers, :list_records]
+  before_action :ensure_metadata_prefix, only: [:get_record, :list_records]
   before_action :ensure_datestamp_format, only: [:list_identifiers, :list_records]
   before_action :ensure_identifier, only: [:get_record]
 
@@ -85,17 +86,13 @@ class OaiPmh::BaseController < BaseController
 
     def ensure_datestamp_format
       regex = /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ$/
-      
-      if params[:from].present?
-        unless params[:from].match(regex)
-          render_error 'badArgument', 'from has incorrect format'
-        end
+
+      if params[:from].present? && !params[:from].match(regex)
+        render_error 'badArgument', 'from has incorrect format'
       end
 
-      if params[:until].present?
-        unless params[:until].match(regex)
-          render_error 'badArgument', 'until has incorrect format'
-        end
+      if params[:until].present? && !params[:until].match(regex)
+        render_error 'badArgument', 'until has incorrect format'
       end
     end
 

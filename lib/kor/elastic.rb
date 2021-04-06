@@ -76,14 +76,14 @@ class Kor::Elastic
                   'type' => 'asciifolding',
                   'preserve_original' => true
                 }
-              },
-              'tokenizer' => {
-                'gram' => {
-                  'type' => 'ngram',
-                  'min_gram' => 2,
-                  'max_gram' => 30
-                }
               }
+              # 'tokenizer' => {
+              #   'gram' => {
+              #     'type' => 'ngram',
+              #     'min_gram' => 2,
+              #     'max_gram' => 30
+              #   }
+              # }
             }
           }
         },
@@ -499,8 +499,8 @@ class Kor::Elastic
   def by_dataset(dataset)
     if dataset.present?
       dataset.each do |field, value|
-        @query['filter'] << {
-          'term' => {"dataset.#{field}" => value}
+        @query['must'] << {
+          'match' => {"dataset.#{field}" => value}
         }
       end
     end
@@ -706,7 +706,7 @@ class Kor::Elastic
 
   def self.require_ok(response)
     if response.status < 200 || response.status >= 300
-      raise Exception.new("error", [response.status, response.headers, JSON.load(response.body)])
+      raise StandardError.new("error", [response.status, response.headers, JSON.load(response.body)])
     end
   end
 

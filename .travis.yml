@@ -15,12 +15,12 @@ services:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libav-tools imagemagick chromium-chromedriver
+  - sudo apt-get install -y libav-tools imagemagick
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.12.deb
   - sudo dpkg -i --force-confnew elasticsearch-5.6.12.deb
   - sudo service elasticsearch restart
-  - nvm install v8.12.0
-  - nvm alias default v8.12.0
+  - nvm install lts/erbium
+  - nvm alias default lts/erbium
   - gem update --system
   - gem install bundler
 

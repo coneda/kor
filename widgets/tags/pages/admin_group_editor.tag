@@ -45,12 +45,17 @@
     tag.mixin(wApp.mixins.auth)
     tag.mixin(wApp.mixins.page)
 
-    tag.on 'before-mount', ->
+    window.t = tag
+
+    tag.on 'before-mount', (e)->
       tag.errors = {}
       fetchCategories()
 
       if !tag.isAuthorityGroupAdmin()
         wApp.bus.trigger('access-denied')
+
+        # found no other way to prevent the tag mount
+        throw 'access denied'
 
     tag.on 'mount', ->
       if tag.opts.id
@@ -64,7 +69,7 @@
       p = (if tag.opts.id then update() else create())
       p.done (data) ->
         tag.errors = {}
-        if id = values()['authority_group_category_id']
+        if (id = values()['authority_group_category_id']) && id != '-1'
           wApp.routing.path('/groups/categories/' + id)
         else
           wApp.routing.path('/groups/categories')
@@ -86,7 +91,7 @@
         url: '/authority_group_categories/flat'
         data: {include: 'ancestors'}
         success: (data) ->
-          results = [{value: '0', label: tag.t('none')}]
+          results = [{value: -1, label: tag.t('none')}]
           for r in data.records
             names = (a.name for a in r.ancestors)
             names.push(r.name)
@@ -106,6 +111,8 @@
       )
 
     update = ->
+      console.log(values())
+
       Zepto.ajax(
         type: 'PATCH'
         url: "/authority_groups/#{tag.opts.id}"

@@ -35,5 +35,29 @@ RSpec.describe Field do
     expect(last_supper.reload.dataset['viaf']).to be_nil
   end
 
+  it 'should validate mandatory fields' do
+    field = described_class.create(
+      kind_id: works.id,
+      name: 'cycle',
+      show_label: 'Cycle',
+      mandatory: true
+    )
+
+    ml = mona_lisa
+    ml.dataset['cycle'] = ''
+    field.entity = ml
+
+    expect(field.validate_value).to eq(:empty)
+
+    ml.dataset['cycle'] = ' '
+    expect(field.validate_value).to eq(:empty)
+
+    ml.dataset['cycle'] = nil
+    expect(field.validate_value).to eq(:empty)
+
+    ml.dataset['cycle'] = 'x'
+    expect(field.validate_value).to eq(true)
+  end
+
   it 'should fall back to the show label for other labels'
 end

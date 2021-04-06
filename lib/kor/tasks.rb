@@ -41,20 +41,17 @@ class Kor::Tasks
 
     response = unless config[:assume_yes]
       print "Continue [yes/no]? "
-      STDIN.gets.strip
+      $stdin.gets.strip
     end
 
     if config[:assume_yes] || response == "yes"
-      zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/terminal_download.zip",
-        :user_id => User.admin.id,
-        :file_name => "#{group.name}.zip"
+      zip_file = Kor::ZipFile.create(
+        User.admin.id,
+        group.class.name,
+        group.id,
+        group.entities.pluck(:id)
       )
-
-      group.entities.media.each do |e|
-        zip_file.add_entity e
-      end
-
-      download = zip_file.create_as_download
+      download = zip_file.build
       puts "Packaging complete, the zip file can be downloaded via"
       puts "#{Kor.root_url}/downloads/#{download.uuid}"
     end
@@ -220,7 +217,7 @@ class Kor::Tasks
         maxes[i] ||= data.map{ |r| r[i].to_s.size }.max
         row << "#{field.to_s.ljust(maxes[i])}"
       end
-      puts '| ' + row.join(' | ') + ' |'
+      puts "| #{row.join(' | ')} |"
     end
   end
 end

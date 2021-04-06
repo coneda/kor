@@ -1,6 +1,6 @@
 <kor-header>
   <a href="#/" class="logo">
-    <img src="images/logo.gif" />
+    <kor-logo />
   </a>
 
   <div class="session">

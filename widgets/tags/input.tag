@@ -4,6 +4,7 @@
     <a
       if={opts.help}
       href="#"
+      title={tcap('nouns.help')}
       onclick={toggleHelp}
     ><i class="fa fa-question-circle"></i></a>
     <input
@@ -27,7 +28,7 @@
       multiple={opts.multiple}
       disabled={opts.isDisabled}
     >
-      <option if={opts.placeholder} value={0}>{opts.placeholder}</option>
+      <option if={opts.placeholder !== undefined} value={placeholderValue()}>{opts.placeholder}</option>
       <option
         each={item in opts.options}
         value={item.id || item.value || item}
@@ -139,6 +140,12 @@
 
     tag.input = ->
       Zepto(tag.root).find('input, select, textarea')
+
+    tag.placeholderValue = () ->
+      if opts.placeholderValue == undefined
+        0
+      else
+        opts.placeholderValue
 
   </script>
 </kor-input>

@@ -1,5 +1,8 @@
 class Fields::Select < Field
   def validate_value
+    result = super
+    return result if result != true
+
     if subtype == 'multiselect'
       value.each do |v|
         return :invalid unless values.include?(v)

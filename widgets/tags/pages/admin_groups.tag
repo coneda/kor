@@ -76,7 +76,10 @@
     var fetch = function() {
       Zepto.ajax({
         url: '/authority_groups',
-        data: {authority_group_category_id: tag.opts.categoryId},
+        data: {
+          authority_group_category_id: tag.opts.categoryId,
+          per_page: 'max'
+        },
         success: function(data) {
           tag.data = data;
           tag.update();

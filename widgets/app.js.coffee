@@ -2,7 +2,6 @@ Zepto.extend Zepto.ajaxSettings, {
   type: 'GET'
   dataType: 'json'
   contentType: 'application/json'
-  accepts: 'application/json'
   beforeSend: (xhr, settings) ->
     wApp.state.requests.push xhr
     wApp.bus.trigger 'ajax-state-changed'

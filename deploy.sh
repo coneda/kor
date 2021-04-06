@@ -36,7 +36,10 @@ function deploy {
   deploy_code
   cleanup
 
-  within_do $CURRENT_PATH "bundle --clean --quiet --without test development --path $SHARED_PATH/bundle"
+  within_do $CURRENT_PATH "bundle config set --local clean 'true'"
+  within_do $CURRENT_PATH "bundle config set --local path '$SHARED_PATH/bundle.$RUBY_VERSION'"
+  within_do $CURRENT_PATH "bundle config set --local without 'development:test'"
+  within_do $CURRENT_PATH "bundle --quiet"
 
   remote "ln -sfn $SHARED_PATH/log $CURRENT_PATH/log"
   remote "ln -sfn $SHARED_PATH/tmp $CURRENT_PATH/tmp"

@@ -23,13 +23,13 @@ Feature: Clipboard
     And I follow "all"
     And I follow "Add to a global collection"
     And I follow "create new"
-    And I fill in "Name" with "Neue Gruppe"
+    And I fill in "Name" with "Neue Sammlung"
     And I press "Save"
-    Then I should see "Neue Gruppe has been created"
+    Then I should see "Neue Sammlung has been created"
     When I go to the clipboard
     And I follow "all"
     And I follow "Add to a global collection"
-    And I select "Neue Gruppe" from "Global collection"
+    And I select "Neue Sammlung" from "Global collection"
     And I press "Save"
     Then I should see "entities have been added to the selected collection"
 
@@ -56,9 +56,6 @@ Feature: Clipboard
     And the relation "was created by/created" between "Work/Works" and "Person/People"
     And I put "Leonardo" into the clipboard
     And I go to the clipboard
-    And I follow "Relate with"
-    Then I should see "You must select at least one entity"
-    When I press "Cancel"
     And I follow "all"
     And I follow "Relate with"
     And I select "created" from "Relation"
@@ -67,6 +64,34 @@ Feature: Clipboard
     And I press "Save"
     And I should see "have been related"
     Then "Leonardo" should have "created" "Mona Lisa"
+
+  Scenario: Mass delete
+  Given I am logged in as "admin"
+    And all entities of kind "Medium/Media" are in the clipboard
+    When I go to the clipboard
+    And I follow "all"
+    And I ignore the next confirmation box
+    And I follow "Delete"
+    Then I should see "entities have been deleted"
+
+  Scenario: Remove entity from clipboard
+    Given I am logged in as "admin"
+    And I put "Leonardo" into the clipboard
+    When I go to the clipboard
+    Then I should see "Leonardo" within "[data-is='kor-clipboard']"
+    And I follow "remove"
+    Then I should not see "Leonardo" within "[data-is='kor-clipboard']"
+
+  Scenario: Add entity to authority group
+    Given I am logged in as "admin"
+    And I put "Leonardo" into the clipboard
+    When I go to the clipboard
+    Then I should see "Leonardo" within "[data-is='kor-clipboard']"
+    When I follow "all"
+    And I follow "Add to a global collection"
+    And I select "archive » seminar" from "Global collection"
+    And I press "Save"
+    Then I should see "have been added to the selected collection"
 
   # TODO: why is this commented out?
   # Scenario: Select entities by kind

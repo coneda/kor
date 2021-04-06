@@ -28,6 +28,23 @@
           />
         </div>
 
+        <virtual if={mediumKind && mediumKind.fields.length > 0}>
+          <hr />
+
+          <kor-dataset-fields
+            name="dataset"
+            fields={mediumKind.fields}
+            ref="dataset"
+            only-mandatory={!allFields}
+          />
+        </virtual>
+
+        <a onClick={toggleAllFields}>
+          {allFieldsLabel()}
+        </a>
+
+        <hr />
+
         <a class="trigger">
           » {tcap('objects.add', {interpolations: {o: 'nouns.file.other'}})}
         </a>
@@ -122,19 +139,40 @@
         "entity[kind_id]": wApp.info.data.medium_kind_id,
         "entity[collection_id]": tag.refs['cs'].value(),
         "user_group_name": tag.refs['group'].value(),
-        "target_entity_id": wApp.clipboard.selection(),
+        "target_entity_id": wApp.routing.query()['relate_with'],
         'authenticity_token': wApp.session.csrfToken()
       };
       var rs = tag.refs['relation-selector'];
       if (rs) {
         params['relation_name'] = rs.value();
       }
+
+      if (tag.refs.dataset) {
+        const datasetValues = tag.refs.dataset.value()
+        for (const k in datasetValues) {
+          const p = 'entity[dataset][' + k + ']'
+          const v = datasetValues[k]
+          params[p] = v
+        }
+      }
+
       uploader.setOption('multipart_params', params);
       uploader.start();
     }
 
     tag.hasSelection = function() {
       return !!wApp.clipboard.selection();
+    }
+
+    tag.toggleAllFields = function(event) {
+      tag.allFields = !tag.allFields
+      tag.update()
+    }
+
+    tag.allFieldsLabel = function() {
+      return tag.allFields ? 
+        tag.tcap('show_only_mandatory_fields') : 
+        tag.tcap('show_all_fields')
     }
 
     var relationSelectorValue = function() {
@@ -162,6 +200,8 @@
     }
 
     var init = function() {
+      fetchMediumKind()
+
       if (tag.hasSelection())
         fetchSelected(wApp.clipboard.selection());
 
@@ -208,6 +248,17 @@
       });
 
       uploader.init();
+    }
+
+    var fetchMediumKind = function() {
+      $.ajax({
+        url: '/kinds/' + wApp.info.data.medium_kind_id,
+        data: {include: 'fields'},
+        success: function(data) {
+          tag.mediumKind = data
+          tag.update()
+        }
+      })
     }
   </script>
 </kor-upload>

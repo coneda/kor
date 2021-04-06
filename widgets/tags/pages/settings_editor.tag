@@ -40,6 +40,14 @@
         />
 
         <kor-input
+          name="welcome_page_only_media"
+          label={nameFor('welcome_page_only_media')}
+          type="checkbox"
+          riot-value={valueWithDefaults('welcome_page_only_media')}
+          ref="fields"
+        />
+
+        <kor-input
           name="legal_text"
           label={nameFor('legal_text')}
           type="textarea"
@@ -217,6 +225,22 @@
           help={tcap('help.create_missing_relations')}
           type="checkbox"
           riot-value={valueWithDefaults('create_missing_relations')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="mirador_page_template"
+          label={nameFor('mirador_page_template')}
+          type="number"
+          riot-value={valueWithDefaults('mirador_page_template')}
+          ref="fields"
+        />
+
+        <kor-input
+          name="mirador_manifest_template"
+          label={nameFor('mirador_page_template')}
+          type="number"
+          riot-value={valueWithDefaults('mirador_manifest_template')}
           ref="fields"
         />
 

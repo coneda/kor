@@ -119,6 +119,7 @@ module Kor
         'default_locale' => 'en',
         'welcome_title' => 'Welcome to ConedaKOR',
         'welcome_text' => 'This text can be configured in the settings',
+        'welcome_page_only_media' => true,
         'max_foreground_group_download_size' => 10,
         'max_file_upload_size' => 100,
         'max_results_per_request' => 500,
@@ -146,6 +147,9 @@ module Kor
         'relationship_dating_label' => 'Dating',
 
         'max_download_group_size' => 80,
+
+        'mirador_page_template' => nil,
+        'mirador_manifest_template' => nil,
 
         'search_entity_name' => 'Name / Title / UUID',
 
@@ -208,6 +212,11 @@ module Kor
         ]
         integer_arrays.each do |ia|
           @attributes[ia] = self[ia].map{ |i| i.to_i }
+        end
+
+        booleans = ['welcome_page_only_media']
+        booleans.each do |i|
+          @attributes[i] = ['1', 'true', true, 1].include?(self[i])
         end
       end
 

@@ -33,13 +33,11 @@ class SingularRelationEndpoints < ActiveRecord::Migration
               updates[:relation_id] = new_r.id
             end
 
-            if r.name == r.reverse_name
-              if rel.from.kind_id == to_kind_id && rel.to.kind_id == from_kind_id
-                updates[:relation_id] = new_r.id
-                updates[:from_id] = rel.to_id
-                updates[:to_id] = rel.from_id
-                to_be_turned << rel.id
-              end
+            if r.name == r.reverse_name && (rel.from.kind_id == to_kind_id && rel.to.kind_id == from_kind_id)
+              updates[:relation_id] = new_r.id
+              updates[:from_id] = rel.to_id
+              updates[:to_id] = rel.from_id
+              to_be_turned << rel.id
             end
             rel.update_columns updates if updates != {}
           end

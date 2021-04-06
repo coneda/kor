@@ -19,7 +19,6 @@ Feature: User administration
 
   Scenario: Show the user's API key
     Given I am logged in as "admin"
-    And the user "jdoe"
     And I go to the users page
     When I follow "edit" within the row for user "John Doe"
     Then I should see "jdoe"'s API Key
@@ -56,10 +55,17 @@ Feature: User administration
     Then I should see "hmustermann"
 
   Scenario: Accept terms of use
-    Given the user "jdoe"
-    And user "jdoe" didn't accept the terms
+    Given user "jdoe" didn't accept the terms
     And I am logged in as "jdoe"
-    Then I should see "You have to accept our terms of use"
-    And I should see "enter a legal notice here"
-    When I click "Accept terms"
+    Then I should see "Terms of use"
+    When I press "Accept terms"
     Then I should see "You have accepted the terms of use"
+    When I follow "Search"
+    Then I should see "Search results"
+
+  Scenario: Reset a user's password
+    Given I am logged in as "admin"
+    And I follow "Users"
+    And I ignore the next confirmation box
+    And I follow "reset password" within the row for user "jdoe"
+    Then I should see "has been reset"

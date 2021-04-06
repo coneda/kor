@@ -18,8 +18,7 @@ class Kor::Import::ErlangenCrm
         name: klass.xpath('rdfs:label').text,
         plural_name: klass.xpath('rdfs:label').text.gsub(/E\d+\s/, '').pluralize,
         description: (
-          klass.xpath('rdfs:label').text + "\n\n" +
-          klass.xpath('rdfs:comment').text
+          "#{klass.xpath('rdfs:label').text}\n\n#{klass.xpath('rdfs:comment').text}"
         ),
         abstract: true,
         uuid: uuid_mapping[klass['rdf:about']]
@@ -43,10 +42,8 @@ class Kor::Import::ErlangenCrm
 
     parent_map.each do |child_url, parent_urls|
       parent_urls.each do |parent_url|
-        if parent = Kind.where(url: parent_url).first
-          if child = Kind.where(url: child_url).first
-            parent.children << child
-          end
+        if parent = Kind.where(url: parent_url).first && child = Kind.where(url: child_url).first
+          parent.children << child
         end
       end
     end
@@ -113,14 +110,10 @@ class Kor::Import::ErlangenCrm
     end
 
     Relation.all.each do |relation|
-      if relation.url
-        if r = @lookup[relation.url]
-          if r[:parent_urls].present?
-            relation.update_attributes(
-              parent_ids: Relation.where(url: r[:parent_urls]).pluck(:id)
-            )
-          end
-        end
+      if relation.url && r = @lookup[relation.url] && r[:parent_urls].present?
+        relation.update_attributes(
+          parent_ids: Relation.where(url: r[:parent_urls]).pluck(:id)
+        )
       end
     end
   end

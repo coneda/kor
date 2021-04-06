@@ -1,3 +1,8 @@
+require 'webdrivers'
+
+Webdrivers.cache_time = 86400 # 24 hours
+# Webdrivers.logger.level = :DEBUG
+
 class ActiveRecord::Base
   mattr_accessor :shared_connection
   @@shared_connection = nil
@@ -22,33 +27,34 @@ end
 
 World(DataHelper)
 
-TestHelper.setup_vcr :cucumber
-TestHelper.setup
+SuiteHelper.setup_vcr :cucumber
+SuiteHelper.setup
 
 Capybara.server_port = 47001
 Capybara.default_max_wait_time = 5
 
 Capybara.register_driver :selenium_chrome_headless do |app|
-  profile = Selenium::WebDriver::Chrome::Profile.new
-  profile["download.default_directory"] = Rails.root.join('tmp')
+  options = Selenium::WebDriver::Chrome::Options.new
+  [
+    'headless',
+    'window-size=1280x960',
+    'remote-debugging-address=0.0.0.0',
+    'remote-debugging-port=9222'
+  ].each{|a| options.add_argument(a)}
 
-  browser_options = ::Selenium::WebDriver::Chrome::Options.new.tap do |opts|
-    opts.args << '--headless'
-    opts.args << '--window-size=1280x960'
-    opts.args << '--remote-debugging-port=9222'
-  end
+  # set download path
+  path = Rails.root.join('tmp', 'test_downloads').to_s
+  system "mkdir -p '#{path}'"
+  options.add_preference 'download.default_directory', path
 
-  Capybara::Selenium::Driver.new app, {
-    browser: :chrome,
-    profile: profile,
-    options: browser_options
-  }
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 end
 
 Capybara.default_driver = :selenium
 
 if ENV['HEADLESS']
   Capybara.default_driver = :selenium_chrome_headless
+  # Capybara.default_driver = :selenium_headless
 end
 
 Around('@notravis') do |_scenario, block|
@@ -58,12 +64,12 @@ Around('@notravis') do |_scenario, block|
 end
 
 Around do |_scenario, block|
-  TestHelper.around_each(&block)
+  SuiteHelper.around_each(&block)
 end
 
 Before do |scenario|
   reset_browser!
-  TestHelper.before_each(:cucumber, self, scenario)
+  SuiteHelper.before_each(:cucumber, self, scenario)
 end
 
 if ENV['DEBUG_FAILED'] == 'true'

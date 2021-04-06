@@ -35,6 +35,10 @@ When /^(?:|I )click button "([^"]*)"$/ do |locator|
   find_button(locator).click
 end
 
+When('I click element {string}') do |selector|
+  find(selector).click
+end
+
 When("I scroll down") do
   # sometimes, capybara doesn't correctly scroll to a button before clicking it
   sleep 1
@@ -70,7 +74,7 @@ Then /^(?:|I )should see "([^"]*)"(?: exactly "(\d+)" times?)?$/ do |text, amoun
   end
 end
 
-Then /^(?:|I )should not see "([^\"]*)"$/ do |text|
+Then /^(?:|I )should not see "([^"]*)"$/ do |text|
   expect(page).to have_no_content(text)
 end
 
@@ -87,7 +91,7 @@ Then /^(?:|I )should be on (.+)$/ do |page_name|
   end
 end
 
-Then /^I should (not )?see element "([^\"]*)"$/ do |yesno, selector|
+Then /^I should (not )?see element "([^"]*)"$/ do |yesno, selector|
   if yesno == 'not '
     if (elements = page.all(selector)).size > 0
       elements.each do |element|
@@ -101,7 +105,7 @@ Then /^I should (not )?see element "([^\"]*)"$/ do |yesno, selector|
   end
 end
 
-When /^I select "([^\"]*)" from the collections selector$/ do |collections|
+When /^I select "([^"]*)" from the collections selector$/ do |collections|
   names = collections.split('/')
   within('kor-collection-selector'){ click_link('edit') }
   click_link 'none'
@@ -115,7 +119,7 @@ Then /^I should see "([^"]*)" before "([^"]*)"$/ do |preceeding, following|
   expect(page.body).to match(/#{preceeding}.*#{following}/m)
 end
 
-When /^(?:|I )unselect "([^\"]*)" from "([^\"]*)"(?: within "([^\"]*)")?$/ do |value, field, selector|
+When /^(?:|I )unselect "([^"]*)" from "([^"]*)"(?: within "([^"]*)")?$/ do |value, field, selector|
   if selector
     within(:css, selector) do
       unselect(value, :from => field)
@@ -142,7 +146,7 @@ Then /^I should see the video player$/ do
   expect(page).to have_selector('video')
 end
 
-Then(/^I should (not )?see option "([^\"]+)"$/) do |negator, text|
+Then(/^I should (not )?see option "([^"]+)"$/) do |negator, text|
   if negator == "not "
     expect(page).not_to have_selector("option", :text => text)
   else
@@ -154,7 +158,7 @@ Then(/^I should see a link "(.*?)" leading to "(.*?)"$/) do |text, href|
   expect(page.find_link(text)['href']).to match(href)
 end
 
-Then(/^I should (not )?see link "([^\"]+)"$/) do |negate, text|
+Then(/^I should (not )?see link "([^"]+)"$/) do |negate, text|
   if negate.present?
     expect(page).not_to have_link(text, exact: true)
   else
@@ -279,6 +283,11 @@ Then("I should see error {string} on field {string}") do |error, field|
   expect(page).to have_css("kor-input[label='#{field}'] .errors", text: error)
 end
 
+Then("I should not see error {string} on field {string}") do |error, field|
+  input = find("kor-input[label='#{field}']")
+  expect(input).to have_no_css('.errors', text: error)
+end
+
 When("I fill in synonyms with {string}") do |string|
   fill_in 'Synonyms', with: string.split('|').join("\n")
 end
@@ -332,7 +341,7 @@ end
 
 Then(/^I should see mirador link with a usable href$/) do
   href = find_link('Mirador')['href']
-  expect(href).to match(/^http:\/\/127.0.0.1:\d+\/mirador\?manifest=http:\/\/127.0.0.1:\d+\/mirador\/\d+$/)
+  expect(href).to match(/^http:\/\/127.0.0.1:\d+\/mirador\?id=\d+&manifest=http:\/\/127.0.0.1:\d+\/mirador\/\d+$/)
 end
 
 When("I select autocomplete option {string}") do |string|
@@ -345,4 +354,8 @@ When("I press the {string} key") do |string|
   else
     raise "unknown key: '#{string}'"
   end
+end
+
+Then('I should see page title {string}') do |title|
+  expect(page.title).to eq(title)
 end

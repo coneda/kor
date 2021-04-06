@@ -23,6 +23,8 @@ have been moved to 4.2.0
 
 ## Version 4.0.1
 
+This is just a bugfix release, for details see the [milestone summary](https://github.com/coneda/kor/issues?q=is%3Aissue+milestone%3Av4.0.1+is%3Aclosed).
+
 * dropping angularjs previously prompted using riotjs for rendering custom
   generators. The latter did actually not perform all required operations (e.g.
   conditionals), therefore [EJS](https://ejs.co) is now used. This also

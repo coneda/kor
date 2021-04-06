@@ -30,7 +30,7 @@ RSpec.describe ActiveRecord do
     ua1 = mona_lisa.updated_at
     expect(ua1).to be_within(1.second).of(Time.now)
 
-    # TODO: replace with `travel ... do` once available
+    # due to mysql timestamp precision
     sleep 1
 
     mona_lisa.destroy

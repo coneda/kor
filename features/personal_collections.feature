@@ -112,3 +112,34 @@ Feature: personal collections
     Given I am logged in as "mrossi"
     And I go to the user group "nice"
     Then I should see "Access denied"
+
+  Scenario: Download as zip (foreground)
+    Given I am logged in as "jdoe"
+    When I follow "Personal collections"
+    And I follow "nice"
+    And I follow "download collection as zip file"
+    # no error => we are happy
+
+  Scenario: Download as zip (background)
+    Given the setting "max_foreground_group_download_size" is "0.1"
+    Given I am logged in as "jdoe"
+    When I follow "Personal collections"
+    And I follow "nice"
+    And I follow "download collection as zip file"
+    # this is not reliable, perhaps remove
+    # Then I should see "Zip file will be created"
+    And I wait for "1" second
+    And there should be "1" outgoing email
+    When I click the download link in mail "1"
+    # no error => we are happy
+
+  Scenario: Remove entity
+    And I am logged in as "jdoe"
+    And the entity "Leonardo" is in user group "nice"
+    When I follow "Personal collections"
+    And I follow "nice"
+    Then I should see "Leonardo"
+    When I follow "remove" within the cell for entity "Mona Lisa"
+    Then I should see "have been removed"
+    When I follow "remove"
+    And I should see "No entities found"

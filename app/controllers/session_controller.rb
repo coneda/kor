@@ -4,6 +4,7 @@ class SessionController < JsonController
   skip_before_action :auth, :legal
 
   def show
+    @messages = flash[:notice]
   end
 
   def env_auth

@@ -1,15 +1,15 @@
 class Kor::Dating::Transform < Parslet::Transform
   rule(:num => simple(:num), :part => simple(:part), :bc => simple(:bc), :cs => simple(:cs)) do
-    modifier = case part
-    when "Anfang" then [0, 75]
-    when "Mitte" then [35, 35]
-    when "Ende" then [75, 0]
-    when "1. Hälfte" then [0, 50]
-    when "2. Hälfte" then [50, 0]
-    when "1. Drittel" then [0, 66]
-    when "2. Drittel" then [33, 33]
-    when "3. Drittel" then [66, 0]
-    end
+    modifier = {
+      "Anfang" => [0, 75],
+      "Mitte" => [35, 35],
+      "Ende" => [75, 0],
+      "1. Hälfte" => [0, 50],
+      "2. Hälfte" => [50, 0],
+      "1. Drittel" => [0, 66],
+      "2. Drittel" => [33, 33],
+      "3. Drittel" => [66, 0]
+    }[part.to_s]
 
     if bc.nil?
       {
