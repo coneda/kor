@@ -7,12 +7,21 @@ commit history and the closed issues on GitHub.
 
 ## Version ???
 
-* custom help texts can now be provided separately for each language
-* the welcome page can now be configured with textile and without any HTML
-  sanitization
+* entities can now be cloned
+* admins can now create new users without sending login credentials via mail
+* the "new entities" section has considerably more options for filtering and
+  sorting
+* entity tags are now rendered as links to the search page
+* UI renaming:
+  * former "groups" (global, personal, shared etc.) are now called "collections"
+  * former "collections" are now called "domains"
+* wikidata is now tightly integrated (including direct entity lookup)
+* help texts can now be translated to German
+* the front page can now be fully customized with textile
+* the domain is now included with delivering related entities via the REST api
 * authentication sources can now specify a custom password management url. This
   also removes the password fields from the profile editor to prevent federation
-  users to change their local passwords
+  users to change their local passwords11111
 
 ## Version 4.1.0
 
