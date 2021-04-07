@@ -49,6 +49,7 @@
       Zepto.ajax(
         url: '/entities'
         data: {
+          engine: 'active_record',
           include: 'kind'
           isolated: true
           page: tag.opts.query.page
