@@ -22,15 +22,17 @@
       />
 
       <kor-collection-selector
+        name="collection_id"
         label={tcap('activerecord.attributes.entity.collection_id')}
+        ref="fields"
       />
 
       <kor-input
         label={tcap('activerecord.attributes.entity.name')}
         name="no_name_statement"
         type="radio"
-        ref="fields"
         options={noNameStatements}
+        ref="fields"
       />
 
       <kor-input
@@ -78,8 +80,8 @@
       <kor-synonyms-editor
         label={tcap('activerecord.attributes.entity.synonyms')}
         name="synonyms"
-        ref="fields"
         value={combined.synonyms}
+        ref="fields"
       />
 
       <hr />
@@ -99,10 +101,10 @@
         if={kind}
         label={tcap('activerecord.models.entity_dating', {count: 'other'})}
         name="datings_attributes"
-        ref="fields"
         value={combined.datings}
         for="entity"
         kind={kind}
+        ref="fields"
       />
 
       <hr />
@@ -110,8 +112,8 @@
       <kor-entity-properties-editor
         label={tcap('activerecord.attributes.entity.properties')}
         name="properties"
-        ref="fields"
         value={combined.properties}
+        ref="fields"
       />
 
       <hr />

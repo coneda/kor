@@ -398,3 +398,8 @@ Given('the entity {string} is in user group {string}') do |name, group|
   entity = Entity.find_by! name: name
   UserGroup.find_by!(name: group).add_entities(entity)
 end
+
+Then('there should be no entity {string}') do |name|
+  entity = Entity.find_by name: name
+  expect(entity).to be_nil
+end

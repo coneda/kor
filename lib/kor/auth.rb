@@ -182,6 +182,7 @@ module Kor::Auth
     case objects
     when ActiveRecord::Base then [objects.id]
     when Integer then [objects]
+    when String then [objects.to_i]
     when Array, ActiveRecord::Relation
       objects.map do |o|
         o.respond_to?(:id) ? o.id : o

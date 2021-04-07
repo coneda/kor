@@ -1,6 +1,8 @@
 Feature: Merge
   Scenario: Merge institutions with linked GKD entries
-    Given I am logged in as "admin"
+    # we add a further collection where admin has to permissions
+    Given the collection "my project"
+    And I am logged in as "admin"
     And kind "Institution" has field "bossa_id" of type "Fields::String"
     And kind "Institution" has field "knd" of type "Fields::String"
     And the entity "Louvre (Paris)" of kind "Institution/Institutionen"
@@ -16,7 +18,9 @@ Feature: Merge
     Then I should see "Knd"
     And I should see "BossaId"
     When I press "Save"
-    Then entity "Louvre" should have dataset value "12345" for "knd"
+    Then I should see "have been merged successfully"
+    And there should be no entity "Louvre (Paris)"
+    And entity "Louvre" should have dataset value "12345" for "knd"
     And entity "Louvre" should have dataset value "123" for "bossa_id"
 
   Scenario: Merge media
