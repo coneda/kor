@@ -25,7 +25,7 @@ RSpec.describe EntitiesController, type: :controller do
 
   # see #318
   it 'should GET index (with terms but no elasticsearch)' do
-    expect(Kor::Elastic).to receive(:available?).and_return(false)
+    expect(Kor::Elastic).to receive(:available?).twice.and_return(false)
 
     get 'index', as: 'json', params: {terms: '*'}
     expect(json).to eq(
@@ -117,7 +117,7 @@ RSpec.describe EntitiesController, type: :controller do
       current_user User.find_by!(name: 'jdoe')
     end
 
-    it 'should GET index' do
+    it 'should GET index', elastic: true do
       get 'index'
       expect_collection_response count: 5
 
@@ -299,7 +299,7 @@ RSpec.describe EntitiesController, type: :controller do
       current_user User.admin
     end
 
-    it 'should GET index' do
+    it 'should GET index', elastic: true do
       get 'index'
       expect_collection_response count: 7
 

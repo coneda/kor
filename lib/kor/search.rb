@@ -66,7 +66,11 @@ class Kor::Search
   end
 
   def elastic
-    @search_result = Kor::Elastic.new(@user).search(@criteria)
+    @search_result = if Kor::Elastic.available?
+      Kor::Elastic.new(@user).search(@criteria)
+    else
+      raise Kor::Exception, 'elasticsearch is not available'
+    end
   end
 
   def records
@@ -112,6 +116,10 @@ class Kor::Search
   end
 
   def validate!
+    unless ['active_record', 'elastic'].include?(engine)
+      raise Kor::Exception, "#{engine.inspect} is not a valid search engine"
+    end
+
     if surplus_keys.size > 0
       raise Kor::Exception, "#{surplus_keys.inspect} are not known search keys"
     end
@@ -130,20 +138,39 @@ class Kor::Search
           raise Kor::Exception, "#{k} is only supported with active_record"
         end
       end
+
+      unless Kor::Elastic.available?
+        elastic_keys.each do |k|
+          if @criteria[k].present?
+            raise Kor::Exception, "#{k} is only supported with elasticsearch " +
+              'but elasticsearch is unavailable'
+          end
+        end
+
+        raise Kor::Exception, "elasticsearch requested but unavailable"
+      end
     end
   end
 
-  def preferred_engine
+  def requested_engine
     @criteria[:engine]
+  end
+
+  def requires_active_record?
+    active_record_keys.each do |k|
+      if @criteria[k].present?
+        return 'active_record'
+      end
+    end
+
+    false
   end
 
   # use elastic if available and enabled
   def engine
-    return preferred_engine if preferred_engine.present?
+    return requested_engine if requested_engine.present?
+    return 'active_record' if requires_active_record?
 
-    @engine ||= (Kor::Elastic.available? && Kor::Elastic.enabled? ?
-      'elastic' :
-      'active_record'
-    )
+    Kor::Elastic.available? ? 'elastic' : 'active_record'
   end
 end

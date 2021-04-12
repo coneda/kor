@@ -158,7 +158,7 @@ class Entity < ApplicationRecord
   end
 
   def update_elastic
-    if Kor::Elastic.enabled?
+    if Kor::Elastic.available?
       if deleted?
         Kor::Elastic.drop self
       else

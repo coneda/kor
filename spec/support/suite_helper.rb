@@ -46,11 +46,11 @@ module SuiteHelper
     )
 
     if use_elastic
-      Kor::Elastic.enabled = true
+      Kor::Elastic.enable!
       Kor::Elastic.reset_index
       Kor::Elastic.index_all full: true
     else
-      Kor::Elastic.enabled = false
+      Kor::Elastic.disable!
     end
 
     if framework == :rspec && test.metadata[:type].to_s == 'controller'

@@ -1,5 +1,4 @@
 Feature: Isolated entities
-  @elastic
   Scenario: show isolated entities
     And the entity "Van Gogh" of kind "person/people"
     And I am logged in as "admin"

@@ -2,19 +2,19 @@ require 'rails_helper'
 
 RSpec.describe Kor::Elastic, elastic: true do
   it 'should be enabled by rspec metadata' do
-    expect(described_class.enabled?).to be_truthy
+    expect(described_class.available?).to be_truthy
 
-    described_class.enabled = false
-    expect(described_class.enabled?).to be_falsey
+    described_class.disable!
+    expect(described_class.available?).to be_falsey
 
-    described_class.enabled = true
-    expect(described_class.enabled?).to be_truthy
+    described_class.enable!
+    expect(described_class.available?).to be_truthy
   end
 
   it "should index an entity" do
-    Kor::Elastic.enabled = false
+    Kor::Elastic.disable!
     @landscape = FactoryGirl.create :landscape
-    Kor::Elastic.enabled = true
+    Kor::Elastic.enable!
 
     expect{
       described_class.index(@landscape)

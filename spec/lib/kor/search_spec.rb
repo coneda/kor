@@ -33,7 +33,7 @@ RSpec.shared_examples 'a kor search' do
 
     monalisa = mona_lisa
     monalisa.update name: 'Monalisa'
-    Kor::Elastic.refresh if Kor::Elastic.enabled?
+    Kor::Elastic.refresh if Kor::Elastic.available?
 
     search = described_class.new(
       admin,
@@ -46,7 +46,7 @@ RSpec.shared_examples 'a kor search' do
 
   it 'should search with the distinct name' do
     leonardo.update distinct_name: 'uzh-khist-gd-04207-53'
-    Kor::Elastic.refresh if Kor::Elastic.enabled?
+    Kor::Elastic.refresh if Kor::Elastic.available?
 
     search = described_class.new(admin, name: 'uzh-khist-gd-04207-53')
     expect(search.total).to eq(1)
@@ -306,19 +306,23 @@ RSpec.describe Kor::Search do
     it 'should raise an exception for elasticsearch-only criteria' do
       expect{
         described_class.new(admin, terms: 'lis*')
-      }.to raise_error(Kor::Exception, 'terms is only supported with elasticsearch')
+      }.to raise_error(Kor::Exception, /terms is only supported with elasticsearch/)
 
       expect{
         described_class.new(admin, dataset: {'gnd_id' => '12345'})
-      }.to raise_error(Kor::Exception, 'dataset is only supported with elasticsearch')
+      }.to raise_error(Kor::Exception, /dataset is only supported with elasticsearch/)
 
       expect{
         described_class.new(admin, property: {'age' => '41'})
-      }.to raise_error(Kor::Exception, 'property is only supported with elasticsearch')
+      }.to raise_error(Kor::Exception, /property is only supported with elasticsearch/)
 
       expect{
         described_class.new(admin, related: 'mona')
-      }.to raise_error(Kor::Exception, 'related is only supported with elasticsearch')
+      }.to raise_error(Kor::Exception, /related is only supported with elasticsearch/)
+
+      expect{
+        search = described_class.new(admin, engine: 'elastic', name: '*')
+      }.to raise_error(Kor::Exception, 'elasticsearch requested but unavailable')
     end
   end
 
@@ -326,13 +330,13 @@ RSpec.describe Kor::Search do
     # do all of the above
     it_behaves_like 'a kor search'
 
-    it 'should use correct engine' do
+    it 'should use the correct engine' do
       search = described_class.new(admin, terms: 'mona')
       expect(search.engine).to eq('elastic')
 
       # not possible with elastic
       expect{
-        search = described_class.new(admin, isolated: true)
+        search = described_class.new(admin, isolated: true, engine: 'elastic')
       }.to raise_error(Kor::Exception)
 
       search = described_class.new(admin, name: 'mona')

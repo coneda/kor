@@ -146,6 +146,7 @@
 
     var urlParams = function() {
       var results = wApp.routing.query()
+      results['engine'] = 'active_record'
       results['id'] = wApp.clipboard.ids().join(',')
       return results;
     }

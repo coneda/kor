@@ -3,6 +3,17 @@ class Kor::SearchResult
     assign attrs
   end
 
+  def self.empty
+    new(
+      total: 0,
+      uuids: [],
+      ids: [],
+      raw_records: [],
+      page: 1,
+      per_page: 10
+    )
+  end
+
   attr_writer :records, :total, :page, :per_page, :ids, :uuids
 
   def assign(attrs = {})

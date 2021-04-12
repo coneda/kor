@@ -139,7 +139,7 @@ Feature: Inplace relationship editor
   Scenario: Paginate target entities
     Given I am logged in as "admin"
     And 10 entities "artwork" of kind "work/works" inside collection "default"
-    And everthing is indexed
+    And everything is indexed
     And I am on the entity page for "Mona Lisa"
     Then I should see "Mona Lisa"
     And I click icon "add relationship"

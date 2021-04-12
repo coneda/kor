@@ -13,7 +13,7 @@ json.info do
   json.locales I18n.available_locales
   json.medium_kind_id Kind.medium_kind_id
   json.env Rails.env.to_s
-  json.elastic Kor::Elastic.enabled?
+  json.elastic Kor::Elastic.available?
 
   if url = ENV['CUSTOM_CSS_URL']
     json.custom_css url

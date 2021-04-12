@@ -19,27 +19,29 @@ class Kor::Elastic
   end
 
   def self.available?
-    @available ||= begin
-      return false if ENV['ELASTIC_URL'].blank?
+    return false if @disabled
 
-      response = raw_request('get', '/')
-      response.status == 200
-    rescue ArgumentError, Errno::ECONNREFUSED => e
-      Rails.logger.info "tried connecting to elasticsearch, but failed: #{e.message}"
-      false
-    end
+    ENV['ELASTIC_URL'].present?
   end
+
+  def self.disable!
+    @disabled = true
+  end
+
+  def self.enable!
+    @disabled = false
+  end
+
+  # def self.enabled=(value)
+  #   @enabled = value
+  # end
+
+  # def self.enabled?
+  #   available? && (@enabled != false)
+  # end
 
   def self.current_index
     config['index']
-  end
-
-  def self.enabled=(value)
-    @enabled = value
-  end
-
-  def self.enabled?
-    available? && (@enabled != false)
   end
 
   def self.server_version
@@ -294,7 +296,7 @@ class Kor::Elastic
   end
 
   def search(criteria = {})
-    raise Kor::Exception unless self.class.enabled?
+    raise Kor::Exception unless self.class.available?
 
     criteria.reverse_merge!(
       analyzer: 'folding',
@@ -673,7 +675,7 @@ class Kor::Elastic
 
   def self.request(method, path, query = {}, body = nil, headers = {})
     raise Kor::Exception, "elasticsearch is not available" if !available?
-    raise Kor::Exception, "elasticsearch functionality has been disabled" if !enabled?
+    # raise Kor::Exception, "elasticsearch functionality has been disabled" if !enabled?
 
     query ||= {}
     path = "/#{current_index}#{path}"

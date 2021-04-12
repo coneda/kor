@@ -51,6 +51,7 @@
       Zepto.ajax(
         url: '/entities'
         data: {
+          engine: 'active_record',
           include: 'kind,gallery_data',
           page: tag.opts.query.page,
           per_page: 16,

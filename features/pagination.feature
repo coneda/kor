@@ -1,7 +1,10 @@
 Feature: Pagination
+
+  @elastic
   Scenario: Paginate 11 search results and paginate back
     Given I am logged in as "admin"
     And there are "11" entities named "work %02d" of kind "work/works"
+    And everything is indexed
     When I go to the search page
     And I select "work" from "Entity type"
     And I press "Search"
