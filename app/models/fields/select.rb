@@ -3,12 +3,16 @@ class Fields::Select < Field
     result = super
     return result if result != true
 
+    # if this is not a valid case, the mandatory check in super should have
+    # caught it
+    return true if value.blank?
+
     if subtype == 'multiselect'
       value.each do |v|
-        return :invalid unless values.include?(v)
+        return :invalid unless value_list.include?(v)
       end
     else
-      return :invalid unless values.include?(value)
+      return :invalid unless value_list.include?(value)
     end
 
     true
@@ -32,7 +36,11 @@ class Fields::Select < Field
   end
 
   def values
-    (settings[:values] || []).join("\n")
+    value_list.join("\n")
+  end
+
+  def value_list
+    settings[:values] || []
   end
 
   def self.fields
