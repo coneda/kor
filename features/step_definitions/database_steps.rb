@@ -326,6 +326,13 @@ Given(/^entity "([^"]*)" has dating "([^"]*)"$/) do |name, dating|
   Entity.find_by(name: name).datings.create label: label, dating_string: value
 end
 
+Then('entity {string} should have dating {string}') do |name, dating|
+  existing = Entity.find_by(name: name).datings.map do |d|
+    "#{d.label}: #{d.dating_string}"
+  end
+  expect(existing).to include(dating)
+end
+
 Given("mona lisa has many relationships") do
   10.times do
     Relationship.relate_and_save last_supper, 'is related to', mona_lisa

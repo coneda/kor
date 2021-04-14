@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["authority_group_category_id"], name: "index_authority_groups_on_authority_group_category_id", using: :btree
   end
 
-  create_table "authority_groups_entities", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+  create_table "authority_groups_entities", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "entity_id"
     t.integer "authority_group_id"
     t.index ["authority_group_id"], name: "index_authority_groups_entities_on_authority_group_id", using: :btree
@@ -61,7 +61,7 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["name"], name: "index_credentials_on_name", using: :btree
   end
 
-  create_table "credentials_users", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+  create_table "credentials_users", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "user_id"
     t.integer "credential_id"
     t.index ["credential_id"], name: "index_credentials_users_on_credential_id", using: :btree
@@ -136,20 +136,20 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["uuid"], name: "index_entities_on_uuid", using: :btree
   end
 
-  create_table "entities_system_groups", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+  create_table "entities_system_groups", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "entity_id"
     t.integer "system_group_id"
     t.index ["entity_id"], name: "index_entities_system_groups_on_entity_id", using: :btree
     t.index ["system_group_id"], name: "index_entities_system_groups_on_system_group_id", using: :btree
   end
 
-  create_table "entities_tags", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+  create_table "entities_tags", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "entity_id"
     t.integer "tag_id"
     t.index ["entity_id", "tag_id"], name: "index_entities_tags_on_entity_id_and_tag_id", unique: true, using: :btree
   end
 
-  create_table "entities_user_groups", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+  create_table "entities_user_groups", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "entity_id"
     t.integer "user_group_id"
     t.index ["entity_id"], name: "index_entities_user_groups_on_entity_id", using: :btree
@@ -202,7 +202,7 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["value"], name: "index_identifiers_on_value", using: :btree
   end
 
-  create_table "kind_inheritances", primary_key: "false", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+  create_table "kind_inheritances", primary_key: "false", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "parent_id"
     t.integer  "child_id"
     t.datetime "created_at"
@@ -252,7 +252,7 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["user_id"], name: "index_publishments_on_user_id", using: :btree
   end
 
-  create_table "relation_inheritances", primary_key: "false", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+  create_table "relation_inheritances", primary_key: "false", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "parent_id"
     t.integer  "child_id"
     t.datetime "created_at"

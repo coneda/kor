@@ -176,7 +176,11 @@
       Zepto.ajax({
         type: 'GET',
         url: '/entities',
-        data: {id: tag.opts.ids.join(','), include: 'all'},
+        data: {
+          engine: 'active_record',
+          id: tag.opts.ids.join(','),
+          include: 'all'
+        },
         success: function(data) {
           // check not retrieved (but requested) entities
           if (data.total < tag.opts.ids.length) {

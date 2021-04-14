@@ -53,7 +53,7 @@ class EntitiesController < JsonController
       authority_group_id: params[:authority_group_id],
 
       terms: params[:terms],
-      dataset: dataset_params,
+      dataset: dataset_search_params,
       property: params[:property],
       related: params[:related],
 
@@ -354,7 +354,7 @@ class EntitiesController < JsonController
       result
     end
 
-    def dataset_params
+    def dataset_search_params
       results = {}
       params.each do |k, v|
         if m = k.match(/^dataset_(.+)$/)
