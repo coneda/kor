@@ -258,6 +258,7 @@ kor-login-info {
 }
 
 kor-pagination, [data-is=kor-pagination] {
+  white-space: nowrap;
   display: block;
   text-align: right;
 
@@ -281,6 +282,13 @@ kor-pagination, [data-is=kor-pagination] {
     top: -4px;
     margin-left: 3px;
     margin-right: 3px;
+  }
+
+  // for narrow containers
+  &.slim {
+    input {
+      width: 3rem !important;
+    }
   }
 }
 

@@ -9,6 +9,7 @@
       per-page={data.per_page}
       total={data.total}
       on-paginate={pageUpdate}
+      class="slim"
     />
 
     <div class="clearfix"></div>
