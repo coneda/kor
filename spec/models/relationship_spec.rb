@@ -79,4 +79,14 @@ RSpec.describe Relationship do
     expect(relationship.valid?).to be(true)
     expect(relationship.save).to be(true)
   end
+
+  it 'validate without side effects' do
+    relationship = Relationship.relate(leonardo.id, 'has created', mona_lisa.id)
+    relationship.valid?
+    expect(relationship.valid?).to be_truthy
+
+    relationship = Relationship.relate(mona_lisa.id, 'has been created by', leonardo.id)
+    relationship.valid?
+    expect(relationship.valid?).to be_truthy
+  end
 end
