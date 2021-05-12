@@ -171,6 +171,18 @@ Feature: Entities
     And I press "Save"
     Then I should see a link "» Wikipedia" leading to "https://en.wikipedia.org/wiki/Mona_Lisa"
 
+  Scenario: handle validation for further properties
+    Given I am logged in as "admin"
+    And I go to the entity page for "Mona Lisa"
+    And I follow "edit"
+    And I fill in "Further properties" with "width=126cm"
+    And I press "Save"
+    Then I should see "input contains errors"
+    And I should see "format invalid, please refer to this field's help above"
+    And I fill in "Further properties" with "width: 126cm"
+    And I press "Save"
+    Then I should see "has been changed"
+
   Scenario: Don't show original file type without "original" permissions
     Given I am logged in as "jdoe"
     When I go to the entity page for the first medium

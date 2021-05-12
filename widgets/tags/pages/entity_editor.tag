@@ -125,6 +125,7 @@
         <kor-entity-properties-editor
           label={tcap('activerecord.attributes.entity.properties')}
           name="properties"
+          errors={errors.properties}
           ref="fields"
           value={data.properties}
         />

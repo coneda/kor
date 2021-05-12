@@ -4,6 +4,7 @@
     type="textarea"
     value={valueFromParent()}
     help={tcap('help.property_input')}
+    errors={opts.errors}
   />
 
   <script type="text/coffee">

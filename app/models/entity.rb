@@ -140,8 +140,8 @@ class Entity < ApplicationRecord
 
   def validate_properties
     properties.each do |property|
-      errors.add :properties, :needs_label if property['label'].blank?
-      errors.add :properties, :needs_value if property['value'].blank?
+      errors.add :properties, :invalid_properties_format if property['label'].blank?
+      errors.add :properties, :invalid_properties_format if property['value'].blank?
     end
   end
 

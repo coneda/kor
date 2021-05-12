@@ -1084,6 +1084,8 @@ en:
         template_and_parent: "Only 'template' or parent is possible"
         needs_value: "need a value"
         needs_label: "need a label"
+        invalid_properties_format: |
+          format invalid, please refer to this field's help above
         file_exists: "a file with identical content already exists"
         file_must_be_set: "please select a file"
         needed_for_disambiguation: "is needed for determination (conflict with collection '%{collection}')"

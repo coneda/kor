@@ -1117,6 +1117,8 @@ de:
         template_and_parent: "Es ist entweder nur 'Template' oder die Vaterrolle möglich"
         needs_value: "benötigen einen Wert"
         needs_label: "benötigen einen Bezeichner"
+        invalid_properties_format: |
+          Format ungültig, siehe oben (Hilfe zu diesem Eingabefeld)
         file_exists: "eine inhaltlich gleiche Datei wurde bereits hochgeladen"
         file_must_be_set: "eine Datei muss ausgewählt werden"
         needed_for_disambiguation: "muss zur Unterscheidung angegeben werden (Konflikt mit Sammlung '%{collection}')"
