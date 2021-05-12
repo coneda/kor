@@ -50,3 +50,15 @@ class DelayedPaperclip::ProcessJob
     self.queue_adapter = old
   end
 end
+
+# suppress URI.escape "obsolete" warnings
+require 'paperclip/url_generator'
+class Paperclip::UrlGenerator
+  def escape_url(url)
+    if url.respond_to?(:escape)
+      url.escape
+    else
+      URI.parser.escape(url).gsub(escape_regex){|m| "%#{m.ord.to_s(16).upcase}" }
+    end
+  end
+end

@@ -119,12 +119,23 @@ en:
       <code>18. Jahrhundert</code> or
       <code>ca. 1800</code> or
       <code>nach 1792</code>
-    date_input: Use format YYYY-MM-DD
     file_size_query: |
       Prefix the amount with '+' to find all media with a file size
       larger than the given amount of bytes or with '-' to find smaller
       files. Add KB, MB, GB, or TB to change the unit. Some examples:
       <code>+50MB<br />-100KB<br />+1GB</code>
+    no_name_input: |
+      Every entity except media needs a unique name. For objects with the same
+      name in real life, add a short explanation to "Distinguished name" so that
+      both fields are together unique. If an object doesn't have a name, specify
+      the reason here, e.g. with "name is unavailable"
+    date_input: Use format YYYY-MM-DD
+    synonym_input: Provide one synonym per line, for example
+      <code>Leo<br />Leonardo<br />Leonardo da Vinci</code>
+    property_input: |
+      Enter one of more lines using the format "label: value", for example
+      <code>width: 100cm<br />height: 120cm</code>Url values are rendered as
+      links
 
   search_term:
     one: search term

@@ -46,7 +46,15 @@
     value={opts.label || tcap('verbs.reset')}
   />
   <virtual if={opts.type == 'radio'}>
-    <label>{opts.label}</label>
+    <label>
+      {opts.label}
+      <a
+        if={opts.help}
+        href="#"
+        title={tcap('nouns.help')}
+        onclick={toggleHelp}
+      ><i class="fa fa-question-circle"></i></a>
+    </label>
     <label class="radio" each={item in opts.options}>
       <input
         type="radio"

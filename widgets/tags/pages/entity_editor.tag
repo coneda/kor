@@ -39,6 +39,7 @@
             options={noNameStatements}
             onchange={update}
             errors={errors.no_name_statement}
+            help={tcap('help.no_name_input')}
           />
 
           <kor-input

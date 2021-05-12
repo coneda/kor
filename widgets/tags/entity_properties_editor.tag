@@ -3,6 +3,7 @@
     label={opts.label}
     type="textarea"
     value={valueFromParent()}
+    help={tcap('help.property_input')}
   />
 
   <script type="text/coffee">
