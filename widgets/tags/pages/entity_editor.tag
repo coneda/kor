@@ -242,7 +242,8 @@
 
     fetchCollections = ->
       Zepto.ajax(
-        url: "/collections"
+        url: "/collections",
+        data: {per_page: 'max'},
         success: (data) ->
           tag.collections = data.records
           tag.update()
