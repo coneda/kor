@@ -505,6 +505,10 @@ kor-medium-page, [data-is=kor-medium-page] {
   img {
     max-width: 100%;
   }
+
+  video {
+    max-width: 100%;
+  }
 }
 
 kor-kinds, [data-is=kor-kinds] {
@@ -768,10 +772,6 @@ kor-entity-page, [data-is=kor-entity-page] {
 
     img {
       width: 100%;
-    }
-
-    video {
-      max-width: 100%;
     }
 
     .commands {
