@@ -262,6 +262,11 @@ RSpec.describe MediaController, type: :request do
       get entity.medium.url(:thumbnail), headers: {'Range' => 'bytes=0-100'}
       expect(response.status).to eq(206)
       expect(response.body.bytesize).to eq(101)
+
+      # deal with chrome's bytes=0- requests
+      get entity.medium.url(:original), headers: {'Range' => 'bytes=0-'}
+      expect(response.status).to eq(206)
+      expect(response.body.bytesize).to eq(262145)
     end
   end
 end
