@@ -206,7 +206,7 @@ kor-entity {
 
     h3 {
       margin: 0px;
-      color: white;
+      color: var(--kor-shine);
     }
 
     img {
@@ -559,7 +559,7 @@ kor-generators {
 }
 
 .kor-glow {
-  text-shadow: 0px 0px 5px white;
+  text-shadow: 0px 0px 5px var(--kor-shine);
 }
 
 .kor-loading-screen {
@@ -571,7 +571,7 @@ kor-generators {
 kor-settings-editor, [data-is=kor-settings-editor] {
   h2 {
     margin-top: 4rem;
-    color: white;
+    color: var(--kor-shine);
   }
 }
 
@@ -964,7 +964,7 @@ kor-input {
 
     code {
       display: block;
-      color: white;
+      color: var(--kor-shine);
       margin-bottom: 1rem;
     }
   }
