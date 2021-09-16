@@ -115,3 +115,11 @@ Feature: relations
     And I press "Save"
     Then I should see "the input contains errors"
     And I should see "can't allow more endpoints than its ancestors"
+
+  Scenario: Search relations
+    Given I am logged in as "admin"
+    When I go to the relations page
+    And I fill in "Search term" with "located"
+    And I press the "enter" key
+    Then I should see "is located"
+    Then I should not see "has created"
