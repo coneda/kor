@@ -41,6 +41,9 @@ module HtmlSelectorsHelpers
     when /relation merger row for relation "([^"]+)"/
       [:css, 'kor-relation-merger li', {text: $1}]
 
+    when /gallery item "(\d+)"/
+      [:css, "kor-gallery-grid td:nth-child(#{$1})"]
+
     when /widget "([^"]+)"/
       name = $1
       [:css, "#{name}, [data-is=#{name}]"]

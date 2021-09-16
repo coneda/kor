@@ -410,3 +410,13 @@ Then('there should be no entity {string}') do |name|
   entity = Entity.find_by name: name
   expect(entity).to be_nil
 end
+
+Given('the secondary relationship refers back to the medium') do
+  Kor.settings.update(
+    'primary_relations' => ['shows'],
+    'secondary_relations' => ['is shown by']
+  )
+
+  # make sure mona lisa has two related media
+  Relationship.relate_and_save picture_b, 'shows', mona_lisa
+end

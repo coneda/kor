@@ -235,6 +235,16 @@ kor-gallery-grid, [data-is=kor-gallery-grid] {
   .name {
     font-weight: bold;
   }
+
+  .name, .desc {
+    a:after {
+      content: ', ';
+    }
+
+    a:last-child:after {
+      content: '';
+    }
+  }
 }
 
 kor-login, [data-is=kor-login] {

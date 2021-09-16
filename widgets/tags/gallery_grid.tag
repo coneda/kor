@@ -64,7 +64,7 @@
 
     tag.primaries = (entity) => {
       results = [...entity.primary_entities]
-      return wApp.utils.uniq(results).sort(compare)
+      return wApp.utils.uniqRecords(results).sort(compare)
     }
 
     tag.secondaries = (entity) => {
@@ -77,7 +77,7 @@
         }
       }
 
-      return wApp.utils.uniq(results).sort(compare)
+      return wApp.utils.uniqRecords(results).sort(compare)
     }
 
     var compare = (a, b) => {
