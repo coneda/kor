@@ -89,6 +89,7 @@ de:
   show_all_fields: alle Felder anzeigen
   show_only_mandatory_fields: nur Pflichtfelder anzeigen
   remove_all: alle entfernen
+  change_order: Reihenfolge ändern, verwenden Sie Drag & Drop
 
   help:
     terms_query: |

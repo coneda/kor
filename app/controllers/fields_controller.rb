@@ -50,9 +50,14 @@ class FieldsController < JsonController
       results = params.fetch(:field, {}).permit(
         :kind_id, :name, :search_label, :form_label, :show_label, :lock_version,
         :show_on_entity, :is_identifier, :regex, :type, :values,
-        :allow_other_values, :subtype, :mandatory, :help_text
+        :allow_other_values, :subtype, :mandatory, :help_text, :position
       )
-      results.merge type: sanitize_type(results[:type])
+
+      if results[:type].present?
+        results.merge! type: sanitize_type(results[:type])
+      end
+
+      results
     end
 
     def auth

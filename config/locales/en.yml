@@ -88,6 +88,7 @@ en:
   show_all_fields: show all fields
   show_only_mandatory_fields: show only mandatory fields
   remove_all: remove all
+  change_order: change order, use drag & drop
 
   help:
     terms_query: |

@@ -120,6 +120,14 @@ i:last-child {
   text-align: right;
 }
 
+.sortable-ghost {
+  background-color: $kor-button-highlight;
+}
+
+.sortable-fallback{
+  visibility: hidden;
+}
+
 [data-is=w-app] {
   padding: 2rem;
 
