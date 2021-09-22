@@ -835,6 +835,7 @@ de:
       Ihr Berechtigungen reichen nicht aus, um einige der ausgewählten Entitäten
       zu löschen
     mass_destroy_success: die Entitäten wurden gelöscht
+    collections_merged: die Sammlungen wurden verschmolzen
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

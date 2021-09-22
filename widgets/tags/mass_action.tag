@@ -43,11 +43,11 @@
       onclick={addToUserGroup}
     >{tcap('clipboard_actions.add_to_user_group')}</a>
 
-    <!-- a
+    <a
       class="action"
       href="#"
       onclick={moveToCollection}
-    >{tcap('clipboard_actions.move_to_collection')}</a -->
+    >{tcap('clipboard_actions.move_to_collection')}</a>
   </virtual>
 
 
@@ -110,7 +110,9 @@
     tag.moveToCollection = function(event) {
       event.preventDefault();
 
-      // TODO
+      wApp.bus.trigger('modal', 'kor-to-collection', {
+        entityIds: wApp.clipboard.subSelection()
+      })
     }
 
     var notify = function() {

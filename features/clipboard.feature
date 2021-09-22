@@ -93,6 +93,17 @@ Feature: Clipboard
     And I press "Save"
     Then I should see "have been added to the selected entity group"
 
+  Scenario: Move multiple entities into a collection
+    Given I am logged in as "admin"
+    And I put "Mona Lisa" into the clipboard
+    And I put "Leonardo" into the clipboard
+    And I go to the clipboard
+    When I follow "all"
+    And I follow "Move to collection"
+    And I select "private" from "Collection"
+    And I press "Save"
+    Then I should see "all entities have been moved to collection 'private'"
+
   # TODO: why is this commented out?
   # Scenario: Select entities by kind
   #   Given I am logged in as "admin"

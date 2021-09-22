@@ -803,6 +803,7 @@ en:
       you do not have enough permissions to delete some of the selected
       entities
     mass_destroy_success: the entities have been deleted
+    collections_merged: the collections have been merged
 
   labels:
     relate_to_via: relate all files with "%{to}" via
