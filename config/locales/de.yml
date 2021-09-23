@@ -141,6 +141,18 @@ de:
       Geben Sie eine oder mehrere Zeilen der Form "Bezeichnung: Wert" ein, zum
       Beispiel <code>Breite: 100cm<br />Höhe: 120cm</code> Werte in Url-Form
       werden als Links dargestellt
+    primary_relations: |
+      Wählen Sie verknüpfte Entitäten, die unter dem Medium auf der Seite 'neue
+      medien' dargestellt werden sollen. Zum Beispiel würde die Wahl einer
+      Relation 'zeigt' zwischen Medien und Werken den Werktitel unter dem Medium
+      anzeigen. Wählen Sie mehrere Einträge mit STRG-Click an oder ab.
+    secondary_relations: |
+      Wählen Sie verknüpfte Entitäten, die unter dem Medium auf der Seite 'neue
+      medien' dargestellt werden sollen. Gehen Sie hier von Ihrer Auswahl obiger
+      'primärer Relationen' aus. Zum Beispiel würde die Wahl einer
+      Relation 'wurde geschaffen von' zwischen Werk und Person den Werktitel
+      sowie zusötzlich den Künstlernamen unter dem Medium anzeigen.
+      Wählen Sie mehrere Einträge mit STRG-Click an oder ab.
 
   search_term: 
     one: Suchbegriff

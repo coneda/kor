@@ -129,6 +129,7 @@
           options={relations}
           riot-value={valueWithDefaults('primary_relations')}
           ref="fields"
+          help={tcap('help.primary_relations')}
         />
 
         <kor-input
@@ -139,6 +140,7 @@
           options={relations}
           riot-value={valueWithDefaults('secondary_relations')}
           ref="fields"
+          help={tcap('help.secondary_relations')}
         />
 
         <h2>{tcap('settings.behavior')}</h2>

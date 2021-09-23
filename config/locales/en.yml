@@ -137,6 +137,18 @@ en:
       Enter one of more lines using the format "label: value", for example
       <code>width: 100cm<br />height: 120cm</code>Url values are rendered as
       links
+    primary_relations: |
+      Select related entities you would like to show under the medium on the
+      'new media' page. E.g. choosing a relation 'shows' between media and
+      artworks would show the artwork's name. Select or deselect multiple
+      entries with CTRL-click.
+    secondary_relations: |
+      Select more related entities you would like to show under the medium on
+      the 'new media' page, here, beginning from the entities listed with the
+      above 'primary relations'. E.g. choosing a relation 'has been created by'
+      between artworks and people would show the artwork's name as well as the
+      artwork's creator's name. Select or deselect multiple entries with
+      CTRL-click.
 
   search_term:
     one: search term
