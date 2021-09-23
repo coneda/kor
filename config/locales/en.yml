@@ -277,6 +277,7 @@ en:
       primary_relations: 'primary relations'
       secondary_relations: 'secondary relations'
       repository_uuid: 'override the generated repository UUID'
+      new_media_label: label for the 'new media' page
       mirador_page_template: |
         override the default page template for the mirador integration (absolute
         path)
@@ -296,7 +297,8 @@ en:
 
 
   pages:
-    new_media: new entries
+    new_entries: new entries
+    new_media: new media
     simple_search: simple search
     expert_search: expert search
     random_entities: randomly selected entries

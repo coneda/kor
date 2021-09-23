@@ -291,6 +291,7 @@ de:
       primary_relations: primäre Relationen
       secondary_relations: sekundäre Relationen
       repository_uuid: die generierte UUID für diese Installation ändern
+      new_media_label: Anzeigename für die 'neue Medien' Seite
       mirador_page_template: |
         (Absoluter) Pfad zu alternativem Template für die Seite zur Anzeige des
         Mirador
@@ -309,7 +310,8 @@ de:
       help_clipboard: Hilfetext zur Zwischenablage
 
   pages:
-    new_media: neue Einträge
+    new_entries: neue Einträge
+    new_media: neue Medien
     simple_search: einfache Suche
     expert_search: Expertensuche
     random_entities: Zufällig ausgewählte Einträge

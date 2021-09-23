@@ -15,7 +15,7 @@
     </li>
 
     <li if={currentUser()}>
-      <a href="#/new-media">{tcap('pages.new_media')}</a>
+      <a href="#/new-media">{tcap(config().new_media_label)}</a>
     </li>
   </ul>
 
@@ -157,6 +157,7 @@
 
     tag.on 'mount', ->
       wApp.bus.on 'reload-kinds', fetchKinds
+      wApp.bus.on 'config-updated', tag.update
       fetchKinds()
 
     tag.on 'umount', ->

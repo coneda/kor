@@ -71,6 +71,15 @@
         />
 
         <kor-input
+          name="new_media_label"
+          type="select"
+          options={newMediaLabels()}
+          label={nameFor('new_media_label')}
+          riot-value={valueWithDefaults('new_media_label')}
+          ref="fields"
+        />
+
+        <kor-input
           name="env_auth_button_label"
           label={nameFor('env_auth_button_label')}
           riot-value={valueWithDefaults('env_auth_button_label')}
@@ -359,6 +368,12 @@
     tag.nameFor = (key) ->
       tag.tcap("settings.values.#{key}")
 
+    tag.newMediaLabels = () ->
+      return [
+        {value: 'pages.new_media', label: tag.tcap('pages.new_media')},
+        {value: 'pages.new_entries', label: tag.tcap('pages.new_entries')}
+      ]
+
     tag.submit = (event) ->
       event.preventDefault()
       p = update()
@@ -380,6 +395,7 @@
         )
         success: (data) ->
           wApp.bus.trigger('config-updated')
+          fetch()
       )
 
     values = ->

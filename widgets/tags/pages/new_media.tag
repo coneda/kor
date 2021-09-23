@@ -2,7 +2,7 @@
   <kor-help-button key="new_entries" />
 
   <div class="kor-content-box">
-    <h1>{tcap('pages.new_media')}</h1>
+    <h1>{tcap(config().new_media_label)}</h1>
 
     <kor-pagination
       if={data}
@@ -37,6 +37,7 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.page)
+    tag.mixin(wApp.mixins.config)
 
     tag.on 'mount', ->
       tag.title(tag.t('pages.new_media'))
