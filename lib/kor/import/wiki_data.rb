@@ -188,7 +188,11 @@ class Kor::Import::WikiData
   protected
 
     def request(method, url, params = {}, body = nil, headers = {}, redirect_count = 10)
-      @client ||= HTTPClient.new
+      @client ||= begin
+        client = HTTPClient.new
+        client.ssl_config.set_default_paths
+        client
+      end
 
       response = @client.request(method, url, params, headers, body)
 

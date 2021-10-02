@@ -291,10 +291,10 @@ en:
       repository_uuid: 'override the generated repository UUID'
       new_media_label: label for the 'new media' page
       mirador_page_template: |
-        override the default page template for the mirador integration (absolute
+        override the page template for the mirador integration (absolute
         path)
       mirador_manifest_template: |
-        override the default manifest template for the mirador integration
+        override the manifest template for the mirador integration
         (absolute path)
 
       help_general: general help text (menu)
