@@ -69,8 +69,10 @@ Feature: search
     Then I should see "Collections: private"
     When I press "Search"
     Then I should see "Collections: private"
+    And I should see "nothing found"
     And I go back
     Then I should see "Collections: all" within widget "kor-collection-selector"
+    And I should see "Mona Lisa"
 
   Scenario: searching for media
     Given I am logged in as "admin"
@@ -103,3 +105,5 @@ Feature: search
       | smaller_than | 307200 |
     And I press "Search"
     Then I should see "logged in as"
+
+  # Scenario: select field, changing collection/kind trigger new search on change

@@ -214,7 +214,7 @@
       var id = Zepto(event.target).val();
       if (id && id != '0') {
         fetchKind(id);
-        wApp.routing.query({kind_id: id});
+        //wApp.routing.query({kind_id: id});
       } else {
         tag.kind = null;
         tag.update();

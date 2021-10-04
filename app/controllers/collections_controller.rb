@@ -78,7 +78,7 @@ class CollectionsController < JsonController
 
     if allowed
       @entities.each do |entity|
-        entity.update_column :collection_id, @record.id
+        entity.update_attributes collection_id: @record.id
       end
       render_200 I18n.t('messages.entities_moved_to_collection', o: @record.name)
     else
