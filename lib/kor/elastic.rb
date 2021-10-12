@@ -698,7 +698,11 @@ class Kor::Elastic
 
   def self.require_ok(response)
     if response.status < 200 || response.status >= 300
-      raise StandardError.new("error", [response.status, response.headers, JSON.load(response.body)])
+      raise StandardError, [
+        "elastic request failed: #{response.status}: ",
+        'HEADERS: ', response.headers.inspect, ' ',
+        'BODY: ', response.body
+      ].join
     end
   end
 

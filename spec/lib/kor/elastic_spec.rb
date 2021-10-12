@@ -274,4 +274,12 @@ RSpec.describe Kor::Elastic, elastic: true do
     results = described_class.new(User.admin).search(name: 'mon*')
     expect(results.records.size).to eq(1)
   end
+
+  it 'should handle elastic request fails gracefully' do
+    response = described_class.raw_request 'GET', '/invalid'
+
+    expect{
+      described_class.require_ok(response)
+    }.to raise_error(StandardError, /elastic request failed/)
+  end
 end
