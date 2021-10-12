@@ -7,8 +7,9 @@ class Identifier < ApplicationRecord
   def self.resolve!(id, kind)
     if kind.present?
       case kind
-      when "id" then Entity.find_by!(id: id)
-      when "uuid" then Entity.find_by!(uuid: id)
+      when 'id' then Entity.find_by!(id: id)
+      when 'uuid' then Entity.find_by!(uuid: id)
+      when 'medium-id' then Entity.find_by!(medium_id: id)
       else
         find_by!(kind: kind, value: id).entity
       end
