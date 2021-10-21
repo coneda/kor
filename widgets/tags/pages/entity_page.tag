@@ -155,9 +155,23 @@
           </span>
         </div>
 
-        <div if={data.groups.length}>
+        <div if={data.groups.length} class="groups">
           <span class="field">{t('activerecord.models.authority_group.other')}:</span>
-          <span class="value">{authorityGroups()}</span>
+          <ul>
+            <li each={group in data.groups} class="value">
+              <virtual if={group.directory}>
+                <span each={dir in group.directory.ancestors}>
+                  <a href="#/groups/categories/{dir.id}">{dir.name}</a> /
+                </span>
+                
+                <a href="#/groups/categories/{group.directory.id}"><!--
+                  -->{group.directory.name}<!--
+                --></a> /
+              </virtual>
+
+              <a href="#/groups/admin/{group.id}">{group.name}</a>
+            </li>
+          </ul>
         </div>
 
         <div>
@@ -298,9 +312,6 @@
 
     tag.visibleFields = ->
       f for f in tag.data.fields when f.value && f.show_on_entity
-
-    tag.authorityGroups = ->
-      (g.name for g in tag.data.groups).join(', ')
 
     tag.showTagging = ->
       tag.data.kind.tagging && 

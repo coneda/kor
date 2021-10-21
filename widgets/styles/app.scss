@@ -772,7 +772,7 @@ kor-entity-page, [data-is=kor-entity-page] {
     font-weight: bold;
   }
 
-  span.value {
+  .value {
     font-weight: bold;
     color: var(--kor-shine);
   }
@@ -800,6 +800,13 @@ kor-entity-page, [data-is=kor-entity-page] {
   .kor-api-links {
     i {
       margin-right: 5px;
+    }
+  }
+
+  .groups {
+    ul {
+      padding-left: 20px;
+      margin: 0;
     }
   }
 }
