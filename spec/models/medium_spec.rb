@@ -81,8 +81,8 @@ RSpec.describe Medium do
   end
 
   it "should not generate the checksum error twice" do
-    FactoryGirl.create(:medium_image_c)
-    duplicate = FactoryGirl.build(:medium_image_c)
+    FactoryBot.create(:medium_image_c)
+    duplicate = FactoryBot.build(:medium_image_c)
 
     expect(duplicate.valid?).not_to be_truthy
     expect(duplicate.errors.full_messages).to eq(
@@ -91,7 +91,7 @@ RSpec.describe Medium do
   end
 
   it "should generate a datahash for attachments" do
-    FactoryGirl.create :medium_image_c
+    FactoryBot.create :medium_image_c
     medium = Medium.last
     expect(medium.datahash).to eq("faf7e17cdeb3d4ce08bcb60e4d6dea8f6aa9eb73")
   end
@@ -102,19 +102,19 @@ RSpec.describe Medium do
       expect(medium).to receive(:processors).and_call_original
       expect(medium.processors).to eq([])
 
-      medium = FactoryGirl.build(:picture_c).medium
+      medium = FactoryBot.build(:picture_c).medium
       expect(medium.processors).to eq([])
 
-      medium = FactoryGirl.build(:video_a).medium
+      medium = FactoryBot.build(:video_a).medium
       expect(medium.processors).to eq([:video])
 
-      medium = FactoryGirl.build(:video_b).medium
+      medium = FactoryBot.build(:video_b).medium
       expect(medium.processors).to eq([:video])
 
-      medium = FactoryGirl.build(:audio_a).medium
+      medium = FactoryBot.build(:audio_a).medium
       expect(medium.processors).to eq([:audio])
 
-      medium = FactoryGirl.build(:audio_b).medium
+      medium = FactoryBot.build(:audio_b).medium
       expect(medium.processors).to eq([:audio])
     end
 
@@ -123,23 +123,23 @@ RSpec.describe Medium do
 
       expect(Paperclip::Video).not_to receive(:make)
       expect(Paperclip::Audio).not_to receive(:make)
-      FactoryGirl.create :picture_c
+      FactoryBot.create :picture_c
     end
 
     it "should run the video processor for videos" do
       expect(Paperclip::Video).to receive(:make).at_least(:once).and_call_original
       expect(Paperclip::Audio).not_to receive(:make)
-      FactoryGirl.create :video_a
+      FactoryBot.create :video_a
     end
 
     it "should run the audio processor for audio" do
       expect(Paperclip::Video).not_to receive(:make)
       expect(Paperclip::Audio).to receive(:make).at_least(:once).and_call_original
-      FactoryGirl.create :audio_a
+      FactoryBot.create :audio_a
     end
 
     it "should convert a video to all 3 major html5 containers/codecs" do
-      medium = FactoryGirl.create :video_a
+      medium = FactoryBot.create :video_a
       document = medium.medium.document
       expect(File.size document.path(:mp4)).to be > 0
       expect(File.size document.path(:webm)).to be > 0
@@ -147,14 +147,14 @@ RSpec.describe Medium do
     end
 
     it "should convert a audio file to all 2 major html5 containers/formats" do
-      medium = FactoryGirl.create :audio_a
+      medium = FactoryBot.create :audio_a
       document = medium.medium.document
       expect(File.size document.path(:mp3)).to be > 0
       expect(File.size document.path(:ogg)).to be > 0
     end
 
     it "should destroy custom styles with the medium" do
-      medium = FactoryGirl.create :audio_a
+      medium = FactoryBot.create :audio_a
       document = medium.medium.document
       paths = [document.path(:mp3), document.path(:ogg)]
 

@@ -37,7 +37,7 @@ module SuiteHelper
     system "rm -rf #{ENV['DATA_DIR']}/media/"
     system "cp -a #{Rails.root}/tmp/test.media.clone #{ENV['DATA_DIR']}/media"
 
-    FactoryGirl.reload
+    FactoryBot.reload
     Kor::Auth.sources(refresh: true)
 
     use_elastic = (

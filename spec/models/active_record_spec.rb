@@ -17,7 +17,7 @@ RSpec.describe ActiveRecord do
   end
 
   it "does insert duplicate links for many-to-many associations" do
-    group = FactoryGirl.create :authority_group
+    group = FactoryBot.create :authority_group
 
     group.entities << Entity.first
     group.entities << Entity.first
@@ -26,7 +26,7 @@ RSpec.describe ActiveRecord do
   end
 
   it 'sets updated_at when creating and deleting' do
-    mona_lisa = FactoryGirl.create :mona_lisa
+    mona_lisa = FactoryBot.create :mona_lisa
     ua1 = mona_lisa.updated_at
     expect(ua1).to be_within(1.second).of(Time.now)
 

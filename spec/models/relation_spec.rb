@@ -124,7 +124,7 @@ RSpec.describe Relation do
       ['has created', 'is location of', 'is related to', 'shows']
     )
 
-    FactoryGirl.create :shows, from_kind_id: media.id, to_kind_id: people.id
+    FactoryBot.create :shows, from_kind_id: media.id, to_kind_id: people.id
     expect(Relation.available_relation_names(to_ids: [people.id, works.id])).to(
       eq([
            'has been created by', 'has created', 'is location of', 'is related to',
@@ -150,15 +150,15 @@ RSpec.describe Relation do
   end
 
   it 'should not permit to be more restrictive on endpoints than the parent' do
-    artists = FactoryGirl.create(:kind, name: 'artist', plural_name: 'artists', parents: [people])
-    artworks = FactoryGirl.create(:kind, name: 'artwork', plural_name: 'artworks')
-    paintings = FactoryGirl.create(:kind, name: 'painting', plural_name: 'paintings', parents: [artworks])
-    metaphors = FactoryGirl.create(:kind, name: 'metaphor', plural_name: 'metaphors')
-    has_created = FactoryGirl.create(:has_created,
+    artists = FactoryBot.create(:kind, name: 'artist', plural_name: 'artists', parents: [people])
+    artworks = FactoryBot.create(:kind, name: 'artwork', plural_name: 'artworks')
+    paintings = FactoryBot.create(:kind, name: 'painting', plural_name: 'paintings', parents: [artworks])
+    metaphors = FactoryBot.create(:kind, name: 'metaphor', plural_name: 'metaphors')
+    has_created = FactoryBot.create(:has_created,
       from_kind: people,
       to_kind: artworks
     )
-    has_painted = FactoryGirl.create(:relation,
+    has_painted = FactoryBot.create(:relation,
       name: 'has painted',
       reverse_name: 'has been painted by',
       from_kind: artists,
@@ -223,9 +223,9 @@ RSpec.describe Relation do
 
   it 'should allow merge checks' do
     relation = Relation.find_by(name: 'has created')
-    other = FactoryGirl.create :has_created, from_kind_id: people.id, to_kind_id: works.id
+    other = FactoryBot.create :has_created, from_kind_id: people.id, to_kind_id: works.id
     another = Relation.find_by(name: 'shows')
-    and_another = FactoryGirl.create(:relation,
+    and_another = FactoryBot.create(:relation,
       name: 'creator of',
       reverse_name: 'created by',
       from_kind_id: people.id,
@@ -245,7 +245,7 @@ RSpec.describe Relation do
 
   it 'should allow merges' do
     relation = Relation.find_by(name: 'has created')
-    other = FactoryGirl.create :has_created, from_kind_id: people.id, to_kind_id: works.id
+    other = FactoryBot.create :has_created, from_kind_id: people.id, to_kind_id: works.id
     relation.relationships.last.update_column(:relation_id, other.id)
     another = Relation.find_by(name: 'shows')
 
@@ -266,7 +266,7 @@ RSpec.describe Relation do
 
   it 'should merge relations with different names' do
     relation = Relation.find_by(name: 'has created')
-    other = FactoryGirl.create(:relation,
+    other = FactoryBot.create(:relation,
       name: 'creator of',
       reverse_name: 'created by',
       from_kind_id: people.id,

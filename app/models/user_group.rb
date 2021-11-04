@@ -1,6 +1,6 @@
 class UserGroup < EntityGroup
   has_and_belongs_to_many :entities
-  belongs_to :owner, class_name: 'User', foreign_key: :user_id
+  belongs_to :owner, class_name: 'User', foreign_key: :user_id, optional: true
 
   validates(:name,
     uniqueness: {:scope => :user_id},

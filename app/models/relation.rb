@@ -7,8 +7,8 @@ class Relation < ApplicationRecord
   has_many :relation_child_inheritances, class_name: 'RelationInheritance', foreign_key: :parent_id, dependent: :destroy
   has_many :parents, through: :relation_parent_inheritances
   has_many :children, through: :relation_child_inheritances
-  belongs_to :from_kind, class_name: "Kind"
-  belongs_to :to_kind, class_name: "Kind"
+  belongs_to :from_kind, class_name: "Kind", optional: true
+  belongs_to :to_kind, class_name: "Kind", optional: true
 
   validates :reverse_name,
     :presence => true,
@@ -103,14 +103,14 @@ class Relation < ApplicationRecord
   end
 
   def correct_directed
-    if name_changed?
+    if saved_change_to_name?
       DirectedRelationship.
         where(is_reverse: false).
         where(relation_id: id).
         update_all(relation_name: name)
     end
 
-    if reverse_name_changed?
+    if saved_change_to_reverse_name?
       DirectedRelationship.
         where(is_reverse: true).
         where(relation_id: id).

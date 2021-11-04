@@ -22,7 +22,7 @@ end
 
 Given /^the user "([^"]*)"$/ do |user|
   unless User.exists? :name => user
-    FactoryGirl.create :user, :name => user, :password => user, :email => "#{user}@example.com"
+    FactoryBot.create :user, :name => user, :password => user, :email => "#{user}@example.com"
   end
 end
 

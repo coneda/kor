@@ -12,7 +12,7 @@ RSpec.describe Kor::Auth do
   end
 
   it "should call external auth scripts" do
-    FactoryGirl.create :user, name: "example_auth", email: 'ea@example.com'
+    FactoryBot.create :user, name: "example_auth", email: 'ea@example.com'
 
     expect(described_class.login "hmustermann", "wrong").to be_falsey
     expect(described_class.login "hmustermann", "123456").to be_truthy
@@ -90,7 +90,7 @@ RSpec.describe Kor::Auth do
   end
 
   it 'should pass the permissions matrix' do
-    hmustermann = FactoryGirl.create :hmustermann, parent: jdoe
+    hmustermann = FactoryBot.create :hmustermann, parent: jdoe
 
     matrix = [
       # [user, policies, collections, options, outcome]

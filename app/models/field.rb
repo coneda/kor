@@ -4,7 +4,7 @@ class Field < ApplicationRecord
   acts_as_list scope: [:kind_id], top_of_list: 0
   default_scope{ order(:position) }
   
-  belongs_to :kind, touch: true
+  belongs_to :kind, touch: true, optional: true
 
   validates :name,
     :presence => true,
@@ -31,12 +31,18 @@ class Field < ApplicationRecord
   end
   after_update do |f|
     f.synchronize_identifiers :update
-    if name_changed?
-      GenericJob.perform_later 'constant', f.class.name, 'synchronize_storage', f.kind_id, f.name_was, f.name
+    if saved_change_to_name?
+      GenericJob.perform_later(
+        'constant', f.class.name,
+        'synchronize_storage', f.kind_id, f.name_before_last_save, f.name
+      )
     end
   end
   after_destroy do |f|
-    GenericJob.perform_later 'constant', f.class.name, 'synchronize_storage', f.kind_id, f.name_was, nil
+    GenericJob.perform_later(
+      'constant', f.class.name,
+      'synchronize_storage', f.kind_id, f.name_was, nil
+    )
     f.destroy_identifiers
   end
 
@@ -45,7 +51,7 @@ class Field < ApplicationRecord
   end
 
   def synchronize_identifiers(mode)
-    if is_identifier_changed? || id_changed?
+    if saved_change_to_is_identifier? || saved_change_to_id?
       others_changed = false
 
       self.class.where(name: self.name).each do |f|

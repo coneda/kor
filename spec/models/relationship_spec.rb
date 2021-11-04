@@ -35,9 +35,9 @@ RSpec.describe Relationship do
   end
 
   it "should accept nested attributes for entity datings" do
-    leonardo = FactoryGirl.create :leonardo
-    mona_lisa = FactoryGirl.create :mona_lisa
-    has_created = FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
+    leonardo = FactoryBot.create :leonardo
+    mona_lisa = FactoryBot.create :mona_lisa
+    has_created = FactoryBot.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
 
     relationship = Relationship.create(
       relation: has_created,
@@ -53,9 +53,9 @@ RSpec.describe Relationship do
   end
 
   it "should search by dating" do
-    leonardo = FactoryGirl.create :leonardo
-    mona_lisa = FactoryGirl.create :mona_lisa
-    has_created = FactoryGirl.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
+    leonardo = FactoryBot.create :leonardo
+    mona_lisa = FactoryBot.create :mona_lisa
+    has_created = FactoryBot.create :has_created, from_kind: leonardo.kind, to_kind: mona_lisa.kind
 
     Relationship.create(
       relation: has_created,

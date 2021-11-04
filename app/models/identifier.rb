@@ -1,7 +1,7 @@
 class Identifier < ApplicationRecord
-  belongs_to :entity
+  belongs_to :entity, optional: true
 
-  validates :kind, :value, :presence => true
+  validates :kind, :value, presence: true
   validates :kind, :uniqueness => {:scope => :entity_id}
 
   def self.resolve!(id, kind)

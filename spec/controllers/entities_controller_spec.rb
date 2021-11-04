@@ -663,7 +663,7 @@ RSpec.describe EntitiesController, type: :controller do
     end
 
     it "should merge two entities while not messing up the dataset" do
-      FactoryGirl.create :mona_lisa, name: 'Monalisa', dataset: {
+      FactoryBot.create :mona_lisa, name: 'Monalisa', dataset: {
         gnd: '123456',
         google_maps: 'Deutsche Straße 12, Frankfurt'
       }
@@ -724,7 +724,7 @@ RSpec.describe EntitiesController, type: :controller do
       works = Kind.find_by! name: 'work'
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       mona_lisa.update comment: 'comment 1'
-      other_mona_lisa = FactoryGirl.create :mona_lisa, {
+      other_mona_lisa = FactoryBot.create :mona_lisa, {
         name: 'Monalisa',
         comment: 'comment 2',
         dataset: {
@@ -750,7 +750,7 @@ RSpec.describe EntitiesController, type: :controller do
     it "should merge two entities with datings" do
       works = Kind.find_by! name: 'work'
       leonardo = Entity.find_by! name: 'Leonardo'
-      other_leonardo = FactoryGirl.create :leonardo, {
+      other_leonardo = FactoryBot.create :leonardo, {
         name: 'Leonardo da Vinci',
         datings: [EntityDating.new(label: 'Lifespan', dating_string: '1877')]
       }

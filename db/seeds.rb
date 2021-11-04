@@ -1,11 +1,11 @@
-admins = Credential.create!(:name => "admins")
+admins = Credential.create!(name: "admins")
 
 Kor::Tasks.reset_admin_account
 Kor::Tasks.reset_guest_account
 
-default = Collection.create! :name => "Default"
+default = Collection.create! name: "Default"
 
-Kor::Auth.grant default, :all, :to => admins
+Kor::Auth.grant default, :all, to: admins
 
 Kind.create(
   name: Medium.model_name.human,
@@ -16,40 +16,40 @@ Kind.create(
   }
 )
 
-SystemGroup.create(:name => 'invalid')
+SystemGroup.create(name: 'invalid')
 
-# TODO: still needed?
-if ENV['SAMPLE_DATA']
-  print "generating sample data ... "
-  if FactoryGirl.factories.count == 0
-    require "#{Rails.root}/spec/factories"
-  end
+# # TODO: still needed?
+# if ENV['SAMPLE_DATA']
+#   print "generating sample data ... "
+#   if FactoryBot.factories.count == 0
+#     require "#{Rails.root}/spec/factories"
+#   end
 
-  media = Kind.medium_kind
-  people = FactoryGirl.create :people
-  works = FactoryGirl.create :works
-  FactoryGirl.create(:shows,
-    from_kind_ids: [media.id],
-    to_kind_ids: [works.id]
-  )
-  FactoryGirl.create(:has_created,
-    from_kind_ids: [people.id],
-    to_kind_ids: [works.id]
-  )
-  FactoryGirl.create(:is_equivalent_to,
-    from_kind_ids: [works.id],
-    to_kind_ids: [works.id]
-  )
-  FactoryGirl.create(:is_sibling_of,
-    from_kind_ids: [people.id],
-    to_kind_ids: [people.id]
-  )
+#   media = Kind.medium_kind
+#   people = FactoryBot.create :people
+#   works = FactoryBot.create :works
+#   FactoryBot.create(:shows,
+#     from_kind_ids: [media.id],
+#     to_kind_ids: [works.id]
+#   )
+#   FactoryBot.create(:has_created,
+#     from_kind_ids: [people.id],
+#     to_kind_ids: [works.id]
+#   )
+#   FactoryBot.create(:is_equivalent_to,
+#     from_kind_ids: [works.id],
+#     to_kind_ids: [works.id]
+#   )
+#   FactoryBot.create(:is_sibling_of,
+#     from_kind_ids: [people.id],
+#     to_kind_ids: [people.id]
+#   )
 
-  leonardo = FactoryGirl.create :leonardo
-  mona_lisa = FactoryGirl.create :mona_lisa
-  FactoryGirl.create :der_schrei
-  FactoryGirl.create :landscape
+#   leonardo = FactoryBot.create :leonardo
+#   mona_lisa = FactoryBot.create :mona_lisa
+#   FactoryBot.create :der_schrei
+#   FactoryBot.create :landscape
 
-  Relationship.relate_and_save leonardo, 'has created', mona_lisa
-  puts "done"
-end
+#   Relationship.relate_and_save leonardo, 'has created', mona_lisa
+#   puts "done"
+# end

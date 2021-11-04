@@ -202,7 +202,7 @@ RSpec.describe UserGroupsController, type: :controller do
   #   leonardo = Entity.find_by(name: 'Leonardo da Vinci')
   #   mona_lisa = Entity.find_by(name: 'Mona Lisa')
 
-  #   group = FactoryGirl.create :user_group, owner: User.admin
+  #   group = FactoryBot.create :user_group, owner: User.admin
   #   group.add_entities [mona_lisa, leonardo]
 
   #   get :mark, id: group.id

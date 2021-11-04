@@ -16,10 +16,19 @@ class User < ApplicationRecord
     class_name: 'User',
     foreign_key: :parent_username,
     primary_key: :name,
-    autosave: false
+    autosave: false,
+    optional: true
   }
-  belongs_to :personal_group, :class_name => 'Credential', :foreign_key => :credential_id
-  belongs_to :personal_collection, :class_name => 'Collection', :foreign_key => :collection_id
+  belongs_to(:personal_group,
+    class_name: 'Credential',
+    foreign_key: :credential_id,
+    optional: true
+  )
+  belongs_to(:personal_collection,
+    class_name: 'Collection',
+    foreign_key: :collection_id,
+    optional: true
+  )
 
   validates :name,
     :presence => true,
@@ -44,13 +53,13 @@ class User < ApplicationRecord
 
   def validate_empty_personal_collection
     if !make_personal && personal_collection && !personal_collection.entities.empty?
-        errors.add :make_personal, :personal_collection_not_empty
+      errors.add :make_personal, :personal_collection_not_empty
     end
   end
 
   def validate_existing_parent_user
     if self.parent_username.present? && !User.exists?(:name => self.parent_username)
-        errors.add :parent_username, :user_doesnt_exist
+      errors.add :parent_username, :user_doesnt_exist
     end
   end
 

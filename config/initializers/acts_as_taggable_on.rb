@@ -14,3 +14,8 @@ begin
   end
 rescue ActiveRecord::NoDatabaseError => e
 end
+
+# see https://github.com/mbleigh/acts-as-taggable-on/issues/914
+chain = ActsAsTaggableOn::Tagging.send(:get_callbacks, :validate)
+callback = chain.find{|cb| cb.filter.attributes == [:taggable]}
+chain.delete(callback)

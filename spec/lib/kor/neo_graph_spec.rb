@@ -2,13 +2,13 @@ require "rails_helper"
 
 RSpec.describe Kor::NeoGraph, skip: 'not integrated within the dependencies yet' do
   it "should create nodes" do
-    admin = FactoryGirl.create :admin
+    admin = FactoryBot.create :admin
     graph = described_class.new(admin)
 
-    mona_lisa = FactoryGirl.create :mona_lisa
+    mona_lisa = FactoryBot.create :mona_lisa
     graph.store_entity mona_lisa
 
-    der_schrei = FactoryGirl.create :der_schrei
+    der_schrei = FactoryBot.create :der_schrei
     graph.store_entity der_schrei
 
     # node = graph.find(mona_lisa)
@@ -18,8 +18,8 @@ RSpec.describe Kor::NeoGraph, skip: 'not integrated within the dependencies yet'
   end
 
   it 'should rollback transactions' do
-    admin = FactoryGirl.create :admin
-    mona_lisa = FactoryGirl.create :mona_lisa
+    admin = FactoryBot.create :admin
+    mona_lisa = FactoryBot.create :mona_lisa
     graph = described_class.new(admin)
 
     expect{
