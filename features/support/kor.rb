@@ -28,10 +28,13 @@ end
 World(DataHelper)
 
 SuiteHelper.setup_vcr :cucumber
-SuiteHelper.setup
+SuiteHelper.setup :cucumber
 
 Capybara.server_port = 47001
 Capybara.default_max_wait_time = 5
+
+download_path = Rails.root.join('tmp', 'test_downloads').to_s
+system "mkdir -p '#{download_path}'"
 
 Capybara.register_driver :selenium_chrome_headless do |app|
   options = Selenium::WebDriver::Chrome::Options.new
@@ -43,14 +46,26 @@ Capybara.register_driver :selenium_chrome_headless do |app|
   ].each{|a| options.add_argument(a)}
 
   # set download path
-  path = Rails.root.join('tmp', 'test_downloads').to_s
-  system "mkdir -p '#{path}'"
-  options.add_preference 'download.default_directory', path
+  options.add_preference 'download.default_directory', download_path
 
   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 end
 
-Capybara.default_driver = :selenium
+Capybara.register_driver :firefox_custom do |app|
+  profile = Selenium::WebDriver::Firefox::Profile.new
+  profile['browser.download.dir'] = download_path
+  profile['browser.download.lastDir'] = download_path
+  profile['browser.download.folderList'] = 2
+  profile['browser.helperApps.neverAsk.saveToDisk'] = "application/pdf,application/zip"
+  profile['browser.download.manager.showWhenStarting'] = false
+  profile['pdfjs.disabled'] = true
+  options = Selenium::WebDriver::Firefox::Options.new(profile: profile)
+
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
+end
+
+Capybara.default_driver = :firefox_custom
+# Capybara.default_driver = :selenium
 
 if ENV['HEADLESS']
   Capybara.default_driver = :selenium_chrome_headless

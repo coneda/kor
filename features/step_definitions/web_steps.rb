@@ -6,6 +6,7 @@ When("I click icon {string}") do |string|
 end
 
 When /^(.*) within (.+)$/ do |step, parent|
+  binding.pry if all(*selector_for(parent)).size == 0
   within find(*selector_for(parent)) do
     step(step)
   end

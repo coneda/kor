@@ -5,7 +5,7 @@ module SuiteHelper
     require 'support/xml_helper'
   end
 
-  def self.setup
+  def self.setup(framework)
     DatabaseCleaner.clean_with :truncation
     DatabaseCleaner.strategy = :transaction
 
@@ -28,9 +28,9 @@ module SuiteHelper
   end
 
   def self.around_each(&block)
-    DatabaseCleaner.start
-    yield
-    DatabaseCleaner.clean
+    DatabaseCleaner.cleaning do
+      yield
+    end
   end
 
   def self.before_each(framework, scope, test)

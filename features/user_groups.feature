@@ -126,13 +126,8 @@ Feature: usergroups
     Given I am logged in as "jdoe"
     When I follow "Personal groups"
     And I follow "nice"
-    And I follow "download group as zip file"
-    # this is not reliable, perhaps remove
-    # Then I should see "Zip file will be created"
-    And I wait for "1" second
-    And there should be "1" outgoing email
-    When I click the download link in mail "1"
-    # no error => we are happy
+    Then I should see link "download group as zip file"
+    # downloads are not reliable with capybara, writing controller test
 
   Scenario: Remove entity
     And I am logged in as "jdoe"

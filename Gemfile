@@ -33,7 +33,7 @@ group :test do
   gem 'capybara'
   gem 'connection_pool'
   gem 'cucumber-rails', require: false
-  gem 'database_cleaner'
+  gem 'database_cleaner-active_record'
   gem 'factory_bot'
   gem 'selenium-webdriver'
   gem 'simplecov', require: false
