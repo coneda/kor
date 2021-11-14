@@ -6,7 +6,7 @@ RSpec.describe GeneratorsController, type: :controller do
   it 'should GET show' do
     generator = Generator.first
     get :show, params: {id: generator.id, kind_id: generator.kind_id}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['directive']).to be_a(String)
     expect(json['created_at']).to be_nil
   end
@@ -18,7 +18,7 @@ RSpec.describe GeneratorsController, type: :controller do
       kind_id: generator.kind_id,
       include: 'technical'
     }
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(Time.parse json['created_at']).to be < Time.now
   end
 

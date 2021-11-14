@@ -10,7 +10,7 @@ RSpec.describe AuthorityGroupCategoriesController, type: :controller do
 
   it 'should GET show' do
     get :show, params: {id: archive.id}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['name']).to eq('archive')
     expect(json['ancestors']).to be_nil
   end

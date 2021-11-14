@@ -64,7 +64,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'should GET me' do
       get :me
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['name']).to eq('jdoe')
     end
 
@@ -96,7 +96,7 @@ RSpec.describe UsersController, type: :controller do
 
     it 'should PATCH accept_terms' do
       patch :accept_terms
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -113,7 +113,7 @@ RSpec.describe UsersController, type: :controller do
     it 'should GET show' do
       user = User.find_by! name: 'jdoe'
       get :show, params: {id: user.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['name']).to eq('jdoe')
       expect(json['permissions']).to be_nil
     end
@@ -121,7 +121,7 @@ RSpec.describe UsersController, type: :controller do
     it 'should GET show with additions' do
       user = User.find_by! name: 'jdoe'
       get :show, params: {id: user.id, include: 'permissions'}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['name']).to eq('jdoe')
       expect(json['permissions']).to be_a(Hash)
     end
@@ -156,7 +156,7 @@ RSpec.describe UsersController, type: :controller do
       user = User.find_by! name: 'jdoe'
       pwd = user.password
       patch :reset_password, params: {id: user.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(user.reload.password).not_to eq(pwd)
       expect(ActionMailer::Base.deliveries.size).to eq(1)
     end
@@ -166,7 +166,7 @@ RSpec.describe UsersController, type: :controller do
       user.add_login_attempt
       user.save
       patch :reset_login_attempts, params: {id: user.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(user.reload.login_attempts).to be_empty
     end
   end

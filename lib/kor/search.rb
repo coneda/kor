@@ -48,7 +48,7 @@ class Kor::Search
 
     @scope = case @criteria[:sort][:column]
     when 'default' then @scope.order('name')
-    when 'random' then @scope.order('rand()')
+    when 'random' then @scope.order(Arel.sql('rand()'))
     else
       @scope.order(
         @criteria[:sort][:column] => @criteria[:sort][:direction]

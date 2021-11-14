@@ -135,7 +135,7 @@ RSpec.describe MediaController, type: :request do
       expect(response).to be_forbidden
 
       get entity.medium.url :original
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.body).to eq(File.read entity.medium.path)
     end
 
@@ -155,7 +155,7 @@ RSpec.describe MediaController, type: :request do
       expect(response).to be_forbidden
 
       get entity.medium.url :original, 'download'
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.headers['content-disposition']).to match(/^attachment/)
       expect(response.body).to eq(File.read entity.medium.path)
     end
@@ -180,23 +180,23 @@ RSpec.describe MediaController, type: :request do
       entity = Collection.find_by!(name: 'private').entities.media.first
 
       get entity.medium.url :icon
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.body).to eq(File.read entity.medium.path(:icon))
 
       get entity.medium.url :thumbnail
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.body).to eq(File.read entity.medium.path(:thumbnail))
 
       get entity.medium.url :screen
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.body).to eq(File.read entity.medium.path(:screen))
 
       get entity.medium.url :normal
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.body).to eq(File.read entity.medium.path(:normal))
 
       get entity.medium.url :original
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.body).to eq(File.read entity.medium.path)
     end
 
@@ -204,27 +204,27 @@ RSpec.describe MediaController, type: :request do
       entity = Collection.find_by!(name: 'private').entities.media.first
 
       get entity.medium.url :icon, 'download'
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.headers['content-disposition']).to match(/^attachment/)
       expect(response.body).to eq(File.read entity.medium.path(:icon))
 
       get entity.medium.url :thumbnail, 'download'
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.headers['content-disposition']).to match(/^attachment/)
       expect(response.body).to eq(File.read entity.medium.path(:thumbnail))
 
       get entity.medium.url :screen, 'download'
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.headers['content-disposition']).to match(/^attachment/)
       expect(response.body).to eq(File.read entity.medium.path(:screen))
 
       get entity.medium.url :normal, 'download'
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.headers['content-disposition']).to match(/^attachment/)
       expect(response.body).to eq(File.read entity.medium.path(:normal))
 
       get entity.medium.url :original, 'download'
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.headers['content-disposition']).to match(/^attachment/)
       expect(response.body).to eq(File.read entity.medium.path(:original))
     end
@@ -233,11 +233,11 @@ RSpec.describe MediaController, type: :request do
       entity = Collection.find_by!(name: 'private').entities.media.first
 
       patch "/media/transform/#{entity.medium_id}/image/rotate_cw"
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['message']).to eq('medium has been transformed')
 
       patch "/media/transform/#{entity.medium_id}/image/flip"
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['message']).to eq('medium has been transformed')
     end
 

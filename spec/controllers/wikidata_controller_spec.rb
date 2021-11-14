@@ -10,7 +10,7 @@ RSpec.describe WikidataController, type: :request do
         kind: 'person',
         api_key: User.admin.api_key
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['entity']['name']).to eq('Leonardo da Vinci')
     }.not_to(change{ Entity.count })
   end
@@ -24,7 +24,7 @@ RSpec.describe WikidataController, type: :request do
         kind: 'person',
         api_key: User.admin.api_key
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(Entity.last.name).to eq('Leonardo da Vinci')
     }.to(change{ Entity.count }.by(1))
   end

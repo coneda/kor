@@ -6,7 +6,7 @@ RSpec.describe SessionController, type: :controller do
   it "should logout in any case and display a message" do
     current_user User.admin
     post :destroy
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['message']).to match(/logged out/)
   end
 
@@ -34,7 +34,7 @@ RSpec.describe SessionController, type: :controller do
   it "should reset the users login attempts when he authenticated successfully" do
     User.admin.update login_attempts: [Time.now, Time.now]
     post :create, params: {username: 'admin', password: 'admin'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(User.admin.login_attempts).to be_empty
   end
 
@@ -50,7 +50,7 @@ RSpec.describe SessionController, type: :controller do
     expect(User.admin.password.size).to eq(40)
 
     post :create, params: {username: 'admin', password: 'admin'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(User.admin.password.size).to eq(64)
   end
 
@@ -141,7 +141,7 @@ RSpec.describe SessionController, type: :controller do
     it 'should POST recovery (correct email)' do
       old = jdoe.password
       post :recovery, params: {email: jdoe.email}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(jdoe.reload.password).not_to eq(old)
     end
   end

@@ -20,7 +20,7 @@ RSpec.describe DownloadsController, type: :controller do
     )
 
     get 'show', params: {uuid: download.uuid}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(response.body).to match(/ConedaKOR is a web based application/)
   end
 
@@ -39,7 +39,7 @@ RSpec.describe DownloadsController, type: :controller do
       download = zip_file.build
 
       get 'show', params: {uuid: download.uuid}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.body.size).to be_within(1000).of(264872)
     end
   end

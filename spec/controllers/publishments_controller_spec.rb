@@ -23,7 +23,7 @@ RSpec.describe PublishmentsController, type: 'controller' do
 
   it 'should GET show (correct hash)' do
     get 'show', params: {user_id: jdoe.id, uuid: @publishment.uuid}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['name']).to eq('for meeting')
   end
 
@@ -68,7 +68,7 @@ RSpec.describe PublishmentsController, type: 'controller' do
 
     it 'should GET index' do
       get 'index'
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['total']).to eq(1)
       expect(json['records'][0]['name']).to eq('for meeting')
     end
@@ -82,7 +82,7 @@ RSpec.describe PublishmentsController, type: 'controller' do
           valid_until: 4.weeks.from_now
         }
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       # not easy to verify the timestamp for now
     end
 

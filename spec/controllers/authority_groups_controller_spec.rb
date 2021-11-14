@@ -10,7 +10,7 @@ RSpec.describe AuthorityGroupsController, type: :controller do
 
   it 'should GET show' do
     get :show, params: {id: AuthorityGroup.find_by!(name: 'seminar').id}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['name']).to eq('seminar')
     expect(json['created_at']).to be_nil
   end
@@ -23,7 +23,7 @@ RSpec.describe AuthorityGroupsController, type: :controller do
 
   it 'should GET download_images' do
     get :download_images, params: {id: lecture.id}
-    expect(response).to be_success
+    expect(response).to be_successful
     # guest is not allowed to see the particular entity
     expect(json['message']).to match(/no entities to download/)
   end
@@ -104,13 +104,13 @@ RSpec.describe AuthorityGroupsController, type: :controller do
 
     it 'should not POST add_to' do
       post 'add_to', params: {id: seminar.id, entity_ids: [mona_lisa.id]}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(seminar.entities).to include(mona_lisa)
     end
 
     it 'should not POST remove_from' do
       post 'remove_from', params: {id: lecture.id, entity_ids: [picture_a.id]}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(lecture.entities).not_to include(picture_a)
     end
   end

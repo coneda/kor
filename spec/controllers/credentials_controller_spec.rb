@@ -42,7 +42,7 @@ RSpec.describe CredentialsController, type: :controller do
 
     it 'should GET show' do
       get :show, params: {id: Credential.find_by!(name: 'students').id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['name']).to eq('students')
       expect(json['counts']).to be_nil
     end

@@ -37,7 +37,7 @@ RSpec.describe DirectedRelationshipsController, type: :controller do
 
     it 'should GET show' do
       get :show, params: {id: DirectedRelationship.first.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['relation_name']).to be_a(String)
       expect(json['relationship']).to be_nil
     end
@@ -46,7 +46,7 @@ RSpec.describe DirectedRelationshipsController, type: :controller do
       get :show, params: {
         id: DirectedRelationship.first.id, include: 'relationship'
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['relation_name']).to be_a(String)
       expect(json['relationship']).to be_a(Hash)
     end

@@ -92,7 +92,7 @@ RSpec.describe UserGroupsController, type: :controller do
     it 'should GET show (own group)' do
       group = UserGroup.find_by! name: 'nice'
       get :show, params: {id: group.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['name']).to eq('nice')
       expect(json['owner']).to be_nil
     end
@@ -100,7 +100,7 @@ RSpec.describe UserGroupsController, type: :controller do
     it 'should GET show with additions' do
       group = UserGroup.find_by! name: 'nice'
       get :show, params: {id: group.id, include: 'owner'}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['owner']).to be_a(Hash)
     end
 
@@ -141,7 +141,7 @@ RSpec.describe UserGroupsController, type: :controller do
     it 'should not DELETE destroy (own group)' do
       group = UserGroup.find_by! name: 'nice'
       delete :destroy, params: {id: group.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(UserGroup.find_by id: group.id).to be_nil
     end
 
@@ -175,25 +175,25 @@ RSpec.describe UserGroupsController, type: :controller do
     it 'should PATCH share (own group)' do
       group = UserGroup.find_by! name: 'nice'
       patch :share, params: {id: group.id}
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'should PATCH unshare (own group)' do
       group = UserGroup.find_by! name: 'nice'
       group.update shared: true
       patch :unshare, params: {id: group.id}
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'should POST add_to (own group)' do
       post :add_to, params: {id: nice.id, entity_ids: [mona_lisa.id]}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(nice.entities).to include(mona_lisa)
     end
 
     it 'should POST remove_from (own group)' do
       post :remove_from, params: {id: nice.id, entity_ids: [picture_a.id]}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(nice.entities).not_to include(picture_a)
     end
   end

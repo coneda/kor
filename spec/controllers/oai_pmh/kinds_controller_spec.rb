@@ -5,11 +5,11 @@ RSpec.describe OaiPmh::KindsController, type: :request do
 
   it "should respond to 'Identify'" do
     get '/oai-pmh/kinds.xml', params: {verb: 'Identify'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
 
     post '/oai-pmh/kinds.xml', params: {verb: 'Identify'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
 
     doc = parse_xml(response.body)
@@ -18,7 +18,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
 
   it "should respond to 'ListMetadataFormats'" do
     get '/oai-pmh/kinds.xml', params: {verb: 'ListMetadataFormats'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
@@ -48,7 +48,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
       identifier: people.uuid,
       metadataPrefix: 'kor'
     }
-    expect(response).to be_success
+    expect(response).to be_successful
 
     items = parse_xml(response.body).xpath("//kor:kind")
 
