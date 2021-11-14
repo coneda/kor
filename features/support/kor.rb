@@ -8,22 +8,22 @@ class ActiveRecord::Base
   @@shared_connection = nil
 
   def self.connection
-    @@shared_connection || ConnectionPool::Wrapper.new(size: 1, timeout: 15){ retrieve_connection }
+    @@shared_connection || ConnectionPool::Wrapper.new(size: 1, timeout: 25){ retrieve_connection }
   end
 end
 ActiveRecord::Base.shared_connection = ActiveRecord::Base.connection
 
-require 'active_record/connection_adapters/abstract_mysql_adapter'
-class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
-  SEMAPHORE = Mutex.new
-  def execute(sql, name = nil)
-    begin
-      raise 'Debugging'
-    rescue => e
-      SEMAPHORE.synchronize{ log(sql, name){ @connection.query(sql) } }
-    end
-  end
-end
+# require 'active_record/connection_adapters/abstract_mysql_adapter'
+# class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
+#   SEMAPHORE = Mutex.new
+#   def execute(sql, name = nil)
+#     begin
+#       raise 'Debugging'
+#     rescue => e
+#       SEMAPHORE.synchronize{ log(sql, name){ @connection.query(sql) } }
+#     end
+#   end
+# end
 
 World(DataHelper)
 
@@ -48,7 +48,7 @@ Capybara.register_driver :selenium_chrome_headless do |app|
   # set download path
   options.add_preference 'download.default_directory', download_path
 
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+  Capybara::Selenium::Driver.new(app, browser: :chrome, capabilities: [options])
 end
 
 Capybara.register_driver :firefox_custom do |app|
@@ -61,7 +61,7 @@ Capybara.register_driver :firefox_custom do |app|
   profile['pdfjs.disabled'] = true
   options = Selenium::WebDriver::Firefox::Options.new(profile: profile)
 
-  Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
+  Capybara::Selenium::Driver.new(app, browser: :firefox, capabilities: [options])
 end
 
 Capybara.default_driver = :firefox_custom

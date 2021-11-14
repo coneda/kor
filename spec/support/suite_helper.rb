@@ -9,6 +9,8 @@ module SuiteHelper
     DatabaseCleaner.clean_with :truncation
     DatabaseCleaner.strategy = :transaction
 
+    DatabaseCleaner.start
+
     system "cat /dev/null >| #{Rails.root}/log/test.log"
 
     XmlHelper.compile_validator
@@ -28,6 +30,9 @@ module SuiteHelper
   end
 
   def self.around_each(&block)
+    # binding.pry
+    ActiveRecord::Base.shared_connection
+    
     DatabaseCleaner.cleaning do
       yield
     end
