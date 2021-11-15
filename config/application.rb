@@ -33,7 +33,7 @@ require 'core_ext/array'
 require 'kor'
 require 'securerandom'
 
-Dir["lib/paperclip_processors/*.rb"].each{ |f| require File.expand_path(f) }
+# Dir["lib/paperclip_processors/*.rb"].each{ |f| require File.expand_path(f) }
 
 module Kor
   class Application < Rails::Application

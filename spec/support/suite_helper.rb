@@ -31,7 +31,7 @@ module SuiteHelper
 
   def self.around_each(&block)
     # binding.pry
-    ActiveRecord::Base.shared_connection
+    # ActiveRecord::Base.shared_connection
     
     DatabaseCleaner.cleaning do
       yield

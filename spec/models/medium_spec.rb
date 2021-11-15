@@ -11,7 +11,7 @@ RSpec.describe Medium do
   end
 
   it "should return correct paths and urls" do
-    medium = Medium.create :document => File.open("#{Rails.root}/spec/fixtures/text_file.txt")
+    medium = Medium.create document: File.open("#{Rails.root}/spec/fixtures/text_file.txt")
     medium.reload
 
     expect(medium.path(:original)).to eql("#{ENV['DATA_DIR']}/media/original/#{medium.ids}/document.txt")

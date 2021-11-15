@@ -1,28 +1,102 @@
 class Medium < ApplicationRecord
   has_one :entity
 
-  has_attached_file :document,
-    path: "#{ENV['DATA_DIR']}/media/:style/:id_partition/document.:style_extension",
-    url: "/media/images/:style/:id_partition/document.:style_extension",
-    default_url: "/media/images/:style/:id_partition/image.:style_extension?:style_timestamp",
-    styles: lambda{ |attachment| attachment.instance.custom_styles },
-    processors: lambda{ |instance| instance.processors }
+  after_save do
+    image.save
+    document.save
+  end
 
-  has_attached_file :image,
-    :path => "#{ENV['DATA_DIR']}/media/:style/:id_partition/image.:style_extension",
-    :url => "/media/images/:style/:id_partition/image.:style_extension",
-    :default_url => lambda{ |attachment| attachment.instance.dummy_url },
-    :convert_options => {:all => "+profile '*'"},
-    :styles => {
-      :icon => ['80x80>', :jpg],
-      :thumbnail => ['140x140>', :jpg],
-      :preview => ['300x300>', :jpg],
-      :screen => ['800x800>', :jpg],
-      :normal => ['1440x1440>', :jpg]
-    }
+  def image
+    @image ||= Kor::Storage.new(self, 'image',
+      file_name: image_file_name,
+      content_type: image_content_type
+    )
+  end
 
-  process_in_background :document
-  process_in_background :image
+  def document
+    @document ||= Kor::Storage.new(self, 'document',
+      file_name: document_file_name,
+      content_type: document_content_type
+    )
+  end
+
+  def assign_file(attachment, new_file)
+    file = new_file
+    options = {}
+
+    unless file
+      attachment.assign_file(nil)
+      return []
+    end
+
+    if new_file.is_a?(ActionDispatch::Http::UploadedFile)
+      file = new_file.tmpfile
+      options[:content_type] = file.type
+      options[:file_name] = file.file_name
+    end
+
+    options[:content_type] = Kor::Storage.guess_content_type(file.path)
+    options[:file_name] = file.path.split('/').last
+
+    attachment.assign_file(file, options)
+
+    return [
+      options[:content_type],
+      options[:file_name],
+      file.size,
+      Time.now.utc
+    ]
+  end
+
+  def image=(new_file)
+    content_type, file_name, size, time = assign_file(image, new_file)
+
+    self.image_content_type = content_type
+    self.image_file_name = file_name
+    self.image_file_size = size
+    self.image_updated_at = time
+  end
+
+  def document=(new_file)
+    content_type, file_name, size, time = assign_file(document, new_file)
+
+    self.document_content_type = content_type
+    self.document_file_name = file_name
+    self.document_file_size = size
+    self.document_updated_at = time
+  end
+
+  # has_attached_file :document,
+  #   path: "#{ENV['DATA_DIR']}/media/:style/:id_partition/document.:style_extension",
+  #   url: "/media/images/:style/:id_partition/document.:style_extension",
+  #   default_url: "/media/images/:style/:id_partition/image.:style_extension?:style_timestamp",
+  #   styles: lambda{ |attachment| attachment.instance.custom_styles },
+  #   processors: lambda{ |instance| instance.processors }
+
+  # has_attached_file :image,
+  #   :path => "#{ENV['DATA_DIR']}/media/:style/:id_partition/image.:style_extension",
+  #   :url => "/media/images/:style/:id_partition/image.:style_extension",
+  #   :default_url => lambda{ |attachment| attachment.instance.dummy_url },
+  #   :convert_options => {:all => "+profile '*'"},
+  #   :styles => {
+  #     :icon => ['80x80>', :jpg],
+  #     :thumbnail => ['140x140>', :jpg],
+  #     :preview => ['300x300>', :jpg],
+  #     :screen => ['800x800>', :jpg],
+  #     :normal => ['1440x1440>', :jpg]
+  #   }
+
+  # process_in_background :document
+  # process_in_background :image
+
+  # def document=(value)
+  #   document.assign(value)
+
+  #   if value
+  #     ct = MIME::Types.type_for(document.original_filename).first
+  #     self.document_content_type = ct.to_s if ct
+  #   end
+  # end
 
   # TODO: do we still need this?
   def custom_styles
@@ -73,10 +147,25 @@ class Medium < ApplicationRecord
     self.content_type.match(/^(image|video|application\/x-shockwave-flash|application\/mp4)/)
   end
 
+  def document_to_image
+    @image = @document
+    @image.attachment = 'image'
+
+    self.image_file_name = document_file_name
+    self.image_content_type = document_content_type
+    self.image_file_size = document_file_size
+    self.image_updated_at = document_updated_at
+
+    @document = nil
+    self.document_file_name = nil
+    self.document_content_type = nil
+    self.document_file_size = nil
+    self.document_updated_at = nil
+  end
+
   before_validation do |m|
     if m.document.file? && m.document.content_type.match(/^image\//) && !m.image.file?
-      m.image = m.document
-      m.document.clear
+      m.document_to_image
     end
 
     if file = (m.to_file || m.to_file(:image))
@@ -85,21 +174,48 @@ class Medium < ApplicationRecord
   end
 
   after_destroy do |medium|
+    raise "fix this!"
+
     medium.custom_styles.each do |name, _config|
       file = medium.custom_style_path(name)
       FileUtils.rm(file) if File.exist?(file)
     end
   end
 
-  validates_attachment :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{ |medium| medium.image.file? }}
-  validates_attachment :document, presence: {unless: Proc.new{ |medium| medium.image.file? }, message: :file_must_be_set}
+  # validates :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{ |medium| medium.image.file? }}
+  # validates :document, attachment_presence: {unless: Proc.new{ |medium| medium.image.file? }, message: :file_must_be_set}
   validates :datahash, uniqueness: {:message => :file_exists}
 
+  validate :validate_content_type
+  validate :validate_document_presence
   validate :validate_no_two_images
   validate :validate_file_size
 
+  def validate_content_type
+    if image.file?
+      unless image.content_type.match?(/^image\/.+$/)
+        binding.pry
+        errors[:image] << :invalid_content_type
+      end
+    end
+  end
+
+  def validate_document_presence
+    if !image.file? && !document.file?
+      errors[:document] << :file_must_be_set
+    end
+  end
+
   def validate_no_two_images
-    if document.content_type && image.content_type && (document.content_type.match(/^image\//) && image.content_type.match(/^image\//))
+    invalid = document.content_type &&
+      image.content_type && 
+      (
+        document.content_type.match(/^image\//) && 
+        image.content_type.match(/^image\//)
+      )
+      
+    if invalid
+      binding.pry
       errors.add :base, :no_two_images
     end
   end
@@ -109,19 +225,23 @@ class Medium < ApplicationRecord
     max_bytes = max_mb * 1024**2
 
     if image_file_size.present? and image_file_size > max_bytes
+      binding.pry
       errors.add :image_file_size, :file_size_less_than, :value => max_mb
     end
 
     if document_file_size.present? and document_file_size > max_bytes
+      binding.pry
       errors.add :document_file_size, :file_size_less_than, :value => max_mb
     end
   end
 
   def to_file(attachment = :document, style = :original)
     path = if attachment == :document
-      document.staged_path || document.path
+      # document.staged_path || document.path
+      document.variant_file(style.to_s)
     else
-      image.staged_path || image.path(style)
+      # image.staged_path || image.path(style)
+      image.variant_file(style.to_s)
     end
 
     if path && File.exist?(path)
@@ -243,15 +363,14 @@ class Medium < ApplicationRecord
 
   def path(style = :original)
     if style == :original
-      document.path(:original) || image.path(:original)
+      # document.path(:original) || image.path(:original)
+      document.variant_path('original') || image.variant_path('original')
     elsif image_style?(style)
-      if image.path(style) && File.exist?(image.path(style))
-        image.path(style)
-      else
-        dummy_path
-      end
+      path = image_path(style.to_s)
+
+      File.exists?(path) ? path : dummy_path
     else
-      custom_style_path(style)
+      document.variant_path(style.to_s)
     end
   end
 
@@ -301,15 +420,6 @@ class Medium < ApplicationRecord
   def human_content_type
     group, type = content_type.split('/')
     I18n.t(type, :scope => ['mimes', group], :default => content_type)
-  end
-
-  def document=(value)
-    document.assign(value)
-
-    if value
-      ct = MIME::Types.type_for(document.original_filename).first
-      self.document_content_type = ct.to_s if ct
-    end
   end
 
   def self.read_range(file, range = nil)

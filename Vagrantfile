@@ -52,7 +52,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "mysql_dev"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_nvm", env: {'NODE_VERSION' => '12.22.0'}
-    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv", env: {'RUBY_VERSION' => '2.7.2'}
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv", env: {'RUBY_VERSION' => '2.6.7'}
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "configure_dev", privileged: false
   end
 
