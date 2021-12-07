@@ -27,7 +27,7 @@ module SuiteHelper
     system "mv #{ENV['DATA_DIR']}/media #{Rails.root}/tmp/test.media.clone"
   end
 
-  def self.around_each(&block)
+  def self.around_each
     DatabaseCleaner.start
     yield
     DatabaseCleaner.clean
@@ -41,8 +41,8 @@ module SuiteHelper
     Kor::Auth.sources(refresh: true)
 
     use_elastic = (
-      framework == :rspec && test.metadata[:elastic] ||
-      framework == :cucumber && test.tags.any?{ |st| st.name == '@elastic' }
+      ((framework == :rspec) && test.metadata[:elastic]) ||
+      ((framework == :cucumber) && test.tags.any?{ |st| st.name == '@elastic' })
     )
 
     if use_elastic

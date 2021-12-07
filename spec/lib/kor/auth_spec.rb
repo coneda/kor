@@ -4,7 +4,7 @@ RSpec.describe Kor::Auth do
   it "should create users when they don't exist" do
     expect(User).to receive(:generate_password).exactly(:once)
     user = described_class.authorize(
-      "hmustermann", 
+      "hmustermann",
       additional_attributes: {"email" => "hmustermann@coneda.net"}
     )
 

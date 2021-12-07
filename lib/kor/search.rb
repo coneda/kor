@@ -141,10 +141,11 @@ class Kor::Search
 
       unless Kor::Elastic.available?
         elastic_keys.each do |k|
-          if @criteria[k].present?
-            raise Kor::Exception, "#{k} is only supported with elasticsearch " +
-              'but elasticsearch is unavailable'
-          end
+          next if @criteria[k].blank?
+
+          msg = "#{k} is only supported with elasticsearch"
+          msg << 'but elasticsearch is unavailable'
+          raise Kor::Exception, msg
         end
 
         raise Kor::Exception, "elasticsearch requested but unavailable"

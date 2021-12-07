@@ -1,16 +1,26 @@
 # Changelog
 
-This log has first been created for version `1.9.1`. Also, only feature changes
+This log has first been created for version `1.9.1`. Only feature changes
 and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history and the closed issues on GitHub.
 
 ## Version 4.1.0
 
-This is a feature release created for a specific issue (#83). All other features
-have been moved to 4.2.0
+This is a minor feature release. For details on the many bugfixes and new
+features, please have a look at the
+[milestone summary](https://github.com/coneda/kor/issues?q=is%3Aissue+milestone%3Av4.1.0+is%3Aclosed+).
+Here are a few highlights:
 
-* added custom ordering of dataset fields and generators
+* entities can now be resolved by medium id (#350)
+* the page "new-media" can now be renamed (#348)
+* the collection selector is now hidden from the search form for users without
+  editing permissions (#303)
+* the emitted IIIF manifests are now fully configurable, e.g. to generate
+  collection-style manifests combining multiple entites (#302)
+* custom fields can now have a customized help text (#297)
+* custom fields can now be flagged "mandatory" (#296)
+* the order of custom fields can now be configured (#83)
 
 ## Version 4.0.1
 

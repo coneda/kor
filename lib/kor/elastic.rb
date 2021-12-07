@@ -87,7 +87,7 @@ class Kor::Elastic
               #   }
               # }
             },
-            "max_result_window": [Entity.count * 2, 10000].max
+            'max_result_window': [Entity.count * 2, 10000].max
           }
         },
         'mappings' => {
@@ -675,8 +675,7 @@ class Kor::Elastic
   end
 
   def self.request(method, path, query = {}, body = nil, headers = {})
-    raise Kor::Exception, "elasticsearch is not available" if !available?
-    # raise Kor::Exception, "elasticsearch functionality has been disabled" if !enabled?
+    raise Kor::Exception, 'elasticsearch is not available' if !available?
 
     query ||= {}
     path = "/#{current_index}#{path}"

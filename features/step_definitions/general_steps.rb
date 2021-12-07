@@ -4,14 +4,12 @@ def capybara_wait
   exception = nil
   Timeout.timeout(Capybara.default_max_wait_time) do
     loop do
-      begin
-        yield
-        exception = nil
-        break
-      rescue RSpec::Expectations::ExpectationNotMetError => e
-        exception = e
-        sleep 0.2
-      end
+      yield
+      exception = nil
+      break
+    rescue RSpec::Expectations::ExpectationNotMetError => e
+      exception = e
+      sleep 0.2
     end
   end
 rescue Timeout::Error

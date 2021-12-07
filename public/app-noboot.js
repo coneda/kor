@@ -10287,6 +10287,2668 @@ var route = function() {
     $.tinyAutocomplete = TinyAutocomplete;
 })(window, $);
 
+(function(global, factory) {
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = global || self, 
+    global.Sortable = factory());
+})(this, function() {
+    "use strict";
+    function ownKeys(object, enumerableOnly) {
+        var keys = Object.keys(object);
+        if (Object.getOwnPropertySymbols) {
+            var symbols = Object.getOwnPropertySymbols(object);
+            if (enumerableOnly) {
+                symbols = symbols.filter(function(sym) {
+                    return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+                });
+            }
+            keys.push.apply(keys, symbols);
+        }
+        return keys;
+    }
+    function _objectSpread2(target) {
+        for (var i = 1; i < arguments.length; i++) {
+            var source = arguments[i] != null ? arguments[i] : {};
+            if (i % 2) {
+                ownKeys(Object(source), true).forEach(function(key) {
+                    _defineProperty(target, key, source[key]);
+                });
+            } else if (Object.getOwnPropertyDescriptors) {
+                Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+            } else {
+                ownKeys(Object(source)).forEach(function(key) {
+                    Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+                });
+            }
+        }
+        return target;
+    }
+    function _typeof(obj) {
+        "@babel/helpers - typeof";
+        if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+            _typeof = function(obj) {
+                return typeof obj;
+            };
+        } else {
+            _typeof = function(obj) {
+                return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+            };
+        }
+        return _typeof(obj);
+    }
+    function _defineProperty(obj, key, value) {
+        if (key in obj) {
+            Object.defineProperty(obj, key, {
+                value: value,
+                enumerable: true,
+                configurable: true,
+                writable: true
+            });
+        } else {
+            obj[key] = value;
+        }
+        return obj;
+    }
+    function _extends() {
+        _extends = Object.assign || function(target) {
+            for (var i = 1; i < arguments.length; i++) {
+                var source = arguments[i];
+                for (var key in source) {
+                    if (Object.prototype.hasOwnProperty.call(source, key)) {
+                        target[key] = source[key];
+                    }
+                }
+            }
+            return target;
+        };
+        return _extends.apply(this, arguments);
+    }
+    function _objectWithoutPropertiesLoose(source, excluded) {
+        if (source == null) return {};
+        var target = {};
+        var sourceKeys = Object.keys(source);
+        var key, i;
+        for (i = 0; i < sourceKeys.length; i++) {
+            key = sourceKeys[i];
+            if (excluded.indexOf(key) >= 0) continue;
+            target[key] = source[key];
+        }
+        return target;
+    }
+    function _objectWithoutProperties(source, excluded) {
+        if (source == null) return {};
+        var target = _objectWithoutPropertiesLoose(source, excluded);
+        var key, i;
+        if (Object.getOwnPropertySymbols) {
+            var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+            for (i = 0; i < sourceSymbolKeys.length; i++) {
+                key = sourceSymbolKeys[i];
+                if (excluded.indexOf(key) >= 0) continue;
+                if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+                target[key] = source[key];
+            }
+        }
+        return target;
+    }
+    function _toConsumableArray(arr) {
+        return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+    }
+    function _arrayWithoutHoles(arr) {
+        if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+    }
+    function _iterableToArray(iter) {
+        if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+    }
+    function _unsupportedIterableToArray(o, minLen) {
+        if (!o) return;
+        if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+        var n = Object.prototype.toString.call(o).slice(8, -1);
+        if (n === "Object" && o.constructor) n = o.constructor.name;
+        if (n === "Map" || n === "Set") return Array.from(o);
+        if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+    }
+    function _arrayLikeToArray(arr, len) {
+        if (len == null || len > arr.length) len = arr.length;
+        for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+        return arr2;
+    }
+    function _nonIterableSpread() {
+        throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+    var version = "1.14.0";
+    function userAgent(pattern) {
+        if (typeof window !== "undefined" && window.navigator) {
+            return !!navigator.userAgent.match(pattern);
+        }
+    }
+    var IE11OrLess = userAgent(/(?:Trident.*rv[ :]?11\.|msie|iemobile|Windows Phone)/i);
+    var Edge = userAgent(/Edge/i);
+    var FireFox = userAgent(/firefox/i);
+    var Safari = userAgent(/safari/i) && !userAgent(/chrome/i) && !userAgent(/android/i);
+    var IOS = userAgent(/iP(ad|od|hone)/i);
+    var ChromeForAndroid = userAgent(/chrome/i) && userAgent(/android/i);
+    var captureMode = {
+        capture: false,
+        passive: false
+    };
+    function on(el, event, fn) {
+        el.addEventListener(event, fn, !IE11OrLess && captureMode);
+    }
+    function off(el, event, fn) {
+        el.removeEventListener(event, fn, !IE11OrLess && captureMode);
+    }
+    function matches(el, selector) {
+        if (!selector) return;
+        selector[0] === ">" && (selector = selector.substring(1));
+        if (el) {
+            try {
+                if (el.matches) {
+                    return el.matches(selector);
+                } else if (el.msMatchesSelector) {
+                    return el.msMatchesSelector(selector);
+                } else if (el.webkitMatchesSelector) {
+                    return el.webkitMatchesSelector(selector);
+                }
+            } catch (_) {
+                return false;
+            }
+        }
+        return false;
+    }
+    function getParentOrHost(el) {
+        return el.host && el !== document && el.host.nodeType ? el.host : el.parentNode;
+    }
+    function closest(el, selector, ctx, includeCTX) {
+        if (el) {
+            ctx = ctx || document;
+            do {
+                if (selector != null && (selector[0] === ">" ? el.parentNode === ctx && matches(el, selector) : matches(el, selector)) || includeCTX && el === ctx) {
+                    return el;
+                }
+                if (el === ctx) break;
+            } while (el = getParentOrHost(el));
+        }
+        return null;
+    }
+    var R_SPACE = /\s+/g;
+    function toggleClass(el, name, state) {
+        if (el && name) {
+            if (el.classList) {
+                el.classList[state ? "add" : "remove"](name);
+            } else {
+                var className = (" " + el.className + " ").replace(R_SPACE, " ").replace(" " + name + " ", " ");
+                el.className = (className + (state ? " " + name : "")).replace(R_SPACE, " ");
+            }
+        }
+    }
+    function css(el, prop, val) {
+        var style = el && el.style;
+        if (style) {
+            if (val === void 0) {
+                if (document.defaultView && document.defaultView.getComputedStyle) {
+                    val = document.defaultView.getComputedStyle(el, "");
+                } else if (el.currentStyle) {
+                    val = el.currentStyle;
+                }
+                return prop === void 0 ? val : val[prop];
+            } else {
+                if (!(prop in style) && prop.indexOf("webkit") === -1) {
+                    prop = "-webkit-" + prop;
+                }
+                style[prop] = val + (typeof val === "string" ? "" : "px");
+            }
+        }
+    }
+    function matrix(el, selfOnly) {
+        var appliedTransforms = "";
+        if (typeof el === "string") {
+            appliedTransforms = el;
+        } else {
+            do {
+                var transform = css(el, "transform");
+                if (transform && transform !== "none") {
+                    appliedTransforms = transform + " " + appliedTransforms;
+                }
+            } while (!selfOnly && (el = el.parentNode));
+        }
+        var matrixFn = window.DOMMatrix || window.WebKitCSSMatrix || window.CSSMatrix || window.MSCSSMatrix;
+        return matrixFn && new matrixFn(appliedTransforms);
+    }
+    function find(ctx, tagName, iterator) {
+        if (ctx) {
+            var list = ctx.getElementsByTagName(tagName), i = 0, n = list.length;
+            if (iterator) {
+                for (;i < n; i++) {
+                    iterator(list[i], i);
+                }
+            }
+            return list;
+        }
+        return [];
+    }
+    function getWindowScrollingElement() {
+        var scrollingElement = document.scrollingElement;
+        if (scrollingElement) {
+            return scrollingElement;
+        } else {
+            return document.documentElement;
+        }
+    }
+    function getRect(el, relativeToContainingBlock, relativeToNonStaticParent, undoScale, container) {
+        if (!el.getBoundingClientRect && el !== window) return;
+        var elRect, top, left, bottom, right, height, width;
+        if (el !== window && el.parentNode && el !== getWindowScrollingElement()) {
+            elRect = el.getBoundingClientRect();
+            top = elRect.top;
+            left = elRect.left;
+            bottom = elRect.bottom;
+            right = elRect.right;
+            height = elRect.height;
+            width = elRect.width;
+        } else {
+            top = 0;
+            left = 0;
+            bottom = window.innerHeight;
+            right = window.innerWidth;
+            height = window.innerHeight;
+            width = window.innerWidth;
+        }
+        if ((relativeToContainingBlock || relativeToNonStaticParent) && el !== window) {
+            container = container || el.parentNode;
+            if (!IE11OrLess) {
+                do {
+                    if (container && container.getBoundingClientRect && (css(container, "transform") !== "none" || relativeToNonStaticParent && css(container, "position") !== "static")) {
+                        var containerRect = container.getBoundingClientRect();
+                        top -= containerRect.top + parseInt(css(container, "border-top-width"));
+                        left -= containerRect.left + parseInt(css(container, "border-left-width"));
+                        bottom = top + elRect.height;
+                        right = left + elRect.width;
+                        break;
+                    }
+                } while (container = container.parentNode);
+            }
+        }
+        if (undoScale && el !== window) {
+            var elMatrix = matrix(container || el), scaleX = elMatrix && elMatrix.a, scaleY = elMatrix && elMatrix.d;
+            if (elMatrix) {
+                top /= scaleY;
+                left /= scaleX;
+                width /= scaleX;
+                height /= scaleY;
+                bottom = top + height;
+                right = left + width;
+            }
+        }
+        return {
+            top: top,
+            left: left,
+            bottom: bottom,
+            right: right,
+            width: width,
+            height: height
+        };
+    }
+    function isScrolledPast(el, elSide, parentSide) {
+        var parent = getParentAutoScrollElement(el, true), elSideVal = getRect(el)[elSide];
+        while (parent) {
+            var parentSideVal = getRect(parent)[parentSide], visible = void 0;
+            if (parentSide === "top" || parentSide === "left") {
+                visible = elSideVal >= parentSideVal;
+            } else {
+                visible = elSideVal <= parentSideVal;
+            }
+            if (!visible) return parent;
+            if (parent === getWindowScrollingElement()) break;
+            parent = getParentAutoScrollElement(parent, false);
+        }
+        return false;
+    }
+    function getChild(el, childNum, options, includeDragEl) {
+        var currentChild = 0, i = 0, children = el.children;
+        while (i < children.length) {
+            if (children[i].style.display !== "none" && children[i] !== Sortable.ghost && (includeDragEl || children[i] !== Sortable.dragged) && closest(children[i], options.draggable, el, false)) {
+                if (currentChild === childNum) {
+                    return children[i];
+                }
+                currentChild++;
+            }
+            i++;
+        }
+        return null;
+    }
+    function lastChild(el, selector) {
+        var last = el.lastElementChild;
+        while (last && (last === Sortable.ghost || css(last, "display") === "none" || selector && !matches(last, selector))) {
+            last = last.previousElementSibling;
+        }
+        return last || null;
+    }
+    function index(el, selector) {
+        var index = 0;
+        if (!el || !el.parentNode) {
+            return -1;
+        }
+        while (el = el.previousElementSibling) {
+            if (el.nodeName.toUpperCase() !== "TEMPLATE" && el !== Sortable.clone && (!selector || matches(el, selector))) {
+                index++;
+            }
+        }
+        return index;
+    }
+    function getRelativeScrollOffset(el) {
+        var offsetLeft = 0, offsetTop = 0, winScroller = getWindowScrollingElement();
+        if (el) {
+            do {
+                var elMatrix = matrix(el), scaleX = elMatrix.a, scaleY = elMatrix.d;
+                offsetLeft += el.scrollLeft * scaleX;
+                offsetTop += el.scrollTop * scaleY;
+            } while (el !== winScroller && (el = el.parentNode));
+        }
+        return [ offsetLeft, offsetTop ];
+    }
+    function indexOfObject(arr, obj) {
+        for (var i in arr) {
+            if (!arr.hasOwnProperty(i)) continue;
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key) && obj[key] === arr[i][key]) return Number(i);
+            }
+        }
+        return -1;
+    }
+    function getParentAutoScrollElement(el, includeSelf) {
+        if (!el || !el.getBoundingClientRect) return getWindowScrollingElement();
+        var elem = el;
+        var gotSelf = false;
+        do {
+            if (elem.clientWidth < elem.scrollWidth || elem.clientHeight < elem.scrollHeight) {
+                var elemCSS = css(elem);
+                if (elem.clientWidth < elem.scrollWidth && (elemCSS.overflowX == "auto" || elemCSS.overflowX == "scroll") || elem.clientHeight < elem.scrollHeight && (elemCSS.overflowY == "auto" || elemCSS.overflowY == "scroll")) {
+                    if (!elem.getBoundingClientRect || elem === document.body) return getWindowScrollingElement();
+                    if (gotSelf || includeSelf) return elem;
+                    gotSelf = true;
+                }
+            }
+        } while (elem = elem.parentNode);
+        return getWindowScrollingElement();
+    }
+    function extend(dst, src) {
+        if (dst && src) {
+            for (var key in src) {
+                if (src.hasOwnProperty(key)) {
+                    dst[key] = src[key];
+                }
+            }
+        }
+        return dst;
+    }
+    function isRectEqual(rect1, rect2) {
+        return Math.round(rect1.top) === Math.round(rect2.top) && Math.round(rect1.left) === Math.round(rect2.left) && Math.round(rect1.height) === Math.round(rect2.height) && Math.round(rect1.width) === Math.round(rect2.width);
+    }
+    var _throttleTimeout;
+    function throttle(callback, ms) {
+        return function() {
+            if (!_throttleTimeout) {
+                var args = arguments, _this = this;
+                if (args.length === 1) {
+                    callback.call(_this, args[0]);
+                } else {
+                    callback.apply(_this, args);
+                }
+                _throttleTimeout = setTimeout(function() {
+                    _throttleTimeout = void 0;
+                }, ms);
+            }
+        };
+    }
+    function cancelThrottle() {
+        clearTimeout(_throttleTimeout);
+        _throttleTimeout = void 0;
+    }
+    function scrollBy(el, x, y) {
+        el.scrollLeft += x;
+        el.scrollTop += y;
+    }
+    function clone(el) {
+        var Polymer = window.Polymer;
+        var $ = window.jQuery || window.Zepto;
+        if (Polymer && Polymer.dom) {
+            return Polymer.dom(el).cloneNode(true);
+        } else if ($) {
+            return $(el).clone(true)[0];
+        } else {
+            return el.cloneNode(true);
+        }
+    }
+    function setRect(el, rect) {
+        css(el, "position", "absolute");
+        css(el, "top", rect.top);
+        css(el, "left", rect.left);
+        css(el, "width", rect.width);
+        css(el, "height", rect.height);
+    }
+    function unsetRect(el) {
+        css(el, "position", "");
+        css(el, "top", "");
+        css(el, "left", "");
+        css(el, "width", "");
+        css(el, "height", "");
+    }
+    var expando = "Sortable" + new Date().getTime();
+    function AnimationStateManager() {
+        var animationStates = [], animationCallbackId;
+        return {
+            captureAnimationState: function captureAnimationState() {
+                animationStates = [];
+                if (!this.options.animation) return;
+                var children = [].slice.call(this.el.children);
+                children.forEach(function(child) {
+                    if (css(child, "display") === "none" || child === Sortable.ghost) return;
+                    animationStates.push({
+                        target: child,
+                        rect: getRect(child)
+                    });
+                    var fromRect = _objectSpread2({}, animationStates[animationStates.length - 1].rect);
+                    if (child.thisAnimationDuration) {
+                        var childMatrix = matrix(child, true);
+                        if (childMatrix) {
+                            fromRect.top -= childMatrix.f;
+                            fromRect.left -= childMatrix.e;
+                        }
+                    }
+                    child.fromRect = fromRect;
+                });
+            },
+            addAnimationState: function addAnimationState(state) {
+                animationStates.push(state);
+            },
+            removeAnimationState: function removeAnimationState(target) {
+                animationStates.splice(indexOfObject(animationStates, {
+                    target: target
+                }), 1);
+            },
+            animateAll: function animateAll(callback) {
+                var _this = this;
+                if (!this.options.animation) {
+                    clearTimeout(animationCallbackId);
+                    if (typeof callback === "function") callback();
+                    return;
+                }
+                var animating = false, animationTime = 0;
+                animationStates.forEach(function(state) {
+                    var time = 0, target = state.target, fromRect = target.fromRect, toRect = getRect(target), prevFromRect = target.prevFromRect, prevToRect = target.prevToRect, animatingRect = state.rect, targetMatrix = matrix(target, true);
+                    if (targetMatrix) {
+                        toRect.top -= targetMatrix.f;
+                        toRect.left -= targetMatrix.e;
+                    }
+                    target.toRect = toRect;
+                    if (target.thisAnimationDuration) {
+                        if (isRectEqual(prevFromRect, toRect) && !isRectEqual(fromRect, toRect) && (animatingRect.top - toRect.top) / (animatingRect.left - toRect.left) === (fromRect.top - toRect.top) / (fromRect.left - toRect.left)) {
+                            time = calculateRealTime(animatingRect, prevFromRect, prevToRect, _this.options);
+                        }
+                    }
+                    if (!isRectEqual(toRect, fromRect)) {
+                        target.prevFromRect = fromRect;
+                        target.prevToRect = toRect;
+                        if (!time) {
+                            time = _this.options.animation;
+                        }
+                        _this.animate(target, animatingRect, toRect, time);
+                    }
+                    if (time) {
+                        animating = true;
+                        animationTime = Math.max(animationTime, time);
+                        clearTimeout(target.animationResetTimer);
+                        target.animationResetTimer = setTimeout(function() {
+                            target.animationTime = 0;
+                            target.prevFromRect = null;
+                            target.fromRect = null;
+                            target.prevToRect = null;
+                            target.thisAnimationDuration = null;
+                        }, time);
+                        target.thisAnimationDuration = time;
+                    }
+                });
+                clearTimeout(animationCallbackId);
+                if (!animating) {
+                    if (typeof callback === "function") callback();
+                } else {
+                    animationCallbackId = setTimeout(function() {
+                        if (typeof callback === "function") callback();
+                    }, animationTime);
+                }
+                animationStates = [];
+            },
+            animate: function animate(target, currentRect, toRect, duration) {
+                if (duration) {
+                    css(target, "transition", "");
+                    css(target, "transform", "");
+                    var elMatrix = matrix(this.el), scaleX = elMatrix && elMatrix.a, scaleY = elMatrix && elMatrix.d, translateX = (currentRect.left - toRect.left) / (scaleX || 1), translateY = (currentRect.top - toRect.top) / (scaleY || 1);
+                    target.animatingX = !!translateX;
+                    target.animatingY = !!translateY;
+                    css(target, "transform", "translate3d(" + translateX + "px," + translateY + "px,0)");
+                    this.forRepaintDummy = repaint(target);
+                    css(target, "transition", "transform " + duration + "ms" + (this.options.easing ? " " + this.options.easing : ""));
+                    css(target, "transform", "translate3d(0,0,0)");
+                    typeof target.animated === "number" && clearTimeout(target.animated);
+                    target.animated = setTimeout(function() {
+                        css(target, "transition", "");
+                        css(target, "transform", "");
+                        target.animated = false;
+                        target.animatingX = false;
+                        target.animatingY = false;
+                    }, duration);
+                }
+            }
+        };
+    }
+    function repaint(target) {
+        return target.offsetWidth;
+    }
+    function calculateRealTime(animatingRect, fromRect, toRect, options) {
+        return Math.sqrt(Math.pow(fromRect.top - animatingRect.top, 2) + Math.pow(fromRect.left - animatingRect.left, 2)) / Math.sqrt(Math.pow(fromRect.top - toRect.top, 2) + Math.pow(fromRect.left - toRect.left, 2)) * options.animation;
+    }
+    var plugins = [];
+    var defaults = {
+        initializeByDefault: true
+    };
+    var PluginManager = {
+        mount: function mount(plugin) {
+            for (var option in defaults) {
+                if (defaults.hasOwnProperty(option) && !(option in plugin)) {
+                    plugin[option] = defaults[option];
+                }
+            }
+            plugins.forEach(function(p) {
+                if (p.pluginName === plugin.pluginName) {
+                    throw "Sortable: Cannot mount plugin ".concat(plugin.pluginName, " more than once");
+                }
+            });
+            plugins.push(plugin);
+        },
+        pluginEvent: function pluginEvent(eventName, sortable, evt) {
+            var _this = this;
+            this.eventCanceled = false;
+            evt.cancel = function() {
+                _this.eventCanceled = true;
+            };
+            var eventNameGlobal = eventName + "Global";
+            plugins.forEach(function(plugin) {
+                if (!sortable[plugin.pluginName]) return;
+                if (sortable[plugin.pluginName][eventNameGlobal]) {
+                    sortable[plugin.pluginName][eventNameGlobal](_objectSpread2({
+                        sortable: sortable
+                    }, evt));
+                }
+                if (sortable.options[plugin.pluginName] && sortable[plugin.pluginName][eventName]) {
+                    sortable[plugin.pluginName][eventName](_objectSpread2({
+                        sortable: sortable
+                    }, evt));
+                }
+            });
+        },
+        initializePlugins: function initializePlugins(sortable, el, defaults, options) {
+            plugins.forEach(function(plugin) {
+                var pluginName = plugin.pluginName;
+                if (!sortable.options[pluginName] && !plugin.initializeByDefault) return;
+                var initialized = new plugin(sortable, el, sortable.options);
+                initialized.sortable = sortable;
+                initialized.options = sortable.options;
+                sortable[pluginName] = initialized;
+                _extends(defaults, initialized.defaults);
+            });
+            for (var option in sortable.options) {
+                if (!sortable.options.hasOwnProperty(option)) continue;
+                var modified = this.modifyOption(sortable, option, sortable.options[option]);
+                if (typeof modified !== "undefined") {
+                    sortable.options[option] = modified;
+                }
+            }
+        },
+        getEventProperties: function getEventProperties(name, sortable) {
+            var eventProperties = {};
+            plugins.forEach(function(plugin) {
+                if (typeof plugin.eventProperties !== "function") return;
+                _extends(eventProperties, plugin.eventProperties.call(sortable[plugin.pluginName], name));
+            });
+            return eventProperties;
+        },
+        modifyOption: function modifyOption(sortable, name, value) {
+            var modifiedValue;
+            plugins.forEach(function(plugin) {
+                if (!sortable[plugin.pluginName]) return;
+                if (plugin.optionListeners && typeof plugin.optionListeners[name] === "function") {
+                    modifiedValue = plugin.optionListeners[name].call(sortable[plugin.pluginName], value);
+                }
+            });
+            return modifiedValue;
+        }
+    };
+    function dispatchEvent(_ref) {
+        var sortable = _ref.sortable, rootEl = _ref.rootEl, name = _ref.name, targetEl = _ref.targetEl, cloneEl = _ref.cloneEl, toEl = _ref.toEl, fromEl = _ref.fromEl, oldIndex = _ref.oldIndex, newIndex = _ref.newIndex, oldDraggableIndex = _ref.oldDraggableIndex, newDraggableIndex = _ref.newDraggableIndex, originalEvent = _ref.originalEvent, putSortable = _ref.putSortable, extraEventProperties = _ref.extraEventProperties;
+        sortable = sortable || rootEl && rootEl[expando];
+        if (!sortable) return;
+        var evt, options = sortable.options, onName = "on" + name.charAt(0).toUpperCase() + name.substr(1);
+        if (window.CustomEvent && !IE11OrLess && !Edge) {
+            evt = new CustomEvent(name, {
+                bubbles: true,
+                cancelable: true
+            });
+        } else {
+            evt = document.createEvent("Event");
+            evt.initEvent(name, true, true);
+        }
+        evt.to = toEl || rootEl;
+        evt.from = fromEl || rootEl;
+        evt.item = targetEl || rootEl;
+        evt.clone = cloneEl;
+        evt.oldIndex = oldIndex;
+        evt.newIndex = newIndex;
+        evt.oldDraggableIndex = oldDraggableIndex;
+        evt.newDraggableIndex = newDraggableIndex;
+        evt.originalEvent = originalEvent;
+        evt.pullMode = putSortable ? putSortable.lastPutMode : undefined;
+        var allEventProperties = _objectSpread2(_objectSpread2({}, extraEventProperties), PluginManager.getEventProperties(name, sortable));
+        for (var option in allEventProperties) {
+            evt[option] = allEventProperties[option];
+        }
+        if (rootEl) {
+            rootEl.dispatchEvent(evt);
+        }
+        if (options[onName]) {
+            options[onName].call(sortable, evt);
+        }
+    }
+    var _excluded = [ "evt" ];
+    var pluginEvent = function pluginEvent(eventName, sortable) {
+        var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {}, originalEvent = _ref.evt, data = _objectWithoutProperties(_ref, _excluded);
+        PluginManager.pluginEvent.bind(Sortable)(eventName, sortable, _objectSpread2({
+            dragEl: dragEl,
+            parentEl: parentEl,
+            ghostEl: ghostEl,
+            rootEl: rootEl,
+            nextEl: nextEl,
+            lastDownEl: lastDownEl,
+            cloneEl: cloneEl,
+            cloneHidden: cloneHidden,
+            dragStarted: moved,
+            putSortable: putSortable,
+            activeSortable: Sortable.active,
+            originalEvent: originalEvent,
+            oldIndex: oldIndex,
+            oldDraggableIndex: oldDraggableIndex,
+            newIndex: newIndex,
+            newDraggableIndex: newDraggableIndex,
+            hideGhostForTarget: _hideGhostForTarget,
+            unhideGhostForTarget: _unhideGhostForTarget,
+            cloneNowHidden: function cloneNowHidden() {
+                cloneHidden = true;
+            },
+            cloneNowShown: function cloneNowShown() {
+                cloneHidden = false;
+            },
+            dispatchSortableEvent: function dispatchSortableEvent(name) {
+                _dispatchEvent({
+                    sortable: sortable,
+                    name: name,
+                    originalEvent: originalEvent
+                });
+            }
+        }, data));
+    };
+    function _dispatchEvent(info) {
+        dispatchEvent(_objectSpread2({
+            putSortable: putSortable,
+            cloneEl: cloneEl,
+            targetEl: dragEl,
+            rootEl: rootEl,
+            oldIndex: oldIndex,
+            oldDraggableIndex: oldDraggableIndex,
+            newIndex: newIndex,
+            newDraggableIndex: newDraggableIndex
+        }, info));
+    }
+    var dragEl, parentEl, ghostEl, rootEl, nextEl, lastDownEl, cloneEl, cloneHidden, oldIndex, newIndex, oldDraggableIndex, newDraggableIndex, activeGroup, putSortable, awaitingDragStarted = false, ignoreNextClick = false, sortables = [], tapEvt, touchEvt, lastDx, lastDy, tapDistanceLeft, tapDistanceTop, moved, lastTarget, lastDirection, pastFirstInvertThresh = false, isCircumstantialInvert = false, targetMoveDistance, ghostRelativeParent, ghostRelativeParentInitialScroll = [], _silent = false, savedInputChecked = [];
+    var documentExists = typeof document !== "undefined", PositionGhostAbsolutely = IOS, CSSFloatProperty = Edge || IE11OrLess ? "cssFloat" : "float", supportDraggable = documentExists && !ChromeForAndroid && !IOS && "draggable" in document.createElement("div"), supportCssPointerEvents = function() {
+        if (!documentExists) return;
+        if (IE11OrLess) {
+            return false;
+        }
+        var el = document.createElement("x");
+        el.style.cssText = "pointer-events:auto";
+        return el.style.pointerEvents === "auto";
+    }(), _detectDirection = function _detectDirection(el, options) {
+        var elCSS = css(el), elWidth = parseInt(elCSS.width) - parseInt(elCSS.paddingLeft) - parseInt(elCSS.paddingRight) - parseInt(elCSS.borderLeftWidth) - parseInt(elCSS.borderRightWidth), child1 = getChild(el, 0, options), child2 = getChild(el, 1, options), firstChildCSS = child1 && css(child1), secondChildCSS = child2 && css(child2), firstChildWidth = firstChildCSS && parseInt(firstChildCSS.marginLeft) + parseInt(firstChildCSS.marginRight) + getRect(child1).width, secondChildWidth = secondChildCSS && parseInt(secondChildCSS.marginLeft) + parseInt(secondChildCSS.marginRight) + getRect(child2).width;
+        if (elCSS.display === "flex") {
+            return elCSS.flexDirection === "column" || elCSS.flexDirection === "column-reverse" ? "vertical" : "horizontal";
+        }
+        if (elCSS.display === "grid") {
+            return elCSS.gridTemplateColumns.split(" ").length <= 1 ? "vertical" : "horizontal";
+        }
+        if (child1 && firstChildCSS["float"] && firstChildCSS["float"] !== "none") {
+            var touchingSideChild2 = firstChildCSS["float"] === "left" ? "left" : "right";
+            return child2 && (secondChildCSS.clear === "both" || secondChildCSS.clear === touchingSideChild2) ? "vertical" : "horizontal";
+        }
+        return child1 && (firstChildCSS.display === "block" || firstChildCSS.display === "flex" || firstChildCSS.display === "table" || firstChildCSS.display === "grid" || firstChildWidth >= elWidth && elCSS[CSSFloatProperty] === "none" || child2 && elCSS[CSSFloatProperty] === "none" && firstChildWidth + secondChildWidth > elWidth) ? "vertical" : "horizontal";
+    }, _dragElInRowColumn = function _dragElInRowColumn(dragRect, targetRect, vertical) {
+        var dragElS1Opp = vertical ? dragRect.left : dragRect.top, dragElS2Opp = vertical ? dragRect.right : dragRect.bottom, dragElOppLength = vertical ? dragRect.width : dragRect.height, targetS1Opp = vertical ? targetRect.left : targetRect.top, targetS2Opp = vertical ? targetRect.right : targetRect.bottom, targetOppLength = vertical ? targetRect.width : targetRect.height;
+        return dragElS1Opp === targetS1Opp || dragElS2Opp === targetS2Opp || dragElS1Opp + dragElOppLength / 2 === targetS1Opp + targetOppLength / 2;
+    }, _detectNearestEmptySortable = function _detectNearestEmptySortable(x, y) {
+        var ret;
+        sortables.some(function(sortable) {
+            var threshold = sortable[expando].options.emptyInsertThreshold;
+            if (!threshold || lastChild(sortable)) return;
+            var rect = getRect(sortable), insideHorizontally = x >= rect.left - threshold && x <= rect.right + threshold, insideVertically = y >= rect.top - threshold && y <= rect.bottom + threshold;
+            if (insideHorizontally && insideVertically) {
+                return ret = sortable;
+            }
+        });
+        return ret;
+    }, _prepareGroup = function _prepareGroup(options) {
+        function toFn(value, pull) {
+            return function(to, from, dragEl, evt) {
+                var sameGroup = to.options.group.name && from.options.group.name && to.options.group.name === from.options.group.name;
+                if (value == null && (pull || sameGroup)) {
+                    return true;
+                } else if (value == null || value === false) {
+                    return false;
+                } else if (pull && value === "clone") {
+                    return value;
+                } else if (typeof value === "function") {
+                    return toFn(value(to, from, dragEl, evt), pull)(to, from, dragEl, evt);
+                } else {
+                    var otherGroup = (pull ? to : from).options.group.name;
+                    return value === true || typeof value === "string" && value === otherGroup || value.join && value.indexOf(otherGroup) > -1;
+                }
+            };
+        }
+        var group = {};
+        var originalGroup = options.group;
+        if (!originalGroup || _typeof(originalGroup) != "object") {
+            originalGroup = {
+                name: originalGroup
+            };
+        }
+        group.name = originalGroup.name;
+        group.checkPull = toFn(originalGroup.pull, true);
+        group.checkPut = toFn(originalGroup.put);
+        group.revertClone = originalGroup.revertClone;
+        options.group = group;
+    }, _hideGhostForTarget = function _hideGhostForTarget() {
+        if (!supportCssPointerEvents && ghostEl) {
+            css(ghostEl, "display", "none");
+        }
+    }, _unhideGhostForTarget = function _unhideGhostForTarget() {
+        if (!supportCssPointerEvents && ghostEl) {
+            css(ghostEl, "display", "");
+        }
+    };
+    if (documentExists) {
+        document.addEventListener("click", function(evt) {
+            if (ignoreNextClick) {
+                evt.preventDefault();
+                evt.stopPropagation && evt.stopPropagation();
+                evt.stopImmediatePropagation && evt.stopImmediatePropagation();
+                ignoreNextClick = false;
+                return false;
+            }
+        }, true);
+    }
+    var nearestEmptyInsertDetectEvent = function nearestEmptyInsertDetectEvent(evt) {
+        if (dragEl) {
+            evt = evt.touches ? evt.touches[0] : evt;
+            var nearest = _detectNearestEmptySortable(evt.clientX, evt.clientY);
+            if (nearest) {
+                var event = {};
+                for (var i in evt) {
+                    if (evt.hasOwnProperty(i)) {
+                        event[i] = evt[i];
+                    }
+                }
+                event.target = event.rootEl = nearest;
+                event.preventDefault = void 0;
+                event.stopPropagation = void 0;
+                nearest[expando]._onDragOver(event);
+            }
+        }
+    };
+    var _checkOutsideTargetEl = function _checkOutsideTargetEl(evt) {
+        if (dragEl) {
+            dragEl.parentNode[expando]._isOutsideThisEl(evt.target);
+        }
+    };
+    function Sortable(el, options) {
+        if (!(el && el.nodeType && el.nodeType === 1)) {
+            throw "Sortable: `el` must be an HTMLElement, not ".concat({}.toString.call(el));
+        }
+        this.el = el;
+        this.options = options = _extends({}, options);
+        el[expando] = this;
+        var defaults = {
+            group: null,
+            sort: true,
+            disabled: false,
+            store: null,
+            handle: null,
+            draggable: /^[uo]l$/i.test(el.nodeName) ? ">li" : ">*",
+            swapThreshold: 1,
+            invertSwap: false,
+            invertedSwapThreshold: null,
+            removeCloneOnHide: true,
+            direction: function direction() {
+                return _detectDirection(el, this.options);
+            },
+            ghostClass: "sortable-ghost",
+            chosenClass: "sortable-chosen",
+            dragClass: "sortable-drag",
+            ignore: "a, img",
+            filter: null,
+            preventOnFilter: true,
+            animation: 0,
+            easing: null,
+            setData: function setData(dataTransfer, dragEl) {
+                dataTransfer.setData("Text", dragEl.textContent);
+            },
+            dropBubble: false,
+            dragoverBubble: false,
+            dataIdAttr: "data-id",
+            delay: 0,
+            delayOnTouchOnly: false,
+            touchStartThreshold: (Number.parseInt ? Number : window).parseInt(window.devicePixelRatio, 10) || 1,
+            forceFallback: false,
+            fallbackClass: "sortable-fallback",
+            fallbackOnBody: false,
+            fallbackTolerance: 0,
+            fallbackOffset: {
+                x: 0,
+                y: 0
+            },
+            supportPointer: Sortable.supportPointer !== false && "PointerEvent" in window && !Safari,
+            emptyInsertThreshold: 5
+        };
+        PluginManager.initializePlugins(this, el, defaults);
+        for (var name in defaults) {
+            !(name in options) && (options[name] = defaults[name]);
+        }
+        _prepareGroup(options);
+        for (var fn in this) {
+            if (fn.charAt(0) === "_" && typeof this[fn] === "function") {
+                this[fn] = this[fn].bind(this);
+            }
+        }
+        this.nativeDraggable = options.forceFallback ? false : supportDraggable;
+        if (this.nativeDraggable) {
+            this.options.touchStartThreshold = 1;
+        }
+        if (options.supportPointer) {
+            on(el, "pointerdown", this._onTapStart);
+        } else {
+            on(el, "mousedown", this._onTapStart);
+            on(el, "touchstart", this._onTapStart);
+        }
+        if (this.nativeDraggable) {
+            on(el, "dragover", this);
+            on(el, "dragenter", this);
+        }
+        sortables.push(this.el);
+        options.store && options.store.get && this.sort(options.store.get(this) || []);
+        _extends(this, AnimationStateManager());
+    }
+    Sortable.prototype = {
+        constructor: Sortable,
+        _isOutsideThisEl: function _isOutsideThisEl(target) {
+            if (!this.el.contains(target) && target !== this.el) {
+                lastTarget = null;
+            }
+        },
+        _getDirection: function _getDirection(evt, target) {
+            return typeof this.options.direction === "function" ? this.options.direction.call(this, evt, target, dragEl) : this.options.direction;
+        },
+        _onTapStart: function _onTapStart(evt) {
+            if (!evt.cancelable) return;
+            var _this = this, el = this.el, options = this.options, preventOnFilter = options.preventOnFilter, type = evt.type, touch = evt.touches && evt.touches[0] || evt.pointerType && evt.pointerType === "touch" && evt, target = (touch || evt).target, originalTarget = evt.target.shadowRoot && (evt.path && evt.path[0] || evt.composedPath && evt.composedPath()[0]) || target, filter = options.filter;
+            _saveInputCheckedState(el);
+            if (dragEl) {
+                return;
+            }
+            if (/mousedown|pointerdown/.test(type) && evt.button !== 0 || options.disabled) {
+                return;
+            }
+            if (originalTarget.isContentEditable) {
+                return;
+            }
+            if (!this.nativeDraggable && Safari && target && target.tagName.toUpperCase() === "SELECT") {
+                return;
+            }
+            target = closest(target, options.draggable, el, false);
+            if (target && target.animated) {
+                return;
+            }
+            if (lastDownEl === target) {
+                return;
+            }
+            oldIndex = index(target);
+            oldDraggableIndex = index(target, options.draggable);
+            if (typeof filter === "function") {
+                if (filter.call(this, evt, target, this)) {
+                    _dispatchEvent({
+                        sortable: _this,
+                        rootEl: originalTarget,
+                        name: "filter",
+                        targetEl: target,
+                        toEl: el,
+                        fromEl: el
+                    });
+                    pluginEvent("filter", _this, {
+                        evt: evt
+                    });
+                    preventOnFilter && evt.cancelable && evt.preventDefault();
+                    return;
+                }
+            } else if (filter) {
+                filter = filter.split(",").some(function(criteria) {
+                    criteria = closest(originalTarget, criteria.trim(), el, false);
+                    if (criteria) {
+                        _dispatchEvent({
+                            sortable: _this,
+                            rootEl: criteria,
+                            name: "filter",
+                            targetEl: target,
+                            fromEl: el,
+                            toEl: el
+                        });
+                        pluginEvent("filter", _this, {
+                            evt: evt
+                        });
+                        return true;
+                    }
+                });
+                if (filter) {
+                    preventOnFilter && evt.cancelable && evt.preventDefault();
+                    return;
+                }
+            }
+            if (options.handle && !closest(originalTarget, options.handle, el, false)) {
+                return;
+            }
+            this._prepareDragStart(evt, touch, target);
+        },
+        _prepareDragStart: function _prepareDragStart(evt, touch, target) {
+            var _this = this, el = _this.el, options = _this.options, ownerDocument = el.ownerDocument, dragStartFn;
+            if (target && !dragEl && target.parentNode === el) {
+                var dragRect = getRect(target);
+                rootEl = el;
+                dragEl = target;
+                parentEl = dragEl.parentNode;
+                nextEl = dragEl.nextSibling;
+                lastDownEl = target;
+                activeGroup = options.group;
+                Sortable.dragged = dragEl;
+                tapEvt = {
+                    target: dragEl,
+                    clientX: (touch || evt).clientX,
+                    clientY: (touch || evt).clientY
+                };
+                tapDistanceLeft = tapEvt.clientX - dragRect.left;
+                tapDistanceTop = tapEvt.clientY - dragRect.top;
+                this._lastX = (touch || evt).clientX;
+                this._lastY = (touch || evt).clientY;
+                dragEl.style["will-change"] = "all";
+                dragStartFn = function dragStartFn() {
+                    pluginEvent("delayEnded", _this, {
+                        evt: evt
+                    });
+                    if (Sortable.eventCanceled) {
+                        _this._onDrop();
+                        return;
+                    }
+                    _this._disableDelayedDragEvents();
+                    if (!FireFox && _this.nativeDraggable) {
+                        dragEl.draggable = true;
+                    }
+                    _this._triggerDragStart(evt, touch);
+                    _dispatchEvent({
+                        sortable: _this,
+                        name: "choose",
+                        originalEvent: evt
+                    });
+                    toggleClass(dragEl, options.chosenClass, true);
+                };
+                options.ignore.split(",").forEach(function(criteria) {
+                    find(dragEl, criteria.trim(), _disableDraggable);
+                });
+                on(ownerDocument, "dragover", nearestEmptyInsertDetectEvent);
+                on(ownerDocument, "mousemove", nearestEmptyInsertDetectEvent);
+                on(ownerDocument, "touchmove", nearestEmptyInsertDetectEvent);
+                on(ownerDocument, "mouseup", _this._onDrop);
+                on(ownerDocument, "touchend", _this._onDrop);
+                on(ownerDocument, "touchcancel", _this._onDrop);
+                if (FireFox && this.nativeDraggable) {
+                    this.options.touchStartThreshold = 4;
+                    dragEl.draggable = true;
+                }
+                pluginEvent("delayStart", this, {
+                    evt: evt
+                });
+                if (options.delay && (!options.delayOnTouchOnly || touch) && (!this.nativeDraggable || !(Edge || IE11OrLess))) {
+                    if (Sortable.eventCanceled) {
+                        this._onDrop();
+                        return;
+                    }
+                    on(ownerDocument, "mouseup", _this._disableDelayedDrag);
+                    on(ownerDocument, "touchend", _this._disableDelayedDrag);
+                    on(ownerDocument, "touchcancel", _this._disableDelayedDrag);
+                    on(ownerDocument, "mousemove", _this._delayedDragTouchMoveHandler);
+                    on(ownerDocument, "touchmove", _this._delayedDragTouchMoveHandler);
+                    options.supportPointer && on(ownerDocument, "pointermove", _this._delayedDragTouchMoveHandler);
+                    _this._dragStartTimer = setTimeout(dragStartFn, options.delay);
+                } else {
+                    dragStartFn();
+                }
+            }
+        },
+        _delayedDragTouchMoveHandler: function _delayedDragTouchMoveHandler(e) {
+            var touch = e.touches ? e.touches[0] : e;
+            if (Math.max(Math.abs(touch.clientX - this._lastX), Math.abs(touch.clientY - this._lastY)) >= Math.floor(this.options.touchStartThreshold / (this.nativeDraggable && window.devicePixelRatio || 1))) {
+                this._disableDelayedDrag();
+            }
+        },
+        _disableDelayedDrag: function _disableDelayedDrag() {
+            dragEl && _disableDraggable(dragEl);
+            clearTimeout(this._dragStartTimer);
+            this._disableDelayedDragEvents();
+        },
+        _disableDelayedDragEvents: function _disableDelayedDragEvents() {
+            var ownerDocument = this.el.ownerDocument;
+            off(ownerDocument, "mouseup", this._disableDelayedDrag);
+            off(ownerDocument, "touchend", this._disableDelayedDrag);
+            off(ownerDocument, "touchcancel", this._disableDelayedDrag);
+            off(ownerDocument, "mousemove", this._delayedDragTouchMoveHandler);
+            off(ownerDocument, "touchmove", this._delayedDragTouchMoveHandler);
+            off(ownerDocument, "pointermove", this._delayedDragTouchMoveHandler);
+        },
+        _triggerDragStart: function _triggerDragStart(evt, touch) {
+            touch = touch || evt.pointerType == "touch" && evt;
+            if (!this.nativeDraggable || touch) {
+                if (this.options.supportPointer) {
+                    on(document, "pointermove", this._onTouchMove);
+                } else if (touch) {
+                    on(document, "touchmove", this._onTouchMove);
+                } else {
+                    on(document, "mousemove", this._onTouchMove);
+                }
+            } else {
+                on(dragEl, "dragend", this);
+                on(rootEl, "dragstart", this._onDragStart);
+            }
+            try {
+                if (document.selection) {
+                    _nextTick(function() {
+                        document.selection.empty();
+                    });
+                } else {
+                    window.getSelection().removeAllRanges();
+                }
+            } catch (err) {}
+        },
+        _dragStarted: function _dragStarted(fallback, evt) {
+            awaitingDragStarted = false;
+            if (rootEl && dragEl) {
+                pluginEvent("dragStarted", this, {
+                    evt: evt
+                });
+                if (this.nativeDraggable) {
+                    on(document, "dragover", _checkOutsideTargetEl);
+                }
+                var options = this.options;
+                !fallback && toggleClass(dragEl, options.dragClass, false);
+                toggleClass(dragEl, options.ghostClass, true);
+                Sortable.active = this;
+                fallback && this._appendGhost();
+                _dispatchEvent({
+                    sortable: this,
+                    name: "start",
+                    originalEvent: evt
+                });
+            } else {
+                this._nulling();
+            }
+        },
+        _emulateDragOver: function _emulateDragOver() {
+            if (touchEvt) {
+                this._lastX = touchEvt.clientX;
+                this._lastY = touchEvt.clientY;
+                _hideGhostForTarget();
+                var target = document.elementFromPoint(touchEvt.clientX, touchEvt.clientY);
+                var parent = target;
+                while (target && target.shadowRoot) {
+                    target = target.shadowRoot.elementFromPoint(touchEvt.clientX, touchEvt.clientY);
+                    if (target === parent) break;
+                    parent = target;
+                }
+                dragEl.parentNode[expando]._isOutsideThisEl(target);
+                if (parent) {
+                    do {
+                        if (parent[expando]) {
+                            var inserted = void 0;
+                            inserted = parent[expando]._onDragOver({
+                                clientX: touchEvt.clientX,
+                                clientY: touchEvt.clientY,
+                                target: target,
+                                rootEl: parent
+                            });
+                            if (inserted && !this.options.dragoverBubble) {
+                                break;
+                            }
+                        }
+                        target = parent;
+                    } while (parent = parent.parentNode);
+                }
+                _unhideGhostForTarget();
+            }
+        },
+        _onTouchMove: function _onTouchMove(evt) {
+            if (tapEvt) {
+                var options = this.options, fallbackTolerance = options.fallbackTolerance, fallbackOffset = options.fallbackOffset, touch = evt.touches ? evt.touches[0] : evt, ghostMatrix = ghostEl && matrix(ghostEl, true), scaleX = ghostEl && ghostMatrix && ghostMatrix.a, scaleY = ghostEl && ghostMatrix && ghostMatrix.d, relativeScrollOffset = PositionGhostAbsolutely && ghostRelativeParent && getRelativeScrollOffset(ghostRelativeParent), dx = (touch.clientX - tapEvt.clientX + fallbackOffset.x) / (scaleX || 1) + (relativeScrollOffset ? relativeScrollOffset[0] - ghostRelativeParentInitialScroll[0] : 0) / (scaleX || 1), dy = (touch.clientY - tapEvt.clientY + fallbackOffset.y) / (scaleY || 1) + (relativeScrollOffset ? relativeScrollOffset[1] - ghostRelativeParentInitialScroll[1] : 0) / (scaleY || 1);
+                if (!Sortable.active && !awaitingDragStarted) {
+                    if (fallbackTolerance && Math.max(Math.abs(touch.clientX - this._lastX), Math.abs(touch.clientY - this._lastY)) < fallbackTolerance) {
+                        return;
+                    }
+                    this._onDragStart(evt, true);
+                }
+                if (ghostEl) {
+                    if (ghostMatrix) {
+                        ghostMatrix.e += dx - (lastDx || 0);
+                        ghostMatrix.f += dy - (lastDy || 0);
+                    } else {
+                        ghostMatrix = {
+                            a: 1,
+                            b: 0,
+                            c: 0,
+                            d: 1,
+                            e: dx,
+                            f: dy
+                        };
+                    }
+                    var cssMatrix = "matrix(".concat(ghostMatrix.a, ",").concat(ghostMatrix.b, ",").concat(ghostMatrix.c, ",").concat(ghostMatrix.d, ",").concat(ghostMatrix.e, ",").concat(ghostMatrix.f, ")");
+                    css(ghostEl, "webkitTransform", cssMatrix);
+                    css(ghostEl, "mozTransform", cssMatrix);
+                    css(ghostEl, "msTransform", cssMatrix);
+                    css(ghostEl, "transform", cssMatrix);
+                    lastDx = dx;
+                    lastDy = dy;
+                    touchEvt = touch;
+                }
+                evt.cancelable && evt.preventDefault();
+            }
+        },
+        _appendGhost: function _appendGhost() {
+            if (!ghostEl) {
+                var container = this.options.fallbackOnBody ? document.body : rootEl, rect = getRect(dragEl, true, PositionGhostAbsolutely, true, container), options = this.options;
+                if (PositionGhostAbsolutely) {
+                    ghostRelativeParent = container;
+                    while (css(ghostRelativeParent, "position") === "static" && css(ghostRelativeParent, "transform") === "none" && ghostRelativeParent !== document) {
+                        ghostRelativeParent = ghostRelativeParent.parentNode;
+                    }
+                    if (ghostRelativeParent !== document.body && ghostRelativeParent !== document.documentElement) {
+                        if (ghostRelativeParent === document) ghostRelativeParent = getWindowScrollingElement();
+                        rect.top += ghostRelativeParent.scrollTop;
+                        rect.left += ghostRelativeParent.scrollLeft;
+                    } else {
+                        ghostRelativeParent = getWindowScrollingElement();
+                    }
+                    ghostRelativeParentInitialScroll = getRelativeScrollOffset(ghostRelativeParent);
+                }
+                ghostEl = dragEl.cloneNode(true);
+                toggleClass(ghostEl, options.ghostClass, false);
+                toggleClass(ghostEl, options.fallbackClass, true);
+                toggleClass(ghostEl, options.dragClass, true);
+                css(ghostEl, "transition", "");
+                css(ghostEl, "transform", "");
+                css(ghostEl, "box-sizing", "border-box");
+                css(ghostEl, "margin", 0);
+                css(ghostEl, "top", rect.top);
+                css(ghostEl, "left", rect.left);
+                css(ghostEl, "width", rect.width);
+                css(ghostEl, "height", rect.height);
+                css(ghostEl, "opacity", "0.8");
+                css(ghostEl, "position", PositionGhostAbsolutely ? "absolute" : "fixed");
+                css(ghostEl, "zIndex", "100000");
+                css(ghostEl, "pointerEvents", "none");
+                Sortable.ghost = ghostEl;
+                container.appendChild(ghostEl);
+                css(ghostEl, "transform-origin", tapDistanceLeft / parseInt(ghostEl.style.width) * 100 + "% " + tapDistanceTop / parseInt(ghostEl.style.height) * 100 + "%");
+            }
+        },
+        _onDragStart: function _onDragStart(evt, fallback) {
+            var _this = this;
+            var dataTransfer = evt.dataTransfer;
+            var options = _this.options;
+            pluginEvent("dragStart", this, {
+                evt: evt
+            });
+            if (Sortable.eventCanceled) {
+                this._onDrop();
+                return;
+            }
+            pluginEvent("setupClone", this);
+            if (!Sortable.eventCanceled) {
+                cloneEl = clone(dragEl);
+                cloneEl.draggable = false;
+                cloneEl.style["will-change"] = "";
+                this._hideClone();
+                toggleClass(cloneEl, this.options.chosenClass, false);
+                Sortable.clone = cloneEl;
+            }
+            _this.cloneId = _nextTick(function() {
+                pluginEvent("clone", _this);
+                if (Sortable.eventCanceled) return;
+                if (!_this.options.removeCloneOnHide) {
+                    rootEl.insertBefore(cloneEl, dragEl);
+                }
+                _this._hideClone();
+                _dispatchEvent({
+                    sortable: _this,
+                    name: "clone"
+                });
+            });
+            !fallback && toggleClass(dragEl, options.dragClass, true);
+            if (fallback) {
+                ignoreNextClick = true;
+                _this._loopId = setInterval(_this._emulateDragOver, 50);
+            } else {
+                off(document, "mouseup", _this._onDrop);
+                off(document, "touchend", _this._onDrop);
+                off(document, "touchcancel", _this._onDrop);
+                if (dataTransfer) {
+                    dataTransfer.effectAllowed = "move";
+                    options.setData && options.setData.call(_this, dataTransfer, dragEl);
+                }
+                on(document, "drop", _this);
+                css(dragEl, "transform", "translateZ(0)");
+            }
+            awaitingDragStarted = true;
+            _this._dragStartId = _nextTick(_this._dragStarted.bind(_this, fallback, evt));
+            on(document, "selectstart", _this);
+            moved = true;
+            if (Safari) {
+                css(document.body, "user-select", "none");
+            }
+        },
+        _onDragOver: function _onDragOver(evt) {
+            var el = this.el, target = evt.target, dragRect, targetRect, revert, options = this.options, group = options.group, activeSortable = Sortable.active, isOwner = activeGroup === group, canSort = options.sort, fromSortable = putSortable || activeSortable, vertical, _this = this, completedFired = false;
+            if (_silent) return;
+            function dragOverEvent(name, extra) {
+                pluginEvent(name, _this, _objectSpread2({
+                    evt: evt,
+                    isOwner: isOwner,
+                    axis: vertical ? "vertical" : "horizontal",
+                    revert: revert,
+                    dragRect: dragRect,
+                    targetRect: targetRect,
+                    canSort: canSort,
+                    fromSortable: fromSortable,
+                    target: target,
+                    completed: completed,
+                    onMove: function onMove(target, after) {
+                        return _onMove(rootEl, el, dragEl, dragRect, target, getRect(target), evt, after);
+                    },
+                    changed: changed
+                }, extra));
+            }
+            function capture() {
+                dragOverEvent("dragOverAnimationCapture");
+                _this.captureAnimationState();
+                if (_this !== fromSortable) {
+                    fromSortable.captureAnimationState();
+                }
+            }
+            function completed(insertion) {
+                dragOverEvent("dragOverCompleted", {
+                    insertion: insertion
+                });
+                if (insertion) {
+                    if (isOwner) {
+                        activeSortable._hideClone();
+                    } else {
+                        activeSortable._showClone(_this);
+                    }
+                    if (_this !== fromSortable) {
+                        toggleClass(dragEl, putSortable ? putSortable.options.ghostClass : activeSortable.options.ghostClass, false);
+                        toggleClass(dragEl, options.ghostClass, true);
+                    }
+                    if (putSortable !== _this && _this !== Sortable.active) {
+                        putSortable = _this;
+                    } else if (_this === Sortable.active && putSortable) {
+                        putSortable = null;
+                    }
+                    if (fromSortable === _this) {
+                        _this._ignoreWhileAnimating = target;
+                    }
+                    _this.animateAll(function() {
+                        dragOverEvent("dragOverAnimationComplete");
+                        _this._ignoreWhileAnimating = null;
+                    });
+                    if (_this !== fromSortable) {
+                        fromSortable.animateAll();
+                        fromSortable._ignoreWhileAnimating = null;
+                    }
+                }
+                if (target === dragEl && !dragEl.animated || target === el && !target.animated) {
+                    lastTarget = null;
+                }
+                if (!options.dragoverBubble && !evt.rootEl && target !== document) {
+                    dragEl.parentNode[expando]._isOutsideThisEl(evt.target);
+                    !insertion && nearestEmptyInsertDetectEvent(evt);
+                }
+                !options.dragoverBubble && evt.stopPropagation && evt.stopPropagation();
+                return completedFired = true;
+            }
+            function changed() {
+                newIndex = index(dragEl);
+                newDraggableIndex = index(dragEl, options.draggable);
+                _dispatchEvent({
+                    sortable: _this,
+                    name: "change",
+                    toEl: el,
+                    newIndex: newIndex,
+                    newDraggableIndex: newDraggableIndex,
+                    originalEvent: evt
+                });
+            }
+            if (evt.preventDefault !== void 0) {
+                evt.cancelable && evt.preventDefault();
+            }
+            target = closest(target, options.draggable, el, true);
+            dragOverEvent("dragOver");
+            if (Sortable.eventCanceled) return completedFired;
+            if (dragEl.contains(evt.target) || target.animated && target.animatingX && target.animatingY || _this._ignoreWhileAnimating === target) {
+                return completed(false);
+            }
+            ignoreNextClick = false;
+            if (activeSortable && !options.disabled && (isOwner ? canSort || (revert = parentEl !== rootEl) : putSortable === this || (this.lastPutMode = activeGroup.checkPull(this, activeSortable, dragEl, evt)) && group.checkPut(this, activeSortable, dragEl, evt))) {
+                vertical = this._getDirection(evt, target) === "vertical";
+                dragRect = getRect(dragEl);
+                dragOverEvent("dragOverValid");
+                if (Sortable.eventCanceled) return completedFired;
+                if (revert) {
+                    parentEl = rootEl;
+                    capture();
+                    this._hideClone();
+                    dragOverEvent("revert");
+                    if (!Sortable.eventCanceled) {
+                        if (nextEl) {
+                            rootEl.insertBefore(dragEl, nextEl);
+                        } else {
+                            rootEl.appendChild(dragEl);
+                        }
+                    }
+                    return completed(true);
+                }
+                var elLastChild = lastChild(el, options.draggable);
+                if (!elLastChild || _ghostIsLast(evt, vertical, this) && !elLastChild.animated) {
+                    if (elLastChild === dragEl) {
+                        return completed(false);
+                    }
+                    if (elLastChild && el === evt.target) {
+                        target = elLastChild;
+                    }
+                    if (target) {
+                        targetRect = getRect(target);
+                    }
+                    if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, !!target) !== false) {
+                        capture();
+                        el.appendChild(dragEl);
+                        parentEl = el;
+                        changed();
+                        return completed(true);
+                    }
+                } else if (elLastChild && _ghostIsFirst(evt, vertical, this)) {
+                    var firstChild = getChild(el, 0, options, true);
+                    if (firstChild === dragEl) {
+                        return completed(false);
+                    }
+                    target = firstChild;
+                    targetRect = getRect(target);
+                    if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, false) !== false) {
+                        capture();
+                        el.insertBefore(dragEl, firstChild);
+                        parentEl = el;
+                        changed();
+                        return completed(true);
+                    }
+                } else if (target.parentNode === el) {
+                    targetRect = getRect(target);
+                    var direction = 0, targetBeforeFirstSwap, differentLevel = dragEl.parentNode !== el, differentRowCol = !_dragElInRowColumn(dragEl.animated && dragEl.toRect || dragRect, target.animated && target.toRect || targetRect, vertical), side1 = vertical ? "top" : "left", scrolledPastTop = isScrolledPast(target, "top", "top") || isScrolledPast(dragEl, "top", "top"), scrollBefore = scrolledPastTop ? scrolledPastTop.scrollTop : void 0;
+                    if (lastTarget !== target) {
+                        targetBeforeFirstSwap = targetRect[side1];
+                        pastFirstInvertThresh = false;
+                        isCircumstantialInvert = !differentRowCol && options.invertSwap || differentLevel;
+                    }
+                    direction = _getSwapDirection(evt, target, targetRect, vertical, differentRowCol ? 1 : options.swapThreshold, options.invertedSwapThreshold == null ? options.swapThreshold : options.invertedSwapThreshold, isCircumstantialInvert, lastTarget === target);
+                    var sibling;
+                    if (direction !== 0) {
+                        var dragIndex = index(dragEl);
+                        do {
+                            dragIndex -= direction;
+                            sibling = parentEl.children[dragIndex];
+                        } while (sibling && (css(sibling, "display") === "none" || sibling === ghostEl));
+                    }
+                    if (direction === 0 || sibling === target) {
+                        return completed(false);
+                    }
+                    lastTarget = target;
+                    lastDirection = direction;
+                    var nextSibling = target.nextElementSibling, after = false;
+                    after = direction === 1;
+                    var moveVector = _onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, after);
+                    if (moveVector !== false) {
+                        if (moveVector === 1 || moveVector === -1) {
+                            after = moveVector === 1;
+                        }
+                        _silent = true;
+                        setTimeout(_unsilent, 30);
+                        capture();
+                        if (after && !nextSibling) {
+                            el.appendChild(dragEl);
+                        } else {
+                            target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
+                        }
+                        if (scrolledPastTop) {
+                            scrollBy(scrolledPastTop, 0, scrollBefore - scrolledPastTop.scrollTop);
+                        }
+                        parentEl = dragEl.parentNode;
+                        if (targetBeforeFirstSwap !== undefined && !isCircumstantialInvert) {
+                            targetMoveDistance = Math.abs(targetBeforeFirstSwap - getRect(target)[side1]);
+                        }
+                        changed();
+                        return completed(true);
+                    }
+                }
+                if (el.contains(dragEl)) {
+                    return completed(false);
+                }
+            }
+            return false;
+        },
+        _ignoreWhileAnimating: null,
+        _offMoveEvents: function _offMoveEvents() {
+            off(document, "mousemove", this._onTouchMove);
+            off(document, "touchmove", this._onTouchMove);
+            off(document, "pointermove", this._onTouchMove);
+            off(document, "dragover", nearestEmptyInsertDetectEvent);
+            off(document, "mousemove", nearestEmptyInsertDetectEvent);
+            off(document, "touchmove", nearestEmptyInsertDetectEvent);
+        },
+        _offUpEvents: function _offUpEvents() {
+            var ownerDocument = this.el.ownerDocument;
+            off(ownerDocument, "mouseup", this._onDrop);
+            off(ownerDocument, "touchend", this._onDrop);
+            off(ownerDocument, "pointerup", this._onDrop);
+            off(ownerDocument, "touchcancel", this._onDrop);
+            off(document, "selectstart", this);
+        },
+        _onDrop: function _onDrop(evt) {
+            var el = this.el, options = this.options;
+            newIndex = index(dragEl);
+            newDraggableIndex = index(dragEl, options.draggable);
+            pluginEvent("drop", this, {
+                evt: evt
+            });
+            parentEl = dragEl && dragEl.parentNode;
+            newIndex = index(dragEl);
+            newDraggableIndex = index(dragEl, options.draggable);
+            if (Sortable.eventCanceled) {
+                this._nulling();
+                return;
+            }
+            awaitingDragStarted = false;
+            isCircumstantialInvert = false;
+            pastFirstInvertThresh = false;
+            clearInterval(this._loopId);
+            clearTimeout(this._dragStartTimer);
+            _cancelNextTick(this.cloneId);
+            _cancelNextTick(this._dragStartId);
+            if (this.nativeDraggable) {
+                off(document, "drop", this);
+                off(el, "dragstart", this._onDragStart);
+            }
+            this._offMoveEvents();
+            this._offUpEvents();
+            if (Safari) {
+                css(document.body, "user-select", "");
+            }
+            css(dragEl, "transform", "");
+            if (evt) {
+                if (moved) {
+                    evt.cancelable && evt.preventDefault();
+                    !options.dropBubble && evt.stopPropagation();
+                }
+                ghostEl && ghostEl.parentNode && ghostEl.parentNode.removeChild(ghostEl);
+                if (rootEl === parentEl || putSortable && putSortable.lastPutMode !== "clone") {
+                    cloneEl && cloneEl.parentNode && cloneEl.parentNode.removeChild(cloneEl);
+                }
+                if (dragEl) {
+                    if (this.nativeDraggable) {
+                        off(dragEl, "dragend", this);
+                    }
+                    _disableDraggable(dragEl);
+                    dragEl.style["will-change"] = "";
+                    if (moved && !awaitingDragStarted) {
+                        toggleClass(dragEl, putSortable ? putSortable.options.ghostClass : this.options.ghostClass, false);
+                    }
+                    toggleClass(dragEl, this.options.chosenClass, false);
+                    _dispatchEvent({
+                        sortable: this,
+                        name: "unchoose",
+                        toEl: parentEl,
+                        newIndex: null,
+                        newDraggableIndex: null,
+                        originalEvent: evt
+                    });
+                    if (rootEl !== parentEl) {
+                        if (newIndex >= 0) {
+                            _dispatchEvent({
+                                rootEl: parentEl,
+                                name: "add",
+                                toEl: parentEl,
+                                fromEl: rootEl,
+                                originalEvent: evt
+                            });
+                            _dispatchEvent({
+                                sortable: this,
+                                name: "remove",
+                                toEl: parentEl,
+                                originalEvent: evt
+                            });
+                            _dispatchEvent({
+                                rootEl: parentEl,
+                                name: "sort",
+                                toEl: parentEl,
+                                fromEl: rootEl,
+                                originalEvent: evt
+                            });
+                            _dispatchEvent({
+                                sortable: this,
+                                name: "sort",
+                                toEl: parentEl,
+                                originalEvent: evt
+                            });
+                        }
+                        putSortable && putSortable.save();
+                    } else {
+                        if (newIndex !== oldIndex) {
+                            if (newIndex >= 0) {
+                                _dispatchEvent({
+                                    sortable: this,
+                                    name: "update",
+                                    toEl: parentEl,
+                                    originalEvent: evt
+                                });
+                                _dispatchEvent({
+                                    sortable: this,
+                                    name: "sort",
+                                    toEl: parentEl,
+                                    originalEvent: evt
+                                });
+                            }
+                        }
+                    }
+                    if (Sortable.active) {
+                        if (newIndex == null || newIndex === -1) {
+                            newIndex = oldIndex;
+                            newDraggableIndex = oldDraggableIndex;
+                        }
+                        _dispatchEvent({
+                            sortable: this,
+                            name: "end",
+                            toEl: parentEl,
+                            originalEvent: evt
+                        });
+                        this.save();
+                    }
+                }
+            }
+            this._nulling();
+        },
+        _nulling: function _nulling() {
+            pluginEvent("nulling", this);
+            rootEl = dragEl = parentEl = ghostEl = nextEl = cloneEl = lastDownEl = cloneHidden = tapEvt = touchEvt = moved = newIndex = newDraggableIndex = oldIndex = oldDraggableIndex = lastTarget = lastDirection = putSortable = activeGroup = Sortable.dragged = Sortable.ghost = Sortable.clone = Sortable.active = null;
+            savedInputChecked.forEach(function(el) {
+                el.checked = true;
+            });
+            savedInputChecked.length = lastDx = lastDy = 0;
+        },
+        handleEvent: function handleEvent(evt) {
+            switch (evt.type) {
+              case "drop":
+              case "dragend":
+                this._onDrop(evt);
+                break;
+
+              case "dragenter":
+              case "dragover":
+                if (dragEl) {
+                    this._onDragOver(evt);
+                    _globalDragOver(evt);
+                }
+                break;
+
+              case "selectstart":
+                evt.preventDefault();
+                break;
+            }
+        },
+        toArray: function toArray() {
+            var order = [], el, children = this.el.children, i = 0, n = children.length, options = this.options;
+            for (;i < n; i++) {
+                el = children[i];
+                if (closest(el, options.draggable, this.el, false)) {
+                    order.push(el.getAttribute(options.dataIdAttr) || _generateId(el));
+                }
+            }
+            return order;
+        },
+        sort: function sort(order, useAnimation) {
+            var items = {}, rootEl = this.el;
+            this.toArray().forEach(function(id, i) {
+                var el = rootEl.children[i];
+                if (closest(el, this.options.draggable, rootEl, false)) {
+                    items[id] = el;
+                }
+            }, this);
+            useAnimation && this.captureAnimationState();
+            order.forEach(function(id) {
+                if (items[id]) {
+                    rootEl.removeChild(items[id]);
+                    rootEl.appendChild(items[id]);
+                }
+            });
+            useAnimation && this.animateAll();
+        },
+        save: function save() {
+            var store = this.options.store;
+            store && store.set && store.set(this);
+        },
+        closest: function closest$1(el, selector) {
+            return closest(el, selector || this.options.draggable, this.el, false);
+        },
+        option: function option(name, value) {
+            var options = this.options;
+            if (value === void 0) {
+                return options[name];
+            } else {
+                var modifiedValue = PluginManager.modifyOption(this, name, value);
+                if (typeof modifiedValue !== "undefined") {
+                    options[name] = modifiedValue;
+                } else {
+                    options[name] = value;
+                }
+                if (name === "group") {
+                    _prepareGroup(options);
+                }
+            }
+        },
+        destroy: function destroy() {
+            pluginEvent("destroy", this);
+            var el = this.el;
+            el[expando] = null;
+            off(el, "mousedown", this._onTapStart);
+            off(el, "touchstart", this._onTapStart);
+            off(el, "pointerdown", this._onTapStart);
+            if (this.nativeDraggable) {
+                off(el, "dragover", this);
+                off(el, "dragenter", this);
+            }
+            Array.prototype.forEach.call(el.querySelectorAll("[draggable]"), function(el) {
+                el.removeAttribute("draggable");
+            });
+            this._onDrop();
+            this._disableDelayedDragEvents();
+            sortables.splice(sortables.indexOf(this.el), 1);
+            this.el = el = null;
+        },
+        _hideClone: function _hideClone() {
+            if (!cloneHidden) {
+                pluginEvent("hideClone", this);
+                if (Sortable.eventCanceled) return;
+                css(cloneEl, "display", "none");
+                if (this.options.removeCloneOnHide && cloneEl.parentNode) {
+                    cloneEl.parentNode.removeChild(cloneEl);
+                }
+                cloneHidden = true;
+            }
+        },
+        _showClone: function _showClone(putSortable) {
+            if (putSortable.lastPutMode !== "clone") {
+                this._hideClone();
+                return;
+            }
+            if (cloneHidden) {
+                pluginEvent("showClone", this);
+                if (Sortable.eventCanceled) return;
+                if (dragEl.parentNode == rootEl && !this.options.group.revertClone) {
+                    rootEl.insertBefore(cloneEl, dragEl);
+                } else if (nextEl) {
+                    rootEl.insertBefore(cloneEl, nextEl);
+                } else {
+                    rootEl.appendChild(cloneEl);
+                }
+                if (this.options.group.revertClone) {
+                    this.animate(dragEl, cloneEl);
+                }
+                css(cloneEl, "display", "");
+                cloneHidden = false;
+            }
+        }
+    };
+    function _globalDragOver(evt) {
+        if (evt.dataTransfer) {
+            evt.dataTransfer.dropEffect = "move";
+        }
+        evt.cancelable && evt.preventDefault();
+    }
+    function _onMove(fromEl, toEl, dragEl, dragRect, targetEl, targetRect, originalEvent, willInsertAfter) {
+        var evt, sortable = fromEl[expando], onMoveFn = sortable.options.onMove, retVal;
+        if (window.CustomEvent && !IE11OrLess && !Edge) {
+            evt = new CustomEvent("move", {
+                bubbles: true,
+                cancelable: true
+            });
+        } else {
+            evt = document.createEvent("Event");
+            evt.initEvent("move", true, true);
+        }
+        evt.to = toEl;
+        evt.from = fromEl;
+        evt.dragged = dragEl;
+        evt.draggedRect = dragRect;
+        evt.related = targetEl || toEl;
+        evt.relatedRect = targetRect || getRect(toEl);
+        evt.willInsertAfter = willInsertAfter;
+        evt.originalEvent = originalEvent;
+        fromEl.dispatchEvent(evt);
+        if (onMoveFn) {
+            retVal = onMoveFn.call(sortable, evt, originalEvent);
+        }
+        return retVal;
+    }
+    function _disableDraggable(el) {
+        el.draggable = false;
+    }
+    function _unsilent() {
+        _silent = false;
+    }
+    function _ghostIsFirst(evt, vertical, sortable) {
+        var rect = getRect(getChild(sortable.el, 0, sortable.options, true));
+        var spacer = 10;
+        return vertical ? evt.clientX < rect.left - spacer || evt.clientY < rect.top && evt.clientX < rect.right : evt.clientY < rect.top - spacer || evt.clientY < rect.bottom && evt.clientX < rect.left;
+    }
+    function _ghostIsLast(evt, vertical, sortable) {
+        var rect = getRect(lastChild(sortable.el, sortable.options.draggable));
+        var spacer = 10;
+        return vertical ? evt.clientX > rect.right + spacer || evt.clientX <= rect.right && evt.clientY > rect.bottom && evt.clientX >= rect.left : evt.clientX > rect.right && evt.clientY > rect.top || evt.clientX <= rect.right && evt.clientY > rect.bottom + spacer;
+    }
+    function _getSwapDirection(evt, target, targetRect, vertical, swapThreshold, invertedSwapThreshold, invertSwap, isLastTarget) {
+        var mouseOnAxis = vertical ? evt.clientY : evt.clientX, targetLength = vertical ? targetRect.height : targetRect.width, targetS1 = vertical ? targetRect.top : targetRect.left, targetS2 = vertical ? targetRect.bottom : targetRect.right, invert = false;
+        if (!invertSwap) {
+            if (isLastTarget && targetMoveDistance < targetLength * swapThreshold) {
+                if (!pastFirstInvertThresh && (lastDirection === 1 ? mouseOnAxis > targetS1 + targetLength * invertedSwapThreshold / 2 : mouseOnAxis < targetS2 - targetLength * invertedSwapThreshold / 2)) {
+                    pastFirstInvertThresh = true;
+                }
+                if (!pastFirstInvertThresh) {
+                    if (lastDirection === 1 ? mouseOnAxis < targetS1 + targetMoveDistance : mouseOnAxis > targetS2 - targetMoveDistance) {
+                        return -lastDirection;
+                    }
+                } else {
+                    invert = true;
+                }
+            } else {
+                if (mouseOnAxis > targetS1 + targetLength * (1 - swapThreshold) / 2 && mouseOnAxis < targetS2 - targetLength * (1 - swapThreshold) / 2) {
+                    return _getInsertDirection(target);
+                }
+            }
+        }
+        invert = invert || invertSwap;
+        if (invert) {
+            if (mouseOnAxis < targetS1 + targetLength * invertedSwapThreshold / 2 || mouseOnAxis > targetS2 - targetLength * invertedSwapThreshold / 2) {
+                return mouseOnAxis > targetS1 + targetLength / 2 ? 1 : -1;
+            }
+        }
+        return 0;
+    }
+    function _getInsertDirection(target) {
+        if (index(dragEl) < index(target)) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+    function _generateId(el) {
+        var str = el.tagName + el.className + el.src + el.href + el.textContent, i = str.length, sum = 0;
+        while (i--) {
+            sum += str.charCodeAt(i);
+        }
+        return sum.toString(36);
+    }
+    function _saveInputCheckedState(root) {
+        savedInputChecked.length = 0;
+        var inputs = root.getElementsByTagName("input");
+        var idx = inputs.length;
+        while (idx--) {
+            var el = inputs[idx];
+            el.checked && savedInputChecked.push(el);
+        }
+    }
+    function _nextTick(fn) {
+        return setTimeout(fn, 0);
+    }
+    function _cancelNextTick(id) {
+        return clearTimeout(id);
+    }
+    if (documentExists) {
+        on(document, "touchmove", function(evt) {
+            if ((Sortable.active || awaitingDragStarted) && evt.cancelable) {
+                evt.preventDefault();
+            }
+        });
+    }
+    Sortable.utils = {
+        on: on,
+        off: off,
+        css: css,
+        find: find,
+        is: function is(el, selector) {
+            return !!closest(el, selector, el, false);
+        },
+        extend: extend,
+        throttle: throttle,
+        closest: closest,
+        toggleClass: toggleClass,
+        clone: clone,
+        index: index,
+        nextTick: _nextTick,
+        cancelNextTick: _cancelNextTick,
+        detectDirection: _detectDirection,
+        getChild: getChild
+    };
+    Sortable.get = function(element) {
+        return element[expando];
+    };
+    Sortable.mount = function() {
+        for (var _len = arguments.length, plugins = new Array(_len), _key = 0; _key < _len; _key++) {
+            plugins[_key] = arguments[_key];
+        }
+        if (plugins[0].constructor === Array) plugins = plugins[0];
+        plugins.forEach(function(plugin) {
+            if (!plugin.prototype || !plugin.prototype.constructor) {
+                throw "Sortable: Mounted plugin must be a constructor function, not ".concat({}.toString.call(plugin));
+            }
+            if (plugin.utils) Sortable.utils = _objectSpread2(_objectSpread2({}, Sortable.utils), plugin.utils);
+            PluginManager.mount(plugin);
+        });
+    };
+    Sortable.create = function(el, options) {
+        return new Sortable(el, options);
+    };
+    Sortable.version = version;
+    var autoScrolls = [], scrollEl, scrollRootEl, scrolling = false, lastAutoScrollX, lastAutoScrollY, touchEvt$1, pointerElemChangedInterval;
+    function AutoScrollPlugin() {
+        function AutoScroll() {
+            this.defaults = {
+                scroll: true,
+                forceAutoScrollFallback: false,
+                scrollSensitivity: 30,
+                scrollSpeed: 10,
+                bubbleScroll: true
+            };
+            for (var fn in this) {
+                if (fn.charAt(0) === "_" && typeof this[fn] === "function") {
+                    this[fn] = this[fn].bind(this);
+                }
+            }
+        }
+        AutoScroll.prototype = {
+            dragStarted: function dragStarted(_ref) {
+                var originalEvent = _ref.originalEvent;
+                if (this.sortable.nativeDraggable) {
+                    on(document, "dragover", this._handleAutoScroll);
+                } else {
+                    if (this.options.supportPointer) {
+                        on(document, "pointermove", this._handleFallbackAutoScroll);
+                    } else if (originalEvent.touches) {
+                        on(document, "touchmove", this._handleFallbackAutoScroll);
+                    } else {
+                        on(document, "mousemove", this._handleFallbackAutoScroll);
+                    }
+                }
+            },
+            dragOverCompleted: function dragOverCompleted(_ref2) {
+                var originalEvent = _ref2.originalEvent;
+                if (!this.options.dragOverBubble && !originalEvent.rootEl) {
+                    this._handleAutoScroll(originalEvent);
+                }
+            },
+            drop: function drop() {
+                if (this.sortable.nativeDraggable) {
+                    off(document, "dragover", this._handleAutoScroll);
+                } else {
+                    off(document, "pointermove", this._handleFallbackAutoScroll);
+                    off(document, "touchmove", this._handleFallbackAutoScroll);
+                    off(document, "mousemove", this._handleFallbackAutoScroll);
+                }
+                clearPointerElemChangedInterval();
+                clearAutoScrolls();
+                cancelThrottle();
+            },
+            nulling: function nulling() {
+                touchEvt$1 = scrollRootEl = scrollEl = scrolling = pointerElemChangedInterval = lastAutoScrollX = lastAutoScrollY = null;
+                autoScrolls.length = 0;
+            },
+            _handleFallbackAutoScroll: function _handleFallbackAutoScroll(evt) {
+                this._handleAutoScroll(evt, true);
+            },
+            _handleAutoScroll: function _handleAutoScroll(evt, fallback) {
+                var _this = this;
+                var x = (evt.touches ? evt.touches[0] : evt).clientX, y = (evt.touches ? evt.touches[0] : evt).clientY, elem = document.elementFromPoint(x, y);
+                touchEvt$1 = evt;
+                if (fallback || this.options.forceAutoScrollFallback || Edge || IE11OrLess || Safari) {
+                    autoScroll(evt, this.options, elem, fallback);
+                    var ogElemScroller = getParentAutoScrollElement(elem, true);
+                    if (scrolling && (!pointerElemChangedInterval || x !== lastAutoScrollX || y !== lastAutoScrollY)) {
+                        pointerElemChangedInterval && clearPointerElemChangedInterval();
+                        pointerElemChangedInterval = setInterval(function() {
+                            var newElem = getParentAutoScrollElement(document.elementFromPoint(x, y), true);
+                            if (newElem !== ogElemScroller) {
+                                ogElemScroller = newElem;
+                                clearAutoScrolls();
+                            }
+                            autoScroll(evt, _this.options, newElem, fallback);
+                        }, 10);
+                        lastAutoScrollX = x;
+                        lastAutoScrollY = y;
+                    }
+                } else {
+                    if (!this.options.bubbleScroll || getParentAutoScrollElement(elem, true) === getWindowScrollingElement()) {
+                        clearAutoScrolls();
+                        return;
+                    }
+                    autoScroll(evt, this.options, getParentAutoScrollElement(elem, false), false);
+                }
+            }
+        };
+        return _extends(AutoScroll, {
+            pluginName: "scroll",
+            initializeByDefault: true
+        });
+    }
+    function clearAutoScrolls() {
+        autoScrolls.forEach(function(autoScroll) {
+            clearInterval(autoScroll.pid);
+        });
+        autoScrolls = [];
+    }
+    function clearPointerElemChangedInterval() {
+        clearInterval(pointerElemChangedInterval);
+    }
+    var autoScroll = throttle(function(evt, options, rootEl, isFallback) {
+        if (!options.scroll) return;
+        var x = (evt.touches ? evt.touches[0] : evt).clientX, y = (evt.touches ? evt.touches[0] : evt).clientY, sens = options.scrollSensitivity, speed = options.scrollSpeed, winScroller = getWindowScrollingElement();
+        var scrollThisInstance = false, scrollCustomFn;
+        if (scrollRootEl !== rootEl) {
+            scrollRootEl = rootEl;
+            clearAutoScrolls();
+            scrollEl = options.scroll;
+            scrollCustomFn = options.scrollFn;
+            if (scrollEl === true) {
+                scrollEl = getParentAutoScrollElement(rootEl, true);
+            }
+        }
+        var layersOut = 0;
+        var currentParent = scrollEl;
+        do {
+            var el = currentParent, rect = getRect(el), top = rect.top, bottom = rect.bottom, left = rect.left, right = rect.right, width = rect.width, height = rect.height, canScrollX = void 0, canScrollY = void 0, scrollWidth = el.scrollWidth, scrollHeight = el.scrollHeight, elCSS = css(el), scrollPosX = el.scrollLeft, scrollPosY = el.scrollTop;
+            if (el === winScroller) {
+                canScrollX = width < scrollWidth && (elCSS.overflowX === "auto" || elCSS.overflowX === "scroll" || elCSS.overflowX === "visible");
+                canScrollY = height < scrollHeight && (elCSS.overflowY === "auto" || elCSS.overflowY === "scroll" || elCSS.overflowY === "visible");
+            } else {
+                canScrollX = width < scrollWidth && (elCSS.overflowX === "auto" || elCSS.overflowX === "scroll");
+                canScrollY = height < scrollHeight && (elCSS.overflowY === "auto" || elCSS.overflowY === "scroll");
+            }
+            var vx = canScrollX && (Math.abs(right - x) <= sens && scrollPosX + width < scrollWidth) - (Math.abs(left - x) <= sens && !!scrollPosX);
+            var vy = canScrollY && (Math.abs(bottom - y) <= sens && scrollPosY + height < scrollHeight) - (Math.abs(top - y) <= sens && !!scrollPosY);
+            if (!autoScrolls[layersOut]) {
+                for (var i = 0; i <= layersOut; i++) {
+                    if (!autoScrolls[i]) {
+                        autoScrolls[i] = {};
+                    }
+                }
+            }
+            if (autoScrolls[layersOut].vx != vx || autoScrolls[layersOut].vy != vy || autoScrolls[layersOut].el !== el) {
+                autoScrolls[layersOut].el = el;
+                autoScrolls[layersOut].vx = vx;
+                autoScrolls[layersOut].vy = vy;
+                clearInterval(autoScrolls[layersOut].pid);
+                if (vx != 0 || vy != 0) {
+                    scrollThisInstance = true;
+                    autoScrolls[layersOut].pid = setInterval(function() {
+                        if (isFallback && this.layer === 0) {
+                            Sortable.active._onTouchMove(touchEvt$1);
+                        }
+                        var scrollOffsetY = autoScrolls[this.layer].vy ? autoScrolls[this.layer].vy * speed : 0;
+                        var scrollOffsetX = autoScrolls[this.layer].vx ? autoScrolls[this.layer].vx * speed : 0;
+                        if (typeof scrollCustomFn === "function") {
+                            if (scrollCustomFn.call(Sortable.dragged.parentNode[expando], scrollOffsetX, scrollOffsetY, evt, touchEvt$1, autoScrolls[this.layer].el) !== "continue") {
+                                return;
+                            }
+                        }
+                        scrollBy(autoScrolls[this.layer].el, scrollOffsetX, scrollOffsetY);
+                    }.bind({
+                        layer: layersOut
+                    }), 24);
+                }
+            }
+            layersOut++;
+        } while (options.bubbleScroll && currentParent !== winScroller && (currentParent = getParentAutoScrollElement(currentParent, false)));
+        scrolling = scrollThisInstance;
+    }, 30);
+    var drop = function drop(_ref) {
+        var originalEvent = _ref.originalEvent, putSortable = _ref.putSortable, dragEl = _ref.dragEl, activeSortable = _ref.activeSortable, dispatchSortableEvent = _ref.dispatchSortableEvent, hideGhostForTarget = _ref.hideGhostForTarget, unhideGhostForTarget = _ref.unhideGhostForTarget;
+        if (!originalEvent) return;
+        var toSortable = putSortable || activeSortable;
+        hideGhostForTarget();
+        var touch = originalEvent.changedTouches && originalEvent.changedTouches.length ? originalEvent.changedTouches[0] : originalEvent;
+        var target = document.elementFromPoint(touch.clientX, touch.clientY);
+        unhideGhostForTarget();
+        if (toSortable && !toSortable.el.contains(target)) {
+            dispatchSortableEvent("spill");
+            this.onSpill({
+                dragEl: dragEl,
+                putSortable: putSortable
+            });
+        }
+    };
+    function Revert() {}
+    Revert.prototype = {
+        startIndex: null,
+        dragStart: function dragStart(_ref2) {
+            var oldDraggableIndex = _ref2.oldDraggableIndex;
+            this.startIndex = oldDraggableIndex;
+        },
+        onSpill: function onSpill(_ref3) {
+            var dragEl = _ref3.dragEl, putSortable = _ref3.putSortable;
+            this.sortable.captureAnimationState();
+            if (putSortable) {
+                putSortable.captureAnimationState();
+            }
+            var nextSibling = getChild(this.sortable.el, this.startIndex, this.options);
+            if (nextSibling) {
+                this.sortable.el.insertBefore(dragEl, nextSibling);
+            } else {
+                this.sortable.el.appendChild(dragEl);
+            }
+            this.sortable.animateAll();
+            if (putSortable) {
+                putSortable.animateAll();
+            }
+        },
+        drop: drop
+    };
+    _extends(Revert, {
+        pluginName: "revertOnSpill"
+    });
+    function Remove() {}
+    Remove.prototype = {
+        onSpill: function onSpill(_ref4) {
+            var dragEl = _ref4.dragEl, putSortable = _ref4.putSortable;
+            var parentSortable = putSortable || this.sortable;
+            parentSortable.captureAnimationState();
+            dragEl.parentNode && dragEl.parentNode.removeChild(dragEl);
+            parentSortable.animateAll();
+        },
+        drop: drop
+    };
+    _extends(Remove, {
+        pluginName: "removeOnSpill"
+    });
+    var lastSwapEl;
+    function SwapPlugin() {
+        function Swap() {
+            this.defaults = {
+                swapClass: "sortable-swap-highlight"
+            };
+        }
+        Swap.prototype = {
+            dragStart: function dragStart(_ref) {
+                var dragEl = _ref.dragEl;
+                lastSwapEl = dragEl;
+            },
+            dragOverValid: function dragOverValid(_ref2) {
+                var completed = _ref2.completed, target = _ref2.target, onMove = _ref2.onMove, activeSortable = _ref2.activeSortable, changed = _ref2.changed, cancel = _ref2.cancel;
+                if (!activeSortable.options.swap) return;
+                var el = this.sortable.el, options = this.options;
+                if (target && target !== el) {
+                    var prevSwapEl = lastSwapEl;
+                    if (onMove(target) !== false) {
+                        toggleClass(target, options.swapClass, true);
+                        lastSwapEl = target;
+                    } else {
+                        lastSwapEl = null;
+                    }
+                    if (prevSwapEl && prevSwapEl !== lastSwapEl) {
+                        toggleClass(prevSwapEl, options.swapClass, false);
+                    }
+                }
+                changed();
+                completed(true);
+                cancel();
+            },
+            drop: function drop(_ref3) {
+                var activeSortable = _ref3.activeSortable, putSortable = _ref3.putSortable, dragEl = _ref3.dragEl;
+                var toSortable = putSortable || this.sortable;
+                var options = this.options;
+                lastSwapEl && toggleClass(lastSwapEl, options.swapClass, false);
+                if (lastSwapEl && (options.swap || putSortable && putSortable.options.swap)) {
+                    if (dragEl !== lastSwapEl) {
+                        toSortable.captureAnimationState();
+                        if (toSortable !== activeSortable) activeSortable.captureAnimationState();
+                        swapNodes(dragEl, lastSwapEl);
+                        toSortable.animateAll();
+                        if (toSortable !== activeSortable) activeSortable.animateAll();
+                    }
+                }
+            },
+            nulling: function nulling() {
+                lastSwapEl = null;
+            }
+        };
+        return _extends(Swap, {
+            pluginName: "swap",
+            eventProperties: function eventProperties() {
+                return {
+                    swapItem: lastSwapEl
+                };
+            }
+        });
+    }
+    function swapNodes(n1, n2) {
+        var p1 = n1.parentNode, p2 = n2.parentNode, i1, i2;
+        if (!p1 || !p2 || p1.isEqualNode(n2) || p2.isEqualNode(n1)) return;
+        i1 = index(n1);
+        i2 = index(n2);
+        if (p1.isEqualNode(p2) && i1 < i2) {
+            i2++;
+        }
+        p1.insertBefore(n2, p1.children[i1]);
+        p2.insertBefore(n1, p2.children[i2]);
+    }
+    var multiDragElements = [], multiDragClones = [], lastMultiDragSelect, multiDragSortable, initialFolding = false, folding = false, dragStarted = false, dragEl$1, clonesFromRect, clonesHidden;
+    function MultiDragPlugin() {
+        function MultiDrag(sortable) {
+            for (var fn in this) {
+                if (fn.charAt(0) === "_" && typeof this[fn] === "function") {
+                    this[fn] = this[fn].bind(this);
+                }
+            }
+            if (sortable.options.supportPointer) {
+                on(document, "pointerup", this._deselectMultiDrag);
+            } else {
+                on(document, "mouseup", this._deselectMultiDrag);
+                on(document, "touchend", this._deselectMultiDrag);
+            }
+            on(document, "keydown", this._checkKeyDown);
+            on(document, "keyup", this._checkKeyUp);
+            this.defaults = {
+                selectedClass: "sortable-selected",
+                multiDragKey: null,
+                setData: function setData(dataTransfer, dragEl) {
+                    var data = "";
+                    if (multiDragElements.length && multiDragSortable === sortable) {
+                        multiDragElements.forEach(function(multiDragElement, i) {
+                            data += (!i ? "" : ", ") + multiDragElement.textContent;
+                        });
+                    } else {
+                        data = dragEl.textContent;
+                    }
+                    dataTransfer.setData("Text", data);
+                }
+            };
+        }
+        MultiDrag.prototype = {
+            multiDragKeyDown: false,
+            isMultiDrag: false,
+            delayStartGlobal: function delayStartGlobal(_ref) {
+                var dragged = _ref.dragEl;
+                dragEl$1 = dragged;
+            },
+            delayEnded: function delayEnded() {
+                this.isMultiDrag = ~multiDragElements.indexOf(dragEl$1);
+            },
+            setupClone: function setupClone(_ref2) {
+                var sortable = _ref2.sortable, cancel = _ref2.cancel;
+                if (!this.isMultiDrag) return;
+                for (var i = 0; i < multiDragElements.length; i++) {
+                    multiDragClones.push(clone(multiDragElements[i]));
+                    multiDragClones[i].sortableIndex = multiDragElements[i].sortableIndex;
+                    multiDragClones[i].draggable = false;
+                    multiDragClones[i].style["will-change"] = "";
+                    toggleClass(multiDragClones[i], this.options.selectedClass, false);
+                    multiDragElements[i] === dragEl$1 && toggleClass(multiDragClones[i], this.options.chosenClass, false);
+                }
+                sortable._hideClone();
+                cancel();
+            },
+            clone: function clone(_ref3) {
+                var sortable = _ref3.sortable, rootEl = _ref3.rootEl, dispatchSortableEvent = _ref3.dispatchSortableEvent, cancel = _ref3.cancel;
+                if (!this.isMultiDrag) return;
+                if (!this.options.removeCloneOnHide) {
+                    if (multiDragElements.length && multiDragSortable === sortable) {
+                        insertMultiDragClones(true, rootEl);
+                        dispatchSortableEvent("clone");
+                        cancel();
+                    }
+                }
+            },
+            showClone: function showClone(_ref4) {
+                var cloneNowShown = _ref4.cloneNowShown, rootEl = _ref4.rootEl, cancel = _ref4.cancel;
+                if (!this.isMultiDrag) return;
+                insertMultiDragClones(false, rootEl);
+                multiDragClones.forEach(function(clone) {
+                    css(clone, "display", "");
+                });
+                cloneNowShown();
+                clonesHidden = false;
+                cancel();
+            },
+            hideClone: function hideClone(_ref5) {
+                var _this = this;
+                var sortable = _ref5.sortable, cloneNowHidden = _ref5.cloneNowHidden, cancel = _ref5.cancel;
+                if (!this.isMultiDrag) return;
+                multiDragClones.forEach(function(clone) {
+                    css(clone, "display", "none");
+                    if (_this.options.removeCloneOnHide && clone.parentNode) {
+                        clone.parentNode.removeChild(clone);
+                    }
+                });
+                cloneNowHidden();
+                clonesHidden = true;
+                cancel();
+            },
+            dragStartGlobal: function dragStartGlobal(_ref6) {
+                var sortable = _ref6.sortable;
+                if (!this.isMultiDrag && multiDragSortable) {
+                    multiDragSortable.multiDrag._deselectMultiDrag();
+                }
+                multiDragElements.forEach(function(multiDragElement) {
+                    multiDragElement.sortableIndex = index(multiDragElement);
+                });
+                multiDragElements = multiDragElements.sort(function(a, b) {
+                    return a.sortableIndex - b.sortableIndex;
+                });
+                dragStarted = true;
+            },
+            dragStarted: function dragStarted(_ref7) {
+                var _this2 = this;
+                var sortable = _ref7.sortable;
+                if (!this.isMultiDrag) return;
+                if (this.options.sort) {
+                    sortable.captureAnimationState();
+                    if (this.options.animation) {
+                        multiDragElements.forEach(function(multiDragElement) {
+                            if (multiDragElement === dragEl$1) return;
+                            css(multiDragElement, "position", "absolute");
+                        });
+                        var dragRect = getRect(dragEl$1, false, true, true);
+                        multiDragElements.forEach(function(multiDragElement) {
+                            if (multiDragElement === dragEl$1) return;
+                            setRect(multiDragElement, dragRect);
+                        });
+                        folding = true;
+                        initialFolding = true;
+                    }
+                }
+                sortable.animateAll(function() {
+                    folding = false;
+                    initialFolding = false;
+                    if (_this2.options.animation) {
+                        multiDragElements.forEach(function(multiDragElement) {
+                            unsetRect(multiDragElement);
+                        });
+                    }
+                    if (_this2.options.sort) {
+                        removeMultiDragElements();
+                    }
+                });
+            },
+            dragOver: function dragOver(_ref8) {
+                var target = _ref8.target, completed = _ref8.completed, cancel = _ref8.cancel;
+                if (folding && ~multiDragElements.indexOf(target)) {
+                    completed(false);
+                    cancel();
+                }
+            },
+            revert: function revert(_ref9) {
+                var fromSortable = _ref9.fromSortable, rootEl = _ref9.rootEl, sortable = _ref9.sortable, dragRect = _ref9.dragRect;
+                if (multiDragElements.length > 1) {
+                    multiDragElements.forEach(function(multiDragElement) {
+                        sortable.addAnimationState({
+                            target: multiDragElement,
+                            rect: folding ? getRect(multiDragElement) : dragRect
+                        });
+                        unsetRect(multiDragElement);
+                        multiDragElement.fromRect = dragRect;
+                        fromSortable.removeAnimationState(multiDragElement);
+                    });
+                    folding = false;
+                    insertMultiDragElements(!this.options.removeCloneOnHide, rootEl);
+                }
+            },
+            dragOverCompleted: function dragOverCompleted(_ref10) {
+                var sortable = _ref10.sortable, isOwner = _ref10.isOwner, insertion = _ref10.insertion, activeSortable = _ref10.activeSortable, parentEl = _ref10.parentEl, putSortable = _ref10.putSortable;
+                var options = this.options;
+                if (insertion) {
+                    if (isOwner) {
+                        activeSortable._hideClone();
+                    }
+                    initialFolding = false;
+                    if (options.animation && multiDragElements.length > 1 && (folding || !isOwner && !activeSortable.options.sort && !putSortable)) {
+                        var dragRectAbsolute = getRect(dragEl$1, false, true, true);
+                        multiDragElements.forEach(function(multiDragElement) {
+                            if (multiDragElement === dragEl$1) return;
+                            setRect(multiDragElement, dragRectAbsolute);
+                            parentEl.appendChild(multiDragElement);
+                        });
+                        folding = true;
+                    }
+                    if (!isOwner) {
+                        if (!folding) {
+                            removeMultiDragElements();
+                        }
+                        if (multiDragElements.length > 1) {
+                            var clonesHiddenBefore = clonesHidden;
+                            activeSortable._showClone(sortable);
+                            if (activeSortable.options.animation && !clonesHidden && clonesHiddenBefore) {
+                                multiDragClones.forEach(function(clone) {
+                                    activeSortable.addAnimationState({
+                                        target: clone,
+                                        rect: clonesFromRect
+                                    });
+                                    clone.fromRect = clonesFromRect;
+                                    clone.thisAnimationDuration = null;
+                                });
+                            }
+                        } else {
+                            activeSortable._showClone(sortable);
+                        }
+                    }
+                }
+            },
+            dragOverAnimationCapture: function dragOverAnimationCapture(_ref11) {
+                var dragRect = _ref11.dragRect, isOwner = _ref11.isOwner, activeSortable = _ref11.activeSortable;
+                multiDragElements.forEach(function(multiDragElement) {
+                    multiDragElement.thisAnimationDuration = null;
+                });
+                if (activeSortable.options.animation && !isOwner && activeSortable.multiDrag.isMultiDrag) {
+                    clonesFromRect = _extends({}, dragRect);
+                    var dragMatrix = matrix(dragEl$1, true);
+                    clonesFromRect.top -= dragMatrix.f;
+                    clonesFromRect.left -= dragMatrix.e;
+                }
+            },
+            dragOverAnimationComplete: function dragOverAnimationComplete() {
+                if (folding) {
+                    folding = false;
+                    removeMultiDragElements();
+                }
+            },
+            drop: function drop(_ref12) {
+                var evt = _ref12.originalEvent, rootEl = _ref12.rootEl, parentEl = _ref12.parentEl, sortable = _ref12.sortable, dispatchSortableEvent = _ref12.dispatchSortableEvent, oldIndex = _ref12.oldIndex, putSortable = _ref12.putSortable;
+                var toSortable = putSortable || this.sortable;
+                if (!evt) return;
+                var options = this.options, children = parentEl.children;
+                if (!dragStarted) {
+                    if (options.multiDragKey && !this.multiDragKeyDown) {
+                        this._deselectMultiDrag();
+                    }
+                    toggleClass(dragEl$1, options.selectedClass, !~multiDragElements.indexOf(dragEl$1));
+                    if (!~multiDragElements.indexOf(dragEl$1)) {
+                        multiDragElements.push(dragEl$1);
+                        dispatchEvent({
+                            sortable: sortable,
+                            rootEl: rootEl,
+                            name: "select",
+                            targetEl: dragEl$1,
+                            originalEvt: evt
+                        });
+                        if (evt.shiftKey && lastMultiDragSelect && sortable.el.contains(lastMultiDragSelect)) {
+                            var lastIndex = index(lastMultiDragSelect), currentIndex = index(dragEl$1);
+                            if (~lastIndex && ~currentIndex && lastIndex !== currentIndex) {
+                                var n, i;
+                                if (currentIndex > lastIndex) {
+                                    i = lastIndex;
+                                    n = currentIndex;
+                                } else {
+                                    i = currentIndex;
+                                    n = lastIndex + 1;
+                                }
+                                for (;i < n; i++) {
+                                    if (~multiDragElements.indexOf(children[i])) continue;
+                                    toggleClass(children[i], options.selectedClass, true);
+                                    multiDragElements.push(children[i]);
+                                    dispatchEvent({
+                                        sortable: sortable,
+                                        rootEl: rootEl,
+                                        name: "select",
+                                        targetEl: children[i],
+                                        originalEvt: evt
+                                    });
+                                }
+                            }
+                        } else {
+                            lastMultiDragSelect = dragEl$1;
+                        }
+                        multiDragSortable = toSortable;
+                    } else {
+                        multiDragElements.splice(multiDragElements.indexOf(dragEl$1), 1);
+                        lastMultiDragSelect = null;
+                        dispatchEvent({
+                            sortable: sortable,
+                            rootEl: rootEl,
+                            name: "deselect",
+                            targetEl: dragEl$1,
+                            originalEvt: evt
+                        });
+                    }
+                }
+                if (dragStarted && this.isMultiDrag) {
+                    folding = false;
+                    if ((parentEl[expando].options.sort || parentEl !== rootEl) && multiDragElements.length > 1) {
+                        var dragRect = getRect(dragEl$1), multiDragIndex = index(dragEl$1, ":not(." + this.options.selectedClass + ")");
+                        if (!initialFolding && options.animation) dragEl$1.thisAnimationDuration = null;
+                        toSortable.captureAnimationState();
+                        if (!initialFolding) {
+                            if (options.animation) {
+                                dragEl$1.fromRect = dragRect;
+                                multiDragElements.forEach(function(multiDragElement) {
+                                    multiDragElement.thisAnimationDuration = null;
+                                    if (multiDragElement !== dragEl$1) {
+                                        var rect = folding ? getRect(multiDragElement) : dragRect;
+                                        multiDragElement.fromRect = rect;
+                                        toSortable.addAnimationState({
+                                            target: multiDragElement,
+                                            rect: rect
+                                        });
+                                    }
+                                });
+                            }
+                            removeMultiDragElements();
+                            multiDragElements.forEach(function(multiDragElement) {
+                                if (children[multiDragIndex]) {
+                                    parentEl.insertBefore(multiDragElement, children[multiDragIndex]);
+                                } else {
+                                    parentEl.appendChild(multiDragElement);
+                                }
+                                multiDragIndex++;
+                            });
+                            if (oldIndex === index(dragEl$1)) {
+                                var update = false;
+                                multiDragElements.forEach(function(multiDragElement) {
+                                    if (multiDragElement.sortableIndex !== index(multiDragElement)) {
+                                        update = true;
+                                        return;
+                                    }
+                                });
+                                if (update) {
+                                    dispatchSortableEvent("update");
+                                }
+                            }
+                        }
+                        multiDragElements.forEach(function(multiDragElement) {
+                            unsetRect(multiDragElement);
+                        });
+                        toSortable.animateAll();
+                    }
+                    multiDragSortable = toSortable;
+                }
+                if (rootEl === parentEl || putSortable && putSortable.lastPutMode !== "clone") {
+                    multiDragClones.forEach(function(clone) {
+                        clone.parentNode && clone.parentNode.removeChild(clone);
+                    });
+                }
+            },
+            nullingGlobal: function nullingGlobal() {
+                this.isMultiDrag = dragStarted = false;
+                multiDragClones.length = 0;
+            },
+            destroyGlobal: function destroyGlobal() {
+                this._deselectMultiDrag();
+                off(document, "pointerup", this._deselectMultiDrag);
+                off(document, "mouseup", this._deselectMultiDrag);
+                off(document, "touchend", this._deselectMultiDrag);
+                off(document, "keydown", this._checkKeyDown);
+                off(document, "keyup", this._checkKeyUp);
+            },
+            _deselectMultiDrag: function _deselectMultiDrag(evt) {
+                if (typeof dragStarted !== "undefined" && dragStarted) return;
+                if (multiDragSortable !== this.sortable) return;
+                if (evt && closest(evt.target, this.options.draggable, this.sortable.el, false)) return;
+                if (evt && evt.button !== 0) return;
+                while (multiDragElements.length) {
+                    var el = multiDragElements[0];
+                    toggleClass(el, this.options.selectedClass, false);
+                    multiDragElements.shift();
+                    dispatchEvent({
+                        sortable: this.sortable,
+                        rootEl: this.sortable.el,
+                        name: "deselect",
+                        targetEl: el,
+                        originalEvt: evt
+                    });
+                }
+            },
+            _checkKeyDown: function _checkKeyDown(evt) {
+                if (evt.key === this.options.multiDragKey) {
+                    this.multiDragKeyDown = true;
+                }
+            },
+            _checkKeyUp: function _checkKeyUp(evt) {
+                if (evt.key === this.options.multiDragKey) {
+                    this.multiDragKeyDown = false;
+                }
+            }
+        };
+        return _extends(MultiDrag, {
+            pluginName: "multiDrag",
+            utils: {
+                select: function select(el) {
+                    var sortable = el.parentNode[expando];
+                    if (!sortable || !sortable.options.multiDrag || ~multiDragElements.indexOf(el)) return;
+                    if (multiDragSortable && multiDragSortable !== sortable) {
+                        multiDragSortable.multiDrag._deselectMultiDrag();
+                        multiDragSortable = sortable;
+                    }
+                    toggleClass(el, sortable.options.selectedClass, true);
+                    multiDragElements.push(el);
+                },
+                deselect: function deselect(el) {
+                    var sortable = el.parentNode[expando], index = multiDragElements.indexOf(el);
+                    if (!sortable || !sortable.options.multiDrag || !~index) return;
+                    toggleClass(el, sortable.options.selectedClass, false);
+                    multiDragElements.splice(index, 1);
+                }
+            },
+            eventProperties: function eventProperties() {
+                var _this3 = this;
+                var oldIndicies = [], newIndicies = [];
+                multiDragElements.forEach(function(multiDragElement) {
+                    oldIndicies.push({
+                        multiDragElement: multiDragElement,
+                        index: multiDragElement.sortableIndex
+                    });
+                    var newIndex;
+                    if (folding && multiDragElement !== dragEl$1) {
+                        newIndex = -1;
+                    } else if (folding) {
+                        newIndex = index(multiDragElement, ":not(." + _this3.options.selectedClass + ")");
+                    } else {
+                        newIndex = index(multiDragElement);
+                    }
+                    newIndicies.push({
+                        multiDragElement: multiDragElement,
+                        index: newIndex
+                    });
+                });
+                return {
+                    items: _toConsumableArray(multiDragElements),
+                    clones: [].concat(multiDragClones),
+                    oldIndicies: oldIndicies,
+                    newIndicies: newIndicies
+                };
+            },
+            optionListeners: {
+                multiDragKey: function multiDragKey(key) {
+                    key = key.toLowerCase();
+                    if (key === "ctrl") {
+                        key = "Control";
+                    } else if (key.length > 1) {
+                        key = key.charAt(0).toUpperCase() + key.substr(1);
+                    }
+                    return key;
+                }
+            }
+        });
+    }
+    function insertMultiDragElements(clonesInserted, rootEl) {
+        multiDragElements.forEach(function(multiDragElement, i) {
+            var target = rootEl.children[multiDragElement.sortableIndex + (clonesInserted ? Number(i) : 0)];
+            if (target) {
+                rootEl.insertBefore(multiDragElement, target);
+            } else {
+                rootEl.appendChild(multiDragElement);
+            }
+        });
+    }
+    function insertMultiDragClones(elementsInserted, rootEl) {
+        multiDragClones.forEach(function(clone, i) {
+            var target = rootEl.children[clone.sortableIndex + (elementsInserted ? Number(i) : 0)];
+            if (target) {
+                rootEl.insertBefore(clone, target);
+            } else {
+                rootEl.appendChild(clone);
+            }
+        });
+    }
+    function removeMultiDragElements() {
+        multiDragElements.forEach(function(multiDragElement) {
+            if (multiDragElement === dragEl$1) return;
+            multiDragElement.parentNode && multiDragElement.parentNode.removeChild(multiDragElement);
+        });
+    }
+    Sortable.mount(new AutoScrollPlugin());
+    Sortable.mount(Remove, Revert);
+    Sortable.mount(new SwapPlugin());
+    Sortable.mount(new MultiDragPlugin());
+    return Sortable;
+});
+
 var indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
         if (i in this && this[i] === item) return i;
@@ -10847,7 +13509,7 @@ wApp.utils = {
             n = 15;
         }
         if (str && str.length > n) {
-            return str.substr(0, n - 1) + "&hellip;";
+            return str.substr(0, n - 1) + "…";
         } else {
             return str;
         }
@@ -10897,6 +13559,19 @@ wApp.utils = {
         output = {};
         for (key = j = 0, ref = a.length; 0 <= ref ? j < ref : j > ref; key = 0 <= ref ? ++j : --j) {
             output[a[key]] = a[key];
+        }
+        results = [];
+        for (key in output) {
+            value = output[key];
+            results.push(value);
+        }
+        return results;
+    },
+    uniqRecords: function(a) {
+        var j, key, output, ref, results, value;
+        output = {};
+        for (key = j = 0, ref = a.length; 0 <= ref ? j < ref : j > ref; key = 0 <= ref ? ++j : --j) {
+            output[a[key].id] = a[key];
         }
         results = [];
         for (key in output) {
@@ -11100,7 +13775,7 @@ wApp.mixins.page = {
     }
 };
 
-riot.tag2("kor-field-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <h2 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <form if="{data && types}" onsubmit="{submit}"> <kor-input name="type" label="{tcap(\'activerecord.attributes.field.type\')}" type="select" options="{types_for_select}" riot-value="{data.type}" is-disabled="{data.id}" ref="fields" onchange="{updateSpecialFields}"></kor-input> <virtual each="{f in specialFields}"> <kor-input name="{f.name}" label="{tcap(\'activerecord.attributes.field.\' + f.name)}" type="{f.type}" options="{f.options}" riot-value="{data[f.name]}" errors="{errors[f.name]}" ref="fields"></kor-input> </virtual> <kor-input name="name" label="{tcap(\'activerecord.attributes.field.name\')}" riot-value="{data.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="show_label" label="{tcap(\'activerecord.attributes.field.show_label\')}" riot-value="{data.show_label}" errors="{errors.show_label}" ref="fields"></kor-input> <kor-input name="form_label" label="{tcap(\'activerecord.attributes.field.form_label\')}" riot-value="{data.form_label}" errors="{errors.form_label}" ref="fields"></kor-input> <kor-input name="search_label" label="{tcap(\'activerecord.attributes.field.search_label\')}" riot-value="{data.search_label}" errors="{errors.search_label}" ref="fields"></kor-input> <kor-input name="show_on_entity" type="checkbox" label="{tcap(\'activerecord.attributes.field.show_on_entity\')}" riot-value="{data.show_on_entity}" ref="fields"></kor-input> <kor-input name="is_identifier" type="checkbox" label="{tcap(\'activerecord.attributes.field.is_identifier\')}" riot-value="{data.is_identifier}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
+riot.tag2("kor-field-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <h2 if="{!opts.id}"> {tcap(\'objects.create\', {interpolations: {o: \'activerecord.models.field\'}})} </h2> <form if="{data && types}" onsubmit="{submit}"> <kor-input name="type" label="{tcap(\'activerecord.attributes.field.type\')}" type="select" options="{types_for_select}" riot-value="{data.type}" is-disabled="{data.id}" ref="fields" onchange="{updateSpecialFields}"></kor-input> <virtual each="{f in specialFields}"> <kor-input name="{f.name}" label="{tcap(\'activerecord.attributes.field.\' + f.name)}" type="{f.type}" options="{f.options}" riot-value="{data[f.name]}" errors="{errors[f.name]}" ref="fields"></kor-input> </virtual> <kor-input name="name" label="{tcap(\'activerecord.attributes.field.name\')}" riot-value="{data.name}" errors="{errors.name}" ref="fields"></kor-input> <kor-input name="show_label" label="{tcap(\'activerecord.attributes.field.show_label\')}" riot-value="{data.show_label}" errors="{errors.show_label}" ref="fields"></kor-input> <kor-input name="form_label" label="{tcap(\'activerecord.attributes.field.form_label\')}" riot-value="{data.form_label}" errors="{errors.form_label}" ref="fields"></kor-input> <kor-input name="search_label" label="{tcap(\'activerecord.attributes.field.search_label\')}" riot-value="{data.search_label}" errors="{errors.search_label}" ref="fields"></kor-input> <kor-input name="help_text" type="textarea" label="{tcap(\'activerecord.attributes.field.help_text\')}" riot-value="{data.help_text}" errors="{errors.help_text}" ref="fields"></kor-input> <kor-input name="mandatory" type="checkbox" label="{tcap(\'activerecord.attributes.field.mandatory\')}" riot-value="{data.mandatory}" ref="fields"></kor-input> <kor-input name="show_on_entity" type="checkbox" label="{tcap(\'activerecord.attributes.field.show_on_entity\')}" riot-value="{data.show_on_entity}" ref="fields"></kor-input> <kor-input name="is_identifier" type="checkbox" label="{tcap(\'activerecord.attributes.field.is_identifier\')}" riot-value="{data.is_identifier}" ref="fields"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form>', "", "", function(opts) {
     var create, fetch, fetchTypes, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -11202,11 +13877,39 @@ riot.tag2("kor-field-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {inte
     };
 });
 
-riot.tag2("kor-fields", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/new" title="{t(\'verbs.add\')}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.field\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{field in opts.kind.fields}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(field)}" title="{t(\'verbs.delete\')}"><i class="fa fa-remove"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit">{field.name}</a> <div class="clearfix"></div> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-fields", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/new" title="{t(\'verbs.add\')}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.field\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{field in opts.kind.fields}" key="{field.id}" data-id="{field.id}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> <a href="#" onclick="{remove(field)}" title="{t(\'verbs.delete\')}"><i class="fa fa-remove"></i></a> <a class="handle" href="#" onclick="{preventDefault}" title="{t(\'change_order\')}"><i class="fa fa-bars"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/fields/{field.id}/edit" title="{field.show_label}"> {wApp.utils.shorten(field.name, 20)} </a> <div class="clearfix"></div> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        var ul;
+        ul = tag.root.querySelector("ul");
+        return new Sortable(ul, {
+            draggable: "li",
+            handle: ".handle",
+            forceFallback: true,
+            onEnd: function(event) {
+                var id, params;
+                if (event.newIndex !== event.oldIndex) {
+                    id = event.item.getAttribute("data-id");
+                    params = JSON.stringify({
+                        field: {
+                            position: event.newIndex
+                        }
+                    });
+                    return Zepto.ajax({
+                        type: "PATCH",
+                        url: "/kinds/" + tag.opts.kind.id + "/fields/" + id,
+                        data: params,
+                        success: function() {
+                            return tag.opts.notify.trigger("refresh");
+                        }
+                    });
+                }
+            }
+        });
+    });
     tag.remove = function(field) {
         return function(event) {
             event.preventDefault();
@@ -11221,6 +13924,9 @@ riot.tag2("kor-fields", '<div class="pull-right kor-text-right"> <a href="#/kind
                 });
             }
         };
+    };
+    tag.preventDefault = function(event) {
+        return event.preventDefault();
     };
 });
 
@@ -11292,11 +13998,39 @@ riot.tag2("kor-generator-editor", '<h2 if="{opts.id}"> {tcap(\'objects.edit\', {
     };
 });
 
-riot.tag2("kor-generators", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/new" title="{t(\'verbs.add\')}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.generator\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{generator in opts.kind.generators}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}" onclick="{remove(generator)}" title="{t(\'verbs.delete\')}"><i class="fa fa-remove"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit">{generator.name}</a> <div class="clearfix"></div> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-generators", '<div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/new" title="{t(\'verbs.add\')}"> <i class="fa fa-plus-square"></i> </a> </div> <strong> {tcap(\'activerecord.models.generator\', {count: \'other\'})} </strong> <div class="clearfix"></div> <ul if="{opts.kind}"> <li each="{generator in opts.kind.generators}" key="{generator.id}" data-id="{generator.id}"> <div class="pull-right kor-text-right"> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}" onclick="{remove(generator)}" title="{t(\'verbs.delete\')}"><i class="fa fa-remove"></i></a> <a class="handle" href="#" onclick="{preventDefault}" title="{t(\'change_order\')}"><i class="fa fa-bars"></i></a> </div> <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit">{generator.name}</a> <div class="clearfix"></div> </li> </ul> <div class="clearfix"></div>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.on("mount", function() {
+        var ul;
+        ul = tag.root.querySelector("ul");
+        return new Sortable(ul, {
+            draggable: "li",
+            handle: ".handle",
+            forceFallback: true,
+            onEnd: function(event) {
+                var id, params;
+                if (event.newIndex !== event.oldIndex) {
+                    id = event.item.getAttribute("data-id");
+                    params = JSON.stringify({
+                        generator: {
+                            position: event.newIndex
+                        }
+                    });
+                    return Zepto.ajax({
+                        type: "PATCH",
+                        url: "/kinds/" + tag.opts.kind.id + "/generators/" + id,
+                        data: params,
+                        success: function() {
+                            return tag.opts.notify.trigger("refresh");
+                        }
+                    });
+                }
+            }
+        });
+    });
     tag.remove = function(generator) {
         return function(event) {
             event.preventDefault();
@@ -11311,6 +14045,9 @@ riot.tag2("kor-generators", '<div class="pull-right kor-text-right"> <a href="#/
                 });
             }
         };
+    };
+    tag.preventDefault = function(event) {
+        return event.preventDefault();
     };
 });
 
@@ -11563,6 +14300,9 @@ riot.tag2("kor-collection-selector", '<virtual if="{collections}"> <virtual if="
     var fetch = function() {
         Zepto.ajax({
             url: "/collections",
+            data: {
+                per_page: "max"
+            },
             success: function(data) {
                 tag.collections = data.records;
                 tag.update();
@@ -11582,7 +14322,7 @@ riot.tag2("kor-collection-selector", '<virtual if="{collections}"> <virtual if="
     };
 });
 
-riot.tag2("kor-dataset-fields", '<virtual each="{field in opts.fields}"> <kor-input if="{simple(field)}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields" errors="{errorsFor(field)}"></kor-input> <kor-input if="{field.type == \'Fields::Text\'}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields" errors="{errorsFor(field)}" type="textarea"></kor-input> <kor-input if="{field.type == \'Fields::Select\'}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields" errors="{errorsFor(field)}" type="select" options="{field.values.split(⁗\\n⁗)}" multiple="{field.subtype == \'multiselect\'}"></kor-input> </virtual>', "", "", function(opts) {
+riot.tag2("kor-dataset-fields", '<virtual each="{field in opts.fields}"> <virtual if="{!opts.onlyMandatory || field.mandatory}"> <kor-input if="{simple(field)}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields" errors="{errorsFor(field)}" help="{field.help_text}"></kor-input> <kor-input if="{field.type == \'Fields::Text\'}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields" errors="{errorsFor(field)}" type="textarea" help="{field.help_text}"></kor-input> <kor-input if="{field.type == \'Fields::Select\'}" name="{field.name}" label="{field.form_label}" riot-value="{values()[field.name]}" ref="fields" errors="{errorsFor(field)}" type="select" options="{field.values.split(⁗\\n⁗)}" placeholder="" placeholder-value="" multiple="{field.subtype == \'multiselect\'}" help="{field.help_text}"></kor-input> </virtual>', "", "", function(opts) {
     var tag = this;
     tag.errorsFor = function(field) {
         if (tag.opts.errors) {
@@ -11804,6 +14544,28 @@ riot.tag2("kor-mass-relate", '<div class="kor-content-box"> <h1>{tcap(\'clipboar
     };
 });
 
+riot.tag2("kor-to-collection", '<div class="kor-content-box"> <h1>{title()}</h1> <form onsubmit="{submit}"> <kor-collection-selector ref="collection"></kor-collection-selector> <kor-input type="submit"></kor-input> </form> </div>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.i18n);
+    tag.title = function() {
+        return tag.tcap("clipboard_actions.move_to_collection");
+    };
+    tag.submit = function(event) {
+        event.preventDefault();
+        Zepto.ajax({
+            type: "PATCH",
+            url: "/collections/" + tag.refs.collection.value() + "/entities",
+            data: JSON.stringify({
+                entity_ids: tag.opts.entityIds
+            }),
+            success: function(data) {
+                tag.opts.modal.trigger("close");
+            }
+        });
+    };
+});
+
 riot.tag2("kor-to-entity-group", '<div class="kor-content-box"> <h1>{title()}</h1> <form onsubmit="{submit}"> <kor-entity-group-selector type="{opts.type}" ref="group"></kor-entity-group-selector> <kor-input type="submit"></kor-input> </form> {opts.type} <a if="{opts.type == \'authority\'}" href="#/groups/categories/admin/new" onclick="{add}">{t(\'create_new\')}</a> <a if="{opts.type == \'user\'}" href="#/groups/user/new" onclick="{add}">{t(\'create_new\')}</a> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -11826,7 +14588,7 @@ riot.tag2("kor-to-entity-group", '<div class="kor-content-box"> <h1>{title()}</h
     };
 });
 
-riot.tag2("kor-entity", '<virtual if="{isMedium()}"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{opts.entity}"></kor-clipboard-control> <a href="#/entities/{opts.entity.id}" class="to-medium"> <img riot-src="{imageUrl()}"> </a> <div if="{!opts.noContentType}"> {tcap(\'nouns.content_type\')}: <span class="content-type">{opts.entity.medium.content_type}</span> </div> </virtual> <virtual if="{!isMedium()}"> <a class="name" href="#/entities/{opts.entity.id}">{opts.entity.display_name}</a> <span class="kind">{opts.entity.kind_name}</span> </virtual>', "", 'class="{medium: isMedium()}"', function(opts) {
+riot.tag2("kor-entity", '<virtual if="{isMedium()}"> <div class="buttons"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{opts.entity}"></kor-clipboard-control> <kor-remove-from-group if="{opts.authorityGroupId || opts.userGroupId}" type="{opts.authorityGroupId ? \'authority\' : \'user\'}" group-id="{opts.authorityGroupId || opts.userGroupId}" entity="{opts.entity}"></kor-remove-from-group> </div> <a href="#/entities/{opts.entity.id}" class="to-medium"> <img riot-src="{imageUrl()}"> </a> <div if="{!opts.noContentType}"> {tcap(\'nouns.content_type\')}: <span class="content-type">{opts.entity.medium.content_type}</span> </div> </virtual> <virtual if="{!isMedium()}"> <a class="name" href="#/entities/{opts.entity.id}">{opts.entity.display_name}</a> <span class="kind">{opts.entity.kind_name}</span> </virtual>', "", 'class="{medium: isMedium()}"', function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -11852,7 +14614,8 @@ riot.tag2("kor-entity-group-selector", '<kor-input if="{groups}" label="{tcap(\'
         Zepto.ajax({
             url: "/" + tag.opts.type + "_groups",
             data: {
-                include: "directory"
+                include: "directory",
+                per_page: "max"
             },
             success: function(data) {
                 tag.groups = data.records;
@@ -11869,6 +14632,9 @@ riot.tag2("kor-entity-group-selector", '<kor-input if="{groups}" label="{tcap(\'
                         r.name = names.join(" » ");
                     }
                 }
+                tag.groups = tag.groups.sort((x, y) => {
+                    return x.name.localeCompare(y.name);
+                });
                 if (tag.opts.riotValue) {
                     tag.groups.unshift({
                         name: tag.tcap("objects.create_group", {
@@ -11892,7 +14658,7 @@ riot.tag2("kor-entity-group-selector", '<kor-input if="{groups}" label="{tcap(\'
     };
 });
 
-riot.tag2("kor-entity-merger", '<div class="kor-content-box"> <h1>{tcap(\'verbs.merge\')}</h1> <div if="{error}" class="error">{tcap(error)}</div> <form if="{data}" onsubmit="{submit}"> <kor-input name="uuid" label="{tcap(\'activerecord.attributes.entity.uuid\')}" type="select" options="{combined.uuid}" ref="fields"></kor-input> <kor-input name="subtype" label="{tcap(\'activerecord.attributes.entity.subtype\')}" type="select" options="{combined.subtype}" ref="fields"></kor-input> <kor-collection-selector label="{tcap(\'activerecord.attributes.entity.collection_id\')}"></kor-collection-selector> <kor-input label="{tcap(\'activerecord.attributes.entity.name\')}" name="no_name_statement" type="radio" ref="fields" options="{noNameStatements}"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.entity.name\')}" type="select" options="{combined.name}" ref="fields"></kor-input> <kor-input name="distinct_name" label="{tcap(\'activerecord.attributes.entity.distinct_name\')}" type="select" options="{combined.distinct_name}" ref="fields"></kor-input> <kor-input if="combined.medium_id.length > 0" label="{tcap(\'activerecord.models.medium\')}" name="medium_id" type="radio" options="{media}" riot-value="{combined.medium_id[0]}" ref="fields"></kor-input> <kor-input if="{combined.comment.length > 0}" name="comment" label="{tcap(\'activerecord.attributes.entity.comment\')}" type="radio" options="{combined.comment}" ref="fields"></kor-input> <kor-input name="tag_list" label="{tcap(\'activerecord.attributes.entity.tag_list\')}" riot-value="{combined.tags.join(\', \')}" ref="fields"></kor-input> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{combined.synonyms}"></kor-synonyms-editor> <hr> <kor-input each="{values, key in combined.dataset}" label="{fieldByKey(key).form_label}" name="{key}" type="select" options="{values}" ref="dataset"></kor-input> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{combined.datings}" for="entity" kind="{kind}"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" ref="fields" riot-value="{combined.properties}"></kor-entity-properties-editor> <hr> <kor-input type="submit"></kor-input> </form> </div>', "", "", function(opts) {
+riot.tag2("kor-entity-merger", '<div class="kor-content-box"> <h1>{tcap(\'verbs.merge\')}</h1> <div if="{error}" class="error">{tcap(error)}</div> <form if="{data}" onsubmit="{submit}"> <kor-input name="uuid" label="{tcap(\'activerecord.attributes.entity.uuid\')}" type="select" options="{combined.uuid}" ref="fields"></kor-input> <kor-input name="subtype" label="{tcap(\'activerecord.attributes.entity.subtype\')}" type="select" options="{combined.subtype}" ref="fields"></kor-input> <kor-collection-selector name="collection_id" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" ref="fields"></kor-collection-selector> <kor-input label="{tcap(\'activerecord.attributes.entity.name\')}" name="no_name_statement" type="radio" options="{noNameStatements}" ref="fields"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.entity.name\')}" type="select" options="{combined.name}" ref="fields"></kor-input> <kor-input name="distinct_name" label="{tcap(\'activerecord.attributes.entity.distinct_name\')}" type="select" options="{combined.distinct_name}" ref="fields"></kor-input> <kor-input if="combined.medium_id.length > 0" label="{tcap(\'activerecord.models.medium\')}" name="medium_id" type="radio" options="{media}" riot-value="{combined.medium_id[0]}" ref="fields"></kor-input> <kor-input if="{combined.comment.length > 0}" name="comment" label="{tcap(\'activerecord.attributes.entity.comment\')}" type="radio" options="{combined.comment}" ref="fields"></kor-input> <kor-input name="tag_list" label="{tcap(\'activerecord.attributes.entity.tag_list\')}" riot-value="{combined.tags.join(\', \')}" ref="fields"></kor-input> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" riot-value="{combined.synonyms}" ref="fields"></kor-synonyms-editor> <hr> <kor-input each="{values, key in combined.dataset}" label="{fieldByKey(key).form_label}" name="{key}" type="select" options="{values}" ref="dataset"></kor-input> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" riot-value="{combined.datings}" for="entity" kind="{kind}" ref="fields"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" riot-value="{combined.properties}" ref="fields"></kor-entity-properties-editor> <hr> <kor-input type="submit"></kor-input> </form> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -11947,6 +14713,7 @@ riot.tag2("kor-entity-merger", '<div class="kor-content-box"> <h1>{tcap(\'verbs.
             type: "GET",
             url: "/entities",
             data: {
+                engine: "active_record",
                 id: tag.opts.ids.join(","),
                 include: "all"
             },
@@ -12068,7 +14835,7 @@ riot.tag2("kor-entity-merger", '<div class="kor-content-box"> <h1>{tcap(\'verbs.
     };
 });
 
-riot.tag2("kor-entity-properties-editor", '<kor-input label="{opts.label}" type="textarea" riot-value="{valueFromParent()}"></kor-input>', "", "", function(opts) {
+riot.tag2("kor-entity-properties-editor", '<kor-input label="{opts.label}" type="textarea" riot-value="{valueFromParent()}" help="{tcap(\'help.property_input\')}" errors="{opts.errors}"></kor-input>', "", "", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -12333,13 +15100,27 @@ riot.tag2("kor-field", '<label> {label()} <input if="{has_input()}" type="{input
     };
 });
 
-riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, opts.entities, false)}"> <td each="{entity in row}"> <virtual if="{entity && entity.medium}"> <kor-entity entity="{entity}" publishment="{opts.publishment}"></kor-entity> <div class="meta" if="{entity.primary_entities}"> <div class="hr"></div> <div class="name"> <a each="{e in secondaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> <div class="desc"> <a each="{e in primaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> </div> </virtual> <div class="meta" if="{entity && !entity.medium}"> <div class="name"> <a href="#/entities/{entity.id}">{entity.display_name}</a> </div> <div class="desc">{entity.kind.name}</div> </div> </td> </tr> </tbody> </table>', "", "", function(opts) {
-    var compare, tag;
-    tag = this;
+riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, opts.entities, false)}"> <td each="{entity in row}"> <virtual if="{entity && entity.medium}"> <kor-entity entity="{entity}" publishment="{opts.publishment}" authority-group-id="{opts.authorityGroupId}" user-group-id="{opts.userGroupId}"></kor-entity> <div class="meta" if="{entity.primary_entities}"> <div class="hr"></div> <div class="name"> <a each="{e in secondaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> <div class="desc"> <a each="{e in primaries(entity)}" href="#/entities/{e.id}">{e.display_name}</a> </div> </div> </virtual> <virtual if="{entity && !entity.medium}"> <div class="buttons text-right"> <kor-clipboard-control if="{!opts.noClipboard}" entity="{entity}"></kor-clipboard-control> <kor-remove-from-group if="{opts.authorityGroupId || opts.userGroupId}" type="{opts.authorityGroupId ? \'authority\' : \'user\'}" group-id="{opts.authorityGroupId || opts.userGroupId}" entity="{entity}"></kor-remove-from-group> </div> <div class="meta"> <div class="name"> <a href="#/entities/{entity.id}">{entity.display_name}</a> </div> <div class="desc">{entity.kind.name}</div> </div> </virtual> </td> </tr> </tbody> </table>', "", "", function(opts) {
+    var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.inGroupsOf = wApp.utils.inGroupsOf;
-    compare = function(a, b) {
+    tag.primaries = entity => {
+        results = [ ...entity.primary_entities ];
+        return wApp.utils.uniqRecords(results).sort(compare);
+    };
+    tag.secondaries = entity => {
+        const results = [];
+        for (var i = 0; i < entity.primary_entities.length; i++) {
+            const p = entity.primary_entities[i];
+            for (var j = 0; j < p.secondary_entities.length; j++) {
+                const s = p.secondary_entities[j];
+                results.push(s);
+            }
+        }
+        return wApp.utils.uniqRecords(results).sort(compare);
+    };
+    var compare = (a, b) => {
         if (a.display_name < b.display_name) {
             return -1;
         }
@@ -12347,34 +15128,6 @@ riot.tag2("kor-gallery-grid", '<table> <tbody> <tr each="{row in inGroupsOf(4, o
             return 1;
         }
         return 0;
-    };
-    tag.primaries = function(entity) {
-        var p, results;
-        results = function() {
-            var i, len, ref, results1;
-            ref = entity.primary_entities;
-            results1 = [];
-            for (i = 0, len = ref.length; i < len; i++) {
-                p = ref[i];
-                results1.push(p);
-            }
-            return results1;
-        }();
-        return wApp.utils.uniq(results).sort(compare);
-    };
-    tag.secondaries = function(entity) {
-        var i, j, len, len1, p, ref, ref1, results, s;
-        results = [];
-        ref = entity.primary_entities;
-        for (i = 0, len = ref.length; i < len; i++) {
-            p = ref[i];
-            ref1 = p.secondary_entities;
-            for (j = 0, len1 = ref1.length; j < len1; j++) {
-                s = ref1[j];
-                results.push(s);
-            }
-        }
-        return wApp.utils.uniq(results).sort(compare);
     };
 });
 
@@ -12448,7 +15201,7 @@ riot.tag2("kor-inplace-tags", '<virtual if="{opts.entity.tags.length > 0 || opts
     };
 });
 
-riot.tag2("kor-input", '<label if="{opts.type != \'radio\' && opts.type != \'submit\' && opts.type != \'reset\'}"> <span show="{!opts.hideLabel}">{opts.label}</span> <a if="{opts.help}" href="#" onclick="{toggleHelp}"><i class="fa fa-question-circle"></i></a> <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{valueFromParent()}" checked="{checkedFromParent()}" placeholder="{opts.placeholder}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{valueFromParent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{valueFromParent()}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.placeholder}" riot-value="{0}">{opts.placeholder}</option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}">{item.name || item.label || item}</option> </select> </label> <input if="{opts.type == \'submit\'}" type="submit" riot-value="{opts.label || tcap(\'verbs.save\')}"> <input if="{opts.type == \'reset\'}" type="reset" riot-value="{opts.label || tcap(\'verbs.reset\')}"> <virtual if="{opts.type == \'radio\'}"> <label>{opts.label}</label> <label class="radio" each="{item in opts.options}"> <input type="radio" name="{opts.name}" riot-value="{item.id || item.value || item}" checked="{valueFromParent() == (item.id || item.value || item)}"> <virtual if="{!item.image_url}">{item.name || item.label || item}</virtual> <img if="{item.image_url}" riot-src="{item.image_url}"> </label> </virtual> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}"> {e} </div> </div> <div if="{opts.help && showHelp}" class="help" ref="help"></div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
+riot.tag2("kor-input", '<label if="{opts.type != \'radio\' && opts.type != \'submit\' && opts.type != \'reset\'}"> <span show="{!opts.hideLabel}">{opts.label}</span> <a if="{opts.help}" href="#" title="{tcap(\'nouns.help\')}" onclick="{toggleHelp}"><i class="fa fa-question-circle"></i></a> <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{valueFromParent()}" checked="{checkedFromParent()}" placeholder="{opts.placeholder}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{valueFromParent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{valueFromParent()}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.placeholder !== undefined}" riot-value="{placeholderValue()}">{opts.placeholder}</option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}">{item.name || item.label || item}</option> </select> </label> <input if="{opts.type == \'submit\'}" type="submit" riot-value="{opts.label || tcap(\'verbs.save\')}"> <input if="{opts.type == \'reset\'}" type="reset" riot-value="{opts.label || tcap(\'verbs.reset\')}"> <virtual if="{opts.type == \'radio\'}"> <label> {opts.label} <a if="{opts.help}" href="#" title="{tcap(\'nouns.help\')}" onclick="{toggleHelp}"><i class="fa fa-question-circle"></i></a> </label> <label class="radio" each="{item in opts.options}"> <input type="radio" name="{opts.name}" riot-value="{item.id || item.value || item}" checked="{valueFromParent() == (item.id || item.value || item)}"> <virtual if="{!item.image_url}">{item.name || item.label || item}</virtual> <img if="{item.image_url}" riot-src="{item.image_url}"> </label> </virtual> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}"> {e} </div> </div> <div if="{opts.help && showHelp}" class="help" ref="help"></div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -12547,9 +15300,16 @@ riot.tag2("kor-input", '<label if="{opts.type != \'radio\' && opts.type != \'sub
             return Zepto(tag.refs.help).html(tag.opts.help);
         }
     };
+    tag.placeholderValue = function() {
+        if (opts.placeholderValue === void 0) {
+            return 0;
+        } else {
+            return opts.placeholderValue;
+        }
+    };
 });
 
-riot.tag2("kor-kind-selector", '<kor-input if="{kinds}" label="{tcap(\'activerecord.models.kind\')}" type="select" ref="input" options="{kinds}" placeholder="{t(\'all\')}"></kor-input> </kor-input>', "", "", function(opts) {
+riot.tag2("kor-kind-selector", '<kor-input if="{kinds}" label="{tcap(\'activerecord.models.kind\')}" type="select" ref="input" options="{kinds}" placeholder="{t(\'all\')}" riot-value="{opts.riotValue}"></kor-input> </kor-input>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -12621,7 +15381,7 @@ riot.tag2("kor-login-info", '<div class="item"> <span class="kor-shine">ConedaKO
 
 riot.tag2("kor-logo", '<?xml version="1.0" encoding="UTF-8" standalone="no"?> <?xml version="1.0" encoding="UTF-8" standalone="no"?> <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="51.114326mm" height="35.500031mm" viewbox="0 0 51.114326 35.500031" version="1.1" id="svg8" sodipodi:docname="logo.svg" inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"> <defs id="defs2"></defs> <sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="7.06159" inkscape:cx="106.4579" inkscape:cy="60.595407" inkscape:document-units="mm" inkscape:current-layer="layer1" inkscape:document-rotation="0" showgrid="false" fit-margin-top="0" fit-margin-left="0" fit-margin-right="0" fit-margin-bottom="0" inkscape:showpageshadow="true" inkscape:window-width="2560" inkscape:window-height="1373" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" /> <metadata id="metadata5"> <rdf:RDF> <cc:Work rdf:about=""> <dc:format>image/svg+xml</dc:format> <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /> <dc:title></dc:title> </cc:Work> </rdf:RDF> </metadata> <g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1" transform="translate(-57.804942,-140.95502)" class="fg"> <path d="m 99.919204,142.95509 c 0,1.10476 -0.89535,2.00022 -1.999897,2.00022 -1.104548,0 -2.00025,-0.89546 -2.00025,-2.00022 0,-1.10451 0.895702,-2.00007 2.00025,-2.00007 1.104547,0 1.999897,0.89556 1.999897,2.00007" style="stroke-width:0.0352778;stroke:none;fill-rule:nonzero;fill-opacity:1;" id="path863" mask="none"></path> <path d="m 99.919204,147.45506 c 0,1.10479 -0.89535,2.00021 -1.999897,2.00021 -1.104548,0 -2.00025,-0.89542 -2.00025,-2.00021 0,-1.10448 0.895702,-1.99994 2.00025,-1.99994 1.104547,0 1.999897,0.89546 1.999897,1.99994" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path865"></path> <path d="m 99.919204,151.95506 c 0,1.10475 -0.89535,2.00021 -1.999897,2.00021 -1.104548,0 -2.00025,-0.89546 -2.00025,-2.00021 0,-1.10452 0.895702,-1.99997 2.00025,-1.99997 1.104547,0 1.999897,0.89545 1.999897,1.99997" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path867"></path> <path d="m 99.919204,156.45502 c 0,1.10479 -0.89535,2.00025 -1.999897,2.00025 -1.104548,0 -2.00025,-0.89546 -2.00025,-2.00025 0,-1.10448 0.895702,-1.99979 2.00025,-1.99979 1.104547,0 1.999897,0.89531 1.999897,1.99979" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path869"></path> <path d="m 108.91927,156.45502 c 0,1.10479 -0.89535,2.00025 -1.9999,2.00025 -1.10454,0 -2.00025,-0.89546 -2.00025,-2.00025 0,-1.10448 0.89571,-1.99979 2.00025,-1.99979 1.10455,0 1.9999,0.89531 1.9999,1.99979" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path871"></path> <path d="m 99.919204,160.95502 c 0,1.10476 -0.89535,2.00021 -1.999897,2.00021 -1.104548,0 -2.00025,-0.89545 -2.00025,-2.00021 0,-1.10452 0.895702,-1.99997 2.00025,-1.99997 1.104547,0 1.999897,0.89545 1.999897,1.99997" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path873"></path> <path d="m 104.41924,160.95502 c 0,1.10476 -0.89535,2.00021 -1.9999,2.00021 -1.10455,0 -2.00025,-0.89545 -2.00025,-2.00021 0,-1.10452 0.8957,-1.99997 2.00025,-1.99997 1.10455,0 1.9999,0.89545 1.9999,1.99997" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path875"></path> <path d="m 99.919204,165.45498 c 0,1.10493 -0.89535,2.00025 -1.999897,2.00025 -1.104548,0 -2.00025,-0.89532 -2.00025,-2.00025 0,-1.10448 0.895702,-1.99993 2.00025,-1.99993 1.104547,0 1.999897,0.89545 1.999897,1.99993" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path877"></path> <path d="m 99.919204,169.95498 c 0,1.10476 -0.89535,2.00021 -1.999897,2.00021 -1.104548,0 -2.00025,-0.89545 -2.00025,-2.00021 0,-1.10451 0.895702,-1.99993 2.00025,-1.99993 1.104547,0 1.999897,0.89542 1.999897,1.99993" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path879"></path> <path d="m 104.41924,169.95498 c 0,1.10476 -0.89535,2.00021 -1.9999,2.00021 -1.10455,0 -2.00025,-0.89545 -2.00025,-2.00021 0,-1.10451 0.8957,-1.99993 2.00025,-1.99993 1.10455,0 1.9999,0.89542 1.9999,1.99993" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path881"></path> <path d="m 99.919204,174.45497 c 0,1.10477 -0.89535,2.00008 -1.999897,2.00008 -1.104548,0 -2.00025,-0.89531 -2.00025,-2.00008 0,-1.1045 0.895702,-1.99996 2.00025,-1.99996 1.104547,0 1.999897,0.89546 1.999897,1.99996" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path883"></path> <path d="m 108.91927,174.45497 c 0,1.10477 -0.89535,2.00008 -1.9999,2.00008 -1.10454,0 -2.00025,-0.89531 -2.00025,-2.00008 0,-1.1045 0.89571,-1.99996 2.00025,-1.99996 1.10455,0 1.9999,0.89546 1.9999,1.99996" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path885"></path> <path d="M 89.090548,176.45505 V 140.95502" style="stroke:#231f20;stroke-width:0.174066;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path887"></path> <path d="m 59.654271,147.65723 h -0.09536 c -0.962974,0 -1.753969,-0.78136 -1.753969,-1.74501 v -3.21264 c 0,-0.97247 0.790995,-1.74456 1.753969,-1.74456 h 0.09536 c 0.886767,0 1.610925,0.64805 1.725299,1.49694 v 0.0285 c 0,0.13342 -0.104726,0.23812 -0.228748,0.23812 -0.114378,0 -0.219111,-0.0854 -0.238404,-0.19981 -0.08544,-0.62011 -0.60978,-1.09665 -1.258147,-1.09665 h -0.09536 c -0.705281,0 -1.286814,0.57189 -1.286814,1.27745 v 3.21264 c 0,0.70594 0.581533,1.27783 1.286814,1.27783 h 0.09536 c 0.648367,0 1.172711,-0.47664 1.258147,-1.09664 0.01929,-0.11438 0.124026,-0.19982 0.238404,-0.19982 0.124022,0 0.228748,0.10474 0.228748,0.23788 v 0.0289 c -0.114374,0.84846 -0.838532,1.49683 -1.725299,1.49683" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path889"></path> <path d="m 65.361408,142.69958 c 0,-0.70556 -0.57217,-1.27745 -1.277443,-1.27745 h -0.09578 c -0.705273,0 -1.277408,0.57189 -1.277408,1.27745 v 3.21264 c 0,0.70594 0.572135,1.27783 1.277408,1.27783 h 0.09578 c 0.705273,0 1.277443,-0.57189 1.277443,-1.27783 z m -1.277443,4.95765 h -0.09578 c -0.962554,0 -1.744592,-0.78136 -1.744592,-1.74501 v -3.21264 c 0,-0.97247 0.782038,-1.74456 1.744592,-1.74456 h 0.09578 c 0.962554,0 1.744345,0.77209 1.744345,1.74456 v 3.21264 c 0,0.96365 -0.781791,1.74501 -1.744345,1.74501" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path891"></path> <path d="m 70.316843,147.65723 h -0.171556 c -0.06685,0 -0.190853,-0.0474 -0.238407,-0.16178 l -2.469445,-5.60642 v 5.52994 c 0,0.16245 -0.124037,0.23826 -0.237984,0.23826 -0.11437,0 -0.23883,-0.0758 -0.23883,-0.23826 v -6.22586 c 0,-0.12379 0.114652,-0.23809 0.23883,-0.23809 h 0.171133 c 0.05719,0 0.162348,0.048 0.210149,0.15275 l 2.488072,5.61513 v -5.52979 c 0,-0.16189 0.124001,-0.23809 0.238407,-0.23809 0.11437,0 0.238372,0.0762 0.238372,0.23809 v 6.2169 c 0,0.15211 -0.104705,0.24722 -0.228741,0.24722" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path893"></path> <path d="m 75.054119,147.60001 h -3.10776 c -0.133668,0 -0.238372,-0.11437 -0.238372,-0.23837 v -6.11106 c 0,-0.12376 0.104704,-0.23841 0.238372,-0.23841 h 3.10776 c 0.162349,0 0.238125,0.11465 0.238125,0.23841 0,0.11437 -0.07578,0.22849 -0.238125,0.22849 h -2.831465 v 2.46945 h 1.992666 c 0.161925,0 0.238407,0.124 0.238407,0.24803 0,0.11437 -0.07648,0.22875 -0.238407,0.22875 h -2.040185 v 2.70756 h 2.878984 c 0.162349,0 0.238125,0.11438 0.238125,0.22878 0,0.124 -0.07578,0.23837 -0.238125,0.23837" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path895"></path> <path d="m 79.422496,142.75676 c 0,-0.70555 -0.572135,-1.27769 -1.27769,-1.27769 h -1.372941 v 5.65379 h 1.372941 c 0.705555,0 1.27769,-0.57188 1.27769,-1.27783 z m -1.27769,4.84325 h -1.601294 c -0.133668,0 -0.238407,-0.11437 -0.238407,-0.23837 v -6.11106 c 0,-0.12376 0.104739,-0.23841 0.238407,-0.23841 h 1.601294 c 0.962801,0 1.744592,0.77212 1.744592,1.74459 v 3.09827 c 0,0.96365 -0.781791,1.74498 -1.744592,1.74498" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path897"></path> <path d="m 82.78394,141.90833 -1.172704,3.58426 h 2.326146 z m 2.020922,5.7489 c -0.09511,0 -0.181221,-0.0474 -0.21911,-0.17159 l -0.505072,-1.5259 h -2.621703 l -0.476815,1.5259 c -0.03831,0.12418 -0.124001,0.17159 -0.21911,0.17159 -0.124001,0 -0.238654,-0.0854 -0.238654,-0.22877 0,-0.0185 0,-0.0475 0.0095,-0.0756 l 2.021311,-6.226 c 0.03789,-0.12382 0.133245,-0.1718 0.228742,-0.1718 0.09511,0 0.181222,0.0572 0.21911,0.1718 l 2.030554,6.226 c 0.0096,0.0281 0.0096,0.0474 0.0096,0.0756 0,0.14333 -0.11437,0.22877 -0.238372,0.22877" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path899"></path> <path d="m 61.142828,156.13092 c -0.190722,0 -0.371659,-0.0863 -0.486036,-0.31503 l -1.220664,-2.51615 -0.523932,0.7717 v 1.50604 c 0,0.37208 -0.276983,0.55344 -0.553282,0.55344 -0.276296,0 -0.552593,-0.18136 -0.552593,-0.55344 v -5.59622 c 0,-0.37137 0.276297,-0.55259 0.552593,-0.55259 0.276299,0 0.553282,0.18122 0.553282,0.55259 v 2.12648 c 0,0 1.086584,-1.62073 1.649236,-2.44066 0.114378,-0.17142 0.28622,-0.23841 0.448137,-0.23841 0.285945,0 0.571896,0.23841 0.571896,0.54367 0,0.1047 -0.03789,0.20944 -0.10474,0.31432 l -1.325259,1.95474 1.506199,3.09852 c 0.03817,0.0854 0.05704,0.17089 0.05704,0.25686 0,0.31503 -0.285785,0.53414 -0.571881,0.53414" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path901"></path> <path d="m 64.88918,151.2973 c 0,-0.44771 -0.352778,-0.77237 -0.801088,-0.77237 h -0.08569 c -0.448274,0 -0.801052,0.33415 -0.801052,0.77237 v 2.95522 c 0,0.44856 0.362408,0.78204 0.801052,0.78204 h 0.08569 c 0.44831,0 0.801088,-0.33348 0.801088,-0.77241 z m -0.801088,4.83362 h -0.08569 c -1.048843,0 -1.90694,-0.82007 -1.90694,-1.86877 v -2.96485 c 0,-1.05833 0.858097,-1.86863 1.90694,-1.86863 h 0.08569 c 1.058333,0 1.906517,0.8103 1.906517,1.86863 v 2.95522 c 0,1.05833 -0.848184,1.8784 -1.906517,1.8784" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path903"></path> <path d="m 69.645753,151.39237 c 0,-0.44785 -0.324273,-0.81011 -0.772407,-0.81011 h -0.97222 v 1.70656 h 1.000901 c 0.428837,0 0.743726,-0.37194 0.743726,-0.81016 z m -0.02854,1.84038 1.000725,2.10717 c 0.03817,0.0854 0.06685,0.17089 0.06685,0.24737 0,0.31475 -0.295593,0.54363 -0.581554,0.54363 -0.190853,0 -0.371793,-0.0952 -0.476533,-0.32399 l -1.153689,-2.42175 h -0.571888 v 2.1923 c 0,0.37208 -0.276295,0.55344 -0.553261,0.55344 -0.276296,0 -0.552591,-0.18136 -0.552591,-0.55344 v -5.53833 c 0,-0.29559 0.257422,-0.55326 0.552591,-0.55326 h 1.496836 c 1.058333,0 1.906905,0.84815 1.906905,1.90648 v 0.0863 c 0,0.791 -0.448275,1.4683 -1.134392,1.75409" style="fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0352778" id="path905"></path> </g> </svg>', "", "", function(opts) {});
 
-riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amount"> {opts.ids.length} {t(\'activerecord.models.entity\', {count: \'other\'})} </div> <hr> <virtual if="{opts.ids.length}"> <a if="{allowedTo(\'create\') && allowedTo(\'delete\')}" class="action" href="#" onclick="{merge}">{tcap(\'clipboard_actions.merge\')}</a> <a if="{allowedTo(\'edit\')}" class="action" href="#" onclick="{massRelate}">{tcap(\'clipboard_actions.mass_relate\')}</a> <a if="{allowedTo(\'delete\')}" class="action" href="#" onclick="{massDelete}">{tcap(\'clipboard_actions.mass_delete\')}</a> <a if="{session().user.authority_group_admin}" class="action" href="#" onclick="{addToAuthorityGroup}">{tcap(\'clipboard_actions.add_to_authority_group\')}</a> <a class="action" href="#" onclick="{addToUserGroup}">{tcap(\'clipboard_actions.add_to_user_group\')}</a> </virtual>', "", "", function(opts) {
+riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amount"> {opts.ids.length} {t(\'activerecord.models.entity\', {count: \'other\'})} </div> <hr> <virtual if="{opts.ids.length}"> <a if="{allowedTo(\'create\') && allowedTo(\'delete\')}" class="action" href="#" onclick="{merge}">{tcap(\'clipboard_actions.merge\')}</a> <a if="{allowedTo(\'edit\')}" class="action" href="#" onclick="{massRelate}">{tcap(\'clipboard_actions.mass_relate\')}</a> <a if="{allowedTo(\'delete\')}" class="action" href="#" onclick="{massDelete}">{tcap(\'clipboard_actions.mass_delete\')}</a> <a if="{session().user.authority_group_admin}" class="action" href="#" onclick="{addToAuthorityGroup}">{tcap(\'clipboard_actions.add_to_authority_group\')}</a> <a class="action" href="#" onclick="{addToUserGroup}">{tcap(\'clipboard_actions.add_to_user_group\')}</a> <a class="action" href="#" onclick="{moveToCollection}">{tcap(\'clipboard_actions.move_to_collection\')}</a> </virtual>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.auth);
@@ -12646,7 +15406,7 @@ riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amou
             };
             Zepto.ajax({
                 type: "DELETE",
-                url: "/tools/mass_delete",
+                url: "/entities/mass_destroy",
                 data: JSON.stringify(data),
                 success: function(data) {
                     var ids = wApp.clipboard.subSelection();
@@ -12674,6 +15434,9 @@ riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amou
     };
     tag.moveToCollection = function(event) {
         event.preventDefault();
+        wApp.bus.trigger("modal", "kor-to-collection", {
+            entityIds: wApp.clipboard.subSelection()
+        });
     };
     var notify = function() {
         var h = tag.opts.onActionSuccess;
@@ -12683,7 +15446,7 @@ riot.tag2("kor-mass-action", '<h1>{tcap(\'nouns.action\')}</h1> <div class="amou
     };
 });
 
-riot.tag2("kor-media-relation", '<div class="name"> {opts.name} <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{pageUpdate}"></kor-pagination> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}"></kor-relationship> </virtual>', "", "", function(opts) {
+riot.tag2("kor-media-relation", '<div class="name"> {opts.name} <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{pageUpdate}" class="slim"></kor-pagination> <div class="clearfix"></div> </div> <virtual if="{data}"> <kor-relationship each="{relationship in data.records}" entity="{parent.opts.entity}" relationship="{relationship}"></kor-relationship> </virtual>', "", "", function(opts) {
     var fetch, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -12776,7 +15539,7 @@ riot.tag2("kor-about", '<div class="kor-layout-left kor-layout-large"> <div clas
     tag.mixin(wApp.mixins.page);
     tag.on("mount", function() {
         tag.title(tag.t("about"));
-        return Zepto(tag.root).find(".target").html(tag.config().legal_html);
+        return Zepto(tag.root).find(".target").html(tag.config().about_html);
     });
 });
 
@@ -12840,7 +15603,8 @@ riot.tag2("kor-admin-group-categories", '<kor-help-button key="authority_groups"
         Zepto.ajax({
             url: "/authority_group_categories",
             data: {
-                parent_id: tag.opts.parentId
+                parent_id: tag.opts.parentId,
+                per_page: "max"
             },
             success: function(data) {
                 tag.data = data;
@@ -12975,6 +15739,7 @@ riot.tag2("kor-admin-group-editor", '<div class="kor-layout-left kor-layout-larg
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
     tag.mixin(wApp.mixins.page);
+    window.t = tag;
     tag.on("before-mount", function(e) {
         tag.errors = {};
         fetchCategories();
@@ -12998,7 +15763,7 @@ riot.tag2("kor-admin-group-editor", '<div class="kor-layout-left kor-layout-larg
         p.done(function(data) {
             var id;
             tag.errors = {};
-            if (id = values()["authority_group_category_id"]) {
+            if ((id = values()["authority_group_category_id"]) && id !== "-1") {
                 return wApp.routing.path("/groups/categories/" + id);
             } else {
                 return wApp.routing.path("/groups/categories");
@@ -13030,7 +15795,7 @@ riot.tag2("kor-admin-group-editor", '<div class="kor-layout-left kor-layout-larg
             success: function(data) {
                 var a, i, len, names, r, ref, results;
                 results = [ {
-                    value: "0",
+                    value: -1,
                     label: tag.t("none")
                 } ];
                 ref = data.records;
@@ -13067,6 +15832,7 @@ riot.tag2("kor-admin-group-editor", '<div class="kor-layout-left kor-layout-larg
         });
     };
     update = function() {
+        console.log(values());
         return Zepto.ajax({
             type: "PATCH",
             url: "/authority_groups/" + tag.opts.id,
@@ -13120,7 +15886,8 @@ riot.tag2("kor-admin-groups", '<div class="kor-content-box"> <a if="{!opts.type 
         Zepto.ajax({
             url: "/authority_groups",
             data: {
-                authority_group_category_id: tag.opts.categoryId
+                authority_group_category_id: tag.opts.categoryId,
+                per_page: "max"
             },
             success: function(data) {
                 tag.data = data;
@@ -13130,7 +15897,7 @@ riot.tag2("kor-admin-groups", '<div class="kor-content-box"> <a if="{!opts.type 
     };
 });
 
-riot.tag2("kor-clipboard", '<kor-help-button key="clipboard"></kor-help-button> <div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="kor-layout-commands"> <a onclick="{reset}"><i class="fa fa-minus-square"></i></a> </div> <h1>{tcap(\'nouns.clipboard\')}</h1> <div class="mass-subselect"> <a href="#" onclick="{selectAll}">{t(\'all\')}</a> | <a href="#" onclick="{selectNone}">{t(\'none\')}</a> </div> <kor-pagination if="{data}" page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" per-page-control="{true}"></kor-pagination> <div class="clearfix"></div> <hr> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-nothing-found data="{data}"></kor-nothing-found> <table if="{data}"> <tbody> <tr each="{entity in data.records}"> <td> <kor-clipboard-subselect-control entity="{entity}"></kor-clipboard-subselect-control> </td> <td> <a href="#/entities/{entity.id}"> <span show="{!entity.medium}">{entity.display_name}</span> <img if="{entity.medium}" riot-src="{entity.medium.url.icon}" class="image"> </a> </td> <td class="right nobreak"> <a onclick="{remove(entity.id)}"><i class="minus"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box"> <kor-mass-action if="{data}" ids="{selectedIds()}" on-action-success="{reload}"></kor-mass-action> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-clipboard", '<kor-help-button key="clipboard"></kor-help-button> <div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <div class="kor-layout-commands"> <a onclick="{reset}" title="{t(\'remove_all\')}"><i class="fa fa-minus-square"></i></a> </div> <h1>{tcap(\'nouns.clipboard\')}</h1> <div class="mass-subselect"> <a href="#" onclick="{selectAll}">{t(\'all\')}</a> | <a href="#" onclick="{selectNone}">{t(\'none\')}</a> </div> <kor-pagination if="{data}" page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" per-page-control="{true}"></kor-pagination> <div class="clearfix"></div> <hr> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'nouns.entity.one\'}})} </span> <kor-nothing-found data="{data}"></kor-nothing-found> <table if="{data}"> <tbody> <tr each="{entity in data.records}"> <td> <kor-clipboard-subselect-control entity="{entity}"></kor-clipboard-subselect-control> </td> <td> <a href="#/entities/{entity.id}"> <span show="{!entity.medium}">{entity.display_name}</span> <img if="{entity.medium}" riot-src="{entity.medium.url.icon}" class="image"> </a> </td> <td class="right nobreak"> <a onclick="{remove(entity.id)}" title="{t(\'verbs.remove\')}" href="#"><i class="fa fa-minus-square"></i></a> </td> </tr> </tbody> </table> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box"> <kor-mass-action if="{data}" ids="{selectedIds()}" on-action-success="{reload}"></kor-mass-action> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -13185,6 +15952,7 @@ riot.tag2("kor-clipboard", '<kor-help-button key="clipboard"></kor-help-button> 
     };
     var urlParams = function() {
         var results = wApp.routing.query();
+        results["engine"] = "active_record";
         results["id"] = wApp.clipboard.ids().join(",");
         return results;
     };
@@ -13296,7 +16064,7 @@ riot.tag2("kor-collection-editor", '<div class="kor-layout-left kor-layout-large
     };
 });
 
-riot.tag2("kor-collections", '<div class="kor-content-box"> <a href="#/collections/new" class="pull-right" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.collection\')}})}"><i class="fa fa-plus-square"></i></a> <h1>{tcap(\'activerecord.models.collection\', {count: \'other\'})}</h1> <table> <thead> <th>{tcap(\'activerecord.attributes.collection.name\')}</th> <th class="right"># {tcap(\'activerecord.models.entity.other\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{collection in data.records}"> <td> {collection.name} <span if="{collection.owner}"> ({t(\'activerecord.models.user\')}: <a href="#/users/{collection.owner.id}/edit">{collection.owner.full_name}</a>) </span> </td> <td class="right">{collection.entity_count}</td> <td class="right"> <a href="#/collections/{collection.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a href="#/collections/{collection.id}/destroy" onclick="{onDeleteClicked}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
+riot.tag2("kor-collections", '<div class="kor-content-box"> <a href="#/collections/new" class="pull-right" title="{t(\'objects.new\', {interpolations: {o: t(\'activerecord.models.collection\')}})}"><i class="fa fa-plus-square"></i></a> <h1>{tcap(\'activerecord.models.collection\', {count: \'other\'})}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <table> <thead> <th>{tcap(\'activerecord.attributes.collection.name\')}</th> <th class="right"># {tcap(\'activerecord.models.entity.other\')}</th> <th class="right"></th> </thead> <tbody if="{data}"> <tr each="{collection in data.records}"> <td> {collection.name} <span if="{collection.owner}"> ({t(\'activerecord.models.user\')}: <a href="#/users/{collection.owner.id}/edit">{collection.owner.full_name}</a>) </span> </td> <td class="right">{collection.entity_count}</td> <td class="right"> <a href="#/collections/{collection.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a href="#/collections/{collection.id}/destroy" onclick="{onDeleteClicked}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -13306,10 +16074,19 @@ riot.tag2("kor-collections", '<div class="kor-content-box"> <a href="#/collectio
             count: "other"
         }));
         fetch();
+        tag.on("routing:query", fetch);
+    });
+    tag.on("unmount", function() {
+        tag.off("routing:query", fetch);
     });
     tag.onDeleteClicked = function(event) {
         event.preventDefault();
         if (wApp.utils.confirm()) destroy(event.item.collection.id);
+    };
+    tag.pageUpdate = function(newPage) {
+        wApp.bus.trigger("query-update", {
+            page: newPage
+        });
     };
     var destroy = function(id) {
         Zepto.ajax({
@@ -13323,10 +16100,12 @@ riot.tag2("kor-collections", '<div class="kor-content-box"> <a href="#/collectio
         });
     };
     fetch = function() {
+        var page = wApp.routing.query()["page"] || 1;
         Zepto.ajax({
             url: "/collections",
             data: {
-                include: "counts,owner"
+                include: "counts,owner",
+                page: page
             },
             success: function(data) {
                 tag.data = data;
@@ -13452,7 +16231,7 @@ riot.tag2("kor-credentials", '<div class="kor-content-box"> <a href="#/credentia
     };
 });
 
-riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <hr> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.naming_options\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}"></kor-input> <kor-input label="{nameLabel()}" if="{hasName()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input if="{hasName()}" label="{distinctNameLabel()}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <hr> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.tag_list\')}" name="tag_list" ref="fields" riot-value="{data.tags.join(\', \')}" errors="{errors.tag_list}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields" errors="{errors.dataset}"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <hr> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}" default-dating-label="{kind.dating_label}"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <hr> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.naming_options\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}" help="{tcap(\'help.no_name_input\')}"></kor-input> <kor-input label="{nameLabel()}" if="{hasName()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input if="{hasName()}" label="{distinctNameLabel()}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <hr> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.tag_list\')}" name="tag_list" ref="fields" riot-value="{data.tags.join(\', \')}" errors="{errors.tag_list}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields" errors="{errors.dataset}"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <hr> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <hr> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}" default-dating-label="{kind.dating_label}"></kor-datings-editor> <hr> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" errors="{errors.properties}" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <hr> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var checkPermissions, create, defaults, fetch, fetchCollections, fetchKind, queryHandler, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -13582,6 +16361,9 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
     fetchCollections = function() {
         return Zepto.ajax({
             url: "/collections",
+            data: {
+                per_page: "max"
+            },
             success: function(data) {
                 tag.collections = data.records;
                 return tag.update();
@@ -13622,7 +16404,7 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
     };
 });
 
-riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-text-right pull-right group-commands"> <a if="{opts.type == \'user\' || opts.type == \'authority\'}" href="#" title="{t(\'add_to_clipboard\')}" onclick="{onMarkClicked}"><i class="fa fa-clipboard"></i></a> <a if="{opts.type == \'user\'}" href="/user_groups/{opts.id}/download_images" title="{t(\'title_verbs.zip\')}"><i class="fa fa-download"></i></a> <a if="{opts.type == \'authority\'}" href="/authority_groups/{opts.id}/download_images" title="{t(\'title_verbs.zip\')}"><i class="fa fa-download"></i></a> </div> <h1> {tcap(\'activerecord.models.\' + opts.type + \'_group\')} <span if="{group}">"{group.name}"</span> </h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-text-right pull-right group-commands"> <a if="{opts.type == \'user\' || opts.type == \'authority\'}" href="#" title="{t(\'add_to_clipboard\')}" onclick="{onMarkClicked}"><i class="fa fa-clipboard"></i></a> <a if="{opts.type == \'user\'}" href="/user_groups/{opts.id}/download_images" title="{t(\'title_verbs.zip\')}"><i class="fa fa-download"></i></a> <a if="{opts.type == \'authority\'}" href="/authority_groups/{opts.id}/download_images" title="{t(\'title_verbs.zip\')}"><i class="fa fa-download"></i></a> </div> <h1> {tcap(\'activerecord.models.\' + opts.type + \'_group\')} <span if="{group}">"{group.name}"</span> </h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}" authority-group-id="{opts.type == \'authority\' && group.id}" user-group-id="{opts.type == \'user\' && group.id}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -13630,8 +16412,10 @@ riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-tex
     tag.on("mount", function() {
         fetchGroup();
         tag.on("routing:query", fetch);
+        wApp.bus.on("group-changed", fetch);
     });
     tag.on("unmount", function() {
+        wApp.bus.off("group-changed", fetch);
         tag.off("routing:query", fetch);
     });
     tag.onMarkClicked = function(event, page) {
@@ -13645,7 +16429,8 @@ riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-tex
             data: params,
             success: function(data) {
                 if (data.total > data.page * data.per_page) {
-                    tag.onMarkClicked(event, page + 1);
+                    console.log(params);
+                    tag.onMarkClicked(event, params["page"] + 1);
                 } else {
                     wApp.bus.trigger("message", "notice", tag.t("objects.marked_entities_success"));
                 }
@@ -13671,7 +16456,8 @@ riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-tex
     var fetch = function() {
         var params = {
             include: "gallery_data,kind",
-            page: tag.opts.query.page
+            page: tag.opts.query.page,
+            per_page: 16
         };
         if (tag.opts.type == "user") {
             params["user_group_id"] = tag.opts.id;
@@ -13690,7 +16476,7 @@ riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-tex
     };
 });
 
-riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands page-commands"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <a href="#/entities/{data.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> </virtual> <a href="{reportUrl()}" title="{tcap(\'objects.report\', {interpolations: {o: \'activerecord.models.entity\'}})}"><i class="fa fa-exclamation"></i></a> <a if="{allowedTo(\'edit\', data.collection_id)}" href="#/entities/{data.id}" onclick="{delete}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{fieldValue(field.value)}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <a if="{property.url}" href="{property.value}" rel="noopener" target="_blank">» {property.label}</a> <virtual if="{!property.url}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </virtual> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box relations"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a href="#" onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" ref="relations"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom .meta" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.created_at}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span if="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updated_at}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span if="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <span class="value">{authorityGroups()}</span> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> <hr> <div class="kor-text-right kor-api-links"> <a href="/entities/{data.id}.json" target="_blank"><i class="fa fa-file-text"></i>{t(\'show_json\')}</a><br> <a href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank"><i class="fa fa-code"></i>{t(\'show_oai_pmh\')}</a> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}" title="{t(\'larger\')}"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}" title="{t(\'image_transformations.\' + op)}"><i class="fa fa-{opIcon(op)}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="{data.medium.url.normal}" target="_blank">{t(\'verbs.maximize\')}</a> </span> | <a href="{rootUrl()}mirador?id={data.id}&manifest={rootUrl()}mirador/{data.id}" onclick="{openMirador}">{t(\'nouns.mirador\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="{data.medium.url.original.replace(/\\/images\\//, \'/download/\')}">{t(\'nouns.original\')}</a> | <a href="{data.medium.url.normal.replace(/\\/images\\//, \'/download/\')}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="#/upload?relate_with={data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands page-commands"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <a href="#/entities/{data.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> </virtual> <a href="{reportUrl()}" title="{tcap(\'objects.report\', {interpolations: {o: \'activerecord.models.entity\'}})}"><i class="fa fa-exclamation"></i></a> <a if="{allowedTo(\'edit\', data.collection_id)}" href="#/entities/{data.id}" onclick="{delete}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium && allowedTo(\'download_originals\', data.collection_id)}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{fieldValue(field.value)}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <a if="{property.url}" href="{property.value}" rel="noopener" target="_blank">» {property.label}</a> <virtual if="{!property.url}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </virtual> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box relations"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a href="#" onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" ref="relations"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom .meta" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.created_at}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span if="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updated_at}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span if="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}" class="groups"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <ul> <li each="{group in data.groups}" class="value"> <virtual if="{group.directory}"> <span each="{dir in group.directory.ancestors}"> <a href="#/groups/categories/{dir.id}">{dir.name}</a> / </span> <a href="#/groups/categories/{group.directory.id}">{group.directory.name}</a> / </virtual> <a href="#/groups/admin/{group.id}">{group.name}</a> </li> </ul> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> <hr> <div class="kor-text-right kor-api-links"> <a href="/entities/{data.id}.json" target="_blank"><i class="fa fa-file-text"></i>{t(\'show_json\')}</a><br> <a href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank"><i class="fa fa-code"></i>{t(\'show_oai_pmh\')}</a> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}" title="{t(\'larger\')}"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}" title="{t(\'image_transformations.\' + op)}"><i class="fa fa-{opIcon(op)}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="{data.medium.url.normal}" target="_blank">{t(\'verbs.maximize\')}</a> </span> | <a href="{rootUrl()}mirador?id={data.id}&manifest={rootUrl()}mirador/{data.id}" onclick="{openMirador}">{t(\'nouns.mirador\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="{data.medium.url.original.replace(/\\/images\\//, \'/download/\')}">{t(\'nouns.original\')} |</a> <a href="{data.medium.url.normal.replace(/\\/images\\//, \'/download/\')}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="#/upload?relate_with={data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, linkify_properties, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -13738,19 +16524,6 @@ riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="
             }
         }
         return results;
-    };
-    tag.authorityGroups = function() {
-        var g;
-        return function() {
-            var i, len, ref, results;
-            ref = tag.data.groups;
-            results = [];
-            for (i = 0, len = ref.length; i < len; i++) {
-                g = ref[i];
-                results.push(g.name);
-            }
-            return results;
-        }().join(", ");
     };
     tag.showTagging = function() {
         return tag.data.kind.tagging && tag.allowedTo("tagging", tag.data.collection_id);
@@ -14080,7 +16853,7 @@ riot.tag2("kor-kind-general-editor", '<h2>{tcap(\'general\')}</h2> <div> <form i
     };
 });
 
-riot.tag2("kor-kinds", '<div class="kor-content-box"> <a if="{isKindAdmin()}" href="#/kinds/new" class="pull-right" title="{t(\'verbs.add\')}"><i class="fa fa-plus-square"></i></a> <h1>{tcap(\'activerecord.models.kind\', {count: \'other\'})}</h1> <form class="inline"> <kor-input label="{tcap(\'search_term\')}" name="terms" onkeyup="{delayedSubmit}" ref="terms"></kor-input> <kor-input label="{tcap(\'hide_abstract\')}" type="checkbox" name="hideAbstract" onchange="{submit}" ref="hideAbstract"></kor-input> </form> <div class="hr"></div> <virtual if="{filteredRecords && filteredRecords.length}"> <table each="{records, schema in groupedResults}" class="kor_table text-left"> <thead> <tr> <th>{schema == \'null\' ? tcap(\'no_schema\') : schema}</th> <th if="{isKindAdmin()}"></th> </tr> </thead> <tbody> <tr each="{kind in records}"> <td class="{active: !kind.abstract}"> <div class="name"> <a href="#/kinds/{kind.id}/edit">{kind.name}</a> </div> <div show="{kind.fields.length}"> <span class="label"> {t(\'activerecord.models.field\', {count: \'other\'})}: </span> {fieldNamesFor(kind)} </div> <div show="{kind.generators.length}"> <span class="label"> {t(\'activerecord.models.generator\', {count: \'other\'})}: </span> {generatorNamesFor(kind)} </div> </td> <td class="buttons" if="{isKindAdmin()}"> <a href="#/kinds/{kind.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> <a if="{kind.removable}" href="#/kinds/{kind.id}" onclick="{delete(kind)}" title="{t(\'verbs.delete\')}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </virtual>', "", "", function(opts) {
+riot.tag2("kor-kinds", '<div class="kor-content-box"> <a if="{isKindAdmin()}" href="#/kinds/new" class="pull-right" title="{t(\'verbs.add\')}"><i class="fa fa-plus-square"></i></a> <h1>{tcap(\'activerecord.models.kind\', {count: \'other\'})}</h1> <form class="inline"> <kor-input label="{tcap(\'search_term\')}" name="terms" onkeyup="{delayedSubmit}" ref="terms"></kor-input> <kor-input label="{tcap(\'hide_abstract\')}" type="checkbox" name="hideAbstract" onchange="{submit}" ref="hideAbstract"></kor-input> </form> <hr> <virtual if="{filteredRecords && filteredRecords.length}"> <table each="{records, schema in groupedResults}" class="kor_table text-left"> <thead> <tr> <th>{schema == \'null\' ? tcap(\'no_schema\') : schema}</th> <th if="{isKindAdmin()}"></th> </tr> </thead> <tbody> <tr each="{kind in records}"> <td class="{active: !kind.abstract}"> <div class="name"> <a href="#/kinds/{kind.id}/edit">{kind.name}</a> </div> <div show="{kind.fields.length}"> <span class="label"> {t(\'activerecord.models.field\', {count: \'other\'})}: </span> {fieldNamesFor(kind)} </div> <div show="{kind.generators.length}"> <span class="label"> {t(\'activerecord.models.generator\', {count: \'other\'})}: </span> {generatorNamesFor(kind)} </div> </td> <td class="buttons" if="{isKindAdmin()}"> <a href="#/kinds/{kind.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-edit"></i></a> <a if="{kind.removable}" href="#/kinds/{kind.id}" onclick="{delete(kind)}" title="{t(\'verbs.delete\')}"><i class="fa fa-remove"></i></a> </td> </tr> </tbody> </table> </virtual> </div>', "", "", function(opts) {
     var fetch, filter_records, groupAndSortRecords, tag, typeCompare;
     tag = this;
     tag.requireRoles = [ "kind_admin" ];
@@ -14307,12 +17080,13 @@ riot.tag2("kor-medium-page", '<div class="kor-content-box"> <a if="{data}" href=
     };
 });
 
-riot.tag2("kor-new-media", '<kor-help-button key="new_entries"></kor-help-button> <div class="kor-content-box"> <h1>{tcap(\'pages.new_media\')}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}" class="top"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
+riot.tag2("kor-new-media", '<kor-help-button key="new_entries"></kor-help-button> <div class="kor-content-box"> <h1>{tcap(config().new_media_label)}</h1> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}" class="top"></kor-pagination> <div class="hr"></div> <span show="{data && data.total == 0}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.entity.other\'}})} </span> <kor-gallery-grid if="{data}" entities="{data.records}"></kor-gallery-grid> <div class="hr"></div> <kor-pagination if="{data}" page="{opts.query.page}" per-page="{data.per_page}" total="{data.total}" page-update-handler="{pageUpdate}"></kor-pagination> </div>', "", "", function(opts) {
     var fetch, queryUpdate, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.page);
+    tag.mixin(wApp.mixins.config);
     tag.on("mount", function() {
         tag.title(tag.t("pages.new_media"));
         fetch();
@@ -14326,6 +17100,7 @@ riot.tag2("kor-new-media", '<kor-help-button key="new_entries"></kor-help-button
         return Zepto.ajax({
             url: "/entities",
             data: {
+                engine: "active_record",
                 include: "kind,gallery_data",
                 page: tag.opts.query.page,
                 per_page: 16,
@@ -14802,7 +17577,7 @@ riot.tag2("kor-relation-editor", '<div class="kor-layout-left kor-layout-large">
     };
 });
 
-riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right" if="{isRelationAdmin()}"> <a href="#" title="{t(\'verbs.merge\')}" onclick="{toggleMerge}"><i class="fa fa-compress" aria-hidden="true"></i></a> <a href="#/relations/new" title="{t(\'verbs.add\')}"><i class="fa fa-plus-square"></i></a> </div> <h1> {tcap(\'activerecord.models.relation\', {count: \'other\'})} </h1> <form class="kor-horizontal"> <kor-input name="terms" label="{tcap(\'search_term\')}" onkeyup="{delayedSubmit}"></kor-input> <div class="hr"></div> </form> <div show="{merge}"> <div class="hr"></div> <kor-relation-merger ref="merger" on-done="{mergeDone}"></kor-relation-merger> <div class="hr"></div> </div> <div if="{filteredRecords && !filteredRecords.length}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.relation.other\'}})} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th> {tcap(\'activerecord.attributes.relation.name\')} <span if="{schema == \'null\' || !schema}"> ({t(\'no_schema\')}) </span> <span if="{schema && schema != \'null\'}"> ({tcap(\'activerecord.attributes.relation.schema\')}: {schema}) </span> </th> <th> {tcap(\'activerecord.attributes.relation.from_kind_id\')}<br> {tcap(\'activerecord.attributes.relation.to_kind_id\')} </th> <th if="{isRelationAdmin()}"></th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}/edit"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="kor-text-right buttons" if="{isRelationAdmin()}"> <a href="#/relations/{relation.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a if="{merge}" href="#" onclick="{addToMerge}" title="{t(\'add_to_merge\')}"><i class="fa fa-compress"></i></a> <a href="#" onclick="{invert}" title="{t(\'verbs.invert\')}"><i class="fa fa-exchange"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
+riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right" if="{isRelationAdmin()}"> <a href="#" title="{t(\'verbs.merge\')}" onclick="{toggleMerge}"><i class="fa fa-compress" aria-hidden="true"></i></a> <a href="#/relations/new" title="{t(\'verbs.add\')}"><i class="fa fa-plus-square"></i></a> </div> <h1> {tcap(\'activerecord.models.relation\', {count: \'other\'})} </h1> <form class="inline" onsubmit="{noSubmit}"> <kor-input name="terms" label="{tcap(\'search_term\')}" onkeyup="{delayedSubmit}" ref="terms"></kor-input> <kor-input label="{tcap(\'hide_abstract\')}" type="checkbox" name="hideAbstract" onchange="{delayedSubmit}" ref="hideAbstract"></kor-input> </form> <hr> <div show="{merge}"> <div class="hr"></div> <kor-relation-merger ref="merger" on-done="{mergeDone}"></kor-relation-merger> <div class="hr"></div> </div> <div if="{filteredRecords && !filteredRecords.length}"> {tcap(\'objects.none_found\', {interpolations: {o: \'activerecord.models.relation.other\'}})} </div> <table class="kor_table text-left" each="{records, schema in groupedResults}"> <thead> <tr> <th> {tcap(\'activerecord.attributes.relation.name\')} <span if="{schema == \'null\' || !schema}"> ({t(\'no_schema\')}) </span> <span if="{schema && schema != \'null\'}"> ({tcap(\'activerecord.attributes.relation.schema\')}: {schema}) </span> </th> <th> {tcap(\'activerecord.attributes.relation.from_kind_id\')}<br> {tcap(\'activerecord.attributes.relation.to_kind_id\')} </th> <th if="{isRelationAdmin()}"></th> </tr> </thead> <tbody> <tr each="{relation in records}"> <td> <a href="#/relations/{relation.id}/edit"> {relation.name} / {relation.reverse_name} </a> </td> <td> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.from_id\')}: </span> {kind(relation.from_kind_id)} </div> <div if="{kindLookup}"> <span class="label"> {tcap(\'activerecord.attributes.relationship.to_id\')}: </span> {kind(relation.to_kind_id)} </div> </td> <td class="kor-text-right buttons" if="{isRelationAdmin()}"> <a href="#/relations/{relation.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> <a if="{merge}" href="#" onclick="{addToMerge}" title="{t(\'add_to_merge\')}"><i class="fa fa-compress"></i></a> <a href="#" onclick="{invert}" title="{t(\'verbs.invert\')}"><i class="fa fa-exchange"></i></a> <a if="{relation.removable}" href="#/relations/{relation.id}" onclick="{delete(relation)}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </td> </tr> </tbody> </table> </div>', "", "", function(opts) {
     var fetch, fetchKinds, filter_records, groupAndSortRecords, tag, typeCompare;
     tag = this;
     tag.mixin(wApp.mixins.i18n);
@@ -14832,8 +17607,8 @@ riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right
         };
     };
     tag.submit = function() {
-        tag.filters.terms = tag.formFields["terms"].val();
-        tag.filters.hideAbstract = tag.formFields["hideAbstract"].val();
+        tag.filters.terms = tag.refs["terms"].value();
+        tag.filters.hideAbstract = tag.refs["hideAbstract"].value();
         filter_records();
         groupAndSortRecords();
         return tag.update();
@@ -14845,6 +17620,9 @@ riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right
         }
         tag.delayedTimeout = window.setTimeout(tag.submit, 300);
         return true;
+    };
+    tag.noSubmit = function(event) {
+        return event.preventDefault();
     };
     tag.toggleMerge = function(event) {
         event.preventDefault();
@@ -14961,10 +17739,12 @@ riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right
     };
 });
 
-riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector name="collection_id" multiple="{true}" riot-value="{criteria.collection_id}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" riot-value="{criteria.kind_id}" ref="fields" onchange="{selectKind}" include-media="{true}"></kor-kind-selector> <kor-input if="{elastic()}" name="terms" label="{tcap(\'all_fields\')}" riot-value="{criteria.terms}" ref="fields" help="{tcap(\'help.terms_query\')}"></kor-input> <kor-input name="name" label="{tcap(\'activerecord.attributes.entity.name\')}" riot-value="{criteria.name}" ref="fields" help="{tcap(\'help.name_query\')}"></kor-input> <kor-input name="tags" label="{tcap(\'nouns.tag\', {count: \'other\'})}" riot-value="{criteria.tags}" ref="fields"></kor-input> <kor-input name="dating" label="{tcap(\'activerecord.models.entity_dating\')}" riot-value="{criteria.dating}" ref="fields" help="{tcap(\'help.dating_query\')}"></kor-input> <virtual if="{isMedia(kind)}"> <hr> <kor-input name="file_name" label="{tcap(\'activerecord.attributes.medium.file_name\')}" riot-value="{criteria.file_name}" ref="fields"></kor-input> <kor-input if="{mime_types}" name="file_type" label="{tcap(\'activerecord.attributes.medium.file_type\')}" type="select" options="{mime_types}" placeholder="{t(\'all\')}" riot-value="{criteria.file_type}" ref="fields"></kor-input> <kor-input name="file_size" label="{tcap(\'activerecord.attributes.medium.file_size\')}" riot-value="{criteria.file_size}" ref="fields" help="{tcap(\'help.file_size_query\')}"></kor-input> <kor-input name="datahash" label="{tcap(\'activerecord.attributes.medium.datahash\')}" riot-value="{criteria.datahash}" ref="fields"></kor-input> </virtual> <virtual if="{elastic()}"> <virtual if="{kind && kind.fields.length}"> <hr> <kor-input each="{field in kind.fields}" label="{field.search_label}" name="dataset_{field.name}" riot-value="{criteria[\'dataset_\' + field.name]}" ref="fields"></kor-input> </virtual> <hr> <kor-input name="property" label="{tcap(\'activerecord.attributes.entity.properties\')}" riot-value="{criteria.property}" ref="fields"></kor-input> <kor-input name="related" label="{tcap(\'by_related_entities\')}" riot-value="{criteria.related}" ref="fields"></kor-input> </virtual> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.search\')}"></kor-input> </div> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search_results\')}</h1> </div> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <div class="search-results" if="{data && data.total > 0}"> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="top"></kor-pagination> <div class="kor-search-results"> <kor-search-result each="{entity in data.records}" entity="{entity}"></kor-search-result> </div> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="bottom"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector show="{allowedTo(\'create\')}" name="collection_id" multiple="{true}" riot-value="{criteria.collection_id}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" riot-value="{criteria.kind_id}" ref="fields" onchange="{selectKind}" include-media="{true}"></kor-kind-selector> <kor-input if="{elastic()}" name="terms" label="{tcap(\'all_fields\')}" riot-value="{criteria.terms}" ref="fields" help="{tcap(\'help.terms_query\')}"></kor-input> <kor-input name="name" label="{config()[\'search_entity_name\']}" riot-value="{criteria.name}" ref="fields" help="{tcap(\'help.name_query\')}"></kor-input> <kor-input name="tags" label="{tcap(\'nouns.tag\', {count: \'other\'})}" riot-value="{criteria.tags}" ref="fields"></kor-input> <kor-input name="dating" label="{tcap(\'activerecord.models.entity_dating\')}" riot-value="{criteria.dating}" ref="fields" help="{tcap(\'help.dating_query\')}"></kor-input> <virtual if="{isMedia(kind)}"> <hr> <kor-input name="file_name" label="{tcap(\'activerecord.attributes.medium.file_name\')}" riot-value="{criteria.file_name}" ref="fields"></kor-input> <kor-input if="{mime_types}" name="file_type" label="{tcap(\'activerecord.attributes.medium.file_type\')}" type="select" options="{mime_types}" placeholder="{t(\'all\')}" riot-value="{criteria.file_type}" ref="fields"></kor-input> <kor-input name="file_size" label="{tcap(\'activerecord.attributes.medium.file_size\')}" riot-value="{criteria.file_size}" ref="fields" help="{tcap(\'help.file_size_query\')}"></kor-input> <kor-input name="datahash" label="{tcap(\'activerecord.attributes.medium.datahash\')}" riot-value="{criteria.datahash}" ref="fields"></kor-input> </virtual> <virtual if="{elastic()}"> <virtual if="{kind && kind.fields.length}"> <hr> <kor-input each="{field in kind.fields}" label="{field.search_label}" name="dataset_{field.name}" riot-value="{criteria[\'dataset_\' + field.name]}" ref="fields"></kor-input> </virtual> <hr> <kor-input name="property" label="{tcap(\'activerecord.attributes.entity.properties\')}" riot-value="{criteria.property}" ref="fields"></kor-input> <kor-input name="related" label="{tcap(\'by_related_entities\')}" riot-value="{criteria.related}" ref="fields"></kor-input> </virtual> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.search\')}"></kor-input> </div> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search_results\')}</h1> </div> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <div class="search-results" if="{data && data.total > 0}"> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="top"></kor-pagination> <div class="kor-search-results"> <kor-search-result each="{entity in data.records}" entity="{entity}"></kor-search-result> </div> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="bottom"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.page);
     tag.on("before-mount", function() {
         fetchMimeTypes();
@@ -15000,9 +17780,6 @@ riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div c
         var id = Zepto(event.target).val();
         if (id && id != "0") {
             fetchKind(id);
-            wApp.routing.query({
-                kind_id: id
-            });
         } else {
             tag.kind = null;
             tag.update();
@@ -15077,7 +17854,7 @@ riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div c
     };
 });
 
-riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </h1> <form onsubmit="{submit}" if="{values && groups && relations}"> <h2>{tcap(\'settings.branding_and_display\')}</h2> <hr> <kor-input name="maintainer_name" label="{nameFor(\'maintainer_name\')}" riot-value="{valueWithDefaults(\'maintainer_name\')}" ref="fields"></kor-input> <kor-input name="maintainer_mail" label="{nameFor(\'maintainer_mail\')}" riot-value="{valueWithDefaults(\'maintainer_mail\')}" ref="fields"></kor-input> <kor-input name="welcome_title" label="{nameFor(\'welcome_title\')}" riot-value="{valueWithDefaults(\'welcome_title\')}" ref="fields"></kor-input> <kor-input name="welcome_text" label="{nameFor(\'welcome_text\')}" type="textarea" riot-value="{valueWithDefaults(\'welcome_text\')}" ref="fields"></kor-input> <kor-input name="legal_text" label="{nameFor(\'legal_text\')}" type="textarea" riot-value="{valueWithDefaults(\'legal_text\')}" ref="fields"></kor-input> <kor-input name="about_text" label="{nameFor(\'about_text\')}" type="textarea" riot-value="{valueWithDefaults(\'about_text\')}" ref="fields"></kor-input> <kor-input name="custom_css_file" label="{nameFor(\'custom_css_file\')}" riot-value="{valueWithDefaults(\'custom_css_file\')}" ref="fields"></kor-input> <kor-input name="env_auth_button_label" label="{nameFor(\'env_auth_button_label\')}" riot-value="{valueWithDefaults(\'env_auth_button_label\')}" ref="fields"></kor-input> <kor-input name="search_entity_name" label="{nameFor(\'search_entity_name\')}" riot-value="{valueWithDefaults(\'search_entity_name\')}" ref="fields"></kor-input> <kor-input name="kind_dating_label" label="{nameFor(\'kind_dating_label\')}" riot-value="{valueWithDefaults(\'kind_dating_label\')}" ref="fields"></kor-input> <kor-input name="kind_name_label" label="{nameFor(\'kind_name_label\')}" riot-value="{valueWithDefaults(\'kind_name_label\')}" ref="fields"></kor-input> <kor-input name="kind_distinct_name_label" label="{nameFor(\'kind_distinct_name_label\')}" riot-value="{valueWithDefaults(\'kind_distinct_name_label\')}" ref="fields"></kor-input> <kor-input name="relationship_dating_label" label="{nameFor(\'relationship_dating_label\')}" riot-value="{valueWithDefaults(\'relationship_dating_label\')}" ref="fields"></kor-input> <kor-input name="primary_relations" label="{nameFor(\'primary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'primary_relations\')}" ref="fields"></kor-input> <kor-input name="secondary_relations" label="{nameFor(\'secondary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'secondary_relations\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.behavior\')}</h2> <hr> <kor-input name="default_locale" label="{nameFor(\'default_locale\')}" type="select" options="{wApp.i18n.locales()}" riot-value="{valueWithDefaults(\'default_locale\')}" ref="fields"></kor-input> <kor-input name="max_foreground_group_download_size" label="{nameFor(\'max_foreground_group_download_size\')}" riot-value="{valueWithDefaults(\'max_foreground_group_download_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_file_upload_size" label="{nameFor(\'max_file_upload_size\')}" riot-value="{valueWithDefaults(\'max_file_upload_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_results_per_request" label="{nameFor(\'max_results_per_request\')}" riot-value="{valueWithDefaults(\'max_results_per_request\')}" ref="fields" type="number"></kor-input> <kor-input name="max_included_results_per_result" label="{nameFor(\'max_included_results_per_result\')}" riot-value="{valueWithDefaults(\'max_included_results_per_result\')}" ref="fields" type="number"></kor-input> <kor-input name="session_lifetime" label="{nameFor(\'session_lifetime\')}" riot-value="{valueWithDefaults(\'session_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="publishment_lifetime" label="{nameFor(\'publishment_lifetime\')}" riot-value="{valueWithDefaults(\'publishment_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="default_groups" label="{nameFor(\'default_groups\')}" type="select" multiple="{true}" options="{groups}" riot-value="{valueWithDefaults(\'default_groups\')}" ref="fields"></kor-input> <kor-input name="max_download_group_size" label="{nameFor(\'max_download_group_size\')}" riot-value="{valueWithDefaults(\'max_download_group_size\')}" ref="fields" type="number"></kor-input> <kor-input name="mirador_page_template" label="{nameFor(\'mirador_page_template\')}" riot-value="{valueWithDefaults(\'mirador_page_template\')}" ref="fields" type="number"></kor-input> <kor-input name="mirador_manifest_template" label="{nameFor(\'mirador_page_template\')}" riot-value="{valueWithDefaults(\'mirador_manifest_template\')}" ref="fields" type="number"></kor-input> <h2>{tcap(\'settings.help\')}</h2> <hr> <kor-input name="help_general" label="{nameFor(\'help_general\')}" type="textarea" riot-value="{valueWithDefaults(\'help_general\')}" ref="fields"></kor-input> <kor-input name="help_search" type="textarea" label="{nameFor(\'help_search\')}" riot-value="{valueWithDefaults(\'help_search\')}" ref="fields"></kor-input> <kor-input name="help_upload" type="textarea" label="{nameFor(\'help_upload\')}" riot-value="{valueWithDefaults(\'help_upload\')}" ref="fields"></kor-input> <kor-input name="help_login" type="textarea" label="{nameFor(\'help_login\')}" riot-value="{valueWithDefaults(\'help_login\')}" ref="fields"></kor-input> <kor-input name="help_profile" type="textarea" label="{nameFor(\'help_profile\')}" riot-value="{valueWithDefaults(\'help_profile\')}" ref="fields"></kor-input> <kor-input name="help_new_entries" type="textarea" label="{nameFor(\'help_new_entries\')}" riot-value="{valueWithDefaults(\'help_entries\')}" ref="fields"></kor-input> <kor-input name="help_authority_groups" type="textarea" label="{nameFor(\'help_authority_groups\')}" riot-value="{valueWithDefaults(\'help_authority_groups\')}" ref="fields"></kor-input> <kor-input name="help_user_groups" type="textarea" label="{nameFor(\'help_user_groups\')}" riot-value="{valueWithDefaults(\'help_user_groups\')}" ref="fields"></kor-input> <kor-input name="help_clipboard" type="textarea" label="{nameFor(\'help_clipboard\')}" riot-value="{valueWithDefaults(\'help_clipboard\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.other\')}</h2> <hr> <kor-input name="sources_release" label="{nameFor(\'sources_release\')}" riot-value="{valueWithDefaults(\'sources_release\')}" ref="fields"></kor-input> <kor-input name="sources_pre_release" label="{nameFor(\'sources_pre_release\')}" riot-value="{valueWithDefaults(\'sources_pre_release\')}" ref="fields"></kor-input> <kor-input name="sources_default" label="{nameFor(\'sources_default\')}" riot-value="{valueWithDefaults(\'sources_default\')}" ref="fields"></kor-input> <kor-input name="repository_uuid" label="{nameFor(\'repository_uuid\')}" riot-value="{valueWithDefaults(\'repository_uuid\')}" ref="fields"></kor-input> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </h1> <form onsubmit="{submit}" if="{values && groups && relations}"> <h2>{tcap(\'settings.branding_and_display\')}</h2> <hr> <kor-input name="maintainer_name" label="{nameFor(\'maintainer_name\')}" riot-value="{valueWithDefaults(\'maintainer_name\')}" ref="fields"></kor-input> <kor-input name="maintainer_mail" label="{nameFor(\'maintainer_mail\')}" riot-value="{valueWithDefaults(\'maintainer_mail\')}" ref="fields"></kor-input> <kor-input name="welcome_title" label="{nameFor(\'welcome_title\')}" riot-value="{valueWithDefaults(\'welcome_title\')}" ref="fields"></kor-input> <kor-input name="welcome_text" label="{nameFor(\'welcome_text\')}" type="textarea" riot-value="{valueWithDefaults(\'welcome_text\')}" ref="fields"></kor-input> <kor-input name="welcome_page_only_media" label="{nameFor(\'welcome_page_only_media\')}" type="checkbox" riot-value="{valueWithDefaults(\'welcome_page_only_media\')}" ref="fields"></kor-input> <kor-input name="legal_text" label="{nameFor(\'legal_text\')}" type="textarea" riot-value="{valueWithDefaults(\'legal_text\')}" ref="fields"></kor-input> <kor-input name="about_text" label="{nameFor(\'about_text\')}" type="textarea" riot-value="{valueWithDefaults(\'about_text\')}" ref="fields"></kor-input> <kor-input name="custom_css_file" label="{nameFor(\'custom_css_file\')}" riot-value="{valueWithDefaults(\'custom_css_file\')}" ref="fields"></kor-input> <kor-input name="new_media_label" type="select" options="{newMediaLabels()}" label="{nameFor(\'new_media_label\')}" riot-value="{valueWithDefaults(\'new_media_label\')}" ref="fields"></kor-input> <kor-input name="env_auth_button_label" label="{nameFor(\'env_auth_button_label\')}" riot-value="{valueWithDefaults(\'env_auth_button_label\')}" ref="fields"></kor-input> <kor-input name="search_entity_name" label="{nameFor(\'search_entity_name\')}" riot-value="{valueWithDefaults(\'search_entity_name\')}" ref="fields"></kor-input> <kor-input name="kind_dating_label" label="{nameFor(\'kind_dating_label\')}" riot-value="{valueWithDefaults(\'kind_dating_label\')}" ref="fields"></kor-input> <kor-input name="kind_name_label" label="{nameFor(\'kind_name_label\')}" riot-value="{valueWithDefaults(\'kind_name_label\')}" ref="fields"></kor-input> <kor-input name="kind_distinct_name_label" label="{nameFor(\'kind_distinct_name_label\')}" riot-value="{valueWithDefaults(\'kind_distinct_name_label\')}" ref="fields"></kor-input> <kor-input name="relationship_dating_label" label="{nameFor(\'relationship_dating_label\')}" riot-value="{valueWithDefaults(\'relationship_dating_label\')}" ref="fields"></kor-input> <kor-input name="primary_relations" label="{nameFor(\'primary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'primary_relations\')}" ref="fields" help="{tcap(\'help.primary_relations\')}"></kor-input> <kor-input name="secondary_relations" label="{nameFor(\'secondary_relations\')}" type="select" multiple="{true}" options="{relations}" riot-value="{valueWithDefaults(\'secondary_relations\')}" ref="fields" help="{tcap(\'help.secondary_relations\')}"></kor-input> <h2>{tcap(\'settings.behavior\')}</h2> <hr> <kor-input name="default_locale" label="{nameFor(\'default_locale\')}" type="select" options="{wApp.i18n.locales()}" riot-value="{valueWithDefaults(\'default_locale\')}" ref="fields"></kor-input> <kor-input name="max_foreground_group_download_size" label="{nameFor(\'max_foreground_group_download_size\')}" riot-value="{valueWithDefaults(\'max_foreground_group_download_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_file_upload_size" label="{nameFor(\'max_file_upload_size\')}" riot-value="{valueWithDefaults(\'max_file_upload_size\')}" ref="fields" type="number"></kor-input> <kor-input name="max_results_per_request" label="{nameFor(\'max_results_per_request\')}" riot-value="{valueWithDefaults(\'max_results_per_request\')}" ref="fields" type="number"></kor-input> <kor-input name="max_included_results_per_result" label="{nameFor(\'max_included_results_per_result\')}" riot-value="{valueWithDefaults(\'max_included_results_per_result\')}" ref="fields" type="number"></kor-input> <kor-input name="session_lifetime" label="{nameFor(\'session_lifetime\')}" riot-value="{valueWithDefaults(\'session_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="publishment_lifetime" label="{nameFor(\'publishment_lifetime\')}" riot-value="{valueWithDefaults(\'publishment_lifetime\')}" ref="fields" type="number"></kor-input> <kor-input name="default_groups" label="{nameFor(\'default_groups\')}" type="select" multiple="{true}" options="{groups}" riot-value="{valueWithDefaults(\'default_groups\')}" ref="fields"></kor-input> <kor-input name="max_download_group_size" label="{nameFor(\'max_download_group_size\')}" riot-value="{valueWithDefaults(\'max_download_group_size\')}" ref="fields" type="number"></kor-input> <kor-input name="mirador_page_template" label="{nameFor(\'mirador_page_template\')}" riot-value="{valueWithDefaults(\'mirador_page_template\')}" ref="fields"></kor-input> <kor-input name="mirador_manifest_template" label="{nameFor(\'mirador_manifest_template\')}" riot-value="{valueWithDefaults(\'mirador_manifest_template\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.help\')}</h2> <hr> <kor-input name="help_general" label="{nameFor(\'help_general\')}" type="textarea" riot-value="{valueWithDefaults(\'help_general\')}" ref="fields"></kor-input> <kor-input name="help_search" type="textarea" label="{nameFor(\'help_search\')}" riot-value="{valueWithDefaults(\'help_search\')}" ref="fields"></kor-input> <kor-input name="help_upload" type="textarea" label="{nameFor(\'help_upload\')}" riot-value="{valueWithDefaults(\'help_upload\')}" ref="fields"></kor-input> <kor-input name="help_login" type="textarea" label="{nameFor(\'help_login\')}" riot-value="{valueWithDefaults(\'help_login\')}" ref="fields"></kor-input> <kor-input name="help_profile" type="textarea" label="{nameFor(\'help_profile\')}" riot-value="{valueWithDefaults(\'help_profile\')}" ref="fields"></kor-input> <kor-input name="help_new_entries" type="textarea" label="{nameFor(\'help_new_entries\')}" riot-value="{valueWithDefaults(\'help_entries\')}" ref="fields"></kor-input> <kor-input name="help_authority_groups" type="textarea" label="{nameFor(\'help_authority_groups\')}" riot-value="{valueWithDefaults(\'help_authority_groups\')}" ref="fields"></kor-input> <kor-input name="help_user_groups" type="textarea" label="{nameFor(\'help_user_groups\')}" riot-value="{valueWithDefaults(\'help_user_groups\')}" ref="fields"></kor-input> <kor-input name="help_clipboard" type="textarea" label="{nameFor(\'help_clipboard\')}" riot-value="{valueWithDefaults(\'help_clipboard\')}" ref="fields"></kor-input> <h2>{tcap(\'settings.other\')}</h2> <hr> <kor-input name="sources_release" label="{nameFor(\'sources_release\')}" riot-value="{valueWithDefaults(\'sources_release\')}" ref="fields"></kor-input> <kor-input name="sources_pre_release" label="{nameFor(\'sources_pre_release\')}" riot-value="{valueWithDefaults(\'sources_pre_release\')}" ref="fields"></kor-input> <kor-input name="sources_default" label="{nameFor(\'sources_default\')}" riot-value="{valueWithDefaults(\'sources_default\')}" ref="fields"></kor-input> <kor-input name="repository_uuid" label="{nameFor(\'repository_uuid\')}" riot-value="{valueWithDefaults(\'repository_uuid\')}" ref="fields"></kor-input> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, fetchGroups, fetchRelations, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -15097,6 +17874,15 @@ riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large">
     };
     tag.nameFor = function(key) {
         return tag.tcap("settings.values." + key);
+    };
+    tag.newMediaLabels = function() {
+        return [ {
+            value: "pages.new_media",
+            label: tag.tcap("pages.new_media")
+        }, {
+            value: "pages.new_entries",
+            label: tag.tcap("pages.new_entries")
+        } ];
     };
     tag.submit = function(event) {
         var p;
@@ -15122,7 +17908,8 @@ riot.tag2("kor-settings-editor", '<div class="kor-layout-left kor-layout-large">
                 mtime: tag.mtime
             }),
             success: function(data) {
-                return wApp.bus.trigger("config-updated");
+                wApp.bus.trigger("config-updated");
+                return fetch();
             }
         });
     };
@@ -15197,7 +17984,7 @@ riot.tag2("kor-statistics", "<div class=\"kor-layout-left kor-layout-large\"> <d
     };
 });
 
-riot.tag2("kor-upload", '<kor-help-button key="upload"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'verbs.upload\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector policy="create" ref="cs"></kor-collection-selector> <kor-entity-group-selector type="user" riot-value="{l(new Date())}" ref="group"></kor-entity-group-selector> <div if="{selection}"> {tcap(\'labels.relate_to_via\', {interpolations: {to: selection.display_name}})}: <kor-relation-selector if="{selection}" source-kind-id="{wApp.info.data.medium_kind_id}" target-kind-id="{selection.kind_id}" ref="relation-selector"></kor-relation-selector> </div> <a class="trigger"> » {tcap(\'objects.add\', {interpolations: {o: \'nouns.file.other\'}})} </a> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <ul> <li each="{job in files()}"> <div class="pull-right"> <a ref="#" onclick="{remove}">x</a> </div> <strong>{job.name}</strong> <div> {hs(job.size)} <span show="{job.percent > 0}"> <span show="{job.percent < 100}"> {job.percent} </span> <span show="{job.percent == 100 && !job.error}"> ... {t(\'done\')} </span> </span> <div class="kor-error" if="{job.error}"> <strong>{job.error.parsed_response.message}: <div each="{errors, field in job.error.parsed_response.errors}"> <span>{errors.join(\', \')}</span> </div> </strong> </div> </div> </li> </ul> <form class="inline" onsubmit="{submit}"> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.upload\')}"></kor-input> <kor-input type="submit" label="{tcap(\'empty_list\')}" onclick="{abort}"></kor-input> </div> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-upload", '<kor-help-button key="upload"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'verbs.upload\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector policy="create" ref="cs"></kor-collection-selector> <kor-entity-group-selector type="user" riot-value="{l(new Date())}" ref="group"></kor-entity-group-selector> <div if="{selection}"> {tcap(\'labels.relate_to_via\', {interpolations: {to: selection.display_name}})}: <kor-relation-selector if="{selection}" source-kind-id="{wApp.info.data.medium_kind_id}" target-kind-id="{selection.kind_id}" ref="relation-selector"></kor-relation-selector> </div> <virtual if="{mediumKind && mediumKind.fields.length > 0}"> <hr> <kor-dataset-fields name="dataset" fields="{mediumKind.fields}" ref="dataset" only-mandatory="{!allFields}"></kor-dataset-fields> </virtual> <a onclick="{toggleAllFields}"> {allFieldsLabel()} </a> <hr> <a class="trigger"> » {tcap(\'objects.add\', {interpolations: {o: \'nouns.file.other\'}})} </a> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <ul> <li each="{job in files()}"> <div class="pull-right"> <a ref="#" onclick="{remove}">x</a> </div> <strong>{job.name}</strong> <div> {hs(job.size)} <span show="{job.percent > 0}"> <span show="{job.percent < 100}"> {job.percent} </span> <span show="{job.percent == 100 && !job.error}"> ... {t(\'done\')} </span> </span> <div class="kor-error" if="{job.error}"> <strong>{job.error.parsed_response.message}: <div each="{errors, field in job.error.parsed_response.errors}"> <span>{errors.join(\', \')}</span> </div> </strong> </div> </div> </li> </ul> <form class="inline" onsubmit="{submit}"> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.upload\')}"></kor-input> <kor-input type="submit" label="{tcap(\'empty_list\')}" onclick="{abort}"></kor-input> </div> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -15226,18 +18013,33 @@ riot.tag2("kor-upload", '<kor-help-button key="upload"></kor-help-button> <div c
             "entity[kind_id]": wApp.info.data.medium_kind_id,
             "entity[collection_id]": tag.refs["cs"].value(),
             user_group_name: tag.refs["group"].value(),
-            target_entity_id: wApp.clipboard.selection(),
+            target_entity_id: wApp.routing.query()["relate_with"],
             authenticity_token: wApp.session.csrfToken()
         };
         var rs = tag.refs["relation-selector"];
         if (rs) {
             params["relation_name"] = rs.value();
         }
+        if (tag.refs.dataset) {
+            const datasetValues = tag.refs.dataset.value();
+            for (const k in datasetValues) {
+                const p = "entity[dataset][" + k + "]";
+                const v = datasetValues[k];
+                params[p] = v;
+            }
+        }
         uploader.setOption("multipart_params", params);
         uploader.start();
     };
     tag.hasSelection = function() {
         return !!wApp.clipboard.selection();
+    };
+    tag.toggleAllFields = function(event) {
+        tag.allFields = !tag.allFields;
+        tag.update();
+    };
+    tag.allFieldsLabel = function() {
+        return tag.allFields ? tag.tcap("show_only_mandatory_fields") : tag.tcap("show_all_fields");
     };
     var relationSelectorValue = function() {
         return tag.refs["relation-selector"] ? tag.refs["relation-selector"].value() : nil;
@@ -15259,6 +18061,7 @@ riot.tag2("kor-upload", '<kor-help-button key="upload"></kor-help-button> <div c
         });
     };
     var init = function() {
+        fetchMediumKind();
         if (tag.hasSelection()) fetchSelected(wApp.clipboard.selection());
         var id = wApp.routing.query()["relate_with"];
         if (id) fetchSelected(id);
@@ -15299,6 +18102,18 @@ riot.tag2("kor-upload", '<kor-help-button key="upload"></kor-help-button> <div c
             }
         });
         uploader.init();
+    };
+    var fetchMediumKind = function() {
+        $.ajax({
+            url: "/kinds/" + wApp.info.data.medium_kind_id,
+            data: {
+                include: "fields"
+            },
+            success: function(data) {
+                tag.mediumKind = data;
+                tag.update();
+            }
+        });
     };
 });
 
@@ -15531,7 +18346,8 @@ riot.tag2("kor-user-groups", '<kor-help-button key="user_groups"></kor-help-butt
         Zepto.ajax({
             url: tag.opts.type == "shared" ? "/user_groups/shared" : "user_groups",
             data: {
-                include: "owner"
+                include: "owner",
+                per_page: "max"
             },
             success: function(data) {
                 tag.data = data;
@@ -15629,28 +18445,28 @@ riot.tag2("kor-users", '<div class="kor-content-box"> <div class="kor-layout-com
 });
 
 riot.tag2("kor-welcome", '<div class="kor-content-box"> <h1>{config().welcome_title}</h1> <div class="target"></div> <div class="teaser" if="{currentUser() && !isGuest()}"> <span>{tcap(\'pages.random_entities\')}</span> <div class="hr"></div> <kor-gallery-grid entities="{entities()}"></kor-gallery-grid> </div> </div>', "", "", function(opts) {
-    var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.config);
     tag.mixin(wApp.mixins.page);
-    tag.on("mount", function() {
+    tag.on("mount", () => {
         Zepto(tag.root).find(".target").html(tag.config().welcome_html);
-        return Zepto.ajax({
+        Zepto.ajax({
             url: "/entities",
             data: {
                 include: "gallery_data",
                 sort: "random",
-                per_page: 4
+                per_page: 4,
+                kind_id: tag.config()["welcome_page_only_media"] ? wApp.info.data.medium_kind_id : ""
             },
-            success: function(data) {
+            success: data => {
                 tag.data = data;
-                return tag.update();
+                tag.update();
             }
         });
     });
-    tag.entities = function() {
+    tag.entities = () => {
         return (tag.data || {}).records || [];
     };
 });
@@ -16241,7 +19057,7 @@ riot.tag2("kor-sa-entity", '<div class="auth" if="{!authorized}"> <strong>Info</
     };
 });
 
-riot.tag2("kor-synonyms-editor", '<kor-input label="{opts.label}" type="textarea" ref="field"></kor-input>', "", "", function(opts) {
+riot.tag2("kor-synonyms-editor", '<kor-input label="{opts.label}" type="textarea" ref="field" help="{tcap(\'help.synonym_input\')}"></kor-input>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -16652,7 +19468,7 @@ riot.tag2("w-app", '<kor-header></kor-header> <div> <kor-menu></kor-menu> <div c
 riot.tag2("w-app-loader", '<div class="app" ref="target"> <div class="kor-loading-screen"> <img src="/images/loading.gif"><br> <strong>… loading …</strong> </div> </div>', "", "", function(opts) {
     var tag = this;
     var reloadApp = function() {
-        console.log("reloading app");
+        console.log("remounting app ...");
         unmount();
         var preloaders = wApp.setup();
         $.when.apply(null, preloaders).then(function() {
@@ -16670,7 +19486,7 @@ riot.tag2("w-app-loader", '<div class="app" ref="target"> <div class="kor-loadin
             routing: true
         };
         tag.mountedApp = riot.mount(tag.refs.target, "w-app", opts)[0];
-        console.log("ConedaKOR frontend loaded");
+        console.log("ConedaKOR frontend mounted");
     };
     var updateLayout = function() {
         var meta = Zepto("meta[http-equiv=content-language]");
@@ -16710,7 +19526,7 @@ riot.tag2("kor-header", '<a href="#/" class="logo"> <kor-logo></kor-logo> </a> <
     tag.mixin(wApp.mixins.i18n);
 });
 
-riot.tag2("kor-menu", '<ul if="{currentUser()}"> <li if="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.search\')}</a> </li> </ul> <ul> <li if="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> <li if="{currentUser()}"> <a href="#/new-media">{tcap(\'pages.new_media\')}</a> </li> </ul> <div class="header">{tcap(\'nouns.group\', {count: \'other\'})}</div> <ul> <li> <a href="#/groups/categories"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\', {count: \'other\'})} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.published\', {count: \'other\'})} </a> </li> </ul> <virtual if="{isLoggedIn() && (allowedTo(\'create\'))}"> <div class="header">{tcap(\'verbs.create\')}</div> <ul> <li> <kor-input if="{kinds && kinds.records.length > 0}" name="new_entity_type" type="select" onchange="{newEntity}" options="{kinds.records}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.entity.one\'}})}" ref="kind_id"></kor-input> </li> <li if="{isLoggedIn()}"> <a href="#/upload">{tcap(\'verbs.upload\')}</a> </li> <li> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> </ul> </virtual> <virtual if="{isLoggedIn() && (allowedTo(\'delete\') || allowedTo(\'edit\'))}"> <div class="header">{tcap(\'verbs.edit\')}</div> <ul> <li if="{allowedTo(\'delete\')}"> <a href="#/entities/invalid">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/recent">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/isolated">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> </virtual> <div if="{isAdmin()}" class="header">{tcap(\'nouns.administration\')}</div> <ul if="{isAdmin()}"> <li> <a href="#/settings"> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </a> </li> <li> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> <ul> <li if="{hasHelp()}"> <a href="#/help" onclick="{showHelp}">{tcap(\'nouns.help\')}</a> </li> <li> <a href="#/statistics">{tcap(\'nouns.statistics\')}</a> </li> <li if="{hasLegal()}"> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li if="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer_mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
+riot.tag2("kor-menu", '<ul if="{currentUser()}"> <li if="{!isLoggedIn()}"> <a href="#/login">{tcap(\'nouns.login\')}</a> </li> <li> <a href="#/search">{tcap(\'nouns.search\')}</a> </li> </ul> <ul> <li if="{isLoggedIn()}"> <a href="#/clipboard">{tcap(\'nouns.clipboard\')}</a> </li> <li if="{currentUser()}"> <a href="#/new-media">{tcap(config().new_media_label)}</a> </li> </ul> <div class="header">{tcap(\'nouns.group\', {count: \'other\'})}</div> <ul> <li> <a href="#/groups/categories"> {tcap(\'activerecord.models.authority_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/user"> {tcap(\'activerecord.models.user_group.other\')} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/shared"> {tcap(\'activerecord.attributes.user_group.shared\', {count: \'other\'})} </a> </li> <li if="{isLoggedIn()}"> <a href="#/groups/published"> {tcap(\'activerecord.attributes.user_group.published\', {count: \'other\'})} </a> </li> </ul> <virtual if="{isLoggedIn() && (allowedTo(\'create\'))}"> <div class="header">{tcap(\'verbs.create\')}</div> <ul> <li> <kor-input if="{kinds && kinds.records.length > 0}" name="new_entity_type" type="select" onchange="{newEntity}" options="{kinds.records}" placeholder="{tcap(\'objects.new\', {interpolations: {o: \'activerecord.models.entity.one\'}})}" ref="kind_id"></kor-input> </li> <li if="{isLoggedIn()}"> <a href="#/upload">{tcap(\'verbs.upload\')}</a> </li> <li> <a href="#/relations"> {tcap(\'activerecord.models.relation.other\')} </a> </li> <li> <a href="#/kinds"> {tcap(\'activerecord.models.kind.other\')} </a> </li> </ul> </virtual> <virtual if="{isLoggedIn() && (allowedTo(\'delete\') || allowedTo(\'edit\'))}"> <div class="header">{tcap(\'verbs.edit\')}</div> <ul> <li if="{allowedTo(\'delete\')}"> <a href="#/entities/invalid">{tcap(\'nouns.invalid_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/recent">{tcap(\'nouns.new_entity\', {count: \'other\'})}</a> </li> <li if="{allowedTo(\'edit\')}"> <a href="#/entities/isolated">{tcap(\'nouns.isolated_entity\', {count: \'other\'})}</a> </li> </ul> </virtual> <div if="{isAdmin()}" class="header">{tcap(\'nouns.administration\')}</div> <ul if="{isAdmin()}"> <li> <a href="#/settings"> {tcap(\'activerecord.models.setting\', {count: \'other\'})} </a> </li> <li> <a href="#/collections"> {tcap(\'activerecord.models.collection.other\')} </a> </li> <li> <a href="#/credentials"> {tcap(\'activerecord.models.credential.other\')} </a> </li> <li> <a href="#/users"> {tcap(\'activerecord.models.user.other\')} </a> </li> </ul> <ul> <li if="{hasHelp()}"> <a href="#/help" onclick="{showHelp}">{tcap(\'nouns.help\')}</a> </li> <li> <a href="#/statistics">{tcap(\'nouns.statistics\')}</a> </li> <li if="{hasLegal()}"> <a href="#/legal">{tcap(\'legal\')}</a> </li> <li> <a href="#/about">{tcap(\'about\')}</a> </li> <li> <a href="https://coneda.net" target="_blank">coneda.net</a> </li> </ul> <ul> <li if="{hasAnyRole()}"> <a href="https://github.com/coneda/kor/issues"> {tcap(\'report_a_problem\')} </a> </li> <li hide="{hasAnyRole()}"> <a href="mailto:{config().maintainer_mail}"> {tcap(\'report_a_problem\')} </a> </li> </ul>', "", "", function(opts) {
     var fetchKinds, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -16719,6 +19535,7 @@ riot.tag2("kor-menu", '<ul if="{currentUser()}"> <li if="{!isLoggedIn()}"> <a hr
     tag.mixin(wApp.mixins.config);
     tag.on("mount", function() {
         wApp.bus.on("reload-kinds", fetchKinds);
+        wApp.bus.on("config-updated", tag.update);
         return fetchKinds();
     });
     tag.on("umount", function() {
@@ -16843,6 +19660,30 @@ riot.tag2("w-modal", '<div class="receiver" ref="receiver"></div>', "", 'show="{
             return tag.update();
         }
     });
+});
+
+riot.tag2("kor-remove-from-group", '<a if="{isGroupAdmin()}" title="{t(\'verbs.remove\')}" href="#" onclick="{remove}"><i class="fa fa-minus"></i></a>', "", "", function(opts) {
+    var tag = this;
+    tag.mixin(wApp.mixins.sessionAware);
+    tag.mixin(wApp.mixins.auth);
+    tag.mixin(wApp.mixins.i18n);
+    tag.remove = event => {
+        event.preventDefault();
+        Zepto.ajax({
+            type: "POST",
+            url: "/" + tag.opts.type + "_groups/" + tag.opts.groupId + "/remove",
+            data: JSON.stringify({
+                entity_ids: [ tag.opts.entity.id ]
+            }),
+            success: data => {
+                wApp.bus.trigger("group-changed");
+            }
+        });
+    };
+    tag.isGroupAdmin = () => {
+        console.log("xxx", tag.opts.type, tag.isAuthorityGroupAdmin());
+        return tag.opts.type !== "authority" || tag.isAuthorityGroupAdmin();
+    };
 });
 
 riot.tag2("w-timestamp", "<span>{formatted()}</span>", "", "", function(opts) {

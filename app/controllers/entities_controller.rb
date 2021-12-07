@@ -69,7 +69,7 @@ class EntitiesController < JsonController
       if size
         if unit
           exp = {'kb' => 1, 'mb' => 2, 'gb' => 3, 'tb' => 3}[unit] || 0
-          size = size.to_i * 1024**exp
+          size = size.to_i * (1024**exp)
         end
         key = {'+' => :larger_than, '-' => :smaller_than}[sign] || :file_size
         criteria[key] = size.to_i
@@ -289,8 +289,8 @@ class EntitiesController < JsonController
   def mass_destroy
     @entities = Entity.find(params[:ids])
 
-    if allowed_to?(:delete, @entities.map{|e| e.collection_id})
-      @entities.each{|e| e.destroy}
+    if allowed_to?(:delete, @entities.map{ |e| e.collection_id })
+      @entities.each{ |e| e.destroy }
       render_200 I18n.t('messages.mass_destroy_success')
     else
       render_403 I18n.t('messages.not_all_entities_deletable')

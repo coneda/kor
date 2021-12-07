@@ -131,7 +131,7 @@ class OaiPmh::BaseController < BaseController
       offset_scope = scope.offset(params['page'] * params['per_page'])
 
       # token = if offset_scope.count > params['per_page']
-      token = if scope.count - params['page'] * params['per_page'] > params['per_page']
+      token = if scope.count - (params['page'] * params['per_page']) > params['per_page']
         dump_query(params)
       elsif params['resumptionToken']
         ''

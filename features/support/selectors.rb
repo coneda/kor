@@ -36,7 +36,7 @@ module HtmlSelectorsHelpers
       [:css, '[data-is=kor-relations] tr', {text: $1}]
 
     when /the cell for entity "([^"]+)"/
-      [:css, 'kor-gallery-grid td', text: $1]
+      [:css, 'kor-gallery-grid td', {text: $1}]
 
     when /relation merger row for relation "([^"]+)"/
       [:css, 'kor-relation-merger li', {text: $1}]

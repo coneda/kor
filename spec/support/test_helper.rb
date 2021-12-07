@@ -11,7 +11,7 @@ module TestHelper
     end
   end
 
-  def self.before_each(framework, scope, test)
+  def self.before_each(framework, _scope, test)
     system "rm -rf #{ENV['DATA_DIR']}/media/"
     system "cp -a #{Rails.root}/tmp/test.media.clone #{ENV['DATA_DIR']}/media"
 
@@ -19,8 +19,8 @@ module TestHelper
     Kor::Auth.sources(refresh: true)
 
     use_elastic = (
-      framework == :rspec && test.metadata[:elastic] ||
-      framework == :cucumber && test.tags.any?{ |st| st.name == '@elastic' }
+      ((framework == :rspec) && test.metadata[:elastic]) ||
+      ((framework == :cucumber) && test.tags.any?{ |st| st.name == '@elastic' })
     )
 
     if use_elastic

@@ -178,6 +178,18 @@ i {
 i:last-child {
   margin-right: 0px; }
 
+.nowrap {
+  white-space: nowrap; }
+
+.text-right {
+  text-align: right; }
+
+.sortable-ghost {
+  background-color: #666666; }
+
+.sortable-fallback {
+  visibility: hidden; }
+
 [data-is=w-app] {
   padding: 2rem; }
   [data-is=w-app] .w-content {
@@ -211,11 +223,10 @@ kor-entity.medium {
   height: 14.5rem;
   font-size: var(--kor-small-font-size);
   position: relative; }
-  kor-entity.medium kor-clipboard-control {
-    font-size: 14px;
-    display: block;
+  kor-entity.medium .buttons {
+    font-size: 11px;
     text-align: right;
-    margin-bottom: 1rem; }
+    margin-bottom: 1em; }
   kor-entity.medium a {
     display: inline-block; }
   kor-entity.medium img {
@@ -238,7 +249,7 @@ kor-entity.kor-style {
     text-decoration: none; }
   kor-entity.kor-style h3 {
     margin: 0px;
-    color: white; }
+    color: var(--kor-shine); }
   kor-entity.kor-style img {
     display: block;
     max-width: 100%;
@@ -247,6 +258,8 @@ kor-entity.kor-style {
 kor-gallery-grid td, [data-is=kor-gallery-grid] td {
   width: 25%;
   padding: 1.5rem; }
+  kor-gallery-grid td .buttons, [data-is=kor-gallery-grid] td .buttons {
+    margin-bottom: 1em; }
 
 kor-gallery-grid kor-entity.medium, [data-is=kor-gallery-grid] kor-entity.medium {
   width: 100%;
@@ -254,6 +267,12 @@ kor-gallery-grid kor-entity.medium, [data-is=kor-gallery-grid] kor-entity.medium
 
 kor-gallery-grid .name, [data-is=kor-gallery-grid] .name {
   font-weight: bold; }
+
+kor-gallery-grid .name a:after, kor-gallery-grid .desc a:after, [data-is=kor-gallery-grid] .name a:after, [data-is=kor-gallery-grid] .desc a:after {
+  content: ', '; }
+
+kor-gallery-grid .name a:last-child:after, kor-gallery-grid .desc a:last-child:after, [data-is=kor-gallery-grid] .name a:last-child:after, [data-is=kor-gallery-grid] .desc a:last-child:after {
+  content: ''; }
 
 kor-login a.password-recovery, [data-is=kor-login] a.password-recovery {
   text-decoration: underline; }
@@ -269,6 +288,7 @@ kor-login-info {
     margin-bottom: 2rem; }
 
 kor-pagination, [data-is=kor-pagination] {
+  white-space: nowrap;
   display: block;
   text-align: right; }
   kor-pagination a, [data-is=kor-pagination] a {
@@ -285,6 +305,8 @@ kor-pagination, [data-is=kor-pagination] {
     top: -4px;
     margin-left: 3px;
     margin-right: 3px; }
+  kor-pagination.slim input, [data-is=kor-pagination].slim input {
+    width: 3rem !important; }
 
 kor-users kor-pagination, [data-is=kor-users] kor-pagination {
   float: right; }
@@ -421,6 +443,9 @@ kor-medium-page a, [data-is=kor-medium-page] a {
 kor-medium-page img, [data-is=kor-medium-page] img {
   max-width: 100%; }
 
+kor-medium-page video, [data-is=kor-medium-page] video {
+  max-width: 100%; }
+
 kor-kinds td.buttons, [data-is=kor-kinds] td.buttons {
   width: 6rem;
   text-align: right; }
@@ -454,7 +479,7 @@ kor-generators {
   text-align: right; }
 
 .kor-glow {
-  text-shadow: 0px 0px 5px white; }
+  text-shadow: 0px 0px 5px var(--kor-shine); }
 
 .kor-loading-screen {
   margin: 0px auto;
@@ -463,7 +488,7 @@ kor-generators {
 
 kor-settings-editor h2, [data-is=kor-settings-editor] h2 {
   margin-top: 4rem;
-  color: white; }
+  color: var(--kor-shine); }
 
 kor-collection-selector i {
   margin-left: 0.5rem; }
@@ -579,7 +604,7 @@ kor-entity-page .subtitle, [data-is=kor-entity-page] .subtitle {
 kor-entity-page .field, [data-is=kor-entity-page] .field {
   font-weight: bold; }
 
-kor-entity-page span.value, [data-is=kor-entity-page] span.value {
+kor-entity-page .value, [data-is=kor-entity-page] .value {
   font-weight: bold;
   color: var(--kor-shine); }
 
@@ -599,6 +624,10 @@ kor-entity-page .viewer .commands, [data-is=kor-entity-page] .viewer .commands {
 
 kor-entity-page .kor-api-links i, [data-is=kor-entity-page] .kor-api-links i {
   margin-right: 5px; }
+
+kor-entity-page .groups ul, [data-is=kor-entity-page] .groups ul {
+  padding-left: 20px;
+  margin: 0; }
 
 kor-notifications ul {
   perspective: 1000px;
@@ -713,7 +742,7 @@ kor-input .help {
   margin-bottom: 2rem; }
   kor-input .help code {
     display: block;
-    color: white;
+    color: var(--kor-shine);
     margin-bottom: 1rem; }
 
 [data-is=kor-recent-entities] kor-input[name='created_after'] {

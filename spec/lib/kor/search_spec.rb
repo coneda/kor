@@ -241,7 +241,7 @@ RSpec.describe Kor::Search do
         search = described_class.new(admin, isolated: true, engine: 'elastic')
       }.to raise_error(Kor::Exception)
     end
-  
+
     it 'should search by name' do
       search = described_class.new(admin, name: 'ar')
       expect(search.total).to eq(2)
@@ -321,7 +321,7 @@ RSpec.describe Kor::Search do
       }.to raise_error(Kor::Exception, /related is only supported with elasticsearch/)
 
       expect{
-        search = described_class.new(admin, engine: 'elastic', name: '*')
+        described_class.new(admin, engine: 'elastic', name: '*')
       }.to raise_error(Kor::Exception, 'elasticsearch requested but unavailable')
     end
   end

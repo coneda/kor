@@ -70,7 +70,7 @@ class MediaController < JsonController
         if type == 'bytes'
           result = values.split('-').map{ |s| s.to_i }
           unless result[1]
-            result[1] = result[0] + 1024 * 256
+            result[1] = result[0] + (1024 * 256)
           end
 
           result
