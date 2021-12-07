@@ -282,4 +282,18 @@ RSpec.describe Kor::Elastic, elastic: true do
       described_class.require_ok(response)
     }.to raise_error(StandardError, /elastic request failed/)
   end
+
+  it 'should set max_result_window' do
+    settings = described_class.request 'get', '/_settings'
+    mrw = settings['kor_test']['settings']['index']['max_result_window']
+    expect(mrw.to_i).to eq(10000)
+
+    expect(Entity).to receive(:count).and_return(40000)
+    described_class.drop_index
+    described_class.create_index
+
+    settings = described_class.request 'get', '/_settings'
+    mrw = settings['kor_test']['settings']['index']['max_result_window']
+    expect(mrw.to_i).to eq(80000)
+  end
 end

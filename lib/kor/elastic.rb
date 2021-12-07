@@ -86,7 +86,8 @@ class Kor::Elastic
               #     'max_gram' => 30
               #   }
               # }
-            }
+            },
+            "max_result_window": [Entity.count * 2, 10000].max
           }
         },
         'mappings' => {
