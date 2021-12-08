@@ -7,6 +7,7 @@
     ref="input"
     options={kinds}
     placeholder={t('all')}
+    value={opts.riotValue}
   />
 
   </kor-input>

@@ -5,12 +5,17 @@ Feature: Configurable help
     Then I should see "Help"
     Then I should see "Search help text"
     And I should see "File upload help text"
-    When I fill in "Profile help text" with "this is how to use this!"
+    When I fill in "General help text (menu) - en" with "do like this in general"
+    When I fill in "Search help text - en" with "this is how to use this!"
     And I press "Save"
     Then I should see "changed"
-    When I follow "Search"
+
     When I follow "Edit profile"
-    And I save a screenshot
-    Then I should see "Edit profile" within ".w-content"
+
+    When I follow "Help"
+    Then I should see "do like this in general"
+    Then I press the "escape" key
+
+    When I follow "Search"
     And I follow "help"
     Then I should see "this is how to use this!"

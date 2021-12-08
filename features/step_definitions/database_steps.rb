@@ -16,7 +16,8 @@ end
 
 Given /^the kind "([^"]*)"(?: inheriting from "([^"]*)")?$/ do |names, parents|
   components = names.split('/')
-  singular = components[0..(components.size / 2 - 1)].join('/')
+  to = (components.size / 2) - 1
+  singular = components[0..to].join('/')
   plural = components[(components.size / 2)..-1].join('/')
   kind = Kind.find_or_initialize_by(:name => singular, :plural_name => plural)
   if parents.present?
@@ -326,6 +327,13 @@ Given(/^entity "([^"]*)" has dating "([^"]*)"$/) do |name, dating|
   Entity.find_by(name: name).datings.create label: label, dating_string: value
 end
 
+Then('entity {string} should have dating {string}') do |name, dating|
+  existing = Entity.find_by(name: name).datings.map do |d|
+    "#{d.label}: #{d.dating_string}"
+  end
+  expect(existing).to include(dating)
+end
+
 Given("mona lisa has many relationships") do
   10.times do
     Relationship.relate_and_save last_supper, 'is related to', mona_lisa
@@ -413,4 +421,19 @@ end
 Given('the entity {string} is in user group {string}') do |name, group|
   entity = Entity.find_by! name: name
   UserGroup.find_by!(name: group).add_entities(entity)
+end
+
+Then('there should be no entity {string}') do |name|
+  entity = Entity.find_by name: name
+  expect(entity).to be_nil
+end
+
+Given('the secondary relationship refers back to the medium') do
+  Kor.settings.update(
+    'primary_relations' => ['shows'],
+    'secondary_relations' => ['is shown by']
+  )
+
+  # make sure mona lisa has two related media
+  Relationship.relate_and_save picture_b, 'shows', mona_lisa
 end

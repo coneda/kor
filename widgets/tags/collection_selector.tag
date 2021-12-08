@@ -119,6 +119,7 @@
     var fetch = function() {
       Zepto.ajax({
         url: '/collections',
+        data: {per_page: 'max'},
         success: function(data) {
           tag.collections = data.records;
           tag.update();

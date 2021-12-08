@@ -44,70 +44,66 @@ module Kor
       pg = nil
 
       loop do
-        begin
-          params = {'verb' => 'ListRecords'}
-          params['from'] = from if @options[:continue]
-          params['resumptionToken'] = resumptionToken if resumptionToken
-          doc = oaipmh("/oai-pmh/#{type}.xml", params)
+        params = {'verb' => 'ListRecords'}
+        params['from'] = from if @options[:continue]
+        params['resumptionToken'] = resumptionToken if resumptionToken
+        doc = oaipmh("/oai-pmh/#{type}.xml", params)
 
-          if doc.xpath("//xmlns:error/@code").text == 'noRecordsMatch'
-            break # nothing to do
-          end
+        if doc.xpath("//xmlns:error/@code").text == 'noRecordsMatch'
+          break # nothing to do
+        end
 
-          rts = doc.xpath('//xmlns:resumptionToken')
-          if rts.size > 0 && rts.text.size > 0
-            # the response has a token and its not empty
-            resumptionToken = rts.text
+        rts = doc.xpath('//xmlns:resumptionToken')
+        if rts.size > 0 && rts.text.size > 0
+          # the response has a token and its not empty
+          resumptionToken = rts.text
 
-            unless pg
-              total = rts.attr('completeListSize').value.to_i
+          unless pg
+            total = rts.attr('completeListSize').value.to_i
               log "harvesting #{type}: #{total} entries"
               pg = new_progress((total / per_page.to_f).ceil, type)
-            end
-          else
-            resumptionToken = nil
           end
+        else
+          resumptionToken = nil
+        end
 
-          new_ids = doc.xpath("//kor:#{stype}/kor:id").map{ |i| i.text }
-          if new_ids.size > 0
-            ids += new_ids
-          else
-            #log "an xml document has been received but no ids could be found: #{doc.to_xml}"
-          end
+        new_ids = doc.xpath("//kor:#{stype}/kor:id").map{ |i| i.text }
+        if new_ids.size > 0
+          ids += new_ids
+        else
+          log "an xml document has been received but no ids could be found: #{doc.to_xml}"
+        end
 
-          # deleted_ids = doc.xpath(" ")
+        if @options[:target_dir]
+          dir = "#{@options[:target_dir]}/#{type}"
+          system "mkdir -p #{dir}"
 
-          if @options[:target_dir]
-            dir = "#{@options[:target_dir]}/#{type}"
-            system "mkdir -p #{dir}"
+          doc.xpath('//xmlns:record').each do |r|
+            deleted = r.xpath('xmlns:header').first['status']
+            id = r.xpath('xmlns:header/xmlns:identifier').text
+            filename = "#{dir}/#{id}.xml"
 
-            doc.xpath('//xmlns:record').each do |r|
-              deleted = r.xpath('xmlns:header').first['status']
-              id = r.xpath('xmlns:header/xmlns:identifier').text
-              filename = "#{dir}/#{id}.xml"
-
-              if deleted
-                system "rm -f #{filename}"
-              else
-                record = r.xpath("*/kor:#{stype}").first
-                File.open filename, 'w' do |f|
-                  f.puts "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                  f.write record.to_xml
-                end
+            if deleted
+              system "rm -f #{filename}"
+            else
+              record = r.xpath("*/kor:#{stype}").first
+              File.open filename, 'w' do |f|
+                f.puts "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                f.write record.to_xml
               end
             end
           end
-
-          break unless resumptionToken
-
-          sleep @options[:delay]
-          pg.increment
-        rescue => e
-          out = (doc ? doc.to_xml : 'NONE')
-          log "#{e}\n#{e.backtrace.join("\n")}\ndoc:\n#{out}"
-          sleep 1
-          # binding.pry
         end
+
+        break unless resumptionToken
+
+        sleep @options[:delay]
+        pg.increment
+      rescue => e
+        out = (doc ? doc.to_xml : 'NONE')
+        log "#{e}\n#{e.backtrace.join("\n")}\ndoc:\n#{out}"
+        sleep 1
+        # binding.pry
       end
 
       # binding.pry

@@ -83,8 +83,9 @@ RSpec.describe Entity do
       {'value' => 12.7}
     ]
     expect(entity.valid?).to be_falsey
-    expect(entity.errors.full_messages).to include('further properties need a value')
-    expect(entity.errors.full_messages).to include('further properties need a label')
+    expect(entity.errors.full_messages[0]).to match(
+      /further properties format invalid/
+    )
   end
 
   it "should retrieve unsaved mongo values without a kind" do

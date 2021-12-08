@@ -91,6 +91,7 @@ de:
   show_all_fields: alle Felder anzeigen
   show_only_mandatory_fields: nur Pflichtfelder anzeigen
   remove_all: alle entfernen
+  change_order: Reihenfolge ändern, verwenden Sie Drag & Drop
 
   help:
     terms_query: |
@@ -124,7 +125,6 @@ de:
       <code>18. Jahrhundert</code> oder
       <code>ca. 1800</code> oder
       <code>nach 1792</code>
-    date_input: Verwenden Sie das Format JJJJ-MM-TT
     file_size_query: |
       Mit vorangestelltem '+' suchen Sie nach allen Medien mit größerer
       Dateigröße und mit '-' nach kleineren. Fügen Sie KB, MB, GB, or TB an, um
@@ -153,6 +153,31 @@ de:
       Diese Einstellung greift im Zusammenhang mit der Wikidata Integration:
       Geben Sie hier die Wikidata Property ID (also etwa P31) an, sodass diese
       Relation bei zukünftigen Abgleichen mit Wikidata zugeordnet werden kann.
+    no_name_input: |
+      Entitäten müssen mit eindeutigem Namen eingegeben werden. Für zwei Objekte
+      gleichen Namens, geben Sie ein Unterscheidungskriterium in
+      "eindeutiger Name" ein. Für namenlose Objekte, verweden Sie die Auswahl
+      wie etwa "Name ist unbekannt"
+    date_input: Verwenden Sie das Format JJJJ-MM-TT
+    synonym_input: |
+      Geben Sie ein Synonym pro Zeile ein, zum Beispiel <code>Leo<br />Leonardo
+      <br />Leonardo da Vinci</code>
+    property_input: |
+      Geben Sie eine oder mehrere Zeilen der Form "Bezeichnung: Wert" ein, zum
+      Beispiel <code>Breite: 100cm<br />Höhe: 120cm</code> Werte in Url-Form
+      werden als Links dargestellt
+    primary_relations: |
+      Wählen Sie verknüpfte Entitäten, die unter dem Medium auf der Seite 'neue
+      medien' dargestellt werden sollen. Zum Beispiel würde die Wahl einer
+      Relation 'zeigt' zwischen Medien und Werken den Werktitel unter dem Medium
+      anzeigen. Wählen Sie mehrere Einträge mit STRG-Click an oder ab.
+    secondary_relations: |
+      Wählen Sie verknüpfte Entitäten, die unter dem Medium auf der Seite 'neue
+      medien' dargestellt werden sollen. Gehen Sie hier von Ihrer Auswahl obiger
+      'primärer Relationen' aus. Zum Beispiel würde die Wahl einer
+      Relation 'wurde geschaffen von' zwischen Werk und Person den Werktitel
+      sowie zusötzlich den Künstlernamen unter dem Medium anzeigen.
+      Wählen Sie mehrere Einträge mit STRG-Click an oder ab.
 
   search_term: 
     one: Suchbegriff
@@ -307,6 +332,7 @@ de:
       repository_uuid: die generierte UUID für diese Installation ändern
       wikidata_integration: 'Wikidata-Integration verwenden'
       create_missing_relations: 'fehlende Relationen anlegen?'
+      new_media_label: Anzeigename für die 'neue Medien' Seite
       mirador_page_template: |
         (Absoluter) Pfad zu alternativem Template für die Seite zur Anzeige des
         Mirador
@@ -325,7 +351,8 @@ de:
       help_clipboard: Hilfetext zur Zwischenablage
 
   pages:
-    new_media: neue Einträge
+    new_entries: neue Einträge
+    new_media: neue Medien
     simple_search: einfache Suche
     expert_search: Expertensuche
     random_entities: Zufällig ausgewählte Einträge
@@ -863,6 +890,7 @@ de:
       Ihr Berechtigungen reichen nicht aus, um einige der ausgewählten Entitäten
       zu löschen
     mass_destroy_success: die Entitäten wurden gelöscht
+    collections_merged: die Domänen wurden verschmolzen
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
@@ -1150,6 +1178,8 @@ de:
         template_and_parent: "Es ist entweder nur 'Template' oder die Vaterrolle möglich"
         needs_value: "benötigen einen Wert"
         needs_label: "benötigen einen Bezeichner"
+        invalid_properties_format: |
+          Format ungültig, siehe oben (Hilfe zu diesem Eingabefeld)
         file_exists: "eine inhaltlich gleiche Datei wurde bereits hochgeladen"
         file_must_be_set: "eine Datei muss ausgewählt werden"
         needed_for_disambiguation: |

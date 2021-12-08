@@ -7,6 +7,7 @@ Feature: Welcome
     And I should not see "Mona Lisa"
     And I should not see "Leonardo"
 
+  @elastic
   Scenario: Welcome as a logged in user
     Given the setting "welcome_page_only_media" is "false"
     Given I am logged in as "admin"

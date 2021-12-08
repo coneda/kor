@@ -10,6 +10,9 @@ AllCops:
     - 'vendor/**/*'
     - '.git/**/*'
     - 'db/schema.rb'
+    # will be removed when migrating to historical_dating gem
+    - 'lib/kor/dating/parser.rb'
+    - 'lib/kor/dating/transform.rb'
 
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
@@ -109,4 +112,8 @@ Lint/UselessAssignment:
     - 'app/controllers/entities_controller.rb'
     - 'app/controllers/json_controller.rb'
     - 'features/support/kor.rb'
-    
+
+Metrics/BlockLength:
+  Max: 640
+  Exclude:
+    - 'spec/**/*.rb'

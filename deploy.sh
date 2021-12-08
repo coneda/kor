@@ -9,7 +9,7 @@
 
 # Load user settings
 
-. ./deploy.config.sh && $1
+. ./deploy.config.sh && $1 || exit 1
 
 # Deploy
 

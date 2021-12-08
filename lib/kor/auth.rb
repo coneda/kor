@@ -184,6 +184,7 @@ module Kor::Auth
     case objects
     when ActiveRecord::Base then [objects.id]
     when Integer then [objects]
+    when String then [objects.to_i]
     when Array, ActiveRecord::Relation
       objects.map do |o|
         o.respond_to?(:id) ? o.id : o
@@ -288,13 +289,11 @@ module Kor::Auth
   def self.sources(refresh: false)
     @sources = nil if refresh
 
-    @sources ||= begin
-      {}.tap do |results|
-        ENV.each do |key, value|
-          if m = key.match(/^AUTH_SOURCE_([A-Z]+)_([A-Z_]+)$/)
-            results[m[1].downcase] ||= {}
-            results[m[1].downcase][m[2].downcase] = value
-          end
+    @sources ||= {}.tap do |results|
+      ENV.each do |key, value|
+        if m = key.match(/^AUTH_SOURCE_([A-Z]+)_([A-Z_]+)$/)
+          results[m[1].downcase] ||= {}
+          results[m[1].downcase][m[2].downcase] = value
         end
       end
     end

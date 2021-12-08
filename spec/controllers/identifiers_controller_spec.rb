@@ -36,4 +36,9 @@ RSpec.describe IdentifiersController, type: :controller do
     get :resolve, params: {kind: 'x', id: '1234'}
     expect(response).to be_a_not_found
   end
+
+  it 'should resolve by medium id' do
+    get :resolve, params: {kind: 'medium-id', id: picture_a.medium_id}
+    expect(response).to redirect_to("/entities/#{picture_a.id}")
+  end
 end

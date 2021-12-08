@@ -39,6 +39,13 @@ RSpec.describe CollectionsController, type: :controller do
     expect(response).to be_forbidden
   end
 
+  it 'should not PATCH entities' do
+    id = Collection.find_by!(name: 'private').id
+    entity_ids = [mona_lisa.id, leonardo.id]
+    patch :entities, params: {id: id, entity_ids: entity_ids}
+    expect(response).to be_forbidden
+  end
+
   context 'as admin' do
     before :each do
       current_user User.admin
@@ -96,11 +103,20 @@ RSpec.describe CollectionsController, type: :controller do
       other_id = Collection.find_by!(name: 'private').id
       post :merge, params: {id: id, collection_id: other_id}
       expect(response).to be_success
-      expect(json['message']).to match(/have been moved to domain/)
-      # it doesn't actually delete the source collection
+      expect(json['message']).to match(/the domains have been merged/)
+      # it doesn't actually delete the source domain
       expect(Collection.count).to eq(2)
       expect(Collection.find_by!(name: 'Default').entities.count).to eq(0)
       expect(Collection.find_by!(name: 'private').entities.count).to eq(7)
+    end
+
+    it 'should PATCH entities' do
+      id = Collection.find_by!(name: 'private').id
+      entity_ids = [mona_lisa.id, leonardo.id]
+      patch :entities, params: {id: id, entity_ids: entity_ids}
+
+      expect(mona_lisa.collection_id).to be(id)
+      expect(leonardo.collection_id).to be(id)
     end
   end
 end

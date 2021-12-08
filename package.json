@@ -25,6 +25,7 @@
     "plupload": "2.3.6",
     "riot": "< 4",
     "riot-route": "^3.1.4",
+    "sortablejs": "^1.14.0",
     "strftime": "^0.10.0",
     "uglify-js": "^3.12.3",
     "zepto": "^1.0.1"

@@ -1,7 +1,7 @@
 wApp.utils = {
   shorten: (str, n = 15) ->
     if str && str.length > n
-      str.substr(0, n - 1) + '&hellip;'
+      str.substr(0, n - 1) + '…'
     else
       str
   inGroupsOf: (per_row, array, dummy) ->
@@ -31,6 +31,10 @@ wApp.utils = {
   uniq: (a) ->
     output = {}
     output[a[key]] = a[key] for key in [0...a.length]
+    value for key, value of output
+  uniqRecords: (a) ->
+    output = {}
+    output[a[key].id] = a[key] for key in [0...a.length]
     value for key, value of output
   scrollToTop: ->
     if document.body.scrollTop != 0 || document.documentElement.scrollTop != 0

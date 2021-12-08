@@ -140,6 +140,8 @@ module Kor
 
         'custom_css_file' => 'data/custom.css',
 
+        'new_media_label' => 'pages.new_entries',
+
         'kind_dating_label' => 'Dating',
         'kind_name_label' => 'Name',
         'kind_distinct_name_label' => 'Distinct Name',

@@ -50,23 +50,21 @@ class Kor::Import::ErlangenCrm
 
     @lookup = {}
     properties.each do |property|
-      begin
-        url = property['rdf:about']
-        @lookup[url] = {
-          type: property.name,
-          url: url,
-          name: property.xpath('rdfs:label').text,
-          reverse_url: property.xpath('owl:inverseOf/*').map{ |r| r['rdf:about'] }.first,
-          parent_urls: property.xpath('rdfs:subPropertyOf/*').map{ |sp| sp['rdf:about'] },
-          from_urls: property.xpath('rdfs:domain').map{ |d| d['rdf:resource'] },
-          to_urls: property.xpath('rdfs:range').map{ |d| d['rdf:resource'] },
-          description: property.xpath('rdfs:comment').text
-        }
-      rescue => e
-        puts e.message
-        puts e.backtrace
-        binding.pry
-      end
+      url = property['rdf:about']
+      @lookup[url] = {
+        type: property.name,
+        url: url,
+        name: property.xpath('rdfs:label').text,
+        reverse_url: property.xpath('owl:inverseOf/*').map{ |r| r['rdf:about'] }.first,
+        parent_urls: property.xpath('rdfs:subPropertyOf/*').map{ |sp| sp['rdf:about'] },
+        from_urls: property.xpath('rdfs:domain').map{ |d| d['rdf:resource'] },
+        to_urls: property.xpath('rdfs:range').map{ |d| d['rdf:resource'] },
+        description: property.xpath('rdfs:comment').text
+      }
+    rescue => e
+      puts e.message
+      puts e.backtrace
+      binding.pry
     end
 
     @lookup.each do |url, r|

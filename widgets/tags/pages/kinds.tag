@@ -26,48 +26,49 @@
       />
     </form>
 
-    <div class="hr"></div>
+    <hr />
 
-  <virtual if={filteredRecords && filteredRecords.length}>
-    <table each={records, schema in groupedResults} class="kor_table text-left">
-      <thead>
-        <tr>
-          <th>{schema == 'null' ? tcap('no_schema') : schema}</th>
-          <th if={isKindAdmin()}></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr each={kind in records}>
-          <td class={active: !kind.abstract}>
-            <div class="name">
-              <a href="#/kinds/{kind.id}/edit">{kind.name}</a>
-            </div>
-            <div show={kind.fields.length}>
-              <span class="label">
-                {t('activerecord.models.field', {count: 'other'})}:
-              </span>
-              {fieldNamesFor(kind)}
-            </div>
-            <div show={kind.generators.length}>
-              <span class="label">
-                {t('activerecord.models.generator', {count: 'other'})}:
-              </span>
-              {generatorNamesFor(kind)}
-            </div>
-          </td>
-          <td class="buttons" if={isKindAdmin()}>
-            <a href="#/kinds/{kind.id}/edit" title={t('verbs.edit')}><i class="fa fa-edit"></i></a>
-            <a
-              if={kind.removable}
-              href="#/kinds/{kind.id}"
-              onclick={delete(kind)}
-              title={t('verbs.delete')}
-            ><i class="fa fa-remove"></i></a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </virtual>
+    <virtual if={filteredRecords && filteredRecords.length}>
+      <table each={records, schema in groupedResults} class="kor_table text-left">
+        <thead>
+          <tr>
+            <th>{schema == 'null' ? tcap('no_schema') : schema}</th>
+            <th if={isKindAdmin()}></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr each={kind in records}>
+            <td class={active: !kind.abstract}>
+              <div class="name">
+                <a href="#/kinds/{kind.id}/edit">{kind.name}</a>
+              </div>
+              <div show={kind.fields.length}>
+                <span class="label">
+                  {t('activerecord.models.field', {count: 'other'})}:
+                </span>
+                {fieldNamesFor(kind)}
+              </div>
+              <div show={kind.generators.length}>
+                <span class="label">
+                  {t('activerecord.models.generator', {count: 'other'})}:
+                </span>
+                {generatorNamesFor(kind)}
+              </div>
+            </td>
+            <td class="buttons" if={isKindAdmin()}>
+              <a href="#/kinds/{kind.id}/edit" title={t('verbs.edit')}><i class="fa fa-edit"></i></a>
+              <a
+                if={kind.removable}
+                href="#/kinds/{kind.id}"
+                onclick={delete(kind)}
+                title={t('verbs.delete')}
+              ><i class="fa fa-remove"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </virtual>
+  </div>
 
   <script type="text/coffee">
     tag = this

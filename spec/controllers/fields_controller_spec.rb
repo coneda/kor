@@ -125,5 +125,25 @@ RSpec.describe FieldsController, type: :controller do
       delete :destroy, params: {kind_id: people.id, id: field.id}
       expect_deleted_response
     end
+
+    it 'should allow changing position' do
+      people = Kind.find_by! name: 'person'
+      field = people.fields.first
+
+      expect(field.position).to eq(0)
+      patch :update, params: {
+        kind_id: people.id,
+        id: field.id,
+        field: {position: 1}
+      }
+
+      field.reload
+      expect(field.position).to eq(1)
+
+      people.reload
+      expect(people.fields[0].position).to eq(0)
+      expect(people.fields[1].position).to eq(1)
+      expect(people.fields[1]).to eq(field)
+    end
   end
 end

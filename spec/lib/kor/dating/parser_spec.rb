@@ -2,13 +2,11 @@ require 'rails_helper'
 
 RSpec::Matchers.define :parse do |input|
   match do |parser|
-    begin
-      parser.parse input
-    rescue Parslet::ParseFailed
-      false
-    rescue Kor::Exception
-      false
-    end
+    parser.parse input
+  rescue Parslet::ParseFailed
+    false
+  rescue Kor::Exception
+    false
   end
 end
 
@@ -126,8 +124,10 @@ RSpec.describe Kor::Dating::Parser do
   end
 
   it "should parse '? bis 1456'" do
+    range = (Date.today.year - 1456) / 10
+
     expect(subject.transform("? bis 1456")).to eql(
-      :from => Date.new(1456 - (Date.today.year - 1456) / 10, 1, 1),
+      :from => Date.new(1456 - range, 1, 1),
       :to => Date.new(1456, 12, 31)
     )
   end

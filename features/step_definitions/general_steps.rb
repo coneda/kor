@@ -4,14 +4,12 @@ def capybara_wait
   exception = nil
   Timeout.timeout(Capybara.default_max_wait_time) do
     loop do
-      begin
-        yield
-        exception = nil
-        break
-      rescue RSpec::Expectations::ExpectationNotMetError => e
-        exception = e
-        sleep 0.2
-      end
+      yield
+      exception = nil
+      break
+    rescue RSpec::Expectations::ExpectationNotMetError => e
+      exception = e
+      sleep 0.2
     end
   end
 rescue Timeout::Error
@@ -77,7 +75,7 @@ When("I click the download link in mail {string}") do |index|
   visit link
 end
 
-Given('everthing is indexed') do
+Given('everything is indexed') do
   Kor::Elastic.index_all full: true
   Kor::Elastic.refresh
 end

@@ -15,7 +15,11 @@
   <div class="clearfix"></div>
 
   <ul if={opts.kind}>
-    <li each={generator in opts.kind.generators}>
+    <li
+      each={generator in opts.kind.generators}
+      key={generator.id}
+      data-id={generator.id}
+    >
       <div class="pull-right kor-text-right">
         <a
           href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit"
@@ -26,6 +30,12 @@
           onclick={remove(generator)}
           title={t('verbs.delete')}
         ><i class="fa fa-remove"></i></a>
+        <a
+          class="handle"
+          href="#"
+          onclick={preventDefault}
+          title={t('change_order')}
+        ><i class="fa fa-bars"></i></a>
       </div>
       <a href="#/kinds/{opts.kind.id}/edit/generators/{generator.id}/edit">{generator.name}</a>
       <div class="clearfix"></div>
@@ -39,6 +49,24 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
 
+    tag.on 'mount', () ->
+      ul = tag.root.querySelector('ul')
+      new Sortable(ul, {
+        draggable: 'li'
+        handle: '.handle'
+        forceFallback: true
+        onEnd: (event) -> 
+          if (event.newIndex != event.oldIndex)
+            id = event.item.getAttribute('data-id')
+            params = JSON.stringify({generator: {position: event.newIndex}})
+            Zepto.ajax(
+              type: 'PATCH'
+              url: "/kinds/#{tag.opts.kind.id}/generators/#{id}"
+              data: params
+              success: -> tag.opts.notify.trigger 'refresh'
+            )
+      })
+
     tag.remove = (generator) ->
       (event) ->
         event.preventDefault()
@@ -50,6 +78,8 @@
               route("/kinds/#{tag.opts.kind.id}/edit")
               tag.opts.notify.trigger 'refresh'
           )
+
+    tag.preventDefault = (event) -> event.preventDefault()
 
   </script>
 </kor-generators>

@@ -49,4 +49,22 @@ RSpec.describe Fields::Select do
     field.entity = ml
     expect(field.validate_value).to eq(:empty)
   end
+
+  it 'should validate if dataset value is nil' do
+    field = described_class.create(
+      kind_id: works.id,
+      name: 'cycle',
+      show_label: 'Cycle',
+      subtype: 'select',
+      values: ['x', 'y']
+    )
+
+    ml = mona_lisa
+    ml.dataset['cycle'] = nil
+    field.entity = ml
+
+    # there should be no exception and since the field isn't mandatory, nil is
+    # valid
+    expect(field.validate_value).to eq(true)
+  end
 end

@@ -69,8 +69,10 @@ Feature: search
     Then I should see "Domains: private"
     When I press "Search"
     Then I should see "Domains: private"
+    And I should see "nothing found"
     And I go back
     Then I should see "Domains: all" within widget "kor-collection-selector"
+    And I should see "Mona Lisa"
 
   Scenario: searching for media
     Given I am logged in as "admin"
@@ -116,3 +118,5 @@ Feature: search
     When I follow "inventor"
     Then I should see "Leonardo" within ".search-results"
     And field "Tags" should have value "inventor"
+
+  # Scenario: select field, changing collection/kind trigger new search on change

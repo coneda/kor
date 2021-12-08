@@ -53,6 +53,7 @@ Feature: global collections
     And I press "Save"
     Then I should see "has been changed"
     And I should see "Mittachmahl" within "[data-is=kor-admin-group-categories]"
+    And I wait for "1" second
     And I should not see "archive" within "[data-is=kor-admin-group-categories]"
 
   Scenario: delete category
@@ -113,6 +114,13 @@ Feature: global collections
     And I should see "Brot" within "kor-admin-groups"
     And I should see "top level » Mittachmahl"
 
+    # move to top level
+    When I follow "edit"
+    And I select "none" from "Directory"
+    And I press "Save"
+    When I follow "Global collections"
+    And I should see "Brot" within "kor-admin-groups"
+
   Scenario: download zip file
     And the authority group "Natur"
     And the authority group "Natur" contains a medium
@@ -145,7 +153,7 @@ Feature: global collections
     And the entity "Mona Lisa" is in authority group "some"
     When I go to the authority group page for "some"
     And I follow "add to clipboard" within "[data-is=kor-entity-group]"
-    Then I should see "entities have been copied to the clipboard"
+    Then I should see "entities have been added to the clipboard"
     When I go to the clipboard
     Then I should see "Mona Lisa"
     And I should see "Leonardo"

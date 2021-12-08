@@ -19,27 +19,29 @@ class Kor::Elastic
   end
 
   def self.available?
-    @available ||= begin
-      return false if ENV['ELASTIC_URL'].blank?
+    return false if @disabled
 
-      response = raw_request('get', '/')
-      response.status == 200
-    rescue ArgumentError, Errno::ECONNREFUSED => e
-      Rails.logger.info "tried connecting to elasticsearch, but failed: #{e.message}"
-      false
-    end
+    ENV['ELASTIC_URL'].present?
   end
+
+  def self.disable!
+    @disabled = true
+  end
+
+  def self.enable!
+    @disabled = false
+  end
+
+  # def self.enabled=(value)
+  #   @enabled = value
+  # end
+
+  # def self.enabled?
+  #   available? && (@enabled != false)
+  # end
 
   def self.current_index
     config['index']
-  end
-
-  def self.enabled=(value)
-    @enabled = value
-  end
-
-  def self.enabled?
-    available? && (@enabled != false)
   end
 
   def self.server_version
@@ -84,7 +86,8 @@ class Kor::Elastic
               #     'max_gram' => 30
               #   }
               # }
-            }
+            },
+            'max_result_window': [Entity.count * 2, 10000].max
           }
         },
         'mappings' => {
@@ -304,7 +307,7 @@ class Kor::Elastic
   end
 
   def search(criteria = {})
-    raise Kor::Exception unless self.class.enabled?
+    raise Kor::Exception unless self.class.available?
 
     criteria.reverse_merge!(
       analyzer: 'folding',
@@ -682,8 +685,7 @@ class Kor::Elastic
   end
 
   def self.request(method, path, query = {}, body = nil, headers = {})
-    raise Kor::Exception, "elasticsearch is not available" if !available?
-    raise Kor::Exception, "elasticsearch functionality has been disabled" if !enabled?
+    raise Kor::Exception, 'elasticsearch is not available' if !available?
 
     query ||= {}
     path = "/#{current_index}#{path}"
@@ -706,7 +708,11 @@ class Kor::Elastic
 
   def self.require_ok(response)
     if response.status < 200 || response.status >= 300
-      raise StandardError.new("error", [response.status, response.headers, JSON.load(response.body)])
+      raise StandardError, [
+        "elastic request failed: #{response.status}: ",
+        'HEADERS: ', response.headers.inspect, ' ',
+        'BODY: ', response.body
+      ].join
     end
   end
 

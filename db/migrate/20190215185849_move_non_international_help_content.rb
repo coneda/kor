@@ -1,17 +1,13 @@
 class MoveNonInternationalHelpContent < ActiveRecord::Migration
   def up
-    config = Kor::Config.new(Kor::Config.app_config_file)
-    help = Kor.config['help']
+    keys = [
+      'general', 'search', 'upload', 'login', 'profile', 'entries',
+      'authority_groups', 'user_groups', 'clipboard'
+    ]
 
-    help.keys.each do |section|
-      help[section].keys.each do |page|
-        old = help[section][page]
-        help[section][page] = {'en' => old}
-      end
+    keys.each do |key|
+      Kor.settings.update("help_#{key}.en" => Kor.settings["help_#{key}"])
     end
-
-    config.update('help' => help)
-    config.store(Kor::Config.app_config_file)
   end
 
   def down

@@ -19,7 +19,7 @@ class Relationship < ApplicationRecord
 
   before_validation :ensure_direction
   after_validation :ensure_uuid, :ensure_unique_properties, :ensure_directed
-  after_commit :connect_directed
+  after_save :connect_directed
 
   accepts_nested_attributes_for :datings, allow_destroy: true
 
@@ -72,12 +72,16 @@ class Relationship < ApplicationRecord
         )
 
         if reverse
+          # we drop the stored relation name so that the next call to this
+          # method works as well
+          @relation_name = nil
+
           self.relation = reverse
           tmp = self.from
           self.from = self.to
           self.to = tmp
         else
-          raise Kor::Exception, "no relation found for #{from.kind.name} <- #{@relation_name} -> #{to.kind.name}"
+          raise Kor::Exception, "no relation found for #{from.kind.name} -> #{@relation_name} -> #{to.kind.name}"
         end
       end
     end

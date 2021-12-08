@@ -1,11 +1,7 @@
 class Kor::EntityMerger
   def run(options = {})
-    Entity.transaction do
-      Relationship.transaction do
-        DirectedRelationship.transaction do
-          process(options)
-        end
-      end
+    ApplicationRecord.transaction do
+      process(options)
     end
   rescue ActiveRecord::RecordInvalid
     @entity
@@ -16,6 +12,7 @@ class Kor::EntityMerger
 
     @entity = Entity.new(Entity.find(options[:old_ids]).first.attributes)
     @entity.id = nil
+    @datings_attributes = options[:attributes].delete(:datings_attributes)
     @entity.assign_attributes options[:attributes]
 
     # delete the entities but keep their datings and relationships
@@ -43,6 +40,12 @@ class Kor::EntityMerger
 
   def merge_entity_datings(old_ids, new_id)
     EntityDating.where(:entity_id => old_ids).update_all(:entity_id => new_id)
+
+    if @datings_attributes
+      # now that the existing datings have been transferred to the new (persisted)
+      # entity, we can assign the datings from the merger widget
+      @entity.update! datings_attributes: @datings_attributes
+    end
   end
 
   def merge_groups(old_ids, new_id)

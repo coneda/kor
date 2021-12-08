@@ -60,7 +60,27 @@ class CollectionsController < JsonController
 
     if allowed_to?(:delete, @record) && allowed_to?(:create, target)
       Entity.where(collection_id: @record.id).update_all collection_id: target.id
-      render_200 I18n.t('messages.entities_moved_to_collection', o: target.name)
+      render_200 I18n.t('messages.collections_merged', o: target.name)
+    else
+      render_403
+    end
+  end
+
+  def entities
+    @record = Collection.find(params[:id])
+    @entities = Entity.find(params[:entity_ids])
+    from_collection_ids = @entities.pluck(:collection_id).uniq
+
+    allowed = (
+      allowed_to?(:delete, from_collection_ids) &&
+      allowed_to?(:create, @record)
+    )
+
+    if allowed
+      @entities.each do |entity|
+        entity.update_attributes collection_id: @record.id
+      end
+      render_200 I18n.t('messages.entities_moved_to_collection', o: @record.name)
     else
       render_403
     end

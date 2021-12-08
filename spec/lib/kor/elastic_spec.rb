@@ -2,19 +2,19 @@ require 'rails_helper'
 
 RSpec.describe Kor::Elastic, elastic: true do
   it 'should be enabled by rspec metadata' do
-    expect(described_class.enabled?).to be_truthy
+    expect(described_class.available?).to be_truthy
 
-    described_class.enabled = false
-    expect(described_class.enabled?).to be_falsey
+    described_class.disable!
+    expect(described_class.available?).to be_falsey
 
-    described_class.enabled = true
-    expect(described_class.enabled?).to be_truthy
+    described_class.enable!
+    expect(described_class.available?).to be_truthy
   end
 
   it "should index an entity" do
-    Kor::Elastic.enabled = false
+    Kor::Elastic.disable!
     @landscape = FactoryGirl.create :landscape
-    Kor::Elastic.enabled = true
+    Kor::Elastic.enable!
 
     expect{
       described_class.index(@landscape)
@@ -273,5 +273,27 @@ RSpec.describe Kor::Elastic, elastic: true do
 
     results = described_class.new(User.admin).search(name: 'mon*')
     expect(results.records.size).to eq(1)
+  end
+
+  it 'should handle elastic request fails gracefully' do
+    response = described_class.raw_request 'GET', '/invalid'
+
+    expect{
+      described_class.require_ok(response)
+    }.to raise_error(StandardError, /elastic request failed/)
+  end
+
+  it 'should set max_result_window' do
+    settings = described_class.request 'get', '/_settings'
+    mrw = settings['kor_test']['settings']['index']['max_result_window']
+    expect(mrw.to_i).to eq(10000)
+
+    expect(Entity).to receive(:count).and_return(40000)
+    described_class.drop_index
+    described_class.create_index
+
+    settings = described_class.request 'get', '/_settings'
+    mrw = settings['kor_test']['settings']['index']['max_result_window']
+    expect(mrw.to_i).to eq(80000)
   end
 end

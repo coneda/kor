@@ -40,7 +40,7 @@ Capybara.register_driver :selenium_chrome_headless do |app|
     'window-size=1280x960',
     'remote-debugging-address=0.0.0.0',
     'remote-debugging-port=9222'
-  ].each{|a| options.add_argument(a)}
+  ].each{ |a| options.add_argument(a) }
 
   # set download path
   path = Rails.root.join('tmp', 'test_downloads').to_s

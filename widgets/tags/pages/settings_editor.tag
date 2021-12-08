@@ -71,6 +71,15 @@
         />
 
         <kor-input
+          name="new_media_label"
+          type="select"
+          options={newMediaLabels()}
+          label={nameFor('new_media_label')}
+          riot-value={valueWithDefaults('new_media_label')}
+          ref="fields"
+        />
+
+        <kor-input
           name="env_auth_button_label"
           label={nameFor('env_auth_button_label')}
           riot-value={valueWithDefaults('env_auth_button_label')}
@@ -120,6 +129,7 @@
           options={relations}
           riot-value={valueWithDefaults('primary_relations')}
           ref="fields"
+          help={tcap('help.primary_relations')}
         />
 
         <kor-input
@@ -130,6 +140,7 @@
           options={relations}
           riot-value={valueWithDefaults('secondary_relations')}
           ref="fields"
+          help={tcap('help.secondary_relations')}
         />
 
         <h2>{tcap('settings.behavior')}</h2>
@@ -231,15 +242,13 @@
         <kor-input
           name="mirador_page_template"
           label={nameFor('mirador_page_template')}
-          type="number"
           riot-value={valueWithDefaults('mirador_page_template')}
           ref="fields"
         />
 
         <kor-input
           name="mirador_manifest_template"
-          label={nameFor('mirador_page_template')}
-          type="number"
+          label={nameFor('mirador_manifest_template')}
           riot-value={valueWithDefaults('mirador_manifest_template')}
           ref="fields"
         />
@@ -248,74 +257,137 @@
         <div class="hr"></div>
 
         <kor-input
-          name="help_general"
-          label={nameFor('help_general')}
+          name="help_general.en"
+          label={nameFor('help_general') + ' - en'}
           type="textarea"
-          riot-value={valueWithDefaults('help_general')}
+          riot-value={valueWithDefaults('help_general.en')}
+          ref="fields"
+        />
+        <kor-input
+          name="help_general.de"
+          label={nameFor('help_general') + ' - de'}
+          type="textarea"
+          riot-value={valueWithDefaults('help_general.de')}
           ref="fields"
         />
 
         <kor-input
-          name="help_search"
+          name="help_search.en"
           type="textarea"
-          label={nameFor('help_search')}
-          riot-value={valueWithDefaults('help_search')}
+          label={nameFor('help_search') + ' - en'}
+          riot-value={valueWithDefaults('help_search.en')}
+          ref="fields"
+        />
+        <kor-input
+          name="help_search.de"
+          type="textarea"
+          label={nameFor('help_search') + ' - de'}
+          riot-value={valueWithDefaults('help_search.de')}
           ref="fields"
         />
 
         <kor-input
-          name="help_upload"
+          name="help_upload.en"
           type="textarea"
-          label={nameFor('help_upload')}
-          riot-value={valueWithDefaults('help_upload')}
+          label={nameFor('help_upload') + ' - en'}
+          riot-value={valueWithDefaults('help_upload.en')}
+          ref="fields"
+        />
+        <kor-input
+          name="help_upload.de"
+          type="textarea"
+          label={nameFor('help_upload') + ' - de'}
+          riot-value={valueWithDefaults('help_upload.de')}
           ref="fields"
         />
 
         <kor-input
-          name="help_login"
+          name="help_login.en"
           type="textarea"
-          label={nameFor('help_login')}
-          riot-value={valueWithDefaults('help_login')}
+          label={nameFor('help_login') + ' - en'}
+          riot-value={valueWithDefaults('help_login.en')}
+          ref="fields"
+        />
+        <kor-input
+          name="help_login.de"
+          type="textarea"
+          label={nameFor('help_login') + ' - de'}
+          riot-value={valueWithDefaults('help_login.de')}
           ref="fields"
         />
 
         <kor-input
-          name="help_profile"
+          name="help_profile.en"
           type="textarea"
-          label={nameFor('help_profile')}
-          riot-value={valueWithDefaults('help_profile')}
+          label={nameFor('help_profile') + ' - en'}
+          riot-value={valueWithDefaults('help_profile.en')}
+          ref="fields"
+        />
+        <kor-input
+          name="help_profile.de"
+          type="textarea"
+          label={nameFor('help_profile') + ' - de'}
+          riot-value={valueWithDefaults('help_profile.de')}
           ref="fields"
         />
 
         <kor-input
-          name="help_new_entries"
+          name="help_new_entries.en"
           type="textarea"
-          label={nameFor('help_new_entries')}
-          riot-value={valueWithDefaults('help_entries')}
+          label={nameFor('help_new_entries') + ' - en'}
+          riot-value={valueWithDefaults('help_entries.en')}
+          ref="fields"
+        />
+        <kor-input
+          name="help_new_entries.de"
+          type="textarea"
+          label={nameFor('help_new_entries') + ' - de'}
+          riot-value={valueWithDefaults('help_entries.de')}
           ref="fields"
         />
 
         <kor-input
-          name="help_authority_groups"
+          name="help_authority_groups.en"
           type="textarea"
-          label={nameFor('help_authority_groups')}
-          riot-value={valueWithDefaults('help_authority_groups')}
+          label={nameFor('help_authority_groups') + ' - en'}
+          riot-value={valueWithDefaults('help_authority_groups.en')}
+          ref="fields"
+        />
+        <kor-input
+          name="help_authority_groups.de"
+          type="textarea"
+          label={nameFor('help_authority_groups') + ' - de'}
+          riot-value={valueWithDefaults('help_authority_groups.de')}
           ref="fields"
         />
 
         <kor-input
-          name="help_user_groups"
+          name="help_user_groups.en"
           type="textarea"
-          label={nameFor('help_user_groups')}
-          riot-value={valueWithDefaults('help_user_groups')}
+          label={nameFor('help_user_groups') + ' - en'}
+          riot-value={valueWithDefaults('help_user_groups.en')}
+          ref="fields"
+        />
+        <kor-input
+          name="help_user_groups.de"
+          type="textarea"
+          label={nameFor('help_user_groups') + ' - de'}
+          riot-value={valueWithDefaults('help_user_groups.de')}
           ref="fields"
         />
 
         <kor-input
-          name="help_clipboard"
+          name="help_clipboard.en"
           type="textarea"
-          label={nameFor('help_clipboard')}
-          riot-value={valueWithDefaults('help_clipboard')}
+          label={nameFor('help_clipboard') + ' - en'}
+          riot-value={valueWithDefaults('help_clipboard.en')}
+          ref="fields"
+        />
+        <kor-input
+          name="help_clipboard.de"
+          type="textarea"
+          label={nameFor('help_clipboard') + ' - de'}
+          riot-value={valueWithDefaults('help_clipboard.de')}
           ref="fields"
         />
 
@@ -377,6 +449,12 @@
     tag.nameFor = (key) ->
       tag.tcap("settings.values.#{key}")
 
+    tag.newMediaLabels = () ->
+      return [
+        {value: 'pages.new_media', label: tag.tcap('pages.new_media')},
+        {value: 'pages.new_entries', label: tag.tcap('pages.new_entries')}
+      ]
+
     tag.submit = (event) ->
       event.preventDefault()
       p = update()
@@ -398,6 +476,7 @@
         )
         success: (data) ->
           wApp.bus.trigger('config-updated')
+          fetch()
       )
 
     values = ->

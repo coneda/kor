@@ -17,15 +17,25 @@
       {tcap('activerecord.models.relation', {count: 'other'})}
     </h1>
 
-    <form class="kor-horizontal">
+    <form class="inline" onsubmit={noSubmit}>
       <kor-input
         name="terms"
         label={tcap('search_term')}
         onkeyup={delayedSubmit}
+        ref="terms"
       />
 
-      <div class="hr"></div>
+      <kor-input
+        label={tcap('hide_abstract')}
+        type="checkbox"
+        name="hideAbstract"
+        onchange={delayedSubmit}
+        ref="hideAbstract"
+      />
+
     </form>
+
+    <hr />
 
     <div show={merge}>
       <div class="hr"></div>
@@ -133,8 +143,8 @@
           )
 
     tag.submit = ->
-      tag.filters.terms = tag.formFields['terms'].val()
-      tag.filters.hideAbstract = tag.formFields['hideAbstract'].val()
+      tag.filters.terms = tag.refs['terms'].value()
+      tag.filters.hideAbstract = tag.refs['hideAbstract'].value()
       filter_records()
       groupAndSortRecords()
       tag.update()
@@ -145,6 +155,8 @@
         tag.delayedTimeout = undefined
       tag.delayedTimeout = window.setTimeout(tag.submit, 300)
       true
+
+    tag.noSubmit = (event) -> event.preventDefault()
 
     tag.toggleMerge = (event) ->
       event.preventDefault()

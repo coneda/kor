@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 export HEADLESS=true
+export COVERAGE=true
 
 bundle exec rspec spec/ --format=documentation
 bundle exec cucumber features/ --format=pretty --no-strict --retry 3

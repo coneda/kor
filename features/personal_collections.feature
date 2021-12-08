@@ -91,19 +91,20 @@ Feature: personal collections
     When I follow "MyStuff"
     Then I should see "Leonardo"
     When I follow "add to clipboard" within ".group-commands"
-    And I should see "the entities have been copied to the clipboard"
+    And I should see "the entities have been added to the clipboard"
     And I go to the clipboard
     Then I should see "Clipboard"
     And I should see element "img" within widget "kor-clipboard"
 
-  Scenario: Add an global collection's entities to the clipboard as a normal user
+  Scenario: Add a global collection's entities to the clipboard as a normal user
     Given I am logged in as "jdoe"
     And the entity "Louvre" is in authority group "lecture"
     And the entity "Mona Lisa" is in authority group "lecture"
     When I follow "Global collections"
     And I follow "lecture"
-    And I follow "add to clipboard"
-    Then I should see "entities have been copied to the clipboard"
+    Then I should see "Mona Lisa"
+    And I follow "add to clipboard" within ".group-commands"
+    Then I should see "the entities have been added to the clipboard"
     When I follow "Clipboard"
     Then I should see "Mona Lisa"
     And I should see "Louvre"

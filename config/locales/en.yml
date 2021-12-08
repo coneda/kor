@@ -90,6 +90,7 @@ en:
   show_all_fields: show all fields
   show_only_mandatory_fields: show only mandatory fields
   remove_all: remove all
+  change_order: change order, use drag & drop
 
   help:
     terms_query: |
@@ -121,7 +122,6 @@ en:
       <code>18. Jahrhundert</code> or
       <code>ca. 1800</code> or
       <code>nach 1792</code>
-    date_input: Use format YYYY-MM-DD
     file_size_query: |
       Prefix the amount with '+' to find all media with a file size
       larger than the given amount of bytes or with '-' to find smaller
@@ -149,6 +149,30 @@ en:
       This can be used in combination with the wikidata integration: Set the
       wikidata property ID here and imported entries from wikipedia and their
       relationships will be matched against it.
+    no_name_input: |
+      Every entity except media needs a unique name. For objects with the same
+      name in real life, add a short explanation to "Distinguished name" so that
+      both fields are together unique. If an object doesn't have a name, specify
+      the reason here, e.g. with "name is unavailable"
+    date_input: Use format YYYY-MM-DD
+    synonym_input: Provide one synonym per line, for example
+      <code>Leo<br />Leonardo<br />Leonardo da Vinci</code>
+    property_input: |
+      Enter one of more lines using the format "label: value", for example
+      <code>width: 100cm<br />height: 120cm</code>Url values are rendered as
+      links
+    primary_relations: |
+      Select related entities you would like to show under the medium on the
+      'new media' page. E.g. choosing a relation 'shows' between media and
+      artworks would show the artwork's name. Select or deselect multiple
+      entries with CTRL-click.
+    secondary_relations: |
+      Select more related entities you would like to show under the medium on
+      the 'new media' page, here, beginning from the entities listed with the
+      above 'primary relations'. E.g. choosing a relation 'has been created by'
+      between artworks and people would show the artwork's name as well as the
+      artwork's creator's name. Select or deselect multiple entries with
+      CTRL-click.
 
   search_term:
     one: search term
@@ -294,11 +318,12 @@ en:
       repository_uuid: 'override the generated repository UUID'
       wikidata_integration: 'use the wikidata integration'
       create_missing_relations: 'create missing relations?'
+      new_media_label: label for the 'new media' page
       mirador_page_template: |
-        override the default page template for the mirador integration (absolute
+        override the page template for the mirador integration (absolute
         path)
       mirador_manifest_template: |
-        override the default manifest template for the mirador integration
+        override the manifest template for the mirador integration
         (absolute path)
 
       help_general: general help text (menu)
@@ -313,7 +338,8 @@ en:
 
 
   pages:
-    new_media: new entries
+    new_entries: new entries
+    new_media: new media
     simple_search: simple search
     expert_search: expert search
     random_entities: randomly selected entries
@@ -617,7 +643,7 @@ en:
     no_exist: "%{o} does not exist"
     none_available: "%{o} is not available"
     marked_entity_success: "the entity has been added to the clipboard"
-    marked_entities_success: "the entities have been copied to the clipboard"
+    marked_entities_success: "the entities have been added to the clipboard"
     unmarked_entity_success: "the entity has been removed from the clipboard"
     extend_success: "%{o} has been extended until %{until}"
     confirm_destroy: "Do you really want to delete %{o}?"
@@ -831,6 +857,7 @@ en:
       you do not have enough permissions to delete some of the selected
       entities
     mass_destroy_success: the entities have been deleted
+    collections_merged: the domains have been merged
 
   labels:
     relate_to_via: relate all files with "%{to}" via
@@ -1117,6 +1144,8 @@ en:
         template_and_parent: "Only 'template' or parent is possible"
         needs_value: "need a value"
         needs_label: "need a label"
+        invalid_properties_format: |
+          format invalid, please refer to this field's help above
         file_exists: "a file with identical content already exists"
         file_must_be_set: "please select a file"
         needed_for_disambiguation: |

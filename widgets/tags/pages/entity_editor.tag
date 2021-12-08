@@ -39,6 +39,7 @@
             options={noNameStatements}
             onchange={update}
             errors={errors.no_name_statement}
+            help={tcap('help.no_name_input')}
           />
 
           <kor-input
@@ -125,6 +126,7 @@
         <kor-entity-properties-editor
           label={tcap('activerecord.attributes.entity.properties')}
           name="properties"
+          errors={errors.properties}
           ref="fields"
           value={data.properties}
         />
@@ -250,7 +252,8 @@
 
     fetchCollections = ->
       Zepto.ajax(
-        url: "/collections"
+        url: "/collections",
+        data: {per_page: 'max'},
         success: (data) ->
           tag.collections = data.records
           tag.update()

@@ -256,7 +256,11 @@ class Kor::Import::WikiData
   end
 
   def self.request(method, url, params = {}, body = nil, headers = {}, redirect_count = 10)
-    @client ||= HTTPClient.new
+    @client ||= begin
+      client = HTTPClient.new
+      client.ssl_config.set_default_paths
+      client
+    end
 
     response = @client.request(method, url, params, headers, body)
 
@@ -278,4 +282,20 @@ class Kor::Import::WikiData
       response
     end
   end
+
+
+  protected
+
+    def id_for_entity(entity)
+      entity.kind.fields.each do |f|
+        f.entity = entity
+        if f.wikidata_id && f.value
+          response = find_by_attribute(f.wikidata_id, f.value)
+          id = response["items"].first.to_s
+          return id if id.present?
+        end
+      end
+
+      nil
+    end
 end

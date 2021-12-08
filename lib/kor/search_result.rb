@@ -3,6 +3,17 @@ class Kor::SearchResult
     assign attrs
   end
 
+  def self.empty
+    new(
+      total: 0,
+      uuids: [],
+      ids: [],
+      raw_records: [],
+      page: 1,
+      per_page: 10
+    )
+  end
+
   attr_writer :records, :total, :page, :per_page, :ids, :uuids
 
   def assign(attrs = {})
@@ -32,18 +43,16 @@ class Kor::SearchResult
   end
 
   def records
-    @records ||= begin
-      if @ids.present?
-        Entity.where(id: @ids).to_a.sort do |x, y|
-          @ids.index(x.id) <=> @ids.index(y.id)
-        end
-      elsif @uuids.present?
-        Entity.where(uuid: @uuids).to_a.sort do |x, y|
-          @uuids.index(x.uuid) <=> @uuids.index(y.uuid)
-        end
-      else
-        []
+    @records ||= if @ids.present?
+      Entity.where(id: @ids).to_a.sort do |x, y|
+        @ids.index(x.id) <=> @ids.index(y.id)
       end
+    elsif @uuids.present?
+      Entity.where(uuid: @uuids).to_a.sort do |x, y|
+        @uuids.index(x.uuid) <=> @uuids.index(y.uuid)
+      end
+    else
+      []
     end
   end
 

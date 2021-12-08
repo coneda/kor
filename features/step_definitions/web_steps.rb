@@ -351,6 +351,7 @@ end
 When("I press the {string} key") do |string|
   case string
   when 'enter' then find('body').send_keys(:enter)
+  when 'escape' then find('body').send_keys(:escape)
   else
     raise "unknown key: '#{string}'"
   end

@@ -27,7 +27,7 @@ module SuiteHelper
     system "mv #{ENV['DATA_DIR']}/media #{Rails.root}/tmp/test.media.clone"
   end
 
-  def self.around_each(&block)
+  def self.around_each
     DatabaseCleaner.start
     yield
     DatabaseCleaner.clean
@@ -41,16 +41,16 @@ module SuiteHelper
     Kor::Auth.sources(refresh: true)
 
     use_elastic = (
-      framework == :rspec && test.metadata[:elastic] ||
-      framework == :cucumber && test.tags.any?{ |st| st.name == '@elastic' }
+      ((framework == :rspec) && test.metadata[:elastic]) ||
+      ((framework == :cucumber) && test.tags.any?{ |st| st.name == '@elastic' })
     )
 
     if use_elastic
-      Kor::Elastic.enabled = true
+      Kor::Elastic.enable!
       Kor::Elastic.reset_index
       Kor::Elastic.index_all full: true
     else
-      Kor::Elastic.enabled = false
+      Kor::Elastic.disable!
     end
 
     if framework == :rspec && test.metadata[:type].to_s == 'controller'
@@ -80,7 +80,10 @@ module SuiteHelper
         c.configure_rspec_metadata!
       end
 
-      c.default_cassette_options = {:record => :new_episodes}
+      c.default_cassette_options = {
+        record: :new_episodes
+        # record: :all
+      }
       c.allow_http_connections_when_no_cassette = true
 
       c.ignore_request do |r|

@@ -110,6 +110,7 @@ Rails.application.routes.draw do
     resources :collections, except: ['edit', 'new'] do
       member do
         patch 'merge'
+        patch 'entities'
       end
     end
     resources :credentials, except: ['edit', 'new']

@@ -3,6 +3,7 @@
     label={opts.label}
     type="textarea"
     ref="field"
+    help={tcap('help.synonym_input')}
   />
 
   <script type="text/javascript">

@@ -14,7 +14,6 @@ class AuthorityGroupCategoriesController < JsonController
       records.roots
     end
 
-
     @total = @records.count
     @records = @records.pageit(page, per_page)
     render template: 'json/index'

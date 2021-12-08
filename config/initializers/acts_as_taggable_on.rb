@@ -3,11 +3,15 @@
 # db connection string, this makes sure the tag name column is always using a
 # binary collation
 
-if Rails.env.test?
-  old = ActiveRecord::Migration.verbose
-  ActiveRecord::Migration.verbose = false
-  ActsAsTaggableOn.force_binary_collation = true
-  ActiveRecord::Migration.verbose = old
-else
-  ActsAsTaggableOn.force_binary_collation = true
+begin
+  if Rails.env.test?
+    old = ActiveRecord::Migration.verbose
+    ActiveRecord::Migration.verbose = false
+    ActsAsTaggableOn.force_binary_collation = true
+    ActiveRecord::Migration.verbose = old
+  else
+    ActsAsTaggableOn.force_binary_collation = true
+  end
+rescue ActiveRecord::NoDatabaseError => e
+  Rails.log.error("could not set binary collaction fo ActsAsTaggableOn: #{e}")
 end

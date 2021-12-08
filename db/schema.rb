@@ -1,4 +1,16 @@
-ActiveRecord::Schema.define(version: 20210305220358) do
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# Note that this schema.rb definition is the authoritative source for your
+# database schema. If you need to create the application database on another
+# system, you should be using db:schema:load, not running all the migrations
+# from scratch. The latter is a flawed and unsustainable approach (the more migrations
+# you'll amass, the slower it'll run and the greater likelihood for issues).
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema.define(version: 20211104071852) do
 
   create_table "authority_group_categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.integer  "lock_version", default: 0
@@ -21,7 +33,7 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["authority_group_category_id"], name: "index_authority_groups_on_authority_group_category_id", using: :btree
   end
 
-  create_table "authority_groups_entities", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
+  create_table "authority_groups_entities", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "entity_id"
     t.integer "authority_group_id"
     t.index ["authority_group_id"], name: "index_authority_groups_entities_on_authority_group_id", using: :btree
@@ -49,7 +61,7 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["name"], name: "index_credentials_on_name", using: :btree
   end
 
-  create_table "credentials_users", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
+  create_table "credentials_users", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "user_id"
     t.integer "credential_id"
     t.index ["credential_id"], name: "index_credentials_users_on_credential_id", using: :btree
@@ -120,26 +132,24 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["distinct_name"], name: "index_entities_on_distinct_name", using: :btree
     t.index ["id", "deleted_at"], name: "deleted_at_partial", using: :btree
     t.index ["kind_id", "deleted_at"], name: "typey", using: :btree
-    t.index ["kind_id"], name: "index_entities_on_kind_id", using: :btree
-    t.index ["medium_id"], name: "mediy", using: :btree
     t.index ["name"], name: "index_entities_on_name", using: :btree
     t.index ["uuid"], name: "index_entities_on_uuid", using: :btree
   end
 
-  create_table "entities_system_groups", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
+  create_table "entities_system_groups", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "entity_id"
     t.integer "system_group_id"
     t.index ["entity_id"], name: "index_entities_system_groups_on_entity_id", using: :btree
     t.index ["system_group_id"], name: "index_entities_system_groups_on_system_group_id", using: :btree
   end
 
-  create_table "entities_tags", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
+  create_table "entities_tags", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "entity_id"
     t.integer "tag_id"
     t.index ["entity_id", "tag_id"], name: "index_entities_tags_on_entity_id_and_tag_id", unique: true, using: :btree
   end
 
-  create_table "entities_user_groups", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
+  create_table "entities_user_groups", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "entity_id"
     t.integer "user_group_id"
     t.index ["entity_id"], name: "index_entities_user_groups_on_entity_id", using: :btree
@@ -192,7 +202,7 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["value"], name: "index_identifiers_on_value", using: :btree
   end
 
-  create_table "kind_inheritances", primary_key: "false", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
+  create_table "kind_inheritances", primary_key: "false", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "parent_id"
     t.integer  "child_id"
     t.datetime "created_at"
@@ -242,7 +252,7 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.index ["user_id"], name: "index_publishments_on_user_id", using: :btree
   end
 
-  create_table "relation_inheritances", primary_key: "false", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
+  create_table "relation_inheritances", primary_key: "false", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "parent_id"
     t.integer  "child_id"
     t.datetime "created_at"
@@ -255,8 +265,8 @@ ActiveRecord::Schema.define(version: 20210305220358) do
     t.string   "reverse_name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lock_version",                  default: 0
-    t.text     "description",  limit: 16777215
+    t.integer  "lock_version",                        default: 0
+    t.text     "description",        limit: 16777215
     t.datetime "deleted_at"
     t.string   "url"
     t.boolean  "abstract"

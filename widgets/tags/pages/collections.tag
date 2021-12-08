@@ -8,6 +8,14 @@
     ><i class="fa fa-plus-square"></i></a>
     <h1>{tcap('activerecord.models.collection', {count: 'other'})}</h1>
 
+    <kor-pagination
+      if={data}
+      page={opts.query.page}
+      per-page={data.per_page}
+      total={data.total}
+      page-update-handler={pageUpdate}
+    />
+
     <table>
       <thead>
         <th>{tcap('activerecord.attributes.collection.name')}</th>
@@ -49,12 +57,21 @@
     tag.on('mount', function() {
       tag.title(tag.t('activerecord.models.collection', {count: 'other'}))
       fetch()
+      tag.on('routing:query', fetch)
+    })
+
+    tag.on('unmount', function() {
+      tag.off('routing:query', fetch)
     })
 
     tag.onDeleteClicked = function(event) {
       event.preventDefault();
       if (wApp.utils.confirm())
         destroy(event.item.collection.id);
+    }
+
+    tag.pageUpdate = function(newPage) {
+      wApp.bus.trigger('query-update', {page: newPage})
     }
 
     var destroy = function(id) {
@@ -70,9 +87,10 @@
     }
 
     fetch = function() {
+      var page = wApp.routing.query()['page'] || 1
       Zepto.ajax({
         url: '/collections',
-        data: {include: 'counts,owner'},
+        data: {include: 'counts,owner', page: page},
         success: function(data) {
           tag.data = data;
           tag.update();

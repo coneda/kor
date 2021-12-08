@@ -10,7 +10,7 @@
     var tag = this;
 
     var reloadApp = function() {
-      console.log('reloading app');
+      console.log('remounting app ...');
       unmount();
 
       var preloaders = wApp.setup();
@@ -29,7 +29,7 @@
       updateLayout();
       var opts = {routing: true};
       tag.mountedApp = riot.mount(tag.refs.target, 'w-app', opts)[0]
-      console.log('ConedaKOR frontend loaded');
+      console.log('ConedaKOR frontend mounted');
     }
 
     // this update the page layout with some dynamic content, such as language,

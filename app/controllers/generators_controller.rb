@@ -41,7 +41,7 @@ class GeneratorsController < JsonController
   protected
 
     def generator_params
-      params.fetch(:generator, {}).permit(:name, :directive)
+      params.fetch(:generator, {}).permit(:name, :directive, :position)
     end
 
     def auth

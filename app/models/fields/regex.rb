@@ -2,7 +2,7 @@ class Fields::Regex < Field
   def validate_value
     result = super
     return result if result != true
-    
+
     if value.present? && !value.match(matcher)
       return :invalid
     end

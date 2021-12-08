@@ -120,6 +120,14 @@ i:last-child {
   text-align: right;
 }
 
+.sortable-ghost {
+  background-color: $kor-button-highlight;
+}
+
+.sortable-fallback{
+  visibility: hidden;
+}
+
 [data-is=w-app] {
   padding: 2rem;
 
@@ -206,7 +214,7 @@ kor-entity {
 
     h3 {
       margin: 0px;
-      color: white;
+      color: var(--kor-shine);
     }
 
     img {
@@ -235,6 +243,16 @@ kor-gallery-grid, [data-is=kor-gallery-grid] {
   .name {
     font-weight: bold;
   }
+
+  .name, .desc {
+    a:after {
+      content: ', ';
+    }
+
+    a:last-child:after {
+      content: '';
+    }
+  }
 }
 
 kor-login, [data-is=kor-login] {
@@ -258,6 +276,7 @@ kor-login-info {
 }
 
 kor-pagination, [data-is=kor-pagination] {
+  white-space: nowrap;
   display: block;
   text-align: right;
 
@@ -281,6 +300,13 @@ kor-pagination, [data-is=kor-pagination] {
     top: -4px;
     margin-left: 3px;
     margin-right: 3px;
+  }
+
+  // for narrow containers
+  &.slim {
+    input {
+      width: 3rem !important;
+    }
   }
 }
 
@@ -497,6 +523,10 @@ kor-medium-page, [data-is=kor-medium-page] {
   img {
     max-width: 100%;
   }
+
+  video {
+    max-width: 100%;
+  }
 }
 
 kor-kinds, [data-is=kor-kinds] {
@@ -547,7 +577,7 @@ kor-generators {
 }
 
 .kor-glow {
-  text-shadow: 0px 0px 5px white;
+  text-shadow: 0px 0px 5px var(--kor-shine);
 }
 
 .kor-loading-screen {
@@ -559,7 +589,7 @@ kor-generators {
 kor-settings-editor, [data-is=kor-settings-editor] {
   h2 {
     margin-top: 4rem;
-    color: white;
+    color: var(--kor-shine);
   }
 }
 
@@ -742,7 +772,7 @@ kor-entity-page, [data-is=kor-entity-page] {
     font-weight: bold;
   }
 
-  span.value {
+  .value {
     font-weight: bold;
     color: var(--kor-shine);
   }
@@ -770,6 +800,13 @@ kor-entity-page, [data-is=kor-entity-page] {
   .kor-api-links {
     i {
       margin-right: 5px;
+    }
+  }
+
+  .groups {
+    ul {
+      padding-left: 20px;
+      margin: 0;
     }
   }
 }
@@ -951,7 +988,7 @@ kor-input {
 
     code {
       display: block;
-      color: white;
+      color: var(--kor-shine);
       margin-bottom: 1rem;
     }
   }
