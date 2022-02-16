@@ -34,13 +34,17 @@ window.wApp = {
     requests: []
   }
   setup: ->
+    # these require no ajax requests during setup
     wApp.clipboard.setup()
     wApp.entityHistory.setup()
 
-    return [
-      wApp.config.setup()
-      wApp.session.setup(),
-      wApp.i18n.setup(),
-      wApp.info.setup(),
-    ]
+    handler = (resolve, reject) ->
+      innerHandler = () ->
+        $.when.apply(null, [
+          wApp.config.setup()
+          wApp.i18n.setup(),
+          wApp.info.setup(),
+        ]).then(resolve)
+      wApp.session.setup().then(innerHandler)
+    return new Promise(handler)
 }
