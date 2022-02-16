@@ -4,6 +4,12 @@ class SessionController < JsonController
   skip_before_action :auth, :legal
 
   def show
+    # we need to flush the existing token crypto base, otherwise the new token
+    # is simply a new encryption of the same base as long as the session
+    # persists, see
+    # https://github.com/rails/rails/blob/v5.0.7.2/actionpack/lib/action_controller/metal/request_forgery_protection.rb#L367
+    session[:_csrf_token] = nil
+
     @messages = flash[:notice]
   end
 
