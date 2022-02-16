@@ -850,6 +850,9 @@ de:
       zu löschen
     mass_destroy_success: die Entitäten wurden gelöscht
     collections_merged: die Sammlungen wurden verschmolzen
+    has_non_empty_personal_collection: |
+      der Benutzer konnte nicht gelöscht werden, weil die persönliche Sammlung
+      noch Entitätten beinhaltet
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'

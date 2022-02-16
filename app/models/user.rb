@@ -43,14 +43,14 @@ class User < ApplicationRecord
   validate :validate_existing_parent_user
 
   def validate_empty_personal_collection
-    if !make_personal && personal_collection && !personal_collection.entities.empty?
-        errors.add :make_personal, :personal_collection_not_empty
+    if !make_personal && !personal_empty?
+      errors.add :make_personal, :personal_collection_not_empty
     end
   end
 
   def validate_existing_parent_user
     if self.parent_username.present? && !User.exists?(:name => self.parent_username)
-        errors.add :parent_username, :user_doesnt_exist
+      errors.add :parent_username, :user_doesnt_exist
     end
   end
 
@@ -86,6 +86,12 @@ class User < ApplicationRecord
       self.personal_group.destroy if self.personal_group
       self.personal_collection.destroy if self.personal_collection
     end
+  end
+
+  def personal_empty?
+    return true unless personal_collection
+
+    personal_collection.entities.empty?
   end
 
   def generate_secrets

@@ -818,6 +818,9 @@ en:
       entities
     mass_destroy_success: the entities have been deleted
     collections_merged: the collections have been merged
+    has_non_empty_personal_collection: |
+      The user could not be deleted because he/she has a non-empty personal
+      collection
 
   labels:
     relate_to_via: relate all files with "%{to}" via
