@@ -1,5 +1,6 @@
 class OaiPmh::BaseController < BaseController
-  layout "../oai_pmh/base"
+  prepend_view_path "app/views/oai_pmh"
+  layout 'base'
 
   respond_to :xml
 
@@ -16,7 +17,7 @@ class OaiPmh::BaseController < BaseController
     @admin_email = Kor.settings['maintainer_mail']
     @earliest_timestamp = earliest_timestamp
 
-    render :template => "oai_pmh/identify"
+    render :template => "identify"
   end
 
   def list_sets
@@ -24,7 +25,7 @@ class OaiPmh::BaseController < BaseController
   end
 
   def list_metadata_formats
-    render :template => "oai_pmh/list_metadata_formats"
+    render :template => "list_metadata_formats"
   end
 
   def list_identifiers
@@ -35,7 +36,7 @@ class OaiPmh::BaseController < BaseController
     @records = query(record_params)
 
     if @records[:total] > 0
-      render :template => "oai_pmh/list_identifiers"
+      render :template => "list_identifiers"
     else
       render_error 'noRecordsMatch'
     end
@@ -49,7 +50,7 @@ class OaiPmh::BaseController < BaseController
     @records = query(record_params)
 
     if @records[:total] > 0
-      render :template => "oai_pmh/list_records"
+      render :template => "list_records"
     else
       render_error 'noRecordsMatch'
     end
@@ -108,7 +109,7 @@ class OaiPmh::BaseController < BaseController
 
       respond_to do |format|
         format.xml do
-          render template: 'oai_pmh/error', layout: '../oai_pmh/base'
+          render template: 'error'
         end
       end
     end

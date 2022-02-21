@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'acts_as_list'
-gem 'acts-as-taggable-on', '~> 7.0'
+gem 'acts-as-taggable-on', '~> 9.0'
 gem 'colorize'
 gem 'dotenv'
 gem 'exifr', '1.1.1'
@@ -12,7 +12,7 @@ gem 'mysql2', '~> 0.5.3'
 gem 'parslet'
 gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
-gem 'rails', '~> 6.1.0'
+gem 'rails', '~> 7.0.0'
 gem 'RedCloth'
 gem 'responders' # , '~> 2.0'
 gem 'ruby-progressbar'
@@ -30,7 +30,7 @@ end
 group :test do
   gem 'capybara'
   gem 'connection_pool'
-  gem 'cucumber-rails', require: false
+  gem 'cucumber-rails', git: 'https://github.com/cucumber/cucumber-rails.git', require: false
   gem 'database_cleaner-active_record'
   gem 'factory_bot'
   gem 'selenium-webdriver'
@@ -56,7 +56,7 @@ group :test, :development do
 end
 
 group :production do
-  gem 'exception_notification', '4.4.3'
+  gem 'exception_notification'
 end
 
 group :import_export do
