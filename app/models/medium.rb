@@ -210,14 +210,14 @@ class Medium < ApplicationRecord
   def validate_content_type
     if image.file?
       unless image.content_type.match?(/^image\/.+$/)
-        errors[:image] << :invalid_content_type
+        errors.add :image, :invalid_content_type
       end
     end
   end
 
   def validate_document_presence
     if !image.file? && !document.file?
-      errors[:document] << :file_must_be_set
+      errors.add :document, :file_must_be_set
     end
   end
 

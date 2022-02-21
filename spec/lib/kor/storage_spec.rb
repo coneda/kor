@@ -2,13 +2,13 @@ require 'rails_helper'
 
 RSpec.describe Kor::Storage do
   it 'should guess the mime type' do
-    content_type = described_class.guess_content_type('spec/fixtures/audio_a.wav')
+    content_type = described_class.guess_content_type('spec/fixtures/files/audio_a.wav')
     expect(content_type).to eq('audio/x-wav')
 
-    content_type = described_class.guess_content_type('spec/fixtures/video_a.m4v')
+    content_type = described_class.guess_content_type('spec/fixtures/files/video_a.m4v')
     expect(content_type).to eq('video/x-m4v')
 
-    content_type = described_class.guess_content_type('spec/fixtures/pdf_a.pdf')
+    content_type = described_class.guess_content_type('spec/fixtures/files/pdf_a.pdf')
     expect(content_type).to eq('application/pdf')
 
     content_type = described_class.guess_content_type('spec/fixtures/works.csv')
@@ -47,9 +47,9 @@ RSpec.describe Kor::Storage do
     expect(medium.image_updated_at).to be_nil
 
     expect(medium.save).to be_falsey
-    expect(medium.errors[:document]).to eq([:file_must_be_set])
+    expect(medium.errors[:document]).to eq(['please select a file'])
 
-    medium.document = File.open("#{Rails.root}/spec/fixtures/image_c.jpg")
+    medium.document = File.open("#{Rails.root}/spec/fixtures/files/image_c.jpg")
 
     expect(medium.document.file?).to be_truthy
     expect(medium.document.file).to be_a(IO)
