@@ -1,22 +1,19 @@
 class Medium < ApplicationRecord
   has_one :entity
 
-  after_save do
-    image.save
-    document.save
-  end
-
   def image
     @image ||= Kor::Storage.new(self, 'image',
       file_name: image_file_name,
-      content_type: image_content_type
+      content_type: image_content_type,
+      updated_at: image_updated_at
     )
   end
 
   def document
     @document ||= Kor::Storage.new(self, 'document',
       file_name: document_file_name,
-      content_type: document_content_type
+      content_type: document_content_type,
+      updated_at: document_updated_at
     )
   end
 
@@ -30,13 +27,15 @@ class Medium < ApplicationRecord
     end
 
     if new_file.is_a?(ActionDispatch::Http::UploadedFile)
-      file = new_file.tmpfile
-      options[:content_type] = file.type
-      options[:file_name] = file.file_name
+      file = new_file.tempfile
+      options[:content_type] = new_file.content_type
+      options[:file_name] = new_file.original_filename
+    else
+      options[:content_type] = Kor::Storage.guess_content_type(file.path)
+      options[:file_name] = file.path.split('/').last
     end
 
-    options[:content_type] = Kor::Storage.guess_content_type(file.path)
-    options[:file_name] = file.path.split('/').last
+    options[:updated_at] = Time.now.utc.to_i
 
     attachment.assign_file(file, options)
 
@@ -44,7 +43,7 @@ class Medium < ApplicationRecord
       options[:content_type],
       options[:file_name],
       file.size,
-      Time.now.utc
+      options[:updated_at]
     ]
   end
 
@@ -99,38 +98,38 @@ class Medium < ApplicationRecord
   # end
 
   # TODO: do we still need this?
-  def custom_styles
-    result = {}
+  # def custom_styles
+  #   result = {}
 
-    if document.present?
-      ct = document.content_type
-      if ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
-        result.merge!(
-          mp4: {format: :mp4, content_type: 'video/mp4'},
-          ogg: {format: :ogv, content_type: 'video/ogg'},
-          webm: {format: :webm, content_type: 'video/webm'}
-        )
-      end
-      if ct.match(/^audio\//)
-        result.merge!(
-          mp3: {format: :mp3, content_type: 'audio/mp3'},
-          ogg: {format: :ogg, content_type: 'audio/ogg'}
-        )
-      end
-    end
+  #   if document.present?
+  #     ct = document.content_type
+  #     if ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
+  #       result.merge!(
+  #         mp4: {format: :mp4, content_type: 'video/mp4'},
+  #         ogg: {format: :ogv, content_type: 'video/ogg'},
+  #         webm: {format: :webm, content_type: 'video/webm'}
+  #       )
+  #     end
+  #     if ct.match(/^audio\//)
+  #       result.merge!(
+  #         mp3: {format: :mp3, content_type: 'audio/mp3'},
+  #         ogg: {format: :ogg, content_type: 'audio/ogg'}
+  #       )
+  #     end
+  #   end
 
-    result
-  end
+  #   result
+  # end
 
-  def processors
-    if document.present?
-      ct = document.content_type
-      return [:video] if ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
-      return [:audio] if ct.match(/^audio\//)
-    end
+  # def processors
+  #   if document.present?
+  #     ct = document.content_type
+  #     return [:video] if ct.match(/^(video\/|application\/x-shockwave-flash|application\/mp4)/)
+  #     return [:audio] if ct.match(/^audio\//)
+  #   end
 
-    []
-  end
+  #   []
+  # end
 
   def video?
     ct = document.content_type
@@ -173,13 +172,30 @@ class Medium < ApplicationRecord
     end
   end
 
-  after_destroy do |medium|
-    raise "fix this!"
+  after_save do |m|
+    m.image.save
+    m.document.save
 
-    medium.custom_styles.each do |name, _config|
-      file = medium.custom_style_path(name)
-      FileUtils.rm(file) if File.exist?(file)
+    if m.attachments_changed?
+      m.rebuild_variants
     end
+  end
+
+  def rebuild_variants(later: false)
+    if later
+      ProcessVariantsJob.perform_later(id)
+      return
+    end
+
+    document.rebuild_variants
+    image.rebuild_variants
+  end
+
+  after_destroy do |m|
+    m.image.clear
+    m.image.save
+    m.document.clear
+    m.document.save
   end
 
   # validates :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{ |medium| medium.image.file? }}
@@ -194,7 +210,6 @@ class Medium < ApplicationRecord
   def validate_content_type
     if image.file?
       unless image.content_type.match?(/^image\/.+$/)
-        binding.pry
         errors[:image] << :invalid_content_type
       end
     end
@@ -215,7 +230,6 @@ class Medium < ApplicationRecord
       )
       
     if invalid
-      binding.pry
       errors.add :base, :no_two_images
     end
   end
@@ -225,12 +239,10 @@ class Medium < ApplicationRecord
     max_bytes = max_mb * 1024**2
 
     if image_file_size.present? and image_file_size > max_bytes
-      binding.pry
       errors.add :image_file_size, :file_size_less_than, :value => max_mb
     end
 
     if document_file_size.present? and document_file_size > max_bytes
-      binding.pry
       errors.add :document_file_size, :file_size_less_than, :value => max_mb
     end
   end
@@ -249,6 +261,10 @@ class Medium < ApplicationRecord
     end
   end
 
+  def file_size
+    document_file_size || image_file_size
+  end
+
   def content_type(style = :original)
     result = if style == :original
       document.content_type || image.content_type
@@ -261,8 +277,16 @@ class Medium < ApplicationRecord
     result.is_a?(String) ? result.downcase : 'application/octet-stream'
   end
 
-  def file_size
-    original.size
+  def image?
+    document.file? ? document.image? : image.image?
+  end
+
+  def video?
+    document.video?
+  end
+
+  def audio?
+    document.audio?
   end
 
   def data_file(style = :original)
@@ -288,10 +312,6 @@ class Medium < ApplicationRecord
     document.file? ? document : image
   end
 
-  def original_filename
-    original.original_filename
-  end
-
   def original_extension
     if original.original_filename
       File.extname(original.original_filename).gsub('.', '').downcase
@@ -302,7 +322,7 @@ class Medium < ApplicationRecord
   end
 
   def style_extension(style = :original)
-    (document.styles[style] || image.styles[style] || {})[:format]
+    attachment_for(style.to_s).class::VARIANTS[style.to_s][:extension]
   end
 
   def download_filename(style = :original)
@@ -337,41 +357,34 @@ class Medium < ApplicationRecord
   end
 
   def image_style?(style)
-    image.styles.keys.include? style
+    image.class::VARIANTS.keys.include? style.to_s
+  end
+
+  def attachments_changed?
+    saved_change_to_document_updated_at ||
+    saved_change_to_image_updated_at
+  end
+
+  def attachment_for(style)
+    image_styles = ['normal', 'screen', 'preview', 'thumbnail', 'icon', 'still']
+    return image if image_styles.include?(style.to_s)
+    return image if !document.file? && style == :original
+    return document
   end
 
   def url(style = :original, disposition = 'inline')
     return dummy_url if Rails.env.development? && !ENV['SHOW_MEDIA']
 
-    result = if style == :original
-      document.url(:original)
-    elsif image_style?(style)
-      image.url(style)
-    else
-      custom_style_url(style)
-    end
-
-    if disposition == 'download'
-      result.gsub!(/\/images\//, '/download/')
-    end
-
-    # revert escaping, see https://github.com/thoughtbot/paperclip/issues/1945
-    result.gsub!(/%3F/, '?')
-
-    result
+    disposition = 'images' if disposition == 'inline'
+    a = attachment_for(style)
+    File.exists?(a.variant_path(style.to_s)) ?
+      a.variant_url(style.to_s, disposition) :
+      dummy_url
   end
 
   def path(style = :original)
-    if style == :original
-      # document.path(:original) || image.path(:original)
-      document.variant_path('original') || image.variant_path('original')
-    elsif image_style?(style)
-      path = image_path(style.to_s)
-
-      File.exists?(path) ? path : dummy_path
-    else
-      document.variant_path(style.to_s)
-    end
+    path = attachment_for(style).variant_path(style.to_s)
+    File.exist?(path) ? path : dummy_path
   end
 
   def dummy_path

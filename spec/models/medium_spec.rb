@@ -59,7 +59,7 @@ RSpec.describe Medium do
     medium = Medium.new
     expect(medium.save).to be_falsey
     expect(medium.errors[:document]).to eq(
-      ['please select a file']
+      [:file_must_be_set]
     )
   end
 
@@ -67,7 +67,9 @@ RSpec.describe Medium do
     medium = Medium.create :document => File.open("#{Rails.root}/spec/fixtures/image_c.jpg")
     medium = Medium.last
 
-    paths = [:original, :icon, :thumbnail, :preview, :normal].map{ |s| medium.path(s) }
+    paths = [:original, :icon, :thumbnail, :preview, :normal].map do |s|
+      medium.path(s)
+    end
 
     paths.each do |path|
       expect(File.exist?(path)).to be_truthy
@@ -97,68 +99,70 @@ RSpec.describe Medium do
   end
 
   context 'content types' do
-    it "should determine the processors according to the document content type" do
+    it "should determine the type based on content type" do
       medium = Medium.new
-      expect(medium).to receive(:processors).and_call_original
-      expect(medium.processors).to eq([])
+      expect(medium.image?).to be_falsey
+      expect(medium.video?).to be_falsey
+      expect(medium.audio?).to be_falsey
 
       medium = FactoryBot.build(:picture_c).medium
-      expect(medium.processors).to eq([])
+      expect(medium.image?).to be_truthy
 
       medium = FactoryBot.build(:video_a).medium
-      expect(medium.processors).to eq([:video])
+      expect(medium.video?).to be_truthy
 
       medium = FactoryBot.build(:video_b).medium
-      expect(medium.processors).to eq([:video])
+      expect(medium.video?).to be_truthy
 
       medium = FactoryBot.build(:audio_a).medium
-      expect(medium.processors).to eq([:audio])
+      expect(medium.audio?).to be_truthy
 
       medium = FactoryBot.build(:audio_b).medium
-      expect(medium.processors).to eq([:audio])
+      expect(medium.audio?).to be_truthy
     end
 
     it "should not run the video processor for images" do
-      Dir["#{Rails.root}/lib/paperclip_processors/*"].sort.each{ |f| require f }
-
-      expect(Paperclip::Video).not_to receive(:make)
-      expect(Paperclip::Audio).not_to receive(:make)
-      FactoryBot.create :picture_c
+      entity = FactoryBot.build :picture_c
+      expect(entity.medium.document).to receive(:im).at_least(:once)
+      expect(entity.medium.document).not_to receive(:ogg_video)
+      entity.save
     end
 
     it "should run the video processor for videos" do
-      expect(Paperclip::Video).to receive(:make).at_least(:once).and_call_original
-      expect(Paperclip::Audio).not_to receive(:make)
-      FactoryBot.create :video_a
+      entity = FactoryBot.build :video_a
+      expect(entity.medium.document).not_to receive(:im)
+      expect(entity.medium.document).to receive(:ogg_video).at_least(:once)
+      entity.save
     end
 
     it "should run the audio processor for audio" do
-      expect(Paperclip::Video).not_to receive(:make)
-      expect(Paperclip::Audio).to receive(:make).at_least(:once).and_call_original
-      FactoryBot.create :audio_a
+      entity = FactoryBot.build :audio_a
+      expect(entity.medium.document).not_to receive(:im)
+      expect(entity.medium.document).to receive(:ogg_audio).at_least(:once)
+      entity.save
     end
 
     it "should convert a video to all 3 major html5 containers/codecs" do
-      medium = FactoryBot.create :video_a
-      document = medium.medium.document
-      expect(File.size document.path(:mp4)).to be > 0
-      expect(File.size document.path(:webm)).to be > 0
-      expect(File.size document.path(:ogg)).to be > 0
+      entity = FactoryBot.create :video_a
+      document = entity.medium.document
+      expect(File.size document.variant_path('mp4')).to be > 0
+      expect(File.size document.variant_path('webm')).to be > 0
+      expect(File.size document.variant_path('ogg.video')).to be > 0
     end
 
     it "should convert a audio file to all 2 major html5 containers/formats" do
-      medium = FactoryBot.create :audio_a
-      document = medium.medium.document
-      expect(File.size document.path(:mp3)).to be > 0
-      expect(File.size document.path(:ogg)).to be > 0
+      entity = FactoryBot.create :audio_a
+      document = entity.medium.document
+      expect(File.size document.variant_path('mp3')).to be > 0
+      expect(File.size document.variant_path('ogg.audio')).to be > 0
     end
 
     it "should destroy custom styles with the medium" do
-      medium = FactoryBot.create :audio_a
-      document = medium.medium.document
-      paths = [document.path(:mp3), document.path(:ogg)]
+      entity = FactoryBot.create :audio_a
+      document = entity.medium.document
+      paths = [document.variant_path('mp3'), document.variant_path('ogg.audio')]
 
-      medium.reload.destroy
+      entity.reload.destroy
       expect(File.exist? paths[0]).to be_falsey
       expect(File.exist? paths[1]).to be_falsey
     end

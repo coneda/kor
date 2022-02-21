@@ -1,9 +1,7 @@
 module Kor::Media
   def self.transform(medium, transformation, options = {})
     if transformation.transforms(medium)
-      DelayedPaperclip::ProcessJob.with_adapter :inline do
-        transformation.new(medium, options).transform.touch
-      end
+      transformation.new(medium, options).transform
     else
       raise "#{transformation.class} can not handle medium #{medium.id}"
     end

@@ -103,4 +103,15 @@ module Kor
     base = File.join(ENV['DATA_DIR'], 'processing')
     Tempfile.new(rand.to_s, base).path
   end
+
+  def self.system(*cmd)
+    ro, wo = IO.pipe
+    re, we = IO.pipe
+
+    success = Kernel.system *cmd, out: wo, err: we
+    wo.close
+    we.close
+
+    [success, ro.read, re.read]
+  end
 end

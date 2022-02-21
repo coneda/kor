@@ -13,7 +13,7 @@ class Kor::Media::Transformations::Image < Kor::Media::Transformations::Base
   end
 
   def transform
-    file_name = medium.image.path
+    file_name = medium.image.variant_path('original')
     command = operation_to_command(options[:operation])
     system "mogrify -#{command} #{file_name}"
 

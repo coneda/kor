@@ -29,11 +29,11 @@ class Kor::Statistics::Exif < Kor::Statistics::Simple
     @statistics[exif[:make]][exif[:model]] += 1
   end
 
-  def self.exif_for(medium)
+  def self.exif_for(entity)
     result = {:make => nil, :model => nil}
 
-    file = medium.medium.image.path :original
-    content_type = medium.medium.content_type.split('/').last.downcase
+    file = entity.medium.image.variant_path 'original'
+    content_type = entity.medium.content_type.split('/').last.downcase
     parser = case content_type
     when /tiff?/
       EXIFR::TIFF.new(file)

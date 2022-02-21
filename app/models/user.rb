@@ -12,13 +12,13 @@ class User < ApplicationRecord
   has_many :user_groups, :dependent => :destroy
   has_many :publishments, :dependent => :destroy
 
-  belongs_to :parent, {
+  belongs_to(:parent,
     class_name: 'User',
     foreign_key: :parent_username,
     primary_key: :name,
     autosave: false,
     optional: true
-  }
+  )
   belongs_to(:personal_group,
     class_name: 'Credential',
     foreign_key: :credential_id,

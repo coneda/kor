@@ -8,8 +8,8 @@ class Kor::Tasks
     Medium.find_each do |m|
       started_at ||= Time.now
 
-      m.image.reprocess! if m.image.file?
-      m.document.reprocess! if m.document.file?
+      m.image.rebuild_variants if m.image.file?
+      m.document.rebuild_variants? if m.document.file?
 
       left -= 1
       seconds_left = (Time.now - started_at).to_f / (num - left) * left

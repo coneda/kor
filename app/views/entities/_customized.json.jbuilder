@@ -28,14 +28,14 @@ if entity.is_medium?
       json.original entity.medium.url(:original)
 
       if entity.medium.video?
-        json.set! 'video/mp4', entity.medium.document.url(:mp4)
-        json.set! 'video/webm', entity.medium.document.url(:webm)
-        json.set! 'video/ogg', entity.medium.document.url(:ogg)
+        json.set! 'video/mp4', entity.medium.url('mp4')
+        json.set! 'video/webm', entity.medium.url('webm')
+        json.set! 'video/ogg', entity.medium.url('ogg.video')
       end
 
       if entity.medium.audio?
-        json.set! 'audio/mp3', entity.medium.document.url(:mp3)
-        json.set! 'audio/ogg', entity.medium.document.url(:ogg)
+        json.set! 'audio/mp3', entity.medium.document.url('mp3')
+        json.set! 'audio/ogg', entity.medium.url('ogg.audio')
       end
     end
   end

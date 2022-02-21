@@ -22,9 +22,14 @@ module SuiteHelper
       'secondary_relations' => ['has been created by']
     )
 
+    # empty the data dir
+    system 'rm', '-rf', ENV['DATA_DIR']
+    system 'mkdir', '-p', ENV['DATA_DIR']
+
     Rails.application.load_seed
     DataHelper.default_setup
 
+    # keep a copy of the data dir to restore it in before_each
     system "rm -rf #{Rails.root}/tmp/test.media.clone"
     system "mv #{ENV['DATA_DIR']}/media #{Rails.root}/tmp/test.media.clone"
   end

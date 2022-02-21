@@ -234,11 +234,11 @@ class Kor::Elastic
       "sort" => entity.display_name
     }
 
-    if entity.medium
+    if m = entity.medium
       data.merge!(
-        'file_size' => entity.medium.file_size,
-        'file_type' => entity.medium.content_type,
-        'file_name' => entity.medium.original_filename,
+        'file_size' => [m.document_file_size, m.image_file_size].compact,
+        'file_type' => [m.document_content_type, m.image_content_type].compact,
+        'file_name' => [m.document_file_name, m.image_file_name].compact,
         'datahash' => entity.medium.datahash
       )
     end
