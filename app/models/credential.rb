@@ -6,7 +6,7 @@ class Credential < ApplicationRecord
 
   validates :name,
     :presence => true,
-    :uniqueness => true,
+    :uniqueness => {case_sensitive: true},
     :white_space => true
 
   scope :ordered, lambda{ order("name ASC") }

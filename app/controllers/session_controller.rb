@@ -41,7 +41,7 @@ class SessionController < JsonController
       account = Kor::Auth.login(params[:username], params[:password])
 
       if account
-        account.update_attributes(login_attempts: [])
+        account.update(login_attempts: [])
 
         if account.expires_at && (account.expires_at <= Time.now)
           render_403 I18n.t("messages.account_expired")
@@ -76,6 +76,6 @@ class SessionController < JsonController
       session[:user_id] = user.id
       @current_user = nil
       session[:expires_at] = Kor.session_expiry_time
-      user.update_attributes(last_login: Time.now)
+      user.update(last_login: Time.now)
     end
 end

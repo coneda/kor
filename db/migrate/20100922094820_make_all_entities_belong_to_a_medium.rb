@@ -13,19 +13,19 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
     Kind.reset_column_information
 
     if artworks = Kind.find_by_attachment_class('Artwork')
-      artworks.update_attributes :attachment_class => nil, :schema_name => 'artwork'
+      artworks.update :attachment_class => nil, :schema_name => 'artwork'
     end
 
     if literatures = Kind.find_by_attachment_class('Literature')
-      literatures.update_attributes :attachment_class => nil, :schema_name => 'literature'
+      literatures.update :attachment_class => nil, :schema_name => 'literature'
     end
 
     if textuals = Kind.find_by_attachment_class('Textual')
-      textuals.update_attributes :attachment_class => nil, :schema_name => nil
+      textuals.update :attachment_class => nil, :schema_name => nil
     end
 
     if images = Kind.find_by_attachment_class('KorImage')
-      images.update_attributes :attachment_class => nil, :schema_name => nil, :name => 'Medium'
+      images.update :attachment_class => nil, :schema_name => nil, :name => 'Medium'
     end
 
     query = "

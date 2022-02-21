@@ -31,10 +31,10 @@ class Entity < ApplicationRecord
 
   validates :name,
     :presence => {:if => :needs_name?},
-    :uniqueness => {:scope => [:kind_id, :distinct_name], :allow_blank => true},
+    :uniqueness => {scope: [:kind_id, :distinct_name], allow_blank: true, case_sensitive: true},
     :white_space => true
   validates :distinct_name,
-    :uniqueness => {:scope => [:kind_id, :name], :allow_blank => true},
+    :uniqueness => {scope: [:kind_id, :name], allow_blank: true, case_sensitive: true},
     :white_space => true
   validates :kind, :uuid, :collection_id, presence: true
   validates :no_name_statement, inclusion: {
@@ -175,7 +175,7 @@ class Entity < ApplicationRecord
         field.entity = self
         if field.value.present?
           id = identifiers.find_or_create_by(kind: field.name)
-          id.update_attributes :value => field.value
+          id.update :value => field.value
         else
           id = identifiers.where(:kind => field.name).first
           id.destroy if id

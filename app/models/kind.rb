@@ -16,7 +16,7 @@ class Kind < ApplicationRecord
 
   validates :name,
     :presence => true,
-    :uniqueness => true,
+    :uniqueness => {case_sensitive: true},
     :white_space => true
 
   validates :plural_name,

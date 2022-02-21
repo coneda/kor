@@ -21,7 +21,7 @@ RSpec.describe Relationship do
     expect(relationship.to_id).to eq(mona_lisa.id)
 
     expect{
-      relationship.update_attributes(
+      relationship.update(
         from: leonardo,
         relation_name: 'has been created by',
         to: mona_lisa

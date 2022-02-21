@@ -200,7 +200,7 @@ class Medium < ApplicationRecord
 
   # validates :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{ |medium| medium.image.file? }}
   # validates :document, attachment_presence: {unless: Proc.new{ |medium| medium.image.file? }, message: :file_must_be_set}
-  validates :datahash, uniqueness: {:message => :file_exists}
+  validates :datahash, uniqueness: {message: :file_exists, case_sensitive: true}
 
   validate :validate_content_type
   validate :validate_document_presence

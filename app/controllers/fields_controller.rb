@@ -30,7 +30,7 @@ class FieldsController < JsonController
     @kind = Kind.find(params[:kind_id])
     @record = @kind.fields.find(params[:id])
 
-    if @record.update_attributes(field_params)
+    if @record.update(field_params)
       render_updated @record
     else
       render_422 @record.errors

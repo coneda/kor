@@ -18,6 +18,7 @@ class Kor::EntityMerger
     # delete the entities but keep their datings and relationships
     Entity.where(id: options[:old_ids]).map do |e|
       e.delete
+      e.update_elastic
       e
     end
     @entity.save!
@@ -29,6 +30,7 @@ class Kor::EntityMerger
   def merge_externals(old_ids, new_id)
     merge_relationships(old_ids, new_id)
     merge_entity_datings(old_ids, new_id)
+    merge_identifiers(old_ids, new_id)
   end
 
   def merge_relationships(old_ids, new_id)
@@ -44,19 +46,25 @@ class Kor::EntityMerger
     if @datings_attributes
       # now that the existing datings have been transferred to the new (persisted)
       # entity, we can assign the datings from the merger widget
-      @entity.update! datings_attributes: @datings_attributes
+      EntityDating.without_optimistic_locking do
+        @entity.update! datings_attributes: @datings_attributes
+      end
     end
   end
 
-  def merge_groups(old_ids, new_id)
-    groups = (
-      AuthorityGroup.containing(old_ids).to_a +
-      SystemGroup.containing(old_ids).to_a +
-      UserGroup.containing(old_ids).to_a
-    )
-
-    groups.each do |g|
-      g.add_entities Entity.find(new_id)
-    end
+  def merge_identifiers(old_ids, new_id)
+    Identifier.where(entity_id: old_ids).delete_all
   end
+
+  # def merge_groups(old_ids, new_id)
+  #   groups = (
+  #     AuthorityGroup.containing(old_ids).to_a +
+  #     SystemGroup.containing(old_ids).to_a +
+  #     UserGroup.containing(old_ids).to_a
+  #   )
+
+  #   groups.each do |g|
+  #     g.add_entities Entity.find(new_id)
+  #   end
+  # end
 end

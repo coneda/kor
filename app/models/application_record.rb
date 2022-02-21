@@ -7,4 +7,11 @@ class ApplicationRecord < ActiveRecord::Base
 
     offset((page - 1) * per_page).limit(per_page)
   end
+
+  def self.without_optimistic_locking(&block)
+    self.lock_optimistically = false
+    result = yield
+    self.lock_optimistically = true
+    result
+  end
 end

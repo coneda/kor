@@ -36,7 +36,7 @@ class CollectionsController < JsonController
   def update
     @record = Collection.find(params[:id])
 
-    if @record.update_attributes(collection_params)
+    if @record.update(collection_params)
       render_updated @record
     else
       render_422 @record.errors
@@ -78,7 +78,7 @@ class CollectionsController < JsonController
 
     if allowed
       @entities.each do |entity|
-        entity.update_attributes collection_id: @record.id
+        entity.update collection_id: @record.id
       end
       render_200 I18n.t('messages.entities_moved_to_collection', o: @record.name)
     else

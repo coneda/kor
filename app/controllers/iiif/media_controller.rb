@@ -11,7 +11,7 @@ class Iiif::MediaController < JsonController
 
     alt = Kor.settings['mirador_page_template']
     if alt.present? && File.exist?(alt)
-      render file: alt
+      render inline: File.read(alt)
     end
   end
 
@@ -26,7 +26,7 @@ class Iiif::MediaController < JsonController
 
       alt = Kor.settings['mirador_manifest_template']
       if alt.present? && File.exist?(alt)
-        render file: alt
+        render inline: File.read(alt), type: :jbuilder
       end
     else
       render_403

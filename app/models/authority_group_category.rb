@@ -7,6 +7,6 @@ class AuthorityGroupCategory < ApplicationRecord
 
   validates :name,
     :presence => true,
-    :uniqueness => {:scope => :parent_id},
+    :uniqueness => {scope: :parent_id, case_sensitive: true},
     :white_space => true
 end

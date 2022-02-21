@@ -68,7 +68,7 @@ class UsersController < JsonController
   def update_me
     @record = User.find(current_user.id)
 
-    if @record.update_attributes(me_params)
+    if @record.update(me_params)
       render_updated @record
     else
       render_422 @record.errors
@@ -78,7 +78,7 @@ class UsersController < JsonController
   def update
     @record = User.find(params[:id])
 
-    if @record.update_attributes(user_params)
+    if @record.update(user_params)
       render_updated @record
     else
       render_422 @record.errors

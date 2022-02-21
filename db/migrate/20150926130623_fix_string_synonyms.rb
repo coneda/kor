@@ -4,7 +4,7 @@ class FixStringSynonyms < ActiveRecord::Migration
       existing = e.attachment["synonyms"]
       if existing.is_a?(String)
         value = (existing.present? ? existing : [])
-        e.update_attributes :synonyms => value
+        e.update :synonyms => value
       end
     end
   end

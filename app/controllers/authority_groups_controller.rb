@@ -55,7 +55,7 @@ class AuthorityGroupsController < JsonController
   def update
     @record = AuthorityGroup.find(params[:id])
 
-    if @record.update_attributes(authority_group_params)
+    if @record.update(authority_group_params)
       render_updated @record
     else
       render_422 @record.errors

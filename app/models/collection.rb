@@ -12,7 +12,7 @@ class Collection < ApplicationRecord
 
   validates :name,
     :presence => true,
-    :uniqueness => true,
+    :uniqueness => {case_sensitive: true},
     :white_space => true
 
   after_save :update_personals
@@ -33,7 +33,7 @@ class Collection < ApplicationRecord
           end
         end
 
-        Collection.find(collection.id).update_attributes(:grants_by_policy => params, :propagate => false)
+        Collection.find(collection.id).update(:grants_by_policy => params, :propagate => false)
       end
     end
   end

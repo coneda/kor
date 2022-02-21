@@ -94,7 +94,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       leonardo = Entity.last
       admin = User.admin
 
-      leonardo.update_attributes(
+      leonardo.update(
         datings: [FactoryBot.build(:leonardo_lifespan)],
         properties: [{'label' => 'age', 'value' => 53}]
       )

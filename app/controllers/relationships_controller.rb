@@ -17,7 +17,7 @@ class RelationshipsController < JsonController
     @relationship = Relationship.find(params[:id])
 
     if authorized_for_relationship?(@relationship, :edit)
-      if @relationship.update_attributes(relationship_params)
+      if @relationship.update(relationship_params)
         render_updated @relationship
       else
         render_422 build_nested_errors(@relationship)

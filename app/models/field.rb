@@ -9,7 +9,7 @@ class Field < ApplicationRecord
   validates :name,
     :presence => true,
     :format => {:with => /\A[a-z0-9_]+\z/, allow_blank: true},
-    :uniqueness => {:scope => :kind_id},
+    :uniqueness => {scope: :kind_id, case_sensitive: true},
     :white_space => true
   validates :show_label, :form_label, :search_label, presence: true
 

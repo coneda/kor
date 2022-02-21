@@ -32,16 +32,16 @@ class User < ApplicationRecord
 
   validates :name,
     :presence => true,
-    :uniqueness => {:allow_blank => false},
+    :uniqueness => {allow_blank: false, case_sensitive: true},
     :format => {:with => /\A[a-zA-Z0-9_.@\-!:\/]+\Z/, :allow_blank => true},
     :white_space => true
   validates :email,
     :presence => true,
-    :uniqueness => {:allow_blank => false},
+    :uniqueness => {allow_blank: false, case_sensitive: true},
     :format => {:with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true},
     :white_space => true
   validates :api_key,
-    :uniqueness => true,
+    :uniqueness => {case_sensitive: true},
     :length => {:minimum => 32, allow_blank: true}
   validates(:plain_password,
     format: {:allow_nil => true, :with => /\A(.{5,30})|\Z/},

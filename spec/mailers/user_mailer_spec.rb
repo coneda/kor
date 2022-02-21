@@ -20,7 +20,7 @@ RSpec.describe UserMailer do
 
   it "should send mails with the user's locale if available" do
     expires_at = 2.days.from_now
-    admin.update_attributes expires_at: expires_at
+    admin.update expires_at: expires_at
 
     expect(admin.locale).to be_nil
     expect(Kor.settings['default_locale']).to eq('en')
@@ -32,7 +32,7 @@ RSpec.describe UserMailer do
     expect(mail.body).to include('http://example.com')
     expect(mail.body).to include('Please contact the administrator')
 
-    admin.update_attributes locale: 'de'
+    admin.update locale: 'de'
     described_class.upcoming_expiry(admin).deliver_now
     mail = ActionMailer::Base.deliveries.last
     expect(mail.body).to include(expires_at.strftime('%Y-%m-%d'))

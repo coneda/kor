@@ -42,7 +42,7 @@ RSpec.describe Entity do
     expect(Kor::Elastic).to receive(:drop)
 
     entity = FactoryBot.create :der_schrei
-    entity.update_attributes :comment => "Some comment"
+    entity.update :comment => "Some comment"
     entity.destroy
   end
 
@@ -57,7 +57,7 @@ RSpec.describe Entity do
   it "should allow attachments to be written to" do
     entity = FactoryBot.create :jack
 
-    entity.update_attributes(
+    entity.update(
       :dataset => {"some" => "value"},
       :synonyms => ["john"],
       :properties => [{'label' => 'page', 'value' => 144}]
@@ -227,8 +227,8 @@ RSpec.describe Entity do
     # binary
 
     expect{
-      mona_lisa.update_attributes tag_list: ['tintenfass']
-      mona_lisa.update_attributes tag_list: ['tintenfaß']
+      mona_lisa.update tag_list: ['tintenfass']
+      mona_lisa.update tag_list: ['tintenfaß']
     }.not_to raise_error
   end
 end

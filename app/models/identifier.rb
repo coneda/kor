@@ -2,7 +2,7 @@ class Identifier < ApplicationRecord
   belongs_to :entity, optional: true
 
   validates :kind, :value, presence: true
-  validates :kind, :uniqueness => {:scope => :entity_id}
+  validates :kind, :uniqueness => {scope: :entity_id, case_sensitive: true}
 
   def self.resolve!(id, kind)
     if kind.present?

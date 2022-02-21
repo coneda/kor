@@ -59,7 +59,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   if ENV['KOR_BRITTLE'] == 'true'
     it "should return XML that validates against the OAI-PMH schema" do
       people = Kind.where(:name => "Person").first
-      people.update_attributes fields: [
+      people.update fields: [
         Field.new(name: 'gnd', show_label: 'GND-ID')
       ]
 

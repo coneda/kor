@@ -96,7 +96,7 @@ class UserGroupsController < JsonController
   def update
     @record = UserGroup.owned_by(current_user).find(params[:id])
 
-    if @record.update_attributes(user_group_params)
+    if @record.update(user_group_params)
       render_updated @record
     else
       render_422 @record.errors

@@ -3,7 +3,7 @@ class UserGroup < EntityGroup
   belongs_to :owner, class_name: 'User', foreign_key: :user_id, optional: true
 
   validates(:name,
-    uniqueness: {:scope => :user_id},
+    uniqueness: {scope: :user_id, case_sensitive: true},
     format: {
       :with => /\A[^\s]{,30}(\s[^\s]{,30})*\Z/, :message => :invalid_words
     }
