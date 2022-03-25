@@ -26,3 +26,5 @@ spec/.~lock*
 
 deploy.config.sh
 .vagrant
+
+.ruby-version
