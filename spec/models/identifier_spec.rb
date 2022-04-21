@@ -46,10 +46,15 @@ RSpec.describe Identifier do
     expect(described_class.count).to eq(1)
   end
 
-  it "should be removed when with the entity" do
+  it "should be removed with the entity" do
     expect(described_class.count).to eq(1)
 
-    leonardo.destroy
+    entity = leonardo
+    entity.destroy
+    # we are running tests in a transaction, we therefore call the callback
+    # manually because it would otherwise run AFTER the transaction
+    entity.update_identifiers
+
     expect(described_class.count).to eq(0)
   end
 

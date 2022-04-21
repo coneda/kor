@@ -56,7 +56,9 @@ class Kor::Search
     end
 
     if id = @criteria[:user_group_id]
-      ids = UserGroup.where(id: id).to_a.select{ |g| g.owner == @user }.map{ |g| g.id }
+      ids = UserGroup.where(id: id).to_a.
+        select{ |g| g.owner == @user || g.shared? }.
+        map{ |g| g.id }
       @scope = @scope.within_user_groups(ids) if ids.present?
     end
 

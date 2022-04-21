@@ -771,6 +771,30 @@ RSpec.describe EntitiesController, type: :controller do
     end
   end
 
+  it 'should show entities from shared user groups' do
+    group = UserGroup.find_by! name: 'nice'
+
+    get :index, params: {user_group_id: group.id + 999}
+    expect(response).to be_not_found
+
+    get :index, params: {user_group_id: group.id}
+    expect(response).to be_forbidden
+
+    group.update shared: true
+    get :index, params: {user_group_id: group.id}
+    expect(response).to be_forbidden
+
+    current_user User.find_by!(name: 'mrossi')
+    group.update shared: false
+
+    get :index, params: {user_group_id: group.id}
+    expect(response).to be_forbidden
+
+    group.update shared: true
+    get :index, params: {user_group_id: group.id}
+    expect_collection_response total: 1
+  end
+
   it "should not show the recent entities without edit rights" # capybara
   it "should show the recent entities with edit rights" # capybara
   it "should not show the invalid entities without delete rights" # capybara

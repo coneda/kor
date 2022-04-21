@@ -853,6 +853,10 @@ de:
     has_non_empty_personal_collection: |
       der Benutzer konnte nicht gelöscht werden, weil die persönliche Sammlung
       noch Entitätten beinhaltet
+    user_group_not_found: diese persönliche Gruppe existiert nicht
+    user_group_not_allowed: |
+      Sie haben nicht die erforderlichen Rechte, um den Inhalt dieser
+      persönlichen Gruppe anzuzeigen
 
   labels:
     relate_to_via: 'alle Dateien mit "%{to}" verknüpfen über'
