@@ -1,8 +1,7 @@
-coverage
-tmp/*
-!tmp/kor.tar
-log/*
-data/*
-deploy/build
-.vagrant
-node_modules
+/tmp/
+/log/
+/data/
+/.vagrant/
+/node_modules/
+
+/.env

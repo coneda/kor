@@ -159,32 +159,4 @@ function install_prod {
   git checkout $VERSION
 }
 
-function configure_prod {
-  export RAILS_ENV=production
-  cd /opt/kor
-
-  sudo cp /vagrant/deploy/templates/delayed_job.systemd /etc/systemd/system/kor-bg.service
-  sudo systemctl daemon-reload
-  sudo cp /vagrant/deploy/templates/apache.conf /etc/apache2/sites-available/001-kor.conf
-  sudo a2dissite 000-default
-  sudo a2ensite 001-kor
-  sudo systemctl restart apache2
-
-  sudo cp /vagrant/deploy/templates/gemrc /etc/gemrc
-  sudo cp /vagrant/deploy/templates/logrotate.conf /etc/logrotate.d/kor.conf
-  crontab /vagrant/deploy/templates/crontab
-
-  bundle install --without development test --path /opt/kor/bundle
-  rbenv rehash
-  cp /vagrant/config/database.yml.example config/database.yml
-
-  bundle exec rake db:drop db:setup
-  bundle exec rake assets:precompile
-  bundle exec bin/kor index-all
-  bundle exec bin/kor secrets
-
-  sudo systemctl enable kor-bg
-  sudo systemctl start kor-bg
-}
-
 $1

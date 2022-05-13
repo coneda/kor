@@ -1,0 +1,60 @@
+name: kor
+services:
+  kor:
+    build: .
+    volumes:
+      - kor_data:/opt/kor/data
+    environment:
+      ROOT_URL: http://localhost:8080
+      DATABASE_URL: mysql2://root:root@db/kor?encoding=utf8&collation=utf8_unicode_ci&reconnect=true
+      ELASTIC_URL: http://index:9200
+      ELASTIC_INDEX: kor
+      DATA_DIR: /opt/kor/data
+      SECRET_KEY_BASE: equouraafoyahn5libo3ooteiYoowio8
+      MAIL_DELIVERY_METHOD: smtp
+      MAIL_SMTP_ADDRESS:
+      MAIL_SMTP_PORT:
+      MAIL_SMTP_DOMAIN:
+      MAIL_SMTP_USER_NAME:
+      MAIL_SMTP_PASSWORD:
+      MAIL_SMTP_AUTHENTICATION: plain
+      MAIL_SMTP_ENABLE_STARTTLS_AUTO: 'true'
+      MAIL_SMTP_OPENSSL_VERIFY_MODE: none
+      CORS_ALLOWED_ORIGINS: 
+      NOTIFY_EXCEPTIONS:
+      NOTIFY_SENDER:
+      CUSTOM_CSS_URL:
+    ports:
+      - "8080:3000"
+    links:
+      - db
+      - index
+    depends_on:
+      db:
+        condition: service_healthy
+      index:
+        condition: service_healthy
+  db:
+    image: mariadb:10.7.3
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-uroot", "-proot", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 12
+  index:
+    image: elasticsearch:5.6.16
+    volumes:
+      - index_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9200"]
+      interval: 5s
+      timeout: 2s
+      retries: 12
+volumes:
+  kor_data: {}
+  db_data: {}
+  index_data: {}

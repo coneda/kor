@@ -1,9 +1,0 @@
-PATH=/opt/rbenv/shims:/opt/rbenv/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-RAILS_ENV=production
-KOR_ROOT=/opt/kor
-LOGFILE=$KOR_ROOT/log/cron.log
-
-56 4 * * * cd $KOR_ROOT && bundle exec bin/kor index-all >> $LOGFILE
-45 2 * * * cd $KOR_ROOT && bundle exec bin/kor delete-expired-downloads >> $LOGFILE
-50 2 * * * cd $KOR_ROOT && bundle exec bin/kor cleanup-sessions >> $LOGFILE
-50 2 1,6,11,16,21,26 * * cd $KOR_ROOT && bundle exec bin/kor notify-expiring-users >> $LOGFILE
