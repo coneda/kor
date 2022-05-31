@@ -26,3 +26,7 @@ spec/.~lock*
 
 deploy.config.sh
 .vagrant
+
+# Mac
+
+.DS_Store

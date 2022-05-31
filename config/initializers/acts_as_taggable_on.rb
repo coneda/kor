@@ -13,5 +13,5 @@ begin
     ActsAsTaggableOn.force_binary_collation = true
   end
 rescue ActiveRecord::NoDatabaseError => e
-  Rails.log.error("could not set binary collaction fo ActsAsTaggableOn: #{e}")
+  Rails.logger.error("could not set binary collation for ActsAsTaggableOn: #{e}")
 end

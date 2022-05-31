@@ -265,6 +265,11 @@ kor-login, [data-is=kor-login] {
     height: 40rem;
     background-image: url('images/login_blend.gif');
   }
+
+  .kor-local-button {
+    display: block;
+    margin-bottom: 1rem;
+  }
 }
 
 kor-login-info {
