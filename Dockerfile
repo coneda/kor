@@ -14,12 +14,11 @@ RUN bundle install
 
 # Install dependencies, build the frontend and remove the dependencies. We do
 # this so that the image size stays small
-RUN \
-  apt-get install -y nodejs npm rsync && \
-  npm install && \
-  npm run build && \
-  rm -rf ./node_modules && \
-  apt-get purge -y nodejs npm rsync && \
-  apt-get autoremove -y
+RUN apt-get install -y nodejs npm rsync
+RUN npm install
+RUN npm run build
+RUN rm -rf ./node_modules
+RUN apt-get purge -y nodejs npm rsync
+RUN apt-get autoremove -y
 
 ENTRYPOINT ["deploy/entrypoint.sh"]
