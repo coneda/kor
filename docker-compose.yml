@@ -57,6 +57,6 @@ services:
       timeout: 2s
       retries: 12
 volumes:
-  kor_data: {}
-  db_data: {}
-  index_data: {}
+  kor_data:
+  db_data:
+  index_data:
