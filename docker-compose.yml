@@ -1,6 +1,9 @@
 services:
   kor:
-    build: .
+    build:
+      context: .
+      args:
+        MYWINDIR: ${WINDIR}
     volumes:
       - kor_data:/opt/kor/data
     environment:
@@ -19,7 +22,7 @@ services:
       MAIL_SMTP_AUTHENTICATION: plain
       MAIL_SMTP_ENABLE_STARTTLS_AUTO: 'true'
       MAIL_SMTP_OPENSSL_VERIFY_MODE: none
-      CORS_ALLOWED_ORIGINS: 
+      CORS_ALLOWED_ORIGINS:
       NOTIFY_EXCEPTIONS:
       NOTIFY_SENDER:
       CUSTOM_CSS_URL:
