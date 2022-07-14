@@ -50,10 +50,10 @@
 
       <virtual if={expanded && data}>
         <kor-pagination
-          page={opts.query.page}
+          page={query.page}
           per-page={data.per_page}
           total={data.total}
-          page-update-handler={pageUpdate}
+          on-paginate={pageUpdate}
         />
         <div class="clearfix"></div>
       </virtual>
@@ -87,7 +87,7 @@
 
     tag.on 'mount', ->
       tag.relationship = tag.opts.relationship
-      tag.opts.query ||= {}
+      tag.query ||= {}
 
     tag.to = -> tag.relationship.to
 
@@ -121,14 +121,14 @@
       )
 
     tag.pageUpdate = (newPage) ->
-      tag.opts.query.page = newPage
+      tag.query.page = newPage
       fetchPage()
 
     fetchPage = ->
       Zepto.ajax(
         url: "/relationships"
         data: {
-          page: tag.opts.query.page
+          page: tag.query.page
           per_page: 9
           relation_name: tag.opts.name
           to_kind_id: tag.info().medium_kind_id
