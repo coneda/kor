@@ -102,6 +102,7 @@ class Kor::Elastic
                 'type' => 'object',
                 'properties' => {
                   'label' => {'type' => 'text'},
+                  'dating_string' => {'type' => 'text'},
                   'from' => {'type' => 'integer'},
                   'to' => {'type' => 'integer'}
                 }
@@ -229,7 +230,12 @@ class Kor::Elastic
       'updater_id' => entity.updater_id,
       'creator_id' => entity.creator_id,
       'datings' => entity.datings.map{ |d|
-        {'label' => d.dating_string, 'from' => d.from_day, 'to' => d.to_day}
+        {
+          'label' => d.label,
+          'dating_string' => d.dating_string,
+          'from' => d.from_day,
+          'to' => d.to_day
+        }
       },
       'degree' => entity.degree,
       "sort" => entity.display_name

@@ -296,4 +296,14 @@ RSpec.describe Kor::Elastic, elastic: true do
     mrw = settings['kor_test']['settings']['index']['max_result_window']
     expect(mrw.to_i).to eq(80000)
   end
+
+  it 'should search by dating label and string' do
+    elastic = described_class.new(User.admin)
+
+    results = elastic.search(terms: "'1452 bis 1519'")
+    expect(results.total).to eq(1)
+
+    results = elastic.search(terms: "lifespan")
+    expect(results.total).to eq(1)
+  end
 end
