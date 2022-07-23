@@ -106,4 +106,10 @@ Feature: search
     And I press "Search"
     Then I should see "logged in as"
 
+  Scenario: selecting a entity kind modifies the url
+    Given I am logged in as "admin"
+    And I am on the search page
+    When I select "medium" from "Entity type"
+    Then the current js url should be "/search?kind_id=1"
+
   # Scenario: select field, changing collection/kind trigger new search on change
