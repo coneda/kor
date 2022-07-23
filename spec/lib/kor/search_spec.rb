@@ -503,5 +503,10 @@ RSpec.describe Kor::Search do
       search = described_class.new(admin, max_degree: 3)
       expect(search.total).to eq(6)
     end
+
+    it 'should not error on incorrect quoting' do
+      search = described_class.new(admin, terms: 'some "thing')
+      expect(search.total).to eq(0)
+    end
   end
 end
