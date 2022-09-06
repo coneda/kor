@@ -1,3 +1,4 @@
+version: "3"
 services:
   kor:
     build:
@@ -32,10 +33,8 @@ services:
       - db
       - index
     depends_on:
-      db:
-        condition: service_healthy
-      index:
-        condition: service_healthy
+      - db
+      - index
   db:
     image: mariadb:10.7.3
     volumes:
@@ -57,6 +56,7 @@ services:
       timeout: 2s
       retries: 12
 volumes:
-  kor_data:
-  db_data:
-  index_data:
+  kor_data: {}
+  db_data: {}
+  index_data: {}
+

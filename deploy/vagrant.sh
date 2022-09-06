@@ -135,6 +135,11 @@ function install_nvm {
   chown -R vagrant. /opt/nvm
 }
 
+function install_docker {
+  apt-get update -y
+  apt-get install -y docker.io docker-compose
+}
+
 function clean {
   apt-get clean
 }

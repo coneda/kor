@@ -6,7 +6,7 @@ VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vagrant.plugins = ['vagrant-vbguest']
-  config.ssh.insert_key = false
+  # config.ssh.insert_key = false
   config.vm.box = 'bento/ubuntu-16.04'
 
   pe = {
@@ -125,5 +125,26 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.centos.sh", args: "install_part1"
     c.vm.provision :shell, path: "deploy/vagrant.centos.sh", args: "install_part2", privileged: false
     c.vm.provision :shell, path: "deploy/vagrant.centos.sh", args: "install_part3"
+  end
+
+  config.vm.define 'docker-debian11' do |c|
+    c.vm.box = 'generic/debian11'
+
+    if RUBY_PLATFORM.match(/darwin/)
+      c.vm.synced_folder ".", "/vagrant", type: "nfs"
+      c.vm.network "private_network", type: "dhcp"
+    else
+      c.vm.synced_folder '.', '/vagrant', type: 'virtualbox'
+    end
+
+    c.vm.network :forwarded_port, host: 8080, guest: 8080
+
+    c.vm.provider "virtualbox" do |vbox|
+      vbox.name = "docker-debian11"
+      vbox.customize ["modifyvm", :id, "--memory", "4906"]
+      vbox.customize ["modifyvm", :id, "--cpus", "2"]
+    end
+
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_docker"
   end
 end
