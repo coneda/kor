@@ -141,11 +141,18 @@ GEM
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
+    kt-paperclip (7.1.1)
+      activemodel (>= 4.2.0)
+      activesupport (>= 4.2.0)
+      marcel (~> 1.0.1)
+      mime-types
+      terrapin (~> 0.6.0)
     loofah (2.18.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
+    marcel (1.0.2)
     method_profiler (2.0.1)
       hirb (>= 0.6.0)
     method_source (0.9.2)
@@ -321,9 +328,9 @@ DEPENDENCIES
   hirb
   httpclient
   jbuilder
+  kt-paperclip
   method_profiler
   mysql2 (~> 0.5.3)
-  paperclip
   paranoia (~> 2.2)
   parslet
   pry
