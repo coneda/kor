@@ -162,22 +162,25 @@ class Entity < ApplicationRecord
       if deleted?
         Kor::Elastic.drop self
       else
-        Kor::Elastic.index self, :full => true
+        Kor::Elastic.index self, full: true
       end
     end
   end
 
   def update_identifiers
     if self.deleted?
-      self.identifiers.destroy_all
+      Identifier.where(entity_id: id).destroy_all
+      # self.identifiers.destroy_all
     else
+      kind = Kind.with_deleted.find_by(id: kind_id)
+
       kind.fields.identifiers.each do |field|
         field.entity = self
         if field.value.present?
           id = identifiers.find_or_create_by(kind: field.name)
-          id.update_attributes :value => field.value
+          id.update_attributes value: field.value
         else
-          id = identifiers.where(:kind => field.name).first
+          id = identifiers.where(kind: field.name).first
           id.destroy if id
         end
       end

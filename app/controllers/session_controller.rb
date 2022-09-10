@@ -73,9 +73,11 @@ class SessionController < JsonController
   protected
 
     def create_session(user)
+      reset_session
+      @current_user = nil
+
       session[:user_id] = user.id
       session[:auth_source] = user.auth_source
-      @current_user = nil
       session[:expires_at] = Kor.session_expiry_time
       user.update_attributes(last_login: Time.now)
     end

@@ -76,6 +76,20 @@ class EntitiesController < JsonController
       end
     end
 
+    if id = params[:user_group_id]
+      group = UserGroup.find_by(id: id)
+
+      unless group
+        render_404 I18n.t('messages.user_group_not_found') and return
+      end
+
+      if group.owner != current_user
+        if !current_user || current_user.guest? || !group.shared?
+          render_403 I18n.t('messages.user_group_not_allowed') and return
+        end
+      end
+    end
+
     criteria = criteria.delete_if do |_k, v|
       ['', nil, -1, [], {}].include?(v)
     end

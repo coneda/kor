@@ -13,11 +13,11 @@
 
   <% if record.is_medium? %>
     <kor:image-path style="original"><%= medium_url record.medium, style: 'original', only_path: false, download: true %></kor:image-path>
-    <kor:image-path style="screen" dimensions="1440x1440"><%= medium_url record.medium, style: 'original', only_path: false, download: true %></kor:image-path>
     <kor:image-path style="normal" dimensions="800x800"><%= medium_url record.medium, style: 'normal', only_path: false, download: true %></kor:image-path>
+    <kor:image-path style="screen" dimensions="1440x1440"><%= medium_url record.medium, style: 'screen', only_path: false, download: true %></kor:image-path>
     <kor:image-path style="preview" dimensions="300x300"><%= medium_url record.medium, style: 'preview', only_path: false, download: true %></kor:image-path>
     <kor:image-path style="thumbnail" dimensions="140x140"><%= medium_url record.medium, style: 'thumbnail', only_path: false, download: true %></kor:image-path>
-    <kor:image-path style="icon" dimensions="80x80"><%= medium_url record.medium, style: 'icon', only_path: false, download: true %></kor:image-path>
+    <kor:image-path style="icon" dimensions="80x80"><%= medium_url record.medium, style: 'icon', only_path: false, download: false %></kor:image-path>
   <% else %>
     <kor:title><%= record.name %></kor:title>
     <kor:sub-type><%= record.subtype %></kor:sub-type>

@@ -9,8 +9,6 @@ db/*.sqlite3
 
 # Development
 
-deploy/build
-deploy/build.boxes
 db/*.sqlite3
 
 node_modules
@@ -26,3 +24,5 @@ spec/.~lock*
 
 deploy.config.sh
 .vagrant
+
+.ruby-version

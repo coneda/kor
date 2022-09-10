@@ -195,6 +195,11 @@ Then(/^the current js page should be "([^"]*)"$/) do |expected|
   expect(page).to eq(expected.to_i)
 end
 
+Then('the current js url should be {string}') do |string|
+  fragment = URI.parse(current_url).fragment || ''
+  expect(fragment).to eq(string)
+end
+
 When(/^I click the first gallery item$/) do
   first('kor-gallery-grid kor-entity > a').click
 end

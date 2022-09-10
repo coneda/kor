@@ -123,15 +123,15 @@ module DataHelper
   end
 
   def picture_a
-    Medium.find_by!(datahash: '233fcdfee7c55b3978967aacaefb9a08057607a0').entity
+    Medium.find_by!(datahash: 'f7a8dc31ede7ab7a2a41d47469e7034a3cf593f6').entity
   end
 
   def picture_b
-    Medium.find_by!(datahash: '517686264a2ed1a66770470525e520dac4d692ea').entity
+    Medium.find_by!(datahash: '31ca83baf9f17673ff36643c0f18e4526cdcbb8a').entity
   end
 
   def picture_c
-    Medium.find_by!(datahash: 'faf7e17cdeb3d4ce08bcb60e4d6dea8f6aa9eb73').entity
+    Medium.find_by!(datahash: '84fa6bab000ea9d8f73cf27d2cee8ef593ee7277').entity
   end
 
   def lecture

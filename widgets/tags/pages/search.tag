@@ -212,13 +212,10 @@
 
     tag.selectKind = function(event) {
       var id = Zepto(event.target).val();
-      if (id && id != '0') {
-        fetchKind(id);
-        //wApp.routing.query({kind_id: id});
-      } else {
-        tag.kind = null;
-        tag.update();
+      if (!id || id == '0') {
+        id = null
       }
+      wApp.routing.query({kind_id: id});
     }
 
     tag.elastic = function() {

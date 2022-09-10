@@ -858,6 +858,12 @@ en:
       entities
     mass_destroy_success: the entities have been deleted
     collections_merged: the domains have been merged
+    has_non_empty_personal_collection: |
+      The user could not be deleted because he/she has a non-empty personal
+      domain
+    user_group_not_found: this personal group does not exist
+    user_group_not_allowed: |
+      you don't have the required permissions to access this personal group
 
   labels:
     relate_to_via: relate all files with "%{to}" via

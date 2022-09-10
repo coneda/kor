@@ -133,6 +133,23 @@ function clean {
   git clean -f -d public
 }
 
+function replace_symlinks {
+  if ! [ -n "$MYWINDIR" ]; then
+    # we are not on windows
+    exit 0
+  fi
+
+  echo "Windows docker host, replacing symlinks"
+
+  for SL in widgets/vendor/*/*; do
+    LENGTH=$(wc -l $SL | cut -d' ' -f1)
+    if [ "$LENGTH" == "0" ]; then
+      TARGET=$(cat $SL)
+      rm $SL
+      cp -a ${TARGET//..\//} $SL
+    fi
+  done
+}
 
 $COMMAND
 

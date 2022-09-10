@@ -6,6 +6,7 @@ class Kor::Search
       per_page: 10,
       sort: {column: 'name', direction: 'ASC'}
     )
+    sanitize!
     validate!
     run
   end
@@ -56,7 +57,9 @@ class Kor::Search
     end
 
     if id = @criteria[:user_group_id]
-      ids = UserGroup.where(id: id).to_a.select{ |g| g.owner == @user }.map{ |g| g.id }
+      ids = UserGroup.where(id: id).to_a.
+        select{ |g| g.owner == @user || g.shared? }.
+        map{ |g| g.id }
       @scope = @scope.within_user_groups(ids) if ids.present?
     end
 
@@ -113,6 +116,16 @@ class Kor::Search
 
   def surplus_keys
     keys - compat_keys - elastic_keys - active_record_keys
+  end
+
+  def sanitize!
+    # scan for odd number of quotes
+    elastic_keys.each do |k|
+      v = @criteria[k]
+      if v.is_a?(String) && v.scan(/"/).size % 2 == 1
+        @criteria[k] = v.gsub('"', '')
+      end
+    end
   end
 
   def validate!

@@ -13,8 +13,7 @@
       console.log('remounting app ...');
       unmount();
 
-      var preloaders = wApp.setup();
-      $.when.apply(null, preloaders).then(function() {
+      wApp.setup().then(function() {
         mountApp();
       });
     }

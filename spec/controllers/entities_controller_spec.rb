@@ -432,7 +432,7 @@ RSpec.describe EntitiesController, type: :controller do
 
     it "should verify file size when uploading files" do
       Kor.settings["max_file_upload_size"] = 0.2
-      file = fixture_file_upload("image_c.jpg", 'image/jpeg')
+      file = fixture_file_upload("image_a.jpg", 'image/jpeg')
 
       post :create, params: {
         entity: {
@@ -769,6 +769,30 @@ RSpec.describe EntitiesController, type: :controller do
       expect(Entity.count).to eq(7)
       expect(leonardo.datings.count).to eq(2)
     end
+  end
+
+  it 'should show entities from shared user groups' do
+    group = UserGroup.find_by! name: 'nice'
+
+    get :index, params: {user_group_id: group.id + 999}
+    expect(response).to be_not_found
+
+    get :index, params: {user_group_id: group.id}
+    expect(response).to be_forbidden
+
+    group.update shared: true
+    get :index, params: {user_group_id: group.id}
+    expect(response).to be_forbidden
+
+    current_user User.find_by!(name: 'mrossi')
+    group.update shared: false
+
+    get :index, params: {user_group_id: group.id}
+    expect(response).to be_forbidden
+
+    group.update shared: true
+    get :index, params: {user_group_id: group.id}
+    expect_collection_response total: 1
   end
 
   it "should not show the recent entities without edit rights" # capybara

@@ -7,7 +7,7 @@ RSpec.describe Kor::Import::Excel do
 
   it "should not re-create deleted entities" do
     Entity.last.destroy
-    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", :verbose => false).run
+    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", verbose: false).run
     expect(Entity.count).to eq(6)
   end
 
@@ -22,7 +22,7 @@ RSpec.describe Kor::Import::Excel do
     system "rm #{Rails.root}/tmp/export_spec/entities.0001.xls"
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
 
-    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", :verbose => false).run
+    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", verbose: false).run
 
     expect(Entity.count).to eq(7)
     expect(Entity.last.name).to eq("Mona Lisa")
@@ -35,7 +35,7 @@ RSpec.describe Kor::Import::Excel do
     system "rm #{Rails.root}/tmp/export_spec/entities.0001.xls"
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
 
-    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", :verbose => false).run
+    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", verbose: false).run
 
     expect(Entity.count).to eq(7)
   end
@@ -50,7 +50,7 @@ RSpec.describe Kor::Import::Excel do
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
 
     Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec",
-      :verbose => false,
+      verbose: false,
       :ignore_validations => true
     ).run
 
@@ -70,7 +70,7 @@ RSpec.describe Kor::Import::Excel do
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
 
     Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec",
-      :verbose => false,
+      verbose: false,
       :username => "guest",
       :obey_permissions => true
     ).run
@@ -90,7 +90,7 @@ RSpec.describe Kor::Import::Excel do
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
 
     Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec",
-      :verbose => false,
+      verbose: false,
       :username => "guest",
     ).run
 
@@ -107,7 +107,7 @@ RSpec.describe Kor::Import::Excel do
     system "rm #{Rails.root}/tmp/export_spec/entities.0001.xls"
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
 
-    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", :verbose => false).run
+    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", verbose: false).run
 
     mona_lisa = Entity.find_by! name: 'Mona Lisa'
     expect(mona_lisa.datings.first.dating_string).to eq('1677')
@@ -117,7 +117,7 @@ RSpec.describe Kor::Import::Excel do
     leonardo = Entity.find_by! name: 'Leonardo'
     leonardo.datings.last.update dating_string: '1788'
 
-    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", :verbose => false).run
+    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", verbose: false, ignore_stale: true).run
     expect(Entity.count).to eq(7)
 
     expect(leonardo.reload.datings.count).to eq(1)
@@ -131,7 +131,7 @@ RSpec.describe Kor::Import::Excel do
     system "rm #{Rails.root}/tmp/export_spec/entities.0001.xls"
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
 
-    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", :verbose => false).run
+    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", verbose: false).run
 
     leonardo = Entity.find_by! name: 'Leonardo'
     expect(Entity.count).to eq(7)
@@ -153,7 +153,7 @@ RSpec.describe Kor::Import::Excel do
     system "rm #{Rails.root}/tmp/export_spec/entities.0001.xls"
     book.write "#{Rails.root}/tmp/export_spec/entities.0001.xls"
 
-    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", :verbose => false).run
+    Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec", verbose: false).run
 
     expect(Entity.find_by name: 'Mona Lisa').to be_nil
   end

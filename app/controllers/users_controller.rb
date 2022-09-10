@@ -101,8 +101,13 @@ class UsersController < JsonController
 
   def destroy
     @record = User.find(params[:id])
-    @record.destroy
-    render_deleted @record
+
+    if @record.personal_empty?
+      @record.destroy
+      render_deleted @record
+    else
+      render_422 [], I18n.t('messages.has_non_empty_personal_collection')
+    end
   end
 
   private

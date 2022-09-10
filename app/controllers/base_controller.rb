@@ -57,7 +57,7 @@ class BaseController < ApplicationController
     # TODO: test this
     def session_expiry
       if session_expired?
-        session[:user_id] = nil
+        reset_session
         @current_user = nil
       else
         session[:expires_at] = Kor.session_expiry_time

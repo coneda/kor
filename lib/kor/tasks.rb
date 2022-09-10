@@ -201,7 +201,6 @@ class Kor::Tasks
 
   def self.import_test_data(config = {})
     if User.count > 2 || Kind.count > 1 || Relation.count > 0
-      # binding.pry
       puts "This installation is not empty, refusing to import test data"
     else
       require Rails.root.join('spec', 'support', 'data_helper').to_s
