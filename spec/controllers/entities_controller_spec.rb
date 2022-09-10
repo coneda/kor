@@ -432,7 +432,7 @@ RSpec.describe EntitiesController, type: :controller do
 
     it "should verify file size when uploading files" do
       Kor.settings["max_file_upload_size"] = 0.2
-      file = fixture_file_upload("image_c.jpg", 'image/jpeg')
+      file = fixture_file_upload("image_a.jpg", 'image/jpeg')
 
       post :create, params: {
         entity: {

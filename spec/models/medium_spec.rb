@@ -93,7 +93,7 @@ RSpec.describe Medium do
   it "should generate a datahash for attachments" do
     FactoryGirl.create :medium_image_c
     medium = Medium.last
-    expect(medium.datahash).to eq("faf7e17cdeb3d4ce08bcb60e4d6dea8f6aa9eb73")
+    expect(medium.datahash).to eq("84fa6bab000ea9d8f73cf27d2cee8ef593ee7277")
   end
 
   context 'content types' do
