@@ -4,7 +4,7 @@ RSpec.describe Identifier do
   it "should require a type and a value" do
     id = described_class.new
     expect(id.valid?).to be_falsey
-    expect(id.errors.full_messages.size).to eq(2)
+    expect(id.errors.full_messages.size).to eq(3)
   end
 
   it "should not allow duplicate identifiers per kind" do

@@ -3,9 +3,10 @@ class EntityGroup < ApplicationRecord
 
   scope :named_like, lambda{ |pattern| where("name LIKE ?", "%#{pattern}%") }
 
-  validates :name,
-    :presence => true,
-    :white_space => true
+  validates :name, {
+    presence: true,
+    white_space: true
+  }
 
   after_validation(:on => :create) do |model|
     model.uuid = SecureRandom.uuid

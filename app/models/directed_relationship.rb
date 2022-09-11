@@ -1,5 +1,5 @@
 class DirectedRelationship < ApplicationRecord
-  belongs_to :relationship
+  belongs_to :relationship, optional: true
   belongs_to :relation
   belongs_to :from, class_name: 'Entity'
   belongs_to :to, class_name: 'Entity'

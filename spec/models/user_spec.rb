@@ -89,7 +89,7 @@ RSpec.describe User do
 
   it "should respect inherited global roles" do
     jdoe.update admin: true
-    hmustermann = FactoryGirl.create :hmustermann, parent: jdoe, relation_admin: true
+    hmustermann = FactoryBot.create :hmustermann, parent: jdoe, relation_admin: true
 
     expect(hmustermann.parent_username).to eq('jdoe')
     expect(hmustermann.admin?).to be_truthy
@@ -99,7 +99,7 @@ RSpec.describe User do
   end
 
   it "should respect inherited activation status" do
-    hmustermann = FactoryGirl.create :hmustermann, parent: jdoe
+    hmustermann = FactoryBot.create :hmustermann, parent: jdoe
     expect(hmustermann.reload.active).to be_truthy
 
     jdoe.update active: false
@@ -113,7 +113,7 @@ RSpec.describe User do
     time = 2.weeks.from_now
     time = time.change usec: 0
     jdoe.update expires_at: time
-    hmustermann = FactoryGirl.create :hmustermann, parent: jdoe
+    hmustermann = FactoryBot.create :hmustermann, parent: jdoe
     expect(hmustermann.reload.expires_at).to eq(time)
 
     time = 3.weeks.from_now

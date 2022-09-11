@@ -3,13 +3,23 @@ class Relationship < ApplicationRecord
 
   acts_as_paranoid
 
-  belongs_to :owner, :class_name => "User"
+  belongs_to :owner, class_name: "User", optional: true
   belongs_to :relation
-  belongs_to :from, :class_name => "Entity", :foreign_key => :from_id
-  belongs_to :to, :class_name => "Entity", :foreign_key => :to_id
+  belongs_to :from, class_name: "Entity", foreign_key: :from_id
+  belongs_to :to, class_name: "Entity", foreign_key: :to_id
 
-  belongs_to :normal, class_name: "DirectedRelationship", dependent: :destroy, autosave: true
-  belongs_to :reversal, class_name: "DirectedRelationship", dependent: :destroy, autosave: true
+  belongs_to :normal, {
+    class_name: "DirectedRelationship",
+    dependent: :destroy,
+    autosave: true,
+    optional: true
+  }
+  belongs_to :reversal, {
+    class_name: "DirectedRelationship",
+    dependent: :destroy,
+    autosave: true,
+    optional: true
+  }
 
   has_many :datings, :class_name => "RelationshipDating", :dependent => :destroy
 

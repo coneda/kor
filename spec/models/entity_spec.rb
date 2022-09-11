@@ -12,9 +12,9 @@ RSpec.describe Entity do
   it "should search by dating" do
     paris.update(
       datings: [
-        FactoryGirl.build(:entity_dating, :dating_string => "15. Jahrhundert"),
-        FactoryGirl.build(:entity_dating, :dating_string => "18. Jahrhundert"),
-        FactoryGirl.build(:entity_dating, :dating_string => "544")
+        FactoryBot.build(:entity_dating, :dating_string => "15. Jahrhundert"),
+        FactoryBot.build(:entity_dating, :dating_string => "18. Jahrhundert"),
+        FactoryBot.build(:entity_dating, :dating_string => "544")
       ]
     )
 
@@ -41,13 +41,13 @@ RSpec.describe Entity do
     expect(Kor::Elastic).to receive(:index).exactly(2).times
     expect(Kor::Elastic).to receive(:drop)
 
-    entity = FactoryGirl.create :der_schrei
+    entity = FactoryBot.create :der_schrei
     entity.update_attributes :comment => "Some comment"
     entity.destroy
   end
 
   it "should allow an attachment" do
-    entity = FactoryGirl.create :jack
+    entity = FactoryBot.create :jack
 
     expect(entity.dataset).to eq({})
     expect(entity.synonyms).to eq([])
@@ -55,7 +55,7 @@ RSpec.describe Entity do
   end
 
   it "should allow attachments to be written to" do
-    entity = FactoryGirl.create :jack
+    entity = FactoryBot.create :jack
 
     entity.update_attributes(
       :dataset => {"some" => "value"},
@@ -71,14 +71,14 @@ RSpec.describe Entity do
   end
 
   it "should validate the dataset" do
-    entity = FactoryGirl.build :jack
+    entity = FactoryBot.build :jack
     expect(entity).to receive(:validate_dataset).once
     expect(entity).to receive(:validate_properties).once
     entity.save
   end
 
   it "should validate entity properties with the mongo class validator" do
-    entity = FactoryGirl.build :jack, :properties => [
+    entity = FactoryBot.build :jack, :properties => [
       {'label' => 'age'},
       {'value' => 12.7}
     ]
@@ -95,15 +95,15 @@ RSpec.describe Entity do
   end
 
   it "should have correct attachment values after saving" do
-    entity = FactoryGirl.create :jack, :synonyms => ["The Hammer"]
+    entity = FactoryBot.create :jack, :synonyms => ["The Hammer"]
     expect(entity.synonyms).to eq(["The Hammer"])
   end
 
   it "should validate the dataset" do
     people = Kind.where(name: "Person").first
-    people.fields << FactoryGirl.create(:isbn)
+    people.fields << FactoryBot.create(:isbn)
 
-    entity = FactoryGirl.build :jack, dataset: {'isbn' => 'invalid ISBN'}
+    entity = FactoryBot.build :jack, dataset: {'isbn' => 'invalid ISBN'}
     expect(entity.save).to be_falsey
     expect(entity.errors.full_messages).to include("Dataset isbn is invalid")
   end
@@ -164,8 +164,8 @@ RSpec.describe Entity do
   end
 
   it 'should retrieve entities by an array of ids keeping the order' do
-    ml = FactoryGirl.create :mona_lisa
-    ds = FactoryGirl.create :der_schrei
+    ml = FactoryBot.create :mona_lisa
+    ds = FactoryBot.create :der_schrei
 
     expect(Entity.by_ordered_id_array(ml.id, ds.id).pluck(:id)).to eq([ml.id, ds.id])
     expect(Entity.by_ordered_id_array([ml.id, ds.id]).pluck(:id)).to eq([ml.id, ds.id])

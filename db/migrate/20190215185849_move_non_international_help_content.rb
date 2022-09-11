@@ -1,4 +1,4 @@
-class MoveNonInternationalHelpContent < ActiveRecord::Migration
+class MoveNonInternationalHelpContent < ActiveRecord::Migration[4.2]
   def up
     keys = [
       'general', 'search', 'upload', 'login', 'profile', 'entries',
@@ -6,7 +6,11 @@ class MoveNonInternationalHelpContent < ActiveRecord::Migration
     ]
 
     keys.each do |key|
-      Kor.settings.update("help_#{key}.en" => Kor.settings["help_#{key}"])
+      value = Kor.settings["help_#{key}"]
+
+      if value.present?
+        Kor.settings.update("help_#{key}.en" => value)
+      end
     end
   end
 

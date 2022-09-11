@@ -4,7 +4,7 @@ RSpec.describe Kor::EntityMerger do
   it "should merge entities while preserving the dataset" do
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     mona_lisa.update dataset: {'gnd' => '12345', 'google_maps' => 'Am Dornbusch 13, 60315 Frankfurt'}
-    other_mona_lisa = FactoryGirl.create :mona_lisa, :name => "Mona Liza"
+    other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza"
 
     merged = described_class.new.run(
       :old_ids => [mona_lisa.id, other_mona_lisa.id],
@@ -21,7 +21,7 @@ RSpec.describe Kor::EntityMerger do
   it "should preserve synonyms as an array" do
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     mona_lisa.update :synonyms => ["La Gioconda"]
-    other_mona_lisa = FactoryGirl.create :mona_lisa, :name => "Mona Liza", :synonyms => ["La Gioconda"]
+    other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza", :synonyms => ["La Gioconda"]
 
     merged = described_class.new.run(
       :old_ids => [mona_lisa.id, other_mona_lisa.id],
@@ -37,7 +37,7 @@ RSpec.describe Kor::EntityMerger do
 
   it "should push the merge result to elasticsearch", elastic: true do
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
-    other_mona_lisa = FactoryGirl.create :mona_lisa, :name => "Mona Liza"
+    other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza"
 
     expect(Kor::Elastic).to receive(:drop).twice.and_call_original
     expect(Kor::Elastic).to receive(:index).and_call_original
@@ -60,7 +60,7 @@ RSpec.describe Kor::EntityMerger do
     ]
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     mona_lisa.update_attributes dataset: {'gnd' => '12345'}
-    other_mona_lisa = FactoryGirl.create :mona_lisa, :name => "Mona Liza"
+    other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza"
     merged = described_class.new.run(
       old_ids: [mona_lisa.id, other_mona_lisa.id],
       attributes: {
@@ -93,7 +93,7 @@ RSpec.describe Kor::EntityMerger do
 
   it "should fail the whole transaction when the merge result is invalid" do
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
-    other_mona_lisa = FactoryGirl.create :mona_lisa, name: "Mona Liza"
+    other_mona_lisa = FactoryBot.create :mona_lisa, name: "Mona Liza"
 
     merged = described_class.new.run(
       old_ids: [mona_lisa.id, other_mona_lisa.id],

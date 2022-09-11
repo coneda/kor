@@ -6,13 +6,21 @@ class Entity < ApplicationRecord
 
   belongs_to :kind
   belongs_to :collection
-  belongs_to :creator, :class_name => "User", :foreign_key => :creator_id
-  belongs_to :updater, :class_name => "User", :foreign_key => :updater_id
+  belongs_to :creator, {
+    class_name: "User",
+    foreign_key: :creator_id,
+    optional: true
+  }
+  belongs_to :updater, {
+    class_name: "User",
+    foreign_key: :updater_id,
+    optional: true
+  }
 
   has_many :identifiers, :dependent => :destroy
-  has_many :datings, :class_name => "EntityDating", :dependent => :destroy
+  has_many :datings, class_name: "EntityDating", dependent: :destroy
 
-  belongs_to :medium, :dependent => :destroy
+  belongs_to :medium, dependent: :destroy, optional: true
 
   has_and_belongs_to_many :system_groups
   has_and_belongs_to_many :authority_groups

@@ -184,8 +184,8 @@ RSpec.describe UsersController, type: :controller do
   # old
 
   # it "should render a json formatted list of users for autocomplete inputs" do
-  #   FactoryGirl.create :hmustermann
-  #   FactoryGirl.create :jdoe
+  #   FactoryBot.create :hmustermann
+  #   FactoryBot.create :jdoe
 
   #   allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(User.admin)
   #   allow_any_instance_of(ApplicationController).to receive(:session_expired?).and_return(false)

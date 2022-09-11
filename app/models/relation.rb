@@ -103,14 +103,14 @@ class Relation < ApplicationRecord
   end
 
   def correct_directed
-    if name_changed?
+    if saved_change_to_name?
       DirectedRelationship.
         where(is_reverse: false).
         where(relation_id: id).
         update_all(relation_name: name)
     end
 
-    if reverse_name_changed?
+    if saved_change_to_reverse_name?
       DirectedRelationship.
         where(is_reverse: true).
         where(relation_id: id).

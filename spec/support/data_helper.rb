@@ -1,4 +1,4 @@
-require 'factory_girl_rails'
+require 'factory_bot_rails'
 
 module DataHelper
   def json
@@ -155,7 +155,7 @@ module DataHelper
     priv = Collection.create! name: 'private'
 
     # media = Kind.medium_kind
-    people = FactoryGirl.create :people,
+    people = FactoryBot.create :people,
       fields: [
         Fields::String.new(
           name: 'gnd_id', show_label: 'GND-ID', is_identifier: true,
@@ -170,7 +170,7 @@ module DataHelper
           name: 'gnd', directive: 'http://d-nb.info/gnd/{{entity.dataset.p227}}'
         )
       ]
-    works = FactoryGirl.create :works, fields: [
+    works = FactoryBot.create :works, fields: [
       Field.new(
         name: 'wikidata_id', show_label: 'Wikidata ID', is_identifier: true
       ),
@@ -198,24 +198,24 @@ module DataHelper
       name: 'is related to', reverse_name: 'is related to',
       from_kind_id: works.id, to_kind_id: locations.id
     )
-    FactoryGirl.create :has_created, from_kind_id: people.id, to_kind_id: works.id
-    FactoryGirl.create :shows, from_kind_id: media.id, to_kind_id: works.id
+    FactoryBot.create :has_created, from_kind_id: people.id, to_kind_id: works.id
+    FactoryBot.create :shows, from_kind_id: media.id, to_kind_id: works.id
 
     # admins = Credential.find_by! name: 'admins'
-    students = FactoryGirl.create :students
+    students = FactoryBot.create :students
     project = Credential.create! name: 'Project'
 
     # admin = User.find_by! name: 'admin'
-    jdoe = FactoryGirl.create :jdoe, groups: [students]
-    mrossi = FactoryGirl.create :mrossi, groups: [project]
-    FactoryGirl.create :ldap_template
+    jdoe = FactoryBot.create :jdoe, groups: [students]
+    mrossi = FactoryBot.create :mrossi, groups: [project]
+    FactoryBot.create :ldap_template
 
     Kor::Auth.grant default, :view, :to => students
     Kor::Auth.grant priv, :all, :to => admins
     Kor::Auth.grant default, :view, :to => project
     Kor::Auth.grant priv, :all, :to => project
 
-    leonardo = FactoryGirl.create(:leonardo,
+    leonardo = FactoryBot.create(:leonardo,
       created_at: Time.mktime(2016, 10, 17, 13),
       updated_at: Time.mktime(2017, 10, 17, 13),
       creator_id: admin.id,
@@ -230,7 +230,7 @@ module DataHelper
       },
       properties: [{'label' => 'Epoche', 'value' => 'Renaissance'}]
     )
-    mona_lisa = FactoryGirl.create(:mona_lisa,
+    mona_lisa = FactoryBot.create(:mona_lisa,
       created_at: Time.mktime(2016, 10, 19, 17),
       updated_at: Time.mktime(2017, 10, 19, 17),
       creator_id: admin.id,
@@ -244,7 +244,7 @@ module DataHelper
         EntityDating.new(label: 'Dating', dating_string: '1503 bis 1506')
       ]
     )
-    last_supper = FactoryGirl.create :the_last_supper, {
+    last_supper = FactoryBot.create :the_last_supper, {
       created_at: Time.mktime(2016, 10, 21, 11),
       updated_at: Time.mktime(2017, 10, 21, 11),
       collection: priv,
@@ -268,13 +268,13 @@ module DataHelper
       creator_id: admin.id,
       updater_id: admin.id
     )
-    picture_a = FactoryGirl.create :picture_a, {
+    picture_a = FactoryBot.create :picture_a, {
       created_at: Time.mktime(2016, 10, 21, 12, 22),
       updated_at: Time.mktime(2017, 10, 21, 12, 22),
       creator_id: admin.id,
       updater_id: admin.id
     }
-    picture_b = FactoryGirl.create :picture_b, {
+    picture_b = FactoryBot.create :picture_b, {
       created_at: Time.mktime(2016, 10, 21, 18, 9),
       updated_at: Time.mktime(2017, 10, 21, 18, 9),
       collection: priv,

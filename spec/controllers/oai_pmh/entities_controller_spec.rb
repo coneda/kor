@@ -95,7 +95,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       admin = User.admin
 
       leonardo.update_attributes(
-        datings: [FactoryGirl.build(:leonardo_lifespan)],
+        datings: [FactoryBot.build(:leonardo_lifespan)],
         properties: [{'label' => 'age', 'value' => 53}]
       )
 
@@ -117,7 +117,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
   if ENV['KOR_BRITTLE'] == 'true'
     it 'should return XML that validates against the schema for media' do
-      FactoryGirl.create :media
+      FactoryBot.create :media
       picture = Kind.medium_kind.entities.last
       admin = User.admin
 
@@ -282,7 +282,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     zero = Time.now.utc
     Entity.update_all updated_at: (zero - 2.hours)
     55.times do |i|
-      FactoryGirl.create :mona_lisa, name: "Mona Lisa #{i}", updated_at: (zero - i.minutes)
+      FactoryBot.create :mona_lisa, name: "Mona Lisa #{i}", updated_at: (zero - i.minutes)
     end
 
     get '/oai-pmh/entities.xml', params: {

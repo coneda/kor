@@ -1,6 +1,6 @@
 class Publishment < ApplicationRecord
-  belongs_to :user_group, required: true
-  belongs_to :user, required: true
+  belongs_to :user_group
+  belongs_to :user
 
   validates :name, presence: true
 

@@ -13,7 +13,7 @@ RSpec.describe Kor::Elastic, elastic: true do
 
   it "should index an entity" do
     Kor::Elastic.disable!
-    @landscape = FactoryGirl.create :landscape
+    @landscape = FactoryBot.create :landscape
     Kor::Elastic.enable!
 
     expect{
@@ -40,8 +40,8 @@ RSpec.describe Kor::Elastic, elastic: true do
 
   context 'with united countries' do
     before :each do
-      @united_kingdom = FactoryGirl.create :united_kingdom, :tag_list => ["coast", "english language", "beer"]
-      @united_states = FactoryGirl.create :united_states, :tag_list => ["coast", "english language"]
+      @united_kingdom = FactoryBot.create :united_kingdom, :tag_list => ["coast", "english language", "beer"]
+      @united_states = FactoryBot.create :united_states, :tag_list => ["coast", "english language"]
 
       described_class.index_all
     end
@@ -68,8 +68,8 @@ RSpec.describe Kor::Elastic, elastic: true do
   end
 
   it "should search within synonyms" do
-    landscape = FactoryGirl.create :landscape, synonyms: ["Tree on plane", "Nice Tree"]
-    jack = FactoryGirl.create :jack, synonyms: ["The Oak", "Tree on plane"]
+    landscape = FactoryBot.create :landscape, synonyms: ["Tree on plane", "Nice Tree"]
+    jack = FactoryBot.create :jack, synonyms: ["The Oak", "Tree on plane"]
 
     described_class.index_all
 
@@ -82,7 +82,7 @@ RSpec.describe Kor::Elastic, elastic: true do
     results = described_class.new(User.admin).search(terms: "\"tree on plane\"", kind_id: works.id)
     expect(results.records).to eq([landscape])
 
-    FactoryGirl.create :relation, from_kind: landscape.kind, to_kind: jack.kind
+    FactoryBot.create :relation, from_kind: landscape.kind, to_kind: jack.kind
     Relationship.relate_and_save(landscape, "is related to", jack)
     described_class.index_all full: true
 
@@ -98,7 +98,7 @@ RSpec.describe Kor::Elastic, elastic: true do
 
   it "should paginate entities when there are more than 10 results" do
     11.times do |i|
-      FactoryGirl.create :landscape, name: "Auferstehung #{i}"
+      FactoryBot.create :landscape, name: "Auferstehung #{i}"
     end
     described_class.index_all
 
@@ -218,7 +218,7 @@ RSpec.describe Kor::Elastic, elastic: true do
 
   it "should accept a per_page parameter" do
     11.times do |i|
-      FactoryGirl.create :jack, name: "Jack #{i}"
+      FactoryBot.create :jack, name: "Jack #{i}"
     end
     described_class.index_all full: true
 

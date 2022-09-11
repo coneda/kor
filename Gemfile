@@ -1,32 +1,27 @@
 source 'https://rubygems.org'
 
 gem 'acts_as_list'
-gem 'acts-as-taggable-on', '~> 4.0.0'
+gem 'acts-as-taggable-on', '~> 8.0.0'
+gem 'awesome_nested_set', '~> 3.1.1'
 gem 'colorize'
 gem 'delayed_paperclip'
 gem 'dotenv'
 gem 'exifr', '1.1.1'
+gem 'factory_bot_rails'
 gem 'hirb'
 gem 'httpclient'
 gem 'jbuilder'
 gem 'kt-paperclip'
 gem 'mysql2', '~> 0.5.3'
+gem 'paranoia', '~> 2.2'
 gem 'parslet'
 gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
-gem 'rails', '~> 5.0.7.2'
+gem 'rails', '~> 5.1.0'
 gem 'RedCloth'
 gem 'responders', '~> 2.0'
 gem 'ruby-progressbar'
 gem 'semantic', git: 'https://github.com/jlindsey/semantic'
-
-if !ENV['RAILS_GROUPS'] || !ENV['RAILS_GROUPS'].match(/assets/)
-  # TODO: all of these load activerecord on asset precompiliation so we load
-  # (and configure) it in app/controllers/application_controller.rb
-  gem 'awesome_nested_set', '~> 3.1.1'
-  gem 'factory_girl_rails'
-  gem 'paranoia', '~> 2.2'
-end
 
 group :test do
   gem 'capybara'

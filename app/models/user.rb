@@ -16,10 +16,19 @@ class User < ApplicationRecord
     class_name: 'User',
     foreign_key: :parent_username,
     primary_key: :name,
-    autosave: false
+    autosave: false,
+    optional: true
   }
-  belongs_to :personal_group, :class_name => 'Credential', :foreign_key => :credential_id
-  belongs_to :personal_collection, :class_name => 'Collection', :foreign_key => :collection_id
+  belongs_to :personal_group, {
+    class_name: 'Credential',
+    foreign_key: :credential_id,
+    optional: true
+  }
+  belongs_to :personal_collection, {
+    class_name: 'Collection',
+    foreign_key: :collection_id,
+    optional: true
+  }
 
   validates :name,
     :presence => true,

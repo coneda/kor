@@ -2,7 +2,10 @@ class Collection < ApplicationRecord
   has_many :entities
   has_many :grants, :dependent => :destroy
   has_many :credentials, :through => :grants
-  has_one :owner, :class_name => 'User', :foreign_key => :collection_id
+  has_one :owner, {
+    class_name: 'User',
+    foreign_key: :collection_id
+  }
 
   scope :personal, lambda{ joins(:owner) }
   scope :non_personal, lambda{
@@ -10,10 +13,11 @@ class Collection < ApplicationRecord
     personal_ids.empty? ? all : where("id NOT IN (?)", personal_ids)
   }
 
-  validates :name,
-    :presence => true,
-    :uniqueness => true,
-    :white_space => true
+  validates :name, {
+    presence: true,
+    uniqueness: true,
+    white_space: true
+  }
 
   after_save :update_personals
 

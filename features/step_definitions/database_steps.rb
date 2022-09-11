@@ -42,7 +42,7 @@ Given /^the relation "([^"]*)" inheriting from "([^"]*)"?$/ do |names, parents|
 end
 
 Given /^the medium "([^"]*)"$/ do |name|
-  FactoryGirl.create name.to_sym
+  FactoryBot.create name.to_sym
 end
 
 Given /^the entity "([^"]*)" of kind "([^"]*)"$/ do |name, kind|
@@ -229,7 +229,7 @@ Given /^the relation "([^"]*)" between "([^"]*)" and "([^"]*)"$/ do |relation, f
     from_kind_id: to_kind.id,
     reverse_name: name,
     to_kind_id: from_kind.id
-  ) || FactoryGirl.create(:relation,
+  ) || FactoryBot.create(:relation,
     from_kind_id: from_kind.id,
     name: name,
     reverse_name: reverse_name,
@@ -315,7 +315,7 @@ Given(/^there are "([^"]*)" media entities$/) do |amount|
   amount.to_i.times do |i|
     file = "tmp/test_file.txt"
     system "echo #{i} > #{file}"
-    FactoryGirl.create :text, medium: FactoryGirl.build(:medium,
+    FactoryBot.create :text, medium: FactoryBot.build(:medium,
       document: File.open(file)
     )
     system "rm #{file}"
