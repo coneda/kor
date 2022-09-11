@@ -10,14 +10,14 @@ RSpec.describe KindsController, type: :controller do
 
   it 'should GET show' do
     get :show, params: {id: Kind.medium_kind_id}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['name']).to eq('medium')
     expect(json['settings']).to be_nil
   end
 
   it 'should GET show with additions' do
     get :show, params: {id: Kind.medium_kind_id, include: 'settings'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['name']).to eq('medium')
     expect(json['distinct_name_label']).to be_a(String)
   end

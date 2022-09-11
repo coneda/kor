@@ -18,9 +18,11 @@ RSpec.describe Field do
   end
 
   it "should synchronize storage on entities with the field name attribute" do
+    ActiveJob::Base.queue_adapter = :inline
     works.update fields: [
       Field.new(name: 'viaf_id', show_label: 'stack', is_identifier: true)
     ]
+
     mona_lisa.update dataset: {'viaf_id' => '1234'}
     last_supper.update dataset: {'viaf_id' => '5678'}
 

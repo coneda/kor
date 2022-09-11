@@ -11,25 +11,25 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
 
   it "should respond to 'Identify'" do
     get '/oai-pmh/entities.xml', params: {verb: 'Identify'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
     doc = parse_xml(response.body)
     expect(doc.xpath('//xmlns:adminEmail').text).to eq('admin@example.com')
 
     post '/oai-pmh/entities.xml', params: {verb: 'Identify'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListMetadataFormats'" do
     get '/oai-pmh/entities.xml', params: {verb: 'ListMetadataFormats'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListIdentifiers'" do
     get '/oai-pmh/entities.xml', params: {verb: 'ListIdentifiers'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
@@ -38,7 +38,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       verb: 'ListRecords',
       metadataPrefix: 'kor'
     }
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
@@ -50,7 +50,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       identifier: mona_lisa.uuid,
       metadataPrefix: 'kor'
     }
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 

@@ -5,17 +5,17 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
 
   it "should respond to 'Identify'" do
     get '/oai-pmh/relationships.xml', params: {verb: 'Identify'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
 
     post '/oai-pmh/relationships.xml', params: {verb: 'Identify'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
   it "should respond to 'ListMetadataFormats'" do
     get '/oai-pmh/relationships.xml', params: {verb: 'ListMetadataFormats'}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
@@ -26,7 +26,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
       verb: 'ListIdentifiers',
       api_key: admin.api_key
     }
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
@@ -38,7 +38,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
       api_key: admin.api_key,
       metadataPrefix: 'kor'
     }
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 
@@ -52,7 +52,7 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
       api_key: admin.api_key,
       metadataPrefix: 'kor'
     }
-    expect(response).to be_success
+    expect(response).to be_successful
     expect{ Hash.from_xml response.body }.not_to raise_error
   end
 

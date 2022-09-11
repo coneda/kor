@@ -10,14 +10,14 @@ RSpec.describe RelationsController, type: :controller do
 
   it 'should GET names' do
     get 'names'
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json.size).to eq(7)
   end
 
   it 'should not GET show' do
     relation = Relation.find_by! name: 'has created'
     get 'show', params: {id: relation.id}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['name']).to eq('has created')
   end
 

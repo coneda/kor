@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe SettingsController, type: :controller do
   it 'should show the configuration' do
     get :show
-    expect(response).to be_success
+    expect(response).to be_successful
   end
 
   it 'should deny updating configuration for non admins' do
@@ -18,7 +18,7 @@ RSpec.describe SettingsController, type: :controller do
 
     it 'should allow updating configuration for admins' do
       put :update
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'should update the configuration' do

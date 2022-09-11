@@ -32,11 +32,25 @@ class Field < ApplicationRecord
   after_update do |f|
     f.synchronize_identifiers :update
     if saved_change_to_name?
-      GenericJob.perform_later 'constant', f.class.name, 'synchronize_storage', f.kind_id, f.name_was, f.name
+      GenericJob.perform_later(
+        'constant',
+        f.class.name,
+        'synchronize_storage',
+        f.kind_id,
+        f.name_before_last_save,
+        f.name
+      )
     end
   end
   after_destroy do |f|
-    GenericJob.perform_later 'constant', f.class.name, 'synchronize_storage', f.kind_id, f.name_was, nil
+    GenericJob.perform_later(
+      'constant',
+      f.class.name,
+      'synchronize_storage',
+      f.kind_id,
+      f.name,
+      nil
+    )
     f.destroy_identifiers
   end
 

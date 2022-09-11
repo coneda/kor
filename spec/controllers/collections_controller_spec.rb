@@ -58,7 +58,7 @@ RSpec.describe CollectionsController, type: :controller do
 
     it 'should GET show' do
       get :show, params: {id: Collection.find_by!(name: 'default').id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['name']).to eq('Default')
       expect(json['permissions']).to be_nil
     end
@@ -102,7 +102,7 @@ RSpec.describe CollectionsController, type: :controller do
       id = Collection.find_by!(name: 'default').id
       other_id = Collection.find_by!(name: 'private').id
       post :merge, params: {id: id, collection_id: other_id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['message']).to match(/the domains have been merged/)
       # it doesn't actually delete the source domain
       expect(Collection.count).to eq(2)

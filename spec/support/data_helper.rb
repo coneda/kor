@@ -6,7 +6,7 @@ module DataHelper
   end
 
   def expect_collection_response(options = {})
-    expect(response).to be_success
+    expect(response).to be_successful
 
     data = json
 
@@ -26,7 +26,7 @@ module DataHelper
   end
 
   def expect_created_response
-    expect(response).to be_success
+    expect(response).to be_successful
 
     data = json
     expect(data['message']).to match(/has been created/)
@@ -34,17 +34,17 @@ module DataHelper
   end
 
   def expect_updated_response
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['message']).to match(/has been changed/)
   end
 
   def expect_deleted_response
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['message']).to match(/has been deleted/)
   end
 
   def expect_autocomplete_response(options = {})
-    expect(response).to be_success
+    expect(response).to be_successful
 
     data = json
 

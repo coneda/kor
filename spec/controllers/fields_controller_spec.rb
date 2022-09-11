@@ -6,14 +6,14 @@ RSpec.describe FieldsController, type: :controller do
   it 'should GET show' do
     people = Kind.find_by! name: 'person'
     get :show, params: {id: Field.first.id, kind_id: people.id}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['name']).to be_a(String)
     expect(json['created_at']).to be_nil
   end
 
   it 'should GET types' do
     get :types
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json).to be_a(Array)
     expect(json.map{ |f| f['name'] }).to include('Fields::Select')
   end
@@ -23,7 +23,7 @@ RSpec.describe FieldsController, type: :controller do
     get :show, params: {
       id: Field.first.id, kind_id: people.id, include: 'technical'
     }
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(json['name']).to be_a(String)
     expect(Time.parse json['created_at']).to be < Time.now
   end

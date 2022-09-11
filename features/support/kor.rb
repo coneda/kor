@@ -3,27 +3,50 @@ require 'webdrivers'
 Webdrivers.cache_time = 86400 # 24 hours
 # Webdrivers.logger.level = :DEBUG
 
-class ActiveRecord::Base
-  mattr_accessor :shared_connection
-  @@shared_connection = nil
+# class ActiveRecord::Base
+#   mattr_accessor :shared_connection
+#   @@shared_connection = nil
 
-  def self.connection
-    @@shared_connection || ConnectionPool::Wrapper.new(size: 1, timeout: 15){ retrieve_connection }
-  end
-end
-ActiveRecord::Base.shared_connection = ActiveRecord::Base.connection
+#   def self.connection
+#     @@shared_connection || ConnectionPool::Wrapper.new(size: 1, timeout: 15){ retrieve_connection }
+#   end
+# end
+# ActiveRecord::Base.shared_connection = ActiveRecord::Base.connection
 
-require 'active_record/connection_adapters/abstract_mysql_adapter'
-class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
-  SEMAPHORE = Mutex.new
-  def execute(sql, name = nil)
-    begin
-      raise 'Debugging'
-    rescue => e
-      SEMAPHORE.synchronize{ log(sql, name){ @connection.query(sql) } }
-    end
-  end
-end
+# require 'active_record/connection_adapters/abstract_mysql_adapter'
+# class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
+#   SEMAPHORE = Mutex.new
+#   def execute(sql, name = nil)
+#     begin
+#       raise 'Debugging'
+#     rescue => e
+#       SEMAPHORE.synchronize{ log(sql, name){ @connection.query(sql) } }
+#     end
+#   end
+# end
+
+# if Rails::VERSION::MAJOR < 6
+#   # This file is safe to require ahead of time for Rails 5, but not for 6+.
+#   require 'active_record/connection_adapters/mysql/database_statements'
+#   module ActiveRecord
+#     module ConnectionAdapters
+#       module MySQL
+#         module DatabaseStatements
+#           def exec_delete(sql, name = nil, binds = [])
+#             if without_prepared_statement?(binds)
+#               @lock.synchronize do
+#                 execute_and_free(sql, name) { @connection.affected_rows }
+#               end
+#             else
+#               exec_stmt_and_free(sql, name, binds) { |stmt| stmt.affected_rows }
+#             end
+#           end
+#           alias :exec_update :exec_delete
+#         end
+#       end
+#     end
+#   end
+# end
 
 World(DataHelper)
 

@@ -368,7 +368,7 @@ class Entity < ApplicationRecord
   scope :by_ordered_id_array, lambda{ |*ids|
     if ids.present? && ids.flatten.compact.present?
       ids = ids.flatten.compact
-      where(id: ids).order("FIELD(id,#{ids.join(',')})")
+      where(id: ids).order(Arel.sql("FIELD(id,#{ids.join(',')})"))
     else
       none
     end

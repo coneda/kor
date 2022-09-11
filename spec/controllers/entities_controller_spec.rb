@@ -48,7 +48,7 @@ RSpec.describe EntitiesController, type: :controller do
     students.users << User.guest
 
     get 'show', params: {id: mona_lisa.id}
-    expect(response).to be_success
+    expect(response).to be_successful
   end
 
   it 'should not GET metadata' do
@@ -152,24 +152,24 @@ RSpec.describe EntitiesController, type: :controller do
     it 'should GET show' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       get 'show', params: {id: mona_lisa.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['name']).to eq('Mona Lisa')
       expect(json['relations']).to be_nil
 
       get 'show', params: {id: mona_lisa.id, include: 'relations,technical'}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['relations']['has been created by']).to eq(1)
       expect(json['relations']['is located in']).to eq(1)
       expect(json['uuid']).to be_nil
 
       get 'show', params: {id: mona_lisa.uuid, include: 'relations,technical'}
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it 'should GET metadata' do
       picture = Kind.medium_kind.entities.first
       get 'metadata', params: {id: picture.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.body).to match(/medium/)
       expect(response.body).to match(/Mona Lisa/)
       expect(response.body).to match(/Leonardo/)
@@ -247,12 +247,12 @@ RSpec.describe EntitiesController, type: :controller do
     it 'should GET show' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       get 'show', params: {id: mona_lisa.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['name']).to eq('Mona Lisa')
       expect(json['relations']).to be_nil
 
       get 'show', params: {id: mona_lisa.id, include: 'relations,technical'}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['relations']['has been created by']).to eq(1)
       expect(json['relations']['is located in']).to eq(1)
       expect(json['uuid']).not_to be_nil
@@ -273,7 +273,7 @@ RSpec.describe EntitiesController, type: :controller do
       patch 'update_tags', params: {
         id: mona_lisa.id, entity: {tags: 'pretty,smile'}
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(mona_lisa.reload.tag_list).to eq(['art', 'late', 'pretty', 'smile'])
     end
   end
@@ -348,12 +348,12 @@ RSpec.describe EntitiesController, type: :controller do
     it 'should GET show' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       get 'show', params: {id: mona_lisa.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['name']).to eq('Mona Lisa')
       expect(json['relations']).to be_nil
 
       get 'show', params: {id: mona_lisa.id, include: 'relations,technical'}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['relations']['has been created by']).to eq(1)
       expect(json['relations']['is located in']).to eq(1)
       expect(json['relations']['is related to']).to eq(1)
@@ -363,7 +363,7 @@ RSpec.describe EntitiesController, type: :controller do
     it 'should GET metadata' do
       picture = Kind.medium_kind.entities.first
       get 'metadata', params: {id: picture.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.body).to match(/medium/)
       expect(response.body).to match(/Mona Lisa/)
       expect(response.body).to match(/Leonardo/)
@@ -416,7 +416,7 @@ RSpec.describe EntitiesController, type: :controller do
           kind_id: Kind.medium_kind.id
         }
       }
-      expect(response).not_to be_success
+      expect(response).not_to be_successful
       expect(json['errors']['medium'].size).to eq(1)
 
       post :create, params: {
@@ -427,7 +427,7 @@ RSpec.describe EntitiesController, type: :controller do
           medium_attributes: {}
         }
       }
-      expect(response).not_to be_success
+      expect(response).not_to be_successful
     end
 
     it "should verify file size when uploading files" do
@@ -533,7 +533,7 @@ RSpec.describe EntitiesController, type: :controller do
       patch 'update_tags', params: {
         id: mona_lisa.id, entity: {tags: 'pretty,smile'}
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(mona_lisa.reload.tag_list).to eq(['art', 'late', 'pretty', 'smile'])
     end
 
@@ -549,7 +549,7 @@ RSpec.describe EntitiesController, type: :controller do
           collection_id: default.id
         }
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       result = Entity.find(json['id'])
       expect(result.name).to eq('Mona Lisa')
       expect(Entity.find_by id: mona_lisa.id).to be_nil
@@ -565,7 +565,7 @@ RSpec.describe EntitiesController, type: :controller do
         entity_ids: [mona_lisa.id, last_supper.id],
         relation_name: 'is related to'
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(paris.outgoing_relationships.by_to_entity(mona_lisa.id).size).to eq(1)
       expect(paris.outgoing_relationships.by_to_entity(last_supper.id).size).to eq(1)
     end
@@ -580,7 +580,7 @@ RSpec.describe EntitiesController, type: :controller do
     it 'should DELETE mass_destroy' do
       mona_lisa = Entity.find_by! name: 'Mona Lisa'
       delete 'mass_destroy', params: {ids: [mona_lisa.id]}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['message']).to match(/have been deleted/)
       expect(Entity.find_by id: mona_lisa.id).to be_nil
     end
@@ -684,7 +684,7 @@ RSpec.describe EntitiesController, type: :controller do
           collection_id: default.id
         }
       }
-      expect(response).to be_success
+      expect(response).to be_successful
 
       expect(Entity.count).to eq(7)
       expect(Entity.with_deleted.count).to eq(9)
@@ -712,7 +712,7 @@ RSpec.describe EntitiesController, type: :controller do
           collection_id: default.id
         }
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(Entity.all).not_to include(picture_b)
 
       expect(picture_a.authority_groups.count).to eq(2)
@@ -742,7 +742,7 @@ RSpec.describe EntitiesController, type: :controller do
           collection_id: default.id
         }
       }
-      expect(response).to be_success
+      expect(response).to be_successful
 
       expect(Entity.find_by_name('Mona Lisa').comment).to eql("comment 1")
     end
@@ -763,7 +763,7 @@ RSpec.describe EntitiesController, type: :controller do
           collection_id: default.id
         }
       }
-      expect(response).to be_success
+      expect(response).to be_successful
 
       leonardo = Entity.find_by! name: 'Leonardo'
       expect(Entity.count).to eq(7)

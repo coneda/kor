@@ -22,7 +22,7 @@ RSpec.describe WikidataController, type: :request do
         kind_id: Kind.find_by!(name: 'person').id,
         api_key: User.admin.api_key
       }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(Entity.last.name).to eq('Léonard de Vinci')
     }.to(change{ Entity.count }.by(1))
   end

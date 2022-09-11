@@ -62,6 +62,16 @@ Feature: personal domains
     And I uncheck "Personal domain"
     And I press "Save"
     Then I should see "The personal domain could not be deleted because it still contains entities"
+
+  Scenario: Try to delete a user with a non-empty domain
+    Given user "jdoe" has a personal collection
+    And entity "Mona Lisa" is in collection "jdoe"
+    And I am logged in as "admin"
+    And I follow "Users"
+    And I ignore the next confirmation box
+    When I follow "delete" within the row for user "John Doe"
+    Then I should see "The user could not be deleted because he/she has a non-empty personal domain"
+    And user "jdoe" should have a personal collection
   
   Scenario: Show personal domains an edit link when there are personal domains
     Given user "jdoe" has a personal collection

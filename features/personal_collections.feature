@@ -81,39 +81,6 @@ Feature: personal collections
     Then I should be on the publishments page
     And I should see "has been extended"
 
-  Scenario: Try to make a user with a non-empty collection non-personal again
-    Given user "jdoe" has a personal collection
-    And entity "Mona Lisa" is in collection "jdoe"
-    And I am logged in as "admin"
-    And I follow "Users"
-    When I follow "edit" within the row for user "John Doe"
-    And I uncheck "Personal domain"
-    And I press "Save"
-    Then I should see "The personal domain could not be deleted because it still contains entities"
-
-  Scenario: Try to delete a user with a non-empty collection
-    Given user "jdoe" has a personal collection
-    And entity "Mona Lisa" is in collection "jdoe"
-    And I am logged in as "admin"
-    And I follow "Users"
-    And I ignore the next confirmation box
-    When I follow "delete" within the row for user "John Doe"
-    Then I should see "The user could not be deleted because he/she has a non-empty personal domain"
-    And user "jdoe" should have a personal collection
-  
-  Scenario: Show personal collectionsan edit link when there are personal collections
-    Given user "jdoe" has a personal collection
-    And I am logged in as "admin"
-    When I go to the collections page
-    Then I should see "jdoe (user: John Doe)"
-    When I go to the users page
-    And I follow "edit" within the row for user "John Doe"
-    And I uncheck "Personal domain"
-    And I press "Save"
-    And I go to the collections page
-    Then I should not see "jdoe"
-    And I should not see "jdoe (user: John Doe)"
-    
   Scenario: Transfer a shared collection to the clipboard
     Given I am logged in as "admin"
     And "admin" has a shared user group "MyStuff"

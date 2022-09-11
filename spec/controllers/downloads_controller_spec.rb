@@ -20,7 +20,7 @@ RSpec.describe DownloadsController, type: :controller do
     )
 
     get 'show', params: {uuid: download.uuid}
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(response.body).to match(/ConedaKOR is a web based application/)
   end
 end

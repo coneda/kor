@@ -7,7 +7,7 @@ RSpec.describe Iiif::MediaController, type: :controller do
     request.headers["accept"] = 'text/html'
 
     get 'index'
-    expect(response).to be_success
+    expect(response).to be_successful
     expect(response.body).to match(/manifestUri/)
   end
 
@@ -23,7 +23,7 @@ RSpec.describe Iiif::MediaController, type: :controller do
 
     it 'should GET show' do
       get 'show', params: {id: picture_a.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['label']).to eq('entity 6')
     end
 
@@ -33,7 +33,7 @@ RSpec.describe Iiif::MediaController, type: :controller do
       )
 
       get 'show', params: {id: picture_a.id}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(json['id']).to eq(picture_a.id)
       expect(json['label']).to eq('An alternate manifest')
     end

@@ -7,7 +7,8 @@ module SuiteHelper
 
   def self.setup
     DatabaseCleaner.clean_with :truncation
-    DatabaseCleaner.strategy = :transaction
+    # DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.strategy = :truncation
 
     system "cat /dev/null >| #{Rails.root}/log/test.log"
 
@@ -28,9 +29,16 @@ module SuiteHelper
   end
 
   def self.around_each
-    DatabaseCleaner.start
-    yield
     DatabaseCleaner.clean
+    Rails.application.load_seed
+    DataHelper.default_setup
+
+    system "rm -rf #{Rails.root}/tmp/test.media.clone"
+    system "mv #{ENV['DATA_DIR']}/media #{Rails.root}/tmp/test.media.clone"
+
+    # DatabaseCleaner.start
+    yield
+    # DatabaseCleaner.clean
   end
 
   def self.before_each(framework, scope, test)
