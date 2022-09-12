@@ -15,9 +15,9 @@ class Kind < ApplicationRecord
   has_many :children, through: :kind_child_inheritances
 
   validates :name,
-    :presence => true,
-    :uniqueness => true,
-    :white_space => true
+    presence: true,
+    uniqueness: {case_sensitive: true},
+    white_space: true
 
   validates :plural_name,
     :presence => true,
@@ -112,7 +112,7 @@ class Kind < ApplicationRecord
   end
 
   def self.medium_kind_id
-    where(uuid: MEDIA_UUID).pluck(:id).first
+    default_scoped.where(uuid: MEDIA_UUID).pluck(:id).first
   end
 
   def self.find_ids(ids)

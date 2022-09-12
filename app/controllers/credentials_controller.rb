@@ -32,7 +32,7 @@ class CredentialsController < JsonController
   def update
     @record = Credential.find(params[:id])
 
-    if @record.update_attributes(credential_params)
+    if @record.update(credential_params)
       render_updated @record
     else
       render_422 @record.errors

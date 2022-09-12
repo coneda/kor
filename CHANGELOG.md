@@ -21,7 +21,7 @@ commit history and the closed issues on GitHub.
 * the domain is now included with delivering related entities via the REST api
 * authentication sources can now specify a custom password management url. This
   also removes the password fields from the profile editor to prevent federation
-  users to change their local passwords11111
+  users to change their local passwords
 
 ## Version 4.1.0
 

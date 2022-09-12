@@ -6,7 +6,7 @@ class AuthorityGroupCategory < ApplicationRecord
   has_many :authority_groups, :dependent => :destroy
 
   validates :name,
-    :presence => true,
-    :uniqueness => {:scope => :parent_id},
-    :white_space => true
+    presence: true,
+    uniqueness: {scope: :parent_id, case_sensitive: true},
+    white_space: true
 end

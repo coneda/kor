@@ -39,9 +39,6 @@ RSpec.describe Kor::EntityMerger do
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza"
 
-    expect(Kor::Elastic).to receive(:drop).twice.and_call_original
-    expect(Kor::Elastic).to receive(:index).and_call_original
-
     merged = described_class.new.run(
       :old_ids => [mona_lisa.id, other_mona_lisa.id],
       :attributes => {name: mona_lisa.name}
@@ -59,7 +56,7 @@ RSpec.describe Kor::EntityMerger do
       Field.new(name: 'gnd', show_label: 'GND-ID', is_identifier: true)
     ]
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
-    mona_lisa.update_attributes dataset: {'gnd' => '12345'}
+    mona_lisa.update dataset: {'gnd' => '12345'}
     other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza"
     merged = described_class.new.run(
       old_ids: [mona_lisa.id, other_mona_lisa.id],

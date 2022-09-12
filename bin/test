@@ -3,5 +3,7 @@
 export HEADLESS=true
 export COVERAGE=true
 
+rm -rf tmp/coverage
+
 bundle exec rspec spec/ --format=documentation
 bundle exec cucumber features/ --format=pretty --no-strict --retry 3

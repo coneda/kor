@@ -7,10 +7,10 @@ class Field < ApplicationRecord
   belongs_to :kind, touch: true, optional: true
 
   validates :name,
-    :presence => true,
-    :format => {:with => /\A[a-z0-9_]+\z/, allow_blank: true},
-    :uniqueness => {:scope => :kind_id},
-    :white_space => true
+    presence: true,
+    format: {:with => /\A[a-z0-9_]+\z/, allow_blank: true},
+    uniqueness: {scope: :kind_id, case_sensitive: true},
+    white_space: true
   validates :show_label, :form_label, :search_label, presence: true
 
   validate do |f|

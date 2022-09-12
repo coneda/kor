@@ -19,7 +19,7 @@ class SingularRelationEndpoints < ActiveRecord::Migration
 
         new_r = r.dup
         new_r.generate_uuid
-        new_r.update_attributes(
+        new_r.update(
           from_kind_id: from_kind_id,
           to_kind_id: to_kind_id
         )

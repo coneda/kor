@@ -10,10 +10,10 @@ RSpec.describe Field do
     ]
     expect(people.reload.fields.first.is_identifier).to be_truthy
 
-    people.fields.first.update_attributes is_identifier: false
+    people.fields.first.update is_identifier: false
     expect(works.reload.fields.first.is_identifier).to be_falsy
 
-    works.fields.first.update_attributes is_identifier: true
+    works.fields.first.update is_identifier: true
     expect(people.reload.fields.first.is_identifier).to be_truthy
   end
 

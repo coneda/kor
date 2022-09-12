@@ -32,6 +32,7 @@ RSpec.describe Iiif::MediaController, type: :controller do
         'mirador_manifest_template' => 'spec/fixtures/manifest.json.jbuilder'
       )
 
+      request.headers["accept"] = 'application/json'
       get 'show', params: {id: picture_a.id}
       expect(response).to be_successful
       expect(json['id']).to eq(picture_a.id)

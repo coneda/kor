@@ -26,7 +26,9 @@ class Iiif::MediaController < JsonController
 
       alt = Kor.settings['mirador_manifest_template']
       if alt.present? && File.exist?(alt)
-        render file: alt
+        tpl = File.read(alt)
+        json = Jbuilder.encode { |json| eval(tpl) }
+        render json: json
       end
     else
       render_403

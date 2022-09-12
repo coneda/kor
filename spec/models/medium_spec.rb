@@ -19,7 +19,7 @@ RSpec.describe Medium do
     expect(medium.url(:original)).to eql("/media/images/original/#{medium.ids}/document.txt?#{medium.document.updated_at}")
     expect(medium.url(:icon)).to eql('/content_types/text.gif')
 
-    medium.update_attributes(:image => File.open("#{Rails.root}/spec/fixtures/image_c.jpg"))
+    medium.update(:image => File.open("#{Rails.root}/spec/fixtures/image_c.jpg"))
     medium.reload
 
     expect(medium.path(:original)).to eql("#{ENV['DATA_DIR']}/media/original/#{medium.ids}/document.txt")
@@ -27,7 +27,7 @@ RSpec.describe Medium do
     expect(medium.url(:original)).to eql("/media/images/original/#{medium.ids}/document.txt?#{medium.document.updated_at}")
     expect(medium.url(:icon)).to eql("/media/images/icon/#{medium.ids}/image.jpg?#{medium.image.updated_at}")
 
-    medium.update_attributes(:document => nil)
+    medium.update(:document => nil)
     medium.reload
 
     expect(medium.path(:original)).to eql("#{ENV['DATA_DIR']}/media/original/#{medium.ids}/image.jpg")

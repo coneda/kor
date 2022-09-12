@@ -16,7 +16,7 @@
 require 'support/test_helper'
 require 'support/suite_helper'
 
-SuiteHelper.setup_simplecov
+SuiteHelper.setup_simplecov(:rspec)
 SuiteHelper.require_modules
 SuiteHelper.setup_vcr :rspec
 

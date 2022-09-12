@@ -6,7 +6,13 @@ When("I click icon {string}") do |string|
 end
 
 When /^(.*) within (.+)$/ do |step, parent|
-  within find(*selector_for(parent)) do
+  type, locator, options = selector_for(parent)
+
+  scope = options ?
+    find(type, locator, **options) :
+    find(type, locator)
+
+  within scope do
     step(step)
   end
 end
@@ -278,9 +284,9 @@ end
 Then /^I should (not )?see field "([^"]*)"(?: with value "([^"]*)")?$/ do |negation, string, value|
   opts = (value ? {with: value} : {})
   if negation
-    expect(page).not_to have_field(string, opts)
+    expect(page).not_to have_field(string, **opts)
   else
-    expect(page).to have_field(string, opts)
+    expect(page).to have_field(string, **opts)
   end
 end
 

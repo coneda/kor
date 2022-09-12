@@ -12,37 +12,34 @@ class User < ApplicationRecord
   has_many :user_groups, :dependent => :destroy
   has_many :publishments, :dependent => :destroy
 
-  belongs_to :parent, {
+  belongs_to :parent,
     class_name: 'User',
     foreign_key: :parent_username,
     primary_key: :name,
     autosave: false,
     optional: true
-  }
-  belongs_to :personal_group, {
+  belongs_to :personal_group,
     class_name: 'Credential',
     foreign_key: :credential_id,
     optional: true
-  }
-  belongs_to :personal_collection, {
+  belongs_to :personal_collection,
     class_name: 'Collection',
     foreign_key: :collection_id,
     optional: true
-  }
 
   validates :name,
-    :presence => true,
-    :uniqueness => {:allow_blank => false},
-    :format => {:with => /\A[a-zA-Z0-9_.@\-!:\/]+\Z/, :allow_blank => true},
-    :white_space => true
+    presence: true,
+    uniqueness: {allow_blank: false, case_sensitive: true},
+    format: {with: /\A[a-zA-Z0-9_.@\-!:\/]+\Z/, allow_blank: true},
+    white_space: true
   validates :email,
-    :presence => true,
-    :uniqueness => {:allow_blank => false},
-    :format => {:with => /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, :allow_blank => true},
-    :white_space => true
+    presence: true,
+    uniqueness: {allow_blank: false, case_sensitive: true},
+    format: {with: /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,4}\Z/i, allow_blank: true},
+    white_space: true
   validates :api_key,
-    :uniqueness => true,
-    :length => {:minimum => 32, allow_blank: true}
+    uniqueness: {case_sensitive: true},
+    length: {minimum: 32, allow_blank: true}
   validates(:plain_password,
     format: {:allow_nil => true, :with => /\A(.{5,30})|\Z/},
     confirmation: true

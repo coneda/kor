@@ -107,14 +107,14 @@ class Relation < ApplicationRecord
       DirectedRelationship.
         where(is_reverse: false).
         where(relation_id: id).
-        update_all(relation_name: name)
+        update_all(['relation_name = ?', name])
     end
 
     if saved_change_to_reverse_name?
       DirectedRelationship.
         where(is_reverse: true).
         where(relation_id: id).
-        update_all(relation_name: reverse_name)
+        update_all(['relation_name = ?', reverse_name])
     end
   end
 
@@ -239,23 +239,21 @@ class Relation < ApplicationRecord
 
     self.class.transaction do
       others.each do |other|
-        Relationship.where(relation_id: other.id).update_all(
-          relation_id: self.id
-        )
+        Relationship.where(relation_id: other.id).update_all([
+          'relation_id = ?', self.id
+        ])
         DirectedRelationship.where(
           relation_id: other.id,
           is_reverse: false
-        ).update_all(
-          relation_id: self.id,
-          relation_name: self.name
-        )
+        ).update_all([
+          'relation_id = ?, relation_name = ?', self.id, self.name
+        ])
         DirectedRelationship.where(
           relation_id: other.id,
           is_reverse: true
-        ).update_all(
-          relation_id: self.id,
-          relation_name: self.reverse_name
-        )
+        ).update_all([
+          'relation_id = ?, relation_name = ?', self.id, self.reverse_name
+        ])
         other.destroy
       end
     end

@@ -5,9 +5,9 @@ class Credential < ApplicationRecord
   has_one :owner, :class_name => 'User', :foreign_key => :credential_id
 
   validates :name,
-    :presence => true,
-    :uniqueness => true,
-    :white_space => true
+    presence: true,
+    uniqueness: {case_sensitive: true},
+    white_space: true
 
   scope :ordered, lambda{ order("name ASC") }
   scope :non_personal, lambda{

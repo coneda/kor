@@ -109,7 +109,7 @@ class Kor::Import::ErlangenCrm
 
     Relation.all.each do |relation|
       if relation.url && r = @lookup[relation.url] && r[:parent_urls].present?
-        relation.update_attributes(
+        relation.update(
           parent_ids: Relation.where(url: r[:parent_urls]).pluck(:id)
         )
       end

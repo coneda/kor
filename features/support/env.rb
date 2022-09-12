@@ -12,7 +12,7 @@ require 'cucumber/rspec/doubles'
 $: << File.expand_path("#{__dir__}/../../spec")
 
 require 'support/suite_helper'
-SuiteHelper.setup_simplecov
+SuiteHelper.setup_simplecov(:cucumber)
 SuiteHelper.require_modules
 
 # Capybara defaults to CSS3 selectors rather than XPath.

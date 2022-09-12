@@ -1,9 +1,9 @@
 <%= I18n.t("mailer.messages.hi", username: h(@download.user.display_name) ) %>,
 
-<%= I18n.t("mailer.messages.download_ready", {
+<%= I18n.t("mailer.messages.download_ready",
   url: root_url,
   link: url_for(controller: 'downloads', action: 'show', uuid: @download.uuid)
-}) %>
+) %>
 
 <%= I18n.t("mailer.messages.best_regards") %>,
 <%= Kor.settings['maintainer_name'] %>

@@ -8,18 +8,16 @@ class Relationship < ApplicationRecord
   belongs_to :from, class_name: "Entity", foreign_key: :from_id
   belongs_to :to, class_name: "Entity", foreign_key: :to_id
 
-  belongs_to :normal, {
+  belongs_to :normal,
     class_name: "DirectedRelationship",
     dependent: :destroy,
     autosave: true,
     optional: true
-  }
-  belongs_to :reversal, {
+  belongs_to :reversal,
     class_name: "DirectedRelationship",
     dependent: :destroy,
     autosave: true,
     optional: true
-  }
 
   has_many :datings, :class_name => "RelationshipDating", :dependent => :destroy
 

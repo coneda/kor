@@ -6,18 +6,16 @@ class Entity < ApplicationRecord
 
   belongs_to :kind
   belongs_to :collection
-  belongs_to :creator, {
+  belongs_to :creator,
     class_name: "User",
     foreign_key: :creator_id,
     optional: true
-  }
-  belongs_to :updater, {
+  belongs_to :updater,
     class_name: "User",
     foreign_key: :updater_id,
     optional: true
-  }
 
-  has_many :identifiers, :dependent => :destroy
+  has_many :identifiers, dependent: :destroy
   has_many :datings, class_name: "EntityDating", dependent: :destroy
 
   belongs_to :medium, dependent: :destroy, optional: true
@@ -38,12 +36,20 @@ class Entity < ApplicationRecord
   accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
 
   validates :name,
-    :presence => {:if => :needs_name?},
-    :uniqueness => {:scope => [:kind_id, :distinct_name], :allow_blank => true},
-    :white_space => true
+    presence: {if: :needs_name?},
+    uniqueness: {
+      scope: [:kind_id, :distinct_name],
+      allow_blank: true,
+      case_sensitive: true
+    },
+    white_space: true
   validates :distinct_name,
-    :uniqueness => {:scope => [:kind_id, :name], :allow_blank => true},
-    :white_space => true
+    uniqueness: {
+      scope: [:kind_id, :name],
+      allow_blank: true,
+      case_sensitive: true
+    },
+    white_space: true
   validates :kind, :uuid, :collection_id, presence: true
   validates :no_name_statement, inclusion: {
     :allow_blank => true, :in => ['unknown', 'not_available', 'empty_name', 'enter_name']
@@ -186,7 +192,7 @@ class Entity < ApplicationRecord
         field.entity = self
         if field.value.present?
           id = identifiers.find_or_create_by(kind: field.name)
-          id.update_attributes value: field.value
+          id.update value: field.value
         else
           id = identifiers.where(kind: field.name).first
           id.destroy if id

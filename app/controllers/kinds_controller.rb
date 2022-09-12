@@ -28,7 +28,7 @@ class KindsController < JsonController
   def update
     @kind = Kind.find(params[:id])
 
-    if @kind.update_attributes(kind_params)
+    if @kind.update(kind_params)
       render_updated @kind
     else
       render_422 @kind.errors

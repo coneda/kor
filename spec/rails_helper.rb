@@ -66,14 +66,18 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.before :suite do
-    SuiteHelper.setup
+    SuiteHelper.setup(:rspec)
   end
 
   config.around :each do |example|
-    SuiteHelper.around_each(&example)
+    SuiteHelper.around_each(:rspec, &example)
   end
 
   config.before :each do |example|
     SuiteHelper.before_each(:rspec, self, example)
+  end
+
+  config.after :each do |example|
+    SuiteHelper.after_each(:rspec, self, example)
   end
 end

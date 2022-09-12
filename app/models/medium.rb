@@ -21,8 +21,8 @@ class Medium < ApplicationRecord
       :normal => ['1440x1440>', :jpg]
     }
 
-  process_in_background :document
-  process_in_background :image
+  # process_in_background :document
+  # process_in_background :image
 
   # TODO: do we still need this?
   def custom_styles
@@ -93,7 +93,7 @@ class Medium < ApplicationRecord
 
   validates_attachment :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{ |medium| medium.image.file? }}
   validates_attachment :document, presence: {unless: Proc.new{ |medium| medium.image.file? }, message: :file_must_be_set}
-  validates :datahash, uniqueness: {:message => :file_exists}
+  validates :datahash, uniqueness: {message: :file_exists, case_sensitive: true}
 
   validate :validate_no_two_images
   validate :validate_file_size

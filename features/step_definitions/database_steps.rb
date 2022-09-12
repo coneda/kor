@@ -84,11 +84,11 @@ Then /^entity "([^"]*)" should have dataset values? "([^"]*)" for "([^"]*)"$/ do
 end
 
 Given('field {string} is mandatory') do |name|
-  Field.find_by(name: name).update_attributes mandatory: true
+  Field.find_by(name: name).update mandatory: true
 end
 
 Given('select field {string} allows the values {string}') do |name, values|
-  Field.find_by(name: name).update_attributes values: values.split(/\s*,\s*/)
+  Field.find_by(name: name).update values: values.split(/\s*,\s*/)
 end
 
 When /^the "([^"]*)" "([^"]*)" is updated behind the scenes$/ do |klass, name|
@@ -117,7 +117,7 @@ Given /^the (invalid )?entity "([^"]*)" of kind "([^"]*)" inside collection "([^
   step "the collection \"#{collection}\""
   entity = Entity.find_by_name(entity)
   collection = Collection.find_by_name(collection)
-  entity.update_attributes :collection_id => collection.id
+  entity.update :collection_id => collection.id
   entity.mark_invalid if invalid == "invalid "
 end
 
@@ -128,7 +128,7 @@ Given /^(\d+) (invalid )?entities "([^"]*)" of kind "([^"]*)" inside collection 
 end
 
 Given /^the entity "([^"]*)" has the synonyms "([^"]*)"$/ do |entity, synonyms|
-  Entity.find_by!(name: entity).update_attributes :synonyms => synonyms.split('/')
+  Entity.find_by!(name: entity).update :synonyms => synonyms.split('/')
 end
 
 Given /^"([^"]*)" has a (shared )?user group "([^"]*)"$/ do |user_name, shared, group_name|
@@ -302,13 +302,13 @@ end
 Given(/^the entity "([^"]*)" was created by "([^"]*)"$/) do |_name, username|
   entity = Entity.where(name: 'Mona Lisa').first
   user = User.where(name: username).first
-  entity.update_attributes creator: user
+  entity.update creator: user
 end
 
 Given(/^the entity "([^"]*)" was updated by "([^"]*)"$/) do |_name, username|
   entity = Entity.where(name: 'Mona Lisa').first
   user = User.where(name: username).first
-  entity.update_attributes updater: user
+  entity.update updater: user
 end
 
 Given(/^there are "([^"]*)" media entities$/) do |amount|
@@ -415,7 +415,7 @@ Given("{string} has distinct name {string}") do |entity, distinct_name|
 end
 
 Given("user {string} has locale {string}") do |name, locale|
-  User.find_by!(name: name).update_attributes locale: locale
+  User.find_by!(name: name).update locale: locale
 end
 
 Given('the entity {string} is in user group {string}') do |name, group|

@@ -51,7 +51,7 @@ Webdrivers.cache_time = 86400 # 24 hours
 World(DataHelper)
 
 SuiteHelper.setup_vcr :cucumber
-SuiteHelper.setup
+SuiteHelper.setup :cucumber
 
 Capybara.server_port = 47001
 Capybara.default_max_wait_time = 5
@@ -87,16 +87,20 @@ Around('@notravis') do |_scenario, block|
 end
 
 Around do |_scenario, block|
-  SuiteHelper.around_each(&block)
+  SuiteHelper.around_each(:cucumber, &block)
 end
 
-Before do |scenario|
+Before do |_scenario|
   reset_browser!
-  SuiteHelper.before_each(:cucumber, self, scenario)
+  SuiteHelper.before_each(:cucumber, self, _scenario)
+end
+
+After do |_scenario, block|
+  SuiteHelper.after_each(:rspec, self, _scenario)
 end
 
 if ENV['DEBUG_FAILED'] == 'true'
-  After do |scenario|
+  After do |_scenario|
     if scenario.failed?
       if ENV['HEADLESS'] == 'true'
         errors = page.driver.browser.manage.logs.get(:browser)

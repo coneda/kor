@@ -94,7 +94,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
       leonardo = Entity.last
       admin = User.admin
 
-      leonardo.update_attributes(
+      leonardo.update(
         datings: [FactoryBot.build(:leonardo_lifespan)],
         properties: [{'label' => 'age', 'value' => 53}]
       )
@@ -280,7 +280,7 @@ RSpec.describe OaiPmh::EntitiesController, type: :request do
     }
 
     zero = Time.now.utc
-    Entity.update_all updated_at: (zero - 2.hours)
+    Entity.update_all(['updated_at = ?', zero - 2.hours])
     55.times do |i|
       FactoryBot.create :mona_lisa, name: "Mona Lisa #{i}", updated_at: (zero - i.minutes)
     end

@@ -28,7 +28,7 @@ end
 
 Given /^the user "([^"]*)" has password "([^"]*)"$/ do |username, password|
   user = User.find_by!(name: username)
-  user.update_attributes(
+  user.update(
     password: password,
     make_personal: user.personal?,
     terms_accepted: true

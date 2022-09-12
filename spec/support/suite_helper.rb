@@ -5,10 +5,16 @@ module SuiteHelper
     require 'support/xml_helper'
   end
 
-  def self.setup
+  def self.setup(framework)
     DatabaseCleaner.clean_with :truncation
-    # DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.strategy = :truncation
+
+    if framework == :rspec
+      DatabaseCleaner.strategy = :transaction
+    end
+
+    if framework == :cucumber
+      DatabaseCleaner.strategy = :truncation
+    end
 
     system "cat /dev/null >| #{Rails.root}/log/test.log"
 
@@ -24,21 +30,31 @@ module SuiteHelper
     Rails.application.load_seed
     DataHelper.default_setup
 
+    # if framework == :cucumber
+    #   system 'mysqldump',
+    #     '-h', '127.0.0.1',
+    #     '-u', 'root',
+    #     '-p', 'root',
+    # end
+
     system "rm -rf #{Rails.root}/tmp/test.media.clone"
     system "mv #{ENV['DATA_DIR']}/media #{Rails.root}/tmp/test.media.clone"
   end
 
-  def self.around_each
-    DatabaseCleaner.clean
-    Rails.application.load_seed
-    DataHelper.default_setup
+  def self.around_each(framework)
+    if framework == :rspec
+      DatabaseCleaner.start
+      yield
+      DatabaseCleaner.clean
+    end
 
-    system "rm -rf #{Rails.root}/tmp/test.media.clone"
-    system "mv #{ENV['DATA_DIR']}/media #{Rails.root}/tmp/test.media.clone"
+    if framework == :cucumber
+      DatabaseCleaner.clean
+      Rails.application.load_seed
+      DataHelper.default_setup
 
-    # DatabaseCleaner.start
-    yield
-    # DatabaseCleaner.clean
+      yield
+    end
   end
 
   def self.before_each(framework, scope, test)
@@ -77,6 +93,17 @@ module SuiteHelper
     )
   end
 
+  def self.after_each(framework, scope, test)
+    if framework == :rspec
+      extend ActiveSupport::Testing::TimeHelpers
+      travel_back
+    end
+
+    if framework == :cucumber
+      scope.travel_back
+    end
+  end
+
   def self.setup_vcr(framework)
     require 'vcr'
 
@@ -108,11 +135,12 @@ module SuiteHelper
     end
   end
 
-  def self.setup_simplecov
+  def self.setup_simplecov(framework)
     if ENV['COVERAGE'] == 'true'
       require 'simplecov'
 
-      SimpleCov.start 'rails' do
+      SimpleCov.start :rails do
+        command_name framework.to_s
         use_merging true
         merge_timeout 3600
         coverage_dir 'tmp/coverage'
@@ -120,7 +148,7 @@ module SuiteHelper
         track_files '{bin,config,app,lib}/**/*.{rb,rake}'
       end
 
-      puts "performing coverage analysis"
+      puts "performing coverage analysis (suite '#{framework}')"
     end
   end
 

@@ -25,7 +25,7 @@ class GeneratorsController < JsonController
   def update
     @record = @generators.find(params[:id])
 
-    if @record.update_attributes(generator_params)
+    if @record.update(generator_params)
       render_updated @record
     else
       render_422 @record.errors

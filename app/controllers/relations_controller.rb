@@ -37,7 +37,7 @@ class RelationsController < JsonController
   def update
     @record = Relation.find(params[:id])
 
-    if @record.update_attributes(relation_params)
+    if @record.update(relation_params)
       render_updated @record
     else
       render_422 @record.errors

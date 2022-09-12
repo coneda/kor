@@ -1,8 +1,7 @@
 class EntityDating < Dating
-  belongs_to :owner, {
+  belongs_to :owner,
     class_name: 'Entity',
     foreign_key: 'entity_id',
     touch: true,
-    optional: true,
-  }
+    optional: true
 end

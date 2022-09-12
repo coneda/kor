@@ -3,7 +3,10 @@ class AuthorityGroup < EntityGroup
   belongs_to :authority_group_category, optional: true
 
   if column_names.include? 'authority_group_category_id'
-    validates :name, uniqueness: {scope: :authority_group_category_id}
+    validates :name, uniqueness: {
+      scope: :authority_group_category_id,
+      case_sensitive: true
+    }
   end
 
   default_scope lambda{ order(name: 'asc') }
