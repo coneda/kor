@@ -16,5 +16,9 @@ fi
 
 bundle exec rake db:migrate
 
-bundle exec puma -b tcp://0.0.0.0 -p 3000 -e production -v
-
+bundle exec puma \
+  -b tcp://0.0.0.0 \
+  -p 3000 \
+  -e production \
+  --pidfile tmp/puma.pid
+  -v
