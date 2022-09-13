@@ -26,3 +26,6 @@ deploy.config.sh
 .vagrant
 
 .ruby-version
+# Mac
+
+.DS_Store

@@ -22,6 +22,8 @@ commit history and the closed issues on GitHub.
 * authentication sources can now specify a custom password management url. This
   also removes the password fields from the profile editor to prevent federation
   users to change their local passwords
+* the local login form can now be hidden behind a button when federation auth
+  is available
 
 ## Version 4.1.0
 

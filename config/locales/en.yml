@@ -304,6 +304,9 @@ en:
       session_lifetime: "session lifetime [seconds]"
       publishment_lifetime: "publishments lifetime [days]"
       env_auth_button_label: "label for federated login button (leave empty to hide button)"
+      env_auth_local_button_label: |
+        label for the button toggling the local login (leave empty to always
+        show form)
       fail_on_update_errors: "users created/updated by auth sources must pass validations"
       custom_css_file: "path to a custom css file"
       kind_dating_label: "default dating label for new kinds"
@@ -707,6 +710,9 @@ en:
     federation_login: |
       This installation allows authentication through a federation. If you would
       like to use it, please click the button below.
+    local_login: |
+      If you have been given specific login credentials for this application,
+      please use the following form.
 
   mailer:
     subjects:

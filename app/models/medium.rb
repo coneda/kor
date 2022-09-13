@@ -21,8 +21,8 @@ class Medium < ApplicationRecord
       :normal => ['1440x1440>', :jpg]
     }
 
-  # process_in_background :document
-  # process_in_background :image
+  process_in_background :document
+  process_in_background :image
 
   # TODO: do we still need this?
   def custom_styles

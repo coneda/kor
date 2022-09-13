@@ -87,6 +87,13 @@
         />
 
         <kor-input
+          name="env_auth_local_button_label"
+          label={nameFor('env_auth_local_button_label')}
+          riot-value={valueWithDefaults('env_auth_local_button_label')}
+          ref="fields"
+        />
+
+        <kor-input
           name="search_entity_name"
           label={nameFor('search_entity_name')}
           riot-value={valueWithDefaults('search_entity_name')}

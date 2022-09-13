@@ -310,6 +310,9 @@ de:
       env_auth_button_label: |
         Beschriftung für den Button zur Verbunds-Authentifierung (um den Button
         nicht anzuzeigen, lassen Sie das Feld leer)
+      env_auth_local_button_label: |
+        Beschriftung für den Button zum Anzeigen des lokalen Anmelde-Formulars
+        (um das Formular immer anzuzeigen, lassen Sie das Feld leer)
       fail_on_update_errors: |
         Benutzer, die durch externe Authentifierungs-Mechanismen angelegt
         werden, müssen alle Validierungsregeln erfüllen
@@ -723,6 +726,9 @@ de:
     federation_login: |
       Diese Installation stellt eine Authentifizierung durch eine übergeordnete
       Vereinigung bereit. Klicken Sie dazu bitte auf den folgenden Button.
+    local_login: |
+      Wenn Ihnen Zugangsdaten speziell für diese Applikation zur Verfügung
+      gestellt wurden, verwenden Sie bitte das folgende Formular.
 
   mailer:
     subjects:

@@ -47,6 +47,7 @@ class DelayedPaperclip::ProcessJob
     old = self.queue_adapter
     self.queue_adapter = adapter
     yield
+  ensure
     self.queue_adapter = old
   end
 end

@@ -6,6 +6,9 @@ module SuiteHelper
   end
 
   def self.setup(framework)
+    # see https://github.com/rails/rails/issues/37270
+    (ActiveJob::Base.descendants << ActiveJob::Base).each(&:disable_test_adapter)
+
     DatabaseCleaner.clean_with :truncation
 
     if framework == :rspec
@@ -37,8 +40,9 @@ module SuiteHelper
     #     '-p', 'root',
     # end
 
-    system "rm -rf #{Rails.root}/tmp/test.media.clone"
-    system "mv #{ENV['DATA_DIR']}/media #{Rails.root}/tmp/test.media.clone"
+    system 'rm', '-rf', "#{ENV['DATA_DIR']}/media.clone/"
+    system 'mv', "#{ENV['DATA_DIR']}/media", "#{ENV['DATA_DIR']}/media.clone"
+    sleep 1
   end
 
   def self.around_each(framework)
@@ -58,8 +62,9 @@ module SuiteHelper
   end
 
   def self.before_each(framework, scope, test)
-    system "rm -rf #{ENV['DATA_DIR']}/media/"
-    system "cp -a #{Rails.root}/tmp/test.media.clone #{ENV['DATA_DIR']}/media"
+    ActiveJob::Base.queue_adapter = :inline
+    system 'rm', '-rf', "#{ENV['DATA_DIR']}/media/"
+    system 'cp', '-a', "#{ENV['DATA_DIR']}/media.clone/", "#{ENV['DATA_DIR']}/media"
 
     FactoryBot.reload
     Kor::Auth.sources(refresh: true)

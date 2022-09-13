@@ -16,28 +16,44 @@
         <div class="hr"></div>
       </div>
 
-      <form class="form" method="POST" action='#/login' onsubmit={submit}>
-        <kor-input
-          label={tcap('activerecord.attributes.user.name')}
-          type="text"
-          ref="username"
-        />
+      <virtual if={localLabel()}>
+        <p>{t('prompt.local_login')}</p>
+        <a
+          href="#"
+          class="kor-local-button"
+          onclick={toggleLocal}
+        >{localLabel()}</a>
+      </virtual>
 
-        <kor-input
-          label={tcap('activerecord.attributes.user.password')}
-          type="password"
-          ref="password"
-        />
+      <virtual if={!localLabel() || localActive}>
+        <form
+          class="form"
+          method="POST"
+          action='#/login'
+          onsubmit={submit}
+        >
+          <kor-input
+            label={tcap('activerecord.attributes.user.name')}
+            type="text"
+            ref="username"
+          />
 
-        <kor-input
-          type="submit"
-          label={tcap('verbs.login')}
-        />
-      </form>
+          <kor-input
+            label={tcap('activerecord.attributes.user.password')}
+            type="password"
+            ref="password"
+          />
 
-      <a href="#/password-recovery" class="password-recovery">
-        {tcap('password_forgotten_question')}
-      </a>
+          <kor-input
+            type="submit"
+            label={tcap('verbs.login')}
+          />
+        </form>
+
+        <a href="#/password-recovery" class="password-recovery">
+          {tcap('password_forgotten_question')}
+        </a>
+      </virtual>
 
       <div class="hr"></div>
 
@@ -74,9 +90,21 @@
         else
           wApp.routing.path '/search'
 
+    tag.toggleLocal = (event) ->
+      event.preventDefault()
+
+      tag.localActive = !tag.localActive
+
     tag.federationAuth = ->
       l = tag.config().env_auth_button_label
       typeof l == 'string' && l.length > 0
+
+    tag.localLabel = ->
+      l = tag.config().env_auth_local_button_label
+      if typeof l == 'string' && l.length > 0
+        l
+      else
+        null
 
   </script>
 </kor-login>

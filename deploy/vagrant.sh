@@ -3,6 +3,8 @@
 export DEBIAN_FRONTEND=noninteractive
 
 function system_updates {
+  echo "grub-pc hold" | sudo dpkg --set-selections
+  
   apt-get update
   apt-get dist-upgrade -y
   apt-get clean

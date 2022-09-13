@@ -137,6 +137,7 @@ module Kor
         'publishment_lifetime' => 14,
         'default_groups' => [],
         'env_auth_button_label' => 'federated login',
+        'env_auth_local_button_label' => '',
 
         'custom_css_file' => 'data/custom.css',
 
