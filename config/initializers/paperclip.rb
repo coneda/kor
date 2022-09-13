@@ -59,7 +59,7 @@ class Paperclip::UrlGenerator
     if url.respond_to?(:escape)
       url.escape
     else
-      URI.parser.escape(url).gsub(escape_regex) do |m|
+      URI::DEFAULT_PARSER.escape(url).gsub(escape_regex) do |m|
         "%#{m.ord.to_s(16).upcase}"
       end
     end

@@ -62,7 +62,6 @@ module SuiteHelper
   end
 
   def self.before_each(framework, scope, test)
-    ActiveJob::Base.queue_adapter = :inline
     system 'rm', '-rf', "#{ENV['DATA_DIR']}/media/"
     system 'cp', '-a', "#{ENV['DATA_DIR']}/media.clone/", "#{ENV['DATA_DIR']}/media"
 

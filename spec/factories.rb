@@ -47,44 +47,44 @@ FactoryBot.define do
 
   factory :medium do
     factory :medium_image_a do
-      document { File.open("#{Rails.root}/spec/fixtures/image_a.jpg") }
+      document { File.open("#{Rails.root}/spec/fixtures/files/image_a.jpg") }
     end
 
     factory :medium_image_b do
-      document { File.open("#{Rails.root}/spec/fixtures/image_b.jpg") }
+      document { File.open("#{Rails.root}/spec/fixtures/files/image_b.jpg") }
     end
 
     factory :medium_image_c do
-      document { File.open("#{Rails.root}/spec/fixtures/image_c.jpg") }
+      document { File.open("#{Rails.root}/spec/fixtures/files/image_c.jpg") }
     end
 
     factory :medium_image_exif do
-      document { File.open("#{Rails.root}/spec/fixtures/image_exif.tiff") }
+      document { File.open("#{Rails.root}/spec/fixtures/files/image_exif.tiff") }
     end
 
     factory :medium_video_a do
-      document { File.open("#{Rails.root}/spec/fixtures/video_a.m4v") }
+      document { File.open("#{Rails.root}/spec/fixtures/files/video_a.m4v") }
     end
 
     factory :medium_video_b do
-      document { File.open("#{Rails.root}/spec/fixtures/video_b.flv") }
+      document { File.open("#{Rails.root}/spec/fixtures/files/video_b.flv") }
     end
 
     factory :medium_audio_a do
-      document { File.open("#{Rails.root}/spec/fixtures/audio_a.wav") }
+      document { File.open("#{Rails.root}/spec/fixtures/files/audio_a.wav") }
     end
 
     factory :medium_audio_b do
-      document { File.open("#{Rails.root}/spec/fixtures/audio_b.mp3") }
+      document { File.open("#{Rails.root}/spec/fixtures/files/audio_b.mp3") }
     end
 
     factory :medium_text_a do
-      document { File.open("#{Rails.root}/spec/fixtures/text_file.txt") }
+      document { File.open("#{Rails.root}/spec/fixtures/files/text_file.txt") }
     end
   end
 
   factory :medium_without_swap, :class => Medium do
-    image { File.open("#{Rails.root}/spec/fixtures/image_a.jpg") }
+    image { File.open("#{Rails.root}/spec/fixtures/files/image_a.jpg") }
   end
 
   factory :collection do

@@ -87,8 +87,9 @@ class Entity < ApplicationRecord
   end
 
   def read_attribute_for_validation(attr)
-    if attr.match(/^dataset\./)
-      self.dataset[attr.split('\.')[1]]
+    a = attr.to_s
+    if a.match(/^dataset\./)
+      self.dataset[a.split('\.')[1]]
     else
       super
     end
