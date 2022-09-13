@@ -12,7 +12,6 @@ require "action_mailer/railtie"
 # require "action_text/engine"
 # require "action_view/railtie"
 # require "action_cable/engine"
-# require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
 ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'] = '1'
@@ -40,7 +39,8 @@ Dir["lib/paperclip_processors/*.rb"].each{ |f| require File.expand_path(f) }
 module Kor
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.1
+    config.load_defaults 7.0
+    # config.active_record.legacy_connection_handling = false
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -49,8 +49,13 @@ module Kor
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    Rails.autoloaders.main.ignore(Rails.root.join('lib/core_ext'))
+    Rails.autoloaders.main.ignore(Rails.root.join('lib/paperclip_processors'))
     config.autoload_paths << "#{Rails.root}/lib"
     config.eager_load_paths << "#{Rails.root}/lib"
+
+    # Don't generate system test files.
+    config.generators.system_tests = nil
 
     config.active_record.yaml_column_permitted_classes = [Symbol, Time]
 

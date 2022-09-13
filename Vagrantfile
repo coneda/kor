@@ -39,8 +39,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "elasticsearch_dev"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_mysql"
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "mysql_dev"
-    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_nvm", env: {'NODE_VERSION' => '12.22.0'}
-    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv", env: {'RUBY_VERSION' => '2.7.5'}
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_nvm", env: {'NODE_VERSION' => '14.20.0'}
+    c.vm.provision :shell, path: "deploy/vagrant.sh", args: "install_rbenv", env: {'RUBY_VERSION' => '3.0.4'}
     c.vm.provision :shell, path: "deploy/vagrant.sh", args: "configure_dev", privileged: false
   end
 

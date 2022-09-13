@@ -1,6 +1,6 @@
 <ListRecords>
   <% @records[:items].each do |record| %>
-    <%= render :partial => 'wrapper', :locals => {:record => record} %>
+    <%= render partial: 'wrapper', locals: {record: record} %>
   <% end %>
 
   <% if @records[:token] %>

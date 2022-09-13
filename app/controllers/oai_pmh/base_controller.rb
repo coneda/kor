@@ -1,5 +1,5 @@
 class OaiPmh::BaseController < BaseController
-  layout "../oai_pmh/base"
+  layout "oai_pmh/base"
 
   respond_to :xml
 
@@ -49,7 +49,7 @@ class OaiPmh::BaseController < BaseController
     @records = query(record_params)
 
     if @records[:total] > 0
-      render :template => "oai_pmh/list_records"
+      render template: "oai_pmh/list_records"
     else
       render_error 'noRecordsMatch'
     end
@@ -108,7 +108,7 @@ class OaiPmh::BaseController < BaseController
 
       respond_to do |format|
         format.xml do
-          render template: 'oai_pmh/error', layout: '../oai_pmh/base'
+          render template: 'oai_pmh/error', layout: 'oai_pmh/base'
         end
       end
     end
