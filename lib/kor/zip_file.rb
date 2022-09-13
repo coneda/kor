@@ -12,8 +12,8 @@ class Kor::ZipFile
     entities = Entity.find(entity_ids)
 
     zip_file = Kor::ZipFile.new("#{Rails.root}/tmp/download.zip",
-      :user_id => user_id,
-      :file_name => "#{group.name}.zip"
+      user_id: user_id,
+      file_name: "#{group.name}.zip"
     )
 
     entities.each do |e|
@@ -33,10 +33,10 @@ class Kor::ZipFile
 
     pack
     download = Download.create(
-      :user_id => options[:user_id],
-      :data => filename,
-      :file_name => options[:file_name],
-      :notify_user => opts[:notify]
+      user_id: options[:user_id],
+      data: filename,
+      file_name: options[:file_name],
+      notify_user: opts[:notify]
     )
     destroy
 
@@ -58,14 +58,14 @@ class Kor::ZipFile
     if entity.is_medium?
       if entity.medium.document.file?
         extention = entity.medium.original_extension
-        add entity.medium.path(:original), :as => "#{entity.id}.#{extention}"
+        add entity.medium.path(:original), as: "#{entity.id}.#{extention}"
       else
         extention = entity.medium.style_extension(:normal)
-        add entity.medium.path(:normal), :as => "#{entity.id}.#{extention}"
+        add entity.medium.path(:normal), as: "#{entity.id}.#{extention}"
       end
 
-      add nil, :as => "#{entity.id}.txt" do
-        {:data => Kor::Export::MetaData.new(user).render(entity)}
+      add nil, as: "#{entity.id}.txt" do
+        {data: Kor::Export::MetaData.new(user).render(entity)}
       end
     end
   end

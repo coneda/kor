@@ -171,28 +171,28 @@ RSpec.shared_examples 'a kor search' do
   end
 
   it 'should search by media properties' do
-    search = described_class.new(admin, file_size: 184602)
+    search = described_class.new(admin, file_size: 184_602)
     expect(search.total).to eq(0)
 
-    search = described_class.new(admin, file_size: 184601)
+    search = described_class.new(admin, file_size: 184_601)
     expect(search.total).to eq(1)
 
-    search = described_class.new(admin, larger_than: 100000)
+    search = described_class.new(admin, larger_than: 100_000)
     expect(search.total).to eq(2)
 
-    search = described_class.new(admin, larger_than: 400000)
+    search = described_class.new(admin, larger_than: 400_000)
     expect(search.total).to eq(1)
 
-    search = described_class.new(admin, larger_than: 600000)
+    search = described_class.new(admin, larger_than: 600_000)
     expect(search.total).to eq(0)
 
-    search = described_class.new(admin, smaller_than: 100000)
+    search = described_class.new(admin, smaller_than: 100_000)
     expect(search.total).to eq(0)
 
-    search = described_class.new(admin, smaller_than: 300000)
+    search = described_class.new(admin, smaller_than: 300_000)
     expect(search.total).to eq(1)
 
-    search = described_class.new(admin, smaller_than: 600000)
+    search = described_class.new(admin, smaller_than: 600_000)
     expect(search.total).to eq(2)
 
     search = described_class.new(admin, file_type: 'image/jpeg')

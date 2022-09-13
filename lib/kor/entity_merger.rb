@@ -34,14 +34,14 @@ class Kor::EntityMerger
   end
 
   def merge_relationships(old_ids, new_id)
-    Relationship.where(:from_id => old_ids).update_all(["from_id = ?", new_id])
-    Relationship.where(:to_id => old_ids).update_all(["to_id = ?", new_id])
-    DirectedRelationship.where(:from_id => old_ids).update_all(["from_id = ?", new_id])
-    DirectedRelationship.where(:to_id => old_ids).update_all(["to_id = ?", new_id])
+    Relationship.where(from_id: old_ids).update_all(["from_id = ?", new_id])
+    Relationship.where(to_id: old_ids).update_all(["to_id = ?", new_id])
+    DirectedRelationship.where(from_id: old_ids).update_all(["from_id = ?", new_id])
+    DirectedRelationship.where(to_id: old_ids).update_all(["to_id = ?", new_id])
   end
 
   def merge_entity_datings(old_ids, new_id)
-    EntityDating.where(:entity_id => old_ids).update_all(["entity_id = ?", new_id])
+    EntityDating.where(entity_id: old_ids).update_all(["entity_id = ?", new_id])
 
     if @datings_attributes
       # now that the existing datings have been transferred to the new (persisted)

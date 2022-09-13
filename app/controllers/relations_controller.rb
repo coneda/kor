@@ -1,5 +1,5 @@
 class RelationsController < JsonController
-  skip_before_action :auth, :only => [:index, :names, :show]
+  skip_before_action :auth, only: [:index, :names, :show]
   skip_before_action :legal, only: [:index, :names, :show]
 
   def index
@@ -15,7 +15,7 @@ class RelationsController < JsonController
       to_ids: params[:to_kind_ids]
     )
 
-    render :json => @names
+    render json: @names
   end
 
   def show

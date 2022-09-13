@@ -1,6 +1,6 @@
 class ::Array
   def request?(property)
-    self.include?(property) || self.include?('all')
+    include?(property) || include?('all')
   end
 
   def self.wrap(object)

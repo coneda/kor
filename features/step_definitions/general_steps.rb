@@ -70,7 +70,7 @@ end
 
 When("I click the download link in mail {string}") do |index|
   mail = ActionMailer::Base.deliveries[index.to_i - 1]
-  link = mail.body.to_s.scan(%r{http://[^/]+/downloads[^\s]+}).first
+  link = mail.body.to_s.scan(/http:\/\/[^\/]+\/downloads[^\s]+/).first
 
   visit link
 end

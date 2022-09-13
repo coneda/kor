@@ -1,8 +1,8 @@
 class Credential < ApplicationRecord
   has_and_belongs_to_many :users
-  has_many :grants, :dependent => :destroy
-  has_many :collections, :through => :grants
-  has_one :owner, :class_name => 'User', :foreign_key => :credential_id
+  has_many :grants, dependent: :destroy
+  has_many :collections, through: :grants
+  has_one :owner, class_name: 'User', foreign_key: :credential_id
 
   validates :name,
     presence: true,

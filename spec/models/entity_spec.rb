@@ -12,9 +12,9 @@ RSpec.describe Entity do
   it "should search by dating" do
     paris.update(
       datings: [
-        FactoryBot.build(:entity_dating, :dating_string => "15. Jahrhundert"),
-        FactoryBot.build(:entity_dating, :dating_string => "18. Jahrhundert"),
-        FactoryBot.build(:entity_dating, :dating_string => "544")
+        FactoryBot.build(:entity_dating, dating_string: "15. Jahrhundert"),
+        FactoryBot.build(:entity_dating, dating_string: "18. Jahrhundert"),
+        FactoryBot.build(:entity_dating, dating_string: "544")
       ]
     )
 
@@ -42,7 +42,7 @@ RSpec.describe Entity do
     expect(Kor::Elastic).to receive(:drop)
 
     entity = FactoryBot.create :der_schrei
-    entity.update :comment => "Some comment"
+    entity.update comment: "Some comment"
     entity.destroy
   end
 
@@ -58,9 +58,9 @@ RSpec.describe Entity do
     entity = FactoryBot.create :jack
 
     entity.update(
-      :dataset => {"some" => "value"},
-      :synonyms => ["john"],
-      :properties => [{'label' => 'page', 'value' => 144}]
+      dataset: {"some" => "value"},
+      synonyms: ["john"],
+      properties: [{'label' => 'page', 'value' => 144}]
     )
 
     entity.reload
@@ -78,7 +78,7 @@ RSpec.describe Entity do
   end
 
   it "should validate entity properties with the mongo class validator" do
-    entity = FactoryBot.build :jack, :properties => [
+    entity = FactoryBot.build :jack, properties: [
       {'label' => 'age'},
       {'value' => 12.7}
     ]
@@ -95,7 +95,7 @@ RSpec.describe Entity do
   end
 
   it "should have correct attachment values after saving" do
-    entity = FactoryBot.create :jack, :synonyms => ["The Hammer"]
+    entity = FactoryBot.create :jack, synonyms: ["The Hammer"]
     expect(entity.synonyms).to eq(["The Hammer"])
   end
 

@@ -9,16 +9,16 @@ class Medium < ApplicationRecord
     processors: lambda{ |instance| instance.processors }
 
   has_attached_file :image,
-    :path => "#{ENV['DATA_DIR']}/media/:style/:id_partition/image.:style_extension",
-    :url => "/media/images/:style/:id_partition/image.:style_extension",
-    :default_url => lambda{ |attachment| attachment.instance.dummy_url },
-    :convert_options => {:all => "+profile '*'"},
-    :styles => {
-      :icon => ['80x80>', :jpg],
-      :thumbnail => ['140x140>', :jpg],
-      :preview => ['300x300>', :jpg],
-      :screen => ['800x800>', :jpg],
-      :normal => ['1440x1440>', :jpg]
+    path: "#{ENV['DATA_DIR']}/media/:style/:id_partition/image.:style_extension",
+    url: "/media/images/:style/:id_partition/image.:style_extension",
+    default_url: lambda{ |attachment| attachment.instance.dummy_url },
+    convert_options: {all: "+profile '*'"},
+    styles: {
+      icon: ['80x80>', :jpg],
+      thumbnail: ['140x140>', :jpg],
+      preview: ['300x300>', :jpg],
+      screen: ['800x800>', :jpg],
+      normal: ['1440x1440>', :jpg]
     }
 
   process_in_background :document
@@ -70,7 +70,7 @@ class Medium < ApplicationRecord
 
   # TODO: fix for audio case or remove if not used
   def presentable?
-    self.content_type.match(/^(image|video|application\/x-shockwave-flash|application\/mp4)/)
+    content_type.match(/^(image|video|application\/x-shockwave-flash|application\/mp4)/)
   end
 
   before_validation do |m|
@@ -91,15 +91,33 @@ class Medium < ApplicationRecord
     end
   end
 
-  validates_attachment :image, content_type: {content_type: /^image\/.+$/, if: Proc.new{ |medium| medium.image.file? }}
-  validates_attachment :document, presence: {unless: Proc.new{ |medium| medium.image.file? }, message: :file_must_be_set}
+  validates_attachment(:image,
+    content_type: {
+      content_type: /^image\/.+$/,
+      if: Proc.new{ |medium| medium.image.file? }
+    }
+  )
+  validates_attachment(:document,
+    presence: {
+      unless: Proc.new{ |medium| medium.image.file? },
+      message: :file_must_be_set
+    }
+  )
   validates :datahash, uniqueness: {message: :file_exists, case_sensitive: true}
 
   validate :validate_no_two_images
   validate :validate_file_size
 
   def validate_no_two_images
-    if document.content_type && image.content_type && (document.content_type.match(/^image\//) && image.content_type.match(/^image\//))
+    invalid =
+      document.content_type &&
+      image.content_type &&
+      (
+        document.content_type.match(/^image\//) &&
+        image.content_type.match(/^image\//)
+      )
+
+    if invalid
       errors.add :base, :no_two_images
     end
   end
@@ -109,11 +127,11 @@ class Medium < ApplicationRecord
     max_bytes = max_mb * (1024**2)
 
     if image_file_size.present? and image_file_size > max_bytes
-      errors.add :image_file_size, :file_size_less_than, :value => max_mb
+      errors.add :image_file_size, :file_size_less_than, value: max_mb
     end
 
     if document_file_size.present? and document_file_size > max_bytes
-      errors.add :document_file_size, :file_size_less_than, :value => max_mb
+      errors.add :document_file_size, :file_size_less_than, value: max_mb
     end
   end
 
@@ -260,7 +278,7 @@ class Medium < ApplicationRecord
   end
 
   def self.dummy_path(content_type)
-    "#{Rails.root}/public#{self.dummy_url content_type}"
+    "#{Rails.root}/public#{dummy_url content_type}"
   end
 
   def dummy_url
@@ -300,7 +318,7 @@ class Medium < ApplicationRecord
 
   def human_content_type
     group, type = content_type.split('/')
-    I18n.t(type, :scope => ['mimes', group], :default => content_type)
+    I18n.t(type, scope: ['mimes', group], default: content_type)
   end
 
   def document=(value)

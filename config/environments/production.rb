@@ -76,9 +76,9 @@ Rails.application.configure do
 
   if recipients = ENV['NOTIFY_EXCEPTIONS']
     Rails.application.config.middleware.use ExceptionNotification::Rack, email: {
-      :email_prefix => "[KOR Exception] ",
-      :sender_address => ENV['NOTIFY_SENDER'],
-      :exception_recipients => recipients.split(/\s*,\s*/)
+      email_prefix: "[KOR Exception] ",
+      sender_address: ENV['NOTIFY_SENDER'],
+      exception_recipients: recipients.split(/\s*,\s*/)
     }
   end
 

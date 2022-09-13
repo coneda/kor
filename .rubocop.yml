@@ -135,3 +135,21 @@ Lint/DuplicateBranch:
     - 'features/support/paths.rb'
     - 'lib/kor/auth.rb'
     - 'spec/lib/kor/dating/parser_spec.rb'
+
+Lint/UnusedBlockArgument:
+  Exclude:
+    - 'app/controllers/iiif/media_controller.rb'
+
+Lint/ShadowingOuterLocalVariable:
+  Exclude:
+    - 'app/controllers/iiif/media_controller.rb'
+
+Style/RegexpLiteral:
+  AllowInnerSlashes: true
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+Style/WordArray:
+  EnforcedStyle: brackets
+  

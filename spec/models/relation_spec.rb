@@ -169,7 +169,9 @@ RSpec.describe Relation do
 
     has_painted.parents = [has_created]
     expect(has_painted.valid?).to be_falsey
-    expect(has_painted.errors.full_messages).to eq(["permitted type (to) can't allow more endpoints than its ancestors"])
+    expect(has_painted.errors.full_messages).to eq(
+      ["permitted type (to) can't allow more endpoints than its ancestors"]
+    )
 
     has_painted.to_kind = paintings
     expect(has_painted.valid?).to be_truthy

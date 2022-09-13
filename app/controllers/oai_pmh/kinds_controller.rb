@@ -3,7 +3,7 @@ class OaiPmh::KindsController < OaiPmh::BaseController
     @record = locate(params[:identifier])
 
     if @record
-      render :template => "oai_pmh/get_record"
+      render template: "oai_pmh/get_record"
     else
       render_error 'idDoesNotExist'
     end

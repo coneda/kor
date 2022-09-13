@@ -15,7 +15,7 @@ module Kor
 
   def self.source_code_url
     if version.match(/-pre$/)
-      if self.commit
+      if commit
         Kor.settings['sources_pre_release'].gsub(/\{\{commit\}\}/, Kor.commit)
       else
         Kor.settings['sources_default']
@@ -63,10 +63,10 @@ module Kor
 
   def self.progress_bar(title, total, options = {})
     options.reverse_merge!(
-      :title => title,
-      :total => total,
-      :format => "%t: |%B|%R/s|%c/%C (%P%%)|%a%E|",
-      :throttle_rate => 0.5
+      title: title,
+      total: total,
+      format: "%t: |%B|%R/s|%c/%C (%P%%)|%a%E|",
+      throttle_rate: 0.5
     )
 
     ProgressBar.create(options)

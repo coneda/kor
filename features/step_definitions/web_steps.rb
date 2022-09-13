@@ -54,7 +54,7 @@ When("I fill in {string} with {string}") do |field, value|
 end
 
 When /^(?:|I )select "([^"]*)" from "([^"]*)"$/ do |value, field|
-  select(value, :from => field)
+  select(value, from: field)
 end
 
 When /^(?:|I )check "([^"]*)"$/ do |field|
@@ -126,10 +126,10 @@ end
 When /^(?:|I )unselect "([^"]*)" from "([^"]*)"(?: within "([^"]*)")?$/ do |value, field, selector|
   if selector
     within(:css, selector) do
-      unselect(value, :from => field)
+      unselect(value, from: field)
     end
   else
-    unselect(value, :from => field)
+    unselect(value, from: field)
   end
 end
 
@@ -152,9 +152,9 @@ end
 
 Then(/^I should (not )?see option "([^"]+)"$/) do |negator, text|
   if negator == "not "
-    expect(page).not_to have_selector("option", :text => text)
+    expect(page).not_to have_selector("option", text: text)
   else
-    expect(page).to have_selector("option", :text => text)
+    expect(page).to have_selector("option", text: text)
   end
 end
 

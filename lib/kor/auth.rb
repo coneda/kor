@@ -117,7 +117,7 @@ module Kor::Auth
   end
 
   def self.authorize(username, additional_attributes: true)
-    user = User.includes(:groups).find_or_initialize_by(:name => username)
+    user = User.includes(:groups).find_or_initialize_by(name: username)
 
     if additional_attributes.is_a?(Hash)
       user.assign_attributes additional_attributes
@@ -195,10 +195,10 @@ module Kor::Auth
   end
 
   def self.allowed_to?(user, policy = :view, collections = nil, options = {})
-    options.reverse_merge!(:required => :all)
+    options.reverse_merge!(required: :all)
     collections ||= Collection.all.to_a
     user ||= User.guest
-    policy = self.policies if policy == :all
+    policy = policies if policy == :all
     policy = [policy] unless policy.is_a?(Array)
     collection_ids = to_ids(collections)
 

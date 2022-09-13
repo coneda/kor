@@ -4,7 +4,7 @@ class RemoveCollections < ActiveRecord::Migration
   end
 
   def self.down
-    create_table :collections, :options => Kor.config['global_database_options'] do |t|
+    create_table :collections, options: Kor.config['global_database_options'] do |t|
       t.string :name
       t.timestamps
     end

@@ -12,6 +12,8 @@ module Paranoia
   end
 
   def timestamp_attributes_with_current_time
-    timestamp_attributes_for_update_in_model.each_with_object({}){ |attr, hash| hash[attr] = current_time_from_proper_timezone }
+    timestamp_attributes_for_update_in_model.each_with_object({}) do |attr, hash|
+      hash[attr] = current_time_from_proper_timezone
+    end
   end
 end

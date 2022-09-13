@@ -51,7 +51,7 @@ RSpec.describe Kor::Import::Excel do
 
     Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec",
       verbose: false,
-      :ignore_validations => true
+      ignore_validations: true
     ).run
 
     expect(Entity.count).to eq(7)
@@ -71,8 +71,8 @@ RSpec.describe Kor::Import::Excel do
 
     Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec",
       verbose: false,
-      :username => "guest",
-      :obey_permissions => true
+      username: "guest",
+      obey_permissions: true
     ).run
 
     expect(Entity.count).to eq(6)
@@ -91,7 +91,7 @@ RSpec.describe Kor::Import::Excel do
 
     Kor::Import::Excel.new("#{Rails.root}/tmp/export_spec",
       verbose: false,
-      :username => "guest",
+      username: "guest",
     ).run
 
     expect(Entity.count).to eq(7)

@@ -190,7 +190,7 @@ class EntitiesController < JsonController
       @entity.updater_id = current_user.id
 
       if @entity.save
-        SystemGroup.find_or_create_by(:name => 'invalid').remove_entities @entity
+        SystemGroup.find_or_create_by(name: 'invalid').remove_entities @entity
         @entity.update_wikidata
         render_updated @entity
       else
@@ -244,7 +244,7 @@ class EntitiesController < JsonController
     collections = entities.map{ |e| e.collection }.uniq
 
     allowed_to_create = allowed_to?(:create, entity_params[:collection_id])
-    allowed_to_delete_requested_entities = allowed_to?(:delete, collections, :required => :all)
+    allowed_to_delete_requested_entities = allowed_to?(:delete, collections, required: :all)
 
     if allowed_to_create && allowed_to_delete_requested_entities
       if entities.map{ |e| e.kind.id }.uniq.size != 1
@@ -252,9 +252,9 @@ class EntitiesController < JsonController
       end
 
       @record = Kor::EntityMerger.new.run(
-        :old_ids => params[:entity_ids],
-        :attributes => entity_params.merge(
-          :creator_id => current_user.id
+        old_ids: params[:entity_ids],
+        attributes: entity_params.merge(
+          creator_id: current_user.id
         )
       )
 
@@ -334,12 +334,12 @@ class EntitiesController < JsonController
         :collection_id,
         :name, :distinct_name, :subtype, :comment, :no_name_statement,
         :tag_list,
-        :synonyms => [],
-        :datings_attributes => [
+        synonyms: [],
+        datings_attributes: [
           :id, :_destroy, :label, :dating_string, :lock_version
         ],
-        :properties => [:label, :value],
-        :medium_attributes => [:id, :image, :document]
+        properties: [:label, :value],
+        medium_attributes: [:id, :image, :document]
       ).tap do |e|
         e[:dataset] = params[:entity][:dataset].try(:permit!)
         e[:properties] ||= []

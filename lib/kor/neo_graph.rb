@@ -51,7 +51,13 @@ class Kor::NeoGraph
       from = Entity.offset((max * rand).to_i).first.id
       to = Entity.offset((max * rand).to_i).first.id
 
-      results = cypher("MATCH (a),(b), p = shortestPath((a)-[r*..25]->(b)) WHERE a.id = #{from} AND b.id = #{to} RETURN nodes(p), [r IN relationships(p) | type(r)]")
+      results = cypher(
+        [
+          "MATCH (a),(b), p = shortestPath((a)-[r*..25]->(b))",
+          "WHERE a.id = #{from} AND b.id = #{to}",
+          "RETURN nodes(p), [r IN relationships(p) | type(r)]"
+        ].join(' ')
+      )
 
       if results["results"].first["data"].empty?
         puts "!!!#{from} -> #{to}: no connection"
@@ -75,7 +81,7 @@ class Kor::NeoGraph
 
   def import_all
     new_progress_bar "importing entities", Entity.count
-    Entity.includes(:kind).find_in_batches :batch_size => 100 do |batch|
+    Entity.includes(:kind).find_in_batches batch_size: 100 do |batch|
       store_entity(batch)
       increment(batch.size)
     end
@@ -86,13 +92,13 @@ class Kor::NeoGraph
     cypher "CREATE INDEX ON :group(name)"
 
     new_progress_bar "importing groups", AuthorityGroup.count
-    AuthorityGroup.includes(:entities).find_in_batches :batch_size => 10 do |batch|
+    AuthorityGroup.includes(:entities).find_in_batches batch_size: 10 do |batch|
       store_group(batch)
       increment(batch.size)
     end
 
     new_progress_bar "importing relationships", Relationship.count
-    Relationship.includes(:relation).find_in_batches :batch_size => 1000 do |batch|
+    Relationship.includes(:relation).find_in_batches batch_size: 1000 do |batch|
       store_relationship(batch)
       increment(batch.size)
     end

@@ -44,9 +44,9 @@ class Kor::Import::Excel < Kor::Export::Excel
 
         uuid = row[1]
         self.entity = if uuid
-          Entity.where(:uuid => uuid).first
+          Entity.where(uuid: uuid).first
         else
-          Entity.new :creator => @user, :updater => @user
+          Entity.new creator: @user, updater: @user
         end
 
         if entity
@@ -123,7 +123,7 @@ class Kor::Import::Excel < Kor::Export::Excel
               else
                 if @options[:ignore_validations]
                   log "invalid but saving anyhow: #{entity.errors.full_messages.inspect}"
-                  entity.save(:validate => false) unless @options[:simulate]
+                  entity.save(validate: false) unless @options[:simulate]
                 else
                   log "invalid: #{entity.errors.full_messages.inspect}"
                 end
@@ -160,7 +160,7 @@ class Kor::Import::Excel < Kor::Export::Excel
   end
 
   def allowed_to?(policy = :edit, collection_id = nil)
-    collections = Collection.where(:id => collection_id).to_a
+    collections = Collection.where(id: collection_id).to_a
     ::Kor::Auth.allowed_to? @user, policy, collections
   end
 

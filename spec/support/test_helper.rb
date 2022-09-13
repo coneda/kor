@@ -6,7 +6,7 @@ module TestHelper
       ENV[k] = v
     end
     yield
-    old.each do |k, v|
+    old.each do |k, _v|
       ENV[k] = old[k]
     end
   end

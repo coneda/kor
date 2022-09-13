@@ -339,14 +339,6 @@ Style/GlobalStdStream:
 Style/GuardClause:
   Enabled: false
 
-# Offense count: 597
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, EnforcedShorthandSyntax, UseHashRocketsWithSymbolValues, PreferHashRocketsForNonAlnumEndingSymbols.
-# SupportedStyles: ruby19, hash_rockets, no_mixed_keys, ruby19_no_mixed_keys
-# SupportedShorthandSyntax: always, never, either, consistent
-Style/HashSyntax:
-  Enabled: false
-
 # Offense count: 7
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowIfModifier.
@@ -487,11 +479,11 @@ Style/NonNilCheck:
   Exclude:
     - 'app/models/user.rb'
 
-# Offense count: 23
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: Strict, AllowedNumbers, AllowedPatterns.
-Style/NumericLiterals:
-  MinDigits: 8
+# # Offense count: 23
+# # This cop supports safe autocorrection (--autocorrect).
+# # Configuration parameters: Strict, AllowedNumbers, AllowedPatterns.
+# Style/NumericLiterals:
+#   MinDigits: 8
 
 # Offense count: 30
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -597,39 +589,40 @@ Style/RedundantReturn:
     - 'lib/kor/statistics/editors.rb'
     - 'script/oai_pmh_client'
 
-# Offense count: 86
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantSelf:
-  Exclude:
-    - 'app/models/collection.rb'
-    - 'app/models/entity.rb'
-    - 'app/models/entity_group.rb'
-    - 'app/models/field.rb'
-    - 'app/models/kind.rb'
-    - 'app/models/medium.rb'
-    - 'app/models/publishment.rb'
-    - 'app/models/relation.rb'
-    - 'app/models/relationship.rb'
-    - 'app/models/user.rb'
-    - 'config/initializers/paperclip.rb'
-    - 'features/support/paths.rb'
-    - 'lib/core_ext/array.rb'
-    - 'lib/kor.rb'
-    - 'lib/kor/auth.rb'
+# # Offense count: 86
+# # This cop supports safe autocorrection (--autocorrect).
+# Style/RedundantSelf:
+#   Exclude:
+#     - 'app/models/collection.rb'
+#     - 'app/models/entity.rb'
+#     - 'app/models/entity_group.rb'
+#     - 'app/models/field.rb'
+#     - 'app/models/kind.rb'
+#     - 'app/models/medium.rb'
+#     - 'app/models/publishment.rb'
+#     - 'app/models/relation.rb'
+#     - 'app/models/relationship.rb'
+#     - 'app/models/user.rb'
+#     - 'config/initializers/paperclip.rb'
+#     - 'features/support/paths.rb'
+#     - 'lib/core_ext/array.rb'
+#     - 'lib/kor.rb'
+#     - 'lib/kor/auth.rb'
 
 # Offense count: 19
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle, AllowInnerSlashes.
 # SupportedStyles: slashes, percent_r, mixed
-Style/RegexpLiteral:
-  Exclude:
-    - 'app/controllers/base_controller.rb'
-    - 'app/models/medium.rb'
-    - 'app/models/user.rb'
-    - 'features/step_definitions/database_should_steps.rb'
-    - 'features/step_definitions/web_steps.rb'
-    - 'spec/lib/kor/settings_spec.rb'
-    - 'spec/lib/kor/zip_file_spec.rb'
+# Style/RegexpLiteral:
+#   AllowInnerSlashes: true
+  # Exclude:
+  #   - 'app/controllers/base_controller.rb'
+  #   - 'app/models/medium.rb'
+  #   - 'app/models/user.rb'
+  #   - 'features/step_definitions/database_should_steps.rb'
+  #   - 'features/step_definitions/web_steps.rb'
+  #   - 'spec/lib/kor/settings_spec.rb'
+  #   - 'spec/lib/kor/zip_file_spec.rb'
 
 # Offense count: 5
 # This cop supports safe autocorrection (--autocorrect).
@@ -701,13 +694,6 @@ Style/StringLiteralsInInterpolation:
     - 'db/migrate/20090126210939_merge_artwork_material_and_technique.rb'
     - 'lib/kor/auth.rb'
     - 'lib/kor/neo_graph.rb'
-
-# Offense count: 88
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: MinSize.
-# SupportedStyles: percent, brackets
-Style/SymbolArray:
-  EnforcedStyle: brackets
 
 # Offense count: 63
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -785,13 +771,6 @@ Style/WhileUntilModifier:
   Exclude:
     - 'lib/kor/neo_graph.rb'
 
-# Offense count: 50
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: MinSize, WordRegex.
-# SupportedStyles: percent, brackets
-Style/WordArray:
-  EnforcedStyle: brackets
-
 # Offense count: 7
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/ZeroLengthPredicate:
@@ -807,4 +786,11 @@ Style/ZeroLengthPredicate:
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, AllowedPatterns, IgnoredPatterns.
 # URISchemes: http, https
 Layout/LineLength:
-  Max: 190
+  Exclude:
+    - config/routes.rb
+    - db/migrate/*
+    - features/step_definitions/*.rb
+    - lib/kor/command_line.rb
+    - spec/controllers/oai_pmh/entities_controller_spec.rb
+    - spec/models/medium_spec.rb
+  Max: 120

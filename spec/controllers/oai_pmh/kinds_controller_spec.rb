@@ -41,7 +41,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   end
 
   it "should respond to 'GetRecord'" do
-    people = Kind.where(:name => "Person").first
+    people = Kind.where(name: "Person").first
 
     get '/oai-pmh/kinds.xml', params: {
       verb: 'GetRecord',
@@ -58,7 +58,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
 
   if ENV['KOR_BRITTLE'] == 'true'
     it "should return XML that validates against the OAI-PMH schema" do
-      people = Kind.where(:name => "Person").first
+      people = Kind.where(name: "Person").first
       people.update fields: [
         Field.new(name: 'gnd', show_label: 'GND-ID')
       ]
@@ -79,7 +79,7 @@ RSpec.describe OaiPmh::KindsController, type: :request do
   end
 
   it "should disseminate oai_dc and kor metadata formats on GetRecord requests" do
-    people = Kind.where(:name => "Person").first
+    people = Kind.where(name: "Person").first
 
     get '/oai-pmh/kinds.xml', params: {
       verb: 'GetRecord',

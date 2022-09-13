@@ -4,12 +4,12 @@ RSpec.describe Kor::EntityMerger do
   it "should merge entities while preserving the dataset" do
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     mona_lisa.update dataset: {'gnd' => '12345', 'google_maps' => 'Am Dornbusch 13, 60315 Frankfurt'}
-    other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza"
+    other_mona_lisa = FactoryBot.create :mona_lisa, name: "Mona Liza"
 
     merged = described_class.new.run(
-      :old_ids => [mona_lisa.id, other_mona_lisa.id],
-      :attributes => {
-        :name => mona_lisa.name
+      old_ids: [mona_lisa.id, other_mona_lisa.id],
+      attributes: {
+        name: mona_lisa.name
       }
     )
 
@@ -20,14 +20,14 @@ RSpec.describe Kor::EntityMerger do
 
   it "should preserve synonyms as an array" do
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
-    mona_lisa.update :synonyms => ["La Gioconda"]
-    other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza", :synonyms => ["La Gioconda"]
+    mona_lisa.update synonyms: ["La Gioconda"]
+    other_mona_lisa = FactoryBot.create :mona_lisa, name: "Mona Liza", synonyms: ["La Gioconda"]
 
     merged = described_class.new.run(
-      :old_ids => [mona_lisa.id, other_mona_lisa.id],
-      :attributes => {
-        :name => mona_lisa.name,
-        :synonyms => "La Gioconda"
+      old_ids: [mona_lisa.id, other_mona_lisa.id],
+      attributes: {
+        name: mona_lisa.name,
+        synonyms: "La Gioconda"
       }
     )
 
@@ -37,11 +37,11 @@ RSpec.describe Kor::EntityMerger do
 
   it "should push the merge result to elasticsearch", elastic: true do
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
-    other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza"
+    other_mona_lisa = FactoryBot.create :mona_lisa, name: "Mona Liza"
 
     merged = described_class.new.run(
-      :old_ids => [mona_lisa.id, other_mona_lisa.id],
-      :attributes => {name: mona_lisa.name}
+      old_ids: [mona_lisa.id, other_mona_lisa.id],
+      attributes: {name: mona_lisa.name}
     )
 
     expect(Entity.count).to eql(7)
@@ -57,7 +57,7 @@ RSpec.describe Kor::EntityMerger do
     ]
     mona_lisa = Entity.find_by!(name: 'Mona Lisa')
     mona_lisa.update dataset: {'gnd' => '12345'}
-    other_mona_lisa = FactoryBot.create :mona_lisa, :name => "Mona Liza"
+    other_mona_lisa = FactoryBot.create :mona_lisa, name: "Mona Liza"
     merged = described_class.new.run(
       old_ids: [mona_lisa.id, other_mona_lisa.id],
       attributes: {
@@ -110,9 +110,9 @@ RSpec.describe Kor::EntityMerger do
     b = Entity.media[1]
 
     described_class.new.run(
-      :old_ids => [a.id, b.id],
-      :attributes => {
-        :medium_id => b.medium_id
+      old_ids: [a.id, b.id],
+      attributes: {
+        medium_id: b.medium_id
       }
     )
 

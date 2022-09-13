@@ -3,7 +3,7 @@ class MediaController < JsonController
 
   def show
     id = params[:id] || (params[:id_part_01] + params[:id_part_02] + params[:id_part_03]).to_i
-    @medium = Medium.includes(:entity => :collection).find(id)
+    @medium = Medium.includes(entity: :collection).find(id)
 
     style = param_to_style(params[:style])
     auth = if style == :original
@@ -43,7 +43,7 @@ class MediaController < JsonController
     if allowed_to?(:edit, @medium.entity.collection)
       Kor::Media.transform(@medium,
         Kor::Media.transformation_by_name(params[:transformation]),
-        :operation => param_to_operation(params[:operation])
+        operation: param_to_operation(params[:operation])
       )
 
       render_200 I18n.t('objects.transform_success', o: I18n.t('activerecord.models.medium', count: 1))

@@ -40,8 +40,8 @@ RSpec.describe Kor::Elastic, elastic: true do
 
   context 'with united countries' do
     before :each do
-      @united_kingdom = FactoryBot.create :united_kingdom, :tag_list => ["coast", "english language", "beer"]
-      @united_states = FactoryBot.create :united_states, :tag_list => ["coast", "english language"]
+      @united_kingdom = FactoryBot.create :united_kingdom, tag_list: ["coast", "english language", "beer"]
+      @united_states = FactoryBot.create :united_states, tag_list: ["coast", "english language"]
 
       described_class.index_all
     end
@@ -286,15 +286,15 @@ RSpec.describe Kor::Elastic, elastic: true do
   it 'should set max_result_window' do
     settings = described_class.request 'get', '/_settings'
     mrw = settings['kor_test']['settings']['index']['max_result_window']
-    expect(mrw.to_i).to eq(10000)
+    expect(mrw.to_i).to eq(10_000)
 
-    expect(Entity).to receive(:count).and_return(40000)
+    expect(Entity).to receive(:count).and_return(40_000)
     described_class.drop_index
     described_class.create_index
 
     settings = described_class.request 'get', '/_settings'
     mrw = settings['kor_test']['settings']['index']['max_result_window']
-    expect(mrw.to_i).to eq(80000)
+    expect(mrw.to_i).to eq(80_000)
   end
 
   it 'should search by dating label and string' do

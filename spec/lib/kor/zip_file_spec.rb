@@ -5,7 +5,7 @@ RSpec.describe Kor::ZipFile do
     filename = "#{Rails.root}/tmp/sample.zip"
     system "rm -f #{filename}"
     zip = described_class.new(filename)
-    zip.add "#{Rails.root}/LICENSE", :as => "info/LICENSE"
+    zip.add "#{Rails.root}/LICENSE", as: "info/LICENSE"
     zip.pack
     expect(`unzip -l #{zip.filename}`).to match(/info\/LICENSE/)
     zip.destroy
@@ -14,8 +14,8 @@ RSpec.describe Kor::ZipFile do
   it "should be able to attach itself to a download" do
     filename = "#{Rails.root}/tmp/sample.zip"
     system "rm -f #{filename}"
-    zip = described_class.new(filename, :user_id => User.first.id, :file_name => "sample.zip")
-    zip.add "#{Rails.root}/LICENSE", :as => "info/LICENSE"
+    zip = described_class.new(filename, user_id: User.first.id, file_name: "sample.zip")
+    zip.add "#{Rails.root}/LICENSE", as: "info/LICENSE"
     zip.build
 
     expect(Download.count).to eq(1)

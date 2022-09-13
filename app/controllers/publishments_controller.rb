@@ -8,11 +8,11 @@ class PublishmentsController < JsonController
 
     if @publishment.save
       render_200 I18n.t('objects.extend_success',
-        :o => @publishment.name,
-        :until => I18n.l(@publishment.valid_until)
+        o: @publishment.name,
+        until: I18n.l(@publishment.valid_until)
       )
     else
-      render_422 I18n.t('objects.extend_failure', :o => @publishment.name)
+      render_422 I18n.t('objects.extend_failure', o: @publishment.name)
     end
   end
 

@@ -8,7 +8,7 @@ class IdentifiersController < JsonController
 
     respond_to do |format|
       format.html do
-        redirect_to root_path(:anchor => "/entities/#{entity.id}")
+        redirect_to root_path(anchor: "/entities/#{entity.id}")
       end
       format.json do
         redirect_to entity

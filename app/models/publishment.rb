@@ -4,7 +4,7 @@ class Publishment < ApplicationRecord
 
   validates :name, presence: true
 
-  after_validation(:on => :create) do |model|
+  after_validation(on: :create) do |model|
     model.generate_uuid
     model.set_expiry
   end
@@ -18,8 +18,8 @@ class Publishment < ApplicationRecord
   end
 
   def set_expiry
-    self.valid_until = Kor.publishment_expiry_time unless self.valid_until
+    self.valid_until = Kor.publishment_expiry_time unless valid_until
   end
 
-  scope :owned_by, lambda{ |user| where(:user_id => user.id) }
+  scope :owned_by, lambda{ |user| where(user_id: user.id) }
 end

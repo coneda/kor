@@ -13,7 +13,7 @@ RSpec.describe Kor::Export::Excel do
   end
 
   it "should only export the given collections" do
-    Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec", :collection_id => [priv.id]).run
+    Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec", collection_id: [priv.id]).run
     book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
     sheet = book.worksheet 0
 
@@ -21,7 +21,7 @@ RSpec.describe Kor::Export::Excel do
   end
 
   it "should only export the given kinds" do
-    Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec", :kind_id => leonardo.kind_id).run
+    Kor::Export::Excel.new("#{Rails.root}/tmp/export_spec", kind_id: leonardo.kind_id).run
     book = Spreadsheet.open("#{Rails.root}/tmp/export_spec/entities.0001.xls")
     sheet = book.worksheet 0
 

@@ -7,7 +7,7 @@ RSpec.describe Download do
   end
 
   it "should move the file to the download folder" do
-    download = Download.create(:file_name => "test.zip", :user => User.first, :data => File.open("README.md"))
+    download = Download.create(file_name: "test.zip", user: User.first, data: File.open("README.md"))
     expect(File.exist?(download.path)).to be_truthy
   end
 

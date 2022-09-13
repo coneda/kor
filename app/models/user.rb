@@ -6,11 +6,11 @@ class User < ApplicationRecord
   serialize :login_attempts
   serialize :storage, JSON
 
-  has_and_belongs_to_many :groups, :class_name => "Credential"
-  has_many :created_entities, :class_name => 'Entity', :foreign_key => :creator_id
-  has_many :updated_entities, :class_name => 'Entity', :foreign_key => :updater_id
-  has_many :user_groups, :dependent => :destroy
-  has_many :publishments, :dependent => :destroy
+  has_and_belongs_to_many :groups, class_name: "Credential"
+  has_many :created_entities, class_name: 'Entity', foreign_key: :creator_id
+  has_many :updated_entities, class_name: 'Entity', foreign_key: :updater_id
+  has_many :user_groups, dependent: :destroy
+  has_many :publishments, dependent: :destroy
 
   belongs_to :parent,
     class_name: 'User',
@@ -41,7 +41,7 @@ class User < ApplicationRecord
     uniqueness: {case_sensitive: true},
     length: {minimum: 32, allow_blank: true}
   validates(:plain_password,
-    format: {:allow_nil => true, :with => /\A(.{5,30})|\Z/},
+    format: {allow_nil: true, with: /\A(.{5,30})|\Z/},
     confirmation: true
   )
 
@@ -55,19 +55,19 @@ class User < ApplicationRecord
   end
 
   def validate_existing_parent_user
-    if self.parent_username.present? && !User.exists?(:name => self.parent_username)
+    if parent_username.present? && !User.exists?(name: parent_username)
       errors.add :parent_username, :user_doesnt_exist
     end
   end
 
-  before_validation(:on => :create) do |model|
+  before_validation(on: :create) do |model|
     model.generate_secrets
   end
   after_validation :set_expires_at, :create_personal, :add_personal_group
 
   def add_personal_group
-    if self.personal_group && !self.personal_group.destroyed? && !self.groups.map{ |g| g.id }.include?(self.personal_group.id)
-        self.groups << self.personal_group
+    if personal_group && !personal_group.destroyed? && !groups.map{ |g| g.id }.include?(personal_group.id)
+        groups << personal_group
     end
   end
 
@@ -75,22 +75,22 @@ class User < ApplicationRecord
     if make_personal && !personal?
       template = Collection.joins(:owner).first
 
-      self.personal_group = Credential.create(:name => name)
-      self.personal_collection = Collection.create(:name => name)
-      self.groups << self.personal_group
+      self.personal_group = Credential.create(name: name)
+      self.personal_collection = Collection.create(name: name)
+      groups << personal_group
 
       if template
         template.grants.each do |grant|
-          Kor::Auth.grant personal_collection, grant.policy, :to => (grant.personal? ? self.personal_group : grant.credential)
+          Kor::Auth.grant personal_collection, grant.policy, to: (grant.personal? ? personal_group : grant.credential)
         end
       else
-        Kor::Auth.grant personal_collection, :all, :to => self.personal_group
+        Kor::Auth.grant personal_collection, :all, to: personal_group
       end
     end
 
     if !make_personal && personal?
-      self.personal_group.destroy if self.personal_group
-      self.personal_collection.destroy if self.personal_collection
+      personal_group.destroy if personal_group
+      personal_collection.destroy if personal_collection
     end
   end
 
@@ -102,7 +102,7 @@ class User < ApplicationRecord
 
   def generate_secrets
     self.activation_hash = User.generate_activation_hash if self[:activation_hash].blank?
-    self.password = self.plain_password || User.generate_password
+    self.password = plain_password || User.generate_password
     self.api_key = SecureRandom.hex(48)
   end
 
@@ -137,7 +137,7 @@ class User < ApplicationRecord
   end
 
   def personal?
-    self.personal_group.present? && self.personal_collection.present?
+    personal_group.present? && personal_collection.present?
   end
 
   def password=(value)
@@ -163,23 +163,23 @@ class User < ApplicationRecord
     define_method "#{ag}admin".to_sym do
       key = "#{ag}admin".to_sym
       self[key] || (
-        self.parent_username.present? &&
-        self.parent &&
-        self.parent[key]
+        parent_username.present? &&
+        parent &&
+        parent[key]
       )
     end
 
     define_method "#{ag}admin?".to_sym do
       key = "#{ag}admin".to_sym
       self[key] || (
-        self.parent_username.present? &&
-        self.parent &&
-        self.parent[key]
+        parent_username.present? &&
+        parent &&
+        parent[key]
       )
     end
 
     define_method "#{ag}admin=".to_sym do |value|
-      parent_present = self.parent_username.present? && self.parent
+      parent_present = parent_username.present? && parent
       if parent_present && parent.send("#{ag}admin".to_sym) == !!value
         self["#{ag}admin".to_sym] = nil
       else
@@ -354,7 +354,7 @@ class User < ApplicationRecord
   end
 
   def serializable_hash(options = {})
-    super options.merge(:except => [:password, :activation_hash, :api_key])
+    super options.merge(except: [:password, :activation_hash, :api_key])
   end
 
   def allowed_to?(policy = :view, collections = nil, options = {})

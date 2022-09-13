@@ -1,11 +1,11 @@
-admins = Credential.create!(:name => "admins")
+admins = Credential.create!(name: "admins")
 
 Kor::Tasks.reset_admin_account
 Kor::Tasks.reset_guest_account
 
-default = Collection.create! :name => "Default"
+default = Collection.create! name: "Default"
 
-Kor::Auth.grant default, :all, :to => admins
+Kor::Auth.grant default, :all, to: admins
 
 Kind.create(
   name: Medium.model_name.human,
@@ -16,4 +16,4 @@ Kind.create(
   }
 )
 
-SystemGroup.create(:name => 'invalid')
+SystemGroup.create(name: 'invalid')

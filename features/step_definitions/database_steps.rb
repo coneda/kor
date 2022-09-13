@@ -3,14 +3,14 @@ Given /^the credential "([^"]*)"$/ do |name|
 end
 
 Given /^the credential "([^"]*)" described by "([^"]*)"$/ do |name, description|
-  unless Credential.exists? :name => name
-    Credential.create :name => name, :description => description
+  unless Credential.exists? name: name
+    Credential.create name: name, description: description
   end
 end
 
 Given /^the collection "([^"]*)"$/ do |name|
-  unless Collection.exists? :name => name
-    Collection.create! :name => name
+  unless Collection.exists? name: name
+    Collection.create! name: name
   end
 end
 
@@ -19,7 +19,7 @@ Given /^the kind "([^"]*)"(?: inheriting from "([^"]*)")?$/ do |names, parents|
   to = (components.size / 2) - 1
   singular = components[0..to].join('/')
   plural = components[(components.size / 2)..].join('/')
-  kind = Kind.find_or_initialize_by(:name => singular, :plural_name => plural)
+  kind = Kind.find_or_initialize_by(name: singular, plural_name: plural)
   if parents.present?
     parents.split(',').each do |parent|
       kind.parents << Kind.find_by(name: parent)
@@ -49,11 +49,11 @@ Given /^the entity "([^"]*)" of kind "([^"]*)"$/ do |name, kind|
   step "the kind \"#{kind}\""
   kind = Kind.find_by_name(kind.split('/').first)
 
-  unless Entity.exists? :name => name
+  unless Entity.exists? name: name
     entity = kind.entities.build(
-      :name => name,
-      :distinct_name => "",
-      :collection => Collection.first
+      name: name,
+      distinct_name: "",
+      collection: Collection.first
     )
     raise "entity is invalid: #{entity.errors.full_messages.inspect}" unless entity.save
   end
@@ -63,11 +63,11 @@ Given /^kind "([^"]*)" has field "([^"]*)" of type "([^"]+)"$/ do |kind, name, k
   step "the kind \"#{kind}\""
   kind = Kind.find_by_name(kind.split('/').first)
   kind.fields << klass.constantize.new(
-    :name => name,
-    :show_label => name.classify,
-    :form_label => name.classify,
-    :search_label => name.classify,
-    :settings => {'show_on_entity' => '1'}
+    name: name,
+    show_label: name.classify,
+    form_label: name.classify,
+    search_label: name.classify,
+    settings: {'show_on_entity' => '1'}
   )
 end
 
@@ -108,7 +108,7 @@ Given /^user "([^"]*)" is allowed to "([^"]*)" collection "([^"]*)" (?:through|v
   user.groups << credential unless user.groups.include? credential
 
   policy.split("/").each do |p|
-    Kor::Auth.grant collection, p, :to => credential
+    Kor::Auth.grant collection, p, to: credential
   end
 end
 
@@ -117,7 +117,7 @@ Given /^the (invalid )?entity "([^"]*)" of kind "([^"]*)" inside collection "([^
   step "the collection \"#{collection}\""
   entity = Entity.find_by_name(entity)
   collection = Collection.find_by_name(collection)
-  entity.update :collection_id => collection.id
+  entity.update collection_id: collection.id
   entity.mark_invalid if invalid == "invalid "
 end
 
@@ -128,7 +128,7 @@ Given /^(\d+) (invalid )?entities "([^"]*)" of kind "([^"]*)" inside collection 
 end
 
 Given /^the entity "([^"]*)" has the synonyms "([^"]*)"$/ do |entity, synonyms|
-  Entity.find_by!(name: entity).update :synonyms => synonyms.split('/')
+  Entity.find_by!(name: entity).update synonyms: synonyms.split('/')
 end
 
 Given /^"([^"]*)" has a (shared )?user group "([^"]*)"$/ do |user_name, shared, group_name|
@@ -154,19 +154,19 @@ Given /^the authority group "([^"]*)" contains a medium$/ do |name|
 end
 
 Given /^the authority group category "([^"]*)"$/ do |name|
-  AuthorityGroupCategory.create :name => name
+  AuthorityGroupCategory.create name: name
 end
 
 Given(/^the first medium is inside user group "(.*?)"$/) do |name|
-  UserGroup.where(:name => name).first.entities << Entity.media.first
+  UserGroup.where(name: name).first.entities << Entity.media.first
 end
 
 Given /^the authority group categories structure "([^"]*)"$/ do |structure|
   category_names = structure.split(' >> ')
 
-  previous = AuthorityGroupCategory.create :name => category_names.shift
+  previous = AuthorityGroupCategory.create name: category_names.shift
   while current = category_names.shift
-    previous = AuthorityGroupCategory.create(:name => current, :parent => previous)
+    previous = AuthorityGroupCategory.create(name: current, parent: previous)
   end
 end
 
@@ -247,22 +247,22 @@ Given /^the triple "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)"$/ do |from_
 end
 
 Then(/^"(.*?)" should have "(.*?)" "(.*?)"$/) do |subject, relation, object|
-  subject = Entity.where(:name => subject).first
-  object = Entity.where(:name => object).first
+  subject = Entity.where(name: subject).first
+  object = Entity.where(name: object).first
 
-  normal = if normal_relation = Relation.where(:name => relation).first
+  normal = if normal_relation = Relation.where(name: relation).first
     Relationship.where(
-      :from_id => subject.id,
-      :relation_id => normal_relation.id,
-      :to_id => object.id
+      from_id: subject.id,
+      relation_id: normal_relation.id,
+      to_id: object.id
     ).first
   end
 
-  reverse = if reverse_relation = Relation.where(:reverse_name => relation).first
+  reverse = if reverse_relation = Relation.where(reverse_name: relation).first
     Relationship.where(
-      :from_id => object.id,
-      :relation_id => reverse_relation.id,
-      :to_id => subject.id
+      from_id: object.id,
+      relation_id: reverse_relation.id,
+      to_id: subject.id
     ).first
   end
 
@@ -287,8 +287,8 @@ Given /^there are "([^"]*)" entities named "([^"]*)" of kind "([^"]*)"$/ do |num
 
   num.to_i.times do |i|
     kind.entities.create(
-      :collection => Collection.first,
-      :name => name_pattern % i
+      collection: Collection.first,
+      name: name_pattern % i
     )
   end
 end

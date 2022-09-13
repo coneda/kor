@@ -266,7 +266,7 @@ RSpec.describe MediaController, type: :request do
       # deal with chrome's bytes=0- requests
       get entity.medium.url(:original), headers: {'Range' => 'bytes=0-'}
       expect(response.status).to eq(206)
-      expect(response.body.bytesize).to eq(184601)
+      expect(response.body.bytesize).to eq(184_601)
     end
   end
 end

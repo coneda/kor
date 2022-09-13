@@ -4,7 +4,7 @@ class RemoveMongodb < ActiveRecord::Migration
 
     config = Rails.configuration.database_configuration[Rails.env]["mongo"].reverse_merge(
       'host' => '127.0.0.1',
-      'port' => 27017
+      'port' => 27_017
     )
 
     command = [
@@ -25,8 +25,8 @@ class RemoveMongodb < ActiveRecord::Migration
       puts "#{counter}/#{data.size}" if counter % 100 == 0
 
       entity = (
-        Entity.where(:id => doc["entity_id"]).first ||
-        Entity.where(:attachment_id => doc['_id']['$oid']).first
+        Entity.where(id: doc["entity_id"]).first ||
+        Entity.where(attachment_id: doc['_id']['$oid']).first
       )
 
       if entity

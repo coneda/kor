@@ -12,67 +12,76 @@ class UnifyWebServices < ActiveRecord::Migration
 
         case ws
         when 'ulan'
-          field = Fields::String.new(:name => 'ulan', :show_label => 'ULAN-ID', :show_on_entity => false, :kind => kind)
+          field = Fields::String.new(
+            name: 'ulan',
+            show_label: 'ULAN-ID',
+            show_on_entity: false,
+            kind: kind
+          )
           generator = Generator.new(
-            :name => 'ulan_link',
-            :directive => "<a href='http://www.getty.edu/vow/ULANFullDisplay?find=&role=&nation=&prev_page=1&subjectid={{entity.dataset.ulan}}' target='_blank'>» ULAN</a>",
-            :kind => kind
+            name: 'ulan_link',
+            directive: "<a href='http://www.getty.edu/vow/ULANFullDisplay?find=&role=&nation=&prev_page=1&subjectid={{entity.dataset.ulan}}' target='_blank'>» ULAN</a>",
+            kind: kind
           )
         when 'wikipedia'
           generator = Generator.new(
-            :name => 'wikipedia_link',
-            :directive => "<a href='http://de.wikipedia.org/wiki/Spezial:Search?search={{entity.name}}' target='_blank'>» Bei Wikipedia suchen</a>",
-            :kind => kind
+            name: 'wikipedia_link',
+            directive: "<a href='http://de.wikipedia.org/wiki/Spezial:Search?search={{entity.name}}' target='_blank'>» Bei Wikipedia suchen</a>",
+            kind: kind
           )
         when 'amazon'
-          generator = Generator.new(:name => 'amazon_link', :directive => "<a href='http://www.amazon.com/dp/{{entity.dataset.isbn}}' target='_blank'>» Bei Amazon kaufen</a>", :kind => kind)
+          generator = Generator.new(
+            name: 'amazon_link',
+            directive: "<a href='http://www.amazon.com/dp/{{entity.dataset.isbn}}' target='_blank'>» Bei Amazon kaufen</a>",
+            kind: kind
+          )
         when 'kvk'
           url = "http://kvk.ubka.uni-karlsruhe.de/hylib-bin/kvk/nph-kvk2.cgi"
           params = {
-            :maske => "kvk-last",
-            :title => "UB+Karlsruhe:+KVK+Ergebnisanzeige",
-            :header => "http://www.ubka.uni-karlsruhe.de/kvk/kvk/kvk-header_de_04_07_02.html",
-            :spacer => "http://www.ubka.uni-karlsruhe.de/kvk/kvk/kvk-spacer.html",
-            :footer => "http://www.ubka.uni-karlsruhe.de/kvk/kvk/kvk-footer_de_04_07_02.html",
-            :VERBUENDE => nil,
-            :TI => nil,
-            :PY => nil,
-            :AU => nil,
-            :CI => nil,
-            :SS => nil,
-            :ST => nil,
-            :PU => nil,
-            :sortiert => "nein",
-            :css => "http://www.ubka.uni-karlsruhe.de/kvk/kvk/kvk-neu.css",
-            :target => "_blank",
-            :Timeout => 60
+            maske: "kvk-last",
+            title: "UB+Karlsruhe:+KVK+Ergebnisanzeige",
+            header: "http://www.ubka.uni-karlsruhe.de/kvk/kvk/kvk-header_de_04_07_02.html",
+            spacer: "http://www.ubka.uni-karlsruhe.de/kvk/kvk/kvk-spacer.html",
+            footer: "http://www.ubka.uni-karlsruhe.de/kvk/kvk/kvk-footer_de_04_07_02.html",
+            VERBUENDE: nil,
+            TI: nil,
+            PY: nil,
+            AU: nil,
+            CI: nil,
+            SS: nil,
+            ST: nil,
+            PU: nil,
+            sortiert: "nein",
+            css: "http://www.ubka.uni-karlsruhe.de/kvk/kvk/kvk-neu.css",
+            target: "_blank",
+            Timeout: 60
           }
           kataloge = ["SWB", "BVB", "NRW", "HEBIS", "HEBIS_RETRO", "KOBV_SOLR", "GBV", "DDB", "STABI_BERLIN", "TIB"].map do |k|
             "kataloge=#{k}"
           end
           url = "#{url}?#{params.to_param}&#{kataloge.join('&')}&SB={{entity.dataset.isbn}}"
           generator = Generator.new(
-            :name => 'kvk_link',
-            :directive => "<a href='#{url}' target='_blank'>» KVK Katalog</a>",
-            :kind => kind
+            name: 'kvk_link',
+            directive: "<a href='#{url}' target='_blank'>» KVK Katalog</a>",
+            kind: kind
           )
         when 'knd', 'coneda_information_service'
-          unless kind.fields.where(:name => 'gnd').first
-            field = Fields::String.new(:name => 'gnd', :show_label => 'GND-ID', :show_on_entity => false, :kind => kind)
+          unless kind.fields.where(name: 'gnd').first
+            field = Fields::String.new(name: 'gnd', show_label: 'GND-ID', show_on_entity: false, kind: kind)
           end
         when 'google_maps'
-          field = Fields::String.new(:name => 'google_maps', :show_label => 'Adresse', :show_on_entity => false, :kind => kind)
+          field = Fields::String.new(name: 'google_maps', show_label: 'Adresse', show_on_entity: false, kind: kind)
           generator = Generator.new(
-            :name => 'google_maps_link',
-            :directive => "<a href='http://maps.google.com?q={{entity.dataset.google_maps}}' target='_blank'>» Google Maps</a>",
-            :kind => kind
+            name: 'google_maps_link',
+            directive: "<a href='http://maps.google.com?q={{entity.dataset.google_maps}}' target='_blank'>» Google Maps</a>",
+            kind: kind
           )
         when 'sandrart'
-          field = Fields::String.new(:name => 'sandrart', :show_label => 'Sandrart ID', :show_on_entity => false, :kind => kind)
+          field = Fields::String.new(name: 'sandrart', show_label: 'Sandrart ID', show_on_entity: false, kind: kind)
           generator = Generator.new(
-            :name => 'sandrart_person_link',
-            :directive => "<a href='http://ta.sandrart.net/prs/{{entity.dataset.sandrart}}' target='_blank'>» Sandrart</a>",
-            :kind => kind
+            name: 'sandrart_person_link',
+            directive: "<a href='http://ta.sandrart.net/prs/{{entity.dataset.sandrart}}' target='_blank'>» Sandrart</a>",
+            kind: kind
           )
         else
           raise "Web service #{ws} does not exist"
@@ -80,9 +89,9 @@ class UnifyWebServices < ActiveRecord::Migration
 
         if field && field.name == "gnd"
           generator = Generator.new(
-            :name => 'gnd_link',
-            :directive => "<a href='http://d-nb.info/gnd/{{entity.dataset.gnd}}' target='_blank'>» Deutsche Nationalbibliothek</a>",
-            :kind => kind
+            name: 'gnd_link',
+            directive: "<a href='http://d-nb.info/gnd/{{entity.dataset.gnd}}' target='_blank'>» Deutsche Nationalbibliothek</a>",
+            kind: kind
           )
         end
 

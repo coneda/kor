@@ -10,8 +10,8 @@ class UserGroup < EntityGroup
   )
   validates :user_id, presence: true
 
-  scope :owned_by, lambda{ |user| where(:user_id => user ? user.id : nil) }
-  scope :shared, lambda{ where(:shared => true) }
+  scope :owned_by, lambda{ |user| where(user_id: user ? user.id : nil) }
+  scope :shared, lambda{ where(shared: true) }
   scope :latest_first, lambda{ order('created_at DESC') }
   scope :containing, lambda{ |entity_ids|
     joins('JOIN entities_user_groups ge on user_groups.id = ge.user_group_id').

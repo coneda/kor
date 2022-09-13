@@ -8,7 +8,7 @@ class EntityGroup < ApplicationRecord
     white_space: true
   }
 
-  after_validation(:on => :create) do |model|
+  after_validation(on: :create) do |model|
     model.uuid = SecureRandom.uuid
   end
 
@@ -18,7 +18,7 @@ class EntityGroup < ApplicationRecord
 
   def add_entities(new_entities)
     new_entities = [new_entities] unless new_entities.is_a? Array
-    new_entities.reject{ |e| self.entity_ids.include? e.id }.each do |e|
+    new_entities.reject{ |e| entity_ids.include? e.id }.each do |e|
       entities << e
     end
   end

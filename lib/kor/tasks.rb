@@ -21,7 +21,7 @@ class Kor::Tasks
     Kor::Elastic.drop_index
     Kor::Elastic.create_index
     ActiveRecord::Base.logger.level = Logger::ERROR
-    Kor::Elastic.index_all :full => true, :progress => true
+    Kor::Elastic.index_all full: true, progress: true
   end
 
   def self.group_to_zip(config = {})
@@ -79,13 +79,13 @@ class Kor::Tasks
   end
 
   def self.delete_expired_downloads(config = {})
-    Download.find(:all, :conditions => ['created_at < ?', 2.weeks.ago]).each do |download|
+    Download.find(:all, conditions: ['created_at < ?', 2.weeks.ago]).each do |download|
       download.destroy
     end
   end
 
   def self.editor_stats(config = {})
-    stats = Kor::Statistics::Editors.new(:verbose => true)
+    stats = Kor::Statistics::Editors.new(verbose: true)
     stats.run
     puts stats.report
   end
@@ -93,7 +93,7 @@ class Kor::Tasks
   def self.exif_stats(config = {})
     require "exifr"
     stats = Kor::Statistics::Exif.new(config[:from], config[:to],
-      :verbose => true
+      verbose: true
     )
     stats.run
     puts stats.report

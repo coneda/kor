@@ -16,7 +16,10 @@ class Paperclip::Video < Paperclip::Processor
     make_still(file, attachment)
 
     outfile = "#{Kor.tmp_path}.mp4"
-    args = "-c:v libx264 -crf 28 -c:a aac -b:a 256k -strict experimental -profile:v baseline -level 3.0 -movflags +faststart"
+    args = [
+      '-c:v libx264 -crf 28 -c:a aac -b:a 256k -strict experimental',
+      '-profile:v baseline -level 3.0 -movflags +faststart'
+    ].join(' ')
     args = "-loglevel panic -nostats -i #{file.path} #{args} -y #{outfile}"
     Paperclip.run('ffmpeg', args)
     File.open(outfile)

@@ -33,7 +33,7 @@ class Entity < ApplicationRecord
   has_many :incoming_relationships, class_name: "DirectedRelationship", foreign_key: :to_id
   has_many :incoming, through: :incoming_relationships, source: :from
 
-  accepts_nested_attributes_for :medium, :datings, :allow_destroy => true
+  accepts_nested_attributes_for :medium, :datings, allow_destroy: true
 
   validates :name,
     presence: {if: :needs_name?},
@@ -52,7 +52,7 @@ class Entity < ApplicationRecord
     white_space: true
   validates :kind, :uuid, :collection_id, presence: true
   validates :no_name_statement, inclusion: {
-    :allow_blank => true, :in => ['unknown', 'not_available', 'empty_name', 'enter_name']
+    allow_blank: true, in: ['unknown', 'not_available', 'empty_name', 'enter_name']
   }
 
   validate(
@@ -77,10 +77,13 @@ class Entity < ApplicationRecord
     if has_name_duplicates?
       duplicate_collection = find_name_duplicates.first.collection
 
-      if duplicate_collection.id == self.collection_id
+      if duplicate_collection.id == collection_id
         errors.add :distinct_name
       else
-        message = I18n.t('activerecord.errors.messages.needed_for_disambiguation', :collection => duplicate_collection.name)
+        message = I18n.t(
+          'activerecord.errors.messages.needed_for_disambiguation',
+          collection: duplicate_collection.name
+        )
         errors.add :distinct_name, message
       end
     end
@@ -89,7 +92,7 @@ class Entity < ApplicationRecord
   def read_attribute_for_validation(attr)
     a = attr.to_s
     if a.match(/^dataset\./)
-      self.dataset[a.split('\.')[1]]
+      dataset[a.split('\.')[1]]
     else
       super
     end
@@ -165,7 +168,7 @@ class Entity < ApplicationRecord
   after_commit :update_elastic, :update_identifiers
 
   def sanitize_distinct_name
-    self.distinct_name = nil if self.distinct_name == ""
+    self.distinct_name = nil if distinct_name == ""
   end
 
   def generate_uuid
@@ -183,7 +186,7 @@ class Entity < ApplicationRecord
   end
 
   def update_identifiers
-    if self.deleted?
+    if deleted?
       Identifier.where(entity_id: id).destroy_all
       # self.identifiers.destroy_all
     else
@@ -235,11 +238,11 @@ class Entity < ApplicationRecord
   end
 
   def mark_invalid
-    SystemGroup.find_or_create_by(:name => 'invalid').add_entities self
+    SystemGroup.find_or_create_by(name: 'invalid').add_entities self
   end
 
   def mark_valid
-    SystemGroup.find_or_create_by(:name => 'invalid').remove_entities self
+    SystemGroup.find_or_create_by(name: 'invalid').remove_entities self
   end
 
   def last_updated_by
@@ -253,13 +256,13 @@ class Entity < ApplicationRecord
 
   # re-enable this for display
   def html_comment
-    red_cloth = RedCloth.new(self.comment || "")
+    red_cloth = RedCloth.new(comment || "")
     red_cloth.sanitize_html = true
     red_cloth.to_html
   end
 
   def degree
-    Relationship.where("from_id = ? OR to_id = ?", self.id, self.id).count
+    Relationship.where("from_id = ? OR to_id = ?", id, id).count
   end
 
   def primary_relationships(user)
@@ -322,7 +325,7 @@ class Entity < ApplicationRecord
   # TODO: this used to grab the content type for media, removed because its
   # probably not needed anymore
   def kind_name(options = {})
-    options.reverse_merge!(:include_subtype => true)
+    options.reverse_merge!(include_subtype: true)
 
     if options[:include_subtype]
       if is_medium?
@@ -346,7 +349,7 @@ class Entity < ApplicationRecord
   def find_name_duplicates
     return [] unless needs_name?
 
-    result = self.class.where(:name => name, :distinct_name => distinct_name, :kind_id => kind_id)
+    result = self.class.where(name: name, distinct_name: distinct_name, kind_id: kind_id)
     new_record? ? result : result.where("id != ?", id)
   end
 

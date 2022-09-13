@@ -19,7 +19,7 @@ class DropLegacyTables < ActiveRecord::Migration
       end
     end
 
-    Grant.where(:policy => "admin_rating").delete_all
+    Grant.where(policy: "admin_rating").delete_all
   end
 
   def down

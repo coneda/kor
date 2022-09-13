@@ -14,9 +14,9 @@ class CreateEntityDatings < ActiveRecord::Migration
 
     Kind.find_each do |k|
       if k.name == "Person"
-        k.set(:default_dating_label, I18n.t("datings.person", :count => 1))
+        k.set(:default_dating_label, I18n.t("datings.person", count: 1))
       else
-        k.set(:default_dating_label, I18n.t("datings.default", :count => 1))
+        k.set(:default_dating_label, I18n.t("datings.default", count: 1))
       end
       k.save
     end
@@ -26,7 +26,7 @@ class CreateEntityDatings < ActiveRecord::Migration
     puts "this could take a few minutes"
     batch = 1
 
-    Entity.find_in_batches(:include => :kind) do |set|
+    Entity.find_in_batches(include: :kind) do |set|
       print "starting batch #{batch} ... "
       set.each do |e|
         if e.dataset_id && e.dataset_type

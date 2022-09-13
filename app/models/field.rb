@@ -8,7 +8,7 @@ class Field < ApplicationRecord
 
   validates :name,
     presence: true,
-    format: {:with => /\A[a-z0-9_]+\z/, allow_blank: true},
+    format: {with: /\A[a-z0-9_]+\z/, allow_blank: true},
     uniqueness: {scope: :kind_id, case_sensitive: true},
     white_space: true
   validates :show_label, :form_label, :search_label, presence: true
@@ -62,10 +62,10 @@ class Field < ApplicationRecord
     if saved_change_to_is_identifier? || saved_change_to_id?
       others_changed = false
 
-      self.class.where(name: self.name).each do |f|
-        if f.is_identifier != self.is_identifier
+      self.class.where(name: name).each do |f|
+        if f.is_identifier != is_identifier
           others_changed = true
-          f.update_column :is_identifier, self.is_identifier
+          f.update_column :is_identifier, is_identifier
         end
 
         if is_identifier?
@@ -73,14 +73,14 @@ class Field < ApplicationRecord
             GenericJob.perform_later 'object', self.class.name, f.id, 'create_identifiers'
           end
         else
-          Identifier.where(:kind => name).delete_all
+          Identifier.where(kind: name).delete_all
         end
       end
     end
   end
 
   def create_identifiers
-    kind_ids = self.class.where(name: self.name).map{ |f| f.kind_id }
+    kind_ids = self.class.where(name: name).map{ |f| f.kind_id }
     Entity.where(kind_id: kind_ids).find_each batch_size: 100 do |entity|
       entity.update_identifiers
     end
@@ -103,7 +103,7 @@ class Field < ApplicationRecord
     end
   end
 
-  scope :identifiers, lambda{ where(:is_identifier => true) }
+  scope :identifiers, lambda{ where(is_identifier: true) }
 
   # Attributes
 

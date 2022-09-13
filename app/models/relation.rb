@@ -1,7 +1,7 @@
 class Relation < ApplicationRecord
   acts_as_paranoid
 
-  has_many :relationships, :dependent => :destroy
+  has_many :relationships, dependent: :destroy
 
   has_many :relation_parent_inheritances, class_name: 'RelationInheritance', foreign_key: :child_id, dependent: :destroy
   has_many :relation_child_inheritances, class_name: 'RelationInheritance', foreign_key: :parent_id, dependent: :destroy
@@ -11,13 +11,13 @@ class Relation < ApplicationRecord
   belongs_to :to_kind, class_name: "Kind"
 
   validates :reverse_name,
-    :presence => true,
-    :white_space => true
+    presence: true,
+    white_space: true
   validates :name,
-    :presence => true,
-    :white_space => true
+    presence: true,
+    white_space: true
   validates :from_kind_id, :to_kind_id,
-    :presence => true
+    presence: true
 
   validate do |relation|
     to_check = relation.parents.to_a
@@ -192,11 +192,11 @@ class Relation < ApplicationRecord
 
   def invert!
     self.class.transaction do
-      self.update_columns(
-        name: self.reverse_name,
-        reverse_name: self.name,
-        from_kind_id: self.to_kind_id,
-        to_kind_id: self.from_kind_id
+      update_columns(
+        name: reverse_name,
+        reverse_name: name,
+        from_kind_id: to_kind_id,
+        to_kind_id: from_kind_id
       )
       self.class.connection.execute(
         [
@@ -206,7 +206,7 @@ class Relation < ApplicationRecord
             'r1.to_id = r2.from_id,',
             'r1.normal_id = r2.reversal_id,',
             'r1.reversal_id = r2.normal_id',
-          "WHERE r1.id = r2.id AND r2.relation_id = #{self.id}"
+          "WHERE r1.id = r2.id AND r2.relation_id = #{id}"
         ].join(' ')
       )
       # we don't need to swap to_id and from_id on directed relationships
@@ -216,7 +216,7 @@ class Relation < ApplicationRecord
         [
           'UPDATE directed_relationships r1, directed_relationships r2',
           'SET r1.is_reverse = NOT r2.is_reverse',
-          "WHERE r1.id = r2.id AND r1.relation_id = #{self.id}"
+          "WHERE r1.id = r2.id AND r1.relation_id = #{id}"
         ].join(' ')
       )
     end
@@ -240,19 +240,19 @@ class Relation < ApplicationRecord
     self.class.transaction do
       others.each do |other|
         Relationship.where(relation_id: other.id).update_all(
-          ['relation_id = ?', self.id]
+          ['relation_id = ?', id]
         )
         DirectedRelationship.where(
           relation_id: other.id,
           is_reverse: false
         ).update_all(
-          ['relation_id = ?, relation_name = ?', self.id, self.name]
+          ['relation_id = ?, relation_name = ?', id, name]
         )
         DirectedRelationship.where(
           relation_id: other.id,
           is_reverse: true
         ).update_all(
-          ['relation_id = ?, relation_name = ?', self.id, self.reverse_name]
+          ['relation_id = ?, relation_name = ?', id, reverse_name]
         )
         other.destroy
       end

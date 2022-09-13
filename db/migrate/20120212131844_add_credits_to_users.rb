@@ -13,6 +13,6 @@ class AddCreditsToUsers < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :engagements, [:user_id, :kind, :related_type, :related_id], :name => 'lookup'
+    add_index :engagements, [:user_id, :kind, :related_type, :related_id], name: 'lookup'
   end
 end

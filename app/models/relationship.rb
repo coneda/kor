@@ -19,7 +19,7 @@ class Relationship < ApplicationRecord
     autosave: true,
     optional: true
 
-  has_many :datings, :class_name => "RelationshipDating", :dependent => :destroy
+  has_many :datings, class_name: "RelationshipDating", dependent: :destroy
 
   validates :from_id, :to_id, presence: true
   validates :relation_id, presence: true, if: :to_id
@@ -32,7 +32,7 @@ class Relationship < ApplicationRecord
   accepts_nested_attributes_for :datings, allow_destroy: true
 
   def ensure_unique_properties
-    self.properties = self.properties.uniq
+    self.properties = properties.uniq
   end
 
   def ensure_uuid
@@ -44,39 +44,39 @@ class Relationship < ApplicationRecord
     self.reversal ||= DirectedRelationship.new
 
     self.normal.assign_attributes(
-      from_id: self.from_id,
-      to_id: self.to_id,
-      relation_id: self.relation_id,
-      relationship_id: self.id,
+      from_id: from_id,
+      to_id: to_id,
+      relation_id: relation_id,
+      relationship_id: id,
       is_reverse: false,
-      relation_name: self.relation.try(:name)
+      relation_name: relation.try(:name)
     )
 
     self.reversal.assign_attributes(
-      from_id: self.to_id,
-      to_id: self.from_id,
-      relation_id: self.relation_id,
-      relationship_id: self.id,
+      from_id: to_id,
+      to_id: from_id,
+      relation_id: relation_id,
+      relationship_id: id,
       is_reverse: true,
-      relation_name: self.relation.try(:reverse_name)
+      relation_name: relation.try(:reverse_name)
     )
   end
 
   def ensure_direction
-    if @relation_name && self.from && self.to
+    if @relation_name && from && to
       normal = Relation.find_by(
-        from_kind_id: self.from.kind_id,
+        from_kind_id: from.kind_id,
         name: @relation_name,
-        to_kind_id: self.to.kind_id
+        to_kind_id: to.kind_id
       )
 
       if normal
         self.relation = normal
       else
         reverse = Relation.find_by(
-          from_kind_id: self.to.kind_id,
+          from_kind_id: to.kind_id,
           reverse_name: @relation_name,
-          to_kind_id: self.from.kind_id
+          to_kind_id: from.kind_id
         )
 
         if reverse
@@ -85,8 +85,8 @@ class Relationship < ApplicationRecord
           @relation_name = nil
 
           self.relation = reverse
-          tmp = self.from
-          self.from = self.to
+          tmp = from
+          self.from = to
           self.to = tmp
         else
           raise Kor::Exception, "no relation found for #{from.kind.name} -> #{@relation_name} -> #{to.kind.name}"
@@ -97,8 +97,8 @@ class Relationship < ApplicationRecord
 
   def connect_directed
     if self.normal && !self.normal.destroyed?
-      self.normal.update_column :relationship_id, self.id
-      self.reversal.update_column :relationship_id, self.id
+      self.normal.update_column :relationship_id, id
+      self.reversal.update_column :relationship_id, id
     end
   end
 
@@ -110,7 +110,7 @@ class Relationship < ApplicationRecord
     collection_ids = Kor::Auth.authorized_collections(user, policy).map{ |c| c.id }
     with_ends.where(
       "froms.collection_id in (:ids) AND tos.collection_id in (:ids)",
-      :ids => collection_ids
+      ids: collection_ids
     )
   }
   scope :updated_after, lambda{ |time| time.present? ? where("relationships.updated_at >= ?", time) : all }
@@ -154,10 +154,10 @@ class Relationship < ApplicationRecord
     to_id = Kor.id_for_model(to_id)
 
     Relationship.new(
-      :from_id => from_id,
-      :relation_name => relation_name,
-      :to_id => to_id,
-      :properties => properties
+      from_id: from_id,
+      relation_name: relation_name,
+      to_id: to_id,
+      properties: properties
     )
   end
 

@@ -2,8 +2,7 @@ class CombineAdminColumnsOnUsers < ActiveRecord::Migration
   def up
     User.all.each do |user|
       user.update(
-        :admin =>
-          user.credential_admin ||
+        admin: user.credential_admin ||
           user.collection_admin ||
           user.user_admin ||
           user.admin ||

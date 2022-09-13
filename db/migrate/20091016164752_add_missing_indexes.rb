@@ -19,9 +19,9 @@ class AddMissingIndexes < ActiveRecord::Migration
     add_index :entities_user_groups, :user_group_id
 
     # redundant join table indexes
-    remove_index :authority_groups_entities, :name => :ag_link_index
-    remove_index :entities_system_groups, :name => :sg_link_index
-    remove_index :entities_user_groups, :name => :ug_link_index
+    remove_index :authority_groups_entities, name: :ag_link_index
+    remove_index :entities_system_groups, name: :sg_link_index
+    remove_index :entities_user_groups, name: :ug_link_index
   end
 
   def self.down
@@ -44,8 +44,8 @@ class AddMissingIndexes < ActiveRecord::Migration
     remove_index :entities_user_groups, :user_group_id
 
     # redundant join table indexes
-    add_index :entities_system_groups, [:entity_id, :system_group_id], :unique => true, :name => 'sg_link_index'
-    add_index :authority_groups_entities, [:entity_id, :authority_group_id], :unique => true, :name => 'ag_link_index'
-    add_index :entities_user_groups, [:entity_id, :user_group_id], :unique => true, :name => 'ug_link_index'
+    add_index :entities_system_groups, [:entity_id, :system_group_id], unique: true, name: 'sg_link_index'
+    add_index :authority_groups_entities, [:entity_id, :authority_group_id], unique: true, name: 'ag_link_index'
+    add_index :entities_user_groups, [:entity_id, :user_group_id], unique: true, name: 'ug_link_index'
   end
 end

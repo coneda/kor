@@ -44,7 +44,7 @@ end
 require 'delayed_paperclip/process_job'
 class DelayedPaperclip::ProcessJob
   def self.with_adapter(adapter, &block)
-    old = self.queue_adapter
+    old = queue_adapter
     self.queue_adapter = adapter
     yield
   ensure

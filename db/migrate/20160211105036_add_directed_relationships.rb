@@ -31,7 +31,7 @@ class AddDirectedRelationships < ActiveRecord::Migration
     add_index :directed_relationships, :to_id
     add_index :directed_relationships, [
       :relation_id, :is_reverse, :from_id, :to_id
-    ], :name => :ally
+    ], name: :ally
   end
 
   def down

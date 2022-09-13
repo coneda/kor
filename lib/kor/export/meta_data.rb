@@ -20,7 +20,7 @@ class Kor::Export::MetaData
   end
 
   def render_entity(entity, options = {})
-    options.reverse_merge!(:profile => @profile, :indent => 0)
+    options.reverse_merge!(profile: @profile, indent: 0)
 
     result = ""
     if entity.is_medium?
@@ -40,9 +40,9 @@ class Kor::Export::MetaData
 
       relationships.each do |relationship|
         result += render_entity(relationship.to,
-          :properties => relationship.relationship.properties.join(', '),
-          :profile => relation['relations'] || [],
-          :indent => options[:indent] + 1
+          properties: relationship.relationship.properties.join(', '),
+          profile: relation['relations'] || [],
+          indent: options[:indent] + 1
         )
       end
     end

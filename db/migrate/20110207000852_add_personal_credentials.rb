@@ -15,21 +15,21 @@ class AddPersonalCredentials < ActiveRecord::Migration
       t.string :policy
     end
 
-    add_index :collections_credentials, [:collection_id, :credential_id, :policy], :name => :master
+    add_index :collections_credentials, [:collection_id, :credential_id, :policy], name: :master
 
     Collection.all.each do |collection|
       (collection.policy_groups || {}).each do |policy, credential_ids|
         credential_ids.each do |credential_id|
           Grant.create(
-            :collection_id => collection.id,
-            :policy => policy,
-            :credential_id => credential_id
+            collection_id: collection.id,
+            policy: policy,
+            credential_id: credential_id
           )
         end
       end
     end
 
-    remove_index :credentials, :name => :index_credentials_on_name
+    remove_index :credentials, name: :index_credentials_on_name
     add_index :credentials, :name
 
     remove_column :collections, :policy_groups
@@ -38,10 +38,10 @@ class AddPersonalCredentials < ActiveRecord::Migration
   def self.down
     add_column :collections, :policy_groups, :text
 
-    remove_index :credentials, :name => :index_credentials_on_name
-    add_index :credentials, :name, :name => :index_credentials_on_name, :unique => true
+    remove_index :credentials, name: :index_credentials_on_name
+    add_index :credentials, :name, name: :index_credentials_on_name, unique: true
 
-    remove_index :collections_credentials, :name => :master
+    remove_index :collections_credentials, name: :master
     drop_table :collections_credentials
 
     [:credentials, :users, :collections].each do |table|

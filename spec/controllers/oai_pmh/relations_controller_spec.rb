@@ -39,7 +39,7 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
   end
 
   it "should respond to 'GetRecord'" do
-    has_created = Relation.where(:name => "has created").first
+    has_created = Relation.where(name: "has created").first
 
     get '/oai-pmh/relations.xml', params: {
       verb: 'GetRecord',
@@ -57,7 +57,7 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
 
   if ENV['KOR_BRITTLE'] == 'true'
     it "should return XML that validates against the OAI-PMH schema" do
-      relation = Relation.where(:name => "has created").first
+      relation = Relation.where(name: "has created").first
 
       # yes this suck, check out
       # https://mail.gnome.org/archives/xml/2009-November/msg00022.html
@@ -75,7 +75,7 @@ RSpec.describe OaiPmh::RelationsController, type: :request do
   end
 
   it "should disseminate oai_dc and kor metadata formats on GetRecord requests" do
-    has_created = Relation.where(:name => "has created").first
+    has_created = Relation.where(name: "has created").first
 
     get '/oai-pmh/relations.xml', params: {
       verb: 'GetRecord',

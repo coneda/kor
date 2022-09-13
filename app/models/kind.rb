@@ -5,9 +5,9 @@ class Kind < ApplicationRecord
 
   acts_as_paranoid
 
-  has_many :entities, :dependent => :destroy
-  has_many :fields, :dependent => :destroy
-  has_many :generators, :dependent => :destroy
+  has_many :entities, dependent: :destroy
+  has_many :fields, dependent: :destroy
+  has_many :generators, dependent: :destroy
 
   has_many :kind_parent_inheritances, class_name: 'KindInheritance', foreign_key: :child_id, dependent: :destroy
   has_many :kind_child_inheritances, class_name: 'KindInheritance', foreign_key: :parent_id, dependent: :destroy
@@ -20,8 +20,8 @@ class Kind < ApplicationRecord
     white_space: true
 
   validates :plural_name,
-    :presence => true,
-    :white_space => true
+    presence: true,
+    white_space: true
 
   validate do |kind|
     to_check = kind.parents.to_a
@@ -84,11 +84,11 @@ class Kind < ApplicationRecord
   end
 
   def field_instances(object)
-    self.fields.each do |field|
+    fields.each do |field|
       field.entity = object
     end
 
-    self.fields
+    fields
   end
 
   def self.available_fields
@@ -100,7 +100,7 @@ class Kind < ApplicationRecord
 
   # TODO: still needed?
   def defines_schema?
-    !self.fields.empty?
+    !fields.empty?
   end
 
   def medium_kind?
@@ -188,6 +188,6 @@ class Kind < ApplicationRecord
   end
 
   def serializable_hash(*args)
-    super :methods => [:defines_schema?, :tagging]
+    super methods: [:defines_schema?, :tagging]
   end
 end

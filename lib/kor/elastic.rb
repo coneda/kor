@@ -87,7 +87,7 @@ class Kor::Elastic
               #   }
               # }
             },
-            'max_result_window': [Entity.count * 2, 10000].max
+            'max_result_window': [Entity.count * 2, 10_000].max
           }
         },
         'mappings' => {
@@ -220,7 +220,7 @@ class Kor::Elastic
   end
 
   def self.data_for(entity, options = {})
-    options.reverse_merge! :full => false
+    options.reverse_merge! full: false
 
     data = {
       "id" => entity.id,
@@ -292,7 +292,7 @@ class Kor::Elastic
   end
 
   def self.empty_result
-    ::Kor::SearchResult.new(:total => 0, :uuids => [])
+    ::Kor::SearchResult.new(total: 0, uuids: [])
   end
 
   def self.bulk(data)

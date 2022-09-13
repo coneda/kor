@@ -16,7 +16,7 @@ class OaiPmh::BaseController < BaseController
     @admin_email = Kor.settings['maintainer_mail']
     @earliest_timestamp = earliest_timestamp
 
-    render :template => "oai_pmh/identify"
+    render template: "oai_pmh/identify"
   end
 
   def list_sets
@@ -24,7 +24,7 @@ class OaiPmh::BaseController < BaseController
   end
 
   def list_metadata_formats
-    render :template => "oai_pmh/list_metadata_formats"
+    render template: "oai_pmh/list_metadata_formats"
   end
 
   def list_identifiers
@@ -35,7 +35,7 @@ class OaiPmh::BaseController < BaseController
     @records = query(record_params)
 
     if @records[:total] > 0
-      render :template => "oai_pmh/list_identifiers"
+      render template: "oai_pmh/list_identifiers"
     else
       render_error 'noRecordsMatch'
     end
@@ -138,9 +138,9 @@ class OaiPmh::BaseController < BaseController
       end
 
       {
-        :items => offset_scope.limit(params['per_page']),
-        :token => token,
-        :total => scope.count
+        items: offset_scope.limit(params['per_page']),
+        token: token,
+        total: scope.count
       }
     end
 
@@ -180,7 +180,7 @@ class OaiPmh::BaseController < BaseController
     end
 
     def locate(identifier)
-      records.where(:uuid => identifier).first
+      records.where(uuid: identifier).first
     end
 
     def earliest_timestamp

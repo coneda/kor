@@ -1,6 +1,6 @@
 require 'webdrivers'
 
-Webdrivers.cache_time = 86400 # 24 hours
+Webdrivers.cache_time = 86_400 # 24 hours
 # Webdrivers.logger.level = :DEBUG
 
 World(DataHelper)
@@ -8,7 +8,7 @@ World(DataHelper)
 SuiteHelper.setup_vcr :cucumber
 SuiteHelper.setup :cucumber
 
-Capybara.server_port = 47001
+Capybara.server_port = 47_001
 Capybara.default_max_wait_time = 5
 
 Capybara.register_driver :selenium_chrome_headless do |app|

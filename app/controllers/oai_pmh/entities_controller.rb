@@ -4,7 +4,7 @@ class OaiPmh::EntitiesController < OaiPmh::BaseController
 
     if @record
       if current_user && current_user.allowed_to?(:view, @record.collection)
-        render :template => "oai_pmh/get_record"
+        render template: "oai_pmh/get_record"
       else
         head 403
       end

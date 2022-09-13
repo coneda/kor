@@ -1,7 +1,7 @@
 class Collection < ApplicationRecord
   has_many :entities
-  has_many :grants, :dependent => :destroy
-  has_many :credentials, :through => :grants
+  has_many :grants, dependent: :destroy
+  has_many :credentials, through: :grants
   has_one :owner,
     class_name: 'User',
     foreign_key: :collection_id
@@ -21,13 +21,13 @@ class Collection < ApplicationRecord
 
   def update_personals
     if personal? && propagate && @grants_by_policy_buffer
-      collections = self.class.joins(:owner).where("collections.id != ?", self.id)
+      collections = self.class.joins(:owner).where("collections.id != ?", id)
 
       collections.each do |collection|
         params = {}
 
         @grants_by_policy_buffer.each do |policy, credential_ids|
-          own_c_id = self.owner.credential_id.to_s
+          own_c_id = owner.credential_id.to_s
           other_c_id = collection.owner.credential_id.to_s
 
           if credential_ids.include? own_c_id
@@ -35,7 +35,7 @@ class Collection < ApplicationRecord
           end
         end
 
-        Collection.find(collection.id).update(:grants_by_policy => params, :propagate => false)
+        Collection.find(collection.id).update(grants_by_policy: params, propagate: false)
       end
     end
   end

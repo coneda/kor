@@ -21,8 +21,8 @@ Given /^I am logged in as "([^"]*)"/ do |user|
 end
 
 Given /^the user "([^"]*)"$/ do |user|
-  unless User.exists? :name => user
-    FactoryBot.create :user, :name => user, :password => user, :email => "#{user}@example.com"
+  unless User.exists? name: user
+    FactoryBot.create :user, name: user, password: user, email: "#{user}@example.com"
   end
 end
 

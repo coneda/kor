@@ -210,10 +210,10 @@ module DataHelper
     mrossi = FactoryBot.create :mrossi, groups: [project]
     FactoryBot.create :ldap_template
 
-    Kor::Auth.grant default, :view, :to => students
-    Kor::Auth.grant priv, :all, :to => admins
-    Kor::Auth.grant default, :view, :to => project
-    Kor::Auth.grant priv, :all, :to => project
+    Kor::Auth.grant default, :view, to: students
+    Kor::Auth.grant priv, :all, to: admins
+    Kor::Auth.grant default, :view, to: project
+    Kor::Auth.grant priv, :all, to: project
 
     leonardo = FactoryBot.create(:leonardo,
       created_at: Time.mktime(2016, 10, 17, 13),

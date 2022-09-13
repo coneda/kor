@@ -40,7 +40,7 @@ class UserGroupsController < JsonController
     @records.shared = true
     @records.save
 
-    render_200 I18n.t('objects.shared_success', :o => @records.name)
+    render_200 I18n.t('objects.shared_success', o: @records.name)
   end
 
   def unshare
@@ -53,7 +53,7 @@ class UserGroupsController < JsonController
     @records.shared = false
     @records.save
 
-    render_200 I18n.t('objects.unshared_success', :o => @records.name)
+    render_200 I18n.t('objects.unshared_success', o: @records.name)
   end
 
   def shared

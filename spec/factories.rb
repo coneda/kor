@@ -9,7 +9,7 @@ FactoryBot.define do
       name{ "Medium" }
       plural_name{ "Media" }
       uuid{ Kind::MEDIA_UUID }
-      settings{ {:naming => false} }
+      settings{ {naming: false} }
     end
 
     factory :locations do
@@ -83,7 +83,7 @@ FactoryBot.define do
     end
   end
 
-  factory :medium_without_swap, :class => Medium do
+  factory :medium_without_swap, class: Medium do
     image{ File.open("#{Rails.root}/spec/fixtures/files/image_a.jpg") }
   end
 
@@ -111,7 +111,7 @@ FactoryBot.define do
   end
 
   factory :entity do
-    collection{ Collection.find_or_create_by :name => "default" }
+    collection{ Collection.find_or_create_by name: "default" }
 
     factory :work do
       name{ "A entity" }
@@ -121,7 +121,7 @@ FactoryBot.define do
         name{ "Mona Lisa" }
 
         dataset do
-          {:gnd => '12345'}
+          {gnd: '12345'}
         end
       end
 

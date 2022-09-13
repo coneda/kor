@@ -1,6 +1,6 @@
 class CreateExceptionLogs < ActiveRecord::Migration
   def self.up
-    create_table :exception_logs, :options => Kor.config['global_database_options'] do |t|
+    create_table :exception_logs, options: Kor.config['global_database_options'] do |t|
       t.string :kind
       t.string :message
       t.text :backtrace

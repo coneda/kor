@@ -13,19 +13,19 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
     Kind.reset_column_information
 
     if artworks = Kind.find_by_attachment_class('Artwork')
-      artworks.update :attachment_class => nil, :schema_name => 'artwork'
+      artworks.update attachment_class: nil, schema_name: 'artwork'
     end
 
     if literatures = Kind.find_by_attachment_class('Literature')
-      literatures.update :attachment_class => nil, :schema_name => 'literature'
+      literatures.update attachment_class: nil, schema_name: 'literature'
     end
 
     if textuals = Kind.find_by_attachment_class('Textual')
-      textuals.update :attachment_class => nil, :schema_name => nil
+      textuals.update attachment_class: nil, schema_name: nil
     end
 
     if images = Kind.find_by_attachment_class('KorImage')
-      images.update :attachment_class => nil, :schema_name => nil, :name => 'Medium'
+      images.update attachment_class: nil, schema_name: nil, name: 'Medium'
     end
 
     query = "
@@ -52,7 +52,7 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
       else
         puts "working on original #{image_id}: #{image_path}"
 
-        medium = Medium.create(:document => File.open(image_path))
+        medium = Medium.create(document: File.open(image_path))
         if medium.id
           Entity.connection.update("UPDATE entities SET medium_id = #{medium.id} WHERE id = #{id}")
         else
@@ -87,7 +87,7 @@ class MakeAllEntitiesBelongToAMedium < ActiveRecord::Migration
       entity.properties = properties.map{ |p| {'label' => p['label'], 'value' => p['value']} }
       entity.synonyms = synonyms.map{ |s| s['name'] }
       entity.dataset = dataset
-      entity.save :validate => false
+      entity.save validate: false
     end
 
     change_table :entities do |t|

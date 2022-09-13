@@ -228,7 +228,7 @@ class JsonController < BaseController
       if zip_file.background?
         GenericJob.perform_later('constant', 'Kor::ZipFile', 'create!', *args)
         flash[:notice] = I18n.t('messages.creating_zip_file')
-        redirect_to root_path(:anchor => group_path(group))
+        redirect_to root_path(anchor: group_path(group))
       else
         download = zip_file.build
         redirect_to url_for(controller: 'downloads', action: 'show', uuid: download.uuid)
