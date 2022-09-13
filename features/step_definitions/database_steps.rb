@@ -18,7 +18,7 @@ Given /^the kind "([^"]*)"(?: inheriting from "([^"]*)")?$/ do |names, parents|
   components = names.split('/')
   to = (components.size / 2) - 1
   singular = components[0..to].join('/')
-  plural = components[(components.size / 2)..-1].join('/')
+  plural = components[(components.size / 2)..].join('/')
   kind = Kind.find_or_initialize_by(:name => singular, :plural_name => plural)
   if parents.present?
     parents.split(',').each do |parent|

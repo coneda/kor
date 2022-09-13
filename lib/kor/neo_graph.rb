@@ -209,12 +209,9 @@ class Kor::NeoGraph
     if response.ok?
       data = JSON.parse(response.body)
 
-      if data["errors"].empty?
-        data
-      else
-        # binding.pry
-        data
-      end
+      # binding.pry if !data['errors'].empty
+
+      data
     else
       puts response.body, response.status
       nil

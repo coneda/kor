@@ -125,7 +125,7 @@ class User < ApplicationRecord
   attr_accessor :extension
   attr_accessor :custom_extension
   attr_accessor :plain_password
-  
+
   attr_writer :make_personal
 
   def make_personal

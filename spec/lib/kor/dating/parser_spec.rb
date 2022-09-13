@@ -3,9 +3,7 @@ require 'rails_helper'
 RSpec::Matchers.define :parse do |input|
   match do |parser|
     parser.parse input
-  rescue Parslet::ParseFailed
-    false
-  rescue Kor::Exception
+  rescue Parslet::ParseFailed, Kor::Exception
     false
   end
 end

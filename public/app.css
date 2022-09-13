@@ -280,6 +280,10 @@ kor-login .kor-blend, [data-is=kor-login] .kor-blend {
   height: 40rem;
   background-image: url("images/login_blend.gif"); }
 
+kor-login .kor-local-button, [data-is=kor-login] .kor-local-button {
+  display: block;
+  margin-bottom: 1rem; }
+
 kor-login-info {
   font-weight: bold; }
   kor-login-info .item {

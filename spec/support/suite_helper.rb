@@ -97,7 +97,7 @@ module SuiteHelper
     )
   end
 
-  def self.after_each(framework, scope, test)
+  def self.after_each(framework, scope, _test)
     if framework == :rspec
       extend ActiveSupport::Testing::TimeHelpers
       travel_back

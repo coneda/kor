@@ -56,7 +56,7 @@ class UnifyWebServices < ActiveRecord::Migration
             :directive => "<a href='#{url}' target='_blank'>» KVK Katalog</a>",
             :kind => kind
           )
-        when 'knd'
+        when 'knd', 'coneda_information_service'
           unless kind.fields.where(:name => 'gnd').first
             field = Fields::String.new(:name => 'gnd', :show_label => 'GND-ID', :show_on_entity => false, :kind => kind)
           end
@@ -74,10 +74,6 @@ class UnifyWebServices < ActiveRecord::Migration
             :directive => "<a href='http://ta.sandrart.net/prs/{{entity.dataset.sandrart}}' target='_blank'>» Sandrart</a>",
             :kind => kind
           )
-        when 'coneda_information_service'
-          unless kind.fields.where(:name => 'gnd').first
-            field = Fields::String.new(:name => 'gnd', :show_label => 'GND-ID', :show_on_entity => false, :kind => kind)
-          end
         else
           raise "Web service #{ws} does not exist"
         end

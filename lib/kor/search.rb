@@ -122,7 +122,7 @@ class Kor::Search
     # scan for odd number of quotes
     elastic_keys.each do |k|
       v = @criteria[k]
-      if v.is_a?(String) && v.scan(/"/).size % 2 == 1
+      if v.is_a?(String) && v.scan(/"/).size.odd?
         @criteria[k] = v.gsub('"', '')
       end
     end

@@ -5,10 +5,10 @@ executables = [
 ]
 
 executables.each do |e|
-  unless system('which', e, [:out, :err] => '/dev/null')
-    raise(
-      StandardError,
-      "executable '#{e}' could not be found, please install it"
-    )
-  end
+  next if system('which', e, [:out, :err] => '/dev/null')
+
+  raise(
+    StandardError,
+    "executable '#{e}' could not be found, please install it"
+  )
 end

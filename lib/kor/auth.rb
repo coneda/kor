@@ -240,8 +240,7 @@ module Kor::Auth
   def self.grant(collection, policies, options = {})
     policies = case policies
     when :all then self.policies
-    when Symbol then [policies]
-    when String then [policies]
+    when Symbol, String then [policies]
     else
       policies
     end
@@ -263,8 +262,7 @@ module Kor::Auth
   def self.revoke(collection, policies, options = {})
     policies = case policies
     when :all then self.policies
-    when Symbol then [policies]
-    when String then [policies]
+    when Symbol, String then [policies]
     else
       policies
     end

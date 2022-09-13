@@ -60,8 +60,8 @@ module Kor
 
           unless pg
             total = rts.attr('completeListSize').value.to_i
-              log "harvesting #{type}: #{total} entries"
-              pg = new_progress((total / per_page.to_f).ceil, type)
+            log "harvesting #{type}: #{total} entries"
+            pg = new_progress((total / per_page.to_f).ceil, type)
           end
         else
           resumptionToken = nil

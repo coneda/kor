@@ -15,7 +15,3 @@ begin
 rescue ActiveRecord::NoDatabaseError => e
   Rails.logger.error("could not set binary collation for ActsAsTaggableOn: #{e}")
 end
-
-# chain = ActsAsTaggableOn::Tagging.send(:get_callbacks, :validate)
-# callback = chain.find{|cb| cb.filter.attributes == [:taggable]}
-# chain.delete(callback)

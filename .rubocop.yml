@@ -6,6 +6,7 @@ AllCops:
   DisplayStyleGuide: true
   ExtraDetails: true
   Exclude:
+    - 'bin/yarn'
     - 'node_modules/**/*'
     - 'vendor/**/*'
     - '.git/**/*'
@@ -13,6 +14,11 @@ AllCops:
     # will be removed when migrating to historical_dating gem
     - 'lib/kor/dating/parser.rb'
     - 'lib/kor/dating/transform.rb'
+    - 'lib/tasks/cucumber.rake'
+    - 'config/initializers/new_framework_defaults_*'
+    - 'config/puma.rb'
+    - 'config/spring.rb'
+    - 'spec/spec_helper.rb'
 
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
@@ -117,3 +123,15 @@ Metrics/BlockLength:
   Max: 640
   Exclude:
     - 'spec/**/*.rb'
+
+Metrics/CyclomaticComplexity:
+  Max: 39
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Lint/DuplicateBranch:
+  Exclude:
+    - 'features/support/paths.rb'
+    - 'lib/kor/auth.rb'
+    - 'spec/lib/kor/dating/parser_spec.rb'

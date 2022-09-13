@@ -8,9 +8,7 @@ end
 When /^(.*) within (.+)$/ do |step, parent|
   type, locator, options = selector_for(parent)
 
-  scope = options ?
-    find(type, locator, **options) :
-    find(type, locator)
+  scope = options ? find(type, locator, **options) : find(type, locator)
 
   within scope do
     step(step)

@@ -126,20 +126,24 @@ RSpec.describe Relation do
 
     FactoryBot.create :shows, from_kind_id: media.id, to_kind_id: people.id
     expect(Relation.available_relation_names(to_ids: [people.id, works.id])).to(
-      eq([
-        'has been created by', 'has created', 'is location of', 'is related to',
-        'shows'
-      ])
+      eq(
+        [
+          'has been created by', 'has created', 'is location of',
+          'is related to', 'shows'
+        ]
+      )
     )
     expect(
       Relation.available_relation_names(
         from_ids: '',
         to_ids: [people.id, works.id]
       )
-    ).to eq([
-      'has been created by', 'has created', 'is location of', 'is related to',
-      'shows'
-    ])
+    ).to eq(
+      [
+        'has been created by', 'has created', 'is location of', 'is related to',
+        'shows'
+      ]
+    )
 
     # additional relation created above
     expect(Relation.available_relation_names(to_ids: [people.id, media.id])).to(

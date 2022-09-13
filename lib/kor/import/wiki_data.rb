@@ -101,8 +101,8 @@ class Kor::Import::WikiData
     entity = Entity.create(
       collection_id: collection.id,
       kind_id: kind.id,
-      name: self.label,
-      comment: self.description,
+      name: label,
+      comment: description,
       dataset: {'wikidata_id' => qid},
       creator: user
     )
@@ -119,8 +119,8 @@ class Kor::Import::WikiData
 
     if opts[:attributes]
       entity.update(
-        name: self.label,
-        comment: self.description,
+        name: label,
+        comment: description,
         dataset: entity.dataset.merge('wikidata_id' => qid)
       )
     end
@@ -144,7 +144,7 @@ class Kor::Import::WikiData
   end
 
   def update_relationships(entity)
-    self.entity_properties.each do |r|
+    entity_properties.each do |r|
       targets = r['values'].map do |qid|
         Identifier.resolve(qid, 'wikidata_id')
       end
@@ -169,18 +169,16 @@ class Kor::Import::WikiData
         end
 
         # fall back to creating a new relation
-        unless relation
-          if Kor.settings['create_missing_relations']
-            attrs.update(
-              identifier: r['id'],
-              reverse_identifier: "i#{r['id']}",
-              name: r['label'],
-              reverse_name: "inverse of '#{r['label']}'",
-              from_kind_id: entity.kind_id,
-              to_kind_id: target.kind_id
-            )
-            relation = Relation.create!(attrs)
-          end
+        if !relation && Kor.settings['create_missing_relations']
+          attrs.update(
+            identifier: r['id'],
+            reverse_identifier: "i#{r['id']}",
+            name: r['label'],
+            reverse_name: "inverse of '#{r['label']}'",
+            from_kind_id: entity.kind_id,
+            to_kind_id: target.kind_id
+          )
+          relation = Relation.create!(attrs)
         end
 
         if relation
@@ -210,7 +208,7 @@ class Kor::Import::WikiData
     doc = Nokogiri::XML(xml)
     doc.xpath("//xmlns:result").map do |r|
       {
-        "id" => r.xpath("xmlns:binding[@name='id']/xmlns:uri").text.split("/").last[1..-1],
+        "id" => r.xpath("xmlns:binding[@name='id']/xmlns:uri").text.split("/").last[1..],
         "label" => r.xpath("xmlns:binding[@name='label']/xmlns:literal").text
       }
     end
@@ -282,7 +280,6 @@ class Kor::Import::WikiData
       response
     end
   end
-
 
   protected
 

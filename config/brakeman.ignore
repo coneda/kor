@@ -1,6 +1,29 @@
 {
   "ignored_warnings": [
     {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "02dbb7d088f19cdc4379a538287ce0cda9a94aaf4cbea75047ce68bb461bb1ff",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/models/entity.rb",
+      "line": 378,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "Arel.sql(\"FIELD(id,#{ids.flatten.compact.map do\n connection.quote(id)\n end.join(\",\")})\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Entity",
+        "method": null
+      },
+      "user_input": "ids.flatten.compact.map do\n connection.quote(id)\n end.join(\",\")",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": ""
+    },
+    {
       "warning_type": "Unscoped Find",
       "warning_code": 82,
       "fingerprint": "06b5f7c0b52a6eb8e9999883d1c4e44ec2dd488ddebd53066e4246d029169199",
@@ -18,6 +41,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -38,46 +64,9 @@
       },
       "user_input": "dir",
       "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "086f8119027c1314506974abaf53156f6b97dd17d2e5c6f933736d92f22d7288",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Entity#find`",
-      "file": "app/controllers/collections_controller.rb",
-      "line": 71,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Entity.find(params[:entity_ids])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "CollectionsController",
-        "method": "entities"
-      },
-      "user_input": "params[:entity_ids]",
-      "confidence": "Weak",
-      "note": "no problem: permissions are checked immediately afterwards"
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "1302bb51442cfa4dd2f22bb981b2afa3e2742bbeb83aec1f0fcb1d135e5aa552",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Relationship#find`",
-      "file": "app/controllers/relationships_controller.rb",
-      "line": 31,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Relationship.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "RelationshipsController",
-        "method": "destroy"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        77
+      ],
       "note": ""
     },
     {
@@ -98,46 +87,9 @@
       },
       "user_input": "Identifier.resolve!(params[:id], params[:kind])",
       "confidence": "High",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "1e4b1f87a9ff0ec5ed0a061ab7c742f852305cd8325f90f1161d7d2d720838e2",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Entity#find`",
-      "file": "app/controllers/entities_controller.rb",
-      "line": 3,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Entity.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "EntitiesController",
-        "method": "metadata"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "20646879beabd537c5e8e37af96f9331ea51eb59470b5aee601cc7aa33b9fd69",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `User#find`",
-      "file": "app/controllers/users_controller.rb",
-      "line": 79,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "User.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "UsersController",
-        "method": "update"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        601
+      ],
       "note": ""
     },
     {
@@ -158,6 +110,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -167,7 +122,7 @@
       "check_name": "MassAssignment",
       "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
       "file": "app/controllers/collections_controller.rb",
-      "line": 96,
+      "line": 98,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
       "code": "params.require(:collection).permit!",
       "render_path": null,
@@ -178,46 +133,9 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "34f67718aa01faf618146fe1a2caa04fdce3692f68fa86756364171d8c20c427",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Relationship#find`",
-      "file": "app/controllers/relationships_controller.rb",
-      "line": 17,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Relationship.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "RelationshipsController",
-        "method": "update"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "368b891ad7c1479cd1e94b8aa8d3897d0200c10f67ad85750e39f9eb5c0986c0",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Entity#find`",
-      "file": "app/controllers/entities_controller.rb",
-      "line": 213,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Entity.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "EntitiesController",
-        "method": "destroy"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        915
+      ],
       "note": ""
     },
     {
@@ -238,6 +156,9 @@
       },
       "user_input": "base_dir",
       "confidence": "Medium",
+      "cwe_id": [
+        77
+      ],
       "note": ""
     },
     {
@@ -258,46 +179,9 @@
       },
       "user_input": "dir",
       "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "4f5dff7f33747ba09fd796f6b23e05a490bc31d64037f3bd3bb6c4d8f7761c79",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `AuthorityGroup#find`",
-      "file": "app/controllers/authority_groups_controller.rb",
-      "line": 56,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "AuthorityGroup.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "AuthorityGroupsController",
-        "method": "update"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "512dee560fc90078e108bc60a0e01e126641f48953eef49558ae81b1852ba648",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Entity#find`",
-      "file": "app/controllers/entities_controller.rb",
-      "line": 226,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Entity.find(params[:entity_ids])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "EntitiesController",
-        "method": "merge"
-      },
-      "user_input": "params[:entity_ids]",
-      "confidence": "Weak",
+      "cwe_id": [
+        77
+      ],
       "note": ""
     },
     {
@@ -318,27 +202,10 @@
       },
       "user_input": null,
       "confidence": "Medium",
+      "cwe_id": [
+        915
+      ],
       "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "539efaf0bbc6c6c892bf321b9de6bf9030453d8aa2d08a4feeccbb56594fb68e",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Entity#find`",
-      "file": "app/controllers/entities_controller.rb",
-      "line": 290,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Entity.find(params[:ids])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "EntitiesController",
-        "method": "mass_destroy"
-      },
-      "user_input": "params[:ids]",
-      "confidence": "Weak",
-      "note": "no problem: permissions are checked immediately afterwards"
     },
     {
       "warning_type": "Command Injection",
@@ -358,6 +225,9 @@
       },
       "user_input": "Entity.only_kinds(Kind.medium_kind.id).find(params[:id])",
       "confidence": "High",
+      "cwe_id": [
+        77
+      ],
       "note": "there is no possibility for injection, the medium path is fully generated from the db-retrieved model"
     },
     {
@@ -367,7 +237,7 @@
       "check_name": "WeakHash",
       "message": "Weak hashing algorithm used: SHA1",
       "file": "app/models/user.rb",
-      "line": 281,
+      "line": 297,
       "link": "https://brakemanscanner.org/docs/warning_types/weak_hash/",
       "code": "Digest::SHA1.hexdigest(value)",
       "render_path": null,
@@ -378,26 +248,9 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "5ad3bd60f388e97fc19d771bd3aa1bbda5474c3eacb668ff792690117336e087",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `AuthorityGroup#find`",
-      "file": "app/controllers/authority_groups_controller.rb",
-      "line": 16,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "AuthorityGroup.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "AuthorityGroupsController",
-        "method": "download_images"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        328
+      ],
       "note": ""
     },
     {
@@ -418,26 +271,9 @@
       },
       "user_input": "dir",
       "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "5e7b8bec97fd672ebb635fed447b256c1162f36ceb7d3599d1e87663d0c2bec0",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Entity#find`",
-      "file": "app/controllers/entities_controller.rb",
-      "line": 194,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Entity.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "EntitiesController",
-        "method": "update_tags"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        77
+      ],
       "note": ""
     },
     {
@@ -454,6 +290,9 @@
       "location": null,
       "user_input": null,
       "confidence": "High",
+      "cwe_id": [
+        311
+      ],
       "note": ""
     },
     {
@@ -463,7 +302,7 @@
       "check_name": "SQL",
       "message": "Possible SQL injection",
       "file": "app/models/entity.rb",
-      "line": 455,
+      "line": 482,
       "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
       "code": "includes(:medium).references(:media).where(\"media.image_file_size #{{ :equal => \"=\", :smaller => \"<=\", :larger => \">=\" }[mode]} :s OR media.document_file_size #{{ :equal => \"=\", :smaller => \"<=\", :larger => \">=\" }[mode]} :s\", :s => size)",
       "render_path": null,
@@ -474,65 +313,9 @@
       },
       "user_input": "{ :equal => \"=\", :smaller => \"<=\", :larger => \">=\" }[mode]",
       "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Cross-Site Request Forgery",
-      "warning_code": 7,
-      "fingerprint": "6f5239fb87c64764d0c209014deb5cf504c2c10ee424bd33590f0a4f22e01d8f",
-      "check_name": "ForgerySetting",
-      "message": "`protect_from_forgery` should be called in `ApplicationController`",
-      "file": "app/controllers/application_controller.rb",
-      "line": 1,
-      "link": "https://brakemanscanner.org/docs/warning_types/cross-site_request_forgery/",
-      "code": null,
-      "render_path": null,
-      "location": {
-        "type": "controller",
-        "controller": "ApplicationController"
-      },
-      "user_input": null,
-      "confidence": "High",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "7047defb30dc9038c6801b78c24ab0d2c189998aca1d24109e72b0444c66c1f2",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Entity#find`",
-      "file": "app/controllers/entities_controller.rb",
-      "line": 163,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Entity.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "EntitiesController",
-        "method": "update"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "75d9bc116ee45ed7cde68873a739707cedfee7741e2f53b83aa3b41685235d3d",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `AuthorityGroup#find`",
-      "file": "app/controllers/authority_groups_controller.rb",
-      "line": 67,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "AuthorityGroup.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "AuthorityGroupsController",
-        "method": "destroy"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        89
+      ],
       "note": ""
     },
     {
@@ -553,6 +336,9 @@
       },
       "user_input": null,
       "confidence": "Medium",
+      "cwe_id": [
+        915
+      ],
       "note": ""
     },
     {
@@ -562,7 +348,7 @@
       "check_name": "MassAssignment",
       "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
       "file": "app/controllers/users_controller.rb",
-      "line": 108,
+      "line": 116,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
       "code": "params.fetch(:user, {}).permit!",
       "render_path": null,
@@ -573,6 +359,9 @@
       },
       "user_input": null,
       "confidence": "Medium",
+      "cwe_id": [
+        915
+      ],
       "note": ""
     },
     {
@@ -593,6 +382,9 @@
       },
       "user_input": "path",
       "confidence": "Medium",
+      "cwe_id": [
+        77
+      ],
       "note": ""
     },
     {
@@ -613,6 +405,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -633,46 +428,9 @@
       },
       "user_input": "target_dir",
       "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "SQL Injection",
-      "warning_code": 0,
-      "fingerprint": "9a9fb57b596c902d106dc4f1c0448874a178f2cb95b6eb26047124391c8c544a",
-      "check_name": "SQL",
-      "message": "Possible SQL injection",
-      "file": "app/models/entity.rb",
-      "line": 351,
-      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
-      "code": "where(:id => ids.flatten.compact).order(\"FIELD(id,#{ids.flatten.compact.join(\",\")})\")",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "Entity",
-        "method": null
-      },
-      "user_input": "ids.flatten.compact.join(\",\")",
-      "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "9abd49380436896aa6038643b44e0f64e3d855b9d00aae7fc39f8279529ff3d2",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `User#find`",
-      "file": "app/controllers/users_controller.rb",
-      "line": 100,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "User.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "UsersController",
-        "method": "destroy"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        77
+      ],
       "note": ""
     },
     {
@@ -682,7 +440,7 @@
       "check_name": "MassAssignment",
       "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
       "file": "app/controllers/entities_controller.rb",
-      "line": 327,
+      "line": 344,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
       "code": "params[:entity][:dataset].permit!",
       "render_path": null,
@@ -693,26 +451,9 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "ad2c1ccd187b3ffa6a17343530ca4de89a9d672cb2d5f518cf1525158d629524",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `User#find`",
-      "file": "app/controllers/users_controller.rb",
-      "line": 32,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "User.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "UsersController",
-        "method": "reset_login_attempts"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        915
+      ],
       "note": ""
     },
     {
@@ -733,6 +474,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -753,6 +497,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -773,62 +520,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "c2ae97f84004972f8bb8b7abe5f16bf71bcdf5130e7ec0525871f4857b4ee9a0",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Entity#find`",
-      "file": "app/controllers/entities_controller.rb",
-      "line": 259,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Entity.find((params[:entity_ids] or []))",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "EntitiesController",
-        "method": "mass_relate"
-      },
-      "user_input": "params[:entity_ids]",
-      "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Cross-Site Request Forgery",
-      "warning_code": 116,
-      "fingerprint": "c8697fda60549ca065789e2ea74c94effecef88b2b5483bae17ddd62ece47194",
-      "check_name": "CSRFTokenForgeryCVE",
-      "message": "Rails 5.0.7.2 has a vulnerability that may allow CSRF token forgery. Upgrade to Rails 5.2.4.3 or patch",
-      "file": "Gemfile.lock",
-      "line": 196,
-      "link": "https://groups.google.com/g/rubyonrails-security/c/NOjKiGeXUgw",
-      "code": null,
-      "render_path": null,
-      "location": null,
-      "user_input": null,
-      "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "cbabb6646b3e16eb87030f42ca8f428cfbebbe0a39cb601ce44c30d8b9a0ef27",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `User#find`",
-      "file": "app/controllers/users_controller.rb",
-      "line": 59,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "User.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "UsersController",
-        "method": "show"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -849,26 +543,9 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "d731976f7eb44de696c9424dbac12aa78c4e84eb86bb90bb87645bb44479b3c1",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `DirectedRelationship#find`",
-      "file": "app/controllers/directed_relationships_controller.rb",
-      "line": 25,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "DirectedRelationship.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "DirectedRelationshipsController",
-        "method": "show"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        915
+      ],
       "note": ""
     },
     {
@@ -889,6 +566,9 @@
       },
       "user_input": "Entity.only_kinds(Kind.medium_kind.id).find(params[:id])",
       "confidence": "High",
+      "cwe_id": [
+        77
+      ],
       "note": "there is no possibility for injection, the medium path is fully generated from the db-retrieved model"
     },
     {
@@ -909,66 +589,9 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "dd886bbcfbc2113f06087652529b140c6a5ff132a8646702a1c06ce3ae77397e",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `AuthorityGroup#find`",
-      "file": "app/controllers/authority_groups_controller.rb",
-      "line": 23,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "AuthorityGroup.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "AuthorityGroupsController",
-        "method": "add_to"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "e16abd5d70898d1c8f31ebcf2b8f80df47b6480f8d982910fdfc97104cacd551",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `Entity#find`",
-      "file": "app/controllers/entities_controller.rb",
-      "line": 258,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "Entity.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "EntitiesController",
-        "method": "mass_relate"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "e2c902c65db42c714da5cb61d941f69434153351dcb03aba456df7bd30c1a546",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `AuthorityGroup#find`",
-      "file": "app/controllers/authority_groups_controller.rb",
-      "line": 32,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "AuthorityGroup.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "AuthorityGroupsController",
-        "method": "remove_from"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        915
+      ],
       "note": ""
     },
     {
@@ -989,6 +612,9 @@
       },
       "user_input": null,
       "confidence": "Medium",
+      "cwe_id": [
+        328
+      ],
       "note": ""
     },
     {
@@ -1009,26 +635,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
-      "note": ""
-    },
-    {
-      "warning_type": "Unscoped Find",
-      "warning_code": 82,
-      "fingerprint": "eb6463feb7db4290c8004479da5951d3086581889df177cd75e4627cfb0aac97",
-      "check_name": "UnscopedFind",
-      "message": "Unscoped call to `AuthorityGroup#find`",
-      "file": "app/controllers/authority_groups_controller.rb",
-      "line": 41,
-      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
-      "code": "AuthorityGroup.find(params[:id])",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "AuthorityGroupsController",
-        "method": "show"
-      },
-      "user_input": "params[:id]",
-      "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -1038,7 +647,7 @@
       "check_name": "SQL",
       "message": "Possible SQL injection",
       "file": "app/models/entity.rb",
-      "line": 383,
+      "line": 410,
       "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
       "code": "where(\"(#{terms.split(/\\s+/).map do\n \"name LIKE ? OR distinct_name LIKE ?\"\n end.join(\" OR \")})\", *(terms.split(/\\s+/).map do\n \"%#{t}%\"\n end + terms.split(/\\s+/).map do\n \"%#{t}%\"\n end))",
       "render_path": null,
@@ -1049,6 +658,9 @@
       },
       "user_input": "terms.split(/\\s+/).map do\n \"name LIKE ? OR distinct_name LIKE ?\"\n end.join(\" OR \")",
       "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
       "note": ""
     },
     {
@@ -1069,6 +681,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -1089,6 +704,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -1109,6 +727,9 @@
       },
       "user_input": "target_dir",
       "confidence": "Medium",
+      "cwe_id": [
+        77
+      ],
       "note": ""
     },
     {
@@ -1129,6 +750,9 @@
       },
       "user_input": "params[:id]",
       "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
       "note": ""
     },
     {
@@ -1149,9 +773,12 @@
       },
       "user_input": "operation_to_command(options[:operation])",
       "confidence": "Medium",
+      "cwe_id": [
+        77
+      ],
       "note": ""
     }
   ],
-  "updated": "2021-12-06 16:38:48 -0800",
-  "brakeman_version": "5.1.2"
+  "updated": "2022-09-12 22:40:52 -0700",
+  "brakeman_version": "5.3.1"
 }

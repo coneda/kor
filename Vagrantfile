@@ -8,10 +8,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vagrant.plugins = ['vagrant-vbguest']
   config.vm.box = 'generic/debian11'
 
-  pe = {
-    'VERSION' => ENV['VERSION'] || `git rev-parse --abbrev-ref HEAD`
-  }
-
   config.vm.define "dev.v4.2", primary: true do |c|
     c.vm.box = 'generic/debian11'
 

@@ -17,4 +17,3 @@ Kind.create(
 )
 
 SystemGroup.create(:name => 'invalid')
-
