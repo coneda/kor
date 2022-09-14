@@ -146,7 +146,7 @@ module SuiteHelper
       SimpleCov.start :rails do
         command_name framework.to_s
         use_merging true
-        merge_timeout 3600
+        merge_timeout 60 * 60 * 24 * 365 * 9999
         coverage_dir 'tmp/coverage'
 
         track_files '{bin,config,app,lib}/**/*.{rb,rake}'

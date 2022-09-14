@@ -5,15 +5,17 @@ class Kor::Tasks
     started_at = nil
     puts "Found #{num} media entities"
 
-    Medium.find_each do |m|
-      started_at ||= Time.now
+    DelayedPaperclip::ProcessJob.with_adapter :inline do
+      Medium.find_each do |m|
+        started_at ||= Time.now
 
-      m.image.reprocess! if m.image.file?
-      m.document.reprocess! if m.document.file?
+        m.image.reprocess! if m.image.file?
+        m.document.reprocess! if m.document.file?
 
-      left -= 1
-      seconds_left = (Time.now - started_at).to_f / (num - left) * left
-      puts "#{left} items left (ETA: #{Time.now + seconds_left.to_i})"
+        left -= 1
+        seconds_left = (Time.now - started_at).to_f / (num - left) * left
+        puts "#{left} items left (ETA: #{Time.now + seconds_left.to_i})"
+      end
     end
   end
 

@@ -135,19 +135,21 @@ class EntitiesController < JsonController
       @entity.creator_id = current_user.id
 
       if @entity.save
-        if params[:user_group_name]
-          transit = UserGroup.owned_by(current_user).find_or_create_by(name: params[:user_group_name])
-          transit.add_entities @entity if transit
-        end
-
-        if params[:target_entity_id].present? && params[:relation_name].present? && params[:relation_name] != 'false'
-          relationship = Relationship.relate(@entity, params[:relation_name], params[:target_entity_id])
-          if authorized_for_relationship?(relationship, :create)
-            relationship.save!
+        with_lock @entity.medium do
+          if params[:user_group_name]
+            transit = UserGroup.owned_by(current_user).find_or_create_by(name: params[:user_group_name])
+            transit.add_entities @entity if transit
           end
-        end
 
-        @entity.update_wikidata
+          if params[:target_entity_id].present? && params[:relation_name].present? && params[:relation_name] != 'false'
+            relationship = Relationship.relate(@entity, params[:relation_name], params[:target_entity_id])
+            if authorized_for_relationship?(relationship, :create)
+              relationship.save!
+            end
+          end
+
+          @entity.update_wikidata
+        end
 
         @record = @entity
         render_created @entity
@@ -379,5 +381,13 @@ class EntitiesController < JsonController
         end
       end
       results
+    end
+
+    def with_lock(record, &block)
+      if record
+        record.reload.with_lock{ yield }
+      else
+        yield
+      end
     end
 end

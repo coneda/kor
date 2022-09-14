@@ -65,3 +65,46 @@ class Paperclip::UrlGenerator
     end
   end
 end
+
+require 'delayed_paperclip'
+module DelayedPaperclip
+  def self.process_job(instance_klass, instance_id, attachment_name)
+    instance = instance_klass.constantize.unscoped.where(id: instance_id).first
+
+    return if instance.blank?
+
+    instance.with_lock do
+      instance.
+        send(attachment_name).
+        process_delayed!
+    end
+  end
+end
+
+# require 'delayed_paperclip/attachment'
+# module DelayedPaperclip::Attachment
+#   def process_delayed!
+#     self.job_is_processing = true
+#     self.post_processing = true
+#     reprocess!(*delayed_only_process)
+#     self.job_is_processing = false
+#     update_processing_column
+#   end
+
+#   def update_processing_column
+#     if instance.respond_to?(:"#{name}_processing?")
+#       instance.send("#{name}_processing=", false)
+
+#       # update_all now raises lock_version
+#       # instance.class.unscoped.where(instance.class.primary_key => instance.id).update_all({ "#{name}_processing" => false })
+#       k = instance.class
+#       c = k.connection
+#       k.connection.exec_update(
+#         k.sanitize_sql([
+#           "UPDATE #{k.table_name} SET #{name}_processing = ? WHERE #{k.primary_key} = ?",
+#           false, instance.id
+#         ])
+#       )
+#     end
+#   end
+# end

@@ -41,20 +41,10 @@ services:
       - db_data:/var/lib/mysql
     environment:
       MARIADB_ROOT_PASSWORD: root
-    healthcheck:
-      test: ["CMD", "mysqladmin", "-uroot", "-proot", "ping"]
-      interval: 5s
-      timeout: 2s
-      retries: 12
   index:
     image: elasticsearch:5.6.16
     volumes:
       - index_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "curl", "http://localhost:9200"]
-      interval: 5s
-      timeout: 2s
-      retries: 12
 volumes:
   kor_data: {}
   db_data: {}
