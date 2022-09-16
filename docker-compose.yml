@@ -32,9 +32,6 @@ services:
     links:
       - db
       - index
-    depends_on:
-      - db
-      - index
   db:
     image: mariadb:10.7.3
     volumes:
