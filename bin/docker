@@ -1,0 +1,36 @@
+#!/bin/bash -e
+
+CMD=${1:-usage}
+FILE=$2
+
+function kor-usage {
+  echo "USAGE: "
+  echo "  create a timestamped snapshot in the current directory: bin/docker snapshot"
+  echo "  load a snapshot from a file: bin/docker restore <path/to/file>"
+  echo "ATTENTION: make sure Kor has been started with docker-compose"
+}
+
+function kor-snapshot {
+  docker-compose exec kor tar -C /opt/kor/data -c ./ | gzip -c > data.tar.gz
+  docker-compose exec kor mysqldump -h db -u root -proot kor | gzip -c > data.sql.gz
+
+  TS=$(date +'%Y%m%d_%H%M%S')
+  tar czf "kor_snapshot.$TS.tar.gz" data.tar.gz data.sql.gz
+  rm data.tar.gz
+  rm data.sql.gz
+}
+
+function kor-restore {
+  tar xzf $FILE
+
+  docker-compose exec kor bundle exec rake db:drop db:create
+  cat data.sql.gz | gunzip -c | docker-compose exec -T kor mysql -h db -u root -proot kor
+
+  docker-compose exec -T kor bash -c 'rm -rf data/*'
+  cat data.tar.gz | gunzip -c | docker-compose exec -T kor tar -C /opt/kor/data -x
+
+  rm data.tar.gz
+  rm data.sql.gz
+}
+
+kor-$CMD

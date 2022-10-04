@@ -8,6 +8,7 @@ services:
     volumes:
       - kor_data:/opt/kor/data
     environment:
+      RAILS_ENV: production
       ROOT_URL: http://localhost:8080
       DATABASE_URL: mysql2://root:root@db/kor?encoding=utf8&collation=utf8_unicode_ci&reconnect=true
       ELASTIC_URL: http://index:9200
