@@ -210,6 +210,60 @@ class Kor::Tasks
     end
   end
 
+  def self.api_doc(config = {})
+    # `rails routes`.split("\n").each do |line|
+    #   next unless line.match?(/json/)
+    #   line.gsub!(/^[a-z0-9_\s]+/, '')
+
+    #   parts = line.split(/\s+/)
+    #   # parts.unshift nil if parts.size < 5
+    #   methods, path, route, defaults = parts
+    #   methods = methods.split('|')
+    #   path.gsub!('(.:format)', '')
+
+    #   p [methods, path, route, defaults]
+    # end
+    erb_file = "#{Rails.root}/api.md.erb"
+    data_file = "#{Rails.root}/api.yml"
+
+    rebuild = true
+    last_built_at = Time.now
+    
+    while true
+      if rebuild
+        begin
+          puts "#{Time.now} building"
+          data = YAML.load_file(data_file)
+          engine = ERB.new(File.read(erb_file), trim_mode: '-')
+          markdown = engine.result(binding)
+          html = Kramdown::Document.new(markdown).to_html
+
+          File.open 'API.md', 'w' do |f|
+            f.write markdown
+          end
+
+          File.open 'API.html', 'w' do |f|
+            f.write html
+          end
+        rescue StandardError => e
+          puts e.message
+          puts e.backtrace
+        ensure
+          rebuild = false
+        end
+      end
+
+      stat = [data_file, erb_file].map{|f| File.stat(f).mtime}.max
+
+      if last_built_at < stat
+        rebuild = true
+        last_built_at = stat
+      else
+        sleep 0.2
+      end
+    end
+  end
+
   def self.print_table(data)
     maxes = {}
     data.each do |record|

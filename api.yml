@@ -1,0 +1,169 @@
+scopes:
+  -
+    description: work with entities
+    path: '/entities'
+    endpoints:
+      -
+        description: find entities by various criteria
+        path: ''
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: find by id or uuid
+          -
+            name: name
+            type: string
+            description: find by (partial) name
+          -
+            name: except_kind_id
+            type: integer(s)
+            description: exclude results having these kind ids
+          -
+            name: collection_id
+            type: integer
+            description: only return entities with this collection id
+          -
+            name: kind_id
+            type: integer
+            description: only return entities with this kind id
+          -
+            name: dating
+            type: kor date range
+            description: |
+              only return entities (partially) matching the given date range
+          -
+            name: tags
+            type: string(s)
+            description: only return entities having the given tags
+          - 
+            name: relation_name
+            type: string
+            description: |
+              only return entities that can be related using the given relation
+              name
+          -
+            name: file_name
+            type: string
+            description: |
+              only return entities having a uploaded file with the given name,
+              will only return media entities
+          -
+            name: file_type
+            type: content type
+            description: |
+              only return entities having a uploaded file with the given content
+              type, will only return media entities
+          -
+            name: datahash
+            type: string
+            description: |
+              only return entities having a uploaded file matching the given
+              SHA1 hash, will only return media entities
+          -
+            name: file_size
+            type: file size
+            description: |
+              only return entities having a uploaded file with the given file
+              size
+          -
+            name: created_after
+            type: datedate
+            description: only return entities created after the given time
+          -
+            name: created_before
+            type: datedate
+            description: only return entities created before the given time
+          -
+            name: updated_after
+            type: datedate
+            description: only return entities updated after the given time
+          -
+            name: updated_before
+            type: datedate
+            description: only return entities updated before the given time
+          -
+            name: created_by
+            type: integer
+            description: |
+              only return entities created by the given user, expects the user
+              id
+          -
+            name: updated_by
+            type: integer
+            description: |
+              only return entities updated by the given user, expects the user
+              id
+          -
+            name: isolated
+            type: "true"
+            description: |
+              only return entities that are isolated, meaning not related to
+              any other entities
+          -
+            name: invalid
+            type: "true"
+            description: |
+              only return entities that have been previously flagged as invalid
+              (typically by a import script)
+          -
+            name: user_group_id
+            type: integer
+            description: |
+              only return entities that are within the given user group
+          -
+            name: authority_group_id
+            type: integer
+            description: |
+              only return entities that are within the given admin group
+          -
+            name: terms
+            type: elasticsearch query
+            description: |
+              only return entities matching the given elasticsearch query
+          -
+            name: dataset_<name>
+            type: string
+            description: |
+              only return entities having a dataset value dataset_<name>
+              (partially) matching the given string
+          -
+            name: property
+            type: string
+            description: |
+              only return entities having a property (partially) matching the
+              given string
+          -
+            name: related
+            type: string
+            description: |
+              only return entities where a related entity's name matches the
+              given string
+          -
+            name: sort
+            type: string
+            description: |
+              sort the results according to the given criteria, allowed values:
+              relevance, name, random
+            default: name
+          -
+            name: related_per_page
+            type: integer
+            description: |
+              the amount of related entities to include per primary result and
+              per relation. This value is capped by the setting "maximum number
+              of included objects per result"
+            default: 1
+          -
+            name: related_relation_name
+            type: string(s)
+            description: |
+              when including related entities, limit them by the relation name
+              they are related by
+          -
+            name: related_kind_id
+            type: integer(s)
+            description: |
+              when including related entities, limit them by their kind id
+
+        result: a paginated result containing matching entities

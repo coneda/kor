@@ -1,31 +1,29 @@
 # Directories
 
-.bundle
-log/*
-tmp/*
-db/*.sqlite3
+/.bundle
+/log/*
+/tmp/*
+/db/*.sqlite3
 
-.env
 
 # Development
 
-db/*.sqlite3
-
-node_modules
-npm-debug.log
-widgets/tmp
-
-public/custom.css
+/db/*.sqlite3
+/.env
+/node_modules
+/npm-debug.log
+/widgets/tmp
+/public/custom.css
+/deploy.config.sh
+/.vagrant
+/.yardoc
+/doc
 
 # Testing
-spec/.~lock*
+/spec/.~lock*
 
 # Deployment
+/.ruby-version
 
-deploy.config.sh
-.vagrant
-
-.ruby-version
 # Mac
-
 .DS_Store

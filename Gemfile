@@ -46,7 +46,9 @@ end
 
 group :test, :development do
   gem 'byebug'
+  gem 'kramdown'
   gem 'pry'
+  gem 'yard'
 end
 
 group :production do

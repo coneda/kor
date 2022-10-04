@@ -1,0 +1,82 @@
+# Kor JSON REST API Documentation
+
+The Kor JSON REST API is split up into several sections dealing with a specific
+data type (e.g. entities or relationships)each. Each section then has several
+endpoints each handling a specific aspect (e.g. showing or deleting) of that
+data type.
+
+## General
+
+All endpoints follow these general rules
+
+* **HTTP verbs** indicate the type of action (e.g. GET requests will read, POST
+  requests will make modifications)
+* parameters are expected as **query string parameters**
+* the **request body** (if applicable) is expected to be a **JSON document**
+* requests must specify the **HTTP header** `Accept: application/json`
+* the **response body** is **JSON encoded**
+* the **HTTP response code** should indicate success, redirection or problems
+* when errors occur, more information might be found in the response body (e.g.
+  `{message: "Couldn't find User with 'id'=100"}`)
+
+In this documentation we show JSON content as parsed JavaScript objects, e.g.
+`{some: 'value'}` instead of `{"some": "value"}`.
+
+## Parameters
+
+These parameters are available for endpoints that return **several paginated
+results**:
+
+* `page` [integer] The result page for paginated results
+* `per_page` [integer] The amount of results per page for paginated
+  results. The value is capped by the setting "maxium number of results per
+  request".
+
+For parameters specific to the respective endpoint, see the
+[endpoint reference](#endpoint-reference) below.
+
+The following parameter types are currently in use. When the type is given in
+plural, multiple values can be specified, separated by comma, for example,
+type "integer(s)" would allow values like "1", "223" or "44,55,66".
+
+* integer
+* string
+* kor date format - please refer to [our test suite](https://github.com/coneda/kor/blob/master/spec/lib/kor/dating/parser_spec.rb#L203) for currently acceptable values 
+* content type - any valid content type, such as "application/json" or
+  "image/jpeg"
+* true type - the parameter only allows the value "true", every other value (or
+  omitting it) designates "false"
+
+## Collection responses
+
+Whenever a endpoint returns **several paginated results**, the result will be
+wrapped into an object with the form
+
+~~~javascript
+{
+  results: [...], /* the actual results */
+  total: 123, /* the total amount of results ignoring pagination */
+  page: 1, /* the current page of results being returned */
+  per_page: 10 /* the amount of results returned per page */
+}
+~~~
+
+## Endpoint reference
+
+<% data['scopes'].each do |scope| %>
+### <%= scope['description'] %>
+<hr />
+
+<% scope['endpoints'].each do |endpoint| %>
+#### `<%= scope['path'] %><% endpoint['path'] %>`
+* purpose: <%= endpoint['description'] %>
+* parameters
+<% endpoint['params'].each do |param| -%>
+  * `<%= param['name'] -%>`
+    [<%= param['type'] -%>]
+    <%= param['description'].strip -%>
+    <%= "(default: #{param['default']})" if param['default'] %>
+<% end -%>
+* result: <%= endpoint['result'] %>
+<% end %>
+<% end %>
