@@ -77,7 +77,7 @@ RSpec.describe Entity do
     entity.save
   end
 
-  it "should validate entity properties with the mongo class validator" do
+  it "should validate entity properties" do
     entity = FactoryBot.build :jack, properties: [
       {'label' => 'age'},
       {'value' => 12.7}
@@ -88,7 +88,7 @@ RSpec.describe Entity do
     )
   end
 
-  it "should retrieve unsaved mongo values without a kind" do
+  it "should retrieve unsaved values without a kind" do
     entity = Entity.new
     entity.properties = [{'label' => 'test', 'value' => 'test_value'}]
     expect(entity.properties).to eq([{'label' => 'test', 'value' => 'test_value'}])

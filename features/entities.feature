@@ -176,6 +176,14 @@ Feature: Entities
     And I press "Save"
     Then I should see "has been changed"
 
+  Scenario: ignore empty lines when entering properties
+    Given I am logged in as "admin"
+    And I go to the entity page for "Mona Lisa"
+    And I follow "edit"
+    And I fill in "Further properties" with "width: 126cm\n"
+    And I press "Save"
+    Then I should not see "input contains errors"
+
   Scenario: Don't show original file type without "original" permissions
     Given I am logged in as "jdoe"
     When I go to the entity page for the first medium

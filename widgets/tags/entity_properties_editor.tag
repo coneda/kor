@@ -28,6 +28,8 @@
 
       results = []
       for line in text.split(/\n/)
+        continue if line.match(/^\s*$/)
+
         kv = line.split(/:/)
         results.push {
           'label': kv.shift().trim(),
