@@ -167,3 +167,208 @@ scopes:
               when including related entities, limit them by their kind id
 
         result: a paginated result containing matching entities
+      -
+        description: show information about a single entity
+        path: ':id'
+        params:
+          - 
+            name: id
+            type: integer, uuid
+            required: true
+            description: the id or uuid of the entity to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the entity to include
+            values:
+              - 'technical (uuid, timestamps)'
+              - 'synonyms'
+              - 'datings'
+              - 'dataset (custom fields)'
+              - 'properties (special properties)'
+              - 'relations (a count for each relation to non-media entities)'
+              - 'media_relations (a count for each relation to media entities)'
+              - 'related (all related entities up to related_per_page, see ???)'
+              - 'gallery_data (primary and secondary entities as defined in the settings)'
+              - 'kind (detailed kind information)'
+              - 'collection (detailed collection information)'
+              - 'user_groups (list of all user groups this entity is part of, requesting user only)'
+              - 'groups (list of admin groups this entity is part of)'
+              - 'degree (the degree of connectivity)'
+              - 'users (detailed creator, updater information)'
+              - 'fields (custom field types)'
+              - 'generators (custom field generators)'
+              - 'all (include everything)'
+        result: the data for the requested entity
+
+      -
+        name: 'entities.create'
+        description: create a new entity
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: entity
+            type: object
+            required: true
+            description: the information to create the entity from
+            values:
+              name: 'the name of the entity'
+              display_name: |
+                a distinguishing suffix in case the name is already taken by
+                another entity
+              no_name_statement: |
+                one of unknown, not_available, empty_name, enter_name to
+                indicate if a name will be supplied or why not
+              comment: 'a arbitrary string'
+              kind_id: the id of the kind to assign to the entity
+              collection_id: the id of the collection to add the entity to
+              subtype: 'a arbitrary string'
+              medium_attributes: |
+                medium kind only: a object with keys document and/or image and
+                file upload values
+              datings_attributes: a list of objects with keys label, dating_string
+              synonyms: 'a newline separated list'
+              dataset: "a object with keys matching the kind's custom field names"
+              properties: a list of objects with keys label and value
+              user_group_name: the name of a user group to add the new entity to
+              relation_name: the name of a relation to relate the new entity with
+              target_entity_id: the id of another entity to relate the new entity to
+              tag_list: strings, a list of tags to add to the entity
+        result: confirmation_or_errors
+      -
+        description: update a entity
+        path: ':id'
+        method: 'patch, put'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id or uuid of the entity to retrieve
+          -
+            name: entity
+            type: object
+            required: true
+            description: the information to update the entity with
+            values:
+              name: 'the name of the entity'
+              display_name: |
+                a distinguishing suffix in case the name is already taken by
+                another entity
+              no_name_statement: |
+                one of unknown, not_available, empty_name, enter_name to
+                indicate if a name will be supplied or why not
+              comment: 'a arbitrary string'
+              kind_id: the id of the kind to assign to the entity
+              collection_id: the id of the collection to add the entity to
+              subtype: 'a arbitrary string'
+              medium_attributes: |
+                medium kind only: a object with keys document and/or image and
+                file upload values
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
+              synonyms: 'a newline separated list'
+              dataset: "a object with keys matching the kind's custom field names"
+              properties: a list of objects with keys label and value
+              user_group_name: the name of a user group to add the new entity to
+              relation_name: the name of a relation to relate the new entity with
+              target_entity_id: the id of another entity to relate the new entity to
+              tag_list: strings, a list of tags to set for the entity
+              lock_version: see general api description
+        result: confirmation_or_errors
+
+      -
+        description: update a entity's tags
+        path: ':id/update_tags'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id or uuid of the entity to retrieve
+          -
+            name: entity
+            values:
+              tags: strings, a list of tags to add to the entity
+        result: confirmation_or_errors
+      -
+        description: remove (soft-delete) a entity
+        path: ':id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the entity to remove
+        result: confirmation_or_errors
+      -
+        description: merge two or more entities
+        path: 'merge'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the entity to merge into
+          -
+            name: entitiy_ids
+            type: integers
+            required: true
+            description: |
+              the ids of the entities to be merged, only single kind allowed
+          - name: entity
+            type: object
+            required: true
+            values: 'entity.create.entity'
+        result: confirmation_or_errors
+      -
+        description: related several entities to a single entity
+        path: ':id/mass_relate'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the entity to relate to
+          -
+            name: relation_name
+            type: string
+            required: true
+            description: the relation name to relate the entities with
+          -
+            name: entitiy_ids
+            type: integers
+            required: true
+            description: the ids of the entities to be related
+        result: confirmation_or_errors
+      -
+        description: remove (soft-delete) several entities at once
+        path: 'mass_destroy'
+        method: 'delete'
+        params:
+          -
+            name: ids
+            type: integers
+            required: true
+            description: the ids of the entities to be removed
+        result: confirmation_or_errors
+      -
+        description: check if entities exist
+        path: 'existence'
+        method: 'post'
+        params:
+          -
+            name: ids
+            type: integers
+            required: true
+            description: the ids of the entities to be checked
+        result: |
+          a object with a keys for each requested entity's id and values
+          indicating the entity's existence (true, false)
