@@ -5,13 +5,17 @@ data type (e.g. entities or relationships)each. Each section then has several
 endpoints each handling a specific aspect (e.g. showing or deleting) of that
 data type.
 
+
 ## General
 
 All endpoints follow these general rules
 
 * **HTTP verbs** indicate the type of action (e.g. GET requests will read, POST
   requests will make modifications)
-* parameters are expected as **query string parameters**
+* parameters are expected
+  * part of the url path when indicated (e.g. "/entities/:id")
+  * to be **query string parameters** for GET requests
+  * to be **json encoded in the HTTP body for POST, PUT and PATCH requests
 * the **request body** (if applicable) is expected to be a **JSON document**
 * requests must specify the **HTTP header** `Accept: application/json`
 * the **response body** is **JSON encoded**
@@ -22,6 +26,7 @@ All endpoints follow these general rules
 In this documentation we show JSON content as parsed JavaScript objects, e.g.
 `{some: 'value'}` instead of `{"some": "value"}`.
 
+
 ## Parameters
 
 These parameters are available for endpoints that return **several paginated
@@ -31,6 +36,11 @@ results**:
 * `per_page` [integer] The amount of results per page for paginated
   results. The value is capped by the setting "maxium number of results per
   request".
+
+Some updating endpoints allow for a parameter `lock_version`. If it is used,
+the updated resource's lock_version is compared to the given value and the
+update is denied if the values don't match. This can be used to prevent
+accidental overwrites when competing updates occurr on the same resource.
 
 For parameters specific to the respective endpoint, see the
 [endpoint reference](#endpoint-reference) below.
@@ -46,6 +56,7 @@ type "integer(s)" would allow values like "1", "223" or "44,55,66".
   "image/jpeg"
 * true type - the parameter only allows the value "true", every other value (or
   omitting it) designates "false"
+
 
 ## Collection responses
 
