@@ -2,6 +2,12 @@ scopes:
   -
     description: work with entities
     path: '/entities'
+    authentication: |
+      object level access requires 'view', 'create',
+      'update', 'delete', 'tagging' or 'view_meta'
+      permissons on the respective collection. For example: merging entities A
+      and B into C requires 'delete' on A's and B's collections as well as
+      'create' on C's collection.
     endpoints:
       -
         description: find entities by various criteria
@@ -169,7 +175,7 @@ scopes:
         result: a paginated result containing matching entities
       -
         description: show information about a single entity
-        path: ':id'
+        path: '/:id'
         params:
           - 
             name: id
@@ -188,7 +194,7 @@ scopes:
               - 'properties (special properties)'
               - 'relations (a count for each relation to non-media entities)'
               - 'media_relations (a count for each relation to media entities)'
-              - 'related (all related entities up to related_per_page, see ???)'
+              - 'related (all related entities up to related_per_page, entity index endpoint)'
               - 'gallery_data (primary and secondary entities as defined in the settings)'
               - 'kind (detailed kind information)'
               - 'collection (detailed collection information)'
@@ -200,9 +206,7 @@ scopes:
               - 'generators (custom field generators)'
               - 'all (include everything)'
         result: the data for the requested entity
-
       -
-        name: 'entities.create'
         description: create a new entity
         path: ''
         method: 'post'
@@ -235,10 +239,9 @@ scopes:
               relation_name: the name of a relation to relate the new entity with
               target_entity_id: the id of another entity to relate the new entity to
               tag_list: strings, a list of tags to add to the entity
-        result: confirmation_or_errors
       -
         description: update a entity
-        path: ':id'
+        path: '/:id'
         method: 'patch, put'
         params:
           - 
@@ -278,11 +281,10 @@ scopes:
               target_entity_id: the id of another entity to relate the new entity to
               tag_list: strings, a list of tags to set for the entity
               lock_version: see general api description
-        result: confirmation_or_errors
 
       -
         description: update a entity's tags
-        path: ':id/update_tags'
+        path: '/:id/update_tags'
         method: 'patch'
         params:
           - 
@@ -292,9 +294,9 @@ scopes:
             description: the id or uuid of the entity to retrieve
           -
             name: entity
+            description: the entity information
             values:
               tags: strings, a list of tags to add to the entity
-        result: confirmation_or_errors
       -
         description: remove (soft-delete) a entity
         path: ':id'
@@ -305,10 +307,9 @@ scopes:
             type: integer
             required: true
             description: the id of the entity to remove
-        result: confirmation_or_errors
       -
         description: merge two or more entities
-        path: 'merge'
+        path: '/merge'
         method: 'post'
         params:
           - 
@@ -325,11 +326,33 @@ scopes:
           - name: entity
             type: object
             required: true
-            values: 'entity.create.entity'
-        result: confirmation_or_errors
+            description: the entity information
+            values:
+              name: 'the name of the entity'
+              display_name: |
+                a distinguishing suffix in case the name is already taken by
+                another entity
+              no_name_statement: |
+                one of unknown, not_available, empty_name, enter_name to
+                indicate if a name will be supplied or why not
+              comment: 'a arbitrary string'
+              kind_id: the id of the kind to assign to the entity
+              collection_id: the id of the collection to add the entity to
+              subtype: 'a arbitrary string'
+              medium_attributes: |
+                medium kind only: a object with keys document and/or image and
+                file upload values
+              datings_attributes: a list of objects with keys label, dating_string
+              synonyms: 'a newline separated list'
+              dataset: "a object with keys matching the kind's custom field names"
+              properties: a list of objects with keys label and value
+              user_group_name: the name of a user group to add the new entity to
+              relation_name: the name of a relation to relate the new entity with
+              target_entity_id: the id of another entity to relate the new entity to
+              tag_list: strings, a list of tags to add to the entity
       -
-        description: related several entities to a single entity
-        path: ':id/mass_relate'
+        description: relate several entities to a single entity
+        path: '/:id/mass_relate'
         method: 'post'
         params:
           - 
@@ -347,10 +370,9 @@ scopes:
             type: integers
             required: true
             description: the ids of the entities to be related
-        result: confirmation_or_errors
       -
         description: remove (soft-delete) several entities at once
-        path: 'mass_destroy'
+        path: '/mass_destroy'
         method: 'delete'
         params:
           -
@@ -358,10 +380,9 @@ scopes:
             type: integers
             required: true
             description: the ids of the entities to be removed
-        result: confirmation_or_errors
       -
         description: check if entities exist
-        path: 'existence'
+        path: '/existence'
         method: 'post'
         params:
           -
@@ -372,3 +393,179 @@ scopes:
         result: |
           a object with a keys for each requested entity's id and values
           indicating the entity's existence (true, false)
+
+  -
+    description: work with media
+    path: '/media'
+    authentication: |
+      object level access requires 'view' and/or
+      'download_originals' on the respective collection.
+    endpoints:
+      -
+        description: retrieve a medium's data blob in various formats
+        path: '/:disposition/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension'
+        params:
+          - 
+            name: disposition
+            required: true
+            type: string
+            description: suggest download or inline display for images
+            values:
+              - inline (show the image inline or within a browser tab)
+              - download (suggest to the browser to handle the data as a file download)
+          -
+            name: id_part_*,
+            type: string
+            required: true
+            description: the 3-way split medium id, e.g. 3456789 -> 003/456/789
+          -
+            name: attachment
+            type: string
+            required: true
+            description: the attachment to serve
+            values:
+              - image (for images)
+              - document (for everything else)
+          -
+            name: style_extension
+            type: string
+            required: true
+            description: the extension for the blob being retrieved (e.g. jpg, flv, mp4, docx etc.)
+        result: a blob representing the requested medium data
+      -
+        description: transform a medium
+        path: '/transform/:id/:transformation/:operation(.:format)'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the medium to be transformed
+          -
+            name: transformation
+            type: string
+            required: true
+            description: the class of operations to perform
+            values:
+              - image (currently the only possible value)
+          -
+            name: operation
+            type: string
+            required:  true
+            description: the operation to perform
+            values:
+              - flip (mirror across vertical axis)
+              - flop (mirror across horizontal axis)
+              - rotate_cw (rotate 90° clock-wise)
+              - rotate_ccw (rotate 90° counter-clock-wise)
+              - rotate_180 (rotate 180°)
+
+
+  -
+    description: work with relationships
+    path: '/relationships'
+    authentication: |
+      object level access requires 'view' and/or
+      'update' on the respective collection.
+    endpoints:
+      -
+        description: retrieve a list of relationships by various criteria
+        path: ''
+        params:
+          - 
+            name: from_entity_id
+            type: integers
+            description: return only relationships originating from these entities
+          - 
+            name: to_entity_id
+            type: integers
+            description: return only relationships ending at these entities
+          - 
+            name: relation_name
+            type: strings
+            description: return only relationships matching these names
+          - 
+            name: from_kind_id
+            type: integers
+            description: return only relationships originating from entities with these kinds
+          - 
+            name: to_kind_id
+            type: integers
+            description: return only relationships ending at entities with these kinds
+          - 
+            name: except_to_kind_id
+            type: integers
+            description: return only relationships not ending at entities with these kinds
+        result: a paginated result containing matching relationships
+      -
+        description: show information about a single relationship
+        path: '/:id'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the relationship to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the entity to include
+            values:
+              - 'to (detailed data for the target entity)'
+              - "media_relations (detailed data for target entity's related media)"
+              - 'properties (special properties)'
+              - 'datings'
+              - 'relationship (detailed data on the relation)'
+              - 'technical (timestamps)'
+              - 'all (include everything)'
+      -
+        description: create a new (two-way) relationship
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: relationship
+            type: object
+            required: true
+            description: the information to create the relationship from
+            values:
+              from_id: the id for the originating entity
+              to_id: the id for the target entity
+              relation_id: the id for the relation to use
+              relation_name: the name for the relation to use (alternative to relation_id)
+              datings_attributes: a list of objects with keys label, dating_string
+              properties: a list of objects with keys label and value
+      -
+        description: update a existing (two-way) relationship
+        path: '/:id'
+        method: 'put, patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the relationship to update
+          -
+            name: relationship
+            type: object
+            required: true
+            description: the information to create the relationship from
+            values:
+              from_id: the id for the originating entity
+              to_id: the id for the target entity
+              relation_id: the id for the relation to use
+              relation_name: the name for the relation to use (alternative to relation_id)
+              datings_attributes: a list of objects with keys label, dating_string
+              properties: a list of objects with keys label and value
+              lock_version:
+      -
+        description: remove (soft-delete) a (two-way) relationship
+        path: ':id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the relationship to remove

@@ -223,7 +223,8 @@ class Kor::Tasks
 
     #   p [methods, path, route, defaults]
     # end
-    erb_file = "#{Rails.root}/api.md.erb"
+    erb_file = "#{Rails.root}/api.html.erb"
+    intro_file = "#{Rails.root}/api.md"
     data_file = "#{Rails.root}/api.yml"
 
     rebuild = true
@@ -233,16 +234,16 @@ class Kor::Tasks
       if rebuild
         begin
           puts "#{Time.now} building"
+          intro = Kramdown::Document.new(File.read(intro_file)).to_html
           data = YAML.load_file(data_file)
           engine = ERB.new(File.read(erb_file), trim_mode: '-')
-          markdown = engine.result(binding)
-          html = Kramdown::Document.new(markdown).to_html
+          html = engine.result(binding)
 
-          File.open 'API.md', 'w' do |f|
-            f.write markdown
-          end
+          # File.open 'API.md', 'w' do |f|
+          #   f.write markdown
+          # end
 
-          File.open 'API.html', 'w' do |f|
+          File.open 'api.html', 'w' do |f|
             f.write html
           end
         rescue StandardError => e
@@ -253,7 +254,7 @@ class Kor::Tasks
         end
       end
 
-      stat = [data_file, erb_file].map{|f| File.stat(f).mtime}.max
+      stat = [data_file, intro_file, erb_file].map{|f| File.stat(f).mtime}.max
 
       if last_built_at < stat
         rebuild = true

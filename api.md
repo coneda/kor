@@ -26,6 +26,21 @@ All endpoints follow these general rules
 In this documentation we show JSON content as parsed JavaScript objects, e.g.
 `{some: 'value'}` instead of `{"some": "value"}`.
 
+## Authentication
+
+Authentication is not required in which case returned results reflect the 'guest'
+user's access level. API requests may include a authentication key in order to
+receive content with elevated permissions. The key can be passed in one of the
+following ways:
+
+* as a HTTP param `api_key` given as query string parameter or as JSON encoded
+  body parameter
+* as a HTTP request header `HTTP_API_KEY`
+* as a HTTP request header `API_KEY`
+* as a HTTP request header `api_key`
+
+The api key for each user can be retrieved through the profile page or (as a
+user admin) through the users edit page in the user manager.
 
 ## Parameters
 
@@ -74,20 +89,4 @@ wrapped into an object with the form
 
 ## Endpoint reference
 
-<% data['scopes'].each do |scope| %>
-### <%= scope['description'] %>
-<hr />
-
-<% scope['endpoints'].each do |endpoint| %>
-#### `<%= scope['path'] %><% endpoint['path'] %>`
-* purpose: <%= endpoint['description'] %>
-* parameters
-<% endpoint['params'].each do |param| -%>
-  * `<%= param['name'] -%>`
-    [<%= param['type'] -%>]
-    <%= param['description'].strip -%>
-    <%= "(default: #{param['default']})" if param['default'] %>
-<% end -%>
-* result: <%= endpoint['result'] %>
-<% end %>
-<% end %>
+This is a detailed list of all endpoints the JSON API exposes.
