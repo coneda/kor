@@ -103,9 +103,10 @@ class Kor::Tasks
 
   def self.reset_admin_account(config = {})
     u = User.find_or_initialize_by name: 'admin'
-    u.update(
+    u.update!(
       groups: Credential.all,
-      password: 'admin',
+      plain_password: 'admin',
+      plain_password_confirmation: 'admin',
       terms_accepted: true,
       login_attempts: [],
       active: true,
@@ -122,7 +123,7 @@ class Kor::Tasks
 
   def self.reset_guest_account(config = {})
     u = User.find_or_initialize_by name: 'guest'
-    u.update(
+    u.update!(
       terms_accepted: true,
       full_name: u.full_name || I18n.t('users.guest'),
       email: u.email || 'guest@example.com'

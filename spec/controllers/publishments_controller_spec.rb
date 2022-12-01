@@ -74,7 +74,7 @@ RSpec.describe PublishmentsController, type: 'controller' do
     end
 
     it 'should PATCH extend' do
-      expect(@publishment.valid_until).to be_within(1.second).of(2.weeks.from_now)
+      expect(@publishment.valid_until).to be_within(5.seconds).of(2.weeks.from_now)
 
       patch 'extend_publishment', params: {
         id: @publishment.id,

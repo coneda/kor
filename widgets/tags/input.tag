@@ -14,7 +14,7 @@
       value={valueFromParent()}
       checked={checkedFromParent()}
       placeholder={opts.placeholder}
-      autocomplete={opts.wikidata ? 'off' : null}
+      autocomplete={opts.autocomplete || (opts.wikidata ? 'off' : null)}
     />
     <textarea
       if={opts.type == 'textarea'}

@@ -22,14 +22,20 @@ end
 
 Given /^the user "([^"]*)"$/ do |user|
   unless User.exists? name: user
-    FactoryBot.create :user, name: user, password: user, email: "#{user}@example.com"
+    FactoryBot.create(:user,
+      name: user,
+      plain_password: user,
+      plain_password_confirmation: user,
+      email: "#{user}@example.com"
+    )
   end
 end
 
 Given /^the user "([^"]*)" has password "([^"]*)"$/ do |username, password|
   user = User.find_by!(name: username)
   user.update(
-    password: password,
+    plain_password: password,
+    plain_password_confirmation: password,
     make_personal: user.personal?,
     terms_accepted: true
   )

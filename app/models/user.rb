@@ -44,6 +44,9 @@ class User < ApplicationRecord
     format: {allow_nil: true, with: /\A(.{5,30})|\Z/},
     confirmation: true
   )
+  validates(:plain_password_confirmation,
+    presence: {if: Proc.new{|u| u.plain_password.present?}},
+  )
 
   validate :validate_empty_personal_collection
   validate :validate_existing_parent_user
@@ -60,9 +63,8 @@ class User < ApplicationRecord
     end
   end
 
-  before_validation(on: :create) do |model|
-    model.generate_secrets
-  end
+  before_validation :generate_secrets, on: :create
+  before_validation :set_password
   after_validation :set_expires_at, :create_personal, :add_personal_group
 
   def add_personal_group
@@ -101,9 +103,22 @@ class User < ApplicationRecord
   end
 
   def generate_secrets
-    self.activation_hash = User.generate_activation_hash if self[:activation_hash].blank?
-    self.password = plain_password || User.generate_password
-    self.api_key = SecureRandom.hex(48)
+    if password.blank? && plain_password.blank?
+      self.plain_password = User.generate_password
+      self.plain_password_confirmation = plain_password
+    end
+
+    if activation_hash.blank?
+      self.activation_hash = User.generate_activation_hash 
+    end
+
+    if api_key.blank?
+      self.api_key = SecureRandom.hex(48)
+    end
+  end
+
+  def set_password
+    self.password = User.crypt(plain_password) if plain_password.present?
   end
 
   def set_expires_at
@@ -138,13 +153,6 @@ class User < ApplicationRecord
 
   def personal?
     personal_group.present? && personal_collection.present?
-  end
-
-  def password=(value)
-    self.plain_password = value
-    unless value.blank?
-      write_attribute :password, User.crypt(value)
-    end
   end
 
   def display_name
@@ -282,7 +290,7 @@ class User < ApplicationRecord
   end
 
   def reset_password
-    self.password = User.generate_password
+    self.password = nil
   end
 
   def self.generate_password
@@ -303,7 +311,7 @@ class User < ApplicationRecord
 
   def fix_cryptography(password)
     if self.password == self.class.legacy_crypt(password)
-      write_attribute :password, self.class.crypt(password)
+      self.password = self.class.crypt(password)
     end
   end
 

@@ -273,21 +273,24 @@ FactoryBot.define do
       email{ 'mustermann@coneda.net' }
       name{ 'hmustermann' }
       full_name{ 'Hans Mustermann' }
-      password{ 'mustermann' }
+      plain_password{ 'mustermann' }
+      plain_password_confirmation{ 'mustermann' }
     end
 
     factory :jdoe do
       email{ 'jdoe@coneda.net' }
       name{ 'jdoe' }
       full_name{ 'John Doe' }
-      password{ 'jdoe' }
+      plain_password{ 'jdoe' }
+      plain_password_confirmation{ 'jdoe' }
     end
 
     factory :mrossi do
       email{ 'mrossi@coneda.net' }
       name{ 'mrossi' }
       full_name{ 'Mario Rossi' }
-      password{ 'mrossi' }
+      plain_password{ 'mrossi' }
+      plain_password_confirmation{ 'mrossi' }
     end
 
     factory :guest do
@@ -300,7 +303,8 @@ FactoryBot.define do
       email{ 'ldap@coneda.net' }
       name{ 'ldap' }
       full_name{ 'LDAP template user' }
-      password{ 'ldap' }
+      plain_password{ 'ldap' }
+      plain_password_confirmation{ 'ldap' }
     end
   end
 
