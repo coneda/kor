@@ -1,9 +1,9 @@
 # Kor JSON REST API Documentation
 
 The Kor JSON REST API is split up into several sections dealing with a specific
-data type (e.g. entities or relationships)each. Each section then has several
-endpoints each handling a specific aspect (e.g. showing or deleting) of that
-data type.
+data type (e.g. entities or relationships) each. Each section then has several
+endpoints handling a specific aspect (e.g. showing or deleting) of that data
+type.
 
 
 ## General
@@ -51,6 +51,9 @@ results**:
 * `per_page` [integer] The amount of results per page for paginated
   results. The value is capped by the setting "maxium number of results per
   request".
+* `include` [strings] A list of information aspects to include, this parameter
+  is described in detail for the endpoint to retrieve a single record but
+  usually works for the listings as well.
 
 Some updating endpoints allow for a parameter `lock_version`. If it is used,
 the updated resource's lock_version is compared to the given value and the

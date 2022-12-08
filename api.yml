@@ -4,7 +4,7 @@ scopes:
     path: '/entities'
     authentication: |
       object level access requires 'view', 'create',
-      'update', 'delete', 'tagging' or 'view_meta'
+      'edit', 'delete', 'tagging' or 'view_meta'
       permissons on the respective collection. For example: merging entities A
       and B into C requires 'delete' on A's and B's collections as well as
       'create' on C's collection.
@@ -230,7 +230,9 @@ scopes:
               subtype: 'a arbitrary string'
               medium_attributes: |
                 medium kind only: a object with keys document and/or image and
-                file upload values
+                file upload values. When file data is sent via this attribute,
+                the entire request has to be formatted as
+                "application/x-www-form-urlencoded" (for historic reasons)
               datings_attributes: a list of objects with keys label, dating_string
               synonyms: 'a newline separated list'
               dataset: "a object with keys matching the kind's custom field names"
@@ -569,3 +571,220 @@ scopes:
             type: integer
             required: true
             description: the id of the relationship to remove
+
+  -
+    description: work with kinds
+    path: '/kinds'
+    authentication: |
+      no object level restrictions, read access is public, write access requires
+      special user permissions
+    endpoints:
+      -
+        description: retrieve a list of kinds by various criteria
+        path: ''
+        params:
+          - 
+            name: only_active
+            type: any
+            description: |
+              return only active (not abstract) kinds, the value given is
+              irrelevant, the param's presence triggers the filter
+          - 
+            name: no_media
+            description: |
+              return only kinds which are not the medium kind, the value given
+              is irrelevant, the param's presence triggers the filter
+        result: a paginated result containing matching kinds
+      -
+        description: show information about a single kind
+        path: '/:id'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id the kind to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the kind to include
+            values:
+              - 'technical (uuid, timestamps)'
+              - 'settings (tagging, synonyms, name requirements and labels)'
+              - 'fields (custom field definitions)'
+              - 'generators (generator definitions)'
+              - 'inheritance (parent kind(s))'
+              - 'all (include everything)'
+        result: the data for the requested kind
+      -
+        description: create a new kind
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: kind
+            type: object
+            required: true
+            description: the information to create the kind from
+            values:
+              name: 'the name of the kind (required)'
+              plural_name: 'the plural name of the kind (required)'
+              description: a description
+              tagging: '[boolean] wheter to activate tagging for this kind'
+              name_label: the label or the name field
+              dating_label: |
+                the (default) label for new datings added to entities of this
+                kind
+              distinct_name_label: the label for the distinct name
+              schema: the schema this kind belongs to
+              url: the (schema) url
+              abstract: |
+                [boolean] whether the kind is abstract and can therefore only be
+                used as parent for other kinds
+              parent_ids: '[integers] a list of parent kind ids'
+              child_ids: '[integers] a list of child kind ids'
+      -
+        description: update a new kind
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: kind
+            type: object
+            required: true
+            description: the information to update the kind with
+            values:
+              name: 'the name of the kind (required)'
+              plural_name: 'the plural name of the kind (required)'
+              description: a description
+              tagging: '[boolean] wheter to activate tagging for this kind'
+              name_label: the label or the name field
+              dating_label: |
+                the (default) label for new datings added to entities of this
+                kind
+              distinct_name_label: the label for the distinct name
+              schema: the schema this kind belongs to
+              url: the (schema) url
+              abstract: |
+                [boolean] whether the kind is abstract and can therefore only be
+                used as parent for other kinds
+              parent_ids: '[integers] a list of parent kind ids'
+              child_ids: '[integers] a list of child kind ids'
+      -
+        description: remove (soft-delete) a kind
+        path: ':id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the kind to remove
+            
+
+  -
+    description: work with relations
+    path: '/relations'
+    authentication: |
+      no object level restrictions, read access is public, write access requires
+      special user permissions
+    endpoints:
+      -
+        description: retrieve a list of relations
+        path: ''
+        params: {}
+        result: a paginated result containing matching relations
+      -
+        description: list relation names for a given combination of kinds
+        path: '/names'
+        params:
+          - 
+            name: from_kind_ids
+            type: integers
+            description: a list with ids of kinds
+          -
+            name: to_kind_ids
+            type: integers
+            description: a list with ids of kinds
+        result: the list of relation names
+      -
+        description: show information about a single relation
+        path: '/:id'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id the relation to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the relation to include
+            values:
+              - 'technical (uuid, timestamps)'
+              - 'inheritance (parent relation(s))'
+              - 'all (include everything)'
+        result: the data for the requested relation
+      -
+        description: create a new relation
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: kind
+            type: object
+            required: true
+            description: the information to create the relation from
+            values:
+              name: 'the name of the relation (required)'
+              reverse_name: 'the reverse name of the relation (required)'
+              description: a description
+              from_kind_id: 
+              to_kind_id: 
+              abstract: |
+                [boolean] whether the relation is abstract and can therefore
+                only be used as parent for other relations
+              schema: the schema this kind belongs to
+              url: the (schema) url
+              identifier: a identifier (e.g. wikipedia property id)
+              reverse_identifier: |
+                the identifier for a reverse relation (e.g. wikipedia property
+                id)
+      -
+        description: update a new relation
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: kind
+            type: object
+            required: true
+            description: the information to create the relation from
+            values:
+              name: 'the name of the relation (required)'
+              reverse_name: 'the reverse name of the relation (required)'
+              description: a description
+              from_kind_id: |
+                relationships can only start from entities with this kind
+              to_kind_id: |
+                relationships can only end at entities with this kind
+              abstract: |
+                [boolean] whether the relation is abstract and can therefore
+                only be used as parent for other relations
+              schema: the schema this kind belongs to
+              url: the (schema) url
+              identifier: a identifier (e.g. wikipedia property id)
+              reverse_identifier: |
+                the identifier for a reverse relation (e.g. wikipedia property
+                id)
+      -
+        description: remove (soft-delete) a relation
+        path: ':id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the relation to remove
+            
