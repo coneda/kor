@@ -210,7 +210,7 @@ class Kor::Tasks
     end
   end
 
-  def self.api_doc(config = {})
+  def self.api_docs(config = {})
     # `rails routes`.split("\n").each do |line|
     #   next unless line.match?(/json/)
     #   line.gsub!(/^[a-z0-9_\s]+/, '')

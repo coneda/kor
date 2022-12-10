@@ -233,7 +233,10 @@ scopes:
                 file upload values. When file data is sent via this attribute,
                 the entire request has to be formatted as
                 "application/x-www-form-urlencoded" (for historic reasons)
-              datings_attributes: a list of objects with keys label, dating_string
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
               synonyms: 'a newline separated list'
               dataset: "a object with keys matching the kind's custom field names"
               properties: a list of objects with keys label and value
@@ -344,7 +347,10 @@ scopes:
               medium_attributes: |
                 medium kind only: a object with keys document and/or image and
                 file upload values
-              datings_attributes: a list of objects with keys label, dating_string
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
               synonyms: 'a newline separated list'
               dataset: "a object with keys matching the kind's custom field names"
               properties: a list of objects with keys label and value
@@ -499,7 +505,15 @@ scopes:
             name: except_to_kind_id
             type: integers
             description: return only relationships not ending at entities with these kinds
-        result: a paginated result containing matching relationships
+        result: |
+          A paginated result containing matching relationships. This endpoint
+          behaves differently than most other endpoints as reading relationships
+          yields a different format to what is expected when modifying
+          relationship. Here, we are returing a list of 'directed'
+          relationships including the relation name in its correct direction.
+          Each result has keys 'to', and 'relation' containing information on
+          the target entity as well as the relation. This has been done to
+          facilitate rendering.
       -
         description: show information about a single relationship
         path: '/:id'
@@ -521,6 +535,7 @@ scopes:
               - 'relationship (detailed data on the relation)'
               - 'technical (timestamps)'
               - 'all (include everything)'
+        result: see previous endpoint
       -
         description: create a new (two-way) relationship
         path: ''
@@ -536,7 +551,10 @@ scopes:
               to_id: the id for the target entity
               relation_id: the id for the relation to use
               relation_name: the name for the relation to use (alternative to relation_id)
-              datings_attributes: a list of objects with keys label, dating_string
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
               properties: a list of objects with keys label and value
       -
         description: update a existing (two-way) relationship
@@ -558,7 +576,10 @@ scopes:
               to_id: the id for the target entity
               relation_id: the id for the relation to use
               relation_name: the name for the relation to use (alternative to relation_id)
-              datings_attributes: a list of objects with keys label, dating_string
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
               properties: a list of objects with keys label and value
               lock_version:
       -
@@ -788,3 +809,164 @@ scopes:
             required: true
             description: the id of the relation to remove
             
+  -
+    description: work with users
+    path: '/users'
+    authentication: |
+      no object level restrictions, access requires special user permissions
+    endpoints:
+      -
+        description: retrieve a list of users by various criteria
+        path: ''
+        params:
+          -
+            name: terms
+            type: string
+            description: a search term to filter users by
+        result: a paginated result containing matching users
+      -
+        description: retrieve a user record
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the user to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the entity to include
+            values:
+              - 'technical (uuid, timestamps)'
+              - 'security (logins, email, active state, parent, api key)'
+              - 'permissions'
+              - 'all (include everything)'
+        result: the requested user record
+      -
+        description: create a new user
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: user
+            type: object
+            required: true
+            description: the information to create the user from
+            values:
+              full_name: the user's full name
+              name: the login name
+              email: the email address
+              active: '[boolean] whether the user account is active'
+              plain_password: a password
+              plain_password_confirmation: the password confirmation
+              locale: the user's locale
+              expires_at: '[timestamp] when the account will expire'
+              relation_admin: whether the user is allowed to change relations
+              authority_group_admin: |
+                whether the user is allowed to change global collections
+              kind_admin: whether the user is allowed to change kinds
+              admin: whether the user is allowed to change other user accounts
+              default_collection_id: |
+                the default collecton for this user when creating new entities
+              parent_username: a user to inherit permissions from
+              api_key: a api key
+      -
+        description: update a user
+        path: ''
+        method: 'patch, put'
+        params:
+          -
+            name: user
+            type: object
+            required: true
+            description: the information to update the user with
+            values:
+              full_name: the user's full name
+              name: the login name
+              email: the email address
+              active: '[boolean] whether the user account is active'
+              plain_password: a password (omit to keep current passwor)
+              plain_password_confirmation: the password confirmation
+              locale: the user's locale
+              expires_at: '[timestamp] when the account will expire'
+              relation_admin: whether the user is allowed to change relations
+              authority_group_admin: |
+                whether the user is allowed to change global collections
+              kind_admin: whether the user is allowed to change kinds
+              admin: whether the user is allowed to change other user accounts
+              default_collection_id: |
+                the default collecton for this user when creating new entities
+              parent_username: a user to inherit permissions from
+              api_key: a api key
+      -
+        description: delete a user
+        path: ':id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the user to delete
+      -
+        description: reset a user's login attempts
+        path: ':id/reset_login_attempts'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the user to reset the attempts for
+      -
+        description: |
+          reset a user's password (send a newly generated password via mail)
+        path: ':id/reset_password'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the user to reset the password for
+
+  -
+    description: work with the current user
+    path: '/users'
+    authentication: |
+      The endpoint operates on a single object, the current user. Access is
+      granted if the request includes a session cookie as generated by the
+      /session endpoint
+    endpoints:
+      -
+        description: accept the terms of use
+        path: '/accept_terms'
+        method: 'patch'
+        params: {}
+        result: |
+          a confirmation message that the terms have been saved as accepted
+      -
+        description: retrieve information about the current user
+        path: '/me'
+        params: {}
+        result: the record for the current user
+      -
+        description: update the current user (update the profile)
+        path: '/me'
+        method: 'patch'
+        params:
+          -
+            name: user
+            type: object
+            values:
+              full_name: the user's full name
+              name: the login name
+              email: the email address
+              plain_password: a password
+              plain_password_confirmation: the password confirmation
+              locale: the user's locale
+              default_collection_id: |
+                the default collecton for this user when creating new entities
+              api_key: a api key
+        result: a message confirming the changes
