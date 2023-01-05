@@ -58,9 +58,11 @@
         <span class="value">{dating.dating_string}</span>
       </div>
 
-      <div each={field in visibleFields()}>
-        <span class="field">{field.show_label}:</span>
-        <span class="value">{fieldValue(field.value)}</span>
+      <div each={field in fields()} field-name={field.name}>
+        <virtual if={field.value}>
+          <span class="field">{field.show_label}:</span>
+          <span class="value">{fieldValue(field.value)}</span>
+        </virtual>
       </div>
 
       <div show={visibleFields().length > 0} class="hr silent"></div>
@@ -315,8 +317,11 @@
           success: -> window.history.go(-1)
         )
 
+    tag.fields = ->
+      f for f in tag.data.fields when f.show_on_entity
+
     tag.visibleFields = ->
-      f for f in tag.data.fields when f.value && f.show_on_entity
+      f for f in tag.fields() when f.value
 
     tag.showTagging = ->
       tag.data.kind.tagging && 

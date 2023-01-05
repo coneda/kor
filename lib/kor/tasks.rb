@@ -211,6 +211,62 @@ class Kor::Tasks
     end
   end
 
+  # this should be in the docs branch, still needed?
+  # def self.api_docs(config = {})
+  #   # `rails routes`.split("\n").each do |line|
+  #   #   next unless line.match?(/json/)
+  #   #   line.gsub!(/^[a-z0-9_\s]+/, '')
+
+  #   #   parts = line.split(/\s+/)
+  #   #   # parts.unshift nil if parts.size < 5
+  #   #   methods, path, route, defaults = parts
+  #   #   methods = methods.split('|')
+  #   #   path.gsub!('(.:format)', '')
+
+  #   #   p [methods, path, route, defaults]
+  #   # end
+  #   erb_file = "#{Rails.root}/docs/api.html.erb"
+  #   intro_file = "#{Rails.root}/docs/api.md"
+  #   data_file = "#{Rails.root}/docs/api.yml"
+
+  #   rebuild = true
+  #   last_built_at = Time.now
+    
+  #   while true
+  #     if rebuild
+  #       begin
+  #         puts "#{Time.now} building"
+  #         intro = Kramdown::Document.new(File.read(intro_file)).to_html
+  #         data = YAML.load_file(data_file)
+  #         engine = ERB.new(File.read(erb_file), trim_mode: '-')
+  #         html = engine.result(binding)
+
+  #         # File.open 'API.md', 'w' do |f|
+  #         #   f.write markdown
+  #         # end
+
+  #         File.open 'api.html', 'w' do |f|
+  #           f.write html
+  #         end
+  #       rescue StandardError => e
+  #         puts e.message
+  #         puts e.backtrace
+  #       ensure
+  #         rebuild = false
+  #       end
+  #     end
+
+  #     stat = [data_file, intro_file, erb_file].map{|f| File.stat(f).mtime}.max
+
+  #     if last_built_at < stat
+  #       rebuild = true
+  #       last_built_at = stat
+  #     else
+  #       sleep 0.2
+  #     end
+  #   end
+  # end
+
   def self.print_table(data)
     maxes = {}
     data.each do |record|

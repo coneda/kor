@@ -139,7 +139,7 @@ module Kor
         'env_auth_button_label' => 'federated login',
         'env_auth_local_button_label' => '',
 
-        'custom_css_file' => 'data/custom.css',
+        'custom_css_file' => '',
 
         'new_media_label' => 'pages.new_entries',
 
