@@ -13,11 +13,10 @@
 /node_modules
 /npm-debug.log
 /widgets/tmp
-/public/custom.css
 /deploy.config.sh
 /.vagrant
 /.yardoc
-/doc
+/docs/api.html
 
 # Testing
 /spec/.~lock*
