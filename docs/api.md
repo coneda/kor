@@ -22,6 +22,7 @@ All endpoints follow these general rules
 * the **HTTP response code** should indicate success, redirection or problems
 * when errors occur, more information might be found in the response body (e.g.
   `{message: "Couldn't find User with 'id'=100"}`)
+* TODO: sorting
 
 In this documentation we show JSON content as parsed JavaScript objects, e.g.
 `{some: 'value'}` instead of `{"some": "value"}`.

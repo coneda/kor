@@ -14,16 +14,57 @@
   <div class="container mb-5">
     <%= intro %>
 
+    <div class="row">
+      <div class="col d-flex flex-column">
+        <a href="#entities">Entities</a>
+        <a href="#media">Media</a>
+        <a href="#relationships">Relationships</a>
+
+        <a href="#kinds">Kinds</a>
+        <a href="#relations">Relations</a>
+      </div>
+
+      <div class="col d-flex flex-column">
+        <a href="#the-global-collection-hierarchy">The global collection hierarchy</a>
+        <a href="#global-collections">Global collections</a>
+        <a href="#personal-collections">Personal collections</a>
+        <a href="#published-collections">Published collections</a>
+      </div>
+
+      <div class="col d-flex flex-column">
+        <a href="#general-endpoints">General endpoints</a>
+        <a href="#settings">Settings</a>
+        <a href="#the-current-user">The current user</a>
+        <a href="#user-sessions">User sessions</a>
+      </div>
+
+      <div class="col d-flex flex-column">
+        <a href="#users">Users</a>
+        <a href="#user-groups">User groups</a>
+        <a href="#domains">Domains</a>
+      </div>
+    </div>
+
+    <!--
     <% data['scopes'].each do |scope| %>
-      <h3 class="mt-5"><%= scope['description'].capitalize %></h3>
+      <% desc = scope['description'] %>
+      <a href="#<%= desc.parameterize %>"><%= desc.capitalize %></a>
+    <% end %>
+    -->
+
+    <% data['scopes'].each do |scope| %>
+      <% desc = scope['description'] %>
+      <h3 id="<%= desc.parameterize %>" class="mt-5"><%= scope['description'].capitalize %></h3>
       <hr />
 
       <div><strong>Authentication</strong>: <%= scope['authentication'] %></div>
 
       <% scope['endpoints'].each do |endpoint| %>
-        <h4 class="mt-5 mb-3">
-          <%= (endpoint['method'] || 'get').upcase %>
-          <code><%= scope['path'] %><%= endpoint['path'] %></code>
+        <% m = endpoint['method'] || 'get' %>
+        <% path = (scope['path'] || '') + (endpoint['path'] || '') %>
+        <h4 id="<%= m.downcase %>-<%= path.parameterize %>" class="mt-5 mb-3">
+          <%= m.upcase %>
+          <code><%= path %></code>
 
           <div class="fs-6"><%= endpoint['description'].capitalize %></div>
         </h4>

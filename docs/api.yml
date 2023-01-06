@@ -1,6 +1,6 @@
 scopes:
   -
-    description: work with entities
+    description: entities
     path: '/entities'
     authentication: |
       object level access requires 'view', 'create',
@@ -403,7 +403,7 @@ scopes:
           indicating the entity's existence (true, false)
 
   -
-    description: work with media
+    description: media
     path: '/media'
     authentication: |
       object level access requires 'view' and/or
@@ -471,7 +471,7 @@ scopes:
 
 
   -
-    description: work with relationships
+    description: relationships
     path: '/relationships'
     authentication: |
       object level access requires 'view' and/or
@@ -594,7 +594,7 @@ scopes:
             description: the id of the relationship to remove
 
   -
-    description: work with kinds
+    description: kinds
     path: '/kinds'
     authentication: |
       no object level restrictions, read access is public, write access requires
@@ -704,7 +704,7 @@ scopes:
             
 
   -
-    description: work with relations
+    description: relations
     path: '/relations'
     authentication: |
       no object level restrictions, read access is public, write access requires
@@ -809,7 +809,7 @@ scopes:
             description: the id of the relation to remove
             
   -
-    description: work with users
+    description: users
     path: '/users'
     authentication: |
       no object level restrictions, access requires special user permissions
@@ -835,7 +835,7 @@ scopes:
           -
             name: include
             type: strings
-            description: list of information aspects on the entity to include
+            description: list of information aspects on the user to include
             values:
               - 'technical (uuid, timestamps)'
               - 'security (logins, email, active state, parent, api key)'
@@ -931,7 +931,7 @@ scopes:
             description: the id of the user to reset the password for
 
   -
-    description: work with the current user
+    description: the current user
     path: '/users'
     authentication: |
       The endpoint operates on a single object, the current user. Access is
@@ -969,11 +969,12 @@ scopes:
         result: a message confirming the changes
 
   -
-    description: work with user sessions
+    description: user sessions
     path: ''
     authentication: |
       The endpoint operates on user sessions which require valid authentication
-      credentials to be created
+      credentials to be created. Sessions are persisted by means of a session
+      cookie and therefore require a user agent with cookie capabilities.
     endpoints:
       -
         description: rerieve the current session information
@@ -1109,3 +1110,636 @@ scopes:
               repository_uuid: override the generated repository UUID
         result: a message confirming the changes
 
+  -
+    description: the global collection hierarchy
+    path: '/authority_group_categories'
+    authentication: |
+      no object level restrictions, write access requires special user
+      permissions
+    endpoints:
+      -
+        description: retrieve a list of directories
+        path: ''
+        params:
+          -
+            name: parent_id
+            type: integer
+            description: |
+              only return directory who are direct children of the given parent.
+              without this parameter, only root directories are returned
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the directory to include
+            values:
+              - 'technical (timestamps)'
+              - 'ancestors (the parent directory)'
+        result: a paginated result containing matching categories
+      -
+        description: retrieve a list of all directories (ignoring hierarchy)
+        path: '/flat'
+        result: a paginated result containing all categories
+      -
+        description: retrieve a category
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the directory to retrieve
+        result: the requested directory
+      -
+        description: create a new directory
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: authority_group_category
+            type: object
+            required: true
+            description: the information to create the directory from
+            values:
+              name: the directory name
+              parent_id: the id of the parent directory
+      -
+        description: update a directory
+        path: ''
+        method: 'patch, put'
+        params:
+          -
+            name: authority_group_category
+            type: object
+            required: true
+            description: the information to update the directory with
+            values:
+              name: the directory name
+              parent_id: the id of the parent directory
+      -
+        description: delete a directory
+        path: ':id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the directory to delete
+
+  -
+    description: global collections
+    path: '/authority_groups'
+    authentication: |
+      No object level restrictions, write access requires special user
+      permissions, adding/removing entities from collections requires read
+      access to the entities involved. Downloading media requires read access
+      to those media
+    endpoints:
+      -
+        description: retrieve a list of collections
+        path: ''
+        params:
+          -
+            name: terms
+            type: string
+            description: a search term to filter the collections by
+          -
+            name: authority_group_category_id
+            type: integer
+            description: |
+              only return collections within the given directory
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the collection to include
+            values:
+              - 'technical (timestamps, uuid, lock_version)'
+              - 'directory (the directory)'
+        result: a paginated result containing matching collections
+      -
+        description: retrieve a collection
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the collection to retrieve
+        result: the requested collection
+      -
+        description: create a new collection
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: authority_group
+            type: object
+            required: true
+            description: the information to create the collection from
+            values:
+              name: the collection name
+              authority_group_category_id: |
+                the id of the directory to insert the collection into
+      -
+        description: update a collection
+        path: ''
+        method: 'patch, put'
+        params:
+          -
+            name: authority_group
+            type: object
+            required: true
+            description: the information to update the collection with
+            values:
+              name: the collection name
+              authority_group_category_id: |
+                the id of the directory to insert the collection into
+              lock_version: see general api description
+      -
+        description: delete a collection
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the collection to delete
+      -
+        description: add entities
+        path: '/:id/add'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to add the entities to
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to add to the collection
+        result: a confirmation message that the entities have been added
+      -
+        description: remove entities
+        path: '/:id/remove'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to remove from entities from
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to remove from the collection
+        result: a confirmation message that the entities have been removed
+      -
+        description: download media from a collection
+        path: '/:id/download_images'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the id of the collection to download media from
+        result: |
+          A zip file containing the relevant media, or a confirmation message
+          that the zip file generation is on the way. In the latter case, a
+          email message will be sent to the user once the zip file is ready
+          for download. See also the settings endpoint.
+
+  -
+    description: personal collections
+    path: '/user_groups'
+    authentication: |
+      Object level access is granted to a user's own personal collections except
+      when those are shared or published, see below.
+    endpoints:
+      -
+        description: retrieve a list of collections
+        path: ''
+        params:
+          -
+            name: terms
+            type: string
+            description: a search term to filter the collections by
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the collection to include
+            values:
+              - 'technical (timestamps, uuid, lock_version)'
+              - "owner (the user record for the collection's owner)"
+        result: a paginated result containing matching collections
+      -
+        description: retrieve a list of shared collections
+        path: '/shared'
+        result: a paginated result containing shared collections
+      -
+        description: retrieve a collection
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the collection to retrieve
+        result: the requested collection
+      -
+        description: create a new collection
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: user_group
+            type: object
+            required: true
+            description: the information to create the collection from
+            values:
+              name: the collection name
+      -
+        description: update a collection
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: user_group
+            type: object
+            required: true
+            description: the information to update the directory with
+            values:
+              name: the collection name
+              lock_version: see general api description
+      -
+        description: delete a collection
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the collection to delete
+      -
+        description: add entities
+        path: '/:id/add'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to add the entities to
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to add to the collection
+        result: a confirmation message that the entities have been added
+      -
+        description: remove entities
+        path: '/:id/remove'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to remove from entities from
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to remove from the collection
+        result: a confirmation message that the entities have been removed
+      -
+        description: download media from a collection
+        path: '/:id/download_images'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the id of the collection to download media from
+        result: |
+          A zip file containing the relevant media, or a confirmation message
+          that the zip file generation is on the way. In the latter case, a
+          email message will be sent to the user once the zip file is ready
+          for download. See also the settings endpoint.
+      -
+        description: share a collection (with other users)
+        path: '/:id/share'
+        params:
+          - 
+            name: id
+            type: integer
+            description: the id of the collection to share
+      -
+        description: unshare a collection
+        path: '/:id/unshare'
+        params:
+          - 
+            name: id
+            type: integer
+            description: the id of the collection to unshare
+  
+  -
+    description: published collections
+    path: '/publishments'
+    authentication: |
+      Object level access is granted to a user's own personal collections and
+      their publishments. A publishment grants public access to a personal
+      collection via a special link.
+    endpoints:
+      -
+        description: retrieve a list of the user's publishments
+        path: ''
+        params:
+          -
+            name: include
+            type: strings
+            description: |
+              list of information aspects on the publishment to include
+            values:
+              - 'technical (timestamps, uuid, lock_version)'
+        result: the list of publishments
+      -
+        description: |
+          Retrieve a publishment (with its personal collection and entities).
+          The path and parameters for this endpoint can be retrieved from the
+          response when creating a publishment
+        path: '/:user_id/:uuid'
+        params:
+          -
+            name: user_id
+            type: integer
+            required: true
+            description: the id of the user the publishment belongs to
+          -
+            name: uuid
+            type: integer
+            required: true
+            description: the uuid of the publishment to retrieve
+        result: the requested publishment
+      -
+        description: create a new publishment
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: publishment
+            type: object
+            required: true
+            description: the information to create the publishment from
+            values:
+              name: the publishment name
+              user_group_id: the person collection to create the publishment for
+      -
+        description: extend a publishment's validity
+        path: '/:id/extend_publishment'
+        method: 'patch, put'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the publishment to extend
+      -
+        description: delete a publishment
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the publishment to delete
+      -
+        description: add entities
+        path: '/:id/add'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to add the entities to
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to add to the collection
+        result: a confirmation message that the entities have been added
+      -
+        description: remove entities
+        path: '/:id/remove'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to remove from entities from
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to remove from the collection
+        result: a confirmation message that the entities have been removed
+      -
+        description: download media from a collection
+        path: '/:id/download_images'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the id of the collection to download media from
+        result: |
+          A zip file containing the relevant media, or a confirmation message
+          that the zip file generation is on the way. In the latter case, a
+          email message will be sent to the user once the zip file is ready
+          for download. See also the settings endpoint.
+      -
+        description: share a collection (with other users)
+        path: '/:id/share'
+        params:
+          - 
+            name: id
+            type: integer
+            description: the id of the collection to share
+      -
+        description: unshare a collection
+        path: '/:id/unshare'
+        params:
+          - 
+            name: id
+            type: integer
+            description: the id of the collection to unshare
+
+  -
+    description: domains
+    path: '/collections'
+    authentication: |
+      Read access requires read access on the relevant domains. Write access
+      requires special user permissions.
+    endpoints:
+      -
+        description: retrieve a list of domains
+        path: ''
+        params:
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the domain to include
+            values:
+              - 'permissions (permissions for all user groups)'
+              - 'counts (a entity count)'
+              - 'owner (the user record for the domain, personal domains only)'
+              - 'technical (timestamps, lock_version)'
+        result: a paginated result containing matching domains
+      -
+        description: retrieve a list of shared collections
+        path: '/shared'
+        result: a paginated result containing shared collections
+      -
+        description: retrieve a domain
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the domain to retrieve
+        result: the requested domain
+      -
+        description: create a new domain
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: collection
+            type: object
+            required: true
+            description: the information to create the domain from
+            values:
+              name: the domain name
+              permissions: |
+                A structure indicating user access for this domain: A object
+                with keys view, edit, create, delete, download_originals,
+                tagging, view_meta and values of integer arrays listing the
+                relevant user groups.
+      -
+        description: update a domain
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: collection
+            type: object
+            required: true
+            description: the information to create the domain from
+            values:
+              name: the domain name
+              permissions: |
+                A structure indicating user access for this domain: A object
+                with keys view, edit, create, delete, download_originals,
+                tagging, view_meta and values of integer arrays listing the
+                relevant user groups.
+              lock_version: see general api docs
+      -
+        description: delete a domain
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the domain to delete
+      -
+        description: merge two domains
+        path: '/:id/merge'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the domain to dissolve
+          -
+            name: collection_id
+            type: integer
+            required: true
+            description: the id of the domain to merge into
+
+      -
+        description: move entities to a domain
+        path: '/:id/entities'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the domain to move the entities to
+          -
+            name: entity_ids
+            type: integer(s)
+            required: true
+            description: the ids of the entities to move
+
+
+  -
+    description: user groups
+    path: '/credentials'
+    authentication: |
+      Access requires special user permissions
+    endpoints:
+      -
+        description: retrieve a list of user groups
+        path: ''
+        params:
+          -
+            name: include
+            type: strings
+            description: |
+              list of information aspects on the user group to include
+            values:
+              - 'counts (a user count)'
+              - 'technical (timestamps, lock_version)'
+        result: a paginated result containing matching user groups
+      -
+        description: retrieve a user group
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the user group to retrieve
+        result: the requested domain
+      -
+        description: create a new user group
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: user_group
+            type: object
+            required: true
+            description: the information to create the user group from
+            values:
+              name: the user group name
+      -
+        description: update a domain
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: user_group
+            type: object
+            required: true
+            description: the information to create the user group from
+            values:
+              name: the user group name
+              lock_version: see general api docs
+      -
+        description: delete a user group
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the user group to delete

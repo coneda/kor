@@ -11,6 +11,7 @@ class CredentialsController < JsonController
     params[:per_page] = @records.count
     @total = @records.count
 
+    # TODO: should paginate
     render template: 'json/index'
   end
 

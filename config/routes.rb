@@ -76,7 +76,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :user_groups do
+    resources :user_groups, except: ['new', 'edit'] do
       member do
         get 'download_images'
         patch 'share'
@@ -115,6 +115,7 @@ Rails.application.routes.draw do
         patch 'entities'
       end
     end
+    
     resources :credentials, except: ['edit', 'new']
 
     resources :entities do

@@ -211,21 +211,9 @@ class Kor::Tasks
   end
 
   def self.api_docs(config = {})
-    # `rails routes`.split("\n").each do |line|
-    #   next unless line.match?(/json/)
-    #   line.gsub!(/^[a-z0-9_\s]+/, '')
-
-    #   parts = line.split(/\s+/)
-    #   # parts.unshift nil if parts.size < 5
-    #   methods, path, route, defaults = parts
-    #   methods = methods.split('|')
-    #   path.gsub!('(.:format)', '')
-
-    #   p [methods, path, route, defaults]
-    # end
-    erb_file = "#{Rails.root}/api.html.erb"
-    intro_file = "#{Rails.root}/api.md"
-    data_file = "#{Rails.root}/api.yml"
+    erb_file = "#{Rails.root}/docs/api.html.erb"
+    intro_file = "#{Rails.root}/docs/api.md"
+    data_file = "#{Rails.root}/docs/api.yml"
 
     rebuild = true
     last_built_at = Time.now
@@ -239,11 +227,7 @@ class Kor::Tasks
           engine = ERB.new(File.read(erb_file), trim_mode: '-')
           html = engine.result(binding)
 
-          # File.open 'API.md', 'w' do |f|
-          #   f.write markdown
-          # end
-
-          File.open 'api.html', 'w' do |f|
+          File.open "#{Rails.root}/public/api.html", 'w' do |f|
             f.write html
           end
         rescue StandardError => e
