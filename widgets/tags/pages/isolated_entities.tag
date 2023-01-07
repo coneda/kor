@@ -51,7 +51,8 @@
         data: {
           include: 'kind'
           isolated: true
-          page: tag.opts.query.page
+          page: tag.opts.query.page,
+          per_page: 16
         }
         success: (data) ->
           tag.data = data

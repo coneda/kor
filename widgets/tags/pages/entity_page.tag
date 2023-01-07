@@ -48,12 +48,12 @@
         <span class="value">{hs(data.medium.file_size)}</span>
       </div>
 
-      <div if={data.synonyms.length > 0}>
+      <div if={data.synonyms.length > 0} field="synonyms">
         <span class="field">{tcap('nouns.synonym', {count: 'other'})}:</span>
         <span class="value">{data.synonyms.join(' | ')}</span>
       </div>
 
-      <div each={dating in data.datings}>
+      <div each={dating in data.datings} dating-label={dating.label}>
         <span class="field">{dating.label}:</span>
         <span class="value">{dating.dating_string}</span>
       </div>
@@ -67,33 +67,39 @@
 
       <div show={visibleFields().length > 0} class="hr silent"></div>
 
-      <div each={property in data.properties}>
-        <a
-          if={property.url}
-          href="{property.value}"
-          rel="noopener"
-          target="_blank"
-        >» {property.label}</a>
-        <virtual if={!property.url}>
-          <span class="field">{property.label}:</span>
-          <span class="value">{property.value}</span>
-        </virtual>
+      <div field="properties">
+        <div each={property in data.properties}>
+          <a
+            if={property.url}
+            href="{property.value}"
+            rel="noopener"
+            target="_blank"
+          >» {property.label}</a>
+          <virtual if={!property.url}>
+            <span class="field">{property.label}:</span>
+            <span class="value">{property.value}</span>
+          </virtual>
+        </div>
       </div>
 
       <div class="hr silent"></div>
 
-      <div if={data.comment} class="comment">
+      <div if={data.comment} class="comment" field="comment">
         <div class="field">
           {tcap('activerecord.attributes.entity.comment')}:
         </div>
         <div class="value"><pre>{data.comment}</pre></div>
       </div>
 
-      <kor-generator
+      <div
         each={generator in data.generators}
-        generator={generator}
-        entity={data}
-      />
+        generator-name={generator.name}
+      >
+        <kor-generator
+          generator={generator}
+          entity={data}
+        />
+      </div>
 
       <div class="hr silent"></div>
 
