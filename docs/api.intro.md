@@ -15,14 +15,13 @@ All endpoints follow these general rules
 * parameters are expected
   * part of the url path when indicated (e.g. "/entities/:id")
   * to be **query string parameters** for GET requests
-  * to be **json encoded in the HTTP body for POST, PUT and PATCH requests
+  * to be **json encoded** in the HTTP body for POST, PUT and PATCH requests
 * the **request body** (if applicable) is expected to be a **JSON document**
 * requests must specify the **HTTP header** `Accept: application/json`
 * the **response body** is **JSON encoded**
 * the **HTTP response code** should indicate success, redirection or problems
 * when errors occur, more information might be found in the response body (e.g.
   `{message: "Couldn't find User with 'id'=100"}`)
-* TODO: sorting
 
 In this documentation we show JSON content as parsed JavaScript objects, e.g.
 `{some: 'value'}` instead of `{"some": "value"}`.
@@ -45,7 +44,7 @@ user admin) through the users edit page in the user manager.
 
 ## Parameters
 
-These parameters are available for endpoints that return **several paginated
+These parameters are available for endpoints that return **multiple paginated
 results**:
 
 * `page` [integer] The result page for paginated results
@@ -77,19 +76,60 @@ type "integer(s)" would allow values like "1", "223" or "44,55,66".
   omitting it) designates "false"
 
 
+## Object responses
+
+Requests that **retrieve a single record** will always be answered with a
+simple object containing just that record, e.g.
+
+```
+GET /kinds/1
+
+{
+  "id": 123,
+  "name": "person",
+  "plural_name": "people",
+  ...
+}
+```
+
 ## Collection responses
 
-Whenever a endpoint returns **several paginated results**, the result will be
+Whenever a endpoint returns **multiple paginated results**, the result will be
 wrapped into an object with the form
 
-~~~javascript
+```
+GET /kinds
+
 {
   results: [...], /* the actual results */
   total: 123, /* the total amount of results ignoring pagination */
   page: 1, /* the current page of results being returned */
   per_page: 10 /* the amount of results returned per page */
 }
-~~~
+```
+
+## Acknoledgement responses
+
+Requests that **modify a record** will always be answered with the modified
+record as well as a message indicating the modification applied. Also the
+response code will reflect a successful change (200) or incorrect new data
+(422). This applies to create (POST), update (PATCH) and destroy (DELETE)
+requests, e.g.
+
+```
+POST /kinds
+with JSON {"kind": {"name": "person", "plural_name": "people"}}
+
+{
+  "message": "the kind 'person' has been created",
+  "record": {
+    "id": 123,
+    "name": "person",
+    "plural_name": "people",
+    ...
+  }
+}
+```
 
 ## Endpoint reference
 

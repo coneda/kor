@@ -304,7 +304,7 @@ scopes:
               tags: strings, a list of tags to add to the entity
       -
         description: remove (soft-delete) a entity
-        path: ':id'
+        path: '/:id'
         method: 'delete'
         params:
           - 
@@ -584,7 +584,7 @@ scopes:
               lock_version:
       -
         description: remove (soft-delete) a (two-way) relationship
-        path: ':id'
+        path: '/:id'
         method: 'delete'
         params:
           - 
@@ -693,7 +693,7 @@ scopes:
               child_ids: '[integers] a list of child kind ids'
       -
         description: remove (soft-delete) a kind
-        path: ':id'
+        path: '/:id'
         method: 'delete'
         params:
           - 
@@ -799,7 +799,7 @@ scopes:
                 id)
       -
         description: remove (soft-delete) a relation
-        path: ':id'
+        path: '/:id'
         method: 'delete'
         params:
           - 
@@ -900,7 +900,7 @@ scopes:
               api_key: a api key
       -
         description: delete a user
-        path: ':id'
+        path: '/:id'
         method: 'delete'
         params:
           - 
@@ -910,7 +910,7 @@ scopes:
             description: the id of the user to delete
       -
         description: reset a user's login attempts
-        path: ':id/reset_login_attempts'
+        path: '/:id/reset_login_attempts'
         method: 'patch'
         params:
           - 
@@ -921,7 +921,7 @@ scopes:
       -
         description: |
           reset a user's password (send a newly generated password via mail)
-        path: ':id/reset_password'
+        path: '/:id/reset_password'
         method: 'patch'
         params:
           - 
@@ -1177,7 +1177,7 @@ scopes:
               parent_id: the id of the parent directory
       -
         description: delete a directory
-        path: ':id'
+        path: '/:id'
         method: 'delete'
         params:
           - 

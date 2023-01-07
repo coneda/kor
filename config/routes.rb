@@ -27,6 +27,8 @@ Rails.application.routes.draw do
     )
   end
 
+  get '/api', to: 'kor#api'
+
   defaults format: 'json' do
     get 'fields/types', to: 'fields#types'
 

@@ -212,7 +212,7 @@ class Kor::Tasks
 
   def self.api_docs(config = {})
     erb_file = "#{Rails.root}/docs/api.html.erb"
-    intro_file = "#{Rails.root}/docs/api.md"
+    intro_file = "#{Rails.root}/docs/api.intro.md"
     data_file = "#{Rails.root}/docs/api.yml"
 
     rebuild = true

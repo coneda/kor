@@ -44,6 +44,7 @@ class UsersController < JsonController
   end
 
   def index
+    # TODO: unify this
     params[:sort_by] ||= 'name'
     params[:sort_order] ||= 'ASC'
 
