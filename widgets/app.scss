@@ -1,6 +1,7 @@
 $kor-error: #cb1525;
 $kor-notice: #505050;
 $kor-bg: #1e1e1e;
+$kor-bg-transparent: #1e1e1e00;
 $kor-bg-2: #292929;
 $kor-bg-3: #171717;
 $kor-text: #bbbbbb;
@@ -23,6 +24,7 @@ $kor-small-font-size: 0.8rem;
   --kor-error: #{$kor-error};
   --kor-notice: #{$kor-notice};
   --kor-bg: #{$kor-bg};
+  --kor-bg-transparent: #{$kor-bg-transparent};
   --kor-bg-2: #{$kor-bg-2};
   --kor-bg-3: #{$kor-bg-3};
   --kor-text: #{$kor-text};

@@ -631,8 +631,8 @@ kor-search, [data-is=kor-search] {
 
       background: linear-gradient(
         0deg,
-        rgba(255, 255, 255, 100) 80%,
-        rgba(255, 255, 255, 0)
+        var(--kor-bg-transparent) 80%,
+        var(--kor-bg);
       );
     }
   }
