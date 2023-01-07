@@ -244,6 +244,15 @@ class Kor::Tasks
       ActiveRecord::Base.connection.truncate(table)
     end
 
+    Kind.create(
+      name: Medium.model_name.human,
+      plural_name: Medium.model_name.human(count: :other),
+      uuid: Kind::MEDIA_UUID,
+      settings: {
+        naming: false
+      }
+    )
+
     system 'rm', '-rf', "#{ENV['DATA_DIR']}/media"
   end
 
