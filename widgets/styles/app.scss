@@ -619,6 +619,24 @@ kor-ask-choices, [data-is=kor-ask-choices] {
 }
 
 kor-search, [data-is=kor-search] {
+  form {
+    display: block;
+    position: relative;
+
+    div:last-child {
+      display: block;
+      width: calc(100% + 2px);
+      position: sticky;
+      bottom: 0;
+
+      background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 100) 80%,
+        rgba(255, 255, 255, 0)
+      );
+    }
+  }
+
   div.kor-layout-right .kor-content-box {
     padding-bottom: 0rem;
   }
