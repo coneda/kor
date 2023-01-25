@@ -122,7 +122,7 @@
           />
         </virtual>
 
-        <div class="kor-text-right">
+        <div class="buttons kor-text-right">
           <kor-input
             type="reset"
             label={tcap('verbs.reset')}
@@ -242,10 +242,11 @@
         id = null
       }
 
-      wApp.routing.query({
-        kind_id: id,
-        collection_id: tag.tags['kor-collection-selector'].value()
-      });
+      var params = {kind_id: id}
+      var domainIds = tag.tags['kor-collection-selector'].value()
+      if (domainIds.length) params['collection_id'] = domainIds
+
+      wApp.routing.query(params)
     }
 
     tag.elastic = function() {

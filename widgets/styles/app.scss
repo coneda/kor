@@ -510,6 +510,19 @@ kor-entity-editor, [data-is=kor-entity-editor] {
       }
     }
   }
+
+  div.buttons {
+    display: block;
+    width: calc(100% + 2px);
+    position: sticky;
+    bottom: 0;
+
+    background: linear-gradient(
+      0deg,
+      var(--kor-bg) 80%,
+      var(--kor-bg-transparent)
+    );
+  }
 }
 
 kor-clipboard-control {
@@ -623,7 +636,7 @@ kor-search, [data-is=kor-search] {
     display: block;
     position: relative;
 
-    div:last-child {
+    div.buttons {
       display: block;
       width: calc(100% + 2px);
       position: sticky;
