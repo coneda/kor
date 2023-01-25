@@ -736,6 +736,10 @@ kor-search-result {
       text-align: right;
       float: none;
     }
+
+    &:hover {
+      box-shadow: 0 0 1px 1px var(--kor-shine);
+    }
   }
 
   kor-entity:nth-child(4) {
