@@ -637,15 +637,34 @@ kor-search, [data-is=kor-search] {
     }
   }
 
+  div.search-results {
+    .controls {
+      display: flex;
+      padding: 1rem calc(2rem - 2px);
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--kor-bg-3);
+    }
+
+    .footer {
+      margin-top: 1rem;
+      border-top: 1px solid var(--kor-bg-3);
+    }
+  }
+
   div.kor-layout-right .kor-content-box {
     padding-bottom: 0rem;
   }
 
-  kor-pagination {
-    border-bottom: 1px solid var(--kor-bg-3);
-    padding-bottom: 1rem;
-    padding-right: 1rem;
-  }
+  // kor-pagination {
+  //   border-bottom: 1px solid var(--kor-bg-3);
+  //   padding-bottom: 1rem;
+  //   padding-right: 1rem;
+  // }
 
   kor-nothing-found {
     padding: 3rem;

@@ -140,13 +140,19 @@
     <kor-nothing-found data={data} type="entity" />
 
     <div class="search-results" if={data && data.total > 0}>
-      <kor-pagination
-        page={data.page}
-        per-page={data.per_page}
-        total={data.total}
-        on-paginate={page}
-        class="top"
-      />
+      <div class="controls header">
+        <div>
+          <strong>{data.total} {t('nouns.result', {count: 'other'})}</strong>
+        </div>
+
+        <kor-pagination
+          page={data.page}
+          per-page={data.per_page}
+          total={data.total}
+          on-paginate={page}
+          class="top"
+        />
+      </div>
 
       <div class="kor-search-results">
         <kor-search-result
@@ -155,13 +161,19 @@
         />
       </div>
 
-      <kor-pagination
-        page={data.page}
-        per-page={data.per_page}
-        total={data.total}
-        on-paginate={page}
-        class="bottom"
-      />
+      <div class="controls footer">
+        <div>
+          <strong>{data.total} {t('nouns.result', {count: 'other'})}</strong>
+        </div>
+
+        <kor-pagination
+          page={data.page}
+          per-page={data.per_page}
+          total={data.total}
+          on-paginate={page}
+          class="bottom"
+        />
+      </div>
     </div>
   </div>
 
