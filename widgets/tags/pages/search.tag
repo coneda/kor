@@ -5,7 +5,7 @@
     <div class="kor-content-box">
       <h1>{tcap('nouns.search')}</h1>
 
-      <form onsubmit={submit}>
+      <form onsubmit={submit} onreset={reset}>
         <kor-collection-selector
           show={allowedTo('create')}
           name="collection_id"
@@ -124,6 +124,11 @@
 
         <div class="kor-text-right">
           <kor-input
+            type="reset"
+            label={tcap('verbs.reset')}
+          />
+
+          <kor-input
             type="submit"
             label={tcap('verbs.search')}
           />
@@ -218,6 +223,15 @@
       wApp.routing.query(params(), true);
     }
 
+    tag.reset = function(event) {
+      wApp.routing.query(params(), true)
+
+      var domainIds = tag.tags['kor-collection-selector'].value()
+      var kindId = tag.tags['kor-kind-selector'].value()
+
+      wApp.routing.query({kind_id: kindId, collection_id: domainIds}, true)
+    }
+
     tag.page = function(newPage) {
       wApp.routing.query({page: newPage});
     }
@@ -227,7 +241,11 @@
       if (!id || id == '0') {
         id = null
       }
-      wApp.routing.query({kind_id: id});
+
+      wApp.routing.query({
+        kind_id: id,
+        collection_id: tag.tags['kor-collection-selector'].value()
+      });
     }
 
     tag.elastic = function() {
