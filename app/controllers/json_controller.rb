@@ -6,7 +6,7 @@ class JsonController < BaseController
 
   before_action :auth, :legal
 
-  helper_method :inclusion, :page, :per_page, :sort
+  helper_method :inclusion, :related_inclusion, :page, :per_page, :sort
 
   layout false
 
@@ -177,6 +177,10 @@ class JsonController < BaseController
 
     def inclusion
       param_to_array(params[:include], ids: false)
+    end
+
+    def related_inclusion
+      param_to_array(params[:related_include], ids: false)
     end
 
     def array_param(key, options = {})
