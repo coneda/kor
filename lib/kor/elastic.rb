@@ -78,6 +78,13 @@ class Kor::Elastic
                   'type' => 'asciifolding',
                   'preserve_original' => true
                 }
+              },
+              'normalizer' => {
+                'sort_normalizer' => {
+                  'type' => 'custom',
+                  'char_filter' => [],
+                  'filter' => ['lowercase', 'asciifolding']
+                }
               }
               # 'tokenizer' => {
               #   'gram' => {
@@ -152,7 +159,11 @@ class Kor::Elastic
               'file_name' => {'type' => 'keyword'},
               'datahash' => {'type' => 'keyword'},
 
-              "sort" => {"type" => "keyword", "index" => false},
+              "sort" => {
+                "type" => "keyword",
+                "index" => false,
+                'normalizer' => 'sort_normalizer'
+              }
             }
           }
         }
@@ -248,7 +259,7 @@ class Kor::Elastic
         }
       },
       'degree' => entity.degree,
-      "sort" => entity.display_name
+      "sort" => entity.medium_id ? nil : entity.display_name
     }
 
     if entity.medium
@@ -383,7 +394,7 @@ class Kor::Elastic
     case sort[:column]
     when 'name' then [{'sort' => sort[:direction]}]
     when 'default' then [{'sort' => 'asc'}]
-    when 'score' then ['_score']
+    when '_score' then ['_score']
     when 'random'
       @query['must'] << {
         'function_score' => {

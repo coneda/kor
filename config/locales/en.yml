@@ -91,6 +91,8 @@ en:
   show_only_mandatory_fields: show only mandatory fields
   remove_all: remove all
   change_order: change order, use drag & drop
+  relevance: relevance
+  sort_by: sort by
 
   help:
     terms_query: |

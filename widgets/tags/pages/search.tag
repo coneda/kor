@@ -148,6 +148,22 @@
       <div class="controls header">
         <div>
           <strong>{data.total} {t('nouns.result', {count: 'other'})}</strong>
+
+          <div class="sort">
+            {t('sort_by')}
+
+            <virtual if={wApp.routing.query()['terms']}>
+              <kor-sort-by key="_score" force-direction="desc">
+                {tcap('relevance')}
+              </kor-sort-by> |
+            </virtual>
+            <kor-sort-by key="name">
+              {tcap('activerecord.attributes.entity.name')}
+            </kor-sort-by> |
+            <kor-sort-by key="datings.from">
+              {tcap('datings.default')}
+            </kor-sort-by>
+          </div>
         </div>
 
         <kor-pagination

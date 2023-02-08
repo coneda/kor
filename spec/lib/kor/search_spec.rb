@@ -246,7 +246,7 @@ RSpec.describe Kor::Search do
       search = described_class.new(admin, name: 'ar')
       expect(search.total).to eq(2)
 
-      search = described_class.new(admin, name: 'léönärdö')
+      search = described_class.new(admin, name: 'lÉÖnärdó')
       expect(search.total).to eq(1)
     end
 
@@ -360,7 +360,7 @@ RSpec.describe Kor::Search do
       search = described_class.new(admin, name: '*ar*')
       expect(search.total).to eq(2)
 
-      search = described_class.new(admin, name: 'léönärdö')
+      search = described_class.new(admin, name: 'lÉónärdÖ')
       expect(search.total).to eq(1)
 
       search = described_class.new(admin, name: 'léö*')
@@ -368,6 +368,17 @@ RSpec.describe Kor::Search do
 
       search = described_class.new(admin, name: 'léö')
       expect(search.total).to eq(0)
+    end
+
+    it 'should sort by name' do
+      entity = mona_lisa
+      entity.update(name: 'É Mona Lisa')
+      Kor::Elastic.refresh
+      
+      search = described_class.new(admin,
+        sort: {column: 'name', direction: 'asc'}
+      )
+      expect(search.records.first).to eq(entity)
     end
 
     it 'should search by terms' do

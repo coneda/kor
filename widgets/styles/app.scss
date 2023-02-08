@@ -655,7 +655,12 @@ kor-search, [data-is=kor-search] {
       display: flex;
       padding: 1rem calc(2rem - 2px);
       justify-content: space-between;
-      align-items: center;
+      align-items: end;
+
+      .sort {
+        margin-top: 1em;
+        margin-bottom: 0.3em;
+      }
     }
 
     .header {
