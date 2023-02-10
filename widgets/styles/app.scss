@@ -510,6 +510,19 @@ kor-entity-editor, [data-is=kor-entity-editor] {
       }
     }
   }
+
+  div.buttons {
+    display: block;
+    width: calc(100% + 2px);
+    position: sticky;
+    bottom: 0;
+
+    background: linear-gradient(
+      0deg,
+      var(--kor-bg) 80%,
+      var(--kor-bg-transparent)
+    );
+  }
 }
 
 kor-clipboard-control {
@@ -619,15 +632,57 @@ kor-ask-choices, [data-is=kor-ask-choices] {
 }
 
 kor-search, [data-is=kor-search] {
+  form {
+    display: block;
+    position: relative;
+
+    div.buttons {
+      display: block;
+      width: calc(100% + 2px);
+      position: sticky;
+      bottom: 0;
+
+      background: linear-gradient(
+        0deg,
+        var(--kor-bg) 80%,
+        var(--kor-bg-transparent)
+      );
+    }
+  }
+
+  div.search-results {
+    .controls {
+      display: flex;
+      padding: 1rem calc(2rem - 2px);
+      justify-content: space-between;
+      align-items: end;
+
+      .sort {
+        margin-top: 1em;
+        margin-bottom: 0.3em;
+      }
+    }
+
+    .header {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--kor-bg-3);
+    }
+
+    .footer {
+      margin-top: 1rem;
+      border-top: 1px solid var(--kor-bg-3);
+    }
+  }
+
   div.kor-layout-right .kor-content-box {
     padding-bottom: 0rem;
   }
 
-  kor-pagination {
-    border-bottom: 1px solid var(--kor-bg-3);
-    padding-bottom: 1rem;
-    padding-right: 1rem;
-  }
+  // kor-pagination {
+  //   border-bottom: 1px solid var(--kor-bg-3);
+  //   padding-bottom: 1rem;
+  //   padding-right: 1rem;
+  // }
 
   kor-nothing-found {
     padding: 3rem;
@@ -698,6 +753,10 @@ kor-search-result {
       display: block;
       text-align: right;
       float: none;
+    }
+
+    &:hover {
+      box-shadow: 0 0 1px 1px var(--kor-shine);
     }
   }
 

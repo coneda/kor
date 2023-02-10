@@ -91,6 +91,8 @@ en:
   show_only_mandatory_fields: show only mandatory fields
   remove_all: remove all
   change_order: change order, use drag & drop
+  relevance: relevance
+  sort_by: sort by
 
   help:
     terms_query: |
@@ -158,7 +160,7 @@ en:
     synonym_input: Provide one synonym per line, for example
       <code>Leo<br />Leonardo<br />Leonardo da Vinci</code>
     property_input: |
-      Enter one of more lines using the format "label: value", for example
+      Enter one or more lines using the format "label: value", for example
       <code>width: 100cm<br />height: 120cm</code>Url values are rendered as
       links
     primary_relations: |

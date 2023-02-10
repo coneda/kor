@@ -15,7 +15,8 @@ json.info do
   json.env Rails.env.to_s
   json.elastic Kor::Elastic.available?
 
-  if url = ENV['CUSTOM_CSS_URL']
+  url = Kor.settings['custom_css_file']
+  if url.present?
     json.custom_css url
   end
 end

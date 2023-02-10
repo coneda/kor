@@ -103,9 +103,10 @@ class Kor::Tasks
 
   def self.reset_admin_account(config = {})
     u = User.find_or_initialize_by name: 'admin'
-    u.update(
+    u.update!(
       groups: Credential.all,
-      password: 'admin',
+      plain_password: 'admin',
+      plain_password_confirmation: 'admin',
       terms_accepted: true,
       login_attempts: [],
       active: true,
@@ -122,7 +123,7 @@ class Kor::Tasks
 
   def self.reset_guest_account(config = {})
     u = User.find_or_initialize_by name: 'guest'
-    u.update(
+    u.update!(
       terms_accepted: true,
       full_name: u.full_name || I18n.t('users.guest'),
       email: u.email || 'guest@example.com'
@@ -247,6 +248,51 @@ class Kor::Tasks
         sleep 0.2
       end
     end
+  end
+
+  def self.flush(config = {})
+    tables = [
+      :authority_group_categories,
+      :authority_groups,
+      :authority_groups_entities,
+      :delayed_jobs,
+      :directed_relationships,
+      :downloads,
+      :entities,
+      :entities_system_groups,
+      :entities_tags,
+      :entities_user_groups,
+      :entity_datings,
+      :fields,
+      :generators,
+      :identifiers,
+      :kind_inheritances,
+      :kinds,
+      :media,
+      :publishments,
+      :relation_inheritances,
+      :relations,
+      :relationship_datings,
+      :relationships,
+      :taggings,
+      :tags,
+      :user_groups
+    ]
+
+    tables.each do |table|
+      ActiveRecord::Base.connection.truncate(table)
+    end
+
+    Kind.create(
+      name: Medium.model_name.human,
+      plural_name: Medium.model_name.human(count: :other),
+      uuid: Kind::MEDIA_UUID,
+      settings: {
+        naming: false
+      }
+    )
+
+    system 'rm', '-rf', "#{ENV['DATA_DIR']}/media"
   end
 
   def self.print_table(data)

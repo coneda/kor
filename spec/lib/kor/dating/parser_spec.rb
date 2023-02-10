@@ -130,32 +130,40 @@ RSpec.describe Kor::Dating::Parser do
     )
   end
 
-  it "should parse 'vor 1883'" do
-    expect(subject.transform('vor 1883')).to eql(
-      from: Date.new(1870, 1, 1),
-      to: Date.new(1883, 12, 31)
-    )
-  end
+  describe 'TODO: these depend on the current (!) time' do
+    around :each do |example|
+      travel_to Time.mktime(2020)
+      example.run
+      travel_back
+    end
 
-  it "should parse 'nach 1883'" do
-    expect(subject.transform('nach 1883')).to eql(
-      from: Date.new(1883, 1, 1),
-      to: Date.new(1896, 12, 31)
-    )
-  end
+    it "should parse 'vor 1883'" do
+      expect(subject.transform('vor 1883')).to eql(
+        from: Date.new(1870, 1, 1),
+        to: Date.new(1883, 12, 31)
+      )
+    end
 
-  it "should parse 'nicht vor 1883'" do
-    expect(subject.transform('nicht vor 1883')).to eql(
-      from: Date.new(1883, 1, 1),
-      to: Date.new(1896, 12, 31)
-    )
-  end
+    it "should parse 'nach 1883'" do
+      expect(subject.transform('nach 1883')).to eql(
+        from: Date.new(1883, 1, 1),
+        to: Date.new(1896, 12, 31)
+      )
+    end
 
-  it "should parse 'nicht nach 1883'" do
-    expect(subject.transform('nicht nach 1883')).to eql(
-      from: Date.new(1870, 1, 1),
-      to: Date.new(1883, 12, 31)
-    )
+    it "should parse 'nicht vor 1883'" do
+      expect(subject.transform('nicht vor 1883')).to eql(
+        from: Date.new(1883, 1, 1),
+        to: Date.new(1896, 12, 31)
+      )
+    end
+
+    it "should parse 'nicht nach 1883'" do
+      expect(subject.transform('nicht nach 1883')).to eql(
+        from: Date.new(1870, 1, 1),
+        to: Date.new(1883, 12, 31)
+      )
+    end
   end
 
   it "should parse 'um 1555'" do

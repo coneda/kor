@@ -5,7 +5,7 @@
     <div class="kor-content-box">
       <h1>{tcap('nouns.search')}</h1>
 
-      <form onsubmit={submit}>
+      <form onsubmit={submit} onreset={reset}>
         <kor-collection-selector
           show={allowedTo('create')}
           name="collection_id"
@@ -122,7 +122,12 @@
           />
         </virtual>
 
-        <div class="kor-text-right">
+        <div class="buttons kor-text-right">
+          <kor-input
+            type="reset"
+            label={tcap('verbs.reset')}
+          />
+
           <kor-input
             type="submit"
             label={tcap('verbs.search')}
@@ -140,13 +145,35 @@
     <kor-nothing-found data={data} type="entity" />
 
     <div class="search-results" if={data && data.total > 0}>
-      <kor-pagination
-        page={data.page}
-        per-page={data.per_page}
-        total={data.total}
-        on-paginate={page}
-        class="top"
-      />
+      <div class="controls header">
+        <div>
+          <strong>{data.total} {t('nouns.result', {count: 'other'})}</strong>
+
+          <div class="sort">
+            {t('sort_by')}
+
+            <virtual if={wApp.routing.query()['terms']}>
+              <kor-sort-by key="_score" force-direction="desc">
+                {tcap('relevance')}
+              </kor-sort-by> |
+            </virtual>
+            <kor-sort-by key="name">
+              {tcap('activerecord.attributes.entity.name')}
+            </kor-sort-by> |
+            <kor-sort-by key="datings.from">
+              {tcap('datings.default')}
+            </kor-sort-by>
+          </div>
+        </div>
+
+        <kor-pagination
+          page={data.page}
+          per-page={data.per_page}
+          total={data.total}
+          on-paginate={page}
+          class="top"
+        />
+      </div>
 
       <div class="kor-search-results">
         <kor-search-result
@@ -155,13 +182,19 @@
         />
       </div>
 
-      <kor-pagination
-        page={data.page}
-        per-page={data.per_page}
-        total={data.total}
-        on-paginate={page}
-        class="bottom"
-      />
+      <div class="controls footer">
+        <div>
+          <strong>{data.total} {t('nouns.result', {count: 'other'})}</strong>
+        </div>
+
+        <kor-pagination
+          page={data.page}
+          per-page={data.per_page}
+          total={data.total}
+          on-paginate={page}
+          class="bottom"
+        />
+      </div>
     </div>
   </div>
 
@@ -206,6 +239,15 @@
       wApp.routing.query(params(), true);
     }
 
+    tag.reset = function(event) {
+      wApp.routing.query(params(), true)
+
+      var domainIds = tag.tags['kor-collection-selector'].value()
+      var kindId = tag.tags['kor-kind-selector'].value()
+
+      wApp.routing.query({kind_id: kindId, collection_id: domainIds}, true)
+    }
+
     tag.page = function(newPage) {
       wApp.routing.query({page: newPage});
     }
@@ -215,7 +257,12 @@
       if (!id || id == '0') {
         id = null
       }
-      wApp.routing.query({kind_id: id});
+
+      var params = {kind_id: id}
+      var domainIds = tag.tags['kor-collection-selector'].value()
+      if (domainIds.length) params['collection_id'] = domainIds
+
+      wApp.routing.query(params)
     }
 
     tag.elastic = function() {

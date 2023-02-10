@@ -125,4 +125,32 @@ Feature: search
     When I select "medium" from "Entity type"
     Then the current js url should be "/search?kind_id=1"
 
+  @elastic
+  Scenario: reset the search form
+    Given I am logged in as "admin"
+    And I am on the search page
+    When I follow "edit" within "kor-collection-selector"
+    And I uncheck "Default"
+    When I press "ok"
+    Then I should see "Domains: private"
+    And I select "person" from "Entity type"
+    And I fill in "Name / Title / UUID" with "Leonardo"
+    And I fill in "Tags" with "painter, inventor, italy"
+    And I fill in "Dating" with "1712"
+    And I fill in "GND-ID" with "x123"
+    And I fill in "Wikidata ID" with "Q762"
+    And I fill in "Further properties" with "model"
+    And I fill in "Search in related entities" with "Mona Lisa"
+    When I press "Reset"
+    Then I should see "Domains: private"
+    # 2 == person kind id
+    And the select "Entity type" should have value "2"
+    And I should see field "Name / Title / UUID" with value ""
+    And I should see field "Tags" with value ""
+    And I should see field "Dating" with value ""
+    And I should see field "GND-ID" with value ""
+    And I should see field "Wikidata ID" with value ""
+    And I should see field "Further properties" with value ""
+    And I should see field "Search in related entities" with value ""
+
   # Scenario: select field, changing collection/kind trigger new search on change

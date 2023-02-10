@@ -32,12 +32,36 @@ RSpec.describe User do
   end
 
   it "should save the plain password in memory" do
-    expect(User.new(password: 'secret').plain_password).to eql("secret")
+    expect(User.new(plain_password: 'secret').plain_password).to eql("secret")
   end
 
   it "should generate a password on creation" do
     user = User.create(name: 'john', email: 'john.doe@example.com')
     expect(user.password).not_to be_blank
+  end
+
+  it 'should set the password via plain_password' do
+    user = User.new(
+      name: 'janedoe',
+      email: 'janedoe@example.com',
+      plain_password: 'mypass'
+    )
+
+    expect(user.valid?).to be_falsey
+    expect(user.errors[:plain_password_confirmation]).to eq(['has to be filled in'])
+
+    user.plain_password_confirmation = 'wrongpass'
+
+    expect(user.valid?).to be_falsey
+    expect(user.errors[:plain_password_confirmation]).to eq(['does not match'])
+
+    user.plain_password_confirmation = 'mypass'
+    expect(user.valid?).to be_truthy
+
+    user.save
+
+    user = User.find_by!(name: 'janedoe')
+    expect(user.password).to eq(User.crypt('mypass'))
   end
 
   it "should accept 'john.doe@example-dash.com' as email address" do

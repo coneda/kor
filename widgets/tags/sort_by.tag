@@ -26,6 +26,11 @@
         }
       }
 
+      var fd = tag.opts.forceDirection
+      if (fd) {
+        newQuery['direction'] = fd
+      }
+
       wApp.routing.query(newQuery);
     }
 
@@ -46,6 +51,9 @@
     }
 
     var currentDirection = function() {
+      var fd = tag.opts.forceDirection
+      if (fd) return fd
+
       return wApp.routing.query()['direction'];
     }
 

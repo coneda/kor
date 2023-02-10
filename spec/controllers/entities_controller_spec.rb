@@ -121,6 +121,18 @@ RSpec.describe EntitiesController, type: :controller do
       get 'index'
       expect_collection_response count: 5
 
+      get 'index', params: {sort: 'datings.from'}
+      expect_collection_response count: 5
+      expect(json['records'][0]['name']).to eq('Leonardo')
+      expect(json['records'][1]['name']).to eq('Mona Lisa')
+      # the other entities have no dating and are therefore sorted last
+
+      get 'index', params: {sort: 'datings.from', direction: 'desc'}
+      expect_collection_response count: 5
+      expect(json['records'][0]['name']).to eq('Mona Lisa')
+      expect(json['records'][1]['name']).to eq('Leonardo')
+      # the other entities have no dating and are therefore sorted last
+
       get 'index', params: {kind_id: Kind.medium_kind_id}
       expect_collection_response count: 1
       expect(json['records'][0]['primary_entities']).to be_nil

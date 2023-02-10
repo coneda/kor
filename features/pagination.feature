@@ -8,6 +8,7 @@ Feature: Pagination
     When I go to the search page
     And I select "work" from "Entity type"
     And I press "Search"
+    Then I should see "13 results"
     Then I should see "work 00"
     And I should see "work 07"
     And I follow "next" within "kor-pagination.top"

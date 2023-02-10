@@ -11,23 +11,27 @@ function kor-usage {
 }
 
 function kor-snapshot {
-  docker-compose exec kor tar -C /opt/kor/data -c ./ | gzip -c > data.tar.gz
-  docker-compose exec kor mysqldump -h db -u root -proot kor | gzip -c > data.sql.gz
+  tar -C /opt/kor/data -c ./ | gzip -c > data.tar.gz
+  mysqldump -h db -u root -proot kor | gzip -c > data.sql.gz
 
   TS=$(date +'%Y%m%d_%H%M%S')
-  tar czf "kor_snapshot.$TS.tar.gz" data.tar.gz data.sql.gz
+  SNAPSHOT="kor_snapshot.$TS.tar.gz"
+  tar czf $SNAPSHOT data.tar.gz data.sql.gz
   rm data.tar.gz
   rm data.sql.gz
+
+  cat $SNAPSHOT
+  rm $SNAPSHOT
 }
 
 function kor-restore {
-  tar xzf $FILE
+  tar xz
 
-  docker-compose exec kor bundle exec rake db:drop db:create
-  cat data.sql.gz | gunzip -c | docker-compose exec -T kor mysql -h db -u root -proot kor
+  bundle exec rake db:drop db:create
+  cat data.sql.gz | gunzip -c | mysql -h db -u root -proot kor
 
-  docker-compose exec -T kor bash -c 'rm -rf data/*'
-  cat data.tar.gz | gunzip -c | docker-compose exec -T kor tar -C /opt/kor/data -x
+  bash -c 'rm -rf data/*'
+  cat data.tar.gz | gunzip -c | tar -C /opt/kor/data -x
 
   rm data.tar.gz
   rm data.sql.gz

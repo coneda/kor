@@ -92,6 +92,8 @@ de:
   show_only_mandatory_fields: nur Pflichtfelder anzeigen
   remove_all: alle entfernen
   change_order: Reihenfolge ändern, verwenden Sie Drag & Drop
+  relevance: Relevanz
+  sort_by: sortieren nach
 
   help:
     terms_query: |

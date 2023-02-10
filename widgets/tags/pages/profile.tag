@@ -43,6 +43,7 @@
           <kor-input
             label={tcap('activerecord.attributes.user.plain_password')}
             name="plain_password"
+            autocomplete="new-password"
             type="password"
             ref="fields"
             errors={errors.plain_password}
@@ -52,6 +53,7 @@
             label={tcap('activerecord.attributes.user.plain_password_confirmation')}
             name="plain_password_confirmation"
             type="password"
+            autocomplete="new-password"
             ref="fields"
             errors={errors.plain_password_confirmation}
           />

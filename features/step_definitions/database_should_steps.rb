@@ -20,6 +20,12 @@ Then /^user "([^"]*)" should have the following access rights$/ do |user, table|
   end
 end
 
+Then('user {string} should have password {string}') do |name, pass|
+  user = User.find_by!(name: name)
+  crypted_pass = User.crypt(pass)
+  expect(user.password).to eq(crypted_pass)
+end
+
 Then(/^kind "([^"]*)" should( not)? have parent "([^"]*)"$/) do |child, negation, parent|
   child = Kind.find_by(name: child)
   parent = Kind.find_by(name: parent)

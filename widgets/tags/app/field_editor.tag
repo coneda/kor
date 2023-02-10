@@ -8,7 +8,6 @@
   </h2>
 
   <form if={data && types} onsubmit={submit}>
-
     <kor-input
       name="type"
       label={tcap('activerecord.attributes.field.type')}

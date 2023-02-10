@@ -133,7 +133,9 @@
 
         <div class="hr"></div>
 
-        <kor-input type="submit" />
+        <div class="buttons">
+          <kor-input type="submit" />
+        </div>
       </form>
     </div>
   </div>

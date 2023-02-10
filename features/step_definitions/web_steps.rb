@@ -50,6 +50,7 @@ When("I scroll down") do
 end
 
 When("I fill in {string} with {string}") do |field, value|
+  value.gsub!("\\n", "\n")
   find(:fillable_field, field).set(value)
 end
 

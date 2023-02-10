@@ -54,12 +54,19 @@
       meta.after(m);
 
       var url = wApp.info.data.custom_css;
-      if (url) {
-        var link = Zepto('<link rel="stylesheet" href="' + url + '">');
-        link[0].onload = showBody;
-        Zepto('head').append(link);
-      } else {
+      if (!url) {
         showBody()
+      } else {
+        // we test the url before inserting the link
+        fetch(url).then(function(response){
+          if (response.ok) {
+            var link = Zepto('<link rel="stylesheet" href="' + url + '">');
+            link[0].onload = showBody;
+            Zepto('head').append(link);
+          } else {
+            showBody()
+          }
+        }).catch(function(error) {showBody()})
       }
     }
 
