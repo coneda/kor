@@ -151,5 +151,19 @@ function replace_symlinks {
   done
 }
 
+function tocs {
+  printf "dev.md:\n"
+  markdown-toc docs/dev.md --no-firsth1
+
+  printf "\n\nops.md:\n"
+  markdown-toc docs/ops.md --no-firsth1
+
+  printf "\n\napi.intro.md:\n"
+  markdown-toc docs/api.intro.md --no-firsth1
+
+  printf "\n\ndocker.md:\n"
+  markdown-toc docs/docker.md --no-firsth1
+}
+
 $COMMAND
 

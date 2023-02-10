@@ -7,7 +7,20 @@ Often, it is not necessary to modify the Source to achieve the desired result.
 For example, to visualize data in a different way than the default frontend
 provides, writing a html component and having it interact with ConedaKOR's
 JSON API is sufficient. On the other hand, making changes to the way data is
-handled internally requires modification of the source code.
+handled internally requires modifications to the source code.
+
+- [Code Architecture](#code-architecture)
+  * [Backend](#backend)
+  * [Frontend](#frontend)
+  * [APIs](#apis)
+    + [JSON](#json)
+    + [OAI-PMH](#oai-pmh)
+- [Generating docker images](#generating-docker-images)
+- [Development Tooling](#development-tooling)
+  * [Showing media in development](#showing-media-in-development)
+  * [Running the test suites](#running-the-test-suites)
+  * [Coverage reports](#coverage-reports)
+  * [Profiling](#profiling)
 
 ## Code Architecture
 
@@ -25,7 +38,7 @@ couple of consequences:
 * There is no tight coupling between the frontend and the backend, so they can
   be changed independently.
 * Rendering HTML is relatively slow and (when done in the backend) entails
-  serialization and deserialization. Shipping only JSON to the browser and
+  serialization and deserialization. Shipping only JSON to the browser
   shifts the load away from the server and distributes it to each client
   computer which usually scales well.
 * Since the frontend interacts with the backend only by means of APIs, all
@@ -59,7 +72,7 @@ programmatically or (with the help of `Kor::CommandLine`) with the ConedaKOR
 executable (for example `bundle exec bin/kor reset-admin-account`)
 
 **Elasticsearch** is populated with the help of model callbacks. `Kor::Elastic`
-holds mappings, settings, tasks and encapsulates the interaction wth the
+holds mappings, settings, tasks and encapsulates the interaction with the
 indexing server. The data is fully redundant and elasticsearch doesn't need to
 be backed up or kept redundant. Should it not be in sync for some reason, a task
 can be used to re-index all data (see above).
@@ -72,16 +85,73 @@ video, can be added in `lib/paperclip_processors`. Media transformation
 (rotating, flipping etc.) can be added in `lib/media/transformations`.
 
 ConedaKOR includes two **test suites**, a unit test suite (`spec`) and a e2e
-test suite (`features`). Together, they should provide test coverage of 85% or
-more. See below how to tun the tests.
+test suite (`features`). Together, they provide a test coverage of 85% or
+more. See below how to run the tests.
 
-## APIs
+### Frontend
 
-TODO
+The frontend is implemented as a npm package using riotjs, sass and zepto. All
+frontend code can be found in the `widgets` directory.
 
-## Frontend
+Refer to the `"scripts"` section within `package.json` for an overview of
+frontend build steps.
 
-TODO
+The main functionality is implemented as riot components. Some of the components
+take ownership of the url fragment when mounted and therefore provoke or listen
+to changes. The format of the fragment is kept in the form of `#<path>?<query>`
+which allows packing complex data structures within the url fragment. In general
+the path determines which component is being mounted and the query can
+optionally relay parameters to the component. For more details, refer to
+`widgets/lib/routing.js.coffee`.
+
+All styles are coming together at the `widgets/app.scss` file where all other
+stylesheets are loaded from. This is also where css properties can be defined
+to set up the color scheme.
+
+### APIs
+
+ConedaKOR ships with two APIs, a JSON api and a OAI-PMH repository. The JSON API
+is best suited for application development, for example when implementing custom
+frontend functionality or visualizations. OAI-PMH was designed for structured
+data exchange between data repositories and is therefore a good fit for any kind
+of archival.
+
+#### JSON
+
+The API's documentation is extensive so we gave it it's own place and made it
+part of ConedaKOR itself, please refer to the api documentation. It is available
+with each ConedaKOR installation since version 5, for example:
+
+https://kor.example.com/api
+
+#### OAI-PMH
+
+ConedaKOR spawns four OAI-PMH endpoints for entities, kinds, relations and
+relationships:
+
+* https://kor.example.com/oai-pmh/entities?verb=Identify
+* https://kor.example.com/oai-pmh/kinds?verb=Identify
+* https://kor.example.com/oai-pmh/relations?verb=Identify
+* https://kor.example.com/oai-pmh/relationships?verb=Identify
+
+Please refer to the [OAI-PMH
+specification](https://www.openarchives.org/OAI/openarchivesprotocol.html) for
+further information on available verbs and on how to use them.
+
+The api will retrieve entities and relationships according to the authenticated
+user's permissions. Kinds and relations are available without authentication.
+Please check out [Authentication](#authentication) for how to use an api key.
+
+Two formats are available: `oai_dc` and `kor`. While the former is only
+maintained to fulfill the OAI-PMH specification, the latter gives full access to
+all content within the ConedaKOR installation. According to specification, you
+must choose the format as a request parameter `metadataPrefix=kor`. The
+kor format adheres to a schema that is included in ConedaKOR. It can be found at
+
+https://kor.example.com/schema/1.0/kor.xsd
+
+as part of every installation (version 2.0.0 and above). We will add new
+versions, should the need arise.
 
 ## Generating docker images
 

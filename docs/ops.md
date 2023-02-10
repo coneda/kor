@@ -1,15 +1,26 @@
 # Installation & Maintenance
 
-## Notes
-
-Content overview for the "Installation & Maintenance" part.
-
-* mention (commercial) support and service options
-* content desc, target audience, compare to docker install, relevant kor version, incorporate content from readme.md
-
-## End Notes
-
 This is the ConedaKOR system administrator's guide. It covers system requirements, installation, updates and maintenance. Since most of the tasks we are discussing here are happening on the command line, we are assuming some familiarity with the linux terminal and the linux ecosystem in general.
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Authentication](#authentication)
+  * [Unauthenticated access](#unauthenticated-access)
+  * [Permission inheritance](#permission-inheritance)
+  * [External authentication](#external-authentication)
+  * [Authentication via request env](#authentication-via-request-env)
+- [Backups](#backups)
+- [Restore](#restore)
+- [Updates](#updates)
+- [Other maintenance](#other-maintenance)
+  * [Cron jobs](#cron-jobs)
+  * [Logging](#logging)
+- [Command line interface](#command-line-interface)
+  * [Excel import and export](#excel-import-and-export)
+  * [Importing Erlangen CRM classes](#importing-erlangen-crm-classes)
+  * [Rebuilding elastic index](#rebuilding-elastic-index)
+  * [Admin account](#admin-account)
 
 ## Requirements
 
@@ -196,6 +207,95 @@ systemctl start apache2
 
 With that, ConedaKOR should be available at http://app.example.com
 
+## Configuration
+
+The `.env.example` file we copied earlier has many configuration settings,
+please refer to the file's comments for documentation on every setting.
+
+The configuration file in fact just sets environment variables which you can
+also set elsewhere, for example in your apache VirtualHost:
+
+~~~apache
+  SetEnv "DATABASE_URL" "mysql2://<user>:<password>@..."
+~~~
+
+## Authentication
+
+On new installations, the default user is `admin` with password `admin`. He has
+all permissions to grant permissions and administer the installation. Also, he
+is member of the `Administrators` credential which allows him to see and edit
+all data.
+
+### Unauthenticated access
+
+If you create a user with the username `guest`, every unauthenticated access
+will be treated as if user `guest` had made it. This gives enables you to define
+exactly what permissions to grant in this case. If it doesn't exist, the app
+will require authentication.
+
+### Permission inheritance
+
+You may enter a parent username for every user. This way, the user will also be
+able to all the parts of the application his parent has access to.
+
+### External authentication
+
+Additionally, one or more scripts may be written to carry out authentication
+with the credentials provided by the user from the login form. This allows
+flexible authentication via external sources such as PAM, LDAP or
+ActiveDirectory.
+
+Internal users take preceedence over users authenticating via a script.
+
+The script can be written in the language of your choice. Username and password
+are passed on to it through two environment variables `KOR_USERNAME_FILE` and
+`KOR_PASSWORD_FILE` which indicate files where the values can be extracted from.
+The script is expected to terminate with exit code 0 if authentication was
+successful and 1 otherwise. In the positive case, a valid JSON hash has to be
+written to STDOUT. The hash must contain attributes to create/update the user
+record. Only 'email' is required. A user record is created unless the username
+exists.
+
+To activate the script as authenticator, configure it within your environment.
+Have a look at `.env.example` for examples and description of the available
+options.
+
+Example authenticator script `simple_auth.sh`:
+
+    #!/bin/bash
+
+    KOR_USERNAME=`cat $KOR_USERNAME_FILE`
+    KOR_PASSWORD=`cat $KOR_PASSWORD_FILE`
+
+    if [ "$KOR_USERNAME" == "jdoe" ] && [ "$KOR_PASSWORD" == "mysecret" ] ; then
+      echo "{\"email\": \"jdoe@example.com\"}"
+    else
+      echo "{}"
+      exit 1
+    fi
+
+The authentication system might need to create users when they authenticate via
+external sources. The above configuration would create new users and set their
+parent to `simple_user` or `ldap_user` depending on which authentication source
+succeeded. This allows you to grant default permissions to new users.
+
+### Authentication via request env
+
+It is also possible to configure variables to be used for authentication based
+on the request environment. A common use case are Apache authentication modules
+that set the `REMOTE_USER` environment variable. Have a look at `.env.example`
+for examples and description of the available options.
+
+This may be combined with script based authentication sources. Authentication is
+only triggered on GET `/env_auth` which falls back to the login form if the
+environment authentication was not successfull.
+
+If you configure any env auth sources, a button will appear above the login form
+to notify users of that possibility. If they choose to use it, they are
+redirected to `/env_auth` where the magic happens. The label for the button can
+be customized via the web interface.
+
+
 ## Backups
 
 As per the setup above, all data is either stored in the MariaDB database or the
@@ -204,8 +304,11 @@ done by:
 
 * stopping Apache so that no more changes can be made to the data
 * dump the database to `/var/rack/kor/shared`
-* run a backup of `/var/rack/kor/shared`
+* run a backup of `/var/rack/kor/shared` (or better `/var/rack/kor`)
 * start Apache again to resume normal operations
+
+Also, if you don't save the source code of ConedaKOR with your backup, store the
+version last used.
 
 We recommend a backup solution using (rsync)[https://rsync.samba.org/] or
 (borgbackup)[https://www.borgbackup.org/]. If you are concerned that the
@@ -213,6 +316,16 @@ downtime during backups might be too long, please have a look at copy-on-write
 systems on file system or block device level, for example
 (btrfs)[https://btrfs.wiki.kernel.org/] or (lvm)[https://sourceware.org/lvm2/].
 With that, Apache can usually be restarted after less than a second.
+
+## Restore
+
+To restore from a previous backup
+
+1. restore data (and potentially the config file) from the backup
+2. import the database dump
+3. deploy the relevant version of ConedaKOR
+6. refresh the elasticsearch index: 
+   `RAILS_ENV=production bundle exec bin/kor index-all`
 
 ## Updates
 
@@ -267,14 +380,16 @@ file:
 12 2 * * * app cd /var/rack/kor/current && RAILS_ENV=production bundle exec bin/kor index-all
 ```
 
-### Logrotate
+### Logging
 
-The main log file `/var/rack/kor/shared/log/production.log` will likely grow
-fast. We can use logrotate to make it more manageable, here is a example config
-file (e.g. to be stored as `/etc/logrotate.d/kor`):
+Log messages are sent to `log/production.log`. The log level can be configured
+in `config/environments/production.rb`.
+
+The file will likely grow fast. We can use logrotate to make it more manageable,
+here is a example config file (e.g. to be stored as `/etc/logrotate.d/kor`):
 
 ```
-"/var/rack/kor/shared/log/*.log" {
+"/path/to/kor/log/*.log" {
   missingok
   daily
   # size 100M
@@ -282,17 +397,10 @@ file (e.g. to be stored as `/etc/logrotate.d/kor`):
   compress
   sharedscripts
   postrotate
-    touch /var/rack/kor/current/tmp/restart.txt
+    touch /path/to/kor/tmp/restart.txt
   endscript
 }
 ```
-
-## Configuration
-
-The example config file we copied earlier has many configuration settings,
-please refer to the file's comments for documentation on every setting.
-
-TODO (see readme)
 
 ## Command line interface
 

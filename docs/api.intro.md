@@ -5,6 +5,13 @@ data type (e.g. entities or relationships) each. Each section then has several
 endpoints handling a specific aspect (e.g. showing or deleting) of that data
 type.
 
+- [General](#general)
+- [Authentication](#authentication)
+- [Parameters](#parameters)
+- [Object responses](#object-responses)
+- [Collection responses](#collection-responses)
+- [Acknoledgement responses](#acknoledgement-responses)
+- [Endpoint reference](#endpoint-reference)
 
 ## General
 
