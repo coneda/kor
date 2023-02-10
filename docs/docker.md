@@ -19,8 +19,6 @@ We are going to install docker which we will then use to download and run Coneda
 
 Docker is a set of tools for running containers on your Computer. What is a container? In short, its a process (think program) that runs in an isolated way: It has restricted access to your computer and it can be removed without trace if necessary. Docker containers, by default, only see the contents of a "image". These images then contain everything the process needs to run (system libraries, scripting languages, dictionaries etc.). Its not unusual to run several containers to provide a single application like ConedaKOR.
 
-~~We don't want to start, configure and maintain multiple containers which is why we use docker-compose to do it for us: It manages all containers required, sets communication routes between them and handles any persistent storage.~~
-
 If you don't have it already, start by installing docker ~~and docker compose~~ :
 
 * On Windows and MacOS, go to https://www.docker.com/get-started/ and follow the instructions to install "Docker Desktop" for your OS

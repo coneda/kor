@@ -54,17 +54,17 @@ ConedaKOR uses a set of icons that recurrently call specific functions within a 
 
 The following are for all editing and search operations:
 
-* plus: adds search or input options or relations
-* minus: resets and removes options; removes objects
-* trash: in principle, irrevocably deletes the relevant entry, object, or context
-* pen: calls up a form in which objects can be created or modified
-* edit: initiates processing operations and editing of texts
-* bla: temporarily saves on the clipboard
+* ![plus](icons/plus.svg): adds search or input options or relations
+* ![minus](icons/minus.svg): resets and removes options; removes objects
+* ![trash](icons/trash.svg): in principle, irrevocably deletes the relevant entry, object, or context
+* ![pen](icons/pen.svg): calls up a form in which objects can be created or modified
+* ![edit](icons/edit.svg): initiates a editing process
+* ![bla](icons/bla.svg): temporarily saves on the clipboard
 
 Help and interaction with the database managers:
 
-* question_mark: calls up help texts that are then displayed below the respective field
-* exclamation: initiates an email to the database manager
+* ![question_mark](icons/question_mark.svg): calls up help texts that are then displayed below the respective field
+* ![exclamation](icons/exclamation.svg): initiates an email to the database manager
 
 To use data outside of the database:
 
@@ -85,7 +85,7 @@ With *directories*, global collections can be grouped further, for instance, to 
 
 A data entry consists of the entities and their relations. When a user views an entity, the relations are also displayed, along with the various descriptive entries. If the entity is linked to a medium, this is visible as a thumbnail. In addition, depending on the database settings, the *reference data* will also be made accessible to the users.
 
-The *reference data* contain an automatically generated Universally Unique Identifier (UUID) for the entity in question. The information in the *domains* shows to which segment of the database the entity belongs, and "degree" indicates the number of linked entities. An entity linked to a medium has "Degree: 1," while an isolated entity has the value "0." Information on the authorship of the entity and on its editing can, on the one hand, support quality control and, on the other hand, be seen as a micro-publication.
+The *reference data* contain an automatically generated Universally Unique Identifier (UUID) for the entity in question. The information in the *domains* shows to which segment of the database the entity belongs, and "degree" indicates the number of linked entities. An entity linked to a medium has "Degree: 1", while an isolated entity has the value "0". Information on the authorship of the entity and on its editing can, on the one hand, support quality control and, on the other hand, be seen as a micro-publication.
 
 As soon as an entity has been assigned to a *global collection* (i.e. a thematically limited collection), the path appears as further information in the reference data.
 
@@ -103,7 +103,7 @@ This is followed by a number of fields that define the display and labelling of 
 
 * *Path to a custom css file*: This allows you to use your own user interface display settings, such as fonts and background colours. The full URL to a CSS file must be entered here.
 * *Label for the "new media" page*: This will change the naming of the third menu item on the left of the screen from the default "new media" to "new entities."
-* *Label for the button toggling the local login (leave empty to always show form)*: When logging on, this results in an overarching login, assuming the database has been configured accordingly.
+* *Label for the button toggling the local login (leave empty to always show form)*: This results in a SSO (single-sign-on) button being rendered on the login form. See the [operations guide](ops.md#external-authentication) for more details.
 * *Label for the entity name on the search page*: This determines how the entities are displayed for users in the list of search results.
 * *Primary relations* and *secondary relations* together form the caption for media when in gallery view (e.g. under "new entities"). The entities linked via these relations are displayed under the medium.
 
@@ -156,7 +156,7 @@ To create user groups, one calls up a form, on which only a name and an explanat
 
 ### User accounts: Managing users individually
 
-User administration allows you to manage the users who can log in to a given installation. They are given user accounts that expire after a certain period of time.
+User administration allows you to manage the users who can log in to the installation.
 
 User accounts are always password protected.
 
@@ -220,7 +220,7 @@ ConedaKOR offers the following types:
 * treat as a numerical value. The text cannot contain breaks, italics, and so forth.
 * *ISBN*: This field type is intended for inputting ISBN numbers (ISBN-10 or ISBN-13).
 * *multi-line text*: It is possible to input a text of multiple lines.
-* *select*: Allows for the specification of a list of values, which can be selected from a dropdown while inputting.
+* *select*: Allows for the specification of a list of values, which can be selected from a dropdown while entering data.
 * *regex*: Allows for the entry of a [regular expression](https://rubular.com/) in a separate field, with which to validate the input.
 
 ###### Field labelling 
@@ -252,8 +252,7 @@ The display of the fields and their behaviour are controlled with three checkbox
 
 Using the general procedure for creating fields, one can facilitate the semi-automatic transfer of the Wikidata ID to an entity. This procedure is described in the above introduction under [Wikidata lookup](#Schemata-und-Wikidata-LookUp).
 
-The field name must read "wikidata_id", and the Wikidata integration with language selection must be activated under the general settings in the
-*administration* area. The field type is to be set as a *string*, since Wikidata entity numbers always begin with the prefix "Q".
+The field name must read "wikidata_id", and the Wikidata integration must be activated in the general settings by selecting a language for the interaction between ConedaKOR and Wikidata, see the general settings in the *administration* area. The field type is to be set as a *string*, since Wikidata entity numbers always begin with the prefix "Q".
 
 #### Defining generators to enable linking
 
@@ -281,7 +280,7 @@ With `<%= entity.dataset.<Feldname> %>` a specific field value can be used. The 
 
 As described below under [Structural elements](#Structural-elements), relations are the second element with which to structure information in ConedaKOR. Again, ConedaKOR distinguishes between the type (the relation) and the concrete application between two entities (the relationship). The relations are also typed in ConedaKOR. By creating a relation, one can establish its designation and adjust which entity types can be connected to one another. This results in an even application of links among the entities and allows for problem-free searching in the database down the line.
 
-Relationships are always two-way, which means that a relationship between entity A and B implies a inverted relationship between B to A. This requires linguistic adjustments when creating the relation so that it remains intelligible (e.g. "is part of" corresponds to "has part"). Therefore, when viewing one or the other of two linked entities, the link between them will not have an identical label; rather, the label is determined by the perspective of the currently viewed entity.
+Relationships are always two-way, which means that a relationship between entity A and B implies a inverted relationship between B to A. This requires linguistic adjustments when creating the relation so that it remains intelligible (e.g. "is part of" could correspond to "consists of"). Therefore, when viewing one or the other of two linked entities, the link between them will not have an identical label; rather, the label is determined by the perspective of the currently viewed entity.
 
 #### Creating a relation and determining its properties
 

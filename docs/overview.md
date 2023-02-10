@@ -4,6 +4,7 @@ Welcome to the ConedaKOR documentation. We split it up into several parts so tha
 
 To get a ConedaKOR installation quickly, have a look at the [docker quickstart](docker.md) or you can also find a more detailed guide in the *ops* section below.
 
+
 ## User Documentation
 
 Here you will find everything about using ConedaKOR from configuration to structuring your data to data entry and searching.
