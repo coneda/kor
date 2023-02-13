@@ -35,6 +35,10 @@ RSpec.describe IdentifiersController, type: :controller do
   it 'should resolve to a 404 page when the identifier is not found' do
     get :resolve, params: {kind: 'x', id: '1234'}
     expect(response).to be_a_not_found
+
+    get :resolve, params: {kind: 'x', id: '1234'}, format: 'html'
+    expect(response).to be_a_not_found
+    expect(response.content_type).to eq('text/plain')
   end
 
   it 'should resolve by medium id' do

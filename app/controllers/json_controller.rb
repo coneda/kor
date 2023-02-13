@@ -61,7 +61,18 @@ class JsonController < BaseController
     end
 
     def render_record_not_found(exception)
-      render_404 exception.message
+      respond_to do |format|
+        format.json do
+          render_404 I18n.t('messages.not_found')
+        end
+        format.any do
+          render(
+            plain: I18n.t('messages.not_found'),
+            content_type: 'text/plain',
+            status: 404
+          )
+        end
+      end
     end
 
     def render_404(message = nil)

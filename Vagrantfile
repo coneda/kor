@@ -23,7 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.network :forwarded_port, host: 9200, guest: 9200
 
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.v4.0.dev"
+      vbox.name = "kor.v4.1.dev"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end
