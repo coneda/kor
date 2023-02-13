@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.define "dev.v4.0", primary: true do |c|
+  config.vm.define "dev.v4.1", primary: true do |c|
     c.vm.box = 'generic/debian10'
 
     if RUBY_PLATFORM.match(/darwin/)
@@ -40,7 +40,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     c.vm.network :forwarded_port, host: 9200, guest: 9200
 
     c.vm.provider "virtualbox" do |vbox|
-      vbox.name = "kor.v4.0.dev"
+      vbox.name = "kor.v4.1.dev"
       vbox.customize ["modifyvm", :id, "--memory", "2048"]
       vbox.customize ["modifyvm", :id, "--cpus", "2"]
     end

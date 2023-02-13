@@ -34,3 +34,13 @@ Feature: Config
     And I press "Save"
     And I reload the page
     Then the select "Secondary relations" should have value "has been created by,is related to"
+
+  Scenario: Change 'new media' page title
+    Given I am logged in as "admin"
+    When I go to the config page
+    When I select "New entries" from "Label for the 'new media' page"
+    And I press "Save"
+    And I reload the page
+    Then I follow "New entries"
+    Then I should see "New entries" within ".w-content h1"
+
