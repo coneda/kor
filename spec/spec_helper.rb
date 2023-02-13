@@ -1,3 +1,5 @@
+require 'active_support/testing/time_helpers'
+
 require 'support/test_helper'
 require 'support/suite_helper'
 
@@ -6,6 +8,8 @@ SuiteHelper.require_modules
 SuiteHelper.setup_vcr :rspec
 
 RSpec.configure do |config|
+  config.include ActiveSupport::Testing::TimeHelpers
+  
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
