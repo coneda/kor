@@ -26,7 +26,7 @@ Read everything about how to set up ConedaKOR and how to do regular maintenance 
 
 Videos:
 
-* [How to install ConedaKOR on Debian 11 „bullseye“](https://www.youtube.com/watch?v=ejQngJ2Zp-Y)
+* [How to install ConedaKOR on Debian 11 “bullseye”](https://www.youtube.com/watch?v=ejQngJ2Zp-Y)
   ([<img src="icons/download.svg" />](https://coneda.net/wp-content/uploads/2023/02/Installation-KOR-Debian.mov))
 
 ## Developers

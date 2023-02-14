@@ -1,4 +1,4 @@
-# Guidelines: Gather, Manage, and Retrieve Data with ConedaKOR Database Software
+# ConedaKOR documentation | Users
 
 ## Target audience for the guidelines
 
