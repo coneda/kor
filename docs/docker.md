@@ -17,12 +17,12 @@ We are going to install docker which we will then use to download and run Coneda
 
 ## Step 1: Download docker & docker compose
 
-Docker is a set of tools for running containers on your Computer. What is a container? In short, its a process (think program) that runs in an isolated way: It has restricted access to your computer and it can be removed without trace if necessary. Docker containers, by default, only see the contents of a "image". These images then contain everything the process needs to run (system libraries, scripting languages, dictionaries etc.). Its not unusual to run several containers to provide a single application like ConedaKOR.
+Docker is a set of tools for running containers on your Computer. What is a container? In short, its a process (think program) that runs in an isolated way: It has restricted access to your computer and it can be removed without trace if necessary. Docker containers, by default, only see the contents of a “image”. These images then contain everything the process needs to run (system libraries, scripting languages, dictionaries etc.). Its not unusual to run several containers to provide a single application like ConedaKOR.
 
 If you don't have it already, start by installing docker ~~and docker compose~~ :
 
-* On Windows and MacOS, go to https://www.docker.com/get-started/ and follow the instructions to install "Docker Desktop" for your OS
-* On Debian-based Linux, e.g. Ubuntu, run "sudo apt-get install docker.io docker-compose" in a terminal
+* On Windows and MacOS, go to https://www.docker.com/get-started/ and follow the instructions to install “Docker Desktop” for your OS
+* On Debian-based Linux, e.g. Ubuntu, run “sudo apt-get install docker.io docker-compose” in a terminal
 
 If, on Windows, you are prompted to install wsl 2, please install it following the given instructions.
 
@@ -30,18 +30,18 @@ To be on the safe side, restart your computer after docker has been installed.
 
 ## Step 2: Download ConedaKOR
 
-You'll need to download the ConedaKOR source code because it contains configuration and setup instructions for the docker containers. Go to https://github.com/coneda/kor and Click on "Releases" on the right side of the page. Once there, find the section for the most recent version (for example v5.0.0) and click "Source code (zip)". Extract the zip file so that there is a folder on your Desktop called like the version you just downloaded (for example "kor-5.0.0"). For the following instructions, replace "v5.0.0" with the version you downloaded.
+You'll need to download the ConedaKOR source code because it contains configuration and setup instructions for the docker containers. Go to https://github.com/coneda/kor and Click on “Releases” on the right side of the page. Once there, find the section for the most recent version (for example v5.0.0) and click “Source code (zip)”. Extract the zip file so that there is a folder on your Desktop called like the version you just downloaded (for example “kor-5.0.0”). For the following instructions, replace “v5.0.0” with the version you downloaded.
 
 ## Step 3: Run the containers
 
 1. make sure your system is up to date
-2. [Windows] Click the Windows start menu, type cmd and select "Command Prompt" to open a terminal.
+2. [Windows] Click the Windows start menu, type cmd and select “Command Prompt” to open a terminal.
 3. [Windows] type `cd Desktop\kor-5.0.0` and hit enter
 4. [MacOS & Linux] open your terminal application
 5. [MacOS & Linux] type `cd ~/Desktop/kor-5.0.0`
 6. again in your terminal, type `docker-compose up` and hit enter
 
-The last command will likely take several minutes to finish. Once the terminal calms down and there is no more output, open your web browser and go to `http://localhost:8080`. You should see the ConedaKOR user interface. To log in, use "admin" for both username and password.
+The last command will likely take several minutes to finish. Once the terminal calms down and there is no more output, open your web browser and go to `http://localhost:8080`. You should see the ConedaKOR user interface. To log in, use “admin” for both username and password.
 
 To stop all containers, press `ctrl-c` on your keyboard. After a couple of seconds, all containers should have shut down. The data is not deleted and will be available when you start the containers the next time. To remove the data, run `docker-compose down -v`.
 
