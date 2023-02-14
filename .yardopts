@@ -1,0 +1,9 @@
+--api rest
+--tag rest
+--tag rest_url:"REST Url"
+--type-name-tag rest_param:"REST Parameters"
+--tag rest_response:"REST Response"
+config/routes.rb
+app/**/*.rb
+lib/**/*.rb
+api.rb

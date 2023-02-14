@@ -174,6 +174,8 @@ GEM
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
     json (2.6.2)
+    kramdown (2.4.0)
+      rexml
     kt-delayed_paperclip (3.1.1)
       activejob (>= 4.2)
       kt-paperclip (>= 6.4.1)
@@ -341,6 +343,8 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
+    yard (0.9.28)
+      webrick (~> 1.7.0)
     zeitwerk (2.6.0)
 
 PLATFORMS
@@ -366,6 +370,7 @@ DEPENDENCIES
   hirb
   httpclient
   jbuilder
+  kramdown
   kt-delayed_paperclip
   kt-paperclip
   method_profiler
@@ -388,6 +393,7 @@ DEPENDENCIES
   vcr
   webdrivers
   webmock
+  yard
 
 BUNDLED WITH
    2.3.20

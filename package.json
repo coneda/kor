@@ -34,7 +34,7 @@
     "watch:images": "widgets/build.sh watch_images",
     "server": "widgets/build.sh server",
     "clean": "widgets/build.sh clean",
-    "toc": "markdown-toc README.md --no-firsth1"
+    "tocs": "widgets/build.sh tocs"
   },
   "repository": {
     "type": "git",

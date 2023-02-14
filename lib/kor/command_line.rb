@@ -135,6 +135,7 @@ class Kor::CommandLine
       when 'consistency-check' then task :consistency_check
       when 'import-erlangen-crm' then task :import_erlangen_crm
       when 'import-test-data' then task :import_test_data
+      when 'api-docs' then task :api_docs
       when 'flush' then task :flush
       else
         $stderr.puts "command '#{@command}' is not known"

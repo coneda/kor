@@ -16,4 +16,14 @@ class KorController < JsonController
     I18n.backend.load_translations
     render json: {'translations' => I18n.backend.send(:translations)}
   end
+
+  def api
+    html_file = "#{Rails.root}/public/api.html"
+
+    unless File.exists?(html_file)
+      Kor::Tasks.api_docs
+    end
+
+    render file: html_file
+  end
 end

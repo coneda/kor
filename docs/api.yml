@@ -1,0 +1,1745 @@
+scopes:
+  -
+    description: entities
+    path: '/entities'
+    authentication: |
+      object level access requires 'view', 'create',
+      'edit', 'delete', 'tagging' or 'view_meta'
+      permissons on the respective collection. For example: merging entities A
+      and B into C requires 'delete' on A's and B's collections as well as
+      'create' on C's collection.
+    endpoints:
+      -
+        description: find entities by various criteria
+        path: ''
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: find by id or uuid
+          -
+            name: name
+            type: string
+            description: find by (partial) name
+          -
+            name: except_kind_id
+            type: integer(s)
+            description: exclude results having these kind ids
+          -
+            name: collection_id
+            type: integer
+            description: only return entities with this collection id
+          -
+            name: kind_id
+            type: integer
+            description: only return entities with this kind id
+          -
+            name: dating
+            type: kor date range
+            description: |
+              only return entities (partially) matching the given date range
+          -
+            name: tags
+            type: string(s)
+            description: only return entities having the given tags
+          - 
+            name: relation_name
+            type: string
+            description: |
+              only return entities that can be related using the given relation
+              name
+          -
+            name: file_name
+            type: string
+            description: |
+              only return entities having a uploaded file with the given name,
+              will only return media entities
+          -
+            name: file_type
+            type: content type
+            description: |
+              only return entities having a uploaded file with the given content
+              type, will only return media entities
+          -
+            name: datahash
+            type: string
+            description: |
+              only return entities having a uploaded file matching the given
+              SHA1 hash, will only return media entities
+          -
+            name: file_size
+            type: file size
+            description: |
+              only return entities having a uploaded file with the given file
+              size
+          -
+            name: created_after
+            type: datedate
+            description: only return entities created after the given time
+          -
+            name: created_before
+            type: datedate
+            description: only return entities created before the given time
+          -
+            name: updated_after
+            type: datedate
+            description: only return entities updated after the given time
+          -
+            name: updated_before
+            type: datedate
+            description: only return entities updated before the given time
+          -
+            name: created_by
+            type: integer
+            description: |
+              only return entities created by the given user, expects the user
+              id
+          -
+            name: updated_by
+            type: integer
+            description: |
+              only return entities updated by the given user, expects the user
+              id
+          -
+            name: isolated
+            type: "true"
+            description: |
+              only return entities that are isolated, meaning not related to
+              any other entities
+          -
+            name: invalid
+            type: "true"
+            description: |
+              only return entities that have been previously flagged as invalid
+              (typically by a import script)
+          -
+            name: user_group_id
+            type: integer
+            description: |
+              only return entities that are within the given user group
+          -
+            name: authority_group_id
+            type: integer
+            description: |
+              only return entities that are within the given admin group
+          -
+            name: terms
+            type: elasticsearch query
+            description: |
+              only return entities matching the given elasticsearch query
+          -
+            name: dataset_<name>
+            type: string
+            description: |
+              only return entities having a dataset value dataset_<name>
+              (partially) matching the given string
+          -
+            name: property
+            type: string
+            description: |
+              only return entities having a property (partially) matching the
+              given string
+          -
+            name: related
+            type: string
+            description: |
+              only return entities where a related entity's name matches the
+              given string
+          -
+            name: sort
+            type: string
+            description: |
+              sort the results according to the given criteria, allowed values:
+              relevance, name, random
+            default: name
+          -
+            name: related_per_page
+            type: integer
+            description: |
+              the amount of related entities to include per primary result and
+              per relation. This value is capped by the setting "maximum number
+              of included objects per result"
+            default: 1
+          -
+            name: related_relation_name
+            type: string(s)
+            description: |
+              when including related entities, limit them by the relation name
+              they are related by
+          -
+            name: related_kind_id
+            type: integer(s)
+            description: |
+              when including related entities, limit them by their kind id
+
+        result: a paginated result containing matching entities
+      -
+        description: show information about a single entity
+        path: '/:id'
+        params:
+          - 
+            name: id
+            type: integer, uuid
+            required: true
+            description: the id or uuid of the entity to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the entity to include
+            values:
+              - 'technical (uuid, timestamps)'
+              - 'synonyms'
+              - 'datings'
+              - 'dataset (custom fields)'
+              - 'properties (special properties)'
+              - 'relations (a count for each relation to non-media entities)'
+              - 'media_relations (a count for each relation to media entities)'
+              - 'related (all related entities up to related_per_page, entity index endpoint)'
+              - 'gallery_data (primary and secondary entities as defined in the settings)'
+              - 'kind (detailed kind information)'
+              - 'collection (detailed collection information)'
+              - 'user_groups (list of all user groups this entity is part of, requesting user only)'
+              - 'groups (list of admin groups this entity is part of)'
+              - 'degree (the degree of connectivity)'
+              - 'users (detailed creator, updater information)'
+              - 'fields (custom field types)'
+              - 'generators (custom field generators)'
+              - 'all (include everything)'
+        result: the data for the requested entity
+      -
+        description: create a new entity
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: entity
+            type: object
+            required: true
+            description: the information to create the entity from
+            values:
+              name: 'the name of the entity'
+              display_name: |
+                a distinguishing suffix in case the name is already taken by
+                another entity
+              no_name_statement: |
+                one of unknown, not_available, empty_name, enter_name to
+                indicate if a name will be supplied or why not
+              comment: 'a arbitrary string'
+              kind_id: the id of the kind to assign to the entity
+              collection_id: the id of the collection to add the entity to
+              subtype: 'a arbitrary string'
+              medium_attributes: |
+                medium kind only: a object with keys document and/or image and
+                file upload values. When file data is sent via this attribute,
+                the entire request has to be formatted as
+                "application/x-www-form-urlencoded" (for historic reasons)
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
+              synonyms: 'a newline separated list'
+              dataset: "a object with keys matching the kind's custom field names"
+              properties: a list of objects with keys label and value
+              user_group_name: the name of a user group to add the new entity to
+              relation_name: the name of a relation to relate the new entity with
+              target_entity_id: the id of another entity to relate the new entity to
+              tag_list: strings, a list of tags to add to the entity
+      -
+        description: update a entity
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id or uuid of the entity to retrieve
+          -
+            name: entity
+            type: object
+            required: true
+            description: the information to update the entity with
+            values:
+              name: 'the name of the entity'
+              display_name: |
+                a distinguishing suffix in case the name is already taken by
+                another entity
+              no_name_statement: |
+                one of unknown, not_available, empty_name, enter_name to
+                indicate if a name will be supplied or why not
+              comment: 'a arbitrary string'
+              kind_id: the id of the kind to assign to the entity
+              collection_id: the id of the collection to add the entity to
+              subtype: 'a arbitrary string'
+              medium_attributes: |
+                medium kind only: a object with keys document and/or image and
+                file upload values
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
+              synonyms: 'a newline separated list'
+              dataset: "a object with keys matching the kind's custom field names"
+              properties: a list of objects with keys label and value
+              user_group_name: the name of a user group to add the new entity to
+              relation_name: the name of a relation to relate the new entity with
+              target_entity_id: the id of another entity to relate the new entity to
+              tag_list: strings, a list of tags to set for the entity
+              lock_version: see general api description
+
+      -
+        description: update a entity's tags
+        path: '/:id/update_tags'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id or uuid of the entity to retrieve
+          -
+            name: entity
+            description: the entity information
+            values:
+              tags: strings, a list of tags to add to the entity
+      -
+        description: remove (soft-delete) a entity
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the entity to remove
+      -
+        description: merge two or more entities
+        path: '/merge'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the entity to merge into
+          -
+            name: entitiy_ids
+            type: integers
+            required: true
+            description: |
+              the ids of the entities to be merged, only single kind allowed
+          - name: entity
+            type: object
+            required: true
+            description: the entity information
+            values:
+              name: 'the name of the entity'
+              display_name: |
+                a distinguishing suffix in case the name is already taken by
+                another entity
+              no_name_statement: |
+                one of unknown, not_available, empty_name, enter_name to
+                indicate if a name will be supplied or why not
+              comment: 'a arbitrary string'
+              kind_id: the id of the kind to assign to the entity
+              collection_id: the id of the collection to add the entity to
+              subtype: 'a arbitrary string'
+              medium_attributes: |
+                medium kind only: a object with keys document and/or image and
+                file upload values
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
+              synonyms: 'a newline separated list'
+              dataset: "a object with keys matching the kind's custom field names"
+              properties: a list of objects with keys label and value
+              user_group_name: the name of a user group to add the new entity to
+              relation_name: the name of a relation to relate the new entity with
+              target_entity_id: the id of another entity to relate the new entity to
+              tag_list: strings, a list of tags to add to the entity
+      -
+        description: relate several entities to a single entity
+        path: '/:id/mass_relate'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the entity to relate to
+          -
+            name: relation_name
+            type: string
+            required: true
+            description: the relation name to relate the entities with
+          -
+            name: entitiy_ids
+            type: integers
+            required: true
+            description: the ids of the entities to be related
+      -
+        description: remove (soft-delete) several entities at once
+        path: '/mass_destroy'
+        method: 'delete'
+        params:
+          -
+            name: ids
+            type: integers
+            required: true
+            description: the ids of the entities to be removed
+      -
+        description: check if entities exist
+        path: '/existence'
+        method: 'post'
+        params:
+          -
+            name: ids
+            type: integers
+            required: true
+            description: the ids of the entities to be checked
+        result: |
+          a object with a keys for each requested entity's id and values
+          indicating the entity's existence (true, false)
+
+  -
+    description: media
+    path: '/media'
+    authentication: |
+      object level access requires 'view' and/or
+      'download_originals' on the respective collection.
+    endpoints:
+      -
+        description: retrieve a medium's data blob in various formats
+        path: '/:disposition/:style/:id_part_01/:id_part_02/:id_part_03/:attachment.:style_extension'
+        params:
+          - 
+            name: disposition
+            required: true
+            type: string
+            description: suggest download or inline display for images
+            values:
+              - inline (show the image inline or within a browser tab)
+              - download (suggest to the browser to handle the data as a file download)
+          -
+            name: id_part_*,
+            type: string
+            required: true
+            description: the 3-way split medium id, e.g. 3456789 -> 003/456/789
+          -
+            name: attachment
+            type: string
+            required: true
+            description: the attachment to serve
+            values:
+              - image (for images)
+              - document (for everything else)
+          -
+            name: style_extension
+            type: string
+            required: true
+            description: the extension for the blob being retrieved (e.g. jpg, flv, mp4, docx etc.)
+        result: a blob representing the requested medium data
+      -
+        description: transform a medium
+        path: '/transform/:id/:transformation/:operation(.:format)'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the medium to be transformed
+          -
+            name: transformation
+            type: string
+            required: true
+            description: the class of operations to perform
+            values:
+              - image (currently the only possible value)
+          -
+            name: operation
+            type: string
+            required:  true
+            description: the operation to perform
+            values:
+              - flip (mirror across vertical axis)
+              - flop (mirror across horizontal axis)
+              - rotate_cw (rotate 90° clock-wise)
+              - rotate_ccw (rotate 90° counter-clock-wise)
+              - rotate_180 (rotate 180°)
+
+
+  -
+    description: relationships
+    path: '/relationships'
+    authentication: |
+      object level access requires 'view' and/or
+      'update' on the respective collection.
+    endpoints:
+      -
+        description: retrieve a list of relationships by various criteria
+        path: ''
+        params:
+          - 
+            name: from_entity_id
+            type: integers
+            description: return only relationships originating from these entities
+          - 
+            name: to_entity_id
+            type: integers
+            description: return only relationships ending at these entities
+          - 
+            name: relation_name
+            type: strings
+            description: return only relationships matching these names
+          - 
+            name: from_kind_id
+            type: integers
+            description: return only relationships originating from entities with these kinds
+          - 
+            name: to_kind_id
+            type: integers
+            description: return only relationships ending at entities with these kinds
+          - 
+            name: except_to_kind_id
+            type: integers
+            description: return only relationships not ending at entities with these kinds
+        result: |
+          A paginated result containing matching relationships. This endpoint
+          behaves differently than most other endpoints as reading relationships
+          yields a different format to what is expected when modifying
+          relationship. Here, we are returing a list of 'directed'
+          relationships including the relation name in its correct direction.
+          Each result has keys 'to', and 'relation' containing information on
+          the target entity as well as the relation. This has been done to
+          facilitate rendering.
+      -
+        description: show information about a single relationship
+        path: '/:id'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the relationship to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the entity to include
+            values:
+              - 'to (detailed data for the target entity)'
+              - "media_relations (detailed data for target entity's related media)"
+              - 'properties (special properties)'
+              - 'datings'
+              - 'relationship (detailed data on the relation)'
+              - 'technical (timestamps)'
+              - 'all (include everything)'
+        result: see previous endpoint
+      -
+        description: create a new (two-way) relationship
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: relationship
+            type: object
+            required: true
+            description: the information to create the relationship from
+            values:
+              from_id: the id for the originating entity
+              to_id: the id for the target entity
+              relation_id: the id for the relation to use
+              relation_name: the name for the relation to use (alternative to relation_id)
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
+              properties: a list of objects with keys label and value
+      -
+        description: update a existing (two-way) relationship
+        path: '/:id'
+        method: 'put, patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the relationship to update
+          -
+            name: relationship
+            type: object
+            required: true
+            description: the information to create the relationship from
+            values:
+              from_id: the id for the originating entity
+              to_id: the id for the target entity
+              relation_id: the id for the relation to use
+              relation_name: the name for the relation to use (alternative to relation_id)
+              datings_attributes: |
+                a list of objects with keys id, _destroy, label, dating_string
+                and lock_version (set id for existing datings and _destroy to
+                delete)
+              properties: a list of objects with keys label and value
+              lock_version:
+      -
+        description: remove (soft-delete) a (two-way) relationship
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the relationship to remove
+
+  -
+    description: kinds
+    path: '/kinds'
+    authentication: |
+      no object level restrictions, read access is public, write access requires
+      special user permissions
+    endpoints:
+      -
+        description: retrieve a list of kinds by various criteria
+        path: ''
+        params:
+          - 
+            name: only_active
+            type: any
+            description: |
+              return only active (not abstract) kinds, the value given is
+              irrelevant, the param's presence triggers the filter
+          - 
+            name: no_media
+            description: |
+              return only kinds which are not the medium kind, the value given
+              is irrelevant, the param's presence triggers the filter
+        result: a paginated result containing matching kinds
+      -
+        description: show information about a single kind
+        path: '/:id'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id the kind to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the kind to include
+            values:
+              - 'technical (uuid, timestamps)'
+              - 'settings (tagging, synonyms, name requirements and labels)'
+              - 'fields (custom field definitions)'
+              - 'generators (generator definitions)'
+              - 'inheritance (parent kind(s))'
+              - 'all (include everything)'
+        result: the data for the requested kind
+      -
+        description: create a new kind
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: kind
+            type: object
+            required: true
+            description: the information to create the kind from
+            values:
+              name: 'the name of the kind (required)'
+              plural_name: 'the plural name of the kind (required)'
+              description: a description
+              tagging: '[boolean] wheter to activate tagging for this kind'
+              name_label: the label or the name field
+              dating_label: |
+                the (default) label for new datings added to entities of this
+                kind
+              distinct_name_label: the label for the distinct name
+              schema: the schema this kind belongs to
+              url: the (schema) url
+              abstract: |
+                [boolean] whether the kind is abstract and can therefore only be
+                used as parent for other kinds
+              parent_ids: '[integers] a list of parent kind ids'
+              child_ids: '[integers] a list of child kind ids'
+      -
+        description: update a new kind
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: kind
+            type: object
+            required: true
+            description: the information to update the kind with
+            values:
+              name: 'the name of the kind (required)'
+              plural_name: 'the plural name of the kind (required)'
+              description: a description
+              tagging: '[boolean] wheter to activate tagging for this kind'
+              name_label: the label or the name field
+              dating_label: |
+                the (default) label for new datings added to entities of this
+                kind
+              distinct_name_label: the label for the distinct name
+              schema: the schema this kind belongs to
+              url: the (schema) url
+              abstract: |
+                [boolean] whether the kind is abstract and can therefore only be
+                used as parent for other kinds
+              parent_ids: '[integers] a list of parent kind ids'
+              child_ids: '[integers] a list of child kind ids'
+      -
+        description: remove (soft-delete) a kind
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the kind to remove
+            
+
+  -
+    description: relations
+    path: '/relations'
+    authentication: |
+      no object level restrictions, read access is public, write access requires
+      special user permissions
+    endpoints:
+      -
+        description: retrieve a list of relations
+        path: ''
+        result: a paginated result containing matching relations
+      -
+        description: list relation names for a given combination of kinds
+        path: '/names'
+        params:
+          - 
+            name: from_kind_ids
+            type: integers
+            description: a list with ids of kinds
+          -
+            name: to_kind_ids
+            type: integers
+            description: a list with ids of kinds
+        result: the list of relation names
+      -
+        description: show information about a single relation
+        path: '/:id'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id the relation to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the relation to include
+            values:
+              - 'technical (uuid, timestamps)'
+              - 'inheritance (parent relation(s))'
+              - 'all (include everything)'
+        result: the data for the requested relation
+      -
+        description: create a new relation
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: kind
+            type: object
+            required: true
+            description: the information to create the relation from
+            values:
+              name: 'the name of the relation (required)'
+              reverse_name: 'the reverse name of the relation (required)'
+              description: a description
+              from_kind_id: 
+              to_kind_id: 
+              abstract: |
+                [boolean] whether the relation is abstract and can therefore
+                only be used as parent for other relations
+              schema: the schema this kind belongs to
+              url: the (schema) url
+              identifier: a identifier (e.g. wikipedia property id)
+              reverse_identifier: |
+                the identifier for a reverse relation (e.g. wikipedia property
+                id)
+      -
+        description: update a new relation
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: kind
+            type: object
+            required: true
+            description: the information to create the relation from
+            values:
+              name: 'the name of the relation (required)'
+              reverse_name: 'the reverse name of the relation (required)'
+              description: a description
+              from_kind_id: |
+                relationships can only start from entities with this kind
+              to_kind_id: |
+                relationships can only end at entities with this kind
+              abstract: |
+                [boolean] whether the relation is abstract and can therefore
+                only be used as parent for other relations
+              schema: the schema this kind belongs to
+              url: the (schema) url
+              identifier: a identifier (e.g. wikipedia property id)
+              reverse_identifier: |
+                the identifier for a reverse relation (e.g. wikipedia property
+                id)
+      -
+        description: remove (soft-delete) a relation
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the relation to remove
+            
+  -
+    description: users
+    path: '/users'
+    authentication: |
+      no object level restrictions, access requires special user permissions
+    endpoints:
+      -
+        description: retrieve a list of users by various criteria
+        path: ''
+        params:
+          -
+            name: terms
+            type: string
+            description: a search term to filter users by
+        result: a paginated result containing matching users
+      -
+        description: retrieve a user record
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the user to retrieve
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the user to include
+            values:
+              - 'technical (uuid, timestamps)'
+              - 'security (logins, email, active state, parent, api key)'
+              - 'permissions'
+              - 'all (include everything)'
+        result: the requested user record
+      -
+        description: create a new user
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: user
+            type: object
+            required: true
+            description: the information to create the user from
+            values:
+              full_name: the user's full name
+              name: the login name
+              email: the email address
+              active: '[boolean] whether the user account is active'
+              plain_password: a password
+              plain_password_confirmation: the password confirmation
+              locale: the user's locale
+              expires_at: '[timestamp] when the account will expire'
+              relation_admin: whether the user is allowed to change relations
+              authority_group_admin: |
+                whether the user is allowed to change global collections
+              kind_admin: whether the user is allowed to change kinds
+              admin: whether the user is allowed to change other user accounts
+              default_collection_id: |
+                the default collecton for this user when creating new entities
+              parent_username: a user to inherit permissions from
+              api_key: a api key
+      -
+        description: update a user
+        path: ''
+        method: 'patch, put'
+        params:
+          -
+            name: user
+            type: object
+            required: true
+            description: the information to update the user with
+            values:
+              full_name: the user's full name
+              name: the login name
+              email: the email address
+              active: '[boolean] whether the user account is active'
+              plain_password: a password (omit to keep current passwor)
+              plain_password_confirmation: the password confirmation
+              locale: the user's locale
+              expires_at: '[timestamp] when the account will expire'
+              relation_admin: whether the user is allowed to change relations
+              authority_group_admin: |
+                whether the user is allowed to change global collections
+              kind_admin: whether the user is allowed to change kinds
+              admin: whether the user is allowed to change other user accounts
+              default_collection_id: |
+                the default collecton for this user when creating new entities
+              parent_username: a user to inherit permissions from
+              api_key: a api key
+      -
+        description: delete a user
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the user to delete
+      -
+        description: reset a user's login attempts
+        path: '/:id/reset_login_attempts'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the user to reset the attempts for
+      -
+        description: |
+          reset a user's password (send a newly generated password via mail)
+        path: '/:id/reset_password'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the user to reset the password for
+
+  -
+    description: the current user
+    path: '/users'
+    authentication: |
+      The endpoint operates on a single object, the current user. Access is
+      granted if the request includes a session cookie as generated by the
+      /session endpoint
+    endpoints:
+      -
+        description: accept the terms of use
+        path: '/accept_terms'
+        method: 'patch'
+        result: |
+          a confirmation message that the terms have been saved as accepted
+      -
+        description: retrieve information about the current user
+        path: '/me'
+        result: the record for the current user
+      -
+        description: update the current user (update the profile)
+        path: '/me'
+        method: 'patch'
+        params:
+          -
+            name: user
+            type: object
+            values:
+              full_name: the user's full name
+              name: the login name
+              email: the email address
+              plain_password: a password
+              plain_password_confirmation: the password confirmation
+              locale: the user's locale
+              default_collection_id: |
+                the default collecton for this user when creating new entities
+              api_key: a api key
+        result: a message confirming the changes
+
+  -
+    description: user sessions
+    path: ''
+    authentication: |
+      The endpoint operates on user sessions which require valid authentication
+      credentials to be created. Sessions are persisted by means of a session
+      cookie and therefore require a user agent with cookie capabilities.
+    endpoints:
+      -
+        description: rerieve the current session information
+        path: '/session'
+        result: |
+          a record describing the current session including the current user if
+          logged in
+      -
+        description: create a new session
+        path: '/login'
+        method: 'post'
+        params:
+          -
+            name: username
+            type: string
+            required: true
+            description: the name of the user to create a new session for
+          -
+            name: password
+            type: string
+            required: true
+            description: the user's password
+        result: a confirmation message that the user has been logged in
+      -
+        description: destroy user session (log out)
+        path: '/logout'
+        method: 'delete'
+        result: a message confirming the log out
+
+  -
+    description: general endpoints
+    path: ''
+    authentication: access is not restricted
+    endpoints:
+      -
+        description: retrieve all UI translations
+        path: '/translations'
+        result: a object representing all translations by locale
+      -
+        description: general information on this ConedaKOR instance
+        path: '/info'
+        result: the information record
+      -
+        description: statistics on this ConedaKOR instance
+        path: '/statistics'
+        result: the statistics record
+  -
+    description: settings
+    path: '/settings'
+    authentication: |
+      read access is public, write access requires special user permissions
+    endpoints:
+      -
+        description: retrieve all current settings
+        path: '/settings'
+        result: a object representing all current settings
+      -
+        description: change the settings
+        üath: '/settings'
+        method: 'patch, put'
+        params:
+          -
+            name: settings
+            type: object
+            values:
+              maintainer_name: Maintainer organization
+              maintainer_mail: Maintainer email address
+              welcome_title: title of welcome page
+              welcome_text: text of welcome page
+              welcome_page_only_media: |
+                [boolean] show only media on welcome page
+              legal_text: text for terms of use
+              about_text: text for imprint
+              custom_css_file: path to a custom css file
+              new_media_label: label for the 'new media' page
+              env_auth_button_label: |
+                label for federated login button (leave empty to hide button)
+              env_auth_local_button_label: |
+                label for the button toggling the local login (leave empty to
+                always show form)
+              search_entity_name: label for the entity name on the search page
+              kind_dating_label: default dating label for new kinds
+              kind_name_label: default name label for new kinds
+              kind_distinct_name_label: |
+                default distinct name label for new kinds
+              relationship_dating_label: default dating label for new relations
+              primary_relations: primary relations
+              secondary_relations: secondary relations
+              default_locale: default language
+              max_foreground_group_download_size: |
+                [integer] maximum size for foreground downloads of collections
+                [MB]
+              max_file_upload_size: |
+                [integer] maximum file size for uploads [MB]
+              max_results_per_request: |
+                [integer] maxium number of results per request
+              max_included_results_per_result: |
+                [integer] maximum number of included objects per result
+              session_lifetime: '[integer] session lifetime [seconds]'
+              publishment_lifetime: '[integer] publishments lifetime [days]'
+              default_groups: default user groups for new users
+              max_download_group_size: |
+                [integer] maximum downloadable collection size [MB]
+              wikidata_integration: use the wikidata integration
+              create_missing_relations: '[boolean] create missing relations?'
+              mirador_page_template: |
+                override the page template for the mirador integration (absolute
+                path)
+              mirador_manifest_template: |
+                override the manifest template for the mirador integration
+                (absolute path)
+              help_general.en: general help text (menu, en)
+              help_general.de: general help text (menu, de)
+              help_search.en: search help text (en)
+              help_search.de: search help text (de)
+              help_upload.en: file upload help text (en)
+              help_upload.de: file upload help text (de)
+              help_login.en: login help text (en)
+              help_login.de: login help text (de)
+              help_profile.en: profile help text (en)
+              help_profile.de: profile help text (de)
+              help_new_entries.en: new entries help text (en)
+              help_new_entries.de: new entries help text (de)
+              help_authority_groups.en: global collection help text (en)
+              help_authority_groups.de: global collection help text (de)
+              help_user_groups.en: user collection help text (en)
+              help_user_groups.de: user collection help text (de)
+              help_clipboard.en: clipboard help text (en)
+              help_clipboard.de: clipboard help text (de)
+              sources_release: source code url for the closest release
+              sources_pre_release: source code url for the closest preease
+              sources_default: defeault source code url
+              repository_uuid: override the generated repository UUID
+        result: a message confirming the changes
+
+  -
+    description: the global collection hierarchy
+    path: '/authority_group_categories'
+    authentication: |
+      no object level restrictions, write access requires special user
+      permissions
+    endpoints:
+      -
+        description: retrieve a list of directories
+        path: ''
+        params:
+          -
+            name: parent_id
+            type: integer
+            description: |
+              only return directory who are direct children of the given parent.
+              without this parameter, only root directories are returned
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the directory to include
+            values:
+              - 'technical (timestamps)'
+              - 'ancestors (the parent directory)'
+        result: a paginated result containing matching categories
+      -
+        description: retrieve a list of all directories (ignoring hierarchy)
+        path: '/flat'
+        result: a paginated result containing all categories
+      -
+        description: retrieve a category
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the directory to retrieve
+        result: the requested directory
+      -
+        description: create a new directory
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: authority_group_category
+            type: object
+            required: true
+            description: the information to create the directory from
+            values:
+              name: the directory name
+              parent_id: the id of the parent directory
+      -
+        description: update a directory
+        path: ''
+        method: 'patch, put'
+        params:
+          -
+            name: authority_group_category
+            type: object
+            required: true
+            description: the information to update the directory with
+            values:
+              name: the directory name
+              parent_id: the id of the parent directory
+      -
+        description: delete a directory
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the directory to delete
+
+  -
+    description: global collections
+    path: '/authority_groups'
+    authentication: |
+      No object level restrictions, write access requires special user
+      permissions, adding/removing entities from collections requires read
+      access to the entities involved. Downloading media requires read access
+      to those media
+    endpoints:
+      -
+        description: retrieve a list of collections
+        path: ''
+        params:
+          -
+            name: terms
+            type: string
+            description: a search term to filter the collections by
+          -
+            name: authority_group_category_id
+            type: integer
+            description: |
+              only return collections within the given directory
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the collection to include
+            values:
+              - 'technical (timestamps, uuid, lock_version)'
+              - 'directory (the directory)'
+        result: a paginated result containing matching collections
+      -
+        description: retrieve a collection
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the collection to retrieve
+        result: the requested collection
+      -
+        description: create a new collection
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: authority_group
+            type: object
+            required: true
+            description: the information to create the collection from
+            values:
+              name: the collection name
+              authority_group_category_id: |
+                the id of the directory to insert the collection into
+      -
+        description: update a collection
+        path: ''
+        method: 'patch, put'
+        params:
+          -
+            name: authority_group
+            type: object
+            required: true
+            description: the information to update the collection with
+            values:
+              name: the collection name
+              authority_group_category_id: |
+                the id of the directory to insert the collection into
+              lock_version: see general api description
+      -
+        description: delete a collection
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the collection to delete
+      -
+        description: add entities
+        path: '/:id/add'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to add the entities to
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to add to the collection
+        result: a confirmation message that the entities have been added
+      -
+        description: remove entities
+        path: '/:id/remove'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to remove from entities from
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to remove from the collection
+        result: a confirmation message that the entities have been removed
+      -
+        description: download media from a collection
+        path: '/:id/download_images'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the id of the collection to download media from
+        result: |
+          A zip file containing the relevant media, or a confirmation message
+          that the zip file generation is on the way. In the latter case, a
+          email message will be sent to the user once the zip file is ready
+          for download. See also the settings endpoint.
+
+  -
+    description: personal collections
+    path: '/user_groups'
+    authentication: |
+      Object level access is granted to a user's own personal collections except
+      when those are shared or published, see below.
+    endpoints:
+      -
+        description: retrieve a list of collections
+        path: ''
+        params:
+          -
+            name: terms
+            type: string
+            description: a search term to filter the collections by
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the collection to include
+            values:
+              - 'technical (timestamps, uuid, lock_version)'
+              - "owner (the user record for the collection's owner)"
+        result: a paginated result containing matching collections
+      -
+        description: retrieve a list of shared collections
+        path: '/shared'
+        result: a paginated result containing shared collections
+      -
+        description: retrieve a collection
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the collection to retrieve
+        result: the requested collection
+      -
+        description: create a new collection
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: user_group
+            type: object
+            required: true
+            description: the information to create the collection from
+            values:
+              name: the collection name
+      -
+        description: update a collection
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: user_group
+            type: object
+            required: true
+            description: the information to update the directory with
+            values:
+              name: the collection name
+              lock_version: see general api description
+      -
+        description: delete a collection
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the collection to delete
+      -
+        description: add entities
+        path: '/:id/add'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to add the entities to
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to add to the collection
+        result: a confirmation message that the entities have been added
+      -
+        description: remove entities
+        path: '/:id/remove'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to remove from entities from
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to remove from the collection
+        result: a confirmation message that the entities have been removed
+      -
+        description: download media from a collection
+        path: '/:id/download_images'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the id of the collection to download media from
+        result: |
+          A zip file containing the relevant media, or a confirmation message
+          that the zip file generation is on the way. In the latter case, a
+          email message will be sent to the user once the zip file is ready
+          for download. See also the settings endpoint.
+      -
+        description: share a collection (with other users)
+        path: '/:id/share'
+        params:
+          - 
+            name: id
+            type: integer
+            description: the id of the collection to share
+      -
+        description: unshare a collection
+        path: '/:id/unshare'
+        params:
+          - 
+            name: id
+            type: integer
+            description: the id of the collection to unshare
+  
+  -
+    description: published collections
+    path: '/publishments'
+    authentication: |
+      Object level access is granted to a user's own personal collections and
+      their publishments. A publishment grants public access to a personal
+      collection via a special link.
+    endpoints:
+      -
+        description: retrieve a list of the user's publishments
+        path: ''
+        params:
+          -
+            name: include
+            type: strings
+            description: |
+              list of information aspects on the publishment to include
+            values:
+              - 'technical (timestamps, uuid, lock_version)'
+        result: the list of publishments
+      -
+        description: |
+          Retrieve a publishment (with its personal collection and entities).
+          The path and parameters for this endpoint can be retrieved from the
+          response when creating a publishment
+        path: '/:user_id/:uuid'
+        params:
+          -
+            name: user_id
+            type: integer
+            required: true
+            description: the id of the user the publishment belongs to
+          -
+            name: uuid
+            type: integer
+            required: true
+            description: the uuid of the publishment to retrieve
+        result: the requested publishment
+      -
+        description: create a new publishment
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: publishment
+            type: object
+            required: true
+            description: the information to create the publishment from
+            values:
+              name: the publishment name
+              user_group_id: the person collection to create the publishment for
+      -
+        description: extend a publishment's validity
+        path: '/:id/extend_publishment'
+        method: 'patch, put'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the publishment to extend
+      -
+        description: delete a publishment
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the publishment to delete
+      -
+        description: add entities
+        path: '/:id/add'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to add the entities to
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to add to the collection
+        result: a confirmation message that the entities have been added
+      -
+        description: remove entities
+        path: '/:id/remove'
+        method: 'post'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the ids of the collection to remove from entities from
+          -
+            name: entity_ids
+            type: integers(s)
+            description: the ids of the entities to remove from the collection
+        result: a confirmation message that the entities have been removed
+      -
+        description: download media from a collection
+        path: '/:id/download_images'
+        params:
+          - 
+            name: id
+            type: integer(s)
+            description: the id of the collection to download media from
+        result: |
+          A zip file containing the relevant media, or a confirmation message
+          that the zip file generation is on the way. In the latter case, a
+          email message will be sent to the user once the zip file is ready
+          for download. See also the settings endpoint.
+      -
+        description: share a collection (with other users)
+        path: '/:id/share'
+        params:
+          - 
+            name: id
+            type: integer
+            description: the id of the collection to share
+      -
+        description: unshare a collection
+        path: '/:id/unshare'
+        params:
+          - 
+            name: id
+            type: integer
+            description: the id of the collection to unshare
+
+  -
+    description: domains
+    path: '/collections'
+    authentication: |
+      Read access requires read access on the relevant domains. Write access
+      requires special user permissions.
+    endpoints:
+      -
+        description: retrieve a list of domains
+        path: ''
+        params:
+          -
+            name: include
+            type: strings
+            description: list of information aspects on the domain to include
+            values:
+              - 'permissions (permissions for all user groups)'
+              - 'counts (a entity count)'
+              - 'owner (the user record for the domain, personal domains only)'
+              - 'technical (timestamps, lock_version)'
+        result: a paginated result containing matching domains
+      -
+        description: retrieve a list of shared collections
+        path: '/shared'
+        result: a paginated result containing shared collections
+      -
+        description: retrieve a domain
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the domain to retrieve
+        result: the requested domain
+      -
+        description: create a new domain
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: collection
+            type: object
+            required: true
+            description: the information to create the domain from
+            values:
+              name: the domain name
+              permissions: |
+                A structure indicating user access for this domain: A object
+                with keys view, edit, create, delete, download_originals,
+                tagging, view_meta and values of integer arrays listing the
+                relevant user groups.
+      -
+        description: update a domain
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: collection
+            type: object
+            required: true
+            description: the information to create the domain from
+            values:
+              name: the domain name
+              permissions: |
+                A structure indicating user access for this domain: A object
+                with keys view, edit, create, delete, download_originals,
+                tagging, view_meta and values of integer arrays listing the
+                relevant user groups.
+              lock_version: see general api docs
+      -
+        description: delete a domain
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the domain to delete
+      -
+        description: merge two domains
+        path: '/:id/merge'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the domain to dissolve
+          -
+            name: collection_id
+            type: integer
+            required: true
+            description: the id of the domain to merge into
+
+      -
+        description: move entities to a domain
+        path: '/:id/entities'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the domain to move the entities to
+          -
+            name: entity_ids
+            type: integer(s)
+            required: true
+            description: the ids of the entities to move
+
+
+  -
+    description: user groups
+    path: '/credentials'
+    authentication: |
+      Access requires special user permissions
+    endpoints:
+      -
+        description: retrieve a list of user groups
+        path: ''
+        params:
+          -
+            name: include
+            type: strings
+            description: |
+              list of information aspects on the user group to include
+            values:
+              - 'counts (a user count)'
+              - 'technical (timestamps, lock_version)'
+        result: a paginated result containing matching user groups
+      -
+        description: retrieve a user group
+        path: '/:id'
+        params:
+          -
+            name: id
+            type: integer
+            required: true
+            description: the id of the user group to retrieve
+        result: the requested domain
+      -
+        description: create a new user group
+        path: ''
+        method: 'post'
+        params:
+          -
+            name: user_group
+            type: object
+            required: true
+            description: the information to create the user group from
+            values:
+              name: the user group name
+      -
+        description: update a domain
+        path: '/:id'
+        method: 'patch, put'
+        params:
+          -
+            name: user_group
+            type: object
+            required: true
+            description: the information to create the user group from
+            values:
+              name: the user group name
+              lock_version: see general api docs
+      -
+        description: delete a user group
+        path: '/:id'
+        method: 'delete'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the user group to delete

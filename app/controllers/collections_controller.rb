@@ -15,6 +15,7 @@ class CollectionsController < JsonController
   end
 
   def show
+    # TODO: the check shouldn't be necessary or might be even too much
     if current_user.admin?
       @record = Collection.find(params[:id])
     else
@@ -58,6 +59,8 @@ class CollectionsController < JsonController
     @record = Collection.find(params[:id])
     target = Collection.find(params[:collection_id])
 
+    # TODO: This shouldn't be necessary or might even be too mutch: collection
+    # admins only are allowed here
     if allowed_to?(:delete, @record) && allowed_to?(:create, target)
       Entity.
         where(collection_id: @record.id).

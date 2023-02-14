@@ -211,6 +211,45 @@ class Kor::Tasks
     end
   end
 
+  def self.api_docs(config = {})
+    erb_file = "#{Rails.root}/docs/api.html.erb"
+    intro_file = "#{Rails.root}/docs/api.intro.md"
+    data_file = "#{Rails.root}/docs/api.yml"
+
+    rebuild = true
+    last_built_at = Time.now
+    
+    while true
+      if rebuild
+        begin
+          puts "#{Time.now} building"
+          intro = Kramdown::Document.new(File.read(intro_file)).to_html
+          data = YAML.load_file(data_file)
+          engine = ERB.new(File.read(erb_file), trim_mode: '-')
+          html = engine.result(binding)
+
+          File.open "#{Rails.root}/public/api.html", 'w' do |f|
+            f.write html
+          end
+        rescue StandardError => e
+          puts e.message
+          puts e.backtrace
+        ensure
+          rebuild = false
+        end
+      end
+
+      stat = [data_file, intro_file, erb_file].map{|f| File.stat(f).mtime}.max
+
+      if last_built_at < stat
+        rebuild = true
+        last_built_at = stat
+      else
+        sleep 0.2
+      end
+    end
+  end
+
   def self.flush(config = {})
     tables = [
       :authority_group_categories,

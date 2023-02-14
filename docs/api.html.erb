@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+  <!-- <link rel="stylesheet" type="text/css" href="https://unpkg.com/bootswatch@5.2.2/dist/darkly/bootstrap.min.css"> -->
+
+  <style type="text/css">
+    h1, h2, h3, h4 {
+      margin-top: 4em;
+      margin-bottom: 2em;
+    }
+  </style>
+
+  <title>ConedaKOR API Documentation</title>
+</head>
+<body>
+  <div class="container mb-5">
+    <%= intro %>
+
+    <div class="row mt-5">
+      <div class="col d-flex flex-column">
+        <strong class="mb-3">Working with data</strong>
+
+        <a href="#entities">Entities</a>
+        <a href="#media">Media</a>
+        <a href="#relationships">Relationships</a>
+
+        <a href="#kinds">Kinds</a>
+        <a href="#relations">Relations</a>
+      </div>
+
+      <div class="col d-flex flex-column">
+        <strong class="mb-3">Collections</strong>
+
+        <a href="#the-global-collection-hierarchy">The global collection hierarchy</a>
+        <a href="#global-collections">Global collections</a>
+        <a href="#personal-collections">Personal collections</a>
+        <a href="#published-collections">Published collections</a>
+      </div>
+
+      <div class="col d-flex flex-column">
+        <strong class="mb-3">Settings & session</strong>
+
+        <a href="#general-endpoints">General endpoints</a>
+        <a href="#settings">Settings</a>
+        <a href="#the-current-user">The current user</a>
+        <a href="#user-sessions">User sessions</a>
+      </div>
+
+      <div class="col d-flex flex-column">
+        <strong class="mb-3">Access control</strong>
+
+        <a href="#users">Users</a>
+        <a href="#user-groups">User groups</a>
+        <a href="#domains">Domains</a>
+      </div>
+    </div>
+
+    <!--
+    <% data['scopes'].each do |scope| %>
+      <% desc = scope['description'] %>
+      <a href="#<%= desc.parameterize %>"><%= desc.capitalize %></a>
+    <% end %>
+    -->
+
+    <% data['scopes'].each do |scope| %>
+      <% desc = scope['description'] %>
+      <h3 id="<%= desc.parameterize %>"><%= scope['description'].capitalize %></h3>
+      <hr />
+
+      <div><strong>Authentication</strong>: <%= scope['authentication'] %></div>
+
+      <% scope['endpoints'].each do |endpoint| %>
+        <% m = endpoint['method'] || 'get' %>
+        <% path = (scope['path'] || '') + (endpoint['path'] || '') %>
+        <h4 id="<%= m.downcase %>-<%= path.parameterize %>" class="mt-5 mb-3">
+          <%= endpoint['description'].capitalize %>
+        </h4>
+
+        <div>
+        endpoint: <code class="ms-2"><%= m.upcase %> <%= path %></code>
+        </div>
+
+        <% if endpoint['params'] %>
+          <div>
+            Parameters:
+
+            <ul class="list-unstyled ms-4 mb-0">
+              <% endpoint['params'].each do |param| %>
+                <li>
+                  <strong><%= param['name'] %></strong>
+                  [<%= param['type'] %>]
+                  <%= param['description'] %>
+                  <% if param['values'].is_a? Array %>
+                    <div class="ms-4">
+                      possible values:
+
+                      <ul class="list-unstyled">
+                        <% param['values'].each do |v| %>
+                          <li><%= v %></li>
+                        <% end %>
+                      </ul>
+                    </div>
+                  <% end %>
+                  <% if param['values'].is_a? Hash %>
+                    <div class="ms-4">
+                      sub-values:
+
+                      <ul class="list-unstyled">
+                        <% param['values'].each do |k, v| %>
+                          <li><strong><%= k %></strong>: <%= v %></li>
+                        <% end %>
+                      </ul>
+                    </div>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+        <div>
+          Result: <%=
+            endpoint['result'] ||
+            'a confirmation message or a object detailing any errors'
+          %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</body>
+</html>
+
