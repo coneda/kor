@@ -3901,6 +3901,7 @@ var route = function() {
 (function() {
     var Locales = {
         de_DE: {
+            identifier: "de-DE",
             days: [ "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag" ],
             shortDays: [ "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa" ],
             months: [ "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember" ],
@@ -3922,6 +3923,7 @@ var route = function() {
             }
         },
         en_CA: {
+            identifier: "en-CA",
             days: [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ],
             shortDays: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
             months: [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
@@ -3944,6 +3946,7 @@ var route = function() {
             }
         },
         en_US: {
+            identifier: "en-US",
             days: [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ],
             shortDays: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
             months: [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
@@ -3966,6 +3969,7 @@ var route = function() {
             }
         },
         es_MX: {
+            identifier: "es-MX",
             days: [ "domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado" ],
             shortDays: [ "dom", "lun", "mar", "mié", "jue", "vie", "sáb" ],
             months: [ "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", " diciembre" ],
@@ -3987,6 +3991,7 @@ var route = function() {
             }
         },
         fr_FR: {
+            identifier: "fr-FR",
             days: [ "dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi" ],
             shortDays: [ "dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam." ],
             months: [ "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre" ],
@@ -4008,10 +4013,11 @@ var route = function() {
             }
         },
         it_IT: {
+            identifier: "it-IT",
             days: [ "domenica", "lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato" ],
             shortDays: [ "dom", "lun", "mar", "mer", "gio", "ven", "sab" ],
             months: [ "gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre" ],
-            shortMonths: [ "pr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic" ],
+            shortMonths: [ "gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic" ],
             AM: "AM",
             PM: "PM",
             am: "am",
@@ -4029,6 +4035,7 @@ var route = function() {
             }
         },
         nl_NL: {
+            identifier: "nl-NL",
             days: [ "zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag" ],
             shortDays: [ "zo", "ma", "di", "wo", "do", "vr", "za" ],
             months: [ "januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december" ],
@@ -4050,6 +4057,7 @@ var route = function() {
             }
         },
         pt_BR: {
+            identifier: "pt-BR",
             days: [ "domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado" ],
             shortDays: [ "Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb" ],
             months: [ "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro" ],
@@ -4071,6 +4079,7 @@ var route = function() {
             }
         },
         ru_RU: {
+            identifier: "ru-RU",
             days: [ "Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота" ],
             shortDays: [ "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб" ],
             months: [ "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь" ],
@@ -4092,6 +4101,7 @@ var route = function() {
             }
         },
         tr_TR: {
+            identifier: "tr-TR",
             days: [ "Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi" ],
             shortDays: [ "Paz", "Pzt", "Sal", "Çrş", "Prş", "Cum", "Cts" ],
             months: [ "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık" ],
@@ -4113,6 +4123,7 @@ var route = function() {
             }
         },
         zh_CN: {
+            identifier: "zh-CN",
             days: [ "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" ],
             shortDays: [ "日", "一", "二", "三", "四", "五", "六" ],
             months: [ "一月份", "二月份", "三月份", "四月份", "五月份", "六月份", "七月份", "八月份", "九月份", "十月份", "十一月份", "十二月份" ],
@@ -4276,8 +4287,8 @@ var route = function() {
                         if (_useUtcBasedDate && _customTimezoneOffset === 0) {
                             resultString += "GMT";
                         } else {
-                            var tzString = date.toString().match(/\(([\w\s]+)\)/);
-                            resultString += tzString && tzString[1] || "";
+                            var tzName = getTimezoneName(date);
+                            resultString += tzName || "";
                         }
                         break;
 
@@ -4497,6 +4508,20 @@ var route = function() {
     function getTimestampToUtcOffsetFor(date) {
         return (date.getTimezoneOffset() || 0) * 6e4;
     }
+    function getTimezoneName(date, localeIdentifier) {
+        return getShortTimezoneName(date, localeIdentifier) || getDefaultTimezoneName(date);
+    }
+    function getShortTimezoneName(date, localeIdentifier) {
+        if (localeIdentifier == null) return null;
+        var tzString = date.toLocaleString(localeIdentifier, {
+            timeZoneName: "short"
+        }).match(/\s([\w]+)$/);
+        return tzString && tzString[1];
+    }
+    function getDefaultTimezoneName(date) {
+        var tzString = date.toString().match(/\(([\w\s]+)\)/);
+        return tzString && tzString[1];
+    }
     function warn(message) {
         if (typeof console !== "undefined" && typeof console.warn == "function") {
             console.warn(message);
@@ -4590,7 +4615,8 @@ var route = function() {
                 return c(n, function(n, u) {
                     u > 0 && c(n, function(n, u) {
                         var c = -1 !== h(e(n), [ "array", "object" ]);
-                        return n === r || t && o[u] === r ? !0 : (c && i && (n = a(n)), e(o[u]) === e(n) && c ? s(t, i, [ o[u], n ]) : o[u] = n, 
+                        return n === r || t && o[u] === r ? !0 : (c && i && (n = a(n)), 
+                        e(o[u]) === e(n) && c ? s(t, i, [ o[u], n ]) : o[u] = n, 
                         void 0);
                     });
                 }), o;
@@ -4629,7 +4655,8 @@ var route = function() {
                     });
                 }
                 var r = 0, o = t.length;
-                "function" !== e(i) && (i = function() {}), t && t.length || i(), n(r);
+                "function" !== e(i) && (i = function() {}), t && t.length || i(), 
+                n(r);
             }
             function m(e, t) {
                 var i = 0, n = e.length, r = new Array(n);
@@ -4748,9 +4775,10 @@ var route = function() {
                 if (!e) return e;
                 e += "";
                 do {
-                    a = d.indexOf(e.charAt(m++)), s = d.indexOf(e.charAt(m++)), u = d.indexOf(e.charAt(m++)), 
-                    c = d.indexOf(e.charAt(m++)), l = a << 18 | s << 12 | u << 6 | c, n = 255 & l >> 16, 
-                    r = 255 & l >> 8, o = 255 & l, p[h++] = 64 == u ? String.fromCharCode(n) : 64 == c ? String.fromCharCode(n, r) : String.fromCharCode(n, r, o);
+                    a = d.indexOf(e.charAt(m++)), s = d.indexOf(e.charAt(m++)), 
+                    u = d.indexOf(e.charAt(m++)), c = d.indexOf(e.charAt(m++)), 
+                    l = a << 18 | s << 12 | u << 6 | c, n = 255 & l >> 16, r = 255 & l >> 8, 
+                    o = 255 & l, p[h++] = 64 == u ? String.fromCharCode(n) : 64 == c ? String.fromCharCode(n, r) : String.fromCharCode(n, r, o);
                 } while (m < e.length);
                 return f = p.join(""), i ? t(f) : f;
             }, n = function(t, i) {
@@ -4758,8 +4786,9 @@ var route = function() {
                 var n, r, o, a, s, u, c, l, d = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", m = 0, h = 0, f = "", p = [];
                 if (!t) return t;
                 do {
-                    n = t.charCodeAt(m++), r = t.charCodeAt(m++), o = t.charCodeAt(m++), l = n << 16 | r << 8 | o, 
-                    a = 63 & l >> 18, s = 63 & l >> 12, u = 63 & l >> 6, c = 63 & l, p[h++] = d.charAt(a) + d.charAt(s) + d.charAt(u) + d.charAt(c);
+                    n = t.charCodeAt(m++), r = t.charCodeAt(m++), o = t.charCodeAt(m++), 
+                    l = n << 16 | r << 8 | o, a = 63 & l >> 18, s = 63 & l >> 12, 
+                    u = 63 & l >> 6, c = 63 & l, p[h++] = d.charAt(a) + d.charAt(s) + d.charAt(u) + d.charAt(c);
                 } while (m < t.length);
                 f = p.join("");
                 var g = t.length % 3;
@@ -4850,7 +4879,8 @@ var route = function() {
                                 for (s in f) u = f[s], typeof u === o ? t[u[0]] = e : t[u] = e;
                             }
                             for (i = a = 0; i < h.length; i++) if (c = h[i].exec(this.getUA())) {
-                                for (s = 0; s < f.length; s++) l = c[++a], u = f[s], typeof u === o && u.length > 0 ? 2 == u.length ? t[u[0]] = typeof u[1] == n ? u[1].call(this, l) : u[1] : 3 == u.length ? t[u[0]] = typeof u[1] !== n || u[1].exec && u[1].test ? l ? l.replace(u[1], u[2]) : e : l ? u[1].call(this, l, u[2]) : e : 4 == u.length && (t[u[0]] = l ? u[3].call(this, l.replace(u[1], u[2])) : e) : t[u] = l ? l : e;
+                                for (s = 0; s < f.length; s++) l = c[++a], u = f[s], 
+                                typeof u === o && u.length > 0 ? 2 == u.length ? t[u[0]] = typeof u[1] == n ? u[1].call(this, l) : u[1] : 3 == u.length ? t[u[0]] = typeof u[1] !== n || u[1].exec && u[1].test ? l ? l.replace(u[1], u[2]) : e : l ? u[1].call(this, l, u[2]) : e : 4 == u.length && (t[u[0]] = l ? u[3].call(this, l.replace(u[1], u[2])) : e) : t[u] = l ? l : e;
                                 break;
                             }
                             if (c) break;
@@ -4953,7 +4983,8 @@ var route = function() {
                             if (-1 !== e.inArray(t, [ "", "text", "document" ])) return !0;
                             if (window.XMLHttpRequest) {
                                 var i = new XMLHttpRequest();
-                                if (i.open("get", "/"), "responseType" in i) return i.responseType = t, i.responseType !== t ? !1 : !0;
+                                if (i.open("get", "/"), "responseType" in i) return i.responseType = t, 
+                                i.responseType !== t ? !1 : !0;
                             }
                         } catch (n) {}
                         return !1;
@@ -4987,7 +5018,8 @@ var route = function() {
                         try {
                             r = n.getContext("webgl") || n.getContext("experimental-webgl");
                         } catch (o) {}
-                        return r || (r = null), e = !!r, i.use_webgl = e, n = t, e;
+                        return r || (r = null), e = !!r, i.use_webgl = e, n = t, 
+                        e;
                     }
                 };
                 return function(t) {
@@ -5136,10 +5168,10 @@ var route = function() {
                     x: o.x - a.x,
                     y: o.y - a.y
                 };
-                for (r = t; r && r != i && r.nodeType; ) s += r.offsetLeft || 0, u += r.offsetTop || 0, 
-                r = r.offsetParent;
-                for (r = t.parentNode; r && r != i && r.nodeType; ) s -= r.scrollLeft || 0, u -= r.scrollTop || 0, 
-                r = r.parentNode;
+                for (r = t; r && r != i && r.nodeType; ) s += r.offsetLeft || 0, 
+                u += r.offsetTop || 0, r = r.offsetParent;
+                for (r = t.parentNode; r && r != i && r.nodeType; ) s -= r.scrollLeft || 0, 
+                u -= r.scrollTop || 0, r = r.parentNode;
                 return {
                     x: s,
                     y: u
@@ -5170,11 +5202,11 @@ var route = function() {
                 },
                 addEventListener: function(e, t, n, o) {
                     var a, s = this;
-                    return this.hasOwnProperty("uid") || (this.uid = i.guid("uid_")), e = i.trim(e), 
-                    /\s/.test(e) ? (i.each(e.split(/\s+/), function(e) {
+                    return this.hasOwnProperty("uid") || (this.uid = i.guid("uid_")), 
+                    e = i.trim(e), /\s/.test(e) ? (i.each(e.split(/\s+/), function(e) {
                         s.addEventListener(e, t, n, o);
-                    }), void 0) : (e = e.toLowerCase(), n = parseInt(n, 10) || 0, a = r[this.uid] && r[this.uid][e] || [], 
-                    a.push({
+                    }), void 0) : (e = e.toLowerCase(), n = parseInt(n, 10) || 0, 
+                    a = r[this.uid] && r[this.uid][e] || [], a.push({
                         fn: t,
                         priority: n,
                         scope: o || this
@@ -5207,15 +5239,16 @@ var route = function() {
                     var n, o, a, s, u, c = {}, l = !0;
                     if ("string" !== i.typeOf(e)) {
                         if (s = e, "string" !== i.typeOf(s.type)) throw new t.EventException(t.EventException.UNSPECIFIED_EVENT_TYPE_ERR);
-                        e = s.type, s.total !== u && s.loaded !== u && (c.total = s.total, c.loaded = s.loaded), 
-                        c.async = s.async || !1;
+                        e = s.type, s.total !== u && s.loaded !== u && (c.total = s.total, 
+                        c.loaded = s.loaded), c.async = s.async || !1;
                     }
                     if (-1 !== e.indexOf("::") ? function(t) {
                         n = t[0], e = t[1];
                     }(e.split("::")) : n = this.uid, e = e.toLowerCase(), o = r[n] && r[n][e]) {
                         o.sort(function(e, t) {
                             return t.priority - e.priority;
-                        }), a = [].slice.call(arguments), a.shift(), c.type = e, a.unshift(c);
+                        }), a = [].slice.call(arguments), a.shift(), c.type = e, 
+                        a.unshift(c);
                         var d = [];
                         i.each(o, function(e) {
                             a[0].target = e.scope, c.async ? d.push(function(t) {
@@ -5286,7 +5319,8 @@ var route = function() {
                     summon_file_dialog: !1,
                     upload_filesize: !0,
                     use_http_method: !0
-                }, o), e.preferred_caps && (m = r.getMode(s, e.preferred_caps, m)), c = function() {
+                }, o), e.preferred_caps && (m = r.getMode(s, e.preferred_caps, m)), 
+                c = function() {
                     var e = {};
                     return {
                         exec: function(t, i, n, r) {
@@ -5325,8 +5359,9 @@ var route = function() {
                     },
                     getShimContainer: function() {
                         var e, n = i.get(this.shimid);
-                        return n || (e = i.get(this.options.container) || document.body, n = document.createElement("div"), 
-                        n.id = this.shimid, n.className = "moxie-shim moxie-shim-" + this.type, t.extend(n.style, {
+                        return n || (e = i.get(this.options.container) || document.body, 
+                        n = document.createElement("div"), n.id = this.shimid, n.className = "moxie-shim moxie-shim-" + this.type, 
+                        t.extend(n.style, {
                             position: "absolute",
                             top: "0px",
                             left: "0px",
@@ -5349,8 +5384,9 @@ var route = function() {
                     destroy: function() {
                         if (l) {
                             var e = i.get(this.shimid);
-                            e && e.parentNode.removeChild(e), c && c.removeAllInstances(), this.unbindAll(), 
-                            delete a[this.uid], this.uid = null, d = l = c = e = null;
+                            e && e.parentNode.removeChild(e), c && c.removeAllInstances(), 
+                            this.unbindAll(), delete a[this.uid], this.uid = null, 
+                            d = l = c = e = null;
                         }
                     }
                 }), this.mode && e.required_caps && !this.can(e.required_caps) && (this.mode = !1);
@@ -5434,13 +5470,15 @@ var route = function() {
                             }), e.bind("Exception", function(e, i) {
                                 var n = i.name + "(#" + i.code + ")" + (i.message ? ", from: " + i.message : "");
                                 s.trigger("RuntimeError", new t.RuntimeError(t.RuntimeError.EXCEPTION_ERR, n));
-                            }), e.mode ? (e.init(), void 0) : (e.trigger("Error"), void 0)) : (o(i), void 0)) : (s.trigger("RuntimeError", new t.RuntimeError(t.RuntimeError.NOT_INIT_ERR)), 
+                            }), e.mode ? (e.init(), void 0) : (e.trigger("Error"), 
+                            void 0)) : (o(i), void 0)) : (s.trigger("RuntimeError", new t.RuntimeError(t.RuntimeError.NOT_INIT_ERR)), 
                             e = null, void 0);
                         }
                         var a, s = this;
                         if ("string" === i.typeOf(r) ? a = r : "string" === i.typeOf(r.ruid) && (a = r.ruid), 
                         a) {
-                            if (e = n.getRuntime(a)) return s.ruid = a, e.clients++, e;
+                            if (e = n.getRuntime(a)) return s.ruid = a, e.clients++, 
+                            e;
                             throw new t.RuntimeError(t.RuntimeError.NOT_INIT_ERR);
                         }
                         o((r.runtime_order || n.order).split(/\s*,\s*/));
@@ -5482,8 +5520,9 @@ var route = function() {
                         return r[this.uid] ? r[this.uid] : null;
                     },
                     detach: function(e) {
-                        if (this.ruid && (this.getRuntime().exec.call(this, "Blob", "destroy"), this.disconnectRuntime(), 
-                        this.ruid = null), e = e || "", "data:" == e.substr(0, 5)) {
+                        if (this.ruid && (this.getRuntime().exec.call(this, "Blob", "destroy"), 
+                        this.disconnectRuntime(), this.ruid = null), e = e || "", 
+                        "data:" == e.substr(0, 5)) {
                             var i = e.indexOf(";base64,");
                             this.type = e.substring(5, i), e = t.atob(e.substring(i + 8));
                         }
@@ -5545,7 +5584,8 @@ var route = function() {
                 }), i;
             }, u = function(i) {
                 var n = [], r = [];
-                return "string" === e.typeOf(i) && (i = e.trim(i).split(/\s*,\s*/)), r = s(i), n.push({
+                return "string" === e.typeOf(i) && (i = e.trim(i).split(/\s*,\s*/)), 
+                r = s(i), n.push({
                     title: t.translate("Files"),
                     extensions: r.length ? r.join(",") : "*"
                 }), n;
@@ -5580,8 +5620,8 @@ var route = function() {
                     required_caps: !1,
                     container: c.parentNode || document.body
                 }, t = e.extend({}, d, t), "string" == typeof t.required_caps && (t.required_caps = s.parseCaps(t.required_caps)), 
-                "string" == typeof t.accept && (t.accept = i.mimes2extList(t.accept)), o = n.get(t.container), 
-                o || (o = document.body), "static" === n.getStyle(o, "position") && (o.style.position = "relative"), 
+                "string" == typeof t.accept && (t.accept = i.mimes2extList(t.accept)), 
+                o = n.get(t.container), o || (o = document.body), "static" === n.getStyle(o, "position") && (o.style.position = "relative"), 
                 o = c = null, u.call(this), e.extend(this, {
                     uid: e.guid("uid_"),
                     ruid: null,
@@ -5594,8 +5634,10 @@ var route = function() {
                                 i.trigger("Refresh");
                             }, 999), i.bind("Refresh", function() {
                                 var i, r, a, s, u;
-                                a = n.get(t.browse_button), s = n.get(o.shimid), a && (i = n.getPos(a, n.get(t.container)), 
-                                r = n.getSize(a), u = parseInt(n.getStyle(a, "z-index"), 10) || 0, s && e.extend(s.style, {
+                                a = n.get(t.browse_button), s = n.get(o.shimid), 
+                                a && (i = n.getPos(a, n.get(t.container)), r = n.getSize(a), 
+                                u = parseInt(n.getStyle(a, "z-index"), 10) || 0, 
+                                s && e.extend(s.style, {
                                     top: i.y + "px",
                                     left: i.x + "px",
                                     width: r.w + "px",
@@ -5624,7 +5666,8 @@ var route = function() {
                               case "required_caps":
                                 throw new r.FileException(r.FileException.NO_MODIFICATION_ALLOWED_ERR);
                             }
-                            t[e] = n, this.exec("FileInput", "setOption", e, n), this.trigger("OptionChanged", e, n, o);
+                            t[e] = n, this.exec("FileInput", "setOption", e, n), 
+                            this.trigger("OptionChanged", e, n, o);
                         }
                     },
                     disable: function(t) {
@@ -5636,7 +5679,8 @@ var route = function() {
                     },
                     destroy: function() {
                         var t = this.getRuntime();
-                        t && (t.exec.call(this, "FileInput", "destroy"), this.disconnectRuntime()), "array" === e.typeOf(this.files) && e.each(this.files, function(e) {
+                        t && (t.exec.call(this, "FileInput", "destroy"), this.disconnectRuntime()), 
+                        "array" === e.typeOf(this.files) && e.each(this.files, function(e) {
                             e.destroy();
                         }), this.files = null, this.unbindAll();
                     }
@@ -5674,20 +5718,21 @@ var route = function() {
                     }
                 }, i = "object" == typeof i ? n.extend({}, r, i) : r, i.container = t.get(i.drop_zone) || document.body, 
                 "static" === t.getStyle(i.container, "position") && (i.container.style.position = "relative"), 
-                "string" == typeof i.accept && (i.accept = u.mimes2extList(i.accept)), a.call(o), 
-                n.extend(o, {
+                "string" == typeof i.accept && (i.accept = u.mimes2extList(i.accept)), 
+                a.call(o), n.extend(o, {
                     uid: n.guid("uid_"),
                     ruid: null,
                     files: null,
                     init: function() {
                         o.bind("RuntimeInit", function(e, t) {
-                            o.ruid = t.uid, t.exec.call(o, "FileDrop", "init", i), o.dispatchEvent("ready");
+                            o.ruid = t.uid, t.exec.call(o, "FileDrop", "init", i), 
+                            o.dispatchEvent("ready");
                         }), o.connectRuntime(i);
                     },
                     destroy: function() {
                         var e = this.getRuntime();
-                        e && (e.exec.call(this, "FileDrop", "destroy"), this.disconnectRuntime()), this.files = null, 
-                        this.unbindAll();
+                        e && (e.exec.call(this, "FileDrop", "destroy"), this.disconnectRuntime()), 
+                        this.files = null, this.unbindAll();
                     }
                 }), this.handleEventProps(l);
             }
@@ -5730,10 +5775,12 @@ var route = function() {
                     },
                     abort: function() {
                         this.result = null, -1 === e.inArray(this.readyState, [ a.EMPTY, a.DONE ]) && (this.readyState === a.LOADING && (this.readyState = a.DONE), 
-                        this.exec("FileReader", "abort"), this.trigger("abort"), this.trigger("loadend"));
+                        this.exec("FileReader", "abort"), this.trigger("abort"), 
+                        this.trigger("loadend"));
                     },
                     destroy: function() {
-                        this.abort(), this.exec("FileReader", "destroy"), this.disconnectRuntime(), this.unbindAll();
+                        this.abort(), this.exec("FileReader", "destroy"), this.disconnectRuntime(), 
+                        this.unbindAll();
                     }
                 }), this.handleEventProps(s), this.bind("Error", function(e, t) {
                     this.readyState = a.DONE, this.error = t;
@@ -5742,7 +5789,8 @@ var route = function() {
                 }, 999);
             }
             var s = [ "loadstart", "progress", "load", "abort", "error", "loadend" ];
-            return a.EMPTY = 0, a.LOADING = 1, a.DONE = 2, a.prototype = n.instance, a;
+            return a.EMPTY = 0, a.LOADING = 1, a.DONE = 2, a.prototype = n.instance, 
+            a;
         }), n("moxie/core/utils/Url", [ "moxie/core/utils/Basic" ], function(e) {
             var t = function(i, n) {
                 var r, o = [ "source", "scheme", "authority", "userInfo", "user", "pass", "host", "port", "relative", "path", "directory", "file", "query", "fragment" ], a = o.length, s = {
@@ -5764,8 +5812,8 @@ var route = function() {
                     /^[^\/]/.test(u.path) && (m = n.path, m = /\/[^\/]*\.[^\/]*$/.test(m) ? m.replace(/\/[^\/]+$/, "/") : m.replace(/\/?$/, "/")), 
                     u.path = m + (u.path || "");
                 }
-                return u.port || (u.port = s[u.scheme] || 80), u.port = parseInt(u.port, 10), u.path || (u.path = "/"), 
-                delete u.source, u;
+                return u.port || (u.port = s[u.scheme] || 80), u.port = parseInt(u.port, 10), 
+                u.path || (u.path = "/"), delete u.source, u;
             }, i = function(e) {
                 var i = {
                     http: 80,
@@ -5872,15 +5920,16 @@ var route = function() {
                 }
                 function u(t) {
                     function n() {
-                        _ && (_.destroy(), _ = null), s.dispatchEvent("loadend"), s = null;
+                        _ && (_.destroy(), _ = null), s.dispatchEvent("loadend"), 
+                        s = null;
                     }
                     function r(r) {
                         _.bind("LoadStart", function(e) {
-                            i("readyState", h.LOADING), s.dispatchEvent("readystatechange"), s.dispatchEvent(e), 
-                            L && s.upload.dispatchEvent(e);
+                            i("readyState", h.LOADING), s.dispatchEvent("readystatechange"), 
+                            s.dispatchEvent(e), L && s.upload.dispatchEvent(e);
                         }), _.bind("Progress", function(e) {
-                            i("readyState") !== h.LOADING && (i("readyState", h.LOADING), s.dispatchEvent("readystatechange")), 
-                            s.dispatchEvent(e);
+                            i("readyState") !== h.LOADING && (i("readyState", h.LOADING), 
+                            s.dispatchEvent("readystatechange")), s.dispatchEvent(e);
                         }), _.bind("UploadProgress", function(e) {
                             L && s.upload.dispatchEvent({
                                 type: "progress",
@@ -5892,14 +5941,15 @@ var route = function() {
                             i("readyState", h.DONE), i("status", Number(r.exec.call(_, "XMLHttpRequest", "getStatus") || 0)), 
                             i("statusText", f[i("status")] || ""), i("response", r.exec.call(_, "XMLHttpRequest", "getResponse", i("responseType"))), 
                             ~e.inArray(i("responseType"), [ "text", "" ]) ? i("responseText", i("response")) : "document" === i("responseType") && i("responseXML", i("response")), 
-                            U = r.exec.call(_, "XMLHttpRequest", "getAllResponseHeaders"), s.dispatchEvent("readystatechange"), 
-                            i("status") > 0 ? (L && s.upload.dispatchEvent(t), s.dispatchEvent(t)) : (F = !0, 
-                            s.dispatchEvent("error")), n();
+                            U = r.exec.call(_, "XMLHttpRequest", "getAllResponseHeaders"), 
+                            s.dispatchEvent("readystatechange"), i("status") > 0 ? (L && s.upload.dispatchEvent(t), 
+                            s.dispatchEvent(t)) : (F = !0, s.dispatchEvent("error")), 
+                            n();
                         }), _.bind("Abort", function(e) {
                             s.dispatchEvent(e), n();
                         }), _.bind("Error", function(e) {
-                            F = !0, i("readyState", h.DONE), s.dispatchEvent("readystatechange"), M = !0, s.dispatchEvent(e), 
-                            n();
+                            F = !0, i("readyState", h.DONE), s.dispatchEvent("readystatechange"), 
+                            M = !0, s.dispatchEvent(e), n();
                         }), r.exec.call(_, "XMLHttpRequest", "send", {
                             url: x,
                             method: v,
@@ -5918,7 +5968,8 @@ var route = function() {
                     E = new Date().getTime(), _ = new a(), "string" == typeof k.required_caps && (k.required_caps = o.parseCaps(k.required_caps)), 
                     k.required_caps = e.extend({}, k.required_caps, {
                         return_response_type: s.responseType
-                    }), t instanceof c && (k.required_caps.send_multipart = !0), e.isEmptyObj(S) || (k.required_caps.send_custom_headers = !0), 
+                    }), t instanceof c && (k.required_caps.send_multipart = !0), 
+                    e.isEmptyObj(S) || (k.required_caps.send_custom_headers = !0), 
                     B || (k.required_caps.do_cors = !0), k.ruid ? r(_.connectRuntime(k)) : (_.bind("RuntimeInit", function(e, t) {
                         r(t);
                     }), _.bind("RuntimeError", function(e, t) {
@@ -5926,8 +5977,8 @@ var route = function() {
                     }), _.connectRuntime(k));
                 }
                 function g() {
-                    i("responseText", ""), i("responseXML", null), i("response", null), i("status", 0), 
-                    i("statusText", ""), E = b = null;
+                    i("responseText", ""), i("responseXML", null), i("response", null), 
+                    i("status", 0), i("statusText", ""), E = b = null;
                 }
                 var x, v, w, y, E, b, _, R, A = this, I = {
                     timeout: 0,
@@ -5949,10 +6000,11 @@ var route = function() {
                         if (/[\u0100-\uffff]/.test(o) || n.utf8_encode(o) !== o) throw new t.DOMException(t.DOMException.SYNTAX_ERR);
                         if (~e.inArray(o.toUpperCase(), [ "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT", "TRACE", "TRACK" ]) && (v = o.toUpperCase()), 
                         ~e.inArray(v, [ "CONNECT", "TRACE", "TRACK" ])) throw new t.DOMException(t.DOMException.SECURITY_ERR);
-                        if (a = n.utf8_encode(a), l = r.parseUrl(a), B = r.hasSameOrigin(l), x = r.resolveUrl(a), 
-                        (u || c) && !B) throw new t.DOMException(t.DOMException.INVALID_ACCESS_ERR);
+                        if (a = n.utf8_encode(a), l = r.parseUrl(a), B = r.hasSameOrigin(l), 
+                        x = r.resolveUrl(a), (u || c) && !B) throw new t.DOMException(t.DOMException.INVALID_ACCESS_ERR);
                         if (w = u || l.user, y = c || l.pass, T = s || !0, T === !1 && (i("timeout") || i("withCredentials") || "" !== i("responseType"))) throw new t.DOMException(t.DOMException.INVALID_ACCESS_ERR);
-                        N = !T, C = !1, S = {}, g.call(this), i("readyState", h.OPENED), this.dispatchEvent("readystatechange");
+                        N = !T, C = !1, S = {}, g.call(this), i("readyState", h.OPENED), 
+                        this.dispatchEvent("readystatechange");
                     },
                     setRequestHeader: function(r, o) {
                         var a = [ "accept-charset", "accept-encoding", "access-control-request-headers", "access-control-request-method", "connection", "content-length", "cookie", "cookie2", "content-transfer-encoding", "date", "expect", "host", "keep-alive", "origin", "referer", "te", "trailer", "transfer-encoding", "upgrade", "user-agent", "via" ];
@@ -5993,19 +6045,23 @@ var route = function() {
                                 var o = i.getBlob();
                                 k.ruid = o.ruid, D = o.type || "application/octet-stream";
                             }
-                        } else "string" == typeof i && (O = "UTF-8", D = "text/plain;charset=UTF-8", i = n.utf8_encode(i));
+                        } else "string" == typeof i && (O = "UTF-8", D = "text/plain;charset=UTF-8", 
+                        i = n.utf8_encode(i));
                         this.withCredentials || (this.withCredentials = k.required_caps && k.required_caps.send_browser_cookies && !B), 
-                        L = !N && this.upload.hasEventListener(), F = !1, M = !i, N || (C = !0), u.call(this, i);
+                        L = !N && this.upload.hasEventListener(), F = !1, M = !i, 
+                        N || (C = !0), u.call(this, i);
                     },
                     abort: function() {
                         if (F = !0, N = !1, ~e.inArray(i("readyState"), [ h.UNSENT, h.OPENED, h.DONE ])) i("readyState", h.UNSENT); else {
                             if (i("readyState", h.DONE), C = !1, !_) throw new t.DOMException(t.DOMException.INVALID_STATE_ERR);
-                            _.getRuntime().exec.call(_, "XMLHttpRequest", "abort", M), M = !0;
+                            _.getRuntime().exec.call(_, "XMLHttpRequest", "abort", M), 
+                            M = !0;
                         }
                     },
                     destroy: function() {
-                        _ && ("function" === e.typeOf(_.destroy) && _.destroy(), _ = null), this.unbindAll(), 
-                        this.upload && (this.upload.unbindAll(), this.upload = null);
+                        _ && ("function" === e.typeOf(_.destroy) && _.destroy(), 
+                        _ = null), this.unbindAll(), this.upload && (this.upload.unbindAll(), 
+                        this.upload = null);
                     }
                 }), this.handleEventProps(p.concat([ "readystatechange" ])), this.upload.handleEventProps(p);
             }
@@ -6064,8 +6120,8 @@ var route = function() {
             };
             m.prototype = i.instance;
             var p = [ "loadstart", "progress", "abort", "error", "load", "timeout", "loadend" ];
-            return h.UNSENT = 0, h.OPENED = 1, h.HEADERS_RECEIVED = 2, h.LOADING = 3, h.DONE = 4, 
-            h.prototype = i.instance, h;
+            return h.UNSENT = 0, h.OPENED = 1, h.HEADERS_RECEIVED = 2, h.LOADING = 3, 
+            h.DONE = 4, h.prototype = i.instance, h;
         }), n("moxie/runtime/Transporter", [ "moxie/core/utils/Basic", "moxie/core/utils/Encode", "moxie/runtime/RuntimeClient", "moxie/core/EventTarget" ], function(e, t, i, n) {
             function r() {
                 function n() {
@@ -6077,7 +6133,8 @@ var route = function() {
                         d = t.loaded, l > d && -1 === e.inArray(n.state, [ r.IDLE, r.DONE ]) && a.call(n);
                     }, 999), n.bind("TransportingComplete", function() {
                         d = l, n.state = r.DONE, c = null, n.result = u.exec.call(n, "Transporter", "getAsBlob", t || "");
-                    }, 999), n.state = r.BUSY, n.trigger("TransportingStarted"), a.call(n);
+                    }, 999), n.state = r.BUSY, n.trigger("TransportingStarted"), 
+                    a.call(n);
                 }
                 function a() {
                     var e, i = this, n = l - d;
@@ -6092,8 +6149,8 @@ var route = function() {
                         var a = this;
                         if (r = e.extend({
                             chunk_size: 204798
-                        }, r), (s = r.chunk_size % 3) && (r.chunk_size += 3 - s), m = r.chunk_size, n.call(this), 
-                        c = t, l = t.length, "string" === e.typeOf(r) || r.ruid) o.call(a, i, this.connectRuntime(r)); else {
+                        }, r), (s = r.chunk_size % 3) && (r.chunk_size += 3 - s), 
+                        m = r.chunk_size, n.call(this), c = t, l = t.length, "string" === e.typeOf(r) || r.ruid) o.call(a, i, this.connectRuntime(r)); else {
                             var u = function(e, t) {
                                 a.unbind("RuntimeInit", u), o.call(a, i, t);
                             };
@@ -6102,21 +6159,23 @@ var route = function() {
                     },
                     abort: function() {
                         var e = this;
-                        e.state = r.IDLE, u && (u.exec.call(e, "Transporter", "clear"), e.trigger("TransportingAborted")), 
-                        n.call(e);
+                        e.state = r.IDLE, u && (u.exec.call(e, "Transporter", "clear"), 
+                        e.trigger("TransportingAborted")), n.call(e);
                     },
                     destroy: function() {
                         this.unbindAll(), u = null, this.disconnectRuntime(), n.call(this);
                     }
                 });
             }
-            return r.IDLE = 0, r.BUSY = 1, r.DONE = 2, r.prototype = n.instance, r;
+            return r.IDLE = 0, r.BUSY = 1, r.DONE = 2, r.prototype = n.instance, 
+            r;
         }), n("moxie/image/Image", [ "moxie/core/utils/Basic", "moxie/core/utils/Dom", "moxie/core/Exceptions", "moxie/file/FileReaderSync", "moxie/xhr/XMLHttpRequest", "moxie/runtime/Runtime", "moxie/runtime/RuntimeClient", "moxie/runtime/Transporter", "moxie/core/utils/Env", "moxie/core/EventTarget", "moxie/file/Blob", "moxie/file/File", "moxie/core/utils/Encode" ], function(e, t, i, n, r, o, a, s, u, c, l, d, m) {
             function h() {
                 function n(e) {
                     try {
-                        return e || (e = this.exec("Image", "getInfo")), this.size = e.size, this.width = e.width, 
-                        this.height = e.height, this.type = e.type, this.meta = e.meta, "" === this.name && (this.name = e.name), 
+                        return e || (e = this.exec("Image", "getInfo")), this.size = e.size, 
+                        this.width = e.width, this.height = e.height, this.type = e.type, 
+                        this.meta = e.meta, "" === this.name && (this.name = e.name), 
                         !0;
                     } catch (t) {
                         return this.trigger("error", t.code), !1;
@@ -6209,15 +6268,18 @@ var route = function() {
                         try {
                             if (!o.size) throw new i.DOMException(i.DOMException.INVALID_STATE_ERR);
                             if (o.width > h.MAX_RESIZE_WIDTH || o.height > h.MAX_RESIZE_HEIGHT) throw new i.ImageError(i.ImageError.MAX_RESOLUTION_ERR);
-                            if (n = o.meta && o.meta.tiff && o.meta.tiff.Orientation || 1, -1 !== e.inArray(n, [ 5, 6, 7, 8 ])) {
+                            if (n = o.meta && o.meta.tiff && o.meta.tiff.Orientation || 1, 
+                            -1 !== e.inArray(n, [ 5, 6, 7, 8 ])) {
                                 var u = s.width;
                                 s.width = s.height, s.height = u;
                             }
                             if (s.crop) {
-                                switch (r = Math.max(s.width / o.width, s.height / o.height), t.fit ? (a.width = Math.min(Math.ceil(s.width / r), o.width), 
-                                a.height = Math.min(Math.ceil(s.height / r), o.height), r = s.width / a.width) : (a.width = Math.min(s.width, o.width), 
-                                a.height = Math.min(s.height, o.height), r = 1), "boolean" == typeof s.crop && (s.crop = "cc"), 
-                                s.crop.toLowerCase().replace(/_/, "-")) {
+                                switch (r = Math.max(s.width / o.width, s.height / o.height), 
+                                t.fit ? (a.width = Math.min(Math.ceil(s.width / r), o.width), 
+                                a.height = Math.min(Math.ceil(s.height / r), o.height), 
+                                r = s.width / a.width) : (a.width = Math.min(s.width, o.width), 
+                                a.height = Math.min(s.height, o.height), r = 1), 
+                                "boolean" == typeof s.crop && (s.crop = "cc"), s.crop.toLowerCase().replace(/_/, "-")) {
                                   case "rb":
                                   case "right-bottom":
                                     a.x = o.width - a.width, a.y = o.height - a.height;
@@ -6267,7 +6329,8 @@ var route = function() {
                                     a.x = Math.floor((o.width - a.width) / 2), a.y = Math.floor((o.height - a.height) / 2);
                                 }
                                 a.x = Math.max(a.x, 0), a.y = Math.max(a.y, 0);
-                            } else r = Math.min(s.width / o.width, s.height / o.height), r > 1 && !s.fit && (r = 1);
+                            } else r = Math.min(s.width / o.width, s.height / o.height), 
+                            r > 1 && !s.fit && (r = 1);
                             this.exec("Image", "resize", a, r, s);
                         } catch (c) {
                             o.trigger("error", c.code);
@@ -6315,7 +6378,8 @@ var route = function() {
                             var o = this;
                             if (u.can("create_canvas")) {
                                 var l = o.getAsCanvas();
-                                if (l) return n.appendChild(l), l = null, o.destroy(), c.trigger("embedded"), void 0;
+                                if (l) return n.appendChild(l), l = null, o.destroy(), 
+                                c.trigger("embedded"), void 0;
                             }
                             var d = o.getAsDataURL(t, r);
                             if (!d) throw new i.ImageError(i.ImageError.WRONG_FORMAT);
@@ -6365,8 +6429,9 @@ var route = function() {
                         }
                     },
                     destroy: function() {
-                        this.ruid && (this.getRuntime().exec.call(this, "Image", "destroy"), this.disconnectRuntime()), 
-                        this.meta && this.meta.thumb && this.meta.thumb.data.destroy(), this.unbindAll();
+                        this.ruid && (this.getRuntime().exec.call(this, "Image", "destroy"), 
+                        this.disconnectRuntime()), this.meta && this.meta.thumb && this.meta.thumb.data.destroy(), 
+                        this.unbindAll();
                     }
                 }), this.handleEventProps(f), this.bind("Load Resize", function() {
                     return n.call(this);
@@ -6466,8 +6531,8 @@ var route = function() {
                 var c, l;
                 a = a.toLowerCase(), o.addEventListener ? (c = s, o.addEventListener(a, c, !1)) : o.attachEvent && (c = function() {
                     var e = window.event;
-                    e.target || (e.target = e.srcElement), e.preventDefault = t, e.stopPropagation = i, 
-                    s(e);
+                    e.target || (e.target = e.srcElement), e.preventDefault = t, 
+                    e.stopPropagation = i, s(e);
                 }, o.attachEvent("on" + a, c)), o[r] || (o[r] = e.guid()), n.hasOwnProperty(o[r]) || (n[o[r]] = {}), 
                 l = n[o[r]], l.hasOwnProperty(a) || (l[a] = []), l[a].push({
                     func: c,
@@ -6479,7 +6544,7 @@ var route = function() {
                 if (i = i.toLowerCase(), t[r] && n[t[r]] && n[t[r]][i]) {
                     a = n[t[r]][i];
                     for (var u = a.length - 1; u >= 0 && (a[u].orig !== o && a[u].key !== o || (t.removeEventListener ? t.removeEventListener(i, a[u].func, !1) : t.detachEvent && t.detachEvent("on" + i, a[u].func), 
-                    a[u].orig = null, a[u].func = null, a.splice(u, 1), o === s)); u--) ;
+                    a[u].orig = null, a[u].func = null, a.splice(u, 1), o === s)); u--);
                     if (a.length || delete n[t[r]][i], e.isEmptyObj(n[t[r]])) {
                         delete n[t[r]];
                         try {
@@ -6505,20 +6570,22 @@ var route = function() {
                 i.extend(this, {
                     init: function(u) {
                         var c, l, d, m, h, f, p = this, g = p.getRuntime();
-                        e = u, d = o.extList2mimes(e.accept, g.can("filter_by_extension")), l = g.getShimContainer(), 
-                        l.innerHTML = '<input id="' + g.uid + '" type="file" style="font-size:999px;opacity:0;"' + (e.multiple && g.can("select_multiple") ? "multiple" : "") + (e.directory && g.can("select_folder") ? "webkitdirectory directory" : "") + (d ? ' accept="' + d.join(",") + '"' : "") + " />", 
+                        e = u, d = o.extList2mimes(e.accept, g.can("filter_by_extension")), 
+                        l = g.getShimContainer(), l.innerHTML = '<input id="' + g.uid + '" type="file" style="font-size:999px;opacity:0;"' + (e.multiple && g.can("select_multiple") ? "multiple" : "") + (e.directory && g.can("select_folder") ? "webkitdirectory directory" : "") + (d ? ' accept="' + d.join(",") + '"' : "") + " />", 
                         c = n.get(g.uid), i.extend(c.style, {
                             position: "absolute",
                             top: 0,
                             left: 0,
                             width: "100%",
                             height: "100%"
-                        }), m = n.get(e.browse_button), s = n.getStyle(m, "z-index") || "auto", g.can("summon_file_dialog") && ("static" === n.getStyle(m, "position") && (m.style.position = "relative"), 
+                        }), m = n.get(e.browse_button), s = n.getStyle(m, "z-index") || "auto", 
+                        g.can("summon_file_dialog") && ("static" === n.getStyle(m, "position") && (m.style.position = "relative"), 
                         r.addEvent(m, "click", function(e) {
                             var t = n.get(g.uid);
                             t && !t.disabled && t.click(), e.preventDefault();
                         }, p.uid), p.bind("Refresh", function() {
-                            h = parseInt(s, 10) || 1, n.get(e.browse_button).style.zIndex = h, this.getRuntime().getShimContainer().style.zIndex = h - 1;
+                            h = parseInt(s, 10) || 1, n.get(e.browse_button).style.zIndex = h, 
+                            this.getRuntime().getShimContainer().style.zIndex = h - 1;
                         })), f = g.can("summon_file_dialog") ? m : l, r.addEvent(f, "mouseover", function() {
                             p.trigger("mouseenter");
                         }, p.uid), r.addEvent(f, "mouseout", function() {
@@ -6527,11 +6594,13 @@ var route = function() {
                             p.trigger("mousedown");
                         }, p.uid), r.addEvent(n.get(e.container), "mouseup", function() {
                             p.trigger("mouseup");
-                        }, p.uid), (g.can("summon_file_dialog") ? c : m).setAttribute("tabindex", -1), c.onchange = function x() {
+                        }, p.uid), (g.can("summon_file_dialog") ? c : m).setAttribute("tabindex", -1), 
+                        c.onchange = function x() {
                             if (p.files = [], i.each(this.files, function(i) {
                                 var n = "";
                                 return e.directory && "." == i.name ? !0 : (i.webkitRelativePath && (n = "/" + i.webkitRelativePath.replace(/^\//, "")), 
-                                i = new t(g.uid, i), i.relativePath = n, p.files.push(i), void 0);
+                                i = new t(g.uid, i), i.relativePath = n, p.files.push(i), 
+                                void 0);
                             }), "IE" !== a.browser && "IEMobile" !== a.browser) this.value = ""; else {
                                 var n = this.cloneNode(!0);
                                 this.parentNode.replaceChild(n, this), n.onchange = x;
@@ -6553,7 +6622,8 @@ var route = function() {
                             break;
 
                           case "directory":
-                            t && i.can("select_folder") ? (r.setAttribute("directory", ""), r.setAttribute("webkitdirectory", "")) : (r.removeAttribute("directory"), 
+                            t && i.can("select_folder") ? (r.setAttribute("directory", ""), 
+                            r.setAttribute("webkitdirectory", "")) : (r.removeAttribute("directory"), 
                             r.removeAttribute("webkitdirectory"));
                             break;
 
@@ -6567,9 +6637,9 @@ var route = function() {
                     },
                     destroy: function() {
                         var t = this.getRuntime(), i = t.getShim(), o = t.getShimContainer(), a = e && n.get(e.container), u = e && n.get(e.browse_button);
-                        a && r.removeAllEvents(a, this.uid), u && (r.removeAllEvents(u, this.uid), u.style.zIndex = s), 
-                        o && (r.removeAllEvents(o, this.uid), o.innerHTML = ""), i.removeInstance(this.uid), 
-                        e = o = a = u = i = null;
+                        a && r.removeAllEvents(a, this.uid), u && (r.removeAllEvents(u, this.uid), 
+                        u.style.zIndex = s), o && (r.removeAllEvents(o, this.uid), 
+                        o.innerHTML = ""), i.removeInstance(this.uid), e = o = a = u = i = null;
                     }
                 });
             }
@@ -6650,7 +6720,8 @@ var route = function() {
                         }, o.uid);
                     },
                     destroy: function() {
-                        r.removeAllEvents(h && n.get(h.container), this.uid), f = p = g = h = null, this.getRuntime().getShim().removeInstance(this.uid);
+                        r.removeAllEvents(h && n.get(h.container), this.uid), f = p = g = h = null, 
+                        this.getRuntime().getShim().removeInstance(this.uid);
                     }
                 });
             }
@@ -6719,9 +6790,11 @@ var route = function() {
                 t.extend(this, {
                     send: function(i, r) {
                         var s = this, l = "Mozilla" === u.browser && u.verComp(u.version, 4, ">=") && u.verComp(u.version, 7, "<"), f = "Android Browser" === u.browser, p = !1;
-                        if (h = i.url.replace(/^.+?\/([\w\-\.]+)$/, "$1").toLowerCase(), m = c(), m.open(i.method, i.url, i.async, i.user, i.password), 
+                        if (h = i.url.replace(/^.+?\/([\w\-\.]+)$/, "$1").toLowerCase(), 
+                        m = c(), m.open(i.method, i.url, i.async, i.user, i.password), 
                         r instanceof o) r.isDetached() && (p = !0), r = r.getSource(); else if (r instanceof a) {
-                            if (r.hasBlob()) if (r.getBlob().isDetached()) r = d.call(s, r), p = !0; else if ((l || f) && "blob" === t.typeOf(r.getBlob().getSource()) && window.FileReader) return e.call(s, i, r), 
+                            if (r.hasBlob()) if (r.getBlob().isDetached()) r = d.call(s, r), 
+                            p = !0; else if ((l || f) && "blob" === t.typeOf(r.getBlob().getSource()) && window.FileReader) return e.call(s, i, r), 
                             void 0;
                             if (r instanceof a) {
                                 var g = new window.FormData();
@@ -6730,7 +6803,8 @@ var route = function() {
                                 }), r = g;
                             }
                         }
-                        m.upload ? (i.withCredentials && (m.withCredentials = !0), m.addEventListener("load", function(e) {
+                        m.upload ? (i.withCredentials && (m.withCredentials = !0), 
+                        m.addEventListener("load", function(e) {
                             s.trigger(e);
                         }), m.addEventListener("error", function(e) {
                             s.trigger(e);
@@ -6753,7 +6827,8 @@ var route = function() {
                               case 3:
                                 var e, t;
                                 try {
-                                    n.hasSameOrigin(i.url) && (e = m.getResponseHeader("Content-Length") || 0), m.responseText && (t = m.responseText.length);
+                                    n.hasSameOrigin(i.url) && (e = m.getResponseHeader("Content-Length") || 0), 
+                                    m.responseText && (t = m.responseText.length);
                                 } catch (r) {
                                     e = t = 0;
                                 }
@@ -6799,7 +6874,8 @@ var route = function() {
                                     var a = o.match(/filename=([\'\"'])([^\1]+)\1/);
                                     a && (h = a[2]);
                                 }
-                                return n.name = h, n.type || (n.type = i.getFileMime(h)), n;
+                                return n.name = h, n.type || (n.type = i.getFileMime(h)), 
+                                n;
 
                               case "json":
                                 return u.can("return_response_type", "json") ? m.response : 200 === m.status && window.JSON ? JSON.parse(m.responseText) : null;
@@ -6853,7 +6929,8 @@ var route = function() {
                           case 3:
                             if (null === r && (r = new ArrayBuffer()), r instanceof ArrayBuffer) {
                                 var o = new Uint8Array(this.length() - n + r.byteLength);
-                                e > 0 && o.set(new Uint8Array(t.slice(0, e)), 0), o.set(new Uint8Array(r), e), o.set(new Uint8Array(t.slice(e + n)), e + r.byteLength), 
+                                e > 0 && o.set(new Uint8Array(t.slice(0, e)), 0), 
+                                o.set(new Uint8Array(r), e), o.set(new Uint8Array(t.slice(e + n)), e + r.byteLength), 
                                 this.clear(), t = o.buffer, i = new DataView(t);
                                 break;
                             }
@@ -6960,13 +7037,15 @@ var route = function() {
                     headers: s,
                     restore: function(t) {
                         var i, n, r;
-                        for (r = new e(t), o = 65504 == r.SHORT(2) ? 4 + r.SHORT(4) : 2, n = 0, i = s.length; i > n; n++) r.SEGMENT(o, 0, s[n].segment), 
+                        for (r = new e(t), o = 65504 == r.SHORT(2) ? 4 + r.SHORT(4) : 2, 
+                        n = 0, i = s.length; i > n; n++) r.SEGMENT(o, 0, s[n].segment), 
                         o += s[n].length;
                         return t = r.SEGMENT(), r.clear(), t;
                     },
                     strip: function(t) {
                         var n, r, o, a;
-                        for (o = new i(t), r = o.headers, o.purge(), n = new e(t), a = r.length; a--; ) n.SEGMENT(r[a].start, r[a].length, "");
+                        for (o = new i(t), r = o.headers, o.purge(), n = new e(t), 
+                        a = r.length; a--; ) n.SEGMENT(r[a].start, r[a].length, "");
                         return t = n.SEGMENT(), n.clear(), t;
                     },
                     get: function(e) {
@@ -6975,8 +7054,9 @@ var route = function() {
                     },
                     set: function(e, t) {
                         var i, n, r, o = [];
-                        for ("string" == typeof t ? o.push(t) : o = t, i = n = 0, r = s.length; r > i && (s[i].name === e.toUpperCase() && (s[i].segment = o[n], 
-                        s[i].length = o[n].length, n++), !(n >= o.length)); i++) ;
+                        for ("string" == typeof t ? o.push(t) : o = t, i = n = 0, 
+                        r = s.length; r > i && (s[i].name === e.toUpperCase() && (s[i].segment = o[n], 
+                        s[i].length = o[n].length, n++), !(n >= o.length)); i++);
                     },
                     purge: function() {
                         this.headers = s = [];
@@ -7005,11 +7085,14 @@ var route = function() {
                         SLONG: 4,
                         SRATIONAL: 8
                     };
-                    for (o = p.SHORT(i), a = 0; o > a; a++) if (g = [], h = i + 2 + 12 * a, s = r[p.SHORT(h)], 
-                    s !== t) {
-                        if (u = v[p.SHORT(h += 2)], c = p.LONG(h += 2), m = w[u], !m) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
-                        if (h += 4, m * c > 4 && (h = p.LONG(h) + d.tiffHeader), h + m * c >= this.length()) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
-                        "ASCII" !== u ? (g = p.asArray(u, h, c), f = 1 == c ? g[0] : g, x[s] = l.hasOwnProperty(s) && "object" != typeof f ? l[s][f] : f) : x[s] = e.trim(p.STRING(h, c).replace(/\0$/, ""));
+                    for (o = p.SHORT(i), a = 0; o > a; a++) if (g = [], h = i + 2 + 12 * a, 
+                    s = r[p.SHORT(h)], s !== t) {
+                        if (u = v[p.SHORT(h += 2)], c = p.LONG(h += 2), m = w[u], 
+                        !m) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
+                        if (h += 4, m * c > 4 && (h = p.LONG(h) + d.tiffHeader), 
+                        h + m * c >= this.length()) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
+                        "ASCII" !== u ? (g = p.asArray(u, h, c), f = 1 == c ? g[0] : g, 
+                        x[s] = l.hasOwnProperty(s) && "object" != typeof f ? l[s][f] : f) : x[s] = e.trim(p.STRING(h, c).replace(/\0$/, ""));
                     }
                     return x;
                 }
@@ -7255,7 +7338,8 @@ var route = function() {
                     }
                 }), 65505 !== this.SHORT(0) || "EXIF\0" !== this.STRING(4, 5).toUpperCase()) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
                 if (this.littleEndian = 18761 == this.SHORT(m), 42 !== this.SHORT(m += 2)) throw new n.ImageError(n.ImageError.INVALID_META_ERR);
-                d.IFD0 = d.tiffHeader + this.LONG(m += 2), h = a.call(this, d.IFD0, c.tiff), "ExifIFDPointer" in h && (d.exifIFD = d.tiffHeader + h.ExifIFDPointer, 
+                d.IFD0 = d.tiffHeader + this.LONG(m += 2), h = a.call(this, d.IFD0, c.tiff), 
+                "ExifIFDPointer" in h && (d.exifIFD = d.tiffHeader + h.ExifIFDPointer, 
                 delete h.ExifIFDPointer), "GPSInfoIFDPointer" in h && (d.gpsIFD = d.tiffHeader + h.GPSInfoIFDPointer, 
                 delete h.GPSInfoIFDPointer), e.isEmptyObj(h) && (h = null);
                 var f = this.LONG(d.IFD0 + 12 * this.SHORT(d.IFD0) + 2);
@@ -7267,7 +7351,8 @@ var route = function() {
                 function a(e) {
                     var t, i, n = 0;
                     for (e || (e = c); n <= e.length(); ) {
-                        if (t = e.SHORT(n += 2), t >= 65472 && 65475 >= t) return n += 5, {
+                        if (t = e.SHORT(n += 2), t >= 65472 && 65475 >= t) return n += 5, 
+                        {
                             height: e.SHORT(n),
                             width: e.SHORT(n += 2)
                         };
@@ -7277,7 +7362,8 @@ var route = function() {
                 }
                 function s() {
                     var e, t, i = d.thumb();
-                    return i && (e = new n(i), t = a(e), e.clear(), t) ? (t.data = i, t) : null;
+                    return i && (e = new n(i), t = a(e), e.clear(), t) ? (t.data = i, 
+                    t) : null;
                 }
                 function u() {
                     d && l && c && (d.clear(), l.purge(), c.clear(), m = l = d = c = null);
@@ -7319,7 +7405,8 @@ var route = function() {
             function n(n) {
                 function r() {
                     var e, t;
-                    return e = a.call(this, 8), "IHDR" == e.type ? (t = e.start, {
+                    return e = a.call(this, 8), "IHDR" == e.type ? (t = e.start, 
+                    {
                         width: s.LONG(t),
                         height: s.LONG(t += 4)
                     }) : null;
@@ -7329,7 +7416,8 @@ var route = function() {
                 }
                 function a(e) {
                     var t, i, n, r;
-                    return t = s.LONG(e), i = s.STRING(e += 4, 4), n = e += 4, r = s.LONG(e + t), {
+                    return t = s.LONG(e), i = s.STRING(e += 4, 4), n = e += 4, r = s.LONG(e + t), 
+                    {
                         length: t,
                         type: i,
                         start: n,
@@ -7402,7 +7490,8 @@ var route = function() {
                 function c() {
                     var t = e();
                     return "canvas" == t.nodeName.toLowerCase() ? t : (v = document.createElement("canvas"), 
-                    v.width = t.width, v.height = t.height, v.getContext("2d").drawImage(t, 0, 0), v);
+                    v.width = t.width, v.height = t.height, v.getContext("2d").drawImage(t, 0, 0), 
+                    v);
                 }
                 function l(e) {
                     return n.atob(e.substring(e.indexOf("base64,") + 7));
@@ -7467,7 +7556,8 @@ var route = function() {
                     loadFromBlob: function(e) {
                         var t = this.getRuntime(), n = arguments.length > 1 ? arguments[1] : !0;
                         if (!t.can("access_binary")) throw new i.RuntimeError(i.RuntimeError.NOT_SUPPORTED_ERR);
-                        return y = e, e.isDetached() ? (w = e.getSource(), m.call(this, w), void 0) : (h.call(this, e.getSource(), function(e) {
+                        return y = e, e.isDetached() ? (w = e.getSource(), m.call(this, w), 
+                        void 0) : (h.call(this, e.getSource(), function(e) {
                             n && (w = l(e)), m.call(this, e);
                         }), void 0);
                     },
@@ -7480,7 +7570,8 @@ var route = function() {
                     },
                     getInfo: function() {
                         var t, i = this.getRuntime();
-                        return !x && w && i.can("access_image_binary") && (x = new a(w)), t = {
+                        return !x && w && i.can("access_image_binary") && (x = new a(w)), 
+                        t = {
                             width: e().width || 0,
                             height: e().height || 0,
                             type: y.type || u.getFileMime(y.name),
@@ -7680,8 +7771,9 @@ var route = function() {
                         }), i = '<object id="' + this.uid + '" type="application/x-shockwave-flash" data="' + u.swf_url + '" ', 
                         "IE" === t.browser && (i += 'classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" '), 
                         i += 'width="100%" height="100%" style="outline:0"><param name="movie" value="' + u.swf_url + '" />' + '<param name="flashvars" value="uid=' + escape(this.uid) + "&target=" + o.getGlobalEventTarget() + '" />' + '<param name="wmode" value="transparent" />' + '<param name="allowscriptaccess" value="always" />' + "</object>", 
-                        "IE" === t.browser ? (r = document.createElement("div"), a.appendChild(r), r.outerHTML = i, 
-                        r = a = null) : a.innerHTML = i, c = setTimeout(function() {
+                        "IE" === t.browser ? (r = document.createElement("div"), 
+                        a.appendChild(r), r.outerHTML = i, r = a = null) : a.innerHTML = i, 
+                        c = setTimeout(function() {
                             m && !m.initialized && m.trigger("Error", new n.RuntimeError(n.RuntimeError.NOT_INIT_ERR));
                         }, 5e3);
                     },
@@ -7699,8 +7791,9 @@ var route = function() {
                 slice: function(e, i, n, r) {
                     var o = this.getRuntime();
                     return 0 > i ? i = Math.max(e.size + i, 0) : i > 0 && (i = Math.min(i, e.size)), 
-                    0 > n ? n = Math.max(e.size + n, 0) : n > 0 && (n = Math.min(n, e.size)), e = o.shimExec.call(this, "Blob", "slice", i, n, r || ""), 
-                    e && (e = new t(o.uid, e)), e;
+                    0 > n ? n = Math.max(e.size + n, 0) : n > 0 && (n = Math.min(n, e.size)), 
+                    e = o.shimExec.call(this, "Blob", "slice", i, n, r || ""), e && (e = new t(o.uid, e)), 
+                    e;
                 }
             };
             return e.Blob = i;
@@ -7781,7 +7874,8 @@ var route = function() {
                         e.transport = l.mode, l.shimExec.call(c, "XMLHttpRequest", "send", e, n);
                     }
                     function o(e, t) {
-                        l.shimExec.call(c, "XMLHttpRequest", "appendBlob", e, t.uid), n = null, r();
+                        l.shimExec.call(c, "XMLHttpRequest", "appendBlob", e, t.uid), 
+                        n = null, r();
                     }
                     function u(e, t) {
                         var i = new s();
@@ -7873,11 +7967,13 @@ var route = function() {
                     } catch (c) {
                         var l = navigator.plugins["Silverlight Plug-In"];
                         if (l) {
-                            for (t = l.description, "1.0.30226.2" === t && (t = "2.0.30226.2"), i = t.split("."); i.length > 3; ) i.pop();
+                            for (t = l.description, "1.0.30226.2" === t && (t = "2.0.30226.2"), 
+                            i = t.split("."); i.length > 3; ) i.pop();
                             for (;i.length < 4; ) i.push(0);
                             for (n = e.split("."); n.length > 4; ) n.pop();
                             do {
-                                r = parseInt(n[u], 10), o = parseInt(i[u], 10), u++;
+                                r = parseInt(n[u], 10), o = parseInt(i[u], 10), 
+                                u++;
                             } while (u < n.length && r === o);
                             o >= r && !isNaN(r) && (a = !0);
                         }
@@ -7941,7 +8037,8 @@ var route = function() {
                     use_http_method: function(t) {
                         return e.arrayDiff(t, [ "GET", "POST" ]) ? "client" : [ "client", "browser" ];
                     }
-                }), a("2.0.31005.0") && "Opera" !== t.browser || (this.mode = !1), e.extend(this, {
+                }), a("2.0.31005.0") && "Opera" !== t.browser || (this.mode = !1), 
+                e.extend(this, {
                     getShim: function() {
                         return i.get(this.uid).content.Moxie;
                     },
@@ -7980,7 +8077,8 @@ var route = function() {
                         o.files = [], n.each(e, function(e) {
                             o.files.push(new t(a.uid, e));
                         });
-                    }, 999), a.shimExec.call(this, "FileInput", "init", r(e.accept), e.multiple), this.trigger("ready");
+                    }, 999), a.shimExec.call(this, "FileInput", "init", r(e.accept), e.multiple), 
+                    this.trigger("ready");
                 },
                 setOption: function(e, t) {
                     "accept" == e && (t = r(t)), this.getRuntime().shimExec.call(this, "FileInput", "setOption", e, t);
@@ -8025,8 +8123,9 @@ var route = function() {
                         a = s[t], a && (/^(\d|[1-9]\d+)$/.test(a) ? a = parseInt(a, 10) : /^\d*\.\d+$/.test(a) && (a = parseFloat(a)), 
                         r.meta[e][t] = a);
                     }), r.meta && r.meta.thumb && r.meta.thumb.data && !(e.meta.thumb.data instanceof i) && (r.meta.thumb.data = new i(e.uid, r.meta.thumb.data))), 
-                    r.width = parseInt(o.width, 10), r.height = parseInt(o.height, 10), r.size = parseInt(o.size, 10), 
-                    r.type = o.type, r.name = o.name, r;
+                    r.width = parseInt(o.width, 10), r.height = parseInt(o.height, 10), 
+                    r.size = parseInt(o.size, 10), r.type = o.type, r.name = o.name, 
+                    r;
                 },
                 resize: function(e, t, i) {
                     this.getRuntime().shimExec.call(this, "Image", "resize", e.x, e.y, e.width, e.height, t, i.preserveHeaders, i.resample);
@@ -8090,19 +8189,22 @@ var route = function() {
             function s() {
                 function e() {
                     var o, c, d, m, h, f, p = this, g = p.getRuntime();
-                    f = i.guid("uid_"), o = g.getShimContainer(), s && (d = n.get(s + "_form"), d && (i.extend(d.style, {
+                    f = i.guid("uid_"), o = g.getShimContainer(), s && (d = n.get(s + "_form"), 
+                    d && (i.extend(d.style, {
                         top: "100%"
                     }), d.firstChild.setAttribute("tabindex", -1))), m = document.createElement("form"), 
-                    m.setAttribute("id", f + "_form"), m.setAttribute("method", "post"), m.setAttribute("enctype", "multipart/form-data"), 
-                    m.setAttribute("encoding", "multipart/form-data"), i.extend(m.style, {
+                    m.setAttribute("id", f + "_form"), m.setAttribute("method", "post"), 
+                    m.setAttribute("enctype", "multipart/form-data"), m.setAttribute("encoding", "multipart/form-data"), 
+                    i.extend(m.style, {
                         overflow: "hidden",
                         position: "absolute",
                         top: 0,
                         left: 0,
                         width: "100%",
                         height: "100%"
-                    }), h = document.createElement("input"), h.setAttribute("id", f), h.setAttribute("type", "file"), 
-                    h.setAttribute("accept", l.join(",")), g.can("summon_file_dialog") && h.setAttribute("tabindex", -1), 
+                    }), h = document.createElement("input"), h.setAttribute("id", f), 
+                    h.setAttribute("type", "file"), h.setAttribute("accept", l.join(",")), 
+                    g.can("summon_file_dialog") && h.setAttribute("tabindex", -1), 
                     i.extend(h.style, {
                         fontSize: "999px",
                         opacity: 0
@@ -8118,11 +8220,11 @@ var route = function() {
                         var i;
                         this.value && (i = this.files ? this.files[0] : {
                             name: this.value
-                        }, i = new t(g.uid, i), this.onchange = function() {}, e.call(p), p.files = [ i ], 
-                        h.setAttribute("id", i.uid), m.setAttribute("id", i.uid + "_form"), p.trigger("change"), 
-                        h = m = null);
-                    }, g.can("summon_file_dialog") && (c = n.get(u.browse_button), r.removeEvent(c, "click", p.uid), 
-                    r.addEvent(c, "click", function(e) {
+                        }, i = new t(g.uid, i), this.onchange = function() {}, e.call(p), 
+                        p.files = [ i ], h.setAttribute("id", i.uid), m.setAttribute("id", i.uid + "_form"), 
+                        p.trigger("change"), h = m = null);
+                    }, g.can("summon_file_dialog") && (c = n.get(u.browse_button), 
+                    r.removeEvent(c, "click", p.uid), r.addEvent(c, "click", function(e) {
                         h && !h.disabled && h.click(), e.preventDefault();
                     }, p.uid)), s = f, o = d = c = null;
                 }
@@ -8130,13 +8232,16 @@ var route = function() {
                 i.extend(this, {
                     init: function(t) {
                         var i, a = this, s = a.getRuntime();
-                        u = t, l = o.extList2mimes(t.accept, s.can("filter_by_extension")), i = s.getShimContainer(), 
-                        function() {
+                        u = t, l = o.extList2mimes(t.accept, s.can("filter_by_extension")), 
+                        i = s.getShimContainer(), function() {
                             var e, o, l;
-                            e = n.get(t.browse_button), c = n.getStyle(e, "z-index") || "auto", s.can("summon_file_dialog") ? ("static" === n.getStyle(e, "position") && (e.style.position = "relative"), 
+                            e = n.get(t.browse_button), c = n.getStyle(e, "z-index") || "auto", 
+                            s.can("summon_file_dialog") ? ("static" === n.getStyle(e, "position") && (e.style.position = "relative"), 
                             a.bind("Refresh", function() {
-                                o = parseInt(c, 10) || 1, n.get(u.browse_button).style.zIndex = o, this.getRuntime().getShimContainer().style.zIndex = o - 1;
-                            })) : e.setAttribute("tabindex", -1), l = s.can("summon_file_dialog") ? e : i, r.addEvent(l, "mouseover", function() {
+                                o = parseInt(c, 10) || 1, n.get(u.browse_button).style.zIndex = o, 
+                                this.getRuntime().getShimContainer().style.zIndex = o - 1;
+                            })) : e.setAttribute("tabindex", -1), l = s.can("summon_file_dialog") ? e : i, 
+                            r.addEvent(l, "mouseover", function() {
                                 a.trigger("mouseenter");
                             }, a.uid), r.addEvent(l, "mouseout", function() {
                                 a.trigger("mouseleave");
@@ -8161,9 +8266,9 @@ var route = function() {
                     },
                     destroy: function() {
                         var e = this.getRuntime(), t = e.getShim(), i = e.getShimContainer(), o = u && n.get(u.container), a = u && n.get(u.browse_button);
-                        o && r.removeAllEvents(o, this.uid), a && (r.removeAllEvents(a, this.uid), a.style.zIndex = c), 
-                        i && (r.removeAllEvents(i, this.uid), i.innerHTML = ""), t.removeInstance(this.uid), 
-                        s = l = u = i = o = a = t = null;
+                        o && r.removeAllEvents(o, this.uid), a && (r.removeAllEvents(a, this.uid), 
+                        a.style.zIndex = c), i && (r.removeAllEvents(i, this.uid), 
+                        i.innerHTML = ""), t.removeInstance(this.uid), s = l = u = i = o = a = t = null;
                     }
                 });
             }
@@ -8189,7 +8294,8 @@ var route = function() {
                         setTimeout(function() {
                             o.removeEvent(l, "load", s.uid), l.parentNode && l.parentNode.removeChild(l);
                             var t = s.getRuntime().getShimContainer();
-                            t.children.length || t.parentNode.removeChild(t), t = l = null, e();
+                            t.children.length || t.parentNode.removeChild(t), t = l = null, 
+                            e();
                         }, 1);
                     }
                 }
@@ -8226,10 +8332,12 @@ var route = function() {
                         }
                         var f, p, g, x, v = this, w = v.getRuntime();
                         if (u = c = null, m instanceof s && m.hasBlob()) {
-                            if (x = m.getBlob(), f = x.uid, g = i.get(f), p = i.get(f + "_form"), !p) throw new r.DOMException(r.DOMException.NOT_FOUND_ERR);
-                        } else f = t.guid("uid_"), p = document.createElement("form"), p.setAttribute("id", f + "_form"), 
-                        p.setAttribute("method", d.method), p.setAttribute("enctype", "multipart/form-data"), 
-                        p.setAttribute("encoding", "multipart/form-data"), w.getShimContainer().appendChild(p);
+                            if (x = m.getBlob(), f = x.uid, g = i.get(f), p = i.get(f + "_form"), 
+                            !p) throw new r.DOMException(r.DOMException.NOT_FOUND_ERR);
+                        } else f = t.guid("uid_"), p = document.createElement("form"), 
+                        p.setAttribute("id", f + "_form"), p.setAttribute("method", d.method), 
+                        p.setAttribute("enctype", "multipart/form-data"), p.setAttribute("encoding", "multipart/form-data"), 
+                        w.getShimContainer().appendChild(p);
                         p.setAttribute("target", f + "_iframe"), m instanceof s && m.each(function(e, i) {
                             if (e instanceof a) g && g.setAttribute("name", i); else {
                                 var n = document.createElement("input");
@@ -8301,7 +8409,8 @@ var route = function() {
                 t(e, !0);
             }) : "object" == typeof i ? l.each(i, function(e, i) {
                 t(i, e);
-            }) : i === !0 && (e.chunk_size && e.chunk_size > 0 && (n.slice_blob = !0), l.isEmptyObj(e.resize) && e.multipart !== !1 || (n.send_binary_string = !0), 
+            }) : i === !0 && (e.chunk_size && e.chunk_size > 0 && (n.slice_blob = !0), 
+            l.isEmptyObj(e.resize) && e.multipart !== !1 || (n.send_binary_string = !0), 
             e.http_method && (n.use_http_method = e.http_method), l.each(e, function(e, i) {
                 t(i, !!e, !0);
             })), n;
@@ -8427,14 +8536,16 @@ var route = function() {
             function a() {
                 var e, t, i = 0;
                 if (this.state == l.STARTED) {
-                    for (t = 0; t < D.length; t++) e || D[t].status != l.QUEUED ? i++ : (e = D[t], this.trigger("BeforeUpload", e) && (e.status = l.UPLOADING, 
+                    for (t = 0; t < D.length; t++) e || D[t].status != l.QUEUED ? i++ : (e = D[t], 
+                    this.trigger("BeforeUpload", e) && (e.status = l.UPLOADING, 
                     this.trigger("UploadFile", e)));
-                    i == D.length && (this.state !== l.STOPPED && (this.state = l.STOPPED, this.trigger("StateChanged")), 
-                    this.trigger("UploadComplete", D));
+                    i == D.length && (this.state !== l.STOPPED && (this.state = l.STOPPED, 
+                    this.trigger("StateChanged")), this.trigger("UploadComplete", D));
                 }
             }
             function u(e) {
-                e.percent = e.size > 0 ? Math.ceil(100 * (e.loaded / e.size)) : 100, d();
+                e.percent = e.size > 0 ? Math.ceil(100 * (e.loaded / e.size)) : 100, 
+                d();
             }
             function d() {
                 var e, t, n, r = 0;
@@ -8451,9 +8562,10 @@ var route = function() {
             function f() {
                 this.bind("FilesAdded FilesRemoved", function(e) {
                     e.trigger("QueueChanged"), e.refresh();
-                }), this.bind("CancelUpload", b), this.bind("BeforeUpload", m), this.bind("UploadFile", _), 
-                this.bind("UploadProgress", E), this.bind("StateChanged", v), this.bind("QueueChanged", d), 
-                this.bind("Error", R), this.bind("FileUploaded", y), this.bind("Destroy", z);
+                }), this.bind("CancelUpload", b), this.bind("BeforeUpload", m), 
+                this.bind("UploadFile", _), this.bind("UploadProgress", E), this.bind("StateChanged", v), 
+                this.bind("QueueChanged", d), this.bind("Error", R), this.bind("FileUploaded", y), 
+                this.bind("Destroy", z);
             }
             function p(e, i) {
                 var n = this, r = 0, s = [], a = {
@@ -8599,7 +8711,8 @@ var route = function() {
                 var a = this, u = !1;
                 "object" == typeof e ? l.each(e, function(e, t) {
                     s(t, e, r);
-                }) : s(e, i, r), r ? (O.required_features = n(l.extend({}, O)), x = n(l.extend({}, O, {
+                }) : s(e, i, r), r ? (O.required_features = n(l.extend({}, O)), 
+                x = n(l.extend({}, O, {
                     required_features: !0
                 }))) : u && (a.trigger("Destroy"), p.call(a, O, function(e) {
                     e ? (a.runtime = o.getInfo(c()).type, a.trigger("Init", {
@@ -8630,9 +8743,10 @@ var route = function() {
                 function s() {
                     var t, n, r = {};
                     i.status === l.UPLOADING && e.state !== l.STOPPED && (e.settings.send_file_name && (r.name = i.target_name || i.name), 
-                    d && f.chunks && o.size > d ? (n = Math.min(d, o.size - p), t = o.slice(p, p + n)) : (n = o.size, 
-                    t = o), d && f.chunks && (e.settings.send_chunk_number ? (r.chunk = Math.ceil(p / d), 
-                    r.chunks = Math.ceil(o.size / d)) : (r.offset = p, r.total = o.size)), e.trigger("BeforeChunkUpload", i, r, t, p) && a(r, t, n));
+                    d && f.chunks && o.size > d ? (n = Math.min(d, o.size - p), 
+                    t = o.slice(p, p + n)) : (n = o.size, t = o), d && f.chunks && (e.settings.send_chunk_number ? (r.chunk = Math.ceil(p / d), 
+                    r.chunks = Math.ceil(o.size / d)) : (r.offset = p, r.total = o.size)), 
+                    e.trigger("BeforeChunkUpload", i, r, t, p) && a(r, t, n));
                 }
                 function a(a, d, g) {
                     var m;
@@ -8640,16 +8754,17 @@ var route = function() {
                         i.loaded = Math.min(i.size, p + t.loaded), e.trigger("UploadProgress", i);
                     }), T.onload = function() {
                         return T.status < 200 || T.status >= 400 ? (n(), void 0) : (c = e.settings.max_retries, 
-                        g < o.size ? (d.destroy(), p += g, i.loaded = Math.min(p, o.size), e.trigger("ChunkUploaded", i, {
+                        g < o.size ? (d.destroy(), p += g, i.loaded = Math.min(p, o.size), 
+                        e.trigger("ChunkUploaded", i, {
                             offset: i.loaded,
                             total: o.size,
                             response: T.responseText,
                             status: T.status,
                             responseHeaders: T.getAllResponseHeaders()
                         }), "Android Browser" === l.ua.browser && e.trigger("UploadProgress", i)) : i.loaded = i.size, 
-                        d = m = null, !p || p >= o.size ? (i.size != i.origSize && (o.destroy(), o = null), 
-                        e.trigger("UploadProgress", i), i.status = l.DONE, i.completeTimestamp = +new Date(), 
-                        e.trigger("FileUploaded", i, {
+                        d = m = null, !p || p >= o.size ? (i.size != i.origSize && (o.destroy(), 
+                        o = null), e.trigger("UploadProgress", i), i.status = l.DONE, 
+                        i.completeTimestamp = +new Date(), e.trigger("FileUploaded", i, {
                             response: T.responseText,
                             status: T.status,
                             responseHeaders: T.getAllResponseHeaders()
@@ -8676,8 +8791,8 @@ var route = function() {
                     swf_url: e.settings.flash_swf_url,
                     xap_url: e.settings.silverlight_xap_url
                 };
-                i.loaded && (p = i.loaded = d ? d * Math.floor(i.loaded / d) : 0), o = i.getSource(), 
-                l.isEmptyObj(e.settings.resize) || -1 === l.inArray(o.type, [ "image/jpeg", "image/png" ]) ? s() : g(o, e.settings.resize, h, function(e) {
+                i.loaded && (p = i.loaded = d ? d * Math.floor(i.loaded / d) : 0), 
+                o = i.getSource(), l.isEmptyObj(e.settings.resize) || -1 === l.inArray(o.type, [ "image/jpeg", "image/png" ]) ? s() : g(o, e.settings.resize, h, function(e) {
                     o = e, i.size = e.size, s();
                 });
             }
@@ -8815,7 +8930,8 @@ var route = function() {
                         } else e instanceof t.file.Blob ? (a(e.getSource()), e.destroy()) : e instanceof l.File ? (i && (e.name = i), 
                         d.push(function(t) {
                             n(e, function(i) {
-                                i || (D.push(e), f.push(e), u.trigger("FileFiltered", e)), r(t, 1);
+                                i || (D.push(e), f.push(e), u.trigger("FileFiltered", e)), 
+                                r(t, 1);
                             });
                         })) : -1 !== l.inArray(s, [ "file", "blob" ]) ? a(new t.file.File(null, e)) : "node" === s && "filelist" === l.typeOf(e.files) ? l.each(e.files, a) : "array" === s && (i = null, 
                         l.each(e, a));
@@ -8884,8 +9000,8 @@ var route = function() {
             return e;
         }(), l.QueueProgress = function() {
             var e = this;
-            e.size = 0, e.loaded = 0, e.uploaded = 0, e.failed = 0, e.queued = 0, e.percent = 0, 
-            e.bytesPerSec = 0, e.reset = function() {
+            e.size = 0, e.loaded = 0, e.uploaded = 0, e.failed = 0, e.queued = 0, 
+            e.percent = 0, e.bytesPerSec = 0, e.reset = function() {
                 e.size = e.loaded = e.uploaded = e.failed = e.queued = e.percent = e.bytesPerSec = 0;
             };
         }, e.plupload = l;
@@ -8954,6 +9070,7 @@ var route = function() {
             var _OPTS_PASSABLE_WITH_DATA = [ "delimiter", "scope", "context", "debug", "compileDebug", "client", "_with", "rmWhitespace", "strict", "filename", "async" ];
             var _OPTS_PASSABLE_WITH_DATA_EXPRESS = _OPTS_PASSABLE_WITH_DATA.concat("cache");
             var _BOM = /^\uFEFF/;
+            var _JS_IDENTIFIER = /^[a-zA-Z_$][0-9a-zA-Z_$]*$/;
             exports.cache = utils.cache;
             exports.fileLoader = fs.readFileSync;
             exports.localsName = _DEFAULT_LOCALS_NAME;
@@ -9061,7 +9178,7 @@ var route = function() {
                 return exports.fileLoader(filePath);
             }
             function includeFile(path, options) {
-                var opts = utils.shallowCopy({}, options);
+                var opts = utils.shallowCopy(utils.createNullProtoObjWherePossible(), options);
                 opts.filename = getIncludePath(path, opts);
                 if (typeof options.includer === "function") {
                     var includerResult = options.includer(path, opts.filename);
@@ -9108,8 +9225,8 @@ var route = function() {
                 return templ.compile();
             };
             exports.render = function(template, d, o) {
-                var data = d || {};
-                var opts = o || {};
+                var data = d || utils.createNullProtoObjWherePossible();
+                var opts = o || utils.createNullProtoObjWherePossible();
                 if (arguments.length == 2) {
                     utils.shallowCopyFromList(opts, data, _OPTS_PASSABLE_WITH_DATA);
                 }
@@ -9148,7 +9265,7 @@ var route = function() {
                     }
                     opts.filename = filename;
                 } else {
-                    data = {};
+                    data = utils.createNullProtoObjWherePossible();
                 }
                 return tryHandleCache(opts, data, cb);
             };
@@ -9157,8 +9274,8 @@ var route = function() {
                 exports.cache.reset();
             };
             function Template(text, opts) {
-                opts = opts || {};
-                var options = {};
+                opts = opts || utils.createNullProtoObjWherePossible();
+                var options = utils.createNullProtoObjWherePossible();
                 this.templateText = text;
                 this.mode = null;
                 this.truncate = false;
@@ -9216,16 +9333,26 @@ var route = function() {
                     var appended = "";
                     var escapeFn = opts.escapeFunction;
                     var ctor;
+                    var sanitizedFilename = opts.filename ? JSON.stringify(opts.filename) : "undefined";
                     if (!this.source) {
                         this.generateSource();
                         prepended += '  var __output = "";\n' + "  function __append(s) { if (s !== undefined && s !== null) __output += s }\n";
                         if (opts.outputFunctionName) {
+                            if (!_JS_IDENTIFIER.test(opts.outputFunctionName)) {
+                                throw new Error("outputFunctionName is not a valid JS identifier.");
+                            }
                             prepended += "  var " + opts.outputFunctionName + " = __append;" + "\n";
+                        }
+                        if (opts.localsName && !_JS_IDENTIFIER.test(opts.localsName)) {
+                            throw new Error("localsName is not a valid JS identifier.");
                         }
                         if (opts.destructuredLocals && opts.destructuredLocals.length) {
                             var destructuring = "  var __locals = (" + opts.localsName + " || {}),\n";
                             for (var i = 0; i < opts.destructuredLocals.length; i++) {
                                 var name = opts.destructuredLocals[i];
+                                if (!_JS_IDENTIFIER.test(name)) {
+                                    throw new Error("destructuredLocals[" + i + "] is not a valid JS identifier.");
+                                }
                                 if (i > 0) {
                                     destructuring += ",\n  ";
                                 }
@@ -9241,7 +9368,7 @@ var route = function() {
                         this.source = prepended + this.source + appended;
                     }
                     if (opts.compileDebug) {
-                        src = "var __line = 1" + "\n" + "  , __lines = " + JSON.stringify(this.templateText) + "\n" + "  , __filename = " + (opts.filename ? JSON.stringify(opts.filename) : "undefined") + ";" + "\n" + "try {" + "\n" + this.source + "} catch (e) {" + "\n" + "  rethrow(e, __lines, __filename, __line, escapeFn);" + "\n" + "}" + "\n";
+                        src = "var __line = 1" + "\n" + "  , __lines = " + JSON.stringify(this.templateText) + "\n" + "  , __filename = " + sanitizedFilename + ";" + "\n" + "try {" + "\n" + this.source + "} catch (e) {" + "\n" + "  rethrow(e, __lines, __filename, __line, escapeFn);" + "\n" + "}" + "\n";
                     } else {
                         src = this.source;
                     }
@@ -9258,7 +9385,7 @@ var route = function() {
                         console.log(src);
                     }
                     if (opts.compileDebug && opts.filename) {
-                        src = src + "\n" + "//# sourceURL=" + opts.filename + "\n";
+                        src = src + "\n" + "//# sourceURL=" + sanitizedFilename + "\n";
                     }
                     try {
                         if (opts.async) {
@@ -9292,13 +9419,13 @@ var route = function() {
                     }
                     var returnedFn = opts.client ? fn : function anonymous(data) {
                         var include = function(path, includeData) {
-                            var d = utils.shallowCopy({}, data);
+                            var d = utils.shallowCopy(utils.createNullProtoObjWherePossible(), data);
                             if (includeData) {
                                 d = utils.shallowCopy(d, includeData);
                             }
                             return includeFile(path, opts)(d);
                         };
-                        return fn.apply(opts.context, [ data || {}, escapeFn, include, rethrow ]);
+                        return fn.apply(opts.context, [ data || utils.createNullProtoObjWherePossible(), escapeFn, include, rethrow ]);
                     };
                     if (opts.filename && typeof Object.defineProperty === "function") {
                         var filename = opts.filename;
@@ -9474,6 +9601,10 @@ var route = function() {
         2: [ function(require, module, exports) {
             "use strict";
             var regExpChars = /[|\\{}()[\]^$+*?.]/g;
+            var hasOwnProperty = Object.prototype.hasOwnProperty;
+            var hasOwn = function(obj, key) {
+                return hasOwnProperty.apply(obj, [ key ]);
+            };
             exports.escapeRegExpChars = function(string) {
                 if (!string) {
                     return "";
@@ -9500,16 +9631,34 @@ var route = function() {
             };
             exports.shallowCopy = function(to, from) {
                 from = from || {};
-                for (var p in from) {
-                    to[p] = from[p];
+                if (to !== null && to !== undefined) {
+                    for (var p in from) {
+                        if (!hasOwn(from, p)) {
+                            continue;
+                        }
+                        if (p === "__proto__" || p === "constructor") {
+                            continue;
+                        }
+                        to[p] = from[p];
+                    }
                 }
                 return to;
             };
             exports.shallowCopyFromList = function(to, from, list) {
-                for (var i = 0; i < list.length; i++) {
-                    var p = list[i];
-                    if (typeof from[p] != "undefined") {
-                        to[p] = from[p];
+                list = list || [];
+                from = from || {};
+                if (to !== null && to !== undefined) {
+                    for (var i = 0; i < list.length; i++) {
+                        var p = list[i];
+                        if (typeof from[p] != "undefined") {
+                            if (!hasOwn(from, p)) {
+                                continue;
+                            }
+                            if (p === "__proto__" || p === "constructor") {
+                                continue;
+                            }
+                            to[p] = from[p];
+                        }
                     }
                 }
                 return to;
@@ -9534,6 +9683,25 @@ var route = function() {
                     return match[1].toUpperCase();
                 });
             };
+            exports.createNullProtoObjWherePossible = function() {
+                if (typeof Object.create == "function") {
+                    return function() {
+                        return Object.create(null);
+                    };
+                }
+                if (!({
+                    __proto__: null
+                } instanceof Object)) {
+                    return function() {
+                        return {
+                            __proto__: null
+                        };
+                    };
+                }
+                return function() {
+                    return {};
+                };
+            }();
         }, {} ],
         3: [ function(require, module, exports) {}, {} ],
         4: [ function(require, module, exports) {
@@ -9897,7 +10065,7 @@ var route = function() {
                 name: "ejs",
                 description: "Embedded JavaScript templates",
                 keywords: [ "template", "engine", "ejs" ],
-                version: "3.1.5",
+                version: "3.1.7",
                 author: "Matthew Eernisse <mde@fleegix.org> (http://fleegix.org)",
                 license: "Apache-2.0",
                 bin: {
@@ -9913,13 +10081,13 @@ var route = function() {
                 bugs: "https://github.com/mde/ejs/issues",
                 homepage: "https://github.com/mde/ejs",
                 dependencies: {
-                    jake: "^10.6.1"
+                    jake: "^10.8.5"
                 },
                 devDependencies: {
                     browserify: "^16.5.1",
                     eslint: "^6.8.0",
                     "git-directory-deploy": "^1.5.1",
-                    jsdoc: "^3.6.4",
+                    jsdoc: "^3.6.7",
                     "lru-cache": "^4.0.1",
                     mocha: "^7.1.1",
                     "uglify-js": "^3.3.16"
@@ -10366,7 +10534,7 @@ var route = function() {
     function _nonIterableSpread() {
         throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
     }
-    var version = "1.14.0";
+    var version = "1.15.0";
     function userAgent(pattern) {
         if (typeof window !== "undefined" && window.navigator) {
             return !!navigator.userAgent.match(pattern);
@@ -11033,7 +11201,7 @@ var route = function() {
             css(ghostEl, "display", "");
         }
     };
-    if (documentExists) {
+    if (documentExists && !ChromeForAndroid) {
         document.addEventListener("click", function(evt) {
             if (ignoreNextClick) {
                 evt.preventDefault();
@@ -11484,6 +11652,7 @@ var route = function() {
             pluginEvent("setupClone", this);
             if (!Sortable.eventCanceled) {
                 cloneEl = clone(dragEl);
+                cloneEl.removeAttribute("id");
                 cloneEl.draggable = false;
                 cloneEl.style["will-change"] = "";
                 this._hideClone();
@@ -11648,7 +11817,11 @@ var route = function() {
                     }
                     if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, !!target) !== false) {
                         capture();
-                        el.appendChild(dragEl);
+                        if (elLastChild && elLastChild.nextSibling) {
+                            el.insertBefore(dragEl, elLastChild.nextSibling);
+                        } else {
+                            el.appendChild(dragEl);
+                        }
                         parentEl = el;
                         changed();
                         return completed(true);
@@ -12440,17 +12613,20 @@ var route = function() {
                     this[fn] = this[fn].bind(this);
                 }
             }
-            if (sortable.options.supportPointer) {
-                on(document, "pointerup", this._deselectMultiDrag);
-            } else {
-                on(document, "mouseup", this._deselectMultiDrag);
-                on(document, "touchend", this._deselectMultiDrag);
+            if (!sortable.options.avoidImplicitDeselect) {
+                if (sortable.options.supportPointer) {
+                    on(document, "pointerup", this._deselectMultiDrag);
+                } else {
+                    on(document, "mouseup", this._deselectMultiDrag);
+                    on(document, "touchend", this._deselectMultiDrag);
+                }
             }
             on(document, "keydown", this._checkKeyDown);
             on(document, "keyup", this._checkKeyUp);
             this.defaults = {
                 selectedClass: "sortable-selected",
                 multiDragKey: null,
+                avoidImplicitDeselect: false,
                 setData: function setData(dataTransfer, dragEl) {
                     var data = "";
                     if (multiDragElements.length && multiDragSortable === sortable) {
@@ -12668,7 +12844,7 @@ var route = function() {
                             rootEl: rootEl,
                             name: "select",
                             targetEl: dragEl$1,
-                            originalEvt: evt
+                            originalEvent: evt
                         });
                         if (evt.shiftKey && lastMultiDragSelect && sortable.el.contains(lastMultiDragSelect)) {
                             var lastIndex = index(lastMultiDragSelect), currentIndex = index(dragEl$1);
@@ -12690,7 +12866,7 @@ var route = function() {
                                         rootEl: rootEl,
                                         name: "select",
                                         targetEl: children[i],
-                                        originalEvt: evt
+                                        originalEvent: evt
                                     });
                                 }
                             }
@@ -12706,7 +12882,7 @@ var route = function() {
                             rootEl: rootEl,
                             name: "deselect",
                             targetEl: dragEl$1,
-                            originalEvt: evt
+                            originalEvent: evt
                         });
                     }
                 }
@@ -12792,7 +12968,7 @@ var route = function() {
                         rootEl: this.sortable.el,
                         name: "deselect",
                         targetEl: el,
-                        originalEvt: evt
+                        originalEvent: evt
                     });
                 }
             },
@@ -14914,6 +15090,9 @@ riot.tag2("kor-entity-properties-editor", '<kor-input label="{opts.label}" type=
         ref = text.split(/\n/);
         for (i = 0, len = ref.length; i < len; i++) {
             line = ref[i];
+            if (line.match(/^\s*$/)) {
+                continue;
+            }
             kv = line.split(/:/);
             results.push({
                 label: kv.shift().trim(),
@@ -15193,6 +15372,7 @@ riot.tag2("kor-generator", "", "", "", function(opts) {
             return Zepto(tag.root).html(render(tpl, data));
         } catch (error) {
             e = error;
+            return console.error("there was an error rendering tpl '" + tpl + "' with data:", data, e);
         }
     };
     tag.on("mount", update);
@@ -15250,7 +15430,7 @@ riot.tag2("kor-inplace-tags", '<virtual if="{opts.entity.tags.length > 0 || opts
     };
 });
 
-riot.tag2("kor-input", '<label if="{opts.type != \'radio\' && opts.type != \'submit\' && opts.type != \'reset\'}"> <span show="{!opts.hideLabel}">{opts.label}</span> <a if="{opts.help}" href="#" title="{tcap(\'nouns.help\')}" onclick="{toggleHelp}"><i class="fa fa-question-circle"></i></a> <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{valueFromParent()}" checked="{checkedFromParent()}" placeholder="{opts.placeholder}" autocomplete="{opts.wikidata ? \'off\' : null}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{valueFromParent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{valueFromParent()}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.placeholder !== undefined}" riot-value="{placeholderValue()}">{opts.placeholder}</option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}">{item.name || item.label || item}</option> </select> </label> <input if="{opts.type == \'submit\'}" type="submit" riot-value="{opts.label || tcap(\'verbs.save\')}"> <input if="{opts.type == \'reset\'}" type="reset" riot-value="{opts.label || tcap(\'verbs.reset\')}"> <virtual if="{opts.type == \'radio\'}"> <label> {opts.label} <a if="{opts.help}" href="#" title="{tcap(\'nouns.help\')}" onclick="{toggleHelp}"><i class="fa fa-question-circle"></i></a> </label> <label class="radio" each="{item in opts.options}"> <input type="radio" name="{opts.name}" riot-value="{item.id || item.value || item}" checked="{valueFromParent() == (item.id || item.value || item)}"> <virtual if="{!item.image_url}">{item.name || item.label || item}</virtual> <img if="{item.image_url}" riot-src="{item.image_url}"> </label> </virtual> <div if="{opts.help && showHelp}" class="help" ref="help"></div> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}"> {e} </div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
+riot.tag2("kor-input", '<label if="{opts.type != \'radio\' && opts.type != \'submit\' && opts.type != \'reset\'}"> <span show="{!opts.hideLabel}">{opts.label}</span> <a if="{opts.help}" href="#" title="{tcap(\'nouns.help\')}" onclick="{toggleHelp}"><i class="fa fa-question-circle"></i></a> <input if="{opts.type != \'select\' && opts.type != \'textarea\'}" type="{opts.type || \'text\'}" name="{opts.name}" riot-value="{valueFromParent()}" checked="{checkedFromParent()}" placeholder="{opts.placeholder}" autocomplete="{opts.autocomplete || (opts.wikidata ? \'off\' : null)}"> <textarea if="{opts.type == \'textarea\'}" name="{opts.name}" riot-value="{valueFromParent()}"></textarea> <select if="{opts.type == \'select\'}" name="{opts.name}" riot-value="{valueFromParent()}" multiple="{opts.multiple}" disabled="{opts.isDisabled}"> <option if="{opts.placeholder !== undefined}" riot-value="{placeholderValue()}">{opts.placeholder}</option> <option each="{item in opts.options}" riot-value="{item.id || item.value || item}" selected="{selected(item)}">{item.name || item.label || item}</option> </select> </label> <input if="{opts.type == \'submit\'}" type="submit" riot-value="{opts.label || tcap(\'verbs.save\')}"> <input if="{opts.type == \'reset\'}" type="reset" riot-value="{opts.label || tcap(\'verbs.reset\')}"> <virtual if="{opts.type == \'radio\'}"> <label> {opts.label} <a if="{opts.help}" href="#" title="{tcap(\'nouns.help\')}" onclick="{toggleHelp}"><i class="fa fa-question-circle"></i></a> </label> <label class="radio" each="{item in opts.options}"> <input type="radio" name="{opts.name}" riot-value="{item.id || item.value || item}" checked="{valueFromParent() == (item.id || item.value || item)}"> <virtual if="{!item.image_url}">{item.name || item.label || item}</virtual> <img if="{item.image_url}" riot-src="{item.image_url}"> </label> </virtual> <div if="{opts.help && showHelp}" class="help" ref="help"></div> <div class="errors" if="{opts.errors}"> <div each="{e in opts.errors}"> {e} </div> </div>', "", "class=\"{'has-errors': opts.errors}\"", function(opts) {
     var tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -16286,7 +16466,7 @@ riot.tag2("kor-credentials", '<div class="kor-content-box"> <a href="#/credentia
     };
 });
 
-riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <div class="hr"></div> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.naming_options\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}" help="{tcap(\'help.no_name_input\')}"></kor-input> <kor-input if="{hasName()}" label="{nameLabel()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}" wikidata="{config().wikidata_integration}"></kor-input> <kor-input if="{hasName()}" label="{distinctNameLabel()}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <div class="hr"></div> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.tag_list\')}" name="tag_list" ref="fields" riot-value="{data.tags.join(\', \')}" errors="{errors.tag_list}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields" errors="{errors.dataset}"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <div class="hr"></div> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <div class="hr"></div> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}" default-dating-label="{kind.dating_label}"></kor-datings-editor> <div class="hr"></div> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" errors="{errors.properties}" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <div class="hr"></div> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.naming_options\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}" help="{tcap(\'help.no_name_input\')}"></kor-input> <kor-input if="{hasName()}" label="{nameLabel()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}" wikidata="{config().wikidata_integration}"></kor-input> <kor-input if="{hasName()}" label="{distinctNameLabel()}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <div class="hr"></div> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.tag_list\')}" name="tag_list" ref="fields" riot-value="{data.tags.join(\', \')}" errors="{errors.tag_list}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields" errors="{errors.dataset}"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <div class="hr"></div> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <div class="hr"></div> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}" default-dating-label="{kind.dating_label}"></kor-datings-editor> <div class="hr"></div> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" errors="{errors.properties}" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <div class="hr"></div> <div class="buttons"> <kor-input type="submit"></kor-input> </div> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var checkPermissions, create, defaults, existingEntitySelected, fetch, fetchClone, fetchCollections, fetchKind, inputByName, queryHandler, tag, update, values, wikidataItemSelected;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -16577,7 +16757,7 @@ riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-tex
     };
 });
 
-riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands page-commands"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <a href="#/entities/{data.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> </virtual> <a if="{!data.medium && allowedTo(\'create\')}" href="#/entities/new?kind_id={data.kind_id}&clone_id={data.id}" title="{t(\'verbs.clone\')}"><i class="fa fa-copy"></i></a> <a href="{reportUrl()}" title="{tcap(\'objects.report\', {interpolations: {o: \'activerecord.models.entity\'}})}"><i class="fa fa-exclamation"></i></a> <a if="{allowedTo(\'delete\', data.collection_id)}" href="#/entities/{data.id}" onclick="{delete}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium && allowedTo(\'download_originals\', data.collection_id)}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in visibleFields()}"> <span class="field">{field.show_label}:</span> <span class="value">{fieldValue(field.value)}</span> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div each="{property in data.properties}"> <a if="{property.url}" href="{property.value}" rel="noopener" target="_blank">» {property.label}</a> <virtual if="{!property.url}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </virtual> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <kor-generator each="{generator in data.generators}" generator="{generator}" entity="{data}"></kor-generator> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box relations"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a href="#" onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" ref="relations"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom .meta" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.created_at}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span if="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updated_at}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span if="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}" class="groups"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <ul> <li each="{group in data.groups}" class="value"> <virtual if="{group.directory}"> <span each="{dir in group.directory.ancestors}"> <a href="#/groups/categories/{dir.id}">{dir.name}</a> / </span> <a href="#/groups/categories/{group.directory.id}">{group.directory.name}</a> / </virtual> <a href="#/groups/admin/{group.id}">{group.name}</a> </li> </ul> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> <div class="hr"></div> <div class="kor-text-right kor-api-links"> <a href="/entities/{data.id}.json" target="_blank"><i class="fa fa-file-text"></i>{t(\'show_json\')}</a><br> <a href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank"><i class="fa fa-code"></i>{t(\'show_oai_pmh\')}</a> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}" title="{t(\'larger\')}"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}" title="{t(\'image_transformations.\' + op)}"><i class="fa fa-{opIcon(op)}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="{data.medium.url.normal}" target="_blank">{t(\'verbs.maximize\')}</a> </span> | <a href="{rootUrl()}mirador?id={data.id}&manifest={rootUrl()}mirador/{data.id}" onclick="{openMirador}">{t(\'nouns.mirador\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="{data.medium.url.original.replace(/\\/images\\//, \'/download/\')}">{t(\'nouns.original\')} |</a> <a href="{data.medium.url.normal.replace(/\\/images\\//, \'/download/\')}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="#/upload?relate_with={data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands page-commands"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <a href="#/entities/{data.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> </virtual> <a if="{!data.medium && allowedTo(\'create\')}" href="#/entities/new?kind_id={data.kind_id}&clone_id={data.id}" title="{t(\'verbs.clone\')}"><i class="fa fa-copy"></i></a> <a href="{reportUrl()}" title="{tcap(\'objects.report\', {interpolations: {o: \'activerecord.models.entity\'}})}"><i class="fa fa-exclamation"></i></a> <a if="{allowedTo(\'delete\', data.collection_id)}" href="#/entities/{data.id}" onclick="{delete}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium && allowedTo(\'download_originals\', data.collection_id)}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}" field="synonyms"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}" dating-label="{dating.label}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in fields()}" field-name="{field.name}"> <virtual if="{field.value}"> <span class="field">{field.show_label}:</span> <span class="value">{fieldValue(field.value)}</span> </virtual> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div field="properties"> <div each="{property in data.properties}"> <a if="{property.url}" href="{property.value}" rel="noopener" target="_blank">» {property.label}</a> <virtual if="{!property.url}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </virtual> </div> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment" field="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <div each="{generator in data.generators}" generator-name="{generator.name}"> <kor-generator generator="{generator}" entity="{data}"></kor-generator> </div> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box relations"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a href="#" onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" ref="relations"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom .meta" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.created_at}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span if="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updated_at}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span if="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}" class="groups"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <ul> <li each="{group in data.groups}" class="value"> <virtual if="{group.directory}"> <span each="{dir in group.directory.ancestors}"> <a href="#/groups/categories/{dir.id}">{dir.name}</a> / </span> <a href="#/groups/categories/{group.directory.id}">{group.directory.name}</a> / </virtual> <a href="#/groups/admin/{group.id}">{group.name}</a> </li> </ul> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> <div class="hr"></div> <div class="kor-text-right kor-api-links"> <a href="/entities/{data.id}.json" target="_blank"><i class="fa fa-file-text"></i>{t(\'show_json\')}</a><br> <a href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank"><i class="fa fa-code"></i>{t(\'show_oai_pmh\')}</a> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}" title="{t(\'larger\')}"> <img riot-src="{data.medium.url.preview}"> </a> <div class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}" title="{t(\'image_transformations.\' + op)}"><i class="fa fa-{opIcon(op)}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="{data.medium.url.normal}" target="_blank">{t(\'verbs.maximize\')}</a> </span> | <a href="{rootUrl()}mirador?id={data.id}&manifest={rootUrl()}mirador/{data.id}" onclick="{openMirador}">{t(\'nouns.mirador\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="{data.medium.url.original.replace(/\\/images\\//, \'/download/\')}">{t(\'nouns.original\')} |</a> <a href="{data.medium.url.normal.replace(/\\/images\\//, \'/download/\')}"> {t(\'nouns.enlargement\')} </a> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </div> </div> </div> <div class="kor-content-box" if="{data}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="#/upload?relate_with={data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var fetch, linkify_properties, tag;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -16614,13 +16794,25 @@ riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="
             });
         }
     };
-    tag.visibleFields = function() {
+    tag.fields = function() {
         var f, i, len, ref, results;
         ref = tag.data.fields;
         results = [];
         for (i = 0, len = ref.length; i < len; i++) {
             f = ref[i];
-            if (f.value && f.show_on_entity) {
+            if (f.show_on_entity) {
+                results.push(f);
+            }
+        }
+        return results;
+    };
+    tag.visibleFields = function() {
+        var f, i, len, ref, results;
+        ref = tag.fields();
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+            f = ref[i];
+            if (f.value) {
                 results.push(f);
             }
         }
@@ -16798,7 +16990,8 @@ riot.tag2("kor-isolated-entities", '<div class="kor-content-box"> <h1>{tcap(\'no
             data: {
                 include: "kind",
                 isolated: true,
-                page: tag.opts.query.page
+                page: tag.opts.query.page,
+                per_page: 16
             },
             success: function(data) {
                 tag.data = data;
@@ -17259,7 +17452,7 @@ riot.tag2("kor-password-recovery", '<div class="kor-layout-left kor-layout-small
     };
 });
 
-riot.tag2("kor-profile", '<kor-help-button key="profile"></kor-help-button> <div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'objects.edit\', {interpolations: {o: \'nouns.profile\'}})}</h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <virtual if="{isFederationAuth()}"> {tcap(\'messages.federation_password_reset_facility\')} {tcap(\'please\')} <a href="{passwordResetUrl()}"> {t(\'messages.federation_password_reset_prompt\')} </a> </virtual> <virtual if="{!isFederationAuth()}"> <kor-input label="{tcap(\'activerecord.attributes.user.plain_password\')}" name="plain_password" type="password" ref="fields" errors="{errors.plain_password}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.plain_password_confirmation\')}" name="plain_password_confirmation" type="password" ref="fields" errors="{errors.plain_password_confirmation}"></kor-input> </virtual> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.locale\')}" name="locale" type="select" options="{[\'de\', \'en\']}" ref="fields" riot-value="{data.locale}"></kor-input> <div class="hr"></div> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.user.default_collection_id\')}" name="default_collection_id" type="select" options="{collections.records}" ref="fields" riot-value="{data.default_collection_id}"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-profile", '<kor-help-button key="profile"></kor-help-button> <div class="kor-layout-left kor-layout-large" show="{loaded}"> <div class="kor-content-box"> <h1>{tcap(\'objects.edit\', {interpolations: {o: \'nouns.profile\'}})}</h1> <form onsubmit="{submit}" if="{data}"> <kor-input label="{tcap(\'activerecord.attributes.user.full_name\')}" name="full_name" ref="fields" riot-value="{data.full_name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.name\')}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.email\')}" name="email" ref="fields" riot-value="{data.email}" errors="{errors.email}"></kor-input> <div class="hr"></div> <virtual if="{isFederationAuth()}"> {tcap(\'messages.federation_password_reset_facility\')} {tcap(\'please\')} <a href="{passwordResetUrl()}"> {t(\'messages.federation_password_reset_prompt\')} </a> </virtual> <virtual if="{!isFederationAuth()}"> <kor-input label="{tcap(\'activerecord.attributes.user.plain_password\')}" name="plain_password" autocomplete="new-password" type="password" ref="fields" errors="{errors.plain_password}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.user.plain_password_confirmation\')}" name="plain_password_confirmation" type="password" autocomplete="new-password" ref="fields" errors="{errors.plain_password_confirmation}"></kor-input> </virtual> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.api_key\')}" name="api_key" type="textarea" ref="fields" riot-value="{data.api_key}" errors="{errors.api_key}"></kor-input> <div class="hr"></div> <kor-input label="{tcap(\'activerecord.attributes.user.locale\')}" name="locale" type="select" options="{[\'de\', \'en\']}" ref="fields" riot-value="{data.locale}"></kor-input> <div class="hr"></div> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.user.default_collection_id\')}" name="default_collection_id" type="select" options="{collections.records}" ref="fields" riot-value="{data.default_collection_id}"></kor-input> <div class="hr"></div> <kor-input type="submit"></kor-input> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var expiresAtTag, fetchCollections, fetchUser, tag, update, values;
     tag = this;
     tag.mixin(wApp.mixins.sessionAware);
@@ -17863,7 +18056,7 @@ riot.tag2("kor-relations", '<div class="kor-content-box"> <div class="pull-right
     };
 });
 
-riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search\')}</h1> <form onsubmit="{submit}"> <kor-collection-selector show="{allowedTo(\'create\')}" name="collection_id" multiple="{true}" riot-value="{criteria.collection_id}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" riot-value="{criteria.kind_id}" ref="fields" onchange="{selectKind}" include-media="{true}"></kor-kind-selector> <kor-input if="{elastic()}" name="terms" label="{tcap(\'all_fields\')}" riot-value="{criteria.terms}" ref="fields" help="{tcap(\'help.terms_query\')}"></kor-input> <kor-input name="name" label="{config()[\'search_entity_name\']}" riot-value="{criteria.name}" ref="fields" help="{tcap(\'help.name_query\')}"></kor-input> <kor-input name="tags" label="{tcap(\'nouns.tag\', {count: \'other\'})}" riot-value="{criteria.tags}" ref="fields"></kor-input> <kor-input name="dating" label="{tcap(\'activerecord.models.entity_dating\')}" riot-value="{criteria.dating}" ref="fields" help="{tcap(\'help.dating_query\')}"></kor-input> <virtual if="{isMedia(kind)}"> <div class="hr"></div> <kor-input name="file_name" label="{tcap(\'activerecord.attributes.medium.file_name\')}" riot-value="{criteria.file_name}" ref="fields"></kor-input> <kor-input if="{mime_types}" name="file_type" label="{tcap(\'activerecord.attributes.medium.file_type\')}" type="select" options="{mime_types}" placeholder="{t(\'all\')}" riot-value="{criteria.file_type}" ref="fields"></kor-input> <kor-input name="file_size" label="{tcap(\'activerecord.attributes.medium.file_size\')}" riot-value="{criteria.file_size}" ref="fields" help="{tcap(\'help.file_size_query\')}"></kor-input> <kor-input name="datahash" label="{tcap(\'activerecord.attributes.medium.datahash\')}" riot-value="{criteria.datahash}" ref="fields"></kor-input> </virtual> <virtual if="{elastic()}"> <virtual if="{kind && kind.fields.length}"> <div class="hr"></div> <kor-input each="{field in kind.fields}" label="{field.search_label}" name="dataset_{field.name}" riot-value="{criteria[\'dataset_\' + field.name]}" ref="fields"></kor-input> </virtual> <div class="hr"></div> <kor-input name="property" label="{tcap(\'activerecord.attributes.entity.properties\')}" riot-value="{criteria.property}" ref="fields"></kor-input> <kor-input name="related" label="{tcap(\'by_related_entities\')}" riot-value="{criteria.related}" ref="fields"></kor-input> </virtual> <div class="kor-text-right"> <kor-input type="submit" label="{tcap(\'verbs.search\')}"></kor-input> </div> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search_results\')}</h1> </div> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <div class="search-results" if="{data && data.total > 0}"> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="top"></kor-pagination> <div class="kor-search-results"> <kor-search-result each="{entity in data.records}" entity="{entity}"></kor-search-result> </div> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="bottom"></kor-pagination> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div class="kor-layout-left kor-layout-small"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search\')}</h1> <form onsubmit="{submit}" onreset="{reset}"> <kor-collection-selector show="{allowedTo(\'create\')}" name="collection_id" multiple="{true}" riot-value="{criteria.collection_id}" policy="view" ref="fields"></kor-collection-selector> <kor-kind-selector name="kind_id" riot-value="{criteria.kind_id}" ref="fields" onchange="{selectKind}" include-media="{true}"></kor-kind-selector> <kor-input if="{elastic()}" name="terms" label="{tcap(\'all_fields\')}" riot-value="{criteria.terms}" ref="fields" help="{tcap(\'help.terms_query\')}"></kor-input> <kor-input name="name" label="{config()[\'search_entity_name\']}" riot-value="{criteria.name}" ref="fields" help="{tcap(\'help.name_query\')}"></kor-input> <kor-input name="tags" label="{tcap(\'nouns.tag\', {count: \'other\'})}" riot-value="{criteria.tags}" ref="fields"></kor-input> <kor-input name="dating" label="{tcap(\'activerecord.models.entity_dating\')}" riot-value="{criteria.dating}" ref="fields" help="{tcap(\'help.dating_query\')}"></kor-input> <virtual if="{isMedia(kind)}"> <div class="hr"></div> <kor-input name="file_name" label="{tcap(\'activerecord.attributes.medium.file_name\')}" riot-value="{criteria.file_name}" ref="fields"></kor-input> <kor-input if="{mime_types}" name="file_type" label="{tcap(\'activerecord.attributes.medium.file_type\')}" type="select" options="{mime_types}" placeholder="{t(\'all\')}" riot-value="{criteria.file_type}" ref="fields"></kor-input> <kor-input name="file_size" label="{tcap(\'activerecord.attributes.medium.file_size\')}" riot-value="{criteria.file_size}" ref="fields" help="{tcap(\'help.file_size_query\')}"></kor-input> <kor-input name="datahash" label="{tcap(\'activerecord.attributes.medium.datahash\')}" riot-value="{criteria.datahash}" ref="fields"></kor-input> </virtual> <virtual if="{elastic()}"> <virtual if="{kind && kind.fields.length}"> <div class="hr"></div> <kor-input each="{field in kind.fields}" label="{field.search_label}" name="dataset_{field.name}" riot-value="{criteria[\'dataset_\' + field.name]}" ref="fields"></kor-input> </virtual> <div class="hr"></div> <kor-input name="property" label="{tcap(\'activerecord.attributes.entity.properties\')}" riot-value="{criteria.property}" ref="fields"></kor-input> <kor-input name="related" label="{tcap(\'by_related_entities\')}" riot-value="{criteria.related}" ref="fields"></kor-input> </virtual> <div class="buttons kor-text-right"> <kor-input type="reset" label="{tcap(\'verbs.reset\')}"></kor-input> <kor-input type="submit" label="{tcap(\'verbs.search\')}"></kor-input> </div> </form> </div> </div> <div class="kor-layout-right kor-layout-large"> <div class="kor-content-box"> <h1>{tcap(\'nouns.search_results\')}</h1> </div> <kor-nothing-found data="{data}" type="entity"></kor-nothing-found> <div class="search-results" if="{data && data.total > 0}"> <div class="controls header"> <div> <strong>{data.total} {t(\'nouns.result\', {count: \'other\'})}</strong> <div class="sort"> {t(\'sort_by\')} <virtual if="{wApp.routing.query()[\'terms\']}"> <kor-sort-by key="_score" force-direction="desc"> {tcap(\'relevance\')} </kor-sort-by> | </virtual> <kor-sort-by key="name"> {tcap(\'activerecord.attributes.entity.name\')} </kor-sort-by> | <kor-sort-by key="datings.from"> {tcap(\'datings.default\')} </kor-sort-by> </div> </div> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="top"></kor-pagination> </div> <div class="kor-search-results"> <kor-search-result each="{entity in data.records}" entity="{entity}"></kor-search-result> </div> <div class="controls footer"> <div> <strong>{data.total} {t(\'nouns.result\', {count: \'other\'})}</strong> </div> <kor-pagination page="{data.page}" per-page="{data.per_page}" total="{data.total}" on-paginate="{page}" class="bottom"></kor-pagination> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     var tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -17895,6 +18088,15 @@ riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div c
         event.preventDefault();
         wApp.routing.query(params(), true);
     };
+    tag.reset = function(event) {
+        wApp.routing.query(params(), true);
+        var domainIds = tag.tags["kor-collection-selector"].value();
+        var kindId = tag.tags["kor-kind-selector"].value();
+        wApp.routing.query({
+            kind_id: kindId,
+            collection_id: domainIds
+        }, true);
+    };
     tag.page = function(newPage) {
         wApp.routing.query({
             page: newPage
@@ -17905,9 +18107,12 @@ riot.tag2("kor-search", '<kor-help-button key="search"></kor-help-button> <div c
         if (!id || id == "0") {
             id = null;
         }
-        wApp.routing.query({
+        var params = {
             kind_id: id
-        });
+        };
+        var domainIds = tag.tags["kor-collection-selector"].value();
+        if (domainIds.length) params["collection_id"] = domainIds;
+        wApp.routing.query(params);
     };
     tag.elastic = function() {
         return wApp.info.data.elastic;
@@ -19092,6 +19297,10 @@ riot.tag2("kor-sort-by", '<a href="#" onclick="{click}"><yield></yield>{directio
                 newQuery["direction"] = "asc";
             }
         }
+        var fd = tag.opts.forceDirection;
+        if (fd) {
+            newQuery["direction"] = fd;
+        }
         wApp.routing.query(newQuery);
     };
     tag.directionIndicator = function() {
@@ -19109,6 +19318,8 @@ riot.tag2("kor-sort-by", '<a href="#" onclick="{click}"><yield></yield>{directio
         return wApp.routing.query()["sort"];
     };
     var currentDirection = function() {
+        var fd = tag.opts.forceDirection;
+        if (fd) return fd;
         return wApp.routing.query()["direction"];
     };
     var currentPage = function() {
@@ -19637,12 +19848,20 @@ riot.tag2("w-app-loader", '<div class="app" ref="target"> <div class="kor-loadin
         m = Zepto("<meta>").attr("name", "description").attr("keywords", wApp.i18n.t(locale, "meta.keywords"));
         meta.after(m);
         var url = wApp.info.data.custom_css;
-        if (url) {
-            var link = Zepto('<link rel="stylesheet" href="' + url + '">');
-            link[0].onload = showBody;
-            Zepto("head").append(link);
-        } else {
+        if (!url) {
             showBody();
+        } else {
+            fetch(url).then(function(response) {
+                if (response.ok) {
+                    var link = Zepto('<link rel="stylesheet" href="' + url + '">');
+                    link[0].onload = showBody;
+                    Zepto("head").append(link);
+                } else {
+                    showBody();
+                }
+            }).catch(function(error) {
+                showBody();
+            });
         }
     };
     var showBody = function() {

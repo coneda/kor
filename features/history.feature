@@ -21,7 +21,6 @@ Feature: History
     When I click "add to clipboard"
     Then I should be on the entity page for "Nürnberg"
 
-  @notravis
   Scenario: Back button on denied page
     And I am on the home page
     When I follow "New entries"

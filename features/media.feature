@@ -14,7 +14,6 @@ Feature: Media
     And I go to the entity page for the last medium
     Then I should see element "img[src*='/media/images/preview/000/000/002/image.jpg']" within ".viewer"
     
-  @notravis
   Scenario: Upload a video and watch it
     Given I am logged in as "admin"
     And the medium "video_a"

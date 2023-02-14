@@ -56,7 +56,6 @@ Feature: search
     And I should not see field "GND-ID"
     And I should not see field "Properties"
 
-  @notravis
   Scenario: using browser back function to restore previous criteria and results
     Given I am logged in as "admin"
     And I am on the search page
