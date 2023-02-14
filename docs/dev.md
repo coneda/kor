@@ -1,4 +1,4 @@
-# ConedaKOR Development Documentation
+# ConedaKOR documentation | Developers
 
 This is a short introduction to the ConedaKOR Source-Code as well as the
 functionality its APIs exposes.
