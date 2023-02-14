@@ -45,7 +45,7 @@ class User < ApplicationRecord
     confirmation: true
   )
   validates(:plain_password_confirmation,
-    presence: {if: Proc.new{|u| u.plain_password.present?}},
+    presence: {if: proc{ |u| u.plain_password.present? }}
   )
 
   validate :validate_empty_personal_collection
@@ -109,7 +109,7 @@ class User < ApplicationRecord
     end
 
     if activation_hash.blank?
-      self.activation_hash = User.generate_activation_hash 
+      self.activation_hash = User.generate_activation_hash
     end
 
     if api_key.blank?

@@ -218,8 +218,8 @@ class Kor::Tasks
 
     rebuild = true
     last_built_at = Time.now
-    
-    while true
+
+    loop do
       if rebuild
         begin
           puts "#{Time.now} building"
@@ -239,7 +239,7 @@ class Kor::Tasks
         end
       end
 
-      stat = [data_file, intro_file, erb_file].map{|f| File.stat(f).mtime}.max
+      stat = [data_file, intro_file, erb_file].map{ |f| File.stat(f).mtime }.max
 
       if last_built_at < stat
         rebuild = true
@@ -292,7 +292,7 @@ class Kor::Tasks
       }
     )
 
-    system 'rm', '-rf', "#{ENV['DATA_DIR']}/media"
+    system 'rm', '-rf', "#{ENV.fetch('DATA_DIR')}/media"
   end
 
   def self.print_table(data)

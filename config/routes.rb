@@ -117,7 +117,7 @@ Rails.application.routes.draw do
         patch 'entities'
       end
     end
-    
+
     resources :credentials, except: ['edit', 'new']
 
     resources :entities do

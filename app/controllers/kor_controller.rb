@@ -20,7 +20,7 @@ class KorController < JsonController
   def api
     html_file = "#{Rails.root}/public/api.html"
 
-    unless File.exists?(html_file)
+    unless File.exist?(html_file)
       Kor::Tasks.api_docs
     end
 

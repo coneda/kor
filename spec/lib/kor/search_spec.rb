@@ -374,7 +374,7 @@ RSpec.describe Kor::Search do
       entity = mona_lisa
       entity.update(name: 'É Mona Lisa')
       Kor::Elastic.refresh
-      
+
       search = described_class.new(admin,
         sort: {column: 'name', direction: 'asc'}
       )
