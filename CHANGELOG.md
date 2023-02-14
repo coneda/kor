@@ -5,8 +5,21 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history and the closed issues on GitHub.
 
-## Version ???
+## Version 5.0.0
 
+This is a major feature release. For details on the many bugfixes and new
+features, please have a look at the
+[milestone summary](https://github.com/coneda/kor/issues?q=is%3Aissue+milestone%3Av5.0.0).
+Here are a few highlights:
+
+* we reworked the documentation for end users, system administrators and
+  developers
+* now using rails 7.0.0
+* search results can be sorted by relevance, alphabetically or by date
+* the total number of search results is now rendered
+* the search and edit forms now have sticky buttons for save and reset
+* erroneous custom css doesn't prevent the page from loading anymore
+* compatibility with MySQL 8 / MariaDB 10.5
 * entities can now be cloned
 * admins can now create new users without sending login credentials via mail
 * the "new entities" section has considerably more options for filtering and

@@ -38,7 +38,7 @@ RSpec.describe IdentifiersController, type: :controller do
 
     get :resolve, params: {kind: 'x', id: '1234'}, format: 'html'
     expect(response).to be_a_not_found
-    expect(response.content_type).to eq('text/plain')
+    expect(response.content_type).to eq('text/plain; charset=utf-8')
   end
 
   it 'should resolve by medium id' do
