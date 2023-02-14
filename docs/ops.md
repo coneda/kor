@@ -1,4 +1,4 @@
-# Installation & Maintenance
+# ConedaKOR documentation | System administrators
 
 This is the ConedaKOR system administrator's guide. It covers system requirements, installation, updates and maintenance. Since most of the tasks we are discussing here are happening on the command line, we are assuming some familiarity with the linux terminal and the linux ecosystem in general.
 
