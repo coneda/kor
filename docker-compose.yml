@@ -43,6 +43,9 @@ services:
     image: elasticsearch:5.6.16
     volumes:
       - index_data:/var/lib/mysql
+    ulimits:
+      nofile: 65536
+
 volumes:
   kor_data: {}
   db_data: {}

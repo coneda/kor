@@ -1,8 +1,10 @@
 FROM ruby:3.0.4
 
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+
 RUN \
   apt-get update && \
-  apt-get install -y ffmpeg nodejs npm rsync default-mysql-client zip
+  apt-get install -y ffmpeg nodejs rsync default-mysql-client zip
 
 ADD . /opt/kor
 WORKDIR /opt/kor

@@ -385,7 +385,7 @@ class EntitiesController < JsonController
 
     def with_lock(record, &_block)
       if record
-        record.reload.with_lock(&block)
+        record.reload.with_lock(&_block)
       else
         yield
       end
