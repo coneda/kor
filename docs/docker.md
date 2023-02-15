@@ -1,4 +1,4 @@
-# Installation (Docker)
+# ConedaKOR documentation | Installation (Docker)
 
 These are our instructions to run ConedaKOR with [docker](https://docker.com). We wrote them to enable you to have a instance of ConedaKOR up and running as fast as possible to learn about it and to discover its functionality. We expect this to take 10 minutes or less. These steps should work on Windows, MacOS and Linux.
 
