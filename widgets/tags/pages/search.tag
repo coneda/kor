@@ -96,13 +96,25 @@
           <virtual if={kind && kind.fields.length}>
             <div class="hr"></div>
 
-            <kor-input
-              each={field in kind.fields}
-              label={field.search_label}
-              name="dataset_{field.name}"
-              value={criteria['dataset_' + field.name]}
-              ref="fields"
-            />
+            <virtual each={field in kind.fields}>
+              <kor-input
+                if={field.type != 'Fields::Select'}
+                label={field.search_label}
+                name="dataset_{field.name}"
+                value={criteria['dataset_' + field.name]}
+                ref="fields"
+              />
+              <kor-input
+                if={field.type == 'Fields::Select'}
+                label={field.search_label}
+                name="dataset_{field.name}"
+                type="select"
+                options={field.values.split("\n")}
+                placeholder=""
+                value={criteria['dataset_' + field.name]}
+                ref="fields"
+              />
+            </virtual>
           </virtual>
 
           <div class="hr"></div>
