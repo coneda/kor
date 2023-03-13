@@ -1,5 +1,9 @@
 # ConedaKOR documentation | Users
 
+[Anne Klammt](https://orcid.org/0000-0003-3697-9241) (Writing – original draft)
+[Moritz Schepp](https://orcid.org/0000-0003-4237-816X) (Writing – review & editing)
+[Thorsten Wübbena](https://orcid.org/0000-0001-8172-6097) (Validation)
+
 ## Target audience for the guidelines
 
 These guidelines are aimed at scholars and institutions who wish to collect, manage and store their data using the ConedaKOR software. ConedaKOR allows for granular rights management differentiating among the administration, the input and editing of further data records, and finally the search in the database. These roles are termed *Administrator*, *Editor*, and *User*. The guidelines are divided into four sections that address the requirements and duties of these three roles. A separate [document](ops.md) is aimed at system administrators.
