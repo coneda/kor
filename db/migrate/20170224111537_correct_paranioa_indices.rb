@@ -1,4 +1,4 @@
-class CorrectParanioaIndices < ActiveRecord::Migration
+class CorrectParanioaIndices < ActiveRecord::Migration[5.0]
   def change
     [:kinds, :entities, :relations, :relationships].each do |t|
       remove_index t, name: "index_#{t}_on_deleted_at"

@@ -1,4 +1,4 @@
-class AddPositionToField < ActiveRecord::Migration
+class AddPositionToField < ActiveRecord::Migration[5.0]
   def up
     unless column_exists?(:fields, :position)
       add_column :fields, :position, :integer

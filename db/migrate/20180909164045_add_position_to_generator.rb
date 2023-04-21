@@ -1,4 +1,4 @@
-class AddPositionToGenerator < ActiveRecord::Migration
+class AddPositionToGenerator < ActiveRecord::Migration[5.0]
   def up
     unless column_exists?(:generators, :position)
       add_column :generators, :position, :integer

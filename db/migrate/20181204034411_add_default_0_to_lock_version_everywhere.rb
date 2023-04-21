@@ -1,4 +1,4 @@
-class AddDefault0ToLockVersionEverywhere < ActiveRecord::Migration
+class AddDefault0ToLockVersionEverywhere < ActiveRecord::Migration[5.0]
   def up
     tables = [
       :authority_group_categories,

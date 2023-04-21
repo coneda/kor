@@ -1,4 +1,4 @@
-class FixDatings < ActiveRecord::Migration
+class FixDatings < ActiveRecord::Migration[5.0]
   def up
     EntityDating.find_each do |ed|
       parsed = ed.class.parse(ed.dating_string)
