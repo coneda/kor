@@ -1,5 +1,9 @@
 # ConedaKOR documentation | System administrators
 
+[Moritz Schepp](https://orcid.org/0000-0003-4237-816X)(Writing – original draft)
+[Thorsten Wübbena](https://orcid.org/0000-0001-8172-6097) (Validation)
+
+
 This is the ConedaKOR system administrator's guide. It covers system requirements, installation, updates and maintenance. Since most of the tasks we are discussing here are happening on the command line, we are assuming some familiarity with the linux terminal and the linux ecosystem in general.
 
 - [Requirements](#requirements)

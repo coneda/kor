@@ -1,5 +1,8 @@
 # ConedaKOR documentation | Developers
 
+[Moritz Schepp](https://orcid.org/0000-0003-4237-816X) (Writing – original draft)
+[Thorsten Wübbena](https://orcid.org/0000-0001-8172-6097) (Validation)
+
 This is a short introduction to the ConedaKOR Source-Code as well as the
 functionality its APIs exposes.
 
