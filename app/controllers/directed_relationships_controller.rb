@@ -30,4 +30,20 @@ class DirectedRelationshipsController < JsonController
       render_403
     end
   end
+
+  def promote
+    @record = DirectedRelationship.find(params[:id])
+
+    if authorized_for_relationship?(@record, :edit)
+      max = DirectedRelationship.
+        where(from_id: @record.from_id).
+        where(relation_name: @record.relation_name).
+        maximum(:position)
+      @record.update(position: max + 1)
+
+      render_updated @record.relationship
+    else
+      render_403
+    end
+  end
 end

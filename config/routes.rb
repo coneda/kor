@@ -62,7 +62,11 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :relationships, only: ['index', 'show'], controller: 'directed_relationships'
+    resources :relationships, only: ['index', 'show'], controller: 'directed_relationships' do
+      member do
+        patch 'promote'
+      end
+    end
     resources :relationships, only: ['create', 'update', 'destroy']
 
     resources :authority_group_categories, except: ['new', 'edit'] do

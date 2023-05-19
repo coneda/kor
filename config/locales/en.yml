@@ -640,6 +640,7 @@ en:
     new: "create %{o}"
     create_success: "%{o} has been created"
     edit: "edit %{o}"
+    promote: "promote %{o}"
     update_success: "%{o} has been changed"
     delete: "delete %{o}"
     destroy_success: "%{o} has been deleted"

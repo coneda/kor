@@ -370,3 +370,10 @@ end
 Then('I should see page title {string}') do |title|
   expect(page.title).to eq(title)
 end
+
+Then('I should see relationships {string}') do |string|
+  should = string.split(/\s*,\s*/)
+  is = all('kor-relationship kor-entity a').map{|r| r.text}
+
+  expect(is).to eq(should)
+end

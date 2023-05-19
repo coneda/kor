@@ -583,6 +583,16 @@ scopes:
               properties: a list of objects with keys label and value
               lock_version:
       -
+        description: promote a relationship (changes only one way)
+        path: '/:id/promote'
+        method: 'patch'
+        params:
+          - 
+            name: id
+            type: integer
+            required: true
+            description: the id of the relationship to promote
+      -
         description: remove (soft-delete) a (two-way) relationship
         path: '/:id'
         method: 'delete'

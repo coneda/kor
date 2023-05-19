@@ -467,6 +467,12 @@ kor-relationship, [data-is=kor-relationship] {
       td {border-bottom: none;}
     }
   }
+
+  &:first-of-type {
+    a.promote {
+      display: none;
+    }
+  }
 }
 
 kor-relationship-editor, [data-is=kor-relationship-editor] {

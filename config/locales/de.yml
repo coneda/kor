@@ -653,6 +653,7 @@ de:
     new: "%{o} anlegen"
     create_success: "%{o} wurde angelegt"
     edit: "%{o} bearbeiten"
+    promote: "%{o} vorne anstellen"
     update_success: "%{o} wurde abgeändert"
     delete: "%{o} löschen"
     destroy_success: "%{o} gelöscht"

@@ -206,3 +206,11 @@ Feature: Inplace relationship editor
     And I fill in "Dating" with "1522 perhaps?"
     And I press "Save"
     Then I should see "is invalid" within "kor-datings-editor"
+
+  Scenario: change (directed) relationship order
+    Given I am logged in as "admin"
+    When I go to the entity page for "Leonardo"
+    Then I should see relationships "Mona Lisa (the real one), The Last Supper"
+    And I click icon "promote relationship"
+    Then I should see "relationship has been changed"
+    Then I should see relationships "The Last Supper, Mona Lisa (the real one)"

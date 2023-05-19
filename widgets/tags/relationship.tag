@@ -12,6 +12,12 @@
           ><i class="fa fa-pencil"></i></a>
           <a
             href="#"
+            onclick={promote}
+            title={t('objects.promote', {interpolations: {o: 'activerecord.models.relationship'}})}
+            class="promote"
+          ><i class="fa fa-angle-double-up"></i></a>
+          <a
+            href="#"
             onclick={delete}
             title={t('objects.delete', {interpolations: {o: 'activerecord.models.relationship'}})}
           ><i class="fa fa-trash"></i></a>
@@ -118,6 +124,15 @@
           url: "/relationships/#{tag.relationship.relationship_id}"
           success: (data) ->
             wApp.bus.trigger('relationship-deleted')
+      )
+
+    tag.promote = (event) ->
+      event.preventDefault()
+      Zepto.ajax(
+        type: 'PATCH'
+        url: "/relationships/#{tag.relationship.id}/promote"
+        success: (data) ->
+          wApp.bus.trigger('relationship-updated')
       )
 
     tag.pageUpdate = (newPage) ->

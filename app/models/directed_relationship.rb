@@ -1,4 +1,6 @@
 class DirectedRelationship < ApplicationRecord
+  default_scope{ order(position: :desc) }
+
   belongs_to :relationship, optional: true
   belongs_to :relation
   belongs_to :from, class_name: 'Entity'
