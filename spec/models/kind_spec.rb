@@ -53,12 +53,14 @@ RSpec.describe Kind do
 
   it 'should set updated_at when deleted' do
     sleep 1.1
-    works.destroy
+    travel_to 2.seconds.from_now do
+      works.destroy
 
-    works = Kind.with_deleted.find_by name: 'work'
+      works = Kind.with_deleted.find_by name: 'work'
 
-    expect(works.created_at).to be < works.updated_at
-    expect(works.deleted_at).to eq(works.updated_at)
+      expect(works.created_at).to be < works.updated_at
+      expect(works.deleted_at).to eq(works.updated_at)
+    end
   end
 
   it 'should save the schema as nil when an empty string is given' do

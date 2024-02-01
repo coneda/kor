@@ -1,7 +1,9 @@
-require 'webdrivers'
-
-Webdrivers.cache_time = 86_400 # 24 hours
+# require 'webdrivers'
+# Webdrivers.cache_time = 86_400 # 24 hours
+# Webdrivers::Chromedriver.required_version = '120.0.6099'
 # Webdrivers.logger.level = :DEBUG
+# logger = Selenium::WebDriver.logger
+# logger.level = :debug
 
 World(DataHelper)
 

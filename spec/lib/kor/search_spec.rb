@@ -468,6 +468,39 @@ RSpec.describe Kor::Search do
       expect(search.total).to eq(0)
     end
 
+    it 'should search with multi-term dataset values (field type: select)' do
+      works.fields << Fields::Select.new(
+        name: 'style',
+        show_label: 'Style',
+        values: ['oil', 'water color', 'photo']
+      )
+      mona_lisa.update(dataset: {style: 'oil'})
+      Kor::Elastic.refresh
+
+      search = described_class.new(
+        admin,
+        kind_id: works.id,
+        dataset: {style: 'oil painting'}
+      )
+      expect(search.total).to eq(0)
+    end
+
+    it 'should search with multi-term dataset values (field type: text)' do
+      works.fields << Field.new(
+        name: 'style',
+        show_label: 'Style'
+      )
+      mona_lisa.update(dataset: {style: 'oil painting'})
+      Kor::Elastic.refresh
+
+      search = described_class.new(
+        admin,
+        kind_id: works.id,
+        dataset: {style: 'oil painting'}
+      )
+      expect(search.total).to eq(1)
+    end
+
     it 'should search by related entities' do
       search = described_class.new(admin, related: 'mona')
       expect(search.total).to eq(4)

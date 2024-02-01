@@ -18,13 +18,6 @@ function install_requirements {
 
 function install_test_requirements {
   install_requirements
-
-  cd /opt
-  wget https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
-  unzip chromedriver_linux64.zip
-  mkdir -p /usr/local/bin
-  ln -sfn $(pwd)/chromedriver /usr/local/bin/chromedriver
-  chmod 755 $(pwd)/chromedriver
 }
 
 function install_dev_requirements {

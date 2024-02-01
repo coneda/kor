@@ -104,7 +104,12 @@ class Kor::Elastic
                 "dataset": {
                   "path_match": "dataset.*",
                   "mapping": {
-                    "type": "text"
+                    "type": "text",
+                    "fields": {
+                      "discrete": {
+                        "type": "keyword"
+                      }
+                    }
                   }
                 }
               }
@@ -350,7 +355,7 @@ class Kor::Elastic
     by_updated_before(criteria[:updated_before])
     by_dating(criteria[:dating])
     by_tag(criteria[:tags])
-    by_dataset(criteria[:dataset])
+    by_dataset(criteria[:kind_id], criteria[:dataset])
     by_related(criteria[:related])
     by_degree(criteria[:degree])
     by_max_degree(criteria[:max_degree])
@@ -516,14 +521,26 @@ class Kor::Elastic
     end
   end
 
-  def by_dataset(dataset)
+  def by_dataset(kind_id, dataset)
     if dataset.present?
-      dataset.each do |field, value|
+      dataset.each do |name, value|
+        key = dataset_key_for(kind_id, name)
+
         @query['must'] << {
-          'match' => {"dataset.#{field}" => value}
+          'match' => {key => value}
         }
       end
     end
+  end
+
+  def dataset_key_for(kind_id, name)
+    result = "dataset.#{name}"
+    return result if kind_id.blank?
+
+    kind_id = kind_id.first if kind_id.is_a?(Array)
+    field = Kind.find(kind_id).fields.find_by!(name: name)
+
+    field.is_a?(Fields::Select) ? "#{result}.discrete" : result
   end
 
   def by_related(related)
