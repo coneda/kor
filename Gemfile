@@ -10,6 +10,7 @@ gem 'factory_bot_rails'
 gem 'hirb'
 gem 'httpclient'
 gem 'jbuilder'
+gem 'kramdown'
 gem 'kt-delayed_paperclip'
 gem 'kt-paperclip'
 gem 'mysql2'
@@ -46,7 +47,6 @@ end
 
 group :test, :development do
   gem 'byebug'
-  gem 'kramdown'
   gem 'pry'
   gem 'yard'
 end

@@ -211,7 +211,7 @@ class Kor::Tasks
     end
   end
 
-  def self.api_docs(config = {})
+  def self.serve_api_docs(config = {})
     erb_file = "#{Rails.root}/docs/api.html.erb"
     intro_file = "#{Rails.root}/docs/api.intro.md"
     data_file = "#{Rails.root}/docs/api.yml"
@@ -221,22 +221,8 @@ class Kor::Tasks
 
     loop do
       if rebuild
-        begin
-          puts "#{Time.now} building"
-          intro = Kramdown::Document.new(File.read(intro_file)).to_html
-          data = YAML.load_file(data_file)
-          engine = ERB.new(File.read(erb_file), trim_mode: '-')
-          html = engine.result(binding)
-
-          File.open "#{Rails.root}/public/api.html", 'w' do |f|
-            f.write html
-          end
-        rescue StandardError => e
-          puts e.message
-          puts e.backtrace
-        ensure
-          rebuild = false
-        end
+        api_docs(config)
+        rebuild = false
       end
 
       stat = [data_file, intro_file, erb_file].map{ |f| File.stat(f).mtime }.max
@@ -248,6 +234,25 @@ class Kor::Tasks
         sleep 0.2
       end
     end
+  end
+
+  def self.api_docs(config = {})
+    erb_file = "#{Rails.root}/docs/api.html.erb"
+    intro_file = "#{Rails.root}/docs/api.intro.md"
+    data_file = "#{Rails.root}/docs/api.yml"
+
+    puts "#{Time.now} building"
+    intro = Kramdown::Document.new(File.read(intro_file)).to_html
+    data = YAML.load_file(data_file)
+    engine = ERB.new(File.read(erb_file), trim_mode: '-')
+    html = engine.result(binding)
+
+    File.open "#{Rails.root}/public/api.html", 'w' do |f|
+      f.write html
+    end
+  rescue StandardError => e
+    puts e.message
+    puts e.backtrace
   end
 
   def self.flush(config = {})
