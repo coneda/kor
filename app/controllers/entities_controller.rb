@@ -164,6 +164,21 @@ class EntitiesController < JsonController
           if transit
             @entity = Medium.where(datahash: @entity.medium.datahash).first.entity
             transit.add_entities @entity
+          end
+
+          relate =
+            params[:target_entity_id].present? &&
+            params[:relation_name].present? &&
+            params[:relation_name] != 'false'
+          if relate
+            @entity = Medium.where(datahash: @entity.medium.datahash).first.entity
+            relationship = Relationship.relate(@entity, params[:relation_name], params[:target_entity_id])
+            if authorized_for_relationship?(relationship, :create)
+              relationship.save!
+            end
+          end
+
+          if transit || relate
             render_created @entity and return
           end
         end

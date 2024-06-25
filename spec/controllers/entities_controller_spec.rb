@@ -515,7 +515,7 @@ RSpec.describe EntitiesController, type: :controller do
       expect(rels.first.relation_name).to eq('shows')
     end
 
-    it 'when a duplicate was found, put it in the designated group' do
+    it 'when its a duplicate, still add to group and related' do
       file = fixture_file_upload("image_a.jpg", 'image/jpeg')
       post 'create', params: {
         entity: {
@@ -523,12 +523,15 @@ RSpec.describe EntitiesController, type: :controller do
           collection_id: default.id,
           medium_attributes: {image: file}
         },
-        user_group_name: 'today'
+        user_group_name: 'today',
+        target_entity_id: last_supper.id,
+        relation_name: 'shows'
       }
       expect_created_response
       today = UserGroup.find_by!(name: 'today')
       expect(today.entities.size).to eq(1)
       expect(today.entities.first).to eq(picture_a)
+      expect(picture_a.outgoing[1].name).to eq('The Last Supper')
     end
 
     it 'should PATCH update' do
