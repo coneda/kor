@@ -2,6 +2,7 @@
 
   <div class="name">
     <a
+      if={allowedToUnorder()}
       title={t('order_actions.drop_custom')}
       class="unorder"
       href="#"
@@ -111,6 +112,9 @@
       unless tag.expanded == undefined
         for r in tag.tags['kor-relationship']
           r.trigger 'toggle', tag.expanded
+
+    tag.allowedToUnorder = ->
+      tag.allowedTo('edit', tag.opts.entity.collection_id)
 
   </script>
 

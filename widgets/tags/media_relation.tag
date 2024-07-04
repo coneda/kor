@@ -2,6 +2,7 @@
 
   <div class="name">
     <a
+      if={allowedToUnorder()}
       title={t('order_actions.drop_custom')}
       class="unorder"
       href="#"
@@ -88,6 +89,9 @@
           tag.data = data
           tag.update()
       )
+
+    tag.allowedToUnorder = ->
+      tag.allowedTo('edit', tag.opts.entity.collection_id)
 
   </script>
 
