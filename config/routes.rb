@@ -63,8 +63,11 @@ Rails.application.routes.draw do
     end
 
     resources :relationships, only: ['index', 'show'], controller: 'directed_relationships' do
+      collection do
+        delete 'unorder'
+      end
       member do
-        patch 'promote'
+        patch 'reorder'
       end
     end
     resources :relationships, only: ['create', 'update', 'destroy']

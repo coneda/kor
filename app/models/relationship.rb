@@ -28,6 +28,7 @@ class Relationship < ApplicationRecord
   before_validation :ensure_direction
   after_validation :ensure_uuid, :ensure_unique_properties, :ensure_directed
   after_save :connect_directed
+  after_destroy :reorder
 
   accepts_nested_attributes_for :datings, allow_destroy: true
 
@@ -100,6 +101,14 @@ class Relationship < ApplicationRecord
       self.normal.update_column :relationship_id, id
       self.reversal.update_column :relationship_id, id
     end
+  end
+
+  def reorder
+    service = Kor::RelatedOrder.new(normal.from_id, normal.relation_name)
+    service.remove(normal)
+
+    service = Kor::RelatedOrder.new(reversal.from_id, reversal.relation_name)
+    service.remove(reversal)
   end
 
   scope :with_ends, lambda{

@@ -1,6 +1,4 @@
 class DirectedRelationship < ApplicationRecord
-  default_scope{ order(position: :desc) }
-
   belongs_to :relationship, optional: true
   belongs_to :relation
   belongs_to :from, class_name: 'Entity'
@@ -40,5 +38,8 @@ class DirectedRelationship < ApplicationRecord
   }
   scope :order_by_name, lambda{
     with_to.order('tos.name ASC, directed_relationships.relationship_id ASC')
+  }
+  scope :order_by_position_and_name, lambda{
+    with_to.order('directed_relationships.position ASC, tos.name ASC, directed_relationships.relationship_id ASC')
   }
 end

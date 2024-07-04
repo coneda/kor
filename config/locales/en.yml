@@ -93,6 +93,7 @@ en:
   change_order: change order, use drag & drop
   relevance: relevance
   sort_by: sort by
+  custom_order: custom order
 
   help:
     terms_query: |
@@ -262,6 +263,13 @@ en:
     add_to_authority_group: "add to a global collection"
     add_to_user_group: "add to one of your own collections"
     move_to_collection: move to domains
+
+  order_actions:
+    to_top: "move to top"
+    to_bottom: "move to bottom"
+    up: "move up"
+    down: "move down"
+    drop_custom: "remove custom sort order"
 
   datings:
     default:
@@ -640,7 +648,6 @@ en:
     new: "create %{o}"
     create_success: "%{o} has been created"
     edit: "edit %{o}"
-    promote: "promote %{o}"
     update_success: "%{o} has been changed"
     delete: "delete %{o}"
     destroy_success: "%{o} has been deleted"

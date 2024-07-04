@@ -1,6 +1,15 @@
 <kor-relation>
 
   <div class="name">
+    <a
+      title={t('order_actions.drop_custom')}
+      class="unorder"
+      href="#"
+      onclick={unorder}
+    >
+      <i class="fa fa-sort"></i>
+    </a>
+
     <kor-pagination
       if={data}
       page={opts.query.page}
@@ -27,9 +36,10 @@
 
   <virtual if={data}>
     <kor-relationship
-      each={relationship in data.records}
+      each={relationship, i in data.records}
       entity={parent.opts.entity}
       relationship={relationship}
+      position={data.per_page * (data.page - 1) + i + 1}
     />
   </virtual>
 
@@ -60,6 +70,20 @@
     tag.pageUpdate = (newPage) ->
       opts.query.page = newPage
       fetch()
+
+    tag.unorder = (event) ->
+      event.preventDefault()
+
+      Zepto.ajax(
+        type: "DELETE"
+        url: "/relationships/unorder"
+        data: JSON.stringify({
+          from_id: tag.opts.entity.id
+          relation_name: tag.opts.name
+        })
+        success: (data) ->
+          tag.refresh()
+      )
 
     tag.refresh = -> fetch()
 

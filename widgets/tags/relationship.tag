@@ -12,10 +12,28 @@
           ><i class="fa fa-pencil"></i></a>
           <a
             href="#"
-            onclick={promote}
-            title={t('objects.promote', {interpolations: {o: 'activerecord.models.relationship'}})}
-            class="promote"
+            onclick={toTop}
+            title={t('order_actions.to_top')}
+            class="to_top"
           ><i class="fa fa-angle-double-up"></i></a>
+          <a
+            href="#"
+            onclick={up}
+            title={t('order_actions.up')}
+            class="up"
+          ><i class="fa fa-angle-up"></i></a>
+          <a
+            href="#"
+            onclick={down}
+            title={t('order_actions.down')}
+            class="down"
+          ><i class="fa fa-angle-down"></i></a>
+          <a
+            href="#"
+            onclick={toBottom}
+            title={t('order_actions.to_bottom')}
+            class="to_bottom"
+          ><i class="fa fa-angle-double-down"></i></a>
           <a
             href="#"
             onclick={delete}
@@ -93,6 +111,7 @@
 
     tag.on 'mount', ->
       tag.relationship = tag.opts.relationship
+      tag.position = tag.opts.position
       tag.query ||= {}
 
     tag.to = -> tag.relationship.to
@@ -126,11 +145,28 @@
             wApp.bus.trigger('relationship-deleted')
       )
 
-    tag.promote = (event) ->
+    tag.toTop = (event) ->
+      event.preventDefault()
+      tag.toPosition('top')
+
+    tag.up = (event) ->
+      event.preventDefault()
+      tag.toPosition(tag.opts.position - 1)
+
+    tag.down = (event) ->
+      event.preventDefault()
+      tag.toPosition(tag.opts.position + 1)
+
+    tag.toBottom = (event) ->
+      event.preventDefault()
+      tag.toPosition('bottom')
+
+    tag.toPosition = (position) ->
       event.preventDefault()
       Zepto.ajax(
         type: 'PATCH'
-        url: "/relationships/#{tag.relationship.id}/promote"
+        url: "/relationships/#{tag.relationship.id}/reorder"
+        data: JSON.stringify({position: position})
         success: (data) ->
           wApp.bus.trigger('relationship-updated')
       )

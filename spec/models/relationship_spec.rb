@@ -80,7 +80,7 @@ RSpec.describe Relationship do
     expect(relationship.save).to be(true)
   end
 
-  it 'validate without side effects' do
+  it 'should validate without side effects' do
     relationship = Relationship.relate(leonardo.id, 'has created', mona_lisa.id)
     relationship.valid?
     expect(relationship.valid?).to be_truthy
@@ -88,5 +88,20 @@ RSpec.describe Relationship do
     relationship = Relationship.relate(mona_lisa.id, 'has been created by', leonardo.id)
     relationship.valid?
     expect(relationship.valid?).to be_truthy
+  end
+
+  it 'should reorder directed_relationships when destroyed' do
+    FactoryBot.create(:picture_c)
+    Relationship.relate_and_save picture_c, 'shows', mona_lisa
+
+    rels = mona_lisa.outgoing_relationships.where(relation_name: 'is shown by')
+    Kor::RelatedOrder.move_to(rels[1], 1)
+
+    rels.reload
+    rels[0].relationship.destroy
+
+    rels.reload
+    expect(rels.size).to eq(1)
+    expect(rels[0].position).to eq(1)
   end
 end

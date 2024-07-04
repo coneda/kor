@@ -13,6 +13,11 @@ RSpec.describe DirectedRelationshipsController, type: :controller do
     expect(response).to be_forbidden
   end
 
+  it 'should not POST unorder' do
+    delete :unorder, params: {from_id: mona_lisa.id, relation_name: 'is shown by'}
+    expect(response).to be_forbidden
+  end
+
   context 'as jdoe' do
     before :each do
       current_user User.find_by!(name: 'jdoe')
@@ -105,6 +110,17 @@ RSpec.describe DirectedRelationshipsController, type: :controller do
 
       get :index, params: {relation_name: "shows,is located in"}
       expect_collection_response total: 4
+    end
+
+    it 'should POST unorder' do
+      delete :unorder
+      expect(response).not_to be_successful
+
+      delete :unorder, params: {
+        from_id: mona_lisa.id,
+        relation_name: 'is shown by'
+      }
+      expect_deleted_response
     end
   end
 end

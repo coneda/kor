@@ -400,6 +400,10 @@ kor-relation, [data-is=kor-relation] {
     top: 0.3rem;
   }
 
+  .unorder {
+    float: right;
+  }
+
   kor-pagination {
     float: right;
   }
@@ -408,6 +412,10 @@ kor-relation, [data-is=kor-relation] {
 kor-media-relation, [data-is=kor-media-relation] {
   .name {
     margin-bottom: 1rem;
+  }
+
+  .unorder {
+    float: right;
   }
 
   kor-pagination {
@@ -469,7 +477,21 @@ kor-relationship, [data-is=kor-relationship] {
   }
 
   &:first-of-type {
-    a.promote {
+    a.to_top {
+      display: none;
+    }
+
+    a.up {
+      display: none;
+    }
+  }
+
+  &:last-of-type {
+    a.to_bottom {
+      display: none;
+    }
+
+    a.down {
       display: none;
     }
   }

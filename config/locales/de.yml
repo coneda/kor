@@ -94,6 +94,7 @@ de:
   change_order: Reihenfolge ändern, verwenden Sie Drag & Drop
   relevance: Relevanz
   sort_by: sortieren nach
+  custom_order: benutzerdefinierte Reihenfolge
 
   help:
     terms_query: |
@@ -267,6 +268,13 @@ de:
     add_to_authority_group: einer globalen Sammlung hinzufügen
     add_to_user_group: einer eigenen Sammlung hinzufügen
     move_to_collection: "In Domäne verschieben"
+
+  order_actions:
+    to_top: "an den Anfang verschieben"
+    to_bottom: "ans Ende verschieben"
+    up: "nach oben verschieben"
+    down: "nach unten verschieben"
+    drop_custom: "benutzerdefinierte Sortierreihenfolge entfernen"
 
   datings:
     default:
