@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_18_235911) do
+ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
   create_table "authority_group_categories", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
     t.integer "lock_version", default: 0
     t.integer "parent_id"
@@ -126,6 +126,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_18_235911) do
     t.integer "medium_id"
     t.text "attachment", size: :medium
     t.datetime "deleted_at", precision: nil
+    t.string "sort_name"
     t.index ["collection_id", "kind_id"], name: "collections_kinds"
     t.index ["created_at"], name: "index_entities_on_created_at"
     t.index ["creator_id"], name: "index_entities_on_user_id"

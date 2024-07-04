@@ -164,7 +164,7 @@ class Entity < ApplicationRecord
   end
 
   before_validation :generate_uuid, :sanitize_distinct_name
-  before_save :generate_uuid, :add_to_user_group
+  before_save :generate_uuid, :generate_sort_name, :add_to_user_group
   after_commit :update_elastic, :update_identifiers
 
   def sanitize_distinct_name
@@ -173,6 +173,12 @@ class Entity < ApplicationRecord
 
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
+  end
+
+  def generate_sort_name
+    self.sort_name = display_name.gsub(/\d+/) do |m|
+      '%010d' % m.to_i
+    end
   end
 
   def update_elastic

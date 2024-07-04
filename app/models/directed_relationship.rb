@@ -37,12 +37,12 @@ class DirectedRelationship < ApplicationRecord
     kind_id.present? ? with_to.where('tos.kind_id NOT IN (?)', kind_id) : all
   }
   scope :order_by_name, lambda{
-    with_to.order('tos.name ASC, directed_relationships.relationship_id ASC')
+    with_to.order('tos.sort_name ASC, directed_relationships.relationship_id ASC')
   }
   scope :order_by_relation_name, lambda{
     with_to.order('relation_name ASC, directed_relationships.relationship_id ASC')
   }
   scope :order_by_position_and_name, lambda{
-    with_to.order('directed_relationships.position ASC, tos.name ASC, directed_relationships.relationship_id ASC')
+    with_to.order('directed_relationships.position ASC, tos.sort_name ASC, directed_relationships.relationship_id ASC')
   }
 end
