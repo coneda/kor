@@ -167,7 +167,7 @@ module DataHelper
       ],
       generators: [
         Generator.new(
-          name: 'gnd', directive: 'http://d-nb.info/gnd/{{entity.dataset.p227}}'
+          name: 'gnd', directive: 'http://d-nb.info/gnd/<%= entity.dataset.p227 %>'
         )
       ]
     works = FactoryBot.create :works, fields: [

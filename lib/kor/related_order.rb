@@ -14,13 +14,13 @@ class Kor::RelatedOrder
   end
 
   def self.to_top(dr)
-    move_to(dr, 1)
+    instance = new(dr.from_id, dr.relation_name)
+    instance.to_top(dr)
   end
 
   def self.to_bottom(dr)
-    max = new(dr.from_id, dr.relation_name).max
-
-    move_to(dr, max + 1)
+    instance = new(dr.from_id, dr.relation_name)
+    instance.to_bottom(dr)
   end
 
   def self.remove(dr)
@@ -36,6 +36,14 @@ class Kor::RelatedOrder
   def self.authorized?(dr, user)
     instance = new(dr.from_id, dr.relation_name)
     instance authorized?(user)
+  end
+
+  def to_top(dr)
+    move_to(dr, 1)
+  end
+
+  def to_bottom(dr)
+    move_to(dr, max + 1)
   end
 
   def move_to(dr, new_position)

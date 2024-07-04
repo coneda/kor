@@ -168,7 +168,7 @@
         url: "/relationships/#{tag.relationship.id}/reorder"
         data: JSON.stringify({position: position})
         success: (data) ->
-          wApp.bus.trigger('relationship-updated')
+          wApp.bus.trigger('relationship-reorder')
       )
 
     tag.pageUpdate = (newPage) ->

@@ -207,10 +207,18 @@ Feature: Inplace relationship editor
     And I press "Save"
     Then I should see "is invalid" within "kor-datings-editor"
 
-  Scenario: change (directed) relationship order
+  Scenario: move (directed) relationship to top
     Given I am logged in as "admin"
     When I go to the entity page for "Leonardo"
     Then I should see relationships "Mona Lisa (the real one), The Last Supper"
-    And I click icon "promote relationship"
-    Then I should see "relationship has been changed"
+    And I click icon "move to top"
+    Then I should see "custom order has been changed"
     Then I should see relationships "The Last Supper, Mona Lisa (the real one)"
+
+  Scenario: move (directed) relationship up
+    Given I am logged in as "admin"
+    When I go to the entity page for "Leonardo"
+    Then "Mona Lisa (the real one)" should be the first relationship of type "has created"
+    When I follow "move up" within the row for relationship "The Last Supper"
+    Then I should see "custom order has been changed"
+    And "The Last Supper" should be the first relationship of type "has created"

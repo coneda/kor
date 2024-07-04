@@ -52,7 +52,11 @@
 
     tag.on 'mount', ->
       tag.opts.query ||= {}
+      wApp.bus.on 'relationship-reorder', fetch
       fetch()
+
+    tag.on 'unmount', ->
+      wApp.bus.off 'relationship-reorder', fetch
 
     tag.reFetch = fetch
 

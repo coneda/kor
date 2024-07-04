@@ -377,3 +377,10 @@ Then('I should see relationships {string}') do |string|
 
   expect(is).to eq(should)
 end
+
+Then('{string} should be the first relationship of type {string}') do |entity, relation|
+  relation = find('kor-relation', text: relation)
+  relationship = relation.all('kor-relationship kor-entity .name')[0]
+
+  expect(relationship.text).to eq(entity)
+end

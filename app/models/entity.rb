@@ -294,7 +294,7 @@ class Entity < ApplicationRecord
     media_id = Kind.medium_kind_id
 
     scope = outgoing_relationships.
-      order_by_name.
+      order_by_relation_name.
       allowed(user, :view).
       includes(:to).
       group('directed_relationships.relation_name')

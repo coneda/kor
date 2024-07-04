@@ -35,6 +35,9 @@ module HtmlSelectorsHelpers
     when /the row for relation "([^"]+)"/
       [:css, '[data-is=kor-relations] tr', {text: $1}]
 
+    when /the row for relationship "([^"]+)"/
+      [:css, 'kor-relationship', {text: $1}]
+
     when /the cell for entity "([^"]+)"/
       [:css, 'kor-gallery-grid td', {text: $1}]
 

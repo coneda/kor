@@ -44,10 +44,12 @@
       wApp.bus.on 'relationship-created', fetch
       wApp.bus.on 'relationship-updated', fetch
       wApp.bus.on 'relationship-deleted', fetch
+      wApp.bus.on 'relationship-reorder', fetch
       tag.opts.query ||= {}
       fetch()
 
     tag.on 'unmount', ->
+      wApp.bus.off 'relationship-reorder', fetch
       wApp.bus.off 'relationship-deleted', fetch
       wApp.bus.off 'relationship-updated', fetch
       wApp.bus.off 'relationship-created', fetch

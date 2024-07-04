@@ -39,6 +39,9 @@ class DirectedRelationship < ApplicationRecord
   scope :order_by_name, lambda{
     with_to.order('tos.name ASC, directed_relationships.relationship_id ASC')
   }
+  scope :order_by_relation_name, lambda{
+    with_to.order('relation_name ASC, directed_relationships.relationship_id ASC')
+  }
   scope :order_by_position_and_name, lambda{
     with_to.order('directed_relationships.position ASC, tos.name ASC, directed_relationships.relationship_id ASC')
   }
