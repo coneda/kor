@@ -51,3 +51,10 @@ We keep it updated at [CHANGELOG.md](CHANGELOG.md)
 ## License
 
 See file [COPYING](COPYING)
+
+## Support
+
+Please use [GitHub issues](https://github.com/coneda/kor/issues) to report bugs
+and to submit feature requests.
+
+Commercial support is available through [Wendig OÜ](https://wendig.io).
