@@ -12,7 +12,7 @@ Scenario: default manifests
   Given I am logged in as "admin"
   When I go to the mirador page
   And I click element "a.addItemLink"
-  Then I should see "National Gallery of Art"
+  Then I should see "Hertford"
 
 Scenario: alternate launch page
   Given the setting "mirador_page_template" is "spec/fixtures/mirador.page.html"

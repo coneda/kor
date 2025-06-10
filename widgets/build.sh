@@ -51,11 +51,10 @@ function vendor {
 
 function lib {
   log "compiling lib"
-  cat \
-    widgets/app.js.coffee widgets/lib/*.js.coffee | \
-    node_modules/.bin/coffee -s -b -p | \
-    cat - widgets/lib/*.js \
-    > tmp/widgets/lib.js
+  TARGET="tmp/widgets/lib.js"
+  cat widgets/app.js > $TARGET
+  cat widgets/lib/*.js.coffee | node_modules/.bin/coffee -s -b -p >> $TARGET
+  cat widgets/lib/*.js >> $TARGET
 }
 
 function tags {
@@ -95,7 +94,7 @@ function watch_vendor {
 }
 
 function watch_lib {
-  onchange widgets/app.js.coffee widgets/lib -- widgets/build.sh lib
+  onchange widgets/app.js widgets/lib -- widgets/build.sh lib
 }
 
 function watch_tags {

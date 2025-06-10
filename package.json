@@ -34,7 +34,10 @@
     "watch:images": "widgets/build.sh watch_images",
     "server": "widgets/build.sh server",
     "clean": "widgets/build.sh clean",
-    "tocs": "widgets/build.sh tocs"
+    "tocs": "widgets/build.sh tocs",
+    "index": "bin/dev index",
+    "db": "bin/dev db",
+    "server": "bin/dev server"
   },
   "repository": {
     "type": "git",

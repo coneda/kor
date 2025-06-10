@@ -147,7 +147,7 @@ Feature: Inplace relationship editor
     Then I should not see "artwork_7"
     When I follow "next"
     Then I should see "artwork_7"
-    
+
   Scenario: Select another entity which should limit the choices for the relation
     Given I am logged in as "admin"
     When I go to the entity page for "Mona Lisa"
@@ -183,7 +183,7 @@ Feature: Inplace relationship editor
     And I press "delete" within "kor-datings-editor"
     And I press "Save"
     Then I should not see "first phase: 15. Jahrhundert"
-    
+
   Scenario: add and remove a dating without closing the editor
     Given I am logged in as "admin"
     When I go to the entity page for "Paris"

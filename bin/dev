@@ -1,8 +1,26 @@
 #!/bin/bash
 
-if [ -d /vagrant ]; then
-  cd /vagrant
+CMD=$1
+
+function kor-server {
   bundle exec rails s -b 0.0.0.0
-else
-  vagrant ssh -c "/vagrant/bin/dev"
-fi
+}
+
+function kor-db {
+  docker run --rm -ti \
+    --name kor-db \
+    --publish 3306:3306 \
+    --env MARIADB_ROOT_PASSWORD=root \
+    mariadb:10.7.3
+}
+
+function kor-index {
+  docker run --rm -ti \
+    --name kor-index \
+    --publish 9200:9200 \
+    --ulimit nofile=65536 \
+    elasticsearch:5.6.16
+}
+
+kor-$CMD
+
