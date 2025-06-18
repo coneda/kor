@@ -176,9 +176,11 @@ class Entity < ApplicationRecord
   end
 
   def generate_sort_name
-    self.sort_name = display_name.gsub(/\d+/) do |m|
+    sn = display_name.gsub(/\d+/) do |m|
       '%010d' % m.to_i
     end
+
+    self.sort_name = sn.first(255)
   end
 
   def update_elastic

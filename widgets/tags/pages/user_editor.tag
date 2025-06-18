@@ -210,14 +210,14 @@
     tag.submit = (event) ->
       event.preventDefault()
       p = if tag.opts.id then update() else create()
-      p.done (data) -> wApp.routing.path('/users')
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
+      p.then (data) -> wApp.routing.path('/users')
+      p.catch (response) ->
+        tag.errors = response.data.errors
         wApp.utils.scrollToTop()
-      p.always -> tag.update()
+      p.finally -> tag.update()
 
     # TODO: this needs to be done entirely on the server. The client should
-    # just tranfer the amount of days to add      
+    # just tranfer the amount of days to add
     tag.expiresIn = (days) ->
       (event) ->
         event.preventDefault()

@@ -4,6 +4,7 @@ wApp.info = {
       url: '/info',
       success: function (data) {
         wApp.info.data = data.info
+        console.log('INFO loaded')
       }
     })
   }

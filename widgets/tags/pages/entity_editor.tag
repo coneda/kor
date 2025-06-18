@@ -143,7 +143,7 @@
   <!-- <div class="kor-layout-left kor-layout-large"></div> -->
 
   <div class="clearfix"></div>
- 
+
   <script type="text/coffee">
     tag = this
     tag.mixin(wApp.mixins.sessionAware)
@@ -180,14 +180,14 @@
     tag.submit = (event) ->
       event.preventDefault()
       p = (if tag.opts.id then update() else create())
-      p.done (data) ->
+      p.then (data) ->
         tag.errors = {}
         id = tag.opts.id || data.id
         wApp.routing.path('/entities/' + id)
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
+      p.catch (response) ->
+        tag.errors = response.data.errors
         wApp.utils.scrollToTop()
-      p.always -> tag.update()
+      p.finally -> tag.update()
 
     tag.isMedium = ->
       kindId = parseInt(tag.data['kind_id']) || tag.opts.kindId
@@ -204,7 +204,7 @@
     tag.distinctNameLabel = ->
       return '' unless tag.kind
       wApp.utils.capitalize tag.kind.distinct_name_label
-      
+
 
     checkPermissions = ->
       policy = if tag.opts.id then 'edit' else 'create'

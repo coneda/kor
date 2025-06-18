@@ -1,4 +1,4 @@
-wApp.config = {
+const config = {
   setup: function () {
     return Zepto.ajax({
       url: '/settings',
@@ -22,14 +22,23 @@ wApp.config = {
   },
   showHelp: function (k) {
     wApp.bus.trigger('modal', 'kor-help', {key: k})
+  },
+  env: {
+    ROOT_URL: process.env.ROOT_URL
   }
 }
 
-wApp.mixins.config = {
-  config: function () {
-    return wApp.config.data.values
+if (typeof wApp !== 'undefined') {
+  wApp.config = config
+
+  wApp.mixins.config = {
+    config: function () {
+      return wApp.config.data.values
+    }
   }
+
+  wApp.bus.on('config-updated', wApp.config.refresh)
 }
 
-wApp.bus.on('config-updated', wApp.config.refresh)
+export default config
 

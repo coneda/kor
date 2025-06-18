@@ -10,7 +10,7 @@
     >
       <i class="fa fa-sort"></i>
     </a>
-    
+
     {opts.name}
 
     <kor-pagination
@@ -77,7 +77,7 @@
 
     fetch = ->
       Zepto.ajax(
-        url: "relationships"
+        url: "/relationships"
         data: {
           from_entity_id: tag.opts.entity.id
           page: tag.opts.query.page

@@ -125,14 +125,14 @@
     tag.submit = (event) ->
       event.preventDefault()
       p = (if tag.opts.id then update() else create())
-      p.done (data) ->
+      p.then (data) ->
         tag.errors = {}
         tag.opts.notify.trigger 'refresh'
         route("/kinds/#{tag.opts.kindId}/edit")
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
+      p.catch (response) ->
+        tag.errors = response.data.errors
         wApp.utils.scrollToTop()
-      p.always -> tag.update()
+      p.finally -> tag.update()
 
     create = ->
       Zepto.ajax(
