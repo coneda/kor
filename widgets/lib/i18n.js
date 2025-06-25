@@ -3,106 +3,106 @@
     Zepto.ajax({
       url: '/translations',
       success: (data) => wApp.i18n.translations = data.translations
-    });
+    })
   },
   locales: function() {
     if (!wApp.i18n.translations){
-      return [];
-    } 
-    return Object.keys(wApp.i18n.translations);
+      return []
+    }
+    return Object.keys(wApp.i18n.translations)
   },
   translate: function(locale, input, options) {
     if (!options){
-      options = {};
+      options = {}
     }
     if (!wApp.i18n.translations) {
-      return "";
+      return ""
     }
-  
+
   try {
-    if (typeof op)tions.count === undefined) {
-      options.count = 1;
+    if (typeof options.count === undefined) {
+      options.count = 1
     }
     if (options.warnMissingKey === undefined) {
-      options.warnMissingKey = true;
+      options.warnMissingKey = true
     }
-    var parts = input.split(".");
-    var result = wApp.i18n.translations[locale];
-    var part;
-    for (int i = 0; i < parts.length; i++) {
-      part = parts[i]; 
-      result = result[part];
+    var parts = input.split(".")
+    var result = wApp.i18n.translations[locale]
+    var part
+    for (var i = 0; i < parts.length; i++) {
+      part = parts[i]
+      result = result[part]
     }
-    var count = options.count === 1 ? 'one' : 'other';
-    result = result[count] || result;
+    var count = options.count === 1 ? 'one' : 'other'
+    result = result[count] || result
       if (options.interpolations) {
         for (var key in options.interpolations) {
           if (options.interpolations.hasOwnProperty(key)) {
-            var value = options.interpolations[key];
-            var regex = new RegExp("%\\{" + key + "\\}", "g");
-            var tvalue = wApp.i18n.translate(locale, value, { warnMissingKey: false });
+            var value = options.interpolations[key]
+            var regex = new RegExp("%\\{" + key + "\\}", "g")
+            var tvalue = wApp.i18n.translate(locale, value, { warnMissingKey: false })
             if (tvalue && tvalue !== value) {
-              value = tvalue;
+              value = tvalue
             }
-            result = result.replace(regex, value);
+            result = result.replace(regex, value)
           }
         }
       }
       if (options.capitalize) {
-        result = wApp.utils.capitalize(result);
+        result = wApp.utils.capitalize(result)
       }
-  
-      return result;
+
+      return result
   }
     catch (error) {
       if (options.warnMissingKey) {
-        console.warn(error, 'for key', input);
+        console.warn(error, 'for key', input)
       }
-      return "";
+      return ""
     }
   },
   localize: function(locale, input, format_name = 'date.formats.default') {
     try {
       if (!input) {
-        return "";
+        return ""
       }
-      var format = wApp.i18n.translate(locale, format_name);
-      var date = new Date(input);
-      return strftime(format, date);
+      var format = wApp.i18n.translate(locale, format_name)
+      var date = new Date(input)
+      return strftime(format, date)
     } catch (error) {
-      console.warn(error, 'for key', input);
-      return "";
+      console.warn(error, 'for key', input)
+      return ""
     }
   },
   humanSize: function(input) {
     if (input < 1024) {
-      return input + " B";
+      return input + " B"
     }
     if (input < 1024 * 1024) {
-      return (Math.round(input / 1024 * 100) / 100) + " KB";
+      return (Math.round(input / 1024 * 100) / 100) + " KB"
     }
     if (input < 1024 * 1024 * 1024) {
-      return (Math.round(input / (1024 * 1024) * 100) / 100) + " MB";
+      return (Math.round(input / (1024 * 1024) * 100) / 100) + " MB"
     }
     if (input < 1024 * 1024 * 1024 * 1024) {
-      return (Math.round(input / (1024 * 1024 * 1024) * 100) / 100) + " GB";
+      return (Math.round(input / (1024 * 1024 * 1024) * 100) / 100) + " GB"
     }
-    return "";
+    return ""
   }
 }
 wApp.mixins.i18n = {
   t: function(input, options = {}) {
-    return wApp.i18n.translate(this.locale(), input, options);
+    return wApp.i18n.translate(this.locale(), input, options)
   },
   tcap: function(input, options = {}) {
-    options['capitalize'] = true;
-    return wApp.i18n.translate(this.locale(), input, options);
+    options['capitalize'] = true
+    return wApp.i18n.translate(this.locale(), input, options)
   },
   l: function(input, format_name) {
-    return wApp.i18n.localize(this.locale(), input, format_name);
+    return wApp.i18n.localize(this.locale(), input, format_name)
   },
   hs: function(input) {
-    return wApp.i18n.humanSize(input);
+    return wApp.i18n.humanSize(input)
   }
 }
-wApp.i18n.t = wApp.i18n.translate;
+wApp.i18n.t = wApp.i18n.translate
