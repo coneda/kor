@@ -35,57 +35,79 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'before-mount', ->
-      tag.errors = {}
-      tag.data = {}
+  // Initialize errors and data before mounting the tag
+  tag.on('before-mount', function() {
+    tag.errors = {};
+    tag.data = {};
+  });
 
-    tag.on 'mount', ->
-      fetch() if tag.opts.id
+  // On mount, fetch data if editing an existing credential
+  tag.on('mount', function() {
+    if (tag.opts.id) {
+      fetch();
+    }
+  });
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      p = (if tag.opts.id then update() else create())
-      p.done (data) ->
-        tag.errors = {}
-        window.history.back()
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
-        wApp.utils.scrollToTop()
-      p.always -> tag.update()
+  // Handle form submission for creating or updating a credential
+  tag.submit = function(event) {
+    event.preventDefault();
+    var p = tag.opts.id ? update() : create();
+    p.done(function(data) {
+      tag.errors = {};
+      window.history.back();
+    });
+    p.fail(function(xhr) {
+      tag.errors = JSON.parse(xhr.responseText).errors;
+      wApp.utils.scrollToTop();
+    });
+    p.always(function() {
+      tag.update();
+    });
+  };
 
-    fetch = ->
-      Zepto.ajax(
-        url: "/credentials/#{tag.opts.id}"
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+  // Fetch credential data from the server
+  var fetch = function() {
+    Zepto.ajax({
+      url: '/credentials/' + tag.opts.id,
+      success: function(data) {
+        tag.data = data;
+        tag.update();
+      }
+    });
+  };
 
-    create = ->
-      Zepto.ajax(
-        type: 'POST'
-        url: '/credentials'
-        data: JSON.stringify(credential: values())
-      )
+  // Create a new credential
+  var create = function() {
+    return Zepto.ajax({
+      type: 'POST',
+      url: '/credentials',
+      data: JSON.stringify({ credential: values() })
+    });
+  };
 
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/credentials/#{tag.opts.id}"
-        data: JSON.stringify(credential: values())
-      )
+  // Update an existing credential
+  var update = function() {
+    return Zepto.ajax({
+      type: 'PATCH',
+      url: '/credentials/' + tag.opts.id,
+      data: JSON.stringify({ credential: values() })
+    });
+  };
 
-    values = ->
-      results = {}
-      for f in tag.refs.fields
-        results[f.name()] = f.value()
-      results
-
-  </script>
+  // Collect form values for submission
+  var values = function() {
+    var results = {};
+    for (var i = 0; i < tag.refs.fields.length; i++) {
+      var f = tag.refs.fields[i];
+      results[f.name()] = f.value();
+    }
+    return results;
+  };
+</script>
 </kor-credential-editor>

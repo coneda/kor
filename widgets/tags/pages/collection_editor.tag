@@ -41,77 +41,104 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.page);
 
-    tag.policies = [
-      'view', 'edit', 'create', 'delete', 'download_originals', 'tagging',
-      'view_meta'
-    ];
+  // List of available policies
+  tag.policies = [
+    'view', 'edit', 'create', 'delete', 'download_originals', 'tagging',
+    'view_meta'
+  ];
 
-    tag.on 'before-mount', ->
-      tag.errors = {}
+  // Initialize errors before mounting
+  tag.on('before-mount', function() {
+    tag.errors = {};
+  });
 
-    tag.on 'mount', ->
-      if tag.opts.id
-        fetch()
-      else
-        tag.data = {}
-      fetchCredentials()
+  // On mount, fetch collection data if editing, otherwise initialize data, and fetch credentials
+  tag.on('mount', function() {
+    if (tag.opts.id) {
+      fetch();
+    } else {
+      tag.data = {};
+    }
+    fetchCredentials();
+  });
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      p = (if tag.opts.id then update() else create())
-      p.done (data) ->
-        tag.errors = {}
-        window.history.back()
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
-        wApp.utils.scrollToTop()
-      p.always -> tag.update()
+  // Handle form submission for create or update
+  tag.submit = function(event) {
+    event.preventDefault();
+    var p = tag.opts.id ? update() : create();
+    p.done(function(data) {
+      tag.errors = {};
+      window.history.back();
+    });
+    p.fail(function(xhr) {
+      tag.errors = JSON.parse(xhr.responseText).errors;
+      wApp.utils.scrollToTop();
+    });
+    p.always(function() {
+      tag.update();
+    });
+  };
 
-    fetch = ->
-      Zepto.ajax(
-        url: "/collections/#{tag.opts.id}"
-        data: {include: 'permissions'}
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
-
-    create = ->
-      Zepto.ajax(
-        type: 'POST'
-        url: '/collections'
-        data: JSON.stringify(collection: values())
-      )
-
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/collections/#{tag.opts.id}"
-        data: JSON.stringify(collection: values())
-      )
-
-    values = ->
-      results = {
-        name: tag.refs.fields.value()
-        permissions: {}
+  // Fetch collection data from server
+  var fetch = function() {
+    Zepto.ajax({
+      url: '/collections/' + tag.opts.id,
+      data: { include: 'permissions' },
+      success: function(data) {
+        tag.data = data;
+        tag.update();
       }
-      for f in tag.refs.permissions
-        results.permissions[f.name()] ||= f.value()
-      results
+    });
+  };
 
-    fetchCredentials = ->
-      Zepto.ajax(
-        url: '/credentials',
-        success: (data) ->
-          tag.credentials = data
-          tag.update()
-      )
+  // Create a new collection
+  var create = function() {
+    return Zepto.ajax({
+      type: 'POST',
+      url: '/collections',
+      data: JSON.stringify({ collection: values() })
+    });
+  };
 
-  </script>
+  // Update an existing collection
+  var update = function() {
+    return Zepto.ajax({
+      type: 'PATCH',
+      url: '/collections/' + tag.opts.id,
+      data: JSON.stringify({ collection: values() })
+    });
+  };
+
+  // Collect form values for submission
+  var values = function() {
+    var results = {
+      name: tag.refs.fields.value(),
+      permissions: {}
+    };
+    for (var i = 0; i < tag.refs.permissions.length; i++) {
+      var f = tag.refs.permissions[i];
+      if (!results.permissions[f.name()]) {
+        results.permissions[f.name()] = f.value();
+      }
+    }
+    return results;
+  };
+
+  // Fetch credentials for select options
+  var fetchCredentials = function() {
+    Zepto.ajax({
+      url: '/credentials',
+      success: function(data) {
+        tag.credentials = data;
+        tag.update();
+      }
+    });
+  };
+</script>
 </kor-collection-editor>

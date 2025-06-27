@@ -32,42 +32,56 @@
     />
   </div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.page)
-    tag.mixin(wApp.mixins.config)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.page);
+  tag.mixin(wApp.mixins.config);
 
-    tag.on 'mount', ->
-      tag.title(tag.t('pages.new_media'))
-      fetch()
-      tag.on 'routing:query', fetch
-      tag.title(tag.t('pages.new_media'))
+  // On mount, set the page title and fetch data, bind routing event
+  tag.on('mount', function() {
+    tag.title(tag.t('pages.new_media'));
+    fetch();
+    tag.on('routing:query', fetch);
+    tag.title(tag.t('pages.new_media'));
+  });
 
-    tag.on 'unmount', ->
-      tag.off 'routing:query', fetch
+  // On unmount, unbind routing event
+  tag.on('unmount', function() {
+    tag.off('routing:query', fetch);
+  });
 
-    fetch = ->
-      Zepto.ajax(
-        url: '/entities'
-        data: {
-          engine: 'active_record',
-          include: 'kind,gallery_data',
-          page: tag.opts.query.page,
-          per_page: 16,
-          sort: 'created_at',
-          direction: 'desc',
-          kind_id: wApp.info.data.medium_kind_id
-        }
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+  // Fetch media data from the server
+  var fetch = function() {
+    Zepto.ajax({
+      url: '/entities',
+      data: {
+        engine: 'active_record',
+        include: 'kind,gallery_data',
+        page: tag.opts.query.page,
+        per_page: 16,
+        sort: 'created_at',
+        direction: 'desc',
+        kind_id: wApp.info.data.medium_kind_id
+      },
+      success: function(data) {
+        tag.data = data;
+        tag.update();
+      }
+    });
+  };
 
-    tag.pageUpdate = (newPage) -> queryUpdate(page: newPage)
-    queryUpdate = (newQuery) -> wApp.bus.trigger('query-update', newQuery)
+  // Handle page change (pagination)
+  tag.pageUpdate = function(newPage) {
+    queryUpdate({ page: newPage });
+  };
+
+  // Trigger query update event
+  var queryUpdate = function(newQuery) {
+    wApp.bus.trigger('query-update', newQuery);
+  };
 
   </script>
-
+  
 </kor-new-media>

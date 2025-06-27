@@ -49,39 +49,51 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'mount', ->
-      if tag.allowedTo('delete')
-        fetch()
-        tag.on 'routing:query', fetch
-        wApp.bus.trigger 'page-title', tag.t('pages.invalid_entities')
-      else
-        wApp.bus.trigger('access-denied')
+  // On mount, check permission and fetch invalid entities
+  tag.on('mount', function() {
+    if (tag.allowedTo('delete')) {
+      fetch();
+      tag.on('routing:query', fetch);
+      wApp.bus.trigger('page-title', tag.t('pages.invalid_entities'));
+    } else {
+      wApp.bus.trigger('access-denied');
+    }
+  });
 
-    fetch = ->
-      Zepto.ajax(
-        url: '/entities'
-        data: {
-          invalid: true
-          include: 'kind'
-          page: tag.opts.query.page
-          per_page: 20,
-          sort: 'id'
-        }
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+  // Fetch invalid entities from the server
+  var fetch = function() {
+    Zepto.ajax({
+      url: '/entities',
+      data: {
+        invalid: true,
+        include: 'kind',
+        page: tag.opts.query.page,
+        per_page: 20,
+        sort: 'id'
+      },
+      success: function(data) {
+        tag.data = data;
+        tag.update();
+      }
+    });
+  };
 
-    tag.pageUpdate = (newPage) -> queryUpdate(page: newPage)
-    queryUpdate = (newQuery) -> wApp.bus.trigger('query-update', newQuery)
+  // Handle page change (pagination)
+  tag.pageUpdate = function(newPage) {
+    queryUpdate({ page: newPage });
+  };
 
-  </script>
+  // Trigger query update event
+  var queryUpdate = function(newQuery) {
+    wApp.bus.trigger('query-update', newQuery);
+  };
+</script>
 
 </kor-invalid-entities>
