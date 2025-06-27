@@ -66,7 +66,7 @@ wApp.clipboard = {
   },
   checkEntityExistence: function () {
     var ids = wApp.clipboard.ids().concat(wApp.clipboard.subSelection())
-    Zepto.ajax({
+    return Zepto.ajax({
       type: 'POST',
       url: '/entities/existence',
       data: JSON.stringify({ ids: ids }),

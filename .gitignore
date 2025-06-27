@@ -5,6 +5,8 @@
 /tmp/*
 /db/*.sqlite3
 
+/public/static/
+/public/*.map
 
 # Development
 
