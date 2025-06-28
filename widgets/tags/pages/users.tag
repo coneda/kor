@@ -97,74 +97,105 @@
     />
   </div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this
+  tag.mixin(wApp.mixins.sessionAware)
+  tag.mixin(wApp.mixins.i18n)
+  tag.mixin(wApp.mixins.auth)
+  tag.mixin(wApp.mixins.page)
 
-    tag.on 'before-mount', ->
-      if !tag.isAdmin()
-        wApp.bus.trigger('access-denied')
+  // Before mounting, check admin permission
+  tag.on('before-mount', function() {
+    if (!tag.isAdmin()) {
+      wApp.bus.trigger('access-denied')
+    }
+  })
 
-    tag.on 'mount', ->
-      tag.title(tag.t('activerecord.models.user', {count: 'other'}))
-      fetch()
-      tag.on 'routing:query', fetch
+  // On mount, set title and fetch data, bind routing event
+  tag.on('mount', function() {
+    tag.title(tag.t('activerecord.models.user', {count: 'other'}))
+    fetch()
+    tag.on('routing:query', fetch)
+  })
 
-    tag.on 'unmount', ->
-      tag.off 'routing:query', fetch
+  // On unmount, unbind routing event
+  tag.on('unmount', function() {
+    tag.off('routing:query', fetch)
+  })
 
-    fetch = (newOpts) ->
-      Zepto.ajax(
-        url: '/users'
-        data: {
-          include: 'security,technical'
-          terms: tag.opts.query.search
-          page: tag.opts.query.page
-        }
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+  // Fetch user data from server
+  var fetch = function(newOpts) {
+    Zepto.ajax({
+      url: '/users',
+      data: {
+        include: 'security,technical',
+        terms: tag.opts.query.search,
+        page: tag.opts.query.page
+      },
+      success: function(data) {
+        tag.data = data
+        tag.update()
+      }
+    })
+  }
 
-    tag.resetLoginAttempts = (id) ->
-      (event) ->
-        event.preventDefault()
-        Zepto.ajax(
-          type: 'PATCH'
-          url: "/users/#{id}/reset_login_attempts"
-        )
-
-    tag.resetPassword = (id) ->
-      (event) ->
-        event.preventDefault()
-        if confirm(tag.t('confirm.sure'))
-          Zepto.ajax(
-            type: 'PATCH'
-            url: "/users/#{id}/reset_password"
-          )
-
-    tag.destroy = (id) ->
-      (event) ->
-        event.preventDefault()
-        if confirm(tag.t('confirm.sure'))
-          Zepto.ajax(
-            type: 'DELETE'
-            url: "/users/#{id}"
-            success: -> fetch()
-          )
-
-    tag.pageUpdate = (newPage) -> queryUpdate(page: newPage)
-    tag.search = (event) ->
+  // Reset login attempts for a user
+  tag.resetLoginAttempts = function(id) {
+    return function(event) {
       event.preventDefault()
-      queryUpdate(
-        page: 1
-        search: tag.refs.search.value()
-      )
+      Zepto.ajax({
+        type: 'PATCH',
+        url: '/users/' + id + '/reset_login_attempts'
+      })
+    }
+  }
 
-    queryUpdate = (newQuery) -> wApp.bus.trigger('query-update', newQuery)
-  </script>
+  // Reset password for a user
+  tag.resetPassword = function(id) {
+    return function(event) {
+      event.preventDefault()
+      if (confirm(tag.t('confirm.sure'))) {
+        Zepto.ajax({
+          type: 'PATCH',
+          url: '/users/' + id + '/reset_password'
+        })
+      }
+    }
+  }
+
+  // Delete a user
+  tag.destroy = function(id) {
+    return function(event) {
+      event.preventDefault()
+      if (confirm(tag.t('confirm.sure'))) {
+        Zepto.ajax({
+          type: 'DELETE',
+          url: '/users/' + id,
+          success: function() {
+            fetch()
+          }
+        })
+      }
+    }
+  }
+
+  // Handle page change (pagination)
+  tag.pageUpdate = function(newPage) {
+    queryUpdate({ page: newPage })
+  }
+
+  // Handle search form submit
+  tag.search = function(event) {
+    event.preventDefault()
+    queryUpdate({
+      page: 1,
+      search: tag.refs.search.value()
+    })
+  }
+
+  // Trigger query update event
+  var queryUpdate = function(newQuery) {
+    wApp.bus.trigger('query-update', newQuery)
+  }
 
 </kor-users>

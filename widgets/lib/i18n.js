@@ -94,6 +94,7 @@ wApp.i18n = {
   }
 }
 
+
 wApp.mixins.i18n = {
   t: function(input, options = {}) {
     return wApp.i18n.translate(this.locale(), input, options)

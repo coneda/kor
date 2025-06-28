@@ -27,55 +27,74 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this
+  tag.mixin(wApp.mixins.sessionAware)
+  tag.mixin(wApp.mixins.i18n)
+  tag.mixin(wApp.mixins.page)
 
-    tag.on 'before-mount', ->
+  // Initialize errors and data before mounting the tag
+  tag.on('before-mount', function() {
+    tag.errors = {}
+    tag.data = {}
+  })
+
+  // On mount, fetch data if editing an existing user group
+  tag.on('mount', function() {
+    if (tag.opts.id) {
+      fetch()
+    }
+  })
+
+  // Handle form submission for creating or updating a user group
+  tag.submit = function(event) {
+    event.preventDefault()
+    var p = tag.opts.id ? update() : create()
+    p.then(function(data) {
       tag.errors = {}
-      tag.data = {}
+      window.history.back()
+    })
+    p.catch(function(xhr) {
+      tag.errors = response.data.errors
+      wApp.utils.scrollToTop()
+    })
+    p.finally(function() {
+      tag.update()
+    })
+  }
 
-    tag.on 'mount', ->
-      fetch() if tag.opts.id
+  // Fetch user group data from the server
+  function fetch() {
+    Zepto.ajax({
+      url: '/user_groups/' + tag.opts.id,
+      success: function(data) {
+        tag.data = data
+        tag.update()
+      }
+    })
+  }
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      p = (if tag.opts.id then update() else create())
-      p.then (data) ->
-        tag.errors = {}
-        window.history.back()
-      p.catch (response) ->
-        tag.errors = response.data.errors
-        wApp.utils.scrollToTop()
-      p.finally -> tag.update()
+  // Create a new user group
+  function create() {
+    return Zepto.ajax({
+      type: 'POST',
+      url: '/user_groups',
+      data: JSON.stringify({ user_group: values() })
+    })
+  }
 
-    fetch = ->
-      Zepto.ajax(
-        url: "/user_groups/#{tag.opts.id}"
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+  // Update an existing user group
+  function update() {
+    return Zepto.ajax({
+      type: 'PATCH',
+      url: '/user_groups/' + tag.opts.id,
+      data: JSON.stringify({ user_group: values() })
+    })
+  }
 
-    create = ->
-      Zepto.ajax(
-        type: 'POST'
-        url: '/user_groups'
-        data: JSON.stringify(user_group: values())
-      )
-
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/user_groups/#{tag.opts.id}"
-        data: JSON.stringify(user_group: values())
-      )
-
-    values = ->
-      {name: tag.refs.fields.value()}
-
-  </script>
-
+  // Collect form values for submission
+  function values() {
+    return { name: tag.refs.fields.value() }
+  }
+</script>
 </kor-user-group-editor>
