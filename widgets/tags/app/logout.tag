@@ -3,15 +3,18 @@
     {t('verbs.logout')}
   </a>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
 
-    tag.logout = (event) ->
-      event.preventDefault()
-      wApp.auth.logout().then ->
-        wApp.bus.trigger 'logout'
-        wApp.bus.trigger 'routing:path', wApp.routing.parts()
-  </script>
+  // Logout handler
+  tag.logout = function(event) {
+    event.preventDefault();
+    wApp.auth.logout().then(function() {
+      wApp.bus.trigger('logout');
+      wApp.bus.trigger('routing:path', wApp.routing.parts());
+    });
+  };
+</script>
 </kor-logout>

@@ -101,84 +101,114 @@
     <kor-input type="submit" />
   </form>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.errors = {}
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.errors = {};
 
-    tag.on 'mount', ->
-      if tag.opts.id
-        fetch()
-      else
-        tag.data = {type: 'Fields::String'}
-        tag.update()
-      fetchTypes()
+  // On mount, fetch field data if editing, otherwise initialize, then fetch types
+  tag.on('mount', function() {
+    if (tag.opts.id) {
+      fetch();
+    } else {
+      tag.data = { type: 'Fields::String' };
+      tag.update();
+    }
+    fetchTypes();
+  });
 
-    tag.updateSpecialFields = (event) ->
-      typeName = if event then Zepto(event.target).val() else tag.data.type
-      tag.data.type = typeName
-      if types = tag.types
-        tag.specialFields = types[typeName].fields
-        tag.update()
+  // Update special fields when type changes
+  tag.updateSpecialFields = function(event) {
+    var typeName = event ? Zepto(event.target).val() : tag.data.type;
+    tag.data.type = typeName;
+    var types = tag.types;
+    if (types) {
+      tag.specialFields = types[typeName].fields;
+      tag.update();
+    }
+  };
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      p = (if tag.opts.id then update() else create())
-      p.done (data) ->
-        tag.errors = {}
-        tag.opts.notify.trigger 'refresh'
-        route("/kinds/#{tag.opts.kindId}/edit")
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
-        wApp.utils.scrollToTop()
-      p.always -> tag.update()
+  // Handle form submission for create or update
+  tag.submit = function(event) {
+    event.preventDefault();
+    var p = tag.opts.id ? update() : create();
+    p.done(function(data) {
+      tag.errors = {};
+      tag.opts.notify.trigger('refresh');
+      route("/kinds/" + tag.opts.kindId + "/edit");
+    });
+    p.fail(function(xhr) {
+      tag.errors = JSON.parse(xhr.responseText).errors;
+      wApp.utils.scrollToTop();
+    });
+    p.always(function() {
+      tag.update();
+    });
+  };
 
-    create = ->
-      Zepto.ajax(
-        type: 'POST'
-        url: "/kinds/#{tag.opts.kindId}/fields"
-        data: JSON.stringify(values())
-      )
+  // Create a new field
+  var create = function() {
+    return Zepto.ajax({
+      type: 'POST',
+      url: "/kinds/" + tag.opts.kindId + "/fields",
+      data: JSON.stringify(values())
+    });
+  };
 
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/kinds/#{tag.opts.kindId}/fields/#{tag.opts.id}"
-        data: JSON.stringify(values())
-      )
+  // Update an existing field
+  var update = function() {
+    return Zepto.ajax({
+      type: 'PATCH',
+      url: "/kinds/" + tag.opts.kindId + "/fields/" + tag.opts.id,
+      data: JSON.stringify(values())
+    });
+  };
 
-    values = ->
-      results = {}
-      for k, t of tag.refs.fields
-        results[t.name()] = t.value()
-      return {
-        field: results
-        klass: results.type
+  // Collect form values for submission
+  var values = function() {
+    var results = {};
+    for (var k in tag.refs.fields) {
+      if (Object.prototype.hasOwnProperty.call(tag.refs.fields, k)) {
+        var t = tag.refs.fields[k];
+        results[t.name()] = t.value();
       }
+    }
+    return {
+      field: results,
+      klass: results.type
+    };
+  };
 
-    fetch = ->
-      Zepto.ajax(
-        url: "/kinds/#{tag.opts.kindId}/fields/#{tag.opts.id}"
-        success: (data) ->
-          tag.data = data
-          tag.update()
-          tag.updateSpecialFields()
-      )
+  // Fetch field data from server
+  var fetch = function() {
+    Zepto.ajax({
+      url: "/kinds/" + tag.opts.kindId + "/fields/" + tag.opts.id,
+      success: function(data) {
+        tag.data = data;
+        tag.update();
+        tag.updateSpecialFields();
+      }
+    });
+  };
 
-    fetchTypes = ->
-      Zepto.ajax(
-        url: "/fields/types"
-        success: (data) ->
-          tag.types = {}
-          tag.types_for_select = []
-          for t in data
-            tag.types_for_select.push(value: t.name, label: t.label)
-            tag.types[t.name] = t
-          tag.update()
-          tag.updateSpecialFields()
-      )
-
-  </script>
+  // Fetch available field types from server
+  var fetchTypes = function() {
+    Zepto.ajax({
+      url: "/fields/types",
+      success: function(data) {
+        tag.types = {};
+        tag.types_for_select = [];
+        for (var i = 0; i < data.length; i++) {
+          var t = data[i];
+          tag.types_for_select.push({ value: t.name, label: t.label });
+          tag.types[t.name] = t;
+        }
+        tag.update();
+        tag.updateSpecialFields();
+      }
+    });
+  };
+</script>
 
 </kor-field-editor>

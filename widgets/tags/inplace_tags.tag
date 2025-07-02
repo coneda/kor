@@ -29,29 +29,37 @@
     </virtual>
   </virtual>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
 
-    tag.toggleEditor = (event) ->
-      event.preventDefault() if event
-      tag.editorActive = !tag.editorActive
+  // Toggle the tag editor UI
+  tag.toggleEditor = function(event) {
+    if (event) event.preventDefault();
+    tag.editorActive = !tag.editorActive;
+  };
 
-    tag.save = (event) ->
-      event.preventDefault()
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/entities/#{tag.opts.entity.id}/update_tags"
-        data: JSON.stringify(entity: {tags: tag.refs.field.value()})
-        success: (data) ->
-          tag.toggleEditor()
-          tag.update()
-          h() if h = tag.opts.handlers.doneHandler
-      )
+  // Save the updated tags via AJAX
+  tag.save = function(event) {
+    event.preventDefault();
+    Zepto.ajax({
+      type: 'PATCH',
+      url: '/entities/' + tag.opts.entity.id + '/update_tags',
+      data: JSON.stringify({ entity: { tags: tag.refs.field.value() } }),
+      success: function(data) {
+        tag.toggleEditor();
+        tag.update();
+        var h = tag.opts.handlers && tag.opts.handlers.doneHandler;
+        if (h) h();
+      }
+    });
+  };
 
-    tag.cancel = (event) ->
-      event.preventDefault()
-      tag.editorActive = false
-  </script>
+  // Cancel editing tags
+  tag.cancel = function(event) {
+    event.preventDefault();
+    tag.editorActive = false;
+  };
+</script>
 </kor-inplace-tags>

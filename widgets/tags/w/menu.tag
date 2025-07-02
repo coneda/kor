@@ -148,43 +148,58 @@
   </ul>
 
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.config)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.config);
 
-    tag.on 'mount', ->
-      wApp.bus.on 'reload-kinds', fetchKinds
-      wApp.bus.on 'config-updated', tag.update
-      fetchKinds()
+  // On mount, bind event listeners and fetch kinds
+  tag.on('mount', function() {
+    wApp.bus.on('reload-kinds', fetchKinds);
+    wApp.bus.on('config-updated', tag.update);
+    fetchKinds();
+  });
 
-    tag.on 'umount', ->
-      wApp.bus.off 'reload-kinds', fetchKinds
+  // On unmount, unbind event listeners
+  tag.on('umount', function() {
+    wApp.bus.off('reload-kinds', fetchKinds);
+  });
 
-    tag.showHelp = (event) ->
-      event.preventDefault()
-      wApp.config.showHelp('general')
+  // Show help dialog
+  tag.showHelp = function(event) {
+    event.preventDefault();
+    wApp.config.showHelp('general');
+  };
 
-    tag.hasHelp = -> wApp.config.hasHelp('general')
-    tag.hasLegal = -> !!wApp.info.data.legal_html
+  // Check if help is available
+  tag.hasHelp = function() {
+    return wApp.config.hasHelp('general');
+  };
 
-    tag.newEntity = (event) ->
-      event.preventDefault()
-      kind_id = tag.refs.kind_id.value()
-      wApp.routing.path "/entities/new?kind_id=#{kind_id}"
-      tag.refs.kind_id.set(0)
+  // Check if legal information is available
+  tag.hasLegal = function() {
+    return !!wApp.info.data.legal_html;
+  };
 
-    fetchKinds = ->
-      $.ajax(
-        url: '/kinds'
-        data: {no_media: true}
-        success: (data) ->
-          tag.kinds = data
-          tag.update()
-      )
+  // Handle new entity creation
+  tag.newEntity = function(event) {
+    event.preventDefault();
+    var kind_id = tag.refs.kind_id.value();
+    wApp.routing.path('/entities/new?kind_id=' + kind_id);
+    tag.refs.kind_id.set(0);
+  };
 
-  </script>
+  // Fetch kinds from server
+  var fetchKinds = function() {
+    $.ajax({
+      url: '/kinds',
+      data: { no_media: true },
+      success: function(data) {
+        tag.kinds = data;
+        tag.update();
+      }
+    });
 
 </kor-menu>

@@ -44,78 +44,92 @@
     />
   </virtual>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.info)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.info);
 
-    tag.on 'mount', ->
-      tag.opts.query ||= {}
-      wApp.bus.on 'relationship-reorder', fetch
-      fetch()
+  tag.on('mount', function() {
+    tag.opts.query = tag.opts.query || {};
+    wApp.bus.on('relationship-reorder', fetch);
+    fetch();
+  });
 
-    tag.on 'unmount', ->
-      wApp.bus.off 'relationship-reorder', fetch
+  tag.on('unmount', function() {
+    wApp.bus.off('relationship-reorder', fetch);
+  });
 
-    tag.reFetch = fetch
+  tag.reFetch = fetch;
 
-    tag.expandable = ->
-      return false unless tag.data
-      for r in tag.data.records
-        return true if r.media_relations > 0
-      false
+  tag.expandable = function() {
+    if (!tag.data) return false;
+    for (var i = 0; i < tag.data.records.length; i++) {
+      var r = tag.data.records[i];
+      if (r.media_relations > 0) return true;
+    }
+    return false;
+  };
 
-    tag.toggle = (event) ->
-      event.preventDefault()
-      tag.expanded = !tag.expanded
-      updateExpansion()
+  tag.toggle = function(event) {
+    event.preventDefault();
+    tag.expanded = !tag.expanded;
+    updateExpansion();
+  };
 
-    tag.pageUpdate = (newPage) ->
-      opts.query.page = newPage
-      fetch()
+  tag.pageUpdate = function(newPage) {
+    tag.opts.query.page = newPage;
+    fetch();
+  };
 
-    tag.unorder = (event) ->
-      event.preventDefault()
+  tag.unorder = function(event) {
+    event.preventDefault();
+    Zepto.ajax({
+      type: "DELETE",
+      url: "/relationships/unorder",
+      data: JSON.stringify({
+        from_id: tag.opts.entity.id,
+        relation_name: tag.opts.name
+      }),
+      success: function(data) {
+        tag.refresh();
+      }
+    });
+  };
 
-      Zepto.ajax(
-        type: "DELETE"
-        url: "/relationships/unorder"
-        data: JSON.stringify({
-          from_id: tag.opts.entity.id
-          relation_name: tag.opts.name
-        })
-        success: (data) ->
-          tag.refresh()
-      )
+  tag.refresh = function() { fetch(); };
 
-    tag.refresh = -> fetch()
+  function fetch() {
+    Zepto.ajax({
+      url: "/relationships",
+      data: {
+        from_entity_id: tag.opts.entity.id,
+        page: tag.opts.query.page,
+        relation_name: tag.opts.name,
+        except_to_kind_id: tag.info().medium_kind_id,
+        include: 'all'
+      },
+      success: function(data) {
+        tag.data = data;
+        tag.update();
+        updateExpansion();
+      }
+    });
+  }
 
-    fetch = ->
-      Zepto.ajax(
-        url: "/relationships"
-        data: {
-          from_entity_id: tag.opts.entity.id
-          page: tag.opts.query.page
-          relation_name: tag.opts.name
-          except_to_kind_id: tag.info().medium_kind_id,
-          include: 'all'
-        }
-        success: (data) ->
-          tag.data = data
-          tag.update()
-          updateExpansion()
-      )
+  function updateExpansion() {
+    if (tag.expanded !== undefined) {
+      var rels = tag.tags['kor-relationship'] || [];
+      for (var i = 0; i < rels.length; i++) {
+        rels[i].trigger('toggle', tag.expanded);
+      }
+    }
+  }
 
-    updateExpansion = ->
-      unless tag.expanded == undefined
-        for r in tag.tags['kor-relationship']
-          r.trigger 'toggle', tag.expanded
-
-    tag.allowedToUnorder = ->
-      tag.allowedTo('edit', tag.opts.entity.collection_id)
-
-  </script>
+  tag.allowedToUnorder = function() {
+    return tag.allowedTo('edit', tag.opts.entity.collection_id);
+  };
+</script>
 
 </kor-relation>

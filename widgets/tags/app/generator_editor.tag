@@ -32,59 +32,79 @@
   </form>
 
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.errors = {}
+ <script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.errors = {};
 
-    tag.on 'mount', ->
-      if tag.opts.id
-        fetch()
-      else
-        tag.data = {}
-        tag.update()
+  // On mount, fetch generator data if editing, otherwise initialize
+  tag.on('mount', function() {
+    if (tag.opts.id) {
+      fetch();
+    } else {
+      tag.data = {};
+      tag.update();
+    }
+  });
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      p = (if tag.opts.id then update() else create())
-      p.done (data) ->
-        tag.errors = {}
-        tag.opts.notify.trigger 'refresh'
-        route("/kinds/#{tag.opts.kindId}/edit")
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
-        wApp.utils.scrollToTop()
-      p.always -> tag.update()
+  // Handle form submission for create or update
+  tag.submit = function(event) {
+    event.preventDefault();
+    var p = tag.opts.id ? update() : create();
+    p.done(function(data) {
+      tag.errors = {};
+      tag.opts.notify.trigger('refresh');
+      route("/kinds/" + tag.opts.kindId + "/edit");
+    });
+    p.fail(function(xhr) {
+      tag.errors = JSON.parse(xhr.responseText).errors;
+      wApp.utils.scrollToTop();
+    });
+    p.always(function() {
+      tag.update();
+    });
+  };
 
-    create = ->
-      Zepto.ajax(
-        type: 'POST'
-        url: "/kinds/#{tag.opts.kindId}/generators"
-        data: JSON.stringify(values())
-      )
+  // Create a new generator
+  var create = function() {
+    return Zepto.ajax({
+      type: 'POST',
+      url: "/kinds/" + tag.opts.kindId + "/generators",
+      data: JSON.stringify(values())
+    });
+  };
 
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/kinds/#{tag.opts.kindId}/generators/#{tag.opts.id}"
-        data: JSON.stringify(values())
-      )
+  // Update an existing generator
+  var update = function() {
+    return Zepto.ajax({
+      type: 'PATCH',
+      url: "/kinds/" + tag.opts.kindId + "/generators/" + tag.opts.id,
+      data: JSON.stringify(values())
+    });
+  };
 
-    values = ->
-      results = {}
-      for k, t of tag.refs.fields
-        results[t.name()] = t.value()
-      return {generator: results}
+  // Collect form values for submission
+  var values = function() {
+    var results = {};
+    for (var k in tag.refs.fields) {
+      if (Object.prototype.hasOwnProperty.call(tag.refs.fields, k)) {
+        var t = tag.refs.fields[k];
+        results[t.name()] = t.value();
+      }
+    }
+    return { generator: results };
+  };
 
-    fetch = ->
-      Zepto.ajax(
-        url: "/kinds/#{tag.opts.kindId}/generators/#{tag.opts.id}"
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
-
-  </script>
-
+  // Fetch generator data from server
+  var fetch = function() {
+    Zepto.ajax({
+      url: "/kinds/" + tag.opts.kindId + "/generators/" + tag.opts.id,
+      success: function(data) {
+        tag.data = data;
+        tag.update();
+      }
+    });
+  };
+</script>
 </kor-generator-editor>

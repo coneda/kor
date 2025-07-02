@@ -8,52 +8,75 @@
     {message.content}
   </div>
 
-  <script type="text/coffee">
-    self = this
+<script type="text/javascript">
+  var self = this;
 
-    self.on 'mount', ->
-      self.messages = []
-      Zepto(document).on 'ajaxComplete', ajaxCompleteHandler
+  // On mount, initialize messages and bind ajaxComplete handler
+  self.on('mount', function() {
+    self.messages = [];
+    Zepto(document).on('ajaxComplete', ajaxCompleteHandler);
+  });
 
-    self.on 'unmount', ->
-      Zepto(document).off 'ajaxComplete', ajaxCompleteHandler
+  // On unmount, unbind ajaxComplete handler
+  self.on('unmount', function() {
+    Zepto(document).off('ajaxComplete', ajaxCompleteHandler);
+  });
 
-    wApp.bus.on 'message', (type, message) -> 
-      self.messages.push {
-        type: type,
-        content: message
+  // Listen for message events and add them to the messages list
+  wApp.bus.on('message', function(type, message) {
+    self.messages.push({
+      type: type,
+      content: message
+    });
+    window.setTimeout(self.drop, duration());
+    self.update();
+  });
+
+  // Duration for message display (ms)
+  var duration = function() {
+    return 3000;
+  };
+
+  // Handle ajaxComplete events and trigger messages if needed
+  var ajaxCompleteHandler = function(event, request, options) {
+    var contentType = request.getResponseHeader && request.getResponseHeader('content-type');
+    if (contentType && contentType.match(/^application\/json/) && request.response) {
+      try {
+        var data = JSON.parse(request.response);
+
+        if (data.message && !request.noMessaging) {
+          var type = (request.status >= 200 && request.status < 300) ? 'notice' : 'error';
+          wApp.bus.trigger('message', type, data.message);
+        }
+
+        if (data.notice && !request.noMessaging) {
+          wApp.bus.trigger('message', 'notice', data.notice);
+        }
+
+        if (data.code) {
+          wApp.bus.trigger('server-code', data.code);
+        }
+      } catch (e) {
+        console.log(e, request); // TODO: Consider using console.error
       }
-      window.setTimeout(self.drop, duration())
-      self.update()
+    }
+  };
 
-    duration = -> 3000
+  // Remove the oldest message and update UI
+  self.drop = function() {
+    self.messages.shift();
+    self.update();
+  };
 
-    ajaxCompleteHandler = (event, request, options) ->
-      contentType = if request.getResponseHeader
-        request.getResponseHeader('content-type')
+  // Check if a message is an error
+  self.error = function(message) {
+    return message.type === 'error';
+  };
 
-      if contentType && contentType.match(/^application\/json/) && request.response
-        try
-          data = JSON.parse(request.response)
+  // Check if a message is a notice
+  self.notice = function(message) {
+    return message.type === 'notice';
+  };
+</script>
 
-          if data.message && !request.noMessaging
-            type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
-            wApp.bus.trigger 'message', type, data.message
-
-          if data.notice && !request.noMessaging
-            wApp.bus.trigger 'message', 'notice', data.notice
-
-          if data.code
-            wApp.bus.trigger 'server-code', data.code
-
-        catch e
-          # TODO: should this be console.error?
-          console.log e, request
-
-    self.drop = ->
-      self.messages.shift()
-      self.update()
-    self.error = (message) -> message.type == 'error'
-    self.notice = (message) -> message.type == 'notice'
-  </script>
 </w-messaging>

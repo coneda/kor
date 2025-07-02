@@ -44,42 +44,55 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
 
-    tag.on 'mount', () ->
-      ul = tag.root.querySelector('ul')
-      new Sortable(ul, {
-        draggable: 'li'
-        handle: '.handle'
-        forceFallback: true
-        onEnd: (event) -> 
-          if (event.newIndex != event.oldIndex)
-            id = event.item.getAttribute('data-id')
-            params = JSON.stringify({generator: {position: event.newIndex}})
-            Zepto.ajax(
-              type: 'PATCH'
-              url: "/kinds/#{tag.opts.kind.id}/generators/#{id}"
-              data: params
-              success: -> tag.opts.notify.trigger 'refresh'
-            )
-      })
+  // On mount, enable sortable for the generator list
+  tag.on('mount', function() {
+    var ul = tag.root.querySelector('ul');
+    new Sortable(ul, {
+      draggable: 'li',
+      handle: '.handle',
+      forceFallback: true,
+      onEnd: function(event) {
+        if (event.newIndex !== event.oldIndex) {
+          var id = event.item.getAttribute('data-id');
+          var params = JSON.stringify({ generator: { position: event.newIndex } });
+          Zepto.ajax({
+            type: 'PATCH',
+            url: '/kinds/' + tag.opts.kind.id + '/generators/' + id,
+            data: params,
+            success: function() {
+              tag.opts.notify.trigger('refresh');
+            }
+          });
+        }
+      }
+    });
+  });
 
-    tag.remove = (generator) ->
-      (event) ->
-        event.preventDefault()
-        if wApp.utils.confirm wApp.i18n.translate('confirm.general')
-          Zepto.ajax(
-            type: 'DELETE'
-            url: "/kinds/#{tag.opts.kind.id}/generators/#{generator.id}"
-            success: ->
-              route("/kinds/#{tag.opts.kind.id}/edit")
-              tag.opts.notify.trigger 'refresh'
-          )
+  // Remove a generator
+  tag.remove = function(generator) {
+    return function(event) {
+      event.preventDefault();
+      if (wApp.utils.confirm(wApp.i18n.translate('confirm.general'))) {
+        Zepto.ajax({
+          type: 'DELETE',
+          url: '/kinds/' + tag.opts.kind.id + '/generators/' + generator.id,
+          success: function() {
+            route('/kinds/' + tag.opts.kind.id + '/edit');
+            tag.opts.notify.trigger('refresh');
+          }
+        });
+      }
+    };
+  };
 
-    tag.preventDefault = (event) -> event.preventDefault()
-
-  </script>
+  // Prevent default event action
+  tag.preventDefault = function(event) {
+    event.preventDefault();
+  };
+</script>
 </kor-generators>
