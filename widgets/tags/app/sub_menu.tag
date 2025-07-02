@@ -5,15 +5,21 @@
     <yield />
   </div>
 
-  <script type="text/coffee">
-    tag = this
+<script type="text/javascript">
+  var tag = this;
 
-    tag.visible = -> (Lockr.get('toggles') || {})[tag.opts.menuId]
-    tag.toggle = (event) ->
-      event.preventDefault()
-      data = Lockr.get('toggles') || {}
-      data[tag.opts.menuId] = !data[tag.opts.menuId]
-      Lockr.set 'toggles', data
-  </script>
+  // Check if the submenu is visible based on stored toggles
+  tag.visible = function() {
+    var toggles = Lockr.get('toggles') || {};
+    return toggles[tag.opts.menuId];
+  };
 
+  // Toggle the submenu visibility and persist the state
+  tag.toggle = function(event) {
+    event.preventDefault();
+    var data = Lockr.get('toggles') || {};
+    data[tag.opts.menuId] = !data[tag.opts.menuId];
+    Lockr.set('toggles', data);
+  };
+</script>
 </kor-sub-menu>

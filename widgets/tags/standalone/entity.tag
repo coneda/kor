@@ -20,57 +20,75 @@
     </div>
   </a>
 
-  <script type="text/coffee">
-    tag = this
-    tag.authorized = true
+<script type="text/javascript">
+  var tag = this;
+  tag.authorized = true;
 
-    tag.on 'mount', ->
-      if tag.opts.id
-        base = $('script[kor-url]').attr('kor-url') || ""
+  // On mount, fetch entity data if ID is provided
+  tag.on('mount', function() {
+    if (tag.opts.id) {
+      var base = $('script[kor-url]').attr('kor-url') || "";
 
-        Zepto.ajax(
-          url: "#{base}/entities/#{tag.opts.id}"
-          data: {include: 'all'}
-          dataType: 'json'
-          beforeSend: (xhr) -> xhr.withCredentials = true
-          success: (data) ->
-            # console.log data
-            tag.data = data
-            tag.update()
-          error: (request) ->
-            tag.data = {}
-            if request.status == 403
-              tag.authorized = false
-              tag.update()
-        )
-      else
-        raise "this widget requires an id"
+      Zepto.ajax({
+        url: base + "/entities/" + tag.opts.id,
+        data: { include: 'all' },
+        dataType: 'json',
+        beforeSend: function(xhr) {
+          xhr.withCredentials = true;
+        },
+        success: function(data) {
+          tag.data = data;
+          tag.update();
+        },
+        error: function(request) {
+          tag.data = {};
+          if (request.status === 403) {
+            tag.authorized = false;
+            tag.update();
+          }
+        }
+      });
+    } else {
+      throw new Error("This widget requires an ID");
+    }
+  });
 
-    tag.login_url = ->
-      base = $('script[kor-url]').attr('kor-url') || ""
-      return_to = document.location.href
-      "#{base}/login?return_to=#{return_to}"
+  // Generate login URL
+  tag.login_url = function() {
+    var base = $('script[kor-url]').attr('kor-url') || "";
+    var return_to = document.location.href;
+    return base + "/login?return_to=" + return_to;
+  };
 
-    tag.image_size = ->
-      tag.opts.korImageSize || 'preview'
+  // Get image size
+  tag.image_size = function() {
+    return tag.opts.korImageSize || 'preview';
+  };
 
-    tag.image_url = ->
-      base = $('script[kor-url]').attr('kor-url') || ""
-      size = tag.image_size()
-      "#{base}#{tag.data.medium.url[size]}"
+  // Generate image URL
+  tag.image_url = function() {
+    var base = $('script[kor-url]').attr('kor-url') || "";
+    var size = tag.image_size();
+    return base + tag.data.medium.url[size];
+  };
 
-    tag.include = (what) ->
-      includes = (tag.opts.korInclude || "").split(/\s+/)
-      includes.indexOf(what) != -1
+  // Check if a specific feature is included
+  tag.include = function(what) {
+    var includes = (tag.opts.korInclude || "").split(/\s+/);
+    return includes.indexOf(what) !== -1;
+  };
 
-    tag.url = ->
-      base = $('[kor-url]').attr('kor-url') || ""
-      "#{base}/blaze#/entities/#{tag.data.id}"
+  // Generate entity URL
+  tag.url = function() {
+    var base = $('[kor-url]').attr('kor-url') || "";
+    return base + "/blaze#/entities/" + tag.data.id;
+  };
 
-    tag.human_size = ->
-      size = tag.data.medium.file_size / 1024.0 / 1024.0;
-      Math.floor(size * 100) / 100
-
-  </script>
+  // Calculate human-readable file size
+  tag.human_size = function() {
+    var size = tag.data.medium.file_size / 1024.0 / 1024.0;
+    return Math.floor(size * 100) / 100;
+  };
+</script>
 
 </kor-sa-entity>

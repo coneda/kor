@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
-  create_table "authority_group_categories", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "authority_group_categories", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "lock_version", default: 0
     t.integer "parent_id"
     t.integer "lft"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["lft", "rgt", "parent_id"], name: "agc_hierarchy_index"
   end
 
-  create_table "authority_groups", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "authority_groups", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "lock_version", default: 0
     t.string "name"
     t.string "uuid"
@@ -32,35 +32,35 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["authority_group_category_id"], name: "index_authority_groups_on_authority_group_category_id"
   end
 
-  create_table "authority_groups_entities", id: false, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
+  create_table "authority_groups_entities", id: false, charset: "utf8mb3", force: :cascade do |t|
     t.integer "entity_id"
     t.integer "authority_group_id"
     t.index ["authority_group_id"], name: "index_authority_groups_entities_on_authority_group_id"
     t.index ["entity_id"], name: "index_authority_groups_entities_on_entity_id"
   end
 
-  create_table "collections", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "collections", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "lock_version", default: 0
     t.string "name"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "collections_credentials", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "collections_credentials", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "collection_id"
     t.integer "credential_id"
     t.string "policy"
     t.index ["collection_id", "credential_id", "policy"], name: "master"
   end
 
-  create_table "credentials", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "credentials", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "name"
-    t.text "description", size: :medium
+    t.text "description"
     t.integer "lock_version", default: 0
     t.index ["name"], name: "index_credentials_on_name"
   end
 
-  create_table "credentials_users", id: false, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
+  create_table "credentials_users", id: false, charset: "utf8mb3", force: :cascade do |t|
     t.integer "user_id"
     t.integer "credential_id"
     t.index ["credential_id"], name: "index_credentials_users_on_credential_id"
@@ -68,11 +68,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["user_id"], name: "index_credentials_users_on_user_id"
   end
 
-  create_table "delayed_jobs", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "delayed_jobs", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "priority", default: 0
     t.integer "attempts", default: 0
-    t.text "handler", size: :long
-    t.text "last_error", size: :long
+    t.mediumtext "handler"
+    t.mediumtext "last_error"
     t.datetime "run_at", precision: nil
     t.datetime "locked_at", precision: nil
     t.datetime "failed_at", precision: nil
@@ -83,7 +83,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "directed_relationships", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "directed_relationships", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "relation_id"
     t.integer "relationship_id"
     t.boolean "is_reverse"
@@ -99,7 +99,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["to_id"], name: "index_directed_relationships_on_to_id"
   end
 
-  create_table "downloads", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "downloads", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "user_id"
     t.string "uuid"
     t.string "file_name"
@@ -109,11 +109,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["uuid"], name: "index_downloads_on_uuid"
   end
 
-  create_table "entities", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "entities", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "uuid"
     t.string "name"
     t.string "distinct_name"
-    t.text "comment", size: :medium
+    t.text "comment"
     t.integer "kind_id"
     t.integer "collection_id"
     t.integer "creator_id"
@@ -124,7 +124,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.integer "updater_id"
     t.string "subtype"
     t.integer "medium_id"
-    t.text "attachment", size: :medium
+    t.text "attachment"
     t.datetime "deleted_at", precision: nil
     t.string "sort_name"
     t.index ["collection_id", "kind_id"], name: "collections_kinds"
@@ -137,27 +137,27 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["uuid"], name: "index_entities_on_uuid"
   end
 
-  create_table "entities_system_groups", id: false, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
+  create_table "entities_system_groups", id: false, charset: "utf8mb3", force: :cascade do |t|
     t.integer "entity_id"
     t.integer "system_group_id"
     t.index ["entity_id"], name: "index_entities_system_groups_on_entity_id"
     t.index ["system_group_id"], name: "index_entities_system_groups_on_system_group_id"
   end
 
-  create_table "entities_tags", id: false, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
+  create_table "entities_tags", id: false, charset: "utf8mb3", force: :cascade do |t|
     t.integer "entity_id"
     t.integer "tag_id"
     t.index ["entity_id", "tag_id"], name: "index_entities_tags_on_entity_id_and_tag_id", unique: true
   end
 
-  create_table "entities_user_groups", id: false, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
+  create_table "entities_user_groups", id: false, charset: "utf8mb3", force: :cascade do |t|
     t.integer "entity_id"
     t.integer "user_group_id"
     t.index ["entity_id"], name: "index_entities_user_groups_on_entity_id"
     t.index ["user_group_id"], name: "index_entities_user_groups_on_user_group_id"
   end
 
-  create_table "entity_datings", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "entity_datings", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "lock_version", default: 0
     t.integer "entity_id"
     t.string "label"
@@ -168,14 +168,14 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["from_day", "to_day"], name: "timely"
   end
 
-  create_table "fields", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "fields", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "kind_id"
     t.string "type"
     t.string "name"
     t.string "show_label"
     t.string "form_label"
     t.string "search_label"
-    t.text "settings", size: :medium
+    t.text "settings"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.boolean "is_identifier"
@@ -184,16 +184,16 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.boolean "mandatory"
   end
 
-  create_table "generators", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "generators", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "kind_id"
     t.string "name"
-    t.text "directive", size: :medium
+    t.text "directive"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.integer "position"
   end
 
-  create_table "identifiers", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "identifiers", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "kind"
     t.string "value"
     t.datetime "created_at", precision: nil
@@ -203,18 +203,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["value"], name: "index_identifiers_on_value"
   end
 
-  create_table "kind_inheritances", primary_key: "false", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
+  create_table "kind_inheritances", primary_key: "false", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "parent_id"
     t.integer "child_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "kinds", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "kinds", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "uuid"
     t.string "name"
-    t.text "description", size: :medium
-    t.text "settings", size: :medium
+    t.text "description"
+    t.text "settings"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.integer "lock_version", default: 0
@@ -226,7 +226,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["id", "deleted_at"], name: "deleted_at_partial"
   end
 
-  create_table "media", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "media", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "lock_version", default: 0
     t.string "image_file_name"
     t.string "image_content_type"
@@ -244,7 +244,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.boolean "image_processing"
   end
 
-  create_table "publishments", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "publishments", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "user_id"
     t.string "uuid"
     t.string "name"
@@ -253,21 +253,21 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["user_id"], name: "index_publishments_on_user_id"
   end
 
-  create_table "relation_inheritances", primary_key: "false", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
+  create_table "relation_inheritances", primary_key: "false", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "parent_id"
     t.integer "child_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "relations", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "relations", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "uuid"
     t.string "name"
     t.string "reverse_name"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.integer "lock_version", default: 0
-    t.text "description", size: :medium
+    t.text "description"
     t.datetime "deleted_at", precision: nil
     t.string "url"
     t.boolean "abstract"
@@ -281,7 +281,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["reverse_name"], name: "index_relations_on_reverse_name"
   end
 
-  create_table "relationship_datings", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "relationship_datings", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "relationship_id"
     t.string "label"
     t.string "dating_string"
@@ -292,13 +292,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["relationship_id"], name: "rely"
   end
 
-  create_table "relationships", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "relationships", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "uuid"
     t.integer "owner_id"
     t.integer "relation_id"
     t.integer "from_id"
     t.integer "to_id"
-    t.text "properties", size: :medium
+    t.text "properties"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.integer "lock_version", default: 0
@@ -314,7 +314,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["uuid"], name: "index_relationships_on_uuid"
   end
 
-  create_table "system_groups", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "system_groups", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "lock_version", default: 0
     t.string "name"
     t.string "uuid"
@@ -322,7 +322,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "taggings", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "taggings", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "tag_id"
     t.integer "taggable_id"
     t.integer "tagger_id"
@@ -343,13 +343,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["tenant"], name: "index_taggings_on_tenant"
   end
 
-  create_table "tags", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
-    t.string "name", collation: "utf8_bin"
+  create_table "tags", id: :integer, charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", collation: "utf8mb3_bin"
     t.integer "taggings_count", default: 0
     t.index ["name"], name: "index_tags_on_name", unique: true
   end
 
-  create_table "user_groups", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "user_groups", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "lock_version", default: 0
     t.integer "user_id"
     t.string "name"
@@ -361,7 +361,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["user_id"], name: "index_user_groups_on_user_id"
   end
 
-  create_table "users", id: :integer, charset: "utf8", collation: "utf8_unicode_ci", force: :cascade do |t|
+  create_table "users", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "full_name"
     t.string "name"
     t.string "email"
@@ -386,7 +386,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.integer "credential_id"
     t.string "parent_username"
     t.string "api_key"
-    t.text "storage", size: :medium
+    t.text "storage"
     t.index ["name"], name: "index_users_on_name", unique: true
     t.index ["parent_username"], name: "index_users_on_parent_username"
   end

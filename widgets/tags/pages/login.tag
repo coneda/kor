@@ -69,42 +69,54 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.info)
-    tag.mixin(wApp.mixins.config)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.info);
+  tag.mixin(wApp.mixins.config);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'mount', ->
-      Zepto(tag.root).find('input').first().focus()
+  // Focus the first input on mount
+  tag.on('mount', function() {
+    Zepto(tag.root).find('input').first().focus();
+  });
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      username = tag.refs.username.value()
-      password = tag.refs.password.value()
-      wApp.auth.login(username, password).then ->
-        if r = wApp.routing.query()['return_to']
-          window.location.hash = decodeURIComponent(r)
-        else
-          wApp.routing.path '/search'
+  // Handle login form submission
+  tag.submit = function(event) {
+    event.preventDefault();
+    var username = tag.refs.username.value();
+    var password = tag.refs.password.value();
+    wApp.auth.login(username, password).then(function() {
+      var r = wApp.routing.query()['return_to'];
+      if (r) {
+        window.location.hash = decodeURIComponent(r);
+      } else {
+        wApp.routing.path('/search');
+      }
+    });
+  };
 
-    tag.toggleLocal = (event) ->
-      event.preventDefault()
+  // Toggle local login form visibility
+  tag.toggleLocal = function(event) {
+    event.preventDefault();
+    tag.localActive = !tag.localActive;
+  };
 
-      tag.localActive = !tag.localActive
+  // Check if federation auth is available
+  tag.federationAuth = function() {
+    var l = tag.config().env_auth_button_label;
+    return typeof l === 'string' && l.length > 0;
+  };
 
-    tag.federationAuth = ->
-      l = tag.config().env_auth_button_label
-      typeof l == 'string' && l.length > 0
-
-    tag.localLabel = ->
-      l = tag.config().env_auth_local_button_label
-      if typeof l == 'string' && l.length > 0
-        l
-      else
-        null
-
-  </script>
+  // Get the local login button label, or null if not set
+  tag.localLabel = function() {
+    var l = tag.config().env_auth_local_button_label;
+    if (typeof l === 'string' && l.length > 0) {
+      return l;
+    } else {
+      return null;
+    }
+  };
+</script>
 </kor-login>

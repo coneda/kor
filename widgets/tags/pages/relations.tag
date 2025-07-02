@@ -118,125 +118,174 @@
     </table>
   </div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'mount', ->
-      tag.title(tag.t('activerecord.models.relation', {count: 'other'}))
-      fetch()
-      fetchKinds()
+  // On mount, set title and fetch data
+  tag.on('mount', function() {
+    tag.title(tag.t('activerecord.models.relation', {count: 'other'}));
+    fetch();
+    fetchKinds();
+  });
 
-    tag.filters = {}
+  // Filters object for search and options
+  tag.filters = {};
 
-    tag.delete = (kind) ->
-      (event) ->
-        event.preventDefault()
-        if wApp.utils.confirm tag.t('confirm.general')
-          Zepto.ajax(
-            type: 'DELETE'
-            url: "/relations/#{kind.id}"
-            success: -> fetch()
-          )
-
-    tag.submit = ->
-      tag.filters.terms = tag.refs['terms'].value()
-      tag.filters.hideAbstract = tag.refs['hideAbstract'].value()
-      filter_records()
-      groupAndSortRecords()
-      tag.update()
-
-    tag.delayedSubmit = (event) ->
-      if tag.delayedTimeout
-        tag.delayedTimeout.clearTimeout 
-        tag.delayedTimeout = undefined
-      tag.delayedTimeout = window.setTimeout(tag.submit, 300)
-      true
-
-    tag.noSubmit = (event) -> event.preventDefault()
-
-    tag.toggleMerge = (event) ->
-      event.preventDefault()
-      tag.merge = !tag.merge
-
-    tag.addToMerge = (event) ->
+  // Delete a relation
+  tag.delete = function(kind) {
+    return function(event) {
       event.preventDefault();
-      tag.refs.merger.addRelation(event.item.relation)
+      if (wApp.utils.confirm(tag.t('confirm.general'))) {
+        Zepto.ajax({
+          type: 'DELETE',
+          url: "/relations/" + kind.id,
+          success: function() { fetch(); }
+        });
+      }
+    };
+  };
 
-    tag.mergeDone = ->
-      tag.merge = false
-      fetch()
+  // Handle filter form submit
+  tag.submit = function() {
+    tag.filters.terms = tag.refs['terms'].value();
+    tag.filters.hideAbstract = tag.refs['hideAbstract'].value();
+    filter_records();
+    groupAndSortRecords();
+    tag.update();
+  };
 
-    tag.invert = (event) ->
-      event.preventDefault()
-      relation = event.item.relation
-      if window.confirm(tag.t('confirm.long_time_warning'))
-        Zepto.ajax(
-          type: 'PUT'
-          url: '/relations/' + relation.id + '/invert'
-          success: (data) -> fetch()
-        )
+  // Delayed submit for search input
+  tag.delayedSubmit = function(event) {
+    if (tag.delayedTimeout) {
+      clearTimeout(tag.delayedTimeout);
+      tag.delayedTimeout = undefined;
+    }
+    tag.delayedTimeout = window.setTimeout(tag.submit, 300);
+    return true;
+  };
 
-    filter_records = ->
-      tag.filteredRecords = if tag.filters.terms
-        re = new RegExp("#{tag.filters.terms}", 'i')
-        results = []
-        for relation in tag.data.records
-          if relation.name.match(re) || relation.reverse_name.match(re)
-            if results.indexOf(relation) == -1
-              results.push(relation)
-        results
-      else
-        tag.data.records
+  // Prevent default form submit
+  tag.noSubmit = function(event) { event.preventDefault(); };
 
-    typeCompare = (x, y) ->
-      if x.match(/^P\d+/) && y.match(/^P\d+/)
-        x = parseInt(x.replace(/^P/, '').split(' ')[0])
-        y = parseInt(y.replace(/^P/, '').split(' ')[0])
-      if x > y
-        1
-      else
-        if x == y
-          0
-        else
-          -1
+  // Toggle merge mode
+  tag.toggleMerge = function(event) {
+    event.preventDefault();
+    tag.merge = !tag.merge;
+  };
 
-    groupAndSortRecords = ->
-      results = {}
-      for r in tag.filteredRecords
-        results[r['schema']] ||= []
-        results[r['schema']].push r
-      for k, v of results
-        results[k] = v.sort((x, y) -> typeCompare(x.name, y.name))
-      tag.groupedResults = results
+  // Add a relation to the merger
+  tag.addToMerge = function(event) {
+    event.preventDefault();
+    tag.refs.merger.addRelation(event.item.relation);
+  };
 
-    tag.kind = (id) -> tag.kindLookup[id].name
+  // Finish merging
+  tag.mergeDone = function() {
+    tag.merge = false;
+    fetch();
+  };
 
-    fetch = ->
-      Zepto.ajax(
-        url: '/relations'
-        data: {include: 'inheritance'}
-        success: (data) ->
-          tag.data = data
-          filter_records()
-          groupAndSortRecords()
-          tag.refs.merger.reset()
-          tag.update()
-      )
+  // Invert a relation
+  tag.invert = function(event) {
+    event.preventDefault();
+    var relation = event.item.relation;
+    if (window.confirm(tag.t('confirm.long_time_warning'))) {
+      Zepto.ajax({
+        type: 'PUT',
+        url: '/relations/' + relation.id + '/invert',
+        success: function(data) { fetch(); }
+      });
+    }
+  };
 
-    fetchKinds = ->
-      Zepto.ajax(
-        url: '/kinds'
-        success: (data) ->
-          tag.kindLookup = {}
-          for k in data.records
-            tag.kindLookup[k.id] = k
-          tag.update()
-      )
+  // Filter records based on search terms and options
+  var filter_records = function() {
+    if (tag.filters.terms) {
+      var re = new RegExp(tag.filters.terms, 'i');
+      var results = [];
+      for (var i = 0; i < tag.data.records.length; i++) {
+        var relation = tag.data.records[i];
+        if ((relation.name && relation.name.match(re)) ||
+            (relation.reverse_name && relation.reverse_name.match(re))) {
+          if (results.indexOf(relation) === -1) {
+            results.push(relation);
+          }
+        }
+      }
+      tag.filteredRecords = results;
+    } else {
+      tag.filteredRecords = tag.data.records;
+    }
+  };
 
-  </script>
+  // Compare relation types for sorting
+  var typeCompare = function(x, y) {
+    if (/^P\d+/.test(x) && /^P\d+/.test(y)) {
+      x = parseInt(x.replace(/^P/, '').split(' ')[0]);
+      y = parseInt(y.replace(/^P/, '').split(' ')[0]);
+    }
+    if (x > y) return 1;
+    if (x === y) return 0;
+    return -1;
+  };
+
+  // Group and sort records by schema
+  var groupAndSortRecords = function() {
+    var results = {};
+    for (var i = 0; i < tag.filteredRecords.length; i++) {
+      var r = tag.filteredRecords[i];
+      var schema = r['schema'];
+      if (!results[schema]) results[schema] = [];
+      results[schema].push(r);
+    }
+    for (var k in results) {
+      if (results.hasOwnProperty(k)) {
+        results[k] = results[k].sort(function(x, y) {
+          return typeCompare(x.name, y.name);
+        });
+      }
+    }
+    tag.groupedResults = results;
+  };
+
+  // Get kind name by id
+  tag.kind = function(id) {
+    return tag.kindLookup[id].name;
+  };
+
+  // Fetch relations from server
+  var fetch = function() {
+    Zepto.ajax({
+      url: '/relations',
+      data: { include: 'inheritance' },
+      success: function(data) {
+        tag.data = data;
+        filter_records();
+        groupAndSortRecords();
+        tag.refs.merger.reset();
+        tag.update();
+      }
+    });
+  };
+
+  // Fetch kinds from server
+  var fetchKinds = function() {
+    Zepto.ajax({
+      url: '/kinds',
+      success: function(data) {
+        tag.kindLookup = {};
+        for (var i = 0; i < data.records.length; i++) {
+          var k = data.records[i];
+          tag.kindLookup[k.id] = k;
+        }
+        tag.update();
+      }
+    });
+  };
+</script>
 
 </kor-relations>
