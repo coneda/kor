@@ -11,34 +11,36 @@
     </li>
   </ul>
 
-  <script type="text/coffee">
-    tag = this
-    tag.messages = []
-    tag.history = []
+<script type="text/javascript">
+  var tag = this;
+  tag.messages = [];
+  tag.history = [];
 
-    tag.animend = (event) ->
-      i = tag.messages.indexOf(event.item.data)
-      tag.history.push(tag.messages[i])
-      tag.messages.splice(i, 1)
-      tag.update()
+  // Handle animation end: move message to history and remove from messages
+  tag.animend = function(event) {
+    var i = tag.messages.indexOf(event.item.data);
+    tag.history.push(tag.messages[i]);
+    tag.messages.splice(i, 1);
+    tag.update();
+  };
 
-    fading = (data) ->
-      tag.messages.push(data)
-      tag.update()
+  // Add a fading notification message
+  var fading = function(data) {
+    tag.messages.push(data);
+    tag.update();
 
-      setTimeout(
-        (->
-          data.remove = true
-          tag.update()
-        ),
-        5000
-      )
+    setTimeout(function() {
+      data.remove = true;
+      tag.update();
+    }, 5000);
+  };
 
-    kor.bus.on 'notify', (data) ->
-      type = data.type || 'default'
-      if type == 'default' then fading(data)
-      tag.update()
-
-  </script>
+  // Listen for 'notify' events and handle default type with fading
+  kor.bus.on('notify', function(data) {
+    var type = data.type || 'default';
+    if (type === 'default') fading(data);
+    tag.update();
+  });
+</script>
 
 </kor-notifications>

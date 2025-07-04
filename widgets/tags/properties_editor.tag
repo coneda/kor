@@ -28,30 +28,42 @@
     </li>
   </ul>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
 
-    tag.on 'mount', ->
-      tag.properties = []
-      if tag.opts.properties
-        for p in tag.opts.properties
-          tag.properties.push(value: p)
+  // On mount, initialize properties from options
+  tag.on('mount', function() {
+    tag.properties = [];
+    if (tag.opts.properties) {
+      for (var i = 0; i < tag.opts.properties.length; i++) {
+        var p = tag.opts.properties[i];
+        tag.properties.push({ value: p });
+      }
+    }
+  });
 
-    tag.add = (event) ->
-      event.preventDefault()
-      tag.properties.push(value: "")
-      tag.update()
+  // Add a new empty property
+  tag.add = function(event) {
+    event.preventDefault();
+    tag.properties.push({ value: "" });
+    tag.update();
+  };
 
-    tag.remove = (index) ->
-      (event) ->
-        event.preventDefault()
-        tag.properties.splice(index, 1)
-        tag.update()
+  // Remove a property at the given index
+  tag.remove = function(index) {
+    return function(event) {
+      event.preventDefault();
+      tag.properties.splice(index, 1);
+      tag.update();
+    };
+  };
 
-    tag.value = -> e.value() for e in wApp.utils.toArray(tag.refs.inputs)
-
-  </script>
-
+  // Get all property values from input refs
+  tag.value = function() {
+    var inputs = wApp.utils.toArray(tag.refs.inputs);
+    return inputs.map(function(e) { return e.value(); });
+  };
+</script>
 </kor-properties-editor>

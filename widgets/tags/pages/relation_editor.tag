@@ -114,94 +114,129 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'before-mount', ->
-      if !tag.isRelationAdmin()
-        wApp.bus.trigger('access-denied')
+  // Before mounting, check if user is a relation admin
+  tag.on('before-mount', function() {
+    if (!tag.isRelationAdmin()) {
+      wApp.bus.trigger('access-denied');
+    }
+  });
 
-    tag.on 'mount', ->
-      tag.errors = {}
-      if tag.opts.id
-        fetch()
-      else
-        tag.relation = {}
-        tag.update()
-      fetchPossibleParents()
-      fetchPossibleKinds()
+  // On mount, initialize errors, fetch data if editing, and load options
+  tag.on('mount', function() {
+    tag.errors = {};
+    if (tag.opts.id) {
+      fetch();
+    } else {
+      tag.relation = {};
+      tag.update();
+    }
+    fetchPossibleParents();
+    fetchPossibleKinds();
+  });
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      p = (if tag.opts.id then update() else create())
-      p.then (data) ->
-        tag.errors = {}
-        window.history.back()
-      p.catch (response) ->
-        tag.errors = response.data.errors
-        wApp.utils.scrollToTop()
-      p.finally -> tag.update()
+  // Handle form submission for create or update
+  tag.submit = function(event) {
+    event.preventDefault();
+    var p = tag.opts.id ? update() : create();
+    p.then(function(data) {
+      tag.errors = {};
+      window.history.back();
+    });
+    p.catch(function(response) {
+      tag.errors = response.data.errors;
+      wApp.utils.scrollToTop();
+    });
+    p.finally(function() {
+      tag.update();
+    });
+  };
 
-    create = ->
-      Zepto.ajax(
-        type: 'POST'
-        url: '/relations'
-        data: JSON.stringify(relation: values())
-      )
+  // Create a new relation
+  var create = function() {
+    return Zepto.ajax({
+      type: 'POST',
+      url: '/relations',
+      data: JSON.stringify({ relation: values() })
+    });
+  };
 
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/relations/#{tag.opts.id}"
-        data: JSON.stringify(relation: values())
-      )
+  // Update an existing relation
+  var update = function() {
+    return Zepto.ajax({
+      type: 'PATCH',
+      url: '/relations/' + tag.opts.id,
+      data: JSON.stringify({ relation: values() })
+    });
+  };
 
-    values = ->
-      # TODO: add lock version functionality to all forms
-      result = {}
-      for field in tag.refs['fields']
-        result[field.name()] = field.value()
-      result
+  // Collect form values for submission
+  var values = function() {
+    // TODO: add lock version functionality to all forms
+    var result = {};
+    for (var i = 0; i < tag.refs['fields'].length; i++) {
+      var field = tag.refs['fields'][i];
+      result[field.name()] = field.value();
+    }
+    return result;
+  };
 
-    fetch = ->
-      Zepto.ajax(
-        url: "/relations/#{tag.opts.id}"
-        data: {include: 'inheritance,technical'}
-        success: (data) ->
-          tag.relation = data
-          tag.update()
-      )
+  // Fetch relation data from server
+  var fetch = function() {
+    Zepto.ajax({
+      url: '/relations/' + tag.opts.id,
+      data: { include: 'inheritance,technical' },
+      success: function(data) {
+        tag.relation = data;
+        tag.update();
+      }
+    });
+  };
 
-    fetchPossibleParents = ->
-      Zepto.ajax(
-        url: '/relations'
-        success: (data) ->
-          tag.possible_parents = []
-          for relation in data.records
-            if parseInt(tag.opts.id) != relation.id
-              tag.possible_parents.push(
-                label: relation.name
-                value: relation.id
-              )
-          tag.update()
-      )
+  // Fetch possible parent relations for select options
+  var fetchPossibleParents = function() {
+    Zepto.ajax({
+      url: '/relations',
+      success: function(data) {
+        tag.possible_parents = [];
+        for (var i = 0; i < data.records.length; i++) {
+          var relation = data.records[i];
+          if (parseInt(tag.opts.id) !== relation.id) {
+            tag.possible_parents.push({
+              label: relation.name,
+              value: relation.id
+            });
+          }
+        }
+        tag.update();
+      }
+    });
+  };
 
-    fetchPossibleKinds = ->
-      Zepto.ajax(
-        url: '/kinds'
-        success: (data) ->
-          tag.possible_kinds = []
-          for kind in data.records
-            tag.possible_kinds.push(
-              label: kind.name,
-              value: kind.id
-            )
-          tag.update()
-      )
+  // Fetch possible kinds for select options
+  var fetchPossibleKinds = function() {
+    Zepto.ajax({
+      url: '/kinds',
+      success: function(data) {
+        tag.possible_kinds = [];
+        for (var i = 0; i < data.records.length; i++) {
+          var kind = data.records[i];
+          tag.possible_kinds.push({
+            label: kind.name,
+            value: kind.id
+          });
+        }
+        tag.update();
+      }
+    });
+  };
 
-  </script>
+</script>
 </kor-relation-editor>
+

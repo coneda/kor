@@ -46,7 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "collections_credentials", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "collections_credentials", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "collection_id"
     t.integer "credential_id"
     t.string "policy"
@@ -71,8 +71,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
   create_table "delayed_jobs", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "priority", default: 0
     t.integer "attempts", default: 0
-    t.text "handler", size: :medium
-    t.text "last_error", size: :medium
+    t.mediumtext "handler"
+    t.mediumtext "last_error"
     t.datetime "run_at", precision: nil
     t.datetime "locked_at", precision: nil
     t.datetime "failed_at", precision: nil
@@ -99,7 +99,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["to_id"], name: "index_directed_relationships_on_to_id"
   end
 
-  create_table "downloads", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "downloads", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "user_id"
     t.string "uuid"
     t.string "file_name"
@@ -169,7 +169,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["from_day", "to_day"], name: "timely"
   end
 
-  create_table "fields", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "fields", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "kind_id"
     t.string "type"
     t.string "name"
@@ -185,7 +185,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.boolean "mandatory"
   end
 
-  create_table "generators", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "generators", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "kind_id"
     t.string "name"
     t.text "directive"
@@ -204,7 +204,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["value"], name: "index_identifiers_on_value"
   end
 
-  create_table "kind_inheritances", primary_key: "false", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "kind_inheritances", primary_key: "false", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "parent_id"
     t.integer "child_id"
     t.datetime "created_at", precision: nil
@@ -227,7 +227,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["id", "deleted_at"], name: "deleted_at_partial"
   end
 
-  create_table "media", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "media", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "lock_version", default: 0
     t.string "image_file_name"
     t.string "image_content_type"
@@ -254,7 +254,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["user_id"], name: "index_publishments_on_user_id"
   end
 
-  create_table "relation_inheritances", primary_key: "false", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "relation_inheritances", primary_key: "false", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "parent_id"
     t.integer "child_id"
     t.datetime "created_at", precision: nil
@@ -282,7 +282,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["reverse_name"], name: "index_relations_on_reverse_name"
   end
 
-  create_table "relationship_datings", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "relationship_datings", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.integer "relationship_id"
     t.string "label"
     t.string "dating_string"
@@ -391,5 +391,4 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["name"], name: "index_users_on_name", unique: true
     t.index ["parent_username"], name: "index_users_on_parent_username"
   end
-
 end

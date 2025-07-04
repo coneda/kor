@@ -1,27 +1,35 @@
-<!-- TODO: can this be dropped? -->
 <kor-menu-fix>
 
-  <script type="text/coffee">
-    tag = this
+<script type="text/javascript">
+  var tag = this;
 
-    tag.on 'mount', ->
-      wApp.bus.on 'kinds-changed', fixMenu
+  // On mount, listen for 'kinds-changed' event to fix the menu
+  tag.on('mount', function() {
+    wApp.bus.on('kinds-changed', fixMenu);
+  });
 
-    tag.on 'unmount', ->
-      wApp.bus.off 'kinds-changed', fixMenu
+  // On unmount, remove the event listener
+  tag.on('unmount', function() {
+    wApp.bus.off('kinds-changed', fixMenu);
+  });
 
-    fixMenu = ->
-      Zepto.ajax(
-        url: '/kinds'
-        data: {only_active: true}
-        success: (data) ->
-          select = Zepto('#new_entity_kind_id')
-          placeholder = select.find('option:first-child').remove()
-          select.find('option').remove()
-          select.append(placeholder)
-          for kind in data.records
-            select.append("<option value=\"#{kind.id}\">#{kind.name}</option>")
-      )
+  // Fetch active kinds and update the kind select menu
+  var fixMenu = function() {
+    Zepto.ajax({
+      url: '/kinds',
+      data: { only_active: true },
+      success: function(data) {
+        var select = Zepto('#new_entity_kind_id');
+        var placeholder = select.find('option:first-child').remove();
+        select.find('option').remove();
+        select.append(placeholder);
+        for (var i = 0; i < data.records.length; i++) {
+          var kind = data.records[i];
+          select.append('<option value="' + kind.id + '">' + kind.name + '</option>');
+        }
+      }
+    });
+  };
   </script>
-
+  
 </kor-menu-fix>

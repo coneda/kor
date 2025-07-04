@@ -8,48 +8,74 @@
     {message.content}
   </div>
 
-  <script type="text/coffee">
-    self = this
+<script type="text/javascript">
+  var self = this;
 
-    self.on 'mount', ->
-      self.messages = []
-      wApp.bus.on('request-complete', ajaxCompleteHandler)
+  // On mount, initialize messages and bind ajaxComplete handler
+  self.on('mount', function() {
+    self.messages = [];
+    wApp.bus.on('request-complete', ajaxCompleteHandler);
+  });
 
-    self.on 'unmount', ->
-      wApp.bus.off('request-complete', ajaxCompleteHandler)
+  // On unmount, unbind ajaxComplete handler
+  self.on('unmount', function() {
+    wApp.bus.off('request-complete', ajaxCompleteHandler);
+  });
 
-    wApp.bus.on 'message', (type, message) ->
-      self.messages.push {
-        type: type,
-        content: message
+  // Listen for message events and add them to the messages list
+  wApp.bus.on('message', function(type, message) {
+    self.messages.push({
+      type: type,
+      content: message
+    });
+    window.setTimeout(self.drop, duration());
+    self.update();
+  });
+
+  // Duration for message display (ms)
+  var duration = function() {
+    return 3000;
+  };
+
+  // Handle ajaxComplete events and trigger messages if needed
+  var ajaxCompleteHandler = function(response) {
+    try {
+      var data = response.data;
+
+      if (data.message && !request.noMessaging) {
+        var type = (request.status >= 200 && request.status < 300) ? 'notice' : 'error';
+        wApp.bus.trigger('message', type, data.message);
       }
-      window.setTimeout(self.drop, duration())
-      self.update()
 
-    duration = -> 3000
+      if (data.notice && !request.noMessaging) {
+        wApp.bus.trigger('message', 'notice', data.notice);
+      }
 
-    ajaxCompleteHandler = (response) ->
-      try
-        data = response.data
+      if (data.code) {
+        wApp.bus.trigger('server-code', data.code);
+      }
 
-        if data.message && !request.noMessaging
-          type = if request.status >= 200 && request.status < 300 then 'notice' else 'error'
-          wApp.bus.trigger 'message', type, data.message
+    } catch (e) {
+      // TODO: should this be console.error?
+      console.log(e, request);
+    }
+  };
 
-        if data.notice && !request.noMessaging
-          wApp.bus.trigger 'message', 'notice', data.notice
+  // Remove the oldest message and update UI
+  self.drop = function() {
+    self.messages.shift();
+    self.update();
+  };
 
-        if data.code
-          wApp.bus.trigger 'server-code', data.code
+  // Check if a message is an error
+  self.error = function(message) {
+    return message.type === 'error';
+  };
 
-      catch e
-        # TODO: should this be console.error?
-        console.log e, request
-
-    self.drop = ->
-      self.messages.shift()
-      self.update()
-    self.error = (message) -> message.type == 'error'
-    self.notice = (message) -> message.type == 'notice'
-  </script>
+  // Check if a message is a notice
+  self.notice = function(message) {
+    return message.type === 'notice';
+  };
+</script>
 </w-messaging>
+

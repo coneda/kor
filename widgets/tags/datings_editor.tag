@@ -35,58 +35,81 @@
     </li>
   </ul>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
 
-    tag.on 'mount', ->
-      tag.data = tag.opts.riotValue || []
-      tag.deleted = []
-      tag.update()
+  // On mount, initialize data and update the tag
+  tag.on('mount', function() {
+    tag.data = tag.opts.riotValue || [];
+    tag.deleted = [];
+    tag.update();
+  });
 
-    tag.anyVisibleDatings = ->
-      for dating in (tag.data || [])
-        return true if !dating['_destroy']
-      false
+  // Check if any visible datings exist
+  tag.anyVisibleDatings = function() {
+    for (var i = 0; i < (tag.data || []).length; i++) {
+      var dating = tag.data[i];
+      if (!dating['_destroy']) return true;
+    }
+    return false;
+  };
 
-    tag.name = -> tag.opts.name
+  // Get the name of the tag
+  tag.name = function() {
+    return tag.opts.name;
+  };
 
-    tag.errorsFor = (i, field) ->
-      e = tag.opts.errors || []
-      o = e[i] || {}
-      o[field]
+  // Get errors for a specific field
+  tag.errorsFor = function(i, field) {
+    var e = tag.opts.errors || [];
+    var o = e[i] || {};
+    return o[field];
+  };
 
-    tag.set = (values) ->
-      tag.data = values
-      tag.update()
+  // Set the data and update the tag
+  tag.set = function(values) {
+    tag.data = values;
+    tag.update();
 
-      for i, dating of tag.data
-        tag.setDating(i, dating)
+    for (var i = 0; i < tag.data.length; i++) {
+      var dating = tag.data[i];
+      tag.setDating(i, dating);
+    }
+  };
 
-    tag.add = (event) ->
-      event.preventDefault() if event
-      tag.data.push({label: tag.opts.defaultDatingLabel})
-      tag.update()
+  // Add a new dating
+  tag.add = function(event) {
+    if (event) event.preventDefault();
+    tag.data.push({ label: tag.opts.defaultDatingLabel });
+    tag.update();
+  };
 
-    tag.remove = (event) ->
-      event.preventDefault()
-      dating = event.item.dating
-      index = event.item.i
-      if dating.id
-        dating._destroy = true
-      else
-        tag.data.splice(index, 1)
+  // Remove a dating
+  tag.remove = function(event) {
+    event.preventDefault();
+    var dating = event.item.dating;
+    var index = event.item.i;
+    if (dating.id) {
+      dating._destroy = true;
+    } else {
+      tag.data.splice(index, 1);
+    }
+  };
 
-    tag.value = ->
-      labelInputs = wApp.utils.toArray(tag.refs['labels'])
-      datingStringInputs = wApp.utils.toArray(tag.refs['dating_strings'])
+  // Get the value of all datings
+  tag.value = function() {
+    var labelInputs = wApp.utils.toArray(tag.refs['labels']);
+    var datingStringInputs = wApp.utils.toArray(tag.refs['dating_strings']);
 
-      for i, dating of tag.data
-        dating['label'] = labelInputs[i].value()
-        dating['dating_string'] = datingStringInputs[i].value()
+    for (var i = 0; i < tag.data.length; i++) {
+      var dating = tag.data[i];
+      dating['label'] = labelInputs[i].value();
+      dating['dating_string'] = datingStringInputs[i].value();
+    }
 
-      tag.data
-
-  </script>
+    return tag.data;
+  };
+</script>
 </kor-datings-editor>

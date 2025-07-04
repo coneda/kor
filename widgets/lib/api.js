@@ -69,12 +69,19 @@ const request = (url, init = {}) => {
 
       if (response.status >= 200 && response.status < 300) {
         if (init['success']) init['success'](response.data)
+        if (init['complete']) init['complete'](response)
 
         resolve(response)
       } else {
+        if (init['error']) init['error'](response)
+        if (init['complete']) init['complete'](response)
+
         reject(response)
       }
     } else {
+      if (init['error']) init['error'](response)
+      if (init['complete']) init['complete'](response)
+
       reject(response)
     }
 

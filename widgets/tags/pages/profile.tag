@@ -103,92 +103,129 @@
   <div class="clearfix"></div>
 
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'mount', ->
-      tag.title(tag.t('objects.edit', {interpolations: {o: 'nouns.profile'}}))
-      tag.errors = {}
+  // On mount, set title and fetch user and collections data
+  tag.on('mount', function() {
+    tag.title(tag.t('objects.edit', { interpolations: { o: 'nouns.profile' } }));
+    tag.errors = {};
 
-      if tag.currentUser() && !tag.isGuest()
-        Zepto.when(fetchCollections(), fetchUser()).then ->
-          tag.loaded = true
-          tag.update()
-      else
-        wApp.bus.trigger('access-denied')
+    if (tag.currentUser() && !tag.isGuest()) {
+      Zepto.when(fetchCollections(), fetchUser()).then(function() {
+        tag.loaded = true;
+        tag.update();
+      });
+    } else {
+      wApp.bus.trigger('access-denied');
+    }
+  });
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      p = update()
-      p.done (data) ->
-        tag.errors = {}
-        window.history.back()
-        wApp.bus.trigger 'reload-session'
-        # riot.update() # so locale changes take effect
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
-        wApp.utils.scrollToTop()
-      p.always -> tag.update()
+  // Handle form submission for updating profile
+  tag.submit = function(event) {
+    event.preventDefault();
+    var p = update();
+    p.done(function(data) {
+      tag.errors = {};
+      window.history.back();
+      wApp.bus.trigger('reload-session');
+    });
+    p.fail(function(xhr) {
+      tag.errors = JSON.parse(xhr.responseText).errors;
+      wApp.utils.scrollToTop();
+    });
+    p.always(function() {
+      tag.update();
+    });
+  };
 
-    tag.expiresIn = (days) ->
-      (event) ->
-        if days
-          date = new Date()
-          date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
-          expiresAtTag().set(strftime '%Y-%m-%d', date)
-        else
-          expiresAtTag().set undefined
+  // Set expiration date for the profile
+  tag.expiresIn = function(days) {
+    return function(event) {
+      if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+        expiresAtTag().set(strftime('%Y-%m-%d', date));
+      } else {
+        expiresAtTag().set(undefined);
+      }
+    };
+  };
 
-    tag.valueForDate = (date) ->
-      if date then strftime('%Y-%m-%d', new Date(date)) else ''
+  // Format date value
+  tag.valueForDate = function(date) {
+    return date ? strftime('%Y-%m-%d', new Date(date)) : '';
+  };
 
-    tag.isFederationAuth = -> !!wApp.session.current.auth_source
+  // Check if federation authentication is enabled
+  tag.isFederationAuth = function() {
+    return !!wApp.session.current.auth_source;
+  };
 
-    tag.passwordResetUrl = ->
-      wApp.session.current.auth_source.password_reset_url
+  // Get password reset URL for federation authentication
+  tag.passwordResetUrl = function() {
+    return wApp.session.current.auth_source.password_reset_url;
+  };
 
-    fetchUser = ->
-      Zepto.ajax(
-        url: "/users/me"
-        data: {include: 'security'}
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+  // Fetch user data from server
+  function fetchUser() {
+    return Zepto.ajax({
+      url: '/users/me',
+      data: { include: 'security' },
+      success: function(data) {
+        tag.data = data;
+        tag.update();
+      }
+    });
+  }
 
-    fetchCollections = ->
-      Zepto.ajax(
-        url: '/collections'
-        success: (data) ->
-          tag.collections = data
-          tag.update()
-      )
+  // Fetch collections data from server
+  function fetchCollections() {
+    return Zepto.ajax({
+      url: '/collections',
+      success: function(data) {
+        tag.collections = data;
+        tag.update();
+      }
+    });
+  }
 
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/users/me"
-        data: JSON.stringify(
-          id: tag.currentUser().id
-          user: values()
-        )
-      )
+  // Update user profile data
+  function update() {
+    return Zepto.ajax({
+      type: 'PATCH',
+      url: '/users/me',
+      data: JSON.stringify({
+        id: tag.currentUser().id,
+        user: values()
+      })
+    });
+  }
 
-    expiresAtTag = ->
-      for f in tag.refs.fields
-        return f if f.name() == 'expires_at'
-      undefined
+  // Get the expiration date field
+  function expiresAtTag() {
+    for (var i = 0; i < tag.refs.fields.length; i++) {
+      var f = tag.refs.fields[i];
+      if (f.name() === 'expires_at') {
+        return f;
+      }
+    }
+    return undefined;
+  }
 
-    values = ->
-      results = {}
-      for f in tag.refs.fields
-        results[f.name()] = f.value()
-      results
-
-  </script>
+  // Collect form values for submission
+  function values() {
+    var results = {};
+    for (var i = 0; i < tag.refs.fields.length; i++) {
+      var f = tag.refs.fields[i];
+      results[f.name()] = f.value();
+    }
+    return results;
+  }
+</script>
 
 </kor-profile>
