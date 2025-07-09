@@ -68,113 +68,151 @@
     <div each={e in opts.errors}>{e}</div>
   </div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.page = 1
+ <script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.page = 1;
 
-    tag.on 'before-mount', ->
-      tag.id = tag.opts.riotValue
-      if tag.id
-        tag.existing = true
+  // Before mounting, initialize values and trigger reload
+  tag.on('before-mount', function() {
+    tag.id = tag.opts.riotValue;
+    if (tag.id) {
+      tag.existing = true;
+    }
 
-      tag.currentTab = if tag.id then 'current' else 'search'
-      tag.trigger 'reload'
-      tag.update()
-      
-    tag.on 'reload', ->
-      fetch()
+    tag.currentTab = tag.id ? 'current' : 'search';
+    tag.trigger('reload');
+    tag.update();
+  });
 
-    tag.gotoTab = (newTab) ->
-      (event) ->
-        event.preventDefault()
-        if tag.currentTab != newTab
-          tag.currentTab = newTab
-          tag.data = {}
-          tag.groupedEntities = []
-          fetch()
-          tag.update()
+  // Reload data
+  tag.on('reload', function() {
+    fetch();
+  });
 
-    tag.isSelected = (record) -> 
-      record && tag.id == record.id
+  // Switch tabs
+  tag.gotoTab = function(newTab) {
+    return function(event) {
+      event.preventDefault();
+      if (tag.currentTab !== newTab) {
+        tag.currentTab = newTab;
+        tag.data = {};
+        tag.groupedEntities = [];
+        fetch();
+        tag.update();
+      }
+    };
+  };
 
-    tag.select = (event) ->
-      event.preventDefault()
-      record = event.item.record
-      if tag.isSelected(record)
-        tag.id = undefined
-      else
-        tag.id = record.id
-      h() if h = tag.opts.onchange
+  // Check if a record is selected
+  tag.isSelected = function(record) {
+    return record && tag.id === record.id;
+  };
 
-    tag.search = ->
-      if tag.to
-        window.clearTimeout(tag.to)
-      tag.to = window.setTimeout(fetch, 300)
+  // Select or deselect a record
+  tag.select = function(event) {
+    event.preventDefault();
+    var record = event.item.record;
+    if (tag.isSelected(record)) {
+      tag.id = undefined;
+    } else {
+      tag.id = record.id;
+    }
+    if (tag.opts.onchange) {
+      tag.opts.onchange();
+    }
+  };
 
-    tag.paginate = (newPage) ->
-      tag.page = newPage
-      fetch()
+  // Search with debounce
+  tag.search = function() {
+    if (tag.to) {
+      window.clearTimeout(tag.to);
+    }
+    tag.to = window.setTimeout(fetch, 300);
+  };
 
-    tag.value = -> tag.id
+  // Paginate results
+  tag.paginate = function(newPage) {
+    tag.page = newPage;
+    fetch();
+  };
 
-    fetch = () ->
-      switch tag.currentTab
-        when 'current'
-          if tag.opts.riotValue
-            Zepto.ajax(
-              url: '/entities/' + tag.opts.riotValue
-              success: (data) ->
-                tag.data = {records: [data]}
-                group()
-            )
-        when 'visited'
-          Zepto.ajax(
-            url: '/entities'
-            data: {
-              id: wApp.entityHistory.ids()
-              relation_name: tag.opts.relationName
-              page: tag.page
-              per_page: 9
+  // Get the current value
+  tag.value = function() {
+    return tag.id;
+  };
+
+  // Fetch data based on the current tab
+  function fetch() {
+    switch (tag.currentTab) {
+      case 'current':
+        if (tag.opts.riotValue) {
+          Zepto.ajax({
+            url: '/entities/' + tag.opts.riotValue,
+            success: function(data) {
+              tag.data = { records: [data] };
+              group();
             }
-            success: (data) ->
-              tag.data = data
-              group()
-          )
-        when 'created'
-          Zepto.ajax(
-            url: '/entities'
+          });
+        }
+        break;
+      case 'visited':
+        Zepto.ajax({
+          url: '/entities',
+          data: {
+            id: wApp.entityHistory.ids(),
+            relation_name: tag.opts.relationName,
+            page: tag.page,
+            per_page: 9
+          },
+          success: function(data) {
+            tag.data = data;
+            group();
+          }
+        });
+        break;
+      case 'created':
+        Zepto.ajax({
+          url: '/entities',
+          data: {
+            relation_name: tag.opts.relationName,
+            page: tag.page,
+            per_page: 9,
+            sort: 'created_at',
+            direction: 'desc'
+          },
+          success: function(data) {
+            tag.data = data;
+            group();
+          }
+        });
+        break;
+      case 'search':
+        if (tag.refs.terms) {
+          Zepto.ajax({
+            url: '/entities',
             data: {
-              relation_name: tag.opts.relationName
-              page: tag.page
+              terms: tag.refs.terms.value(),
+              relation_name: tag.opts.relationName,
               per_page: 9,
-              sort: 'created_at',
-              direction: 'desc'
+              page: tag.page
+            },
+            success: function(data) {
+              tag.data = data;
+              group();
             }
-            success: (data) ->
-              tag.data = data
-              group()
-          )
-        when 'search'
-          if tag.refs.terms
-            Zepto.ajax(
-              url: '/entities'
-              data: {
-                terms: tag.refs.terms.value(),
-                relation_name: tag.opts.relationName,
-                per_page: 9,
-                page: tag.page
-              }
-              success: (data) ->
-                tag.data = data
-                group()
-            )
+          });
+        }
+        break;
+    }
+  }
 
-    group = ->
-      tag.groupedEntities = wApp.utils.inGroupsOf(3, tag.data.records, null)
-      tag.update()
-
-  </script>
+  // Group entities into rows of 3
+  function group() {
+    tag.groupedEntities = wApp.utils.inGroupsOf(3, tag.data.records, null);
+    tag.update();
+  }
+</script>
 
 </kor-entity-selector>

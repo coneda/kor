@@ -292,126 +292,171 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.info)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.info);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'mount', ->
-      wApp.bus.on 'relationship-updated', fetch
-      wApp.bus.on 'relationship-created', fetch
-      wApp.bus.on 'relationship-deleted', fetch
-      fetch()
+  // On mount, set up event listeners and fetch entity data
+  tag.on('mount', function() {
+    wApp.bus.on('relationship-updated', fetch);
+    wApp.bus.on('relationship-created', fetch);
+    wApp.bus.on('relationship-deleted', fetch);
+    fetch();
+  });
 
-    tag.on 'unmount', ->
-      wApp.bus.off 'relationship-deleted', fetch
-      wApp.bus.off 'relationship-created', fetch
-      wApp.bus.off 'relationship-updated', fetch
+  // On unmount, remove event listeners
+  tag.on('unmount', function() {
+    wApp.bus.off('relationship-deleted', fetch);
+    wApp.bus.off('relationship-created', fetch);
+    wApp.bus.off('relationship-updated', fetch);
+  });
 
-    tag.delete = (event) ->
-      event.preventDefault()
-      message = tag.t('objects.confirm_destroy',
-        interpolations: {o: 'activerecord.models.entity'}
-      )
-      if confirm(message)
-        Zepto.ajax(
-          type: 'DELETE'
-          url: "/entities/#{tag.opts.id}"
-          success: -> window.history.go(-1)
-        )
-
-    tag.fields = ->
-      f for f in tag.data.fields when f.show_on_entity
-
-    tag.visibleFields = ->
-      f for f in tag.fields() when f.value
-
-    tag.showTagging = ->
-      tag.data.kind.tagging && 
-        tag.allowedTo('tagging', tag.data.collection_id)
-
-    tag.transform = (op) ->
-      (event) ->
-        event.preventDefault()
-
-        Zepto.ajax(
-          type: 'PATCH'
-          url: "/media/transform/#{tag.data.medium_id}/image/#{op}"
-          success: ->
-            tag.data.medium.url.preview += '?cb=' + (new Date()).getTime()
-            tag.update()
-        )
-
-    tag.opIcon = (op) ->
-      return {
-        'flip': 'arrows-v',
-        'flop': 'arrows-h',
-        'rotate_cw': 'mail-reply fa-flip-horizontal',
-        'rotate_ccw': 'mail-reply',
-        'rotate_180': 'circle-o-notch fa-flip-vertical'
-      }[op]
-
-    tag.reportUrl = ->
-      to = wApp.config.data.values.maintainer_mail
-      subject = tag.t('messages.report_entity_subject')
-      body = tag.t('messages.report_entity_body', {interpolations: {
-        entity_url: "#{wApp.info.data.url}#/entities/#{tag.data.id}"
-        user: wApp.session.current.user.name
-      }})
-      "mailto:#{to}?subject=#{subject}&body=#{encodeURIComponent(body)}"
-
-    tag.addRelationship = (event) ->
-      event.preventDefault()
-      wApp.bus.trigger 'modal', 'kor-relationship-editor', {
-        directedRelationship: {from_id: tag.data.id},
-        onCreated: tag.reload
-      }
-
-    tag.openMirador = (event) ->
-      event.preventDefault()
-      event.stopPropagation()
-
-      url = Zepto(event.target).attr('href')
-      window.open(url, '', 'height=800,width=1024')
-
-    tag.fieldValue = (value) ->
-      if Zepto.isArray(value) then value.join(', ') else value
-
-    fetch = ->
-      Zepto.ajax(
-        url: "/entities/#{tag.opts.id}"
-        data: {include: 'all'}
-        success: (data) ->
-          tag.data = data
-
-          # nasty hack to force all the kor-relation tags to be remounted
-          rels = tag.data.relations
-          tag.data.relations = {}
-          tag.update()
-          tag.data.relations = rels
-
-          tag.title tag.data.display_name
-          linkify_properties()
-          wApp.entityHistory.add(data.id)
-        error: ->
-          wApp.bus.trigger('access-denied')
-        complete: ->
-          tag.update()
-      )
-
-    tag.inplaceTagHandlers = {
-      doneHandler: fetch
+  // Handle entity deletion
+  tag.delete = function(event) {
+    event.preventDefault();
+    var message = tag.t('objects.confirm_destroy', {
+      interpolations: { o: 'activerecord.models.entity' }
+    });
+    if (confirm(message)) {
+      Zepto.ajax({
+        type: 'DELETE',
+        url: "/entities/" + tag.opts.id,
+        success: function() {
+          window.history.go(-1);
+        }
+      });
     }
+  };
 
-    linkify_properties = ->
-      for property in tag.data.properties
-        if typeof(property['value']) == 'string'
-          if property['value'].match(/^https?:\/\//)
-            property['url'] = true
+  // Get fields to display on the entity page
+  tag.fields = function() {
+    return tag.data.fields.filter(function(f) {
+      return f.show_on_entity;
+    });
+  };
 
-  </script>
+  // Get visible fields with values
+  tag.visibleFields = function() {
+    return tag.fields().filter(function(f) {
+      return f.value;
+    });
+  };
+
+  // Check if tagging is allowed
+  tag.showTagging = function() {
+    return tag.data.kind.tagging && tag.allowedTo('tagging', tag.data.collection_id);
+  };
+
+  // Handle media transformations
+  tag.transform = function(op) {
+    return function(event) {
+      event.preventDefault();
+      Zepto.ajax({
+        type: 'PATCH',
+        url: "/media/transform/" + tag.data.medium_id + "/image/" + op,
+        success: function() {
+          tag.data.medium.url.preview += '?cb=' + new Date().getTime();
+          tag.update();
+        }
+      });
+    };
+  };
+
+  // Get icon for media transformation operations
+  tag.opIcon = function(op) {
+    return {
+      'flip': 'arrows-v',
+      'flop': 'arrows-h',
+      'rotate_cw': 'mail-reply fa-flip-horizontal',
+      'rotate_ccw': 'mail-reply',
+      'rotate_180': 'circle-o-notch fa-flip-vertical'
+    }[op];
+  };
+
+  // Generate report URL for the entity
+  tag.reportUrl = function() {
+    var to = wApp.config.data.values.maintainer_mail;
+    var subject = tag.t('messages.report_entity_subject');
+    var body = tag.t('messages.report_entity_body', {
+      interpolations: {
+        entity_url: wApp.info.data.url + "#/entities/" + tag.data.id,
+        user: wApp.session.current.user.name
+      }
+    });
+    return "mailto:" + to + "?subject=" + subject + "&body=" + encodeURIComponent(body);
+  };
+
+  // Add a relationship to the entity
+  tag.addRelationship = function(event) {
+    event.preventDefault();
+    wApp.bus.trigger('modal', 'kor-relationship-editor', {
+      directedRelationship: { from_id: tag.data.id },
+      onCreated: tag.reload
+    });
+  };
+
+  // Open Mirador viewer
+  tag.openMirador = function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    var url = Zepto(event.target).attr('href');
+    window.open(url, '', 'height=800,width=1024');
+  };
+
+  // Format field value
+  tag.fieldValue = function(value) {
+    return Array.isArray(value) ? value.join(', ') : value;
+  };
+
+  // Fetch entity data from the server
+  var fetch = function() {
+    Zepto.ajax({
+      url: "/entities/" + tag.opts.id,
+      data: { include: 'all' },
+      success: function(data) {
+        tag.data = data;
+
+        // Force re-mounting of kor-relation tags
+        var rels = tag.data.relations;
+        tag.data.relations = {};
+        tag.update();
+        tag.data.relations = rels;
+
+        tag.title(tag.data.display_name);
+        linkifyProperties();
+        wApp.entityHistory.add(data.id);
+      },
+      error: function() {
+        wApp.bus.trigger('access-denied');
+      },
+      complete: function() {
+        tag.update();
+      }
+    });
+  }
+
+  // Handlers for inplace tags
+  tag.inplaceTagHandlers = {
+    doneHandler: function() {
+      fetch();
+    }
+  };
+
+  // Linkify properties with URLs
+  var linkifyProperties = function() {
+    for (var i = 0; i < tag.data.properties.length; i++) {
+      var property = tag.data.properties[i];
+      if (typeof property.value === 'string') {
+        if (property.value.match(/^https?:\/\//)) {
+          property.url = true;
+        }
+      }
+    }
+  };
+</script>
 
 </kor-entity-page>
