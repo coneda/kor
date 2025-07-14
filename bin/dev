@@ -7,19 +7,24 @@ function kor-server {
 }
 
 function kor-db {
-  docker run --rm -ti \
+  docker create \
     --name kor-db \
     --publish 3306:3306 \
     --env MARIADB_ROOT_PASSWORD=root \
-    mariadb:10.7.3
+    mariadb:10.7.3 --key-buffer-size=4G --innodb-buffer-pool-size=4G
+  docker start -a kor-db
+  docker stop kor-db
 }
 
 function kor-index {
-  docker run --rm -ti \
+  docker create \
     --name kor-index \
     --publish 9200:9200 \
     --ulimit nofile=65536 \
+    --env cluster.routing.allocation.disk.threshold_enabled=false \
     elasticsearch:5.6.16
+  docker start -a kor-index
+  docker stop kor-index
 }
 
 kor-$CMD

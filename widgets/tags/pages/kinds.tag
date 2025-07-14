@@ -70,98 +70,146 @@
     </virtual>
   </div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.requireRoles = ['kind_admin']
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.requireRoles = ['kind_admin'];
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'mount', ->
-      tag.title(tag.t('activerecord.models.kind', {count: 'other'}))
-      fetch()
+  // On mount, set the title and fetch data
+  tag.on('mount', function() {
+    tag.title(tag.t('activerecord.models.kind', { count: 'other' }));
+    fetch();
+  });
 
-    tag.filters = {}
+  tag.filters = {};
 
-    tag.delete = (kind) ->
-      (event) ->
-        event.preventDefault()
-        if wApp.utils.confirm tag.t('confirm.general')
-          Zepto.ajax(
-            type: 'DELETE'
-            url: "/kinds/#{kind.id}"
-            success: -> fetch()
-          )
+  // Delete a kind
+  tag.delete = function(kind) {
+    return function(event) {
+      event.preventDefault();
+      if (wApp.utils.confirm(tag.t('confirm.general'))) {
+        Zepto.ajax({
+          type: 'DELETE',
+          url: "/kinds/" + kind.id,
+          success: function() {
+            fetch();
+          }
+        });
+      }
+    };
+  };
 
-    tag.isMedia = (kind) -> kind.uuid == wApp.data.medium_kind_uuid
+  // Check if the kind is media
+  tag.isMedia = function(kind) {
+    return kind.uuid === wApp.data.medium_kind_uuid;
+  };
 
-    tag.fieldNamesFor = (kind) -> (k.show_label for k in kind.fields).join(', ')
-    tag.generatorNamesFor = (kind) ->
-      (g.name for g in kind.generators).join(', ')
+  // Get field names for a kind
+  tag.fieldNamesFor = function(kind) {
+    return kind.fields.map(function(k) {
+      return k.show_label;
+    }).join(', ');
+  };
 
-    tag.submit = ->
-      tag.filters.terms = tag.refs['terms'].value()
-      tag.filters.hideAbstract = tag.refs['hideAbstract'].value()
-      filter_records()
-      groupAndSortRecords()
-      tag.update()
+  // Get generator names for a kind
+  tag.generatorNamesFor = function(kind) {
+    return kind.generators.map(function(g) {
+      return g.name;
+    }).join(', ');
+  };
 
-    tag.delayedSubmit = (event) ->
-      if tag.delayedTimeout
-        tag.delayedTimeout.clearTimeout 
-        tag.delayedTimeout = undefined
+  // Submit filters and update records
+  tag.submit = function() {
+    tag.filters.terms = tag.refs['terms'].value();
+    tag.filters.hideAbstract = tag.refs['hideAbstract'].value();
+    filterRecords();
+    groupAndSortRecords();
+    tag.update();
+  };
 
-      tag.delayedTimeout = window.setTimeout(tag.submit, 300)
-      true
+  // Delayed submit for filters
+  tag.delayedSubmit = function(event) {
+    if (tag.delayedTimeout) {
+      clearTimeout(tag.delayedTimeout);
+      tag.delayedTimeout = undefined;
+    }
 
-    filter_records = ->
-      tag.filteredRecords = if tag.filters.terms
-        re = new RegExp("#{tag.filters.terms}", 'i')
-        results = []
-        for kind in tag.data.records
-          if kind.name.match(re)
-            if results.indexOf(kind) == -1
-              results.push(kind)
-        results
-      else
-        tag.data.records
+    tag.delayedTimeout = window.setTimeout(tag.submit, 300);
+    return true;
+  };
 
-      if tag.filters.hideAbstract
-        tag.filteredRecords = tag.filteredRecords.filter (kind) -> !kind.abstract
+  // Filter records based on terms and abstract flag
+  var filterRecords = function() {
+    if (tag.filters.terms) {
+      var re = new RegExp(tag.filters.terms, 'i');
+      var results = [];
+      for (var i = 0; i < tag.data.records.length; i++) {
+        var kind = tag.data.records[i];
+        if (kind.name.match(re) && results.indexOf(kind) === -1) {
+          results.push(kind);
+        }
+      }
+      tag.filteredRecords = results;
+    } else {
+      tag.filteredRecords = tag.data.records;
+    }
 
-    typeCompare = (x, y) ->
-      if x.match(/^E\d+/) && y.match(/^E\d+/)
-        x = parseInt(x.replace(/^E/, '').split(' ')[0])
-        y = parseInt(y.replace(/^E/, '').split(' ')[0])
-      if x > y
-        1
-      else
-        if x == y
-          0
-        else
-          -1
+    if (tag.filters.hideAbstract) {
+      tag.filteredRecords = tag.filteredRecords.filter(function(kind) {
+        return !kind.abstract;
+      });
+    }
+  };
 
-    groupAndSortRecords = ->
-      results = {}
-      for r in tag.filteredRecords
-        results[r['schema']] ||= []
-        results[r['schema']].push r
-      for k, v of results
-        results[k] = v.sort((x, y) -> typeCompare(x.name, y.name))
-      tag.groupedResults = results
+  // Compare types for sorting
+  var typeCompare = function(x, y) {
+    if (x.match(/^E\d+/) && y.match(/^E\d+/)) {
+      x = parseInt(x.replace(/^E/, '').split(' ')[0]);
+      y = parseInt(y.replace(/^E/, '').split(' ')[0]);
+    }
+    if (x > y) {
+      return 1;
+    } else if (x === y) {
+      return 0;
+    } else {
+      return -1;
+    }
+  };
 
-    fetch = ->
-      Zepto.ajax(
-        url: '/kinds'
-        data: {include: 'generators,fields,inheritance'}
-        success: (data) ->
-          tag.data = data
-          filter_records()
-          groupAndSortRecords()
-          tag.update()
-      )
+  // Group and sort records by schema
+  var groupAndSortRecords = function() {
+    var results = {};
+    for (var i = 0; i < tag.filteredRecords.length; i++) {
+      var r = tag.filteredRecords[i];
+      if (!results[r.schema]) {
+        results[r.schema] = [];
+      }
+      results[r.schema].push(r);
+    }
+    for (var k in results) {
+      results[k] = results[k].sort(function(x, y) {
+        return typeCompare(x.name, y.name);
+      });
+    }
+    tag.groupedResults = results;
+  };
 
-  </script>
+  // Fetch kinds data from the server
+  var fetch = function() {
+    Zepto.ajax({
+      url: '/kinds',
+      data: { include: 'generators,fields,inheritance' },
+      success: function(data) {
+        tag.data = data;
+        filterRecords();
+        groupAndSortRecords();
+        tag.update();
+      }
+    });
+  };
+</script>
 
 </kor-kinds>

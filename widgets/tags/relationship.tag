@@ -101,96 +101,128 @@
     </tbody>      
   </table>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.info)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.info);
 
+  // On mount, initialize relationship and position
+  tag.on('mount', function() {
+    tag.relationship = tag.opts.relationship;
+    tag.position = tag.opts.position;
+    tag.query = tag.query || {};
+  });
 
-    tag.on 'mount', ->
-      tag.relationship = tag.opts.relationship
-      tag.position = tag.opts.position
-      tag.query ||= {}
+  // Get the target entity of the relationship
+  tag.to = function() {
+    return tag.relationship.to;
+  };
 
-    tag.to = -> tag.relationship.to
+  // Toggle the expanded state
+  tag.toggle = function(event) {
+    event.preventDefault();
+    tag.trigger('toggle');
+  };
 
-    tag.toggle = (event) ->
-      event.preventDefault()
-      tag.trigger 'toggle'
+  // Handle toggle event
+  tag.on('toggle', function(value) {
+    tag.expanded = value === undefined ? !tag.expanded : value;
+    if (tag.expanded && !tag.data) {
+      fetchPage();
+    }
+    tag.update();
+  });
 
-    tag.on 'toggle', (value) ->
-      tag.expanded = (if value == undefined then !tag.expanded else value)
-      fetchPage() if tag.expanded && !tag.data
-      tag.update()
+  // Check if the user is allowed to edit
+  tag.allowedToEdit = function() {
+    return tag.allowedTo('edit', tag.opts.entity.collection_id) ||
+           tag.allowedTo('edit', tag.to().collection_id);
+  };
 
-    tag.allowedToEdit = ->
-      tag.allowedTo('edit', tag.opts.entity.collection_id) ||
-      tag.allowedTo('edit', tag.to().collection_id)
+  // Open the relationship editor
+  tag.edit = function(event) {
+    event.preventDefault();
+    wApp.bus.trigger('modal', 'kor-relationship-editor', {
+      directedRelationship: tag.relationship
+    });
+  };
 
-    tag.edit = (event) ->
-      event.preventDefault()
-      wApp.bus.trigger 'modal', 'kor-relationship-editor', {
-        directedRelationship: tag.relationship,
-      }
-
-    tag.delete = (event) ->
-      event.preventDefault()
-      if confirm(tag.t('confirm.sure'))
-        Zepto.ajax(
-          type: 'DELETE'
-          url: "/relationships/#{tag.relationship.relationship_id}"
-          success: (data) ->
-            wApp.bus.trigger('relationship-deleted')
-      )
-
-    tag.toTop = (event) ->
-      event.preventDefault()
-      tag.toPosition('top')
-
-    tag.up = (event) ->
-      event.preventDefault()
-      tag.toPosition(tag.opts.position - 1)
-
-    tag.down = (event) ->
-      event.preventDefault()
-      tag.toPosition(tag.opts.position + 1)
-
-    tag.toBottom = (event) ->
-      event.preventDefault()
-      tag.toPosition('bottom')
-
-    tag.toPosition = (position) ->
-      event.preventDefault()
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/relationships/#{tag.relationship.id}/reorder"
-        data: JSON.stringify({position: position})
-        success: (data) ->
-          wApp.bus.trigger('relationship-reorder')
-      )
-
-    tag.pageUpdate = (newPage) ->
-      tag.query.page = newPage
-      fetchPage()
-
-    fetchPage = ->
-      Zepto.ajax(
-        url: "/relationships"
-        data: {
-          page: tag.query.page
-          per_page: 9
-          relation_name: tag.opts.name
-          to_kind_id: tag.info().medium_kind_id
-          from_entity_id: tag.to().id,
-          include: 'to,properties,datings'
+  // Delete the relationship
+  tag.delete = function(event) {
+    event.preventDefault();
+    if (confirm(tag.t('confirm.sure'))) {
+      Zepto.ajax({
+        type: 'DELETE',
+        url: "/relationships/" + tag.relationship.relationship_id,
+        success: function(data) {
+          wApp.bus.trigger('relationship-deleted');
         }
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
+      });
+    }
+  };
 
-  </script>
+  // Move the relationship to the top
+  tag.toTop = function(event) {
+    event.preventDefault();
+    tag.toPosition('top');
+  };
+
+  // Move the relationship up
+  tag.up = function(event) {
+    event.preventDefault();
+    tag.toPosition(tag.opts.position - 1);
+  };
+
+  // Move the relationship down
+  tag.down = function(event) {
+    event.preventDefault();
+    tag.toPosition(tag.opts.position + 1);
+  };
+
+  // Move the relationship to the bottom
+  tag.toBottom = function(event) {
+    event.preventDefault();
+    tag.toPosition('bottom');
+  };
+
+  // Change the position of the relationship
+  tag.toPosition = function(position) {
+    event.preventDefault();
+    Zepto.ajax({
+      type: 'PATCH',
+      url: "/relationships/" + tag.relationship.id + "/reorder",
+      data: JSON.stringify({ position: position }),
+      success: function(data) {
+        wApp.bus.trigger('relationship-reorder');
+      }
+    });
+  };
+
+  // Update the page and fetch data
+  tag.pageUpdate = function(newPage) {
+    tag.query.page = newPage;
+    fetchPage();
+  };
+
+  // Fetch paginated relationship data
+  var fetchPage = function() {
+    Zepto.ajax({
+      url: "/relationships",
+      data: {
+        page: tag.query.page,
+        per_page: 9,
+        relation_name: tag.opts.name,
+        to_kind_id: tag.info().medium_kind_id,
+        from_entity_id: tag.to().id,
+        include: 'to,properties,datings'
+      },
+      success: function(data) {
+        tag.data = data;
+        tag.update();
+      }
+    });
+  };
 
 </kor-relationship>

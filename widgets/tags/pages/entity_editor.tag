@@ -144,173 +144,226 @@
 
   <div class="clearfix"></div>
  
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.page)
-    tag.mixin(wApp.mixins.config)
+ <script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.page);
+  tag.mixin(wApp.mixins.config);
 
-    tag.on 'before-mount', ->
-      tag.errors = {}
-      tag.dating_errors = []
+  // Before mounting, initialize errors and dating errors
+  tag.on('before-mount', function() {
+    tag.errors = {};
+    tag.dating_errors = [];
 
-      tag.noNameStatements = [
-        {label: tag.t('values.no_name_statements.unknown'), value: 'unknown'},
-        {label: tag.t('values.no_name_statements.not_available'), value: 'not_available'},
-        {label: tag.t('values.no_name_statements.empty_name'), value: 'empty_name'},
-        {label: tag.t('values.no_name_statements.enter_name'), value: 'enter_name'}
-      ]
+    tag.noNameStatements = [
+      { label: tag.t('values.no_name_statements.unknown'), value: 'unknown' },
+      { label: tag.t('values.no_name_statements.not_available'), value: 'not_available' },
+      { label: tag.t('values.no_name_statements.empty_name'), value: 'empty_name' },
+      { label: tag.t('values.no_name_statements.enter_name'), value: 'enter_name' }
+    ];
 
-      wApp.bus.on 'wikidata-item-selected', wikidataItemSelected
-      wApp.bus.on 'existing-entity-selected', existingEntitySelected
+    wApp.bus.on('wikidata-item-selected', wikidataItemSelected);
+    wApp.bus.on('existing-entity-selected', existingEntitySelected);
+  });
 
-    tag.on 'mount', ->
-      checkPermissions()
+  // On mount, check permissions, fetch collections, and fetch entity data
+  tag.on('mount', function() {
+    checkPermissions();
+    fetchCollections();
+    wApp.bus.on('routing:query', queryHandler);
+    fetch(tag.opts.kindId);
+  });
 
-      fetchCollections()
-      wApp.bus.on 'routing:query', queryHandler
-      fetch(tag.opts.kindId)
+  // On unmount, remove event listeners
+  tag.on('unmount', function() {
+    wApp.bus.off('existing-entity-selected', existingEntitySelected);
+    wApp.bus.off('wikidata-item-selected', wikidataItemSelected);
+    wApp.bus.off('routing:query', queryHandler);
+  });
 
-    tag.on 'unmount', ->
-      wApp.bus.off 'existing-entity-selected', existingEntitySelected
-      wApp.bus.off 'wikidata-item-selected', wikidataItemSelected
-      wApp.bus.off 'routing:query', queryHandler
+  // Handle form submission for creating or updating an entity
+  tag.submit = function(event) {
+    event.preventDefault();
+    var p = tag.opts.id ? update() : create();
+    p.done(function(data) {
+      tag.errors = {};
+      var id = tag.opts.id || data.id;
+      wApp.routing.path('/entities/' + id);
+    });
+    p.fail(function(xhr) {
+      tag.errors = JSON.parse(xhr.responseText).errors;
+      wApp.utils.scrollToTop();
+    });
+    p.always(function() {
+      tag.update();
+    });
+  };
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      p = (if tag.opts.id then update() else create())
-      p.done (data) ->
-        tag.errors = {}
-        id = tag.opts.id || data.id
-        wApp.routing.path('/entities/' + id)
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
-        wApp.utils.scrollToTop()
-      p.always -> tag.update()
+  // Check if the entity is of medium kind
+  tag.isMedium = function() {
+    var kindId = parseInt(tag.data['kind_id']) || tag.opts.kindId;
+    return kindId === wApp.info.data.medium_kind_id;
+  };
 
-    tag.isMedium = ->
-      kindId = parseInt(tag.data['kind_id']) || tag.opts.kindId
-      kindId == wApp.info.data.medium_kind_id
+  // Check if the entity has a name
+  tag.hasName = function() {
+    var field = tag.refs['fields.no_name_statement'];
+    return !!field && field.value() === 'enter_name';
+  };
 
-    tag.hasName = ->
-      field = tag.refs['fields.no_name_statement']
-      !!field && field.value() == 'enter_name'
+  // Get the name label for the entity
+  tag.nameLabel = function() {
+    return tag.kind ? wApp.utils.capitalize(tag.kind.name_label) : '';
+  };
 
-    tag.nameLabel = ->
-      return '' unless tag.kind
-      wApp.utils.capitalize tag.kind.name_label
+  // Get the distinct name label for the entity
+  tag.distinctNameLabel = function() {
+    return tag.kind ? wApp.utils.capitalize(tag.kind.distinct_name_label) : '';
+  };
 
-    tag.distinctNameLabel = ->
-      return '' unless tag.kind
-      wApp.utils.capitalize tag.kind.distinct_name_label
-      
+  // Check user permissions for creating or editing the entity
+  var checkPermissions = function() {
+    var policy = tag.opts.id ? 'edit' : 'create';
+    if (tag.currentUser().permissions.collections[policy].length === 0) {
+      wApp.bus.trigger('access-denied');
+    }
+  };
 
-    checkPermissions = ->
-      policy = if tag.opts.id then 'edit' else 'create'
-      if tag.currentUser().permissions.collections[policy].length == 0
-        wApp.bus.trigger('access-denied')
+  // Handle routing query changes
+  var queryHandler = function(parts = {}) {
+    fetch(parts['hash_query']['kind_id']);
+  };
 
-    queryHandler = (parts = {}) ->
-      fetch parts['hash_query']['kind_id']
+  // Default values for a new entity
+  var defaults = function(kind_id) {
+    return {
+      kind_id: kind_id,
+      no_name_statement: 'enter_name',
+      lock_version: 0,
+      tags: [],
+      datings: []
+    };
+  };
 
-    defaults = (kind_id) ->
-      return {
-        kind_id: kind_id
-        no_name_statement: 'enter_name'
-        lock_version: 0
-        tags: [],
-        datings: []
+  // Fetch entity data from the server
+  var fetch = function(kindId) {
+    if (tag.opts.id) {
+      Zepto.ajax({
+        url: "/entities/" + tag.opts.id,
+        data: { include: 'dataset,synonyms,properties,datings' },
+        success: function(data) {
+          tag.data = data;
+          fetchKind();
+        }
+      });
+    } else if (tag.opts.cloneId) {
+      fetchClone();
+    } else {
+      tag.data = {
+        kind_id: kindId,
+        no_name_statement: 'enter_name',
+        tags: []
+      };
+      fetchKind();
+    }
+  };
+
+  // Fetch kind-specific settings and fields
+  var fetchKind = function() {
+    Zepto.ajax({
+      url: "/kinds/" + (tag.data['kind_id'] || tag.opts.kindId),
+      data: { include: 'fields,settings' },
+      success: function(data) {
+        tag.kind = data;
+        tag.update();
       }
+    });
+  };
 
-    fetch = (kindId) ->
-      if tag.opts.id
-        Zepto.ajax(
-          url: "/entities/#{tag.opts.id}"
-          data: {include: 'dataset,synonyms,properties,datings'}
-          success: (data) ->
-            tag.data = data
-            fetchKind()
-        )
-      else
-        if tag.opts.cloneId
-          fetchClone()
-        else
-          tag.data = {
-            kind_id: kindId,
-            no_name_statement: 'enter_name',
-            tags: []
-          }
-          fetchKind()
+  // Fetch collections for selection
+  var fetchCollections = function() {
+    Zepto.ajax({
+      url: "/collections",
+      data: { per_page: 'max' },
+      success: function(data) {
+        tag.collections = data.records;
+        tag.update();
+      }
+    });
+  };
 
-    fetchKind = ->
-      Zepto.ajax(
-        url: "/kinds/#{tag.data['kind_id'] || tag.opts.kindId}"
-        data: {include: 'fields,settings'}
-        success: (data) ->
-          tag.kind = data
-          tag.update()
-      )
+  // Fetch data for cloning an existing entity
+  var fetchClone = function() {
+    Zepto.ajax({
+      url: '/entities/' + tag.opts.cloneId + '?include=all',
+      success: function(data) {
+        data.datings.forEach(function(d) {
+          delete d.id;
+        });
+        tag.data = data;
+        fetchKind();
+      }
+    });
+  };
 
-    fetchCollections = ->
-      Zepto.ajax(
-        url: "/collections",
-        data: {per_page: 'max'},
-        success: (data) ->
-          tag.collections = data.records
-          tag.update()
-      )
+  // Create a new entity
+  var create = function() {
+    return Zepto.ajax({
+      type: 'POST',
+      url: '/entities',
+      data: JSON.stringify({ entity: values() })
+    });
+  };
 
-    fetchClone = ->
-      Zepto.ajax(
-        url: '/entities/' + tag.opts.cloneId + '?include=all'
-        success: (data) ->
-          for d in data.datings
-            delete d.id
+  // Update an existing entity
+  var update = function() {
+    return Zepto.ajax({
+      type: 'PATCH',
+      url: "/entities/" + tag.opts.id,
+      data: JSON.stringify({ entity: values() })
+    });
+  };
 
-          tag.data = data
-          fetchKind()
-      )
+  // Collect form values for submission
+  var values = function() {
+    var results = {};
+    if (!tag.isMedium()) {
+      results.no_name_statement = tag.refs['fields.no_name_statement'].value();
+    }
+    results.kind_id = tag.data.kind_id || tag.opts.kindId;
 
-    create = ->
-      Zepto.ajax(
-        type: 'POST'
-        url: '/entities'
-        data: JSON.stringify(entity: values())
-      )
+    for (var i = 0; i < tag.refs.fields.length; i++) {
+      var f = tag.refs.fields[i];
+      results[f.name()] = f.value();
+    }
 
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/entities/#{tag.opts.id}"
-        data: JSON.stringify(entity: values())
-      )
+    return results;
+  };
 
-    values = ->
-      results = {}
-      if !tag.isMedium()
-        results.no_name_statement = tag.refs['fields.no_name_statement'].value()
-      results.kind_id = tag.data.kind_id || tag.opts.kindId
-      for f in tag.refs.fields
-        results[f.name()] = f.value()
-      results
+  // Handle Wikidata item selection
+  var wikidataItemSelected = function(item) {
+    inputByName('name').set(item.name);
+    inputByName('comment').set(item.description);
+    var t = inputByName('dataset').inputByName('wikidata_id');
+    if (t) t.set(item.id);
+  };
 
-    wikidataItemSelected = (item) ->
-      inputByName('name').set(item.name);
-      inputByName('comment').set(item.description);
-      if t = inputByName('dataset').inputByName('wikidata_id')
-        t.set(item.id)
+  // Handle existing entity selection
+  var existingEntitySelected = function(entity) {
+    wApp.routing.path('/entities/' + entity.id);
+  };
 
-    existingEntitySelected = (entity) ->
-      # console.log(arguments);
-      wApp.routing.path('/entities/' + entity.id);
-
-    inputByName = (name) ->
-      for f in tag.refs.fields
-        if f.name() == name
-          return f
-      null
-
-  </script>
+  // Get input field by name
+  var inputByName = function(name) {
+    for (var i = 0; i < tag.refs.fields.length; i++) {
+      var f = tag.refs.fields[i];
+      if (f.name() === name) {
+        return f;
+      }
+    }
+    return null;
+  };
+</script>
 
 </kor-entity-editor>

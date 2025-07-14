@@ -1,6 +1,6 @@
  wApp.i18n = {
   setup: function() {
-    Zepto.ajax({
+    return Zepto.ajax({
       url: '/translations',
       success: (data) => wApp.i18n.translations = data.translations
     })
@@ -33,7 +33,10 @@
       part = parts[i]
       result = result[part]
     }
-    var count = options.count === 1 ? 'one' : 'other'
+    var count = options.count || 'one'
+    if (count === 1) count = 'one'
+    if (count !== 'one') count = 'other'
+    
     result = result[count] || result
       if (options.interpolations) {
         for (var key in options.interpolations) {

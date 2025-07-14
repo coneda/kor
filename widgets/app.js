@@ -41,17 +41,12 @@ window.wApp = {
     wApp.clipboard.setup()
     wApp.entityHistory.setup()
 
-    var handler = function (resolve, reject) {
-      var innerHandler = function () {
-        $.when.apply(null, [
-          wApp.config.setup(),
-          wApp.i18n.setup(),
-          wApp.info.setup()
-        ]).then(resolve)
-      }
-      wApp.session.setup().then(innerHandler)
-    }
-    return new Promise(handler)
+    return Promise.all([
+      wApp.session.setup(),
+      wApp.config.setup(),
+      wApp.i18n.setup(),
+      wApp.info.setup()
+    ])
   }
 }
 

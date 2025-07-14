@@ -43,6 +43,7 @@
     if (contentType && contentType.match(/^application\/json/) && request.response) {
       try {
         var data = JSON.parse(request.response);
+        console.log(data)
 
         if (data.message && !request.noMessaging) {
           var type = (request.status >= 200 && request.status < 300) ? 'notice' : 'error';
