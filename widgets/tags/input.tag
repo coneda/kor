@@ -74,86 +74,120 @@
     </div>
   </div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
 
-    tag.on 'mount', ->
-      Zepto(tag.root).find('input, textarea, select').focus() if tag.opts.autofocus
-      wApp.wikidata.setup(tag) if tag.opts.wikidata
+  // On mount, set focus and initialize Wikidata if applicable
+  tag.on('mount', function() {
+    if (tag.opts.autofocus) {
+      Zepto(tag.root).find('input, textarea, select').focus();
+    }
+    if (tag.opts.wikidata) {
+      wApp.wikidata.setup(tag);
+    }
+  });
 
-    tag.name = -> tag.opts.name
+  // Get the name of the input
+  tag.name = function() {
+    return tag.opts.name;
+  };
 
-    tag.value = ->
-      if tag.opts.type == 'checkbox'
-        Zepto(tag.root).find('input').prop('checked')
-      else if tag.opts.type == 'radio'
-        for input in Zepto(tag.root).find('input')
-          if (i = $(input)).prop('checked')
-            return i.attr('value')
-      else if tag.opts.type == 'submit'
-        null
-      else
-        result = Zepto(tag.root).find('input, select, textarea').val()
-        if result == "0" && tag.opts.type == 'select'
-          undefined
-        else
-          result
-    tag.valueFromParent = ->
-      if tag.opts.type == 'checkbox' then 1 else tag.opts.riotValue
-    tag.checkedFromParent = ->
-      # console.log '---', tag.opts
-      tag.opts.type == 'checkbox' && tag.opts.riotValue
-    tag.checked = ->
-      tag.opts.type == 'checkbox' &&
-      Zepto(tag.root).find('input').prop('checked')
+  // Get the value of the input
+  tag.value = function() {
+    var result;
+    if (tag.opts.type === 'checkbox') {
+      return Zepto(tag.root).find('input').prop('checked');
+    } else if (tag.opts.type === 'radio') {
+      var inputs = Zepto(tag.root).find('input');
+      for (var i = 0; i < inputs.length; i++) {
+        var input = $(inputs[i]);
+        if (input.prop('checked')) {
+          return input.attr('value');
+        }
+      }
+    } else if (tag.opts.type === 'submit') {
+      return null;
+    } else {
+      result = Zepto(tag.root).find('input, select, textarea').val();
+      return result === "0" && tag.opts.type === 'select' ? undefined : result;
+    }
+  };
 
-    tag.set = (value) ->
-      if tag.opts.type == 'checkbox'
-        Zepto(tag.root).find('input').prop('checked', !!value)
-      else if tag.opts.type == 'radio'
-        for input in Zepto(tag.root).find('input')
-          if (i = $(input)).attr('value') == value
-            i.prop('checked', true)
-          else
-            i.prop('checked', false)
-      else if tag.opts.type == 'submit'
-        # do nothing
-      else if tag.opts.type == 'select' && Zepto.isArray(value)
-        # we have to simulate a working Zepto.val([...])
-        e = Zepto(tag.root).find('select')
-        e.val([])
-        for v in value
-          e.find("option[value='#{v}']").prop('selected', true)
-          Zepto(tag.root).find('select')
-      else
-        Zepto(tag.root).find('input, select, textarea').val(value)
+  // Get the value from the parent
+  tag.valueFromParent = function() {
+    return tag.opts.type === 'checkbox' ? 1 : tag.opts.riotValue;
+  };
 
-    tag.reset = ->
-      # console.log tag.value_from_parent()
-      tag.set tag.valueFromParent()
-    tag.selected = (item) ->
-      v = item.id || item.value || item
-      if tag.opts.multiple
-        (tag.valueFromParent() || []).indexOf(v) > -1
-      else
-        "#{v}" == "#{tag.valueFromParent()}"
+  // Get the checked state from the parent
+  tag.checkedFromParent = function() {
+    return tag.opts.type === 'checkbox' && tag.opts.riotValue;
+  };
 
-    tag.toggleHelp = (event) ->
-      event.preventDefault()
-      tag.showHelp = !tag.showHelp
-      tag.update()
-      Zepto(tag.refs.help).html(tag.opts.help) if tag.showHelp
+  // Check if the input is checked
+  tag.checked = function() {
+    return tag.opts.type === 'checkbox' &&
+           Zepto(tag.root).find('input').prop('checked');
+  };
 
-    tag.input = ->
-      Zepto(tag.root).find('input, select, textarea')
+  // Set the value of the input
+  tag.set = function(value) {
+    if (tag.opts.type === 'checkbox') {
+      Zepto(tag.root).find('input').prop('checked', !!value);
+    } else if (tag.opts.type === 'radio') {
+      var inputs = Zepto(tag.root).find('input');
+      for (var i = 0; i < inputs.length; i++) {
+        var input = $(inputs[i]);
+        input.prop('checked', input.attr('value') === value);
+      }
+    } else if (tag.opts.type === 'submit') {
+      // Do nothing
+    } else if (tag.opts.type === 'select' && Array.isArray(value)) {
+      // we have to simulate a working Zepto.val([...])
+      var select = Zepto(tag.root).find('select');
+      select.val([]);
+      value.forEach(function(v) {
+        select.find("option[value='" + v + "']").prop('selected', true);
+      });
+    } else {
+      Zepto(tag.root).find('input, select, textarea').val(value);
+    }
+  };
 
-    tag.placeholderValue = () ->
-      if opts.placeholderValue == undefined
-        0
-      else
-        opts.placeholderValue
+  // Reset the input to its parent value
+  tag.reset = function() {
+    tag.set(tag.valueFromParent());
+  };
 
-  </script>
+  // Check if an item is selected
+  tag.selected = function(item) {
+    var v = item.id || item.value || item;
+    if (tag.opts.multiple) {
+      return (tag.valueFromParent() || []).indexOf(v) > -1;
+    } else {
+      return String(v) === String(tag.valueFromParent());
+    }
+  };
+
+  // Toggle help visibility
+  tag.toggleHelp = function(event) {
+    event.preventDefault();
+    tag.showHelp = !tag.showHelp;
+    tag.update();
+    if (tag.showHelp) {
+      Zepto(tag.refs.help).html(tag.opts.help);
+    }
+  };
+
+  // Get the input element
+  tag.input = function() {
+    return Zepto(tag.root).find('input, select, textarea');
+  };
+
+  // Get the placeholder value
+  tag.placeholderValue = function() {
+    return tag.opts.placeholderValue === undefined ? 0 : tag.opts.placeholderValue;
+  };
+</script>
 </kor-input>
