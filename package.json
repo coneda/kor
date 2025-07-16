@@ -9,7 +9,6 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@wendig/lib": "git+https://git.wendig.io/git/js-lib.git",
-    "coffee-script": "^1.12.3",
     "ejs": "^3.1.5",
     "font-awesome": "^4.6.3",
     "lockr": "^0.8.5",
