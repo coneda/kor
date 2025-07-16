@@ -39,59 +39,100 @@
     {t('results_per_page')}
   </virtual>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.config)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.config);
 
-    tag.currentPage = -> parseInt(tag.opts.page || 1)
-    tag.toFirst = (event) ->
-      event.preventDefault() if event
-      tag.to(1)
-    tag.toNext = (event) ->
-      event.preventDefault() if event
-      tag.to(tag.currentPage() + 1)
-    tag.toPrevious = (event) ->
-      event.preventDefault() if event
-      tag.to(tag.currentPage() - 1)
-    tag.toLast = (event) ->
-      event.preventDefault() if event
-      tag.to(tag.totalPages())
+  // Get the current page
+  tag.currentPage = function() {
+    return parseInt(tag.opts.page || 1);
+  };
 
-    tag.isFirst = -> tag.currentPage() == 1
-    tag.isLast = -> tag.currentPage() == tag.totalPages()
+  // Navigate to the first page
+  tag.toFirst = function(event) {
+    if (event) event.preventDefault();
+    tag.to(1);
+  };
 
-    tag.to = (new_page) ->
-      if new_page != tag.currentPage() && new_page >= 1 && new_page <= tag.totalPages()
-        if Zepto.isFunction(tag.opts.onPaginate)
-          tag.opts.onPaginate(new_page, tag.opts.perPage)
-        else
-          wApp.routing.query({page: new_page})
+  // Navigate to the next page
+  tag.toNext = function(event) {
+    if (event) event.preventDefault();
+    tag.to(tag.currentPage() + 1);
+  };
 
-    tag.changePerPage = (new_per_page) ->
-      if new_per_page != tag.opts.perPage
-        if Zepto.isFunction(tag.opts.onPaginate)
-          tag.opts.onPaginate(1, new_per_page)
+  // Navigate to the previous page
+  tag.toPrevious = function(event) {
+    if (event) event.preventDefault();
+    tag.to(tag.currentPage() - 1);
+  };
 
-    tag.totalPages = ->
-      Math.ceil(tag.opts.total / tag.opts.perPage)
+  // Navigate to the last page
+  tag.toLast = function(event) {
+    if (event) event.preventDefault();
+    tag.to(tag.totalPages());
+  };
 
-    tag.perPageOptions = ->
-      defaults = [5, 10, 20, 50, 100]
-      results = (i for i in defaults when i < tag.config().max_results_per_request)
-      results.push tag.config().max_results_per_request
-      results
+  // Check if the current page is the first page
+  tag.isFirst = function() {
+    return tag.currentPage() === 1;
+  };
 
-    tag.inputChanged = (event) ->
-      tag.to parseInt(tag.refs.manual.value())
+  // Check if the current page is the last page
+  tag.isLast = function() {
+    return tag.currentPage() === tag.totalPages();
+  };
 
-    tag.selectChanged = (event) ->
-      tag.changePerPage parseInt(tag.refs.select.value())
+  // Navigate to a specific page
+  tag.to = function(newPage) {
+    if (newPage !== tag.currentPage() && newPage >= 1 && newPage <= tag.totalPages()) {
+      if (Zepto.isFunction(tag.opts.onPaginate)) {
+        tag.opts.onPaginate(newPage, tag.opts.perPage);
+      } else {
+        wApp.routing.query({ page: newPage });
+      }
+    }
+  };
 
-    tag.isActive = ->
-      tag.opts.total && (tag.opts.total > tag.opts.perPage)
+  // Change the number of results per page
+  tag.changePerPage = function(newPerPage) {
+    if (newPerPage !== tag.opts.perPage) {
+      if (Zepto.isFunction(tag.opts.onPaginate)) {
+        tag.opts.onPaginate(1, newPerPage);
+      }
+    }
+  };
 
-  </script>
+  // Calculate the total number of pages
+  tag.totalPages = function() {
+    return Math.ceil(tag.opts.total / tag.opts.perPage);
+  };
+
+  // Get options for results per page
+  tag.perPageOptions = function() {
+    var defaults = [5, 10, 20, 50, 100];
+    var results = defaults.filter(function(i) {
+      return i < tag.config().max_results_per_request;
+    });
+    results.push(tag.config().max_results_per_request);
+    return results;
+  };
+
+  // Handle manual page input change
+  tag.inputChanged = function(event) {
+    tag.to(parseInt(tag.refs.manual.value()));
+  };
+
+  // Handle results per page selection change
+  tag.selectChanged = function(event) {
+    tag.changePerPage(parseInt(tag.refs.select.value()));
+  };
+
+  // Check if pagination is active
+  tag.isActive = function() {
+    return tag.opts.total && tag.opts.total > tag.opts.perPage;
+  };
+</script>
 
 </kor-pagination>

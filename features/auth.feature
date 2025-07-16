@@ -1,8 +1,8 @@
 Feature: Authentication and Authorization
 
-  Scenario: show the login page unless there is a guest account
-  Scenario: with a guest account, without authentication, show the expert search
-  Scenario: with no guest account, when authenticated, show the expert search
+  # Scenario: show the login page unless there is a guest account
+  # Scenario: with a guest account, without authentication, show the expert search
+  # Scenario: with no guest account, when authenticated, show the expert search
 
   Scenario: Reset password with wrong email address
     When I go to the login page

@@ -190,102 +190,137 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'mount', ->
-      tag.errors = {}
+  // On mount, initialize errors and fetch data if admin
+  tag.on('mount', function() {
+    tag.errors = {};
 
-      if tag.isAdmin()
-        Zepto.when(fetchCredentials(), fetchUser()).then ->
-          tag.loaded = true
-          tag.update()
-      else
-        wApp.bus.trigger('access-denied')
+    if (tag.isAdmin()) {
+      Zepto.when(fetchCredentials(), fetchUser()).then(function() {
+        tag.loaded = true;
+        tag.update();
+      });
+    } else {
+      wApp.bus.trigger('access-denied');
+    }
+  });
 
-    tag.submit = (event) ->
-      event.preventDefault()
-      p = if tag.opts.id then update() else create()
-      p.then (data) -> wApp.routing.path('/users')
-      p.catch (response) ->
-        tag.errors = response.data.errors
-        wApp.utils.scrollToTop()
-      p.finally -> tag.update()
+  // Handle form submission
+  tag.submit = function(event) {
+    event.preventDefault();
+    var p = tag.opts.id ? update() : create();
+    p.then(function(data) {
+      wApp.routing.path('/users');
+    });
+    p.catch(function(response) {
+      tag.errors = response.data.errors;
+      wApp.utils.scrollToTop();
+    });
+    p.finally(function() {
+      tag.update();
+    });
+  };
 
-    # TODO: this needs to be done entirely on the server. The client should
-    # just tranfer the amount of days to add
-    tag.expiresIn = (days) ->
-      (event) ->
-        event.preventDefault()
+  // TODO: this needs to be done entirely on the server. The client should
+  // just tranfer the amount of days to add
+  // Set expiration date
+  tag.expiresIn = function(days) {
+    return function(event) {
+      event.preventDefault();
 
-        if days
-          date = new Date()
-          date = new Date(date.getTime() + days * 24 * 60 * 60 * 1000)
-          expiresAtTag().set([
-            date.getUTCFullYear(),
-            ('00' + (date.getUTCMonth() + 1)).substr(-2, 2),
-            ('00' + date.getUTCDate()).substr(-2, 2)
-          ].join('-'))
-        else
-          expiresAtTag().set undefined
+      if (days) {
+        var date = new Date();
+        date = new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+        expiresAtTag().set([
+          date.getUTCFullYear(),
+          ('00' + (date.getUTCMonth() + 1)).slice(-2),
+          ('00' + date.getUTCDate()).slice(-2)
+        ].join('-'));
+      } else {
+        expiresAtTag().set(undefined);
+      }
+    };
+  };
 
-    tag.valueForDate = (date) ->
-      if date then strftime('%Y-%m-%d', new Date(date)) else ''
+  // Format date value
+  tag.valueForDate = function(date) {
+    return date ? strftime('%Y-%m-%d', new Date(date)) : '';
+  };
 
-    fetchCredentials = ->
-      Zepto.ajax(
-        url: '/credentials'
-        success: (data) ->
-          tag.credentials = data
-          tag.update()
-      )
+  // Fetch credentials
+  function fetchCredentials() {
+    return Zepto.ajax({
+      url: '/credentials',
+      success: function(data) {
+        tag.credentials = data;
+        tag.update();
+      }
+    });
+  }
 
-    fetchUser = ->
-      if tag.opts.id
-        Zepto.ajax(
-          url: "/users/#{tag.opts.id}"
-          data: {include: 'all'}
-          success: (data) ->
-            tag.data = data
-            tag.update()
-        )
-      else
-        tag.data = {
-          lock_version: 0
+  // Fetch user data
+  var fetchUser = function() {
+    if (tag.opts.id) {
+      return Zepto.ajax({
+        url: "/users/" + tag.opts.id,
+        data: { include: 'all' },
+        success: function(data) {
+          tag.data = data;
+          tag.update();
         }
-        tag.update()
+      });
+    } else {
+      tag.data = { lock_version: 0 };
+      tag.update();
+    }
+  }
 
-    create = ->
-      Zepto.ajax(
-        type: 'POST'
-        url: "/users"
-        data: JSON.stringify(
-          user: values()
-          notify: tag.refs.notify.value()
-        )
-      )
+  // Create a new user
+  var create = function() {
+    return Zepto.ajax({
+      type: 'POST',
+      url: "/users",
+      data: JSON.stringify({
+        user: values(),
+        notify: tag.refs.notify.value()
+      })
+    });
+  }
 
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/users/#{tag.opts.id}"
-        data: JSON.stringify(user: values())
-      )
+  // Update an existing user
+  var update = function() {
+    return Zepto.ajax({
+      type: 'PATCH',
+      url: "/users/" + tag.opts.id,
+      data: JSON.stringify({ user: values() })
+    });
+  }
 
-    expiresAtTag = ->
-      for f in tag.refs.fields
-        return f if f.name() == 'expires_at'
-      undefined
+  // Get the expires_at field tag
+  var expiresAtTag = function() {
+    for (var i = 0; i < tag.refs.fields.length; i++) {
+      var f = tag.refs.fields[i];
+      if (f.name() === 'expires_at') {
+        return f;
+      }
+    }
+    return undefined;
+  }
 
-    values = ->
-      results = {}
-      for f in tag.refs.fields
-        results[f.name()] = f.value()
-      results
-
-  </script>
+  // Collect values from input fields
+  var values = function() {
+    var results = {};
+    for (var i = 0; i < tag.refs.fields.length; i++) {
+      var f = tag.refs.fields[i];
+      results[f.name()] = f.value();
+    }
+    return results;
+  }
+</script>
 </kor-user-editor>

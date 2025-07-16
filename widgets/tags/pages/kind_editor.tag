@@ -65,36 +65,46 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
-    tag.notify = riot.observable()
-    # TODO: make sure this works again
-    # tag.requireRoles = ['kind_admin']
-    tag.mixin(wApp.mixins.sessionAware)
-    tag.mixin(wApp.mixins.i18n)
-    tag.mixin(wApp.mixins.auth)
-    tag.mixin(wApp.mixins.page)
+<script type="text/javascript">
+  var tag = this;
+  tag.notify = riot.observable();
+  // TODO: make sure this works again
+  // tag.requireRoles = ['kind_admin']
+  tag.mixin(wApp.mixins.sessionAware);
+  tag.mixin(wApp.mixins.i18n);
+  tag.mixin(wApp.mixins.auth);
+  tag.mixin(wApp.mixins.page);
 
-    tag.on 'before-mount', ->
-      if !tag.isKindAdmin()
-        wApp.bus.trigger('access-denied')
+  // Before mounting, check if the user has kind admin privileges
+  tag.on('before-mount', function() {
+    if (!tag.isKindAdmin()) {
+      wApp.bus.trigger('access-denied');
+    }
+  });
 
-    tag.on 'mount', ->
-      fetch() if tag.opts.id
-      tag.notify.on 'refresh', fetch
+  // On mount, fetch data if an ID is provided
+  tag.on('mount', function() {
+    if (tag.opts.id) {
+      fetch();
+    }
+    tag.notify.on('refresh', fetch);
+  });
 
-    tag.on 'unmount', ->
-      tag.notify.off 'refresh', fetch
+  // On unmount, remove event listeners
+  tag.on('unmount', function() {
+    tag.notify.off('refresh', fetch);
+  });
 
-    fetch = ->
-      Zepto.ajax(
-        url: "/kinds/#{tag.opts.id}"
-        data: {include: 'settings,fields,generators,inheritance'}
-        success: (data) ->
-          tag.data = data
-          tag.update()
-      )
-
-  </script>
-
+  // Fetch kind data
+  var fetch = function() {
+    Zepto.ajax({
+      url: "/kinds/" + tag.opts.id,
+      data: { include: 'settings,fields,generators,inheritance' },
+      success: function(data) {
+        tag.data = data;
+        tag.update();
+      }
+    });
+  };
+</script>
 </kor-kind-editor>
