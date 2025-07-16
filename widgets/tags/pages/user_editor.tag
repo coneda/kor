@@ -255,7 +255,7 @@
   };
 
   // Fetch credentials
-  var fetchCredentials = function() {
+  function fetchCredentials() {
     return Zepto.ajax({
       url: '/credentials',
       success: function(data) {
@@ -263,7 +263,7 @@
         tag.update();
       }
     });
-  };
+  }
 
   // Fetch user data
   var fetchUser = function() {
@@ -280,7 +280,7 @@
       tag.data = { lock_version: 0 };
       tag.update();
     }
-  };
+  }
 
   // Create a new user
   var create = function() {
@@ -292,7 +292,7 @@
         notify: tag.refs.notify.value()
       })
     });
-  };
+  }
 
   // Update an existing user
   var update = function() {
@@ -301,7 +301,7 @@
       url: "/users/" + tag.opts.id,
       data: JSON.stringify({ user: values() })
     });
-  };
+  }
 
   // Get the expires_at field tag
   var expiresAtTag = function() {
@@ -312,7 +312,7 @@
       }
     }
     return undefined;
-  };
+  }
 
   // Collect values from input fields
   var values = function() {
@@ -322,6 +322,6 @@
       results[f.name()] = f.value();
     }
     return results;
-  };
+  }
 </script>
 </kor-user-editor>

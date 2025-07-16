@@ -150,6 +150,7 @@ module SuiteHelper
         coverage_dir 'tmp/coverage'
 
         track_files '{bin,config,app,lib}/**/*.{rb,rake}'
+        add_filter 'lib/tasks/cucumber.rake'
       end
 
       puts "performing coverage analysis (suite '#{framework}')"
