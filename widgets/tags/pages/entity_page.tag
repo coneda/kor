@@ -176,7 +176,7 @@
                 <span each={dir in group.directory.ancestors}>
                   <a href="#/groups/categories/{dir.id}">{dir.name}</a> /
                 </span>
-                
+
                 <a href="#/groups/categories/{group.directory.id}"><!--
                   -->{group.directory.name}<!--
                 --></a> /
@@ -205,6 +205,7 @@
             target="_blank"
           ><i class="fa fa-file-text"></i>{t('show_json')}</a><br />
           <a
+            if={!isStatic()}
             href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}"
             target="_blank"
           ><i class="fa fa-code"></i>{t('show_oai_pmh')}</a>
@@ -224,7 +225,7 @@
           <img src="{data.medium.url.preview}">
         </a>
 
-        <div class="commands">
+        <div if={allowedTo('edit', data.collection_id)} class="commands">
           <a
             each={op in ['flip', 'flop', 'rotate_cw', 'rotate_ccw', 'rotate_180']}
             href="#/media/{data.medium_id}/{op}"
@@ -233,7 +234,7 @@
           ><i class="fa fa-{opIcon(op)}"></i></a>
         </div>
 
-        
+
         <div class="formats">
           <a href="#/media/{data.id}">{t('verbs.enlarge')}</a>
           <span if={!data.medium.video && !data.medium.audio}> |
@@ -249,7 +250,7 @@
           >{t('nouns.mirador')}</a>
           <br />
           {t('verbs.download')}:<br />
-          <a 
+          <a
             if={allowedTo('download_originals', data.collection_id)}
             href={data.medium.url.original.replace(/\/images\//, '/download/')}
           >{t('nouns.original')} |</a>
@@ -266,7 +267,7 @@
       <div class="related_images">
         <h1>
           {t('nouns.related_medium', {count: 'other', capitalize: true})}
-          
+
           <div class="subtitle">
             <a
               if={allowedTo('create')}

@@ -4,9 +4,9 @@
     <div class="kor-content-box">
       <h1>{tcap('nouns.statistics')}</h1>
 
-      <p if={data}>{validity()}</p>
+      <p if={data && !isStatic()}>{validity()}</p>
 
-      <table if={data}>
+      <table if={data && !isStatic()}>
         <thead>
           <tr>
             <th>{tcap('activerecord.models.user', {count: 'other'})}</th>

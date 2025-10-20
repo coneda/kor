@@ -15,10 +15,11 @@ class BaseController < ApplicationController
 
   # TODO: refactor authorized objects stuff to somewhere else?
   helper_method(
-    :current_user,
     :allowed_to?,
     :authorized_for_relationship?,
-    :medium_url
+    :current_user,
+    :medium_url,
+    :static_mode?
   )
 
   protected
@@ -52,6 +53,12 @@ class BaseController < ApplicationController
 
     def allowed_to?(policy = :view, collections = Collection.all, options = {})
       Kor::Auth.allowed_to? current_user, policy, collections, options
+    end
+
+    def static_mode?
+      path = "#{Rails.root}/public/static"
+      
+      File.directory?(path)
     end
 
     # TODO: test this

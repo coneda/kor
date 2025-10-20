@@ -20,7 +20,6 @@ const lib = {
     nodeResolve(),
     dotenv({envKey: 'RAILS_ENV'}),
     commonjs(),
-    // riot(),
     ...(optimize ? [terser()] : [])
   ]
 }

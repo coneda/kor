@@ -38,5 +38,8 @@ wApp.mixins.sessionAware = {
   },
   isLoggedIn: function () {
     return this.currentUser() && !this.isGuest()
+  },
+  isStatic: function() {
+    return wApp.info.data.static
   }
 }

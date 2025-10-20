@@ -51,7 +51,6 @@ function vendor {
 
 function lib {
   log "compiling lib"
-  cat widgets/lib/*.js.coffee | node_modules/.bin/coffee -s -b -p >> 'tmp/widgets/coffee.js'
   rollup --config
 }
 

@@ -1,6 +1,6 @@
 json.extract!(record,
   :id, :relationship_id, :from_id, :to_id, :is_reverse, :relation_name,
-  :relation_id,
+  :relation_id, :position
 )
 
 if inclusion.request?('to')

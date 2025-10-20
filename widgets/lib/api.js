@@ -1,20 +1,9 @@
 import config from './config'
 // import Article from './article'
 
-import {Url, util, Search as WendigSearch} from '@wendig/lib'
+import {Url, Search as WendigSearch} from '@wendig/lib'
 
-// const clean = (params) => {
-//   let result = {}
-
-//   for (const [k, v] of Object.entries(params)) {
-//     if (k === undefined || k === null) continue
-//     if (v === undefined || v === null) continue
-
-//     result[k] = params[k]
-//   }
-
-//   return result
-// }
+let instance = null
 
 const request = (url, init = {}) => {
   url = `${Url.current().origin()}${url}`
@@ -112,26 +101,50 @@ const request = (url, init = {}) => {
     // })
 }
 
+const drop = (object, key) => {
+  const value = object[key]
+  delete object[key]
+
+  return value
+}
+
 export default class Api extends WendigSearch {
+  static setup() {
+    instance = new WendigSearch()
+    
+    return instance
+  }
+
   constructor() {
     const url = Url.current()
 
     super(`${url.origin()}/db.js`)
+
+    this.request = this.request.bind(this)
   }
 
   request(opts) {
     const url = opts['url']
-    delete opts['url']
 
-    // console.log('USING FETCH API', url, opts)
+    if (url == '/info') {
+      return request(url, opts)
+    }
 
-    return request(url, opts)
+    if (wApp.info.data.static) {
+      const success = drop(opts, 'success')
+      const error = drop(opts, 'error')
+      const complete = drop(opts, 'complete')
 
-    // return this.postMessage({action: 'all', criteria}).then(data => {
-    //   // data['results'] = data['results'].map(r => new Article(r))
+      const promise = this.postMessage({action: 'api', opts})
 
-    //   return data
-    // })
+      if (success) promise.then(success)
+      if (error) promise.catch(error)
+      if (complete) promise.finally(complete)
+
+      return promise
+    } else {
+      delete opts['url']
+      return request(url, opts)
+    }
   }
 }
-
