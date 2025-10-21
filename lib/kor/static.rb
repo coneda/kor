@@ -6,7 +6,6 @@ class Kor::Static
       user: User.admin,
       pretty: true,
       media_override: nil,
-      media_override: '/content_types/image.gif'
     )
 
     @originals_collection_ids = Kor::Auth.
@@ -18,20 +17,18 @@ class Kor::Static
   end
 
   def activate
-    # deactivate
-
-    system 'mkdir', '-p', target
+    deactivate
 
     info
-    # session
-    # settings
-    # statistics
-    # translations
-    # kinds
-    # relations
-    # collections
-    # entities
-    # relationships
+    session
+    settings
+    statistics
+    translations
+    kinds
+    relations
+    collections
+    entities
+    relationships
     authority_groups
   end
 
@@ -139,7 +136,9 @@ class Kor::Static
 
       by_from_id = {}
 
-      @entity_ids.in_groups_of(10).each do |ids|
+      pg = Kor.progress_bar 'relationships', @entity_ids.size
+
+      @entity_ids.in_groups_of(10).each.with_index do |ids, batch_id|
         id_list = ids.map{|id| id.to_s}.join(',')
 
         params = {
@@ -147,8 +146,8 @@ class Kor::Static
           from_entity_id: id_list
         }
         opts = {
-          label: "relationships (#{id_list})",
-          page_limit: false
+          page_limit: false,
+          progress: false
         }
         with_all "relationships", params, opts do |r|
           apply_media_override(r['to'])
@@ -157,6 +156,8 @@ class Kor::Static
           by_from_id[from_id] ||= []
           by_from_id[from_id] << r
         end
+
+        pg.progress += ids.size
       end
 
       by_from_id.each do |from_id, records|
@@ -172,12 +173,16 @@ class Kor::Static
     end
 
     def info
+      puts "info"
+
       data = request('/info.json')
 
       File.write "#{target}/info.json", to_json(data)
     end
 
     def session
+      puts "session"
+
       data = request('/session')
 
       delete_keys(data['session'], ['csrfToken'])
@@ -206,18 +211,24 @@ class Kor::Static
     end
 
     def settings
+      puts "settings"
+
       data = request('/settings')
 
       File.write "#{target}/settings.json", to_json(data)
     end
 
     def statistics
+      puts "statistics"
+
       data = request('/statistics')
 
       File.write "#{target}/statistics.json", to_json(data)
     end
 
     def translations
+      puts "translations"
+      
       data = request('/translations')
 
       File.write "#{target}/translations.json", to_json(data)
@@ -225,16 +236,16 @@ class Kor::Static
 
     def with_all(url, params, opts = {}, &block)
       opts.reverse_merge!(
-        write: true,
         page_limit: @opts[:page_limit],
         per_page: @opts[:per_page],
-        label: url
+        label: url,
+        progress: true
       )
 
       data = request("#{url}", params.merge(per_page: 1))
-      pages = (data['total'] / data['per_page']).ceil
+      pages = (data['total'] / opts[:per_page]).ceil + 1
       pages = [pages, opts[:page_limit]].min if opts[:page_limit]
-      pg = Kor.progress_bar opts[:label], data['total']
+      pg = Kor.progress_bar(opts[:label], data['total']) if opts[:progress]
 
       (1..pages).each do |page|
         rp = params.merge(
@@ -245,9 +256,11 @@ class Kor::Static
         results['records'].each do |record|
           yield record if block_given?
 
-          pg.increment
+          pg.increment if opts[:progress]
         end
       end
+
+      pg.finish if opts[:progress]
     end
 
     def to_result(records)
