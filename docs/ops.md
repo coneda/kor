@@ -25,6 +25,7 @@ This is the ConedaKOR system administrator's guide. It covers system requirement
   * [Importing Erlangen CRM classes](#importing-erlangen-crm-classes)
   * [Rebuilding elastic index](#rebuilding-elastic-index)
   * [Admin account](#admin-account)
+  * [Activate static mode](#activate-static-mode)
 
 ## Requirements
 
@@ -463,3 +464,25 @@ the defaults with (**as user app**)
 cd /var/rack/kor/current
 RAILS_ENV=production bundle exec bin/kor reset-admin-account
 ```
+
+### Activate static mode
+
+Deploying ConedaKOR has several technical requirements and regular maintenance
+is needed to keep it up and running.
+
+To lower this burden, ConedaKOR has the ability to transform into a static page.
+In this form, it consists of only HTML, JavaScript and CSS which is usually
+cheap to deploy in generic datacenters. When this mode is active, the data can
+still be viewed and basic search functionality is available. All functionality
+requiring a backend storage is disabled so static mode ist most suitable for
+when the project has been concluded and no further changes are made to the data.
+
+To activate static mode, run
+
+    bundle exec bin/kor static-mode
+
+Check the command's help (`--help`) to learn about available parameters. Also,
+keep in mind that activation will take a considerable amount of time for large
+installations.
+
+To deactivate static mode, simply remove the `public/static` directory.

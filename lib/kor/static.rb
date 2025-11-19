@@ -2,10 +2,10 @@ class Kor::Static
   def initialize(opts = {})
     @opts = opts.reverse_merge(
       per_page: Kor.settings['max_results_per_request'],
-      page_limit: 3,
+      page_limit: false,
       user: User.admin,
       pretty: true,
-      media_override: nil,
+      media_override: false
     )
 
     @originals_collection_ids = Kor::Auth.
@@ -101,7 +101,7 @@ class Kor::Static
 
       params = {
         engine: 'active_record',
-        include: 'technical,synonyms,datings,dataset,properties,gallery_data,relations,groups,degree',
+        include: 'technical,synonyms,datings,dataset,properties,gallery_data,relations,media_relations,groups,degree',
         sort: 'created_at',
         direction: 'desc'
       }
@@ -277,13 +277,13 @@ class Kor::Static
       return unless @opts[:media_override]
 
       entity['medium']['url'].keys.each do |style|
-        entity['medium']['url'][style] = @opts[:media_override]
+        path = entity['medium']['url'][style]
+        entity['medium']['url'][style] = @opts[:media_override] + path
       end
     end
 
     def media_for(entity)
       return unless entity['medium']
-      apply_media_override(entity)
 
       apply_media_override(entity)
       return if @opts[:media_override]

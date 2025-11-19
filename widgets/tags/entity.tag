@@ -15,7 +15,7 @@
     </div>
     
     <a href="#/entities/{opts.entity.id}" class="to-medium">
-      <img riot-src={imageUrl()} />
+      <img riot-src={imageUrl()} crossorigin="use-credentials" />
     </a>
     <div if={!opts.noContentType}>
       {tcap('nouns.content_type')}:

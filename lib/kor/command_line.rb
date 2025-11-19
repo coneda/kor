@@ -63,11 +63,11 @@ class Kor::CommandLine
     when 'list-permissions'
       @parser.on('-e ENTITY', 'the id of an entity to limit the result list to'){ |v| @config[:entity_id] = v }
       @parser.on('-u USER', 'the id of a user to limit the result list to'){ |v| @config[:user_id] = v }
-    when 'build-static'
-      @parser.on('--page-limit=PAGES', "process only so many pages"){ |v| @config[:page_limit] = v.to_i}
+    when 'static-mode'
+      @parser.on('--page-limit=PAGES', "process only so many pages, default: false"){ |v| @config[:page_limit] = v.to_i}
       @parser.on("--user USERAME", "the user to act as, default: admin"){ |v| @config[:user] = User.find_by!(name: v) }
       @parser.on("--pretty", "output pretty json (with indentation), default: false"){ @config[:pretty] = true }
-      @parser.on("--media-override=URL", "use this url for all media"){ |v| @config[:media_override] = v }
+      @parser.on("--media-override=URL", "use this url for all media, default: false"){ |v| @config[:media_override] = v }
     end
 
     @parser.order!(@args)
@@ -142,7 +142,7 @@ class Kor::CommandLine
       when 'import-test-data' then task :import_test_data
       when 'api-docs' then task :api_docs
       when 'flush' then task :flush
-      when 'build-static' then task :build_static
+      when 'static-mode' then task :build_static
       else
         $stderr.puts "command '#{@command}' is not known"
         usage
