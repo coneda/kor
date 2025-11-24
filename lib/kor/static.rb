@@ -111,6 +111,7 @@ class Kor::Static
           'name' => entity['display_name'],
           'uuid' => entity['uuid'],
           'kind_id' => entity['kind_id'],
+          'created_at' => Time.parse(entity['created_at']).to_i,
           'tags' => entity['tags']
         }
 
@@ -157,7 +158,7 @@ class Kor::Static
           by_from_id[from_id] << r
         end
 
-        pg.progress += ids.size
+        pg.progress = [pg.progress + ids.size, pg.total].min
       end
 
       by_from_id.each do |from_id, records|

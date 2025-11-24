@@ -32,6 +32,7 @@ ontology management tool with an easy to use media database.
 * Many configurable aspects (welcome page, terms of use, help, primary
   relations, brand, …)
 * Access data via an OAI-PMH interface
+* Run in [static mode](docs/ops.md#activate-static-mode)
 * Vagrant dev environment
 * good unit and integration test coverage
 * checked for security problems with

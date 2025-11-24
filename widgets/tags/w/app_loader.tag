@@ -1,7 +1,7 @@
 <w-app-loader>
   <div class="app" ref="target">
     <div class="kor-loading-screen">
-      <img src="/images/loading.gif"><br />
+      <img src="images/loading.gif"><br />
       <strong>… loading …</strong>
     </div>
   </div>

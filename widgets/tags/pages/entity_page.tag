@@ -201,7 +201,7 @@
 
         <div class="kor-text-right kor-api-links">
           <a
-            href="/entities/{data.id}.json"
+            href={jsonUrl()}
             target="_blank"
           ><i class="fa fa-file-text"></i>{t('show_json')}</a><br />
           <a
@@ -256,14 +256,17 @@
           >{t('nouns.original')} |</a>
           <a href={data.medium.url.normal.replace(/\/images\//, '/download/')}>
             {t('nouns.enlargement')}
-          </a> |
-          <a href="/entities/{data.id}/metadata">{t('nouns.metadata')}</a>
+          </a>
+          <virtual if={!isStatic()}>
+            |
+            <a href="/entities/{data.id}/metadata">{t('nouns.metadata')}</a>
+          </virtual>
         </div>
 
       </div>
     </div>
 
-    <div class="kor-content-box" if={data}>
+    <div class="kor-content-box" if={anyMediaRelations()}>
       <div class="related_images">
         <h1>
           {t('nouns.related_medium', {count: 'other', capitalize: true})}
@@ -351,6 +354,22 @@
   tag.showTagging = function() {
     return tag.data.kind.tagging && tag.allowedTo('tagging', tag.data.collection_id);
   };
+
+  tag.anyMediaRelations = function() {
+    if (!tag.data) return false
+
+    const relCount = Object.keys(tag.data.media_relations).length
+
+    return tag.allowedTo('create') || relCount > 0
+  }
+
+  tag.jsonUrl = function() {
+    return (
+      tag.isStatic() ?
+      `static/entities/${tag.data.id}.json` :
+      `entities/${tag.data.id}.json`
+    )
+  }
 
   // Handle media transformations
   tag.transform = function(op) {

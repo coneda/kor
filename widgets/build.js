@@ -4,6 +4,9 @@ import ejs from 'ejs'
 import fs from 'fs'
 import crypto from 'crypto'
 
+import 'dotenv/config'
+import config from './lib/config.js'
+
 class IndexRenderer {
   constructor(filename) {
     this.file_opts = {encoding: 'utf8'}
@@ -23,12 +26,17 @@ class IndexRenderer {
     return hash.update(this.read(filename)).digest('hex').slice(0,9)
   }
 
-  stylesheet_path(filename) {
-    return filename + '?' + this.digest('public/' + filename)
+  rootUrl() {
+    return config.env.ROOT_URL
   }
 
-  script_path(filename) {
-    return this.stylesheet_path(filename)
+  stylesheetPath(filename) {
+    const file = filename + '?' + this.digest('public/' + filename)
+    return `${this.rootUrl()}/${file}`
+  }
+
+  scriptPath(filename) {
+    return this.stylesheetPath(filename)
   }
 
   render() {

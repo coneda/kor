@@ -2,6 +2,8 @@ import {util, Database} from '@wendig/lib'
 import config from './lib/config'
 
 const request = (url, opts = {}) => {
+  url = `${config.env.ROOT_URL}${url}`
+
   if (config.env == 'development') {
     opts['cache'] = 'no-store'
   }
@@ -35,7 +37,7 @@ const preload = [
 
 for (const ds of preload) {
   promises.push(
-    request(`${config.env.ROOT_URL}/static/${ds}.json`).then(r => r.json()).then(data => {
+    request(`/static/${ds}.json`).then(r => r.json()).then(data => {
       storage[ds] = data
     })
   )
@@ -289,6 +291,16 @@ const paginate = (records, criteria) => {
   const {page, per_page} = criteria
   let results = records
   let total = records.length
+
+  if (criteria['sort'] == 'random') {
+    results = util.shuffle(results)
+  }
+
+  if (criteria['sort'] == 'created_at') {
+    results = util.sortBy(results, e => e['created_at'])
+
+    if (criteria['direction'] == 'desc') results.reverse()
+  }
 
   if (per_page && per_page != 'max') {
     const start = (criteria.page - 1) * criteria.per_page

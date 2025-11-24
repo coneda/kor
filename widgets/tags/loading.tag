@@ -1,6 +1,6 @@
 <kor-loading>
 
-  <img show={ajaxInProgress()} src="/images/loading.gif">
+  <img show={ajaxInProgress()} src="images/loading.gif">
 
   <script type="text/javascript">
     var tag = this;

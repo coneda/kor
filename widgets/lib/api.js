@@ -1,12 +1,14 @@
 import config from './config'
-// import Article from './article'
 
 import {Url, Search as WendigSearch} from '@wendig/lib'
 
 let instance = null
 
+const baseUrl = config.env.ROOT_URL || Url.current().origin()
+
 const request = (url, init = {}) => {
-  url = `${Url.current().origin()}${url}`
+  url = `${baseUrl}${url}`
+  console.log(baseUrl, url)
 
   wApp.state.requests.push([url, init])
   wApp.bus.trigger('ajax-state-changed')
@@ -118,17 +120,13 @@ export default class Api extends WendigSearch {
   constructor() {
     const url = Url.current()
 
-    super(`${url.origin()}/db.js`)
+    super(`${baseUrl}/db.js`)
 
     this.request = this.request.bind(this)
   }
 
   request(opts) {
     const url = opts['url']
-
-    if (url == '/info') {
-      return request(url, opts)
-    }
 
     if (wApp.info.data.static) {
       const success = drop(opts, 'success')

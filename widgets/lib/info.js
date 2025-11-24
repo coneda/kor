@@ -1,3 +1,5 @@
+import config from './config'
+
 let instance = null
 
 export default class Info {
@@ -5,13 +7,13 @@ export default class Info {
     // we use raw fetch here because the result tells us if ConedaKOR is in static mode
     // we also try to load a static file first
     const promise = new Promise(resolve => {
-      fetch('/static/info.json').then(r => r.json()).then(data => {
+      fetch(`${config.env.ROOT_URL}/static/info.json`).then(r => r.json()).then(data => {
         instance = new Info(data.info)
         console.log('INFO loaded')
 
         resolve(instance)
       }).catch(error => {
-        fetch('/info.json').then(r => r.json()).then(data => {
+        fetch(`${config.env.ROOT_URL}/info.json`).then(r => r.json()).then(data => {
           instance = new Info(data.info)
           console.log('INFO loaded')
 
