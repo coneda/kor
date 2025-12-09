@@ -64,8 +64,9 @@ RSpec.describe Medium do
   end
 
   it "should delete all files after destruction of an image" do
-    medium = Medium.create document: File.open("#{Rails.root}/spec/fixtures/files/image_c.jpg")
-    medium = Medium.last
+    medium = Medium.create(
+      document: File.open("#{Rails.root}/spec/fixtures/files/image_c.jpg")
+    )
 
     paths = [:original, :icon, :thumbnail, :preview, :normal].map{ |s| medium.path(s) }
 

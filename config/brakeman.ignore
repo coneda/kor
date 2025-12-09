@@ -1,13 +1,36 @@
 {
   "ignored_warnings": [
     {
+      "warning_type": "Unscoped Find",
+      "warning_code": 82,
+      "fingerprint": "01183bf57afbfa043ae1947cd5439cb97b7c77c5938d55b8b728f22f17d6ad08",
+      "check_name": "UnscopedFind",
+      "message": "Unscoped call to `Relation#find_by!`",
+      "file": "app/controllers/relations_controller.rb",
+      "line": 62,
+      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
+      "code": "Relation.find_by!(:id => params[:other_id])",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "RelationsController",
+        "method": "merge"
+      },
+      "user_input": "params[:other_id]",
+      "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
+      "note": "permissions are checked on the controller level"
+    },
+    {
       "warning_type": "SQL Injection",
       "warning_code": 0,
       "fingerprint": "02dbb7d088f19cdc4379a538287ce0cda9a94aaf4cbea75047ce68bb461bb1ff",
       "check_name": "SQL",
       "message": "Possible SQL injection",
       "file": "app/models/entity.rb",
-      "line": 378,
+      "line": 388,
       "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
       "code": "Arel.sql(\"FIELD(id,#{ids.flatten.compact.map do\n connection.quote(id)\n end.join(\",\")})\")",
       "render_path": null,
@@ -70,25 +93,26 @@
       "note": ""
     },
     {
-      "warning_type": "Redirect",
-      "warning_code": 18,
-      "fingerprint": "198713027620a7eebcb51102630f6c3ecd8277a1b0be563d28bf40ca16468d51",
-      "check_name": "Redirect",
-      "message": "Possible unprotected redirect",
-      "file": "app/controllers/identifiers_controller.rb",
-      "line": 14,
-      "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
-      "code": "redirect_to(Identifier.resolve!(params[:id], params[:kind]))",
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "14eb191e22006ba30615ae0e2614c1a4eb345c794e6a1eb5a07bc463b9535c75",
+      "check_name": "Evaluation",
+      "message": "Dynamic code evaluation",
+      "file": "app/controllers/iiif/media_controller.rb",
+      "line": 30,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "eval(File.read(Kor.settings[\"mirador_manifest_template\"]))",
       "render_path": null,
       "location": {
         "type": "method",
-        "class": "IdentifiersController",
-        "method": "resolve"
+        "class": "Iiif::MediaController",
+        "method": "show"
       },
-      "user_input": "Identifier.resolve!(params[:id], params[:kind])",
-      "confidence": "High",
+      "user_input": null,
+      "confidence": "Weak",
       "cwe_id": [
-        601
+        913,
+        95
       ],
       "note": ""
     },
@@ -122,7 +146,7 @@
       "check_name": "MassAssignment",
       "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
       "file": "app/controllers/collections_controller.rb",
-      "line": 98,
+      "line": 101,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
       "code": "params.require(:collection).permit!",
       "render_path": null,
@@ -237,7 +261,7 @@
       "check_name": "WeakHash",
       "message": "Weak hashing algorithm used: SHA1",
       "file": "app/models/user.rb",
-      "line": 297,
+      "line": 305,
       "link": "https://brakemanscanner.org/docs/warning_types/weak_hash/",
       "code": "Digest::SHA1.hexdigest(value)",
       "render_path": null,
@@ -296,36 +320,13 @@
       "note": ""
     },
     {
-      "warning_type": "SQL Injection",
-      "warning_code": 0,
-      "fingerprint": "6ccaa79600dd29665a37db8eaf4193bee3f9bcda5881bb00274ad618143400d8",
-      "check_name": "SQL",
-      "message": "Possible SQL injection",
-      "file": "app/models/entity.rb",
-      "line": 482,
-      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
-      "code": "includes(:medium).references(:media).where(\"media.image_file_size #{{ :equal => \"=\", :smaller => \"<=\", :larger => \">=\" }[mode]} :s OR media.document_file_size #{{ :equal => \"=\", :smaller => \"<=\", :larger => \">=\" }[mode]} :s\", :s => size)",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "Entity",
-        "method": "Entity.by_file_size"
-      },
-      "user_input": "{ :equal => \"=\", :smaller => \"<=\", :larger => \">=\" }[mode]",
-      "confidence": "Weak",
-      "cwe_id": [
-        89
-      ],
-      "note": ""
-    },
-    {
       "warning_type": "Mass Assignment",
       "warning_code": 70,
       "fingerprint": "7ec3ee1dbc596682f6ee1b21900eac4ed0d619613468cd4991d80976bfe88779",
       "check_name": "MassAssignment",
       "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
       "file": "app/controllers/credentials_controller.rb",
-      "line": 51,
+      "line": 52,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
       "code": "params.require(:credential).permit!",
       "render_path": null,
@@ -348,7 +349,7 @@
       "check_name": "MassAssignment",
       "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
       "file": "app/controllers/users_controller.rb",
-      "line": 116,
+      "line": 117,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
       "code": "params.fetch(:user, {}).permit!",
       "render_path": null,
@@ -440,7 +441,7 @@
       "check_name": "MassAssignment",
       "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
       "file": "app/controllers/entities_controller.rb",
-      "line": 344,
+      "line": 361,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
       "code": "params[:entity][:dataset].permit!",
       "render_path": null,
@@ -526,6 +527,29 @@
       "note": ""
     },
     {
+      "warning_type": "Unscoped Find",
+      "warning_code": 82,
+      "fingerprint": "bc9a0d521c7aaca3787ba6f9735ff02f7cda9c0805ff2c528a3f91ee351ae246",
+      "check_name": "UnscopedFind",
+      "message": "Unscoped call to `UserGroup#find_by`",
+      "file": "app/controllers/entities_controller.rb",
+      "line": 80,
+      "link": "https://brakemanscanner.org/docs/warning_types/unscoped_find/",
+      "code": "UserGroup.find_by(:id => params[:user_group_id])",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "EntitiesController",
+        "method": "index"
+      },
+      "user_input": "params[:user_group_id]",
+      "confidence": "Weak",
+      "cwe_id": [
+        285
+      ],
+      "note": "permissions are checked right after"
+    },
+    {
       "warning_type": "Mass Assignment",
       "warning_code": 70,
       "fingerprint": "d69c62d155843cb41309f2e6e1e552e64cbc77ea23a1bd682af9c8b149fd22b4",
@@ -545,6 +569,25 @@
       "confidence": "Medium",
       "cwe_id": [
         915
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Unmaintained Dependency",
+      "warning_code": 120,
+      "fingerprint": "d84924377155b41e094acae7404ec2e521629d86f97b0ff628e3d1b263f8101c",
+      "check_name": "EOLRails",
+      "message": "Support for Rails 7.0.10 ended on 2025-04-01",
+      "file": "Gemfile.lock",
+      "line": 256,
+      "link": "https://brakemanscanner.org/docs/warning_types/unmaintained_dependency/",
+      "code": null,
+      "render_path": null,
+      "location": null,
+      "user_input": null,
+      "confidence": "High",
+      "cwe_id": [
+        1104
       ],
       "note": ""
     },
@@ -647,7 +690,7 @@
       "check_name": "SQL",
       "message": "Possible SQL injection",
       "file": "app/models/entity.rb",
-      "line": 410,
+      "line": 420,
       "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
       "code": "where(\"(#{terms.split(/\\s+/).map do\n \"name LIKE ? OR distinct_name LIKE ?\"\n end.join(\" OR \")})\", *(terms.split(/\\s+/).map do\n \"%#{t}%\"\n end + terms.split(/\\s+/).map do\n \"%#{t}%\"\n end))",
       "render_path": null,
@@ -779,6 +822,5 @@
       "note": ""
     }
   ],
-  "updated": "2022-09-12 22:40:52 -0700",
-  "brakeman_version": "5.3.1"
+  "brakeman_version": "7.1.1"
 }

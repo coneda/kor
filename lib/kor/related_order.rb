@@ -35,7 +35,7 @@ class Kor::RelatedOrder
 
   def self.authorized?(dr, user)
     instance = new(dr.from_id, dr.relation_name)
-    instance authorized?(user)
+    instance.authorized?(user)
   end
 
   def to_top(dr)
@@ -102,13 +102,13 @@ class Kor::RelatedOrder
 
   protected
 
-  def scope
-    DirectedRelationship.
-      by_from_entity(@from_id).
-      by_relation_name(@relation_name)
-  end
+    def scope
+      DirectedRelationship.
+        by_from_entity(@from_id).
+        by_relation_name(@relation_name)
+    end
 
-  def beyond_scope(dr)
-    scope.where('id != ?', dr.id).where('position >= ?', dr.position)
-  end
+    def beyond_scope(dr)
+      scope.where('id != ?', dr.id).where('position >= ?', dr.position)
+    end
 end

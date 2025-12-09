@@ -8,5 +8,5 @@ xdg-open tmp/brakeman.html
 
 # regenerate todo with
 # rubocop --auto-gen-config --regenerate-todo  --offense-counts --auto-gen-timestamp
-rubocop -D -E -S -C false -f html -o tmp/rubocop.html
+rubocop -D -E -S -C false -f html -o tmp/rubocop.html || true
 xdg-open tmp/rubocop.html

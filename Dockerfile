@@ -1,6 +1,6 @@
-FROM ruby:3.0.4
+FROM docker.io/ruby:3.2.3
 
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 
 RUN \
   apt-get update && \

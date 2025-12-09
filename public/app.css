@@ -365,11 +365,16 @@ kor-relation, [data-is=kor-relation] {
     position: relative;
     left: 1rem;
     top: 0.3rem; }
+  kor-relation .unorder, [data-is=kor-relation] .unorder {
+    float: right; }
   kor-relation kor-pagination, [data-is=kor-relation] kor-pagination {
     float: right; }
 
 kor-media-relation .name, [data-is=kor-media-relation] .name {
   margin-bottom: 1rem; }
+
+kor-media-relation .unorder, [data-is=kor-media-relation] .unorder {
+  float: right; }
 
 kor-media-relation kor-pagination, [data-is=kor-media-relation] kor-pagination {
   margin-top: 1rem; }
@@ -410,6 +415,14 @@ kor-relationship, [data-is=kor-relationship] {
       border-top: none; }
     kor-relationship .media-relations tr:last-child td, [data-is=kor-relationship] .media-relations tr:last-child td {
       border-bottom: none; }
+  kor-relationship:first-of-type a.to_top, [data-is=kor-relationship]:first-of-type a.to_top {
+    display: none; }
+  kor-relationship:first-of-type a.up, [data-is=kor-relationship]:first-of-type a.up {
+    display: none; }
+  kor-relationship:last-of-type a.to_bottom, [data-is=kor-relationship]:last-of-type a.to_bottom {
+    display: none; }
+  kor-relationship:last-of-type a.down, [data-is=kor-relationship]:last-of-type a.down {
+    display: none; }
 
 kor-relationship-editor, [data-is=kor-relationship-editor] {
   width: 50rem; }
