@@ -50,11 +50,11 @@ RSpec.describe Kor::Auth do
       env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
       expect(described_class).to receive(:authorize).with(
         'jdoe',
-        additional_attributes: hash_including(email: 'jdoe@example.com')
+        hash_including(additional_attributes: hash_including(email: 'jdoe@example.com'))
       )
       expect(described_class).to receive(:authorize).with(
         'jdoe',
-        additional_attributes: hash_including(email: 'jdoe@personal.com')
+        hash_including(additional_attributes: hash_including(email: 'jdoe@personal.com'))
       )
       expect(described_class.env_login env)
     end
@@ -63,7 +63,7 @@ RSpec.describe Kor::Auth do
       env = {'REMOTE_USER' => 'jdoe'}
       expect(described_class).to receive(:authorize).with(
         'jdoe',
-        additional_attributes: hash_including(email: 'jdoe@example.com')
+        hash_including(additional_attributes: hash_including(email: 'jdoe@example.com'))
       )
       expect(described_class.env_login env)
     end
@@ -73,7 +73,7 @@ RSpec.describe Kor::Auth do
       env = {'REMOTE_USER' => 'jdoe', 'mail' => 'jdoe@personal.com'}
       expect(described_class).to receive(:authorize).with(
         'jdoe',
-        additional_attributes: hash_including(email: 'jdoe@example.com')
+        hash_including(additional_attributes: hash_including(email: 'jdoe@example.com'))
       )
       expect(described_class.env_login env)
     end
@@ -83,7 +83,7 @@ RSpec.describe Kor::Auth do
       env = {'REMOTE_USER' => 'jdoe'}
       expect(described_class).to receive(:authorize).with(
         'jdoe',
-        additional_attributes: hash_including(email: 'jdoe@example.com')
+        hash_including(additional_attributes: hash_including(email: 'jdoe@example.com'))
       )
       expect(described_class.env_login env)
     end
