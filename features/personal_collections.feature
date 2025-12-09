@@ -141,7 +141,7 @@ Feature: personal collections
     When I am on the home page
     And I follow "Global collections"
     And I follow "lecture"
-    Then I should see "Global collection " # trailing space is important
+    Then I should see "Global collection "
     And I should not see link "download collection as zip file"
 
   Scenario: Remove entity

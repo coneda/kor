@@ -96,6 +96,12 @@
       })
     }
 
+    tag.hasDownloadLink = function() {
+      if (tag.isGuest()) return false
+
+      return tag.opts.type == 'authority'
+    }
+
     var fetchGroup = function() {
       return Zepto.ajax({
         url: '/' + tag.opts.type + '_groups/' + tag.opts.id,
@@ -128,12 +134,6 @@
           tag.update();
         }
       })
-    }
-
-    var hasDownloadLink = function() {
-      if (tag.isGuest()) return false
-
-      return tag.opts.type === 'authority'
     }
   </script>
 </kor-entity-group>
