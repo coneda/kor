@@ -134,6 +134,16 @@ Feature: personal collections
     When I click the download link in mail "1"
     # no error => we are happy
 
+  Scenario: Download as zip (background) as guest
+    Given the setting "max_foreground_group_download_size" is "0.1"
+    And the authority group "lecture" contains a medium
+    And user "guest" is allowed to "view" collection "default" through credential "guests"
+    When I am on the home page
+    And I follow "Global collections"
+    And I follow "lecture"
+    Then I should see "Global collection " # trailing space is important
+    And I should not see link "download collection as zip file"
+
   Scenario: Remove entity
     And I am logged in as "jdoe"
     And the entity "Leonardo" is in user group "nice"

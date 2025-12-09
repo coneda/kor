@@ -241,9 +241,14 @@ class JsonController < BaseController
       zip_file = Kor::ZipFile.create(*args)
 
       if zip_file.background?
-        GenericJob.perform_later('constant', 'Kor::ZipFile', 'create!', *args)
-        flash[:notice] = I18n.t('messages.creating_zip_file')
-        redirect_to root_path(anchor: group_path(group))
+        if current_user.guest?
+          flash[:error] = I18n.t('messages.guest_cant_create_zipfile')
+          redirect_back fallback_location: root_path(anchor: group_path(group))
+        else
+          GenericJob.perform_later('constant', 'Kor::ZipFile', 'create!', *args)
+          flash[:notice] = I18n.t('messages.creating_zip_file')
+          redirect_to root_path(anchor: group_path(group))
+        end
       else
         download = zip_file.build
         redirect_to url_for(controller: 'downloads', action: 'show', uuid: download.uuid)

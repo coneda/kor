@@ -767,6 +767,11 @@ en:
     clipboard_too_many_elements: "the clipboard can only contain 500 elements"
     collection_not_empty_on_delete: "the domain '%{name}' can't be deleted, because it is not empty"
     creating_zip_file: "Zip file will be created. You will receive an email as soon as the download is ready."
+    guest_cant_create_zipfile: |
+      The zip file is too large to create immediately. We can build the file in
+      the background and notify you once its ready for download. However, this
+      is only aailable to registered users since it requires an email address.
+      Please sign up with a account and try again.
     date_parsing_failed: "the entered date could not be identified"
     destination_not_given: "you have to chose an entity as a target"
     edit_existing_entity: |

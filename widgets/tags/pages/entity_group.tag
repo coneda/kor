@@ -13,7 +13,7 @@
         title={t('title_verbs.zip')}
       ><i class="fa fa-download"></i></a>
       <a
-        if={opts.type == 'authority'}
+        if={hasDownloadLink()}
         href="/authority_groups/{opts.id}/download_images"
         title={t('title_verbs.zip')}
       ><i class="fa fa-download"></i></a>
@@ -128,6 +128,12 @@
           tag.update();
         }
       })
+    }
+
+    var hasDownloadLink = function() {
+      if (tag.isGuest()) return false
+
+      return tag.opts.type === 'authority'
     }
   </script>
 </kor-entity-group>

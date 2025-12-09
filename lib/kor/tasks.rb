@@ -221,8 +221,11 @@ class Kor::Tasks
 
     loop do
       if rebuild
-        api_docs(config)
-        rebuild = false
+        begin
+          build_api_docs(config)
+        ensure
+          rebuild = false
+        end
       end
 
       stat = [data_file, intro_file, erb_file].map{ |f| File.stat(f).mtime }.max
@@ -236,7 +239,7 @@ class Kor::Tasks
     end
   end
 
-  def self.api_docs(config = {})
+  def self.build_api_docs(config = {})
     erb_file = "#{Rails.root}/docs/api.html.erb"
     intro_file = "#{Rails.root}/docs/api.intro.md"
     data_file = "#{Rails.root}/docs/api.yml"

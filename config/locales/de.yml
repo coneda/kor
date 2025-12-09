@@ -788,6 +788,12 @@ de:
     clipboard_too_many_elements: "Die Zwischenablage kann nur 500 Elemente beinhalten"
     collection_not_empty_on_delete: "Die Domäne '%{name}' kann nicht gelöscht werden, weil sie nicht leer ist"
     creating_zip_file: "Zip-Datei wird erstellt, Sie erhalten eine Email, sobald der Download bereit steht"
+    guest_cant_create_zipfile: |
+      Die Zip-Datei ist zu groß um direkt erstellt zu werden. Sie Erstellung
+      kann stattdessen im Hintergrund erfolgen. Sie werden benachrichtigt,
+      sobald der Download bereit steht. Leider ist diese Funktion nur für
+      registrierte Nutzende verfügbar, bitte beziehen Sie einen Account und
+      versuchen Sie es erneut.
     date_parsing_failed: "Das angegebene Datum wurde nicht erkannt"
     destination_not_given: "Sie müssen eine Entität als Ziel auswählen"
     edit_existing_entity: |
