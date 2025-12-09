@@ -123,3 +123,11 @@ Feature: relations
     And I press the "enter" key
     Then I should see "is located"
     Then I should not see "has created"
+
+  Scenario: Try to edit relation as guest
+    Given user "jdoe" is allowed to "create" collection "default" via credential "users"
+    Given I am logged in as "jdoe"
+    And I follow "Relations"
+    And I follow "shows / is shown by"
+    Then I should see "Access denied"
+    And I should not see "Edit relation"

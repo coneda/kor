@@ -53,7 +53,11 @@
 
   // Handle access denied
   var accessDenied = function() {
-    tag.mountTag('kor-access-denied');
+    if (tag.mountInProgress) {
+      window.requestAnimationFrame(() => tag.mountTag('kor-access-denied'))
+    } else {
+      tag.mountTag('kor-access-denied');
+    }
   };
 
   // Handle server code
@@ -298,7 +302,9 @@
 
       function mountIt() {
         wApp.bus.trigger('page-title');
+        tag.mountInProgress = true
         tag.mountedTag = riot.mount(element[0], tagName, opts)[0];
+        tag.mountInProgress = false
         if (wApp.info.data.env !== 'test') {
           element.animate({ opacity: 1.0 }, 200);
         }
@@ -328,7 +334,9 @@
       if (tag.mountedTag) {
         tag.mountedTag.unmount(true);
       }
+      tag.mountInProgress = true
       tag.mountedTag = riot.mount(element[0], tagName, opts)[0];
+      tag.mountInProgress = false
       wApp.utils.scrollToTop();
     }
   };
