@@ -215,21 +215,20 @@
   tag.submit = function(event) {
     event.preventDefault();
     var p = tag.opts.id ? update() : create();
-    p.done(function(data) {
+    p.then(function(data) {
       wApp.routing.path('/users');
     });
-    p.fail(function(xhr) {
-      tag.errors = JSON.parse(xhr.responseText).errors;
+    p.catch(function(response) {
+      tag.errors = response.data.errors;
       wApp.utils.scrollToTop();
     });
-    p.always(function() {
+    p.finally(function() {
       tag.update();
     });
   };
 
   // TODO: this needs to be done entirely on the server. The client should
   // just tranfer the amount of days to add
-
   // Set expiration date
   tag.expiresIn = function(days) {
     return function(event) {

@@ -133,16 +133,16 @@
   tag.submit = function(event) {
     event.preventDefault();
     var p = tag.opts.id ? update() : create();
-    p.done(function(data) {
+    p.then(function(data) {
       tag.errors = {};
       tag.opts.notify.trigger('refresh');
       route("/kinds/" + tag.opts.kindId + "/edit");
     });
-    p.fail(function(xhr) {
-      tag.errors = JSON.parse(xhr.responseText).errors;
+    p.catch(function(response) {
+      tag.errors = response.data.errors;
       wApp.utils.scrollToTop();
     });
-    p.always(function() {
+    p.finally(function() {
       tag.update();
     });
   };

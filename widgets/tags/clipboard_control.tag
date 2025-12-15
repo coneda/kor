@@ -1,8 +1,7 @@
 <kor-clipboard-control>
-
   <a
     onclick={toggle}
-    if={!isGuest()}
+    if={!isGuest() && !isStatic()}
     href="#/entities/{opts.entity.id}/to_clipboard"
     class="to-clipboard"
     title={t('add_to_clipboard')}

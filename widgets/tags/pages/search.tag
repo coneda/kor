@@ -24,7 +24,7 @@
         />
 
         <kor-input
-          if={elastic()}
+          if={elastic() && !isStatic()}
           name="terms"
           label={tcap('all_fields')}
           value={criteria.terms}
@@ -37,7 +37,7 @@
           label={config()['search_entity_name']}
           value={criteria.name}
           ref="fields"
-          help={tcap('help.name_query')}
+          help={isStatic() ? null : tcap('help.name_query')}
         />
 
         <kor-input
@@ -48,6 +48,7 @@
         />
 
         <kor-input
+          if={!isStatic()}
           name="dating"
           label={tcap('activerecord.models.entity_dating')}
           value={criteria.dating}
@@ -55,7 +56,7 @@
           help={tcap('help.dating_query')}
         />
 
-        <virtual if={isMedia(kind)}>
+        <virtual if={isMedia(kind) && !isStatic()}>
           <div class="hr"></div>
 
           <kor-input
@@ -92,7 +93,7 @@
           />
         </virtual>
 
-        <virtual if={elastic()}>
+        <virtual if={elastic() && !isStatic()}>
           <virtual if={kind && kind.fields.length}>
             <div class="hr"></div>
 
@@ -238,7 +239,7 @@
     var queryUpdate = function() {
       tag.criteria = urlParams();
       tag.update();
-      
+
       if (tag.criteria['kind_id']) {
         fetchKind(tag.criteria['kind_id']);
       }

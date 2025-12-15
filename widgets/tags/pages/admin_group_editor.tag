@@ -45,8 +45,6 @@
   tag.mixin(wApp.mixins.auth)
   tag.mixin(wApp.mixins.page)
 
-  window.t = tag
-
   // Before mounting, check admin permission and fetch categories
   tag.on('before-mount', function(e) {
     tag.errors = {}
@@ -73,7 +71,7 @@
   tag.submit = function(event) {
     event.preventDefault()
     var p = tag.opts.id ? update() : create()
-    p.done(function(data) {
+    p.then(function(data) {
       tag.errors = {}
       var id = values()['authority_group_category_id']
       if (id && id != '-1') {
@@ -82,23 +80,12 @@
         wApp.routing.path('/groups/categories')
       }
     })
-    p.fail(function(xhr) {
-      tag.errors = JSON.parse(xhr.responseText).errors
+    p.catch(response => {
+      tag.errors = response.data.errors
       wApp.utils.scrollToTop()
     })
-    p.always(function() {
+    p.finally(function() {
       tag.update()
-    })
-  }
-
-  // Fetch authority group data from server
-  var fetch = function() {
-    Zepto.ajax({
-      url: '/authority_groups/' + tag.opts.id,
-      success: function(data) {
-        tag.data = data
-        tag.update()
-      }
     })
   }
 
@@ -122,6 +109,17 @@
           })
         }
         tag.categories = results
+        tag.update()
+      }
+    })
+  }
+
+  // Fetch authority group data from server
+  var fetch = function() {
+    Zepto.ajax({
+      url: '/authority_groups/' + tag.opts.id,
+      success: function(data) {
+        tag.data = data
         tag.update()
       }
     })

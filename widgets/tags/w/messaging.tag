@@ -14,12 +14,12 @@
   // On mount, initialize messages and bind ajaxComplete handler
   self.on('mount', function() {
     self.messages = [];
-    Zepto(document).on('ajaxComplete', ajaxCompleteHandler);
+    wApp.bus.on('request-complete', ajaxCompleteHandler);
   });
 
   // On unmount, unbind ajaxComplete handler
   self.on('unmount', function() {
-    Zepto(document).off('ajaxComplete', ajaxCompleteHandler);
+    wApp.bus.off('request-complete', ajaxCompleteHandler);
   });
 
   // Listen for message events and add them to the messages list
@@ -38,28 +38,26 @@
   };
 
   // Handle ajaxComplete events and trigger messages if needed
-  var ajaxCompleteHandler = function(event, request, options) {
-    var contentType = request.getResponseHeader && request.getResponseHeader('content-type');
-    if (contentType && contentType.match(/^application\/json/) && request.response) {
-      try {
-        var data = JSON.parse(request.response);
-        console.log(data)
+  var ajaxCompleteHandler = function(response) {
+    try {
+      var data = response.data;
 
-        if (data.message && !request.noMessaging) {
-          var type = (request.status >= 200 && request.status < 300) ? 'notice' : 'error';
-          wApp.bus.trigger('message', type, data.message);
-        }
-
-        if (data.notice && !request.noMessaging) {
-          wApp.bus.trigger('message', 'notice', data.notice);
-        }
-
-        if (data.code) {
-          wApp.bus.trigger('server-code', data.code);
-        }
-      } catch (e) {
-        console.log(e, request); // TODO: Consider using console.error
+      if (data.message && !request.noMessaging) {
+        var type = (request.status >= 200 && request.status < 300) ? 'notice' : 'error';
+        wApp.bus.trigger('message', type, data.message);
       }
+
+      if (data.notice && !request.noMessaging) {
+        wApp.bus.trigger('message', 'notice', data.notice);
+      }
+
+      if (data.code) {
+        wApp.bus.trigger('server-code', data.code);
+      }
+
+    } catch (e) {
+      // TODO: should this be console.error?
+      console.log(e, request);
     }
   };
 
@@ -79,5 +77,5 @@
     return message.type === 'notice';
   };
 </script>
-
 </w-messaging>
+

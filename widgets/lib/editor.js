@@ -21,7 +21,7 @@ wApp.mixins.editor = {
     return Zepto.ajax({
       type: 'POST',
       url: '/' + this.resource.plural,
-      data: JSON.stringify(data)
+      data: data
     });
   },
   updateRequest: function() {
@@ -31,7 +31,7 @@ wApp.mixins.editor = {
     return Zepto.ajax({
       type: 'PATCH',
       url: '/' + this.resource.plural + '/' + this.resourceId(),
-      data: JSON.stringify(data)
+      data: data
     });
   },
   onSuccess: function(data) {

@@ -13,7 +13,7 @@
         <virtual if={!opts.type}>{tcap('activerecord.models.user_group', {count: 'other'})}</virtual>
         <virtual if={opts.type == 'shared'}>{tcap('nouns.shared_user_group', {count: 'other'})}</virtual>
       </h1>
-      
+
       <kor-nothing-found data={data} />
 
       <table if={data && data.total > 0}>
@@ -104,8 +104,9 @@
     }
 
     var fetch = function() {
+      console.log(tag.opts.type == 'shared' ? '/user_groups/shared' : '/user_groups')
       Zepto.ajax({
-        url: (tag.opts.type == 'shared' ? '/user_groups/shared' : 'user_groups'),
+        url: (tag.opts.type == 'shared' ? '/user_groups/shared' : '/user_groups'),
         data: {
           include: 'owner',
           per_page: 'max'
@@ -116,7 +117,5 @@
         }
       })
     }
-
   </script>
-
 </kor-user-groups>

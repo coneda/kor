@@ -170,8 +170,8 @@
     }
 
     tag.allFieldsLabel = function() {
-      return tag.allFields ? 
-        tag.tcap('show_only_mandatory_fields') : 
+      return tag.allFields ?
+        tag.tcap('show_only_mandatory_fields') :
         tag.tcap('show_all_fields')
     }
 
@@ -193,10 +193,11 @@
           if (xhr.status == 404) {
             wApp.clipboard.unselect();
             tag.update();
-          } else
+          } else {
             console.log(xhr, reason);
+          }
         }
-      });
+      })
     }
 
     var init = function() {

@@ -69,7 +69,7 @@ wApp.clipboard = {
     return Zepto.ajax({
       type: 'POST',
       url: '/entities/existence',
-      data: JSON.stringify({ ids: ids }),
+      data: {ids: ids},
       success: function (data) {
         for (var id in data) {
           if (!data[id]) {

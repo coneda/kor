@@ -14,6 +14,7 @@ json.info do
   json.medium_kind_id Kind.medium_kind_id
   json.env Rails.env.to_s
   json.elastic Kor::Elastic.available?
+  json.static static_mode?
 
   url = Kor.settings['custom_css_file']
   if url.present?

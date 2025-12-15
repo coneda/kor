@@ -128,6 +128,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.datetime "deleted_at", precision: nil
     t.string "sort_name"
     t.index ["collection_id", "kind_id"], name: "collections_kinds"
+    t.index ["collection_id"], name: "testy"
     t.index ["created_at"], name: "index_entities_on_created_at"
     t.index ["creator_id"], name: "index_entities_on_user_id"
     t.index ["distinct_name"], name: "index_entities_on_distinct_name"
@@ -322,7 +323,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.datetime "updated_at", precision: nil
   end
 
-  create_table "taggings", id: :integer, charset: "utf8mb3", force: :cascade do |t|
+  create_table "taggings", id: :integer, charset: "latin1", force: :cascade do |t|
     t.integer "tag_id"
     t.integer "taggable_id"
     t.integer "tagger_id"
@@ -343,7 +344,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["tenant"], name: "index_taggings_on_tenant"
   end
 
-  create_table "tags", id: :integer, charset: "utf8mb3", force: :cascade do |t|
+  create_table "tags", id: :integer, charset: "latin1", force: :cascade do |t|
     t.string "name", collation: "utf8mb3_bin"
     t.integer "taggings_count", default: 0
     t.index ["name"], name: "index_tags_on_name", unique: true
@@ -390,5 +391,4 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_04_204545) do
     t.index ["name"], name: "index_users_on_name", unique: true
     t.index ["parent_username"], name: "index_users_on_parent_username"
   end
-
 end

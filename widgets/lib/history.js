@@ -1,6 +1,5 @@
 wApp.entityHistory = {
   add: function(id) {
-    console.log(id);
     var ids = wApp.entityHistory.ids();
     ids.unshift(id);
     ids = ids.slice(0, 30);

@@ -7,6 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="content-language" />
 
+    <base href="<%= rootUrl() %>/" />
+
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 
     <title>ConedaKOR</title>
@@ -14,13 +16,13 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="<%= stylesheet_path('vendor.css') %>"
+      href="<%= stylesheetPath('vendor.css') %>"
     />
 
     <link
       rel="stylesheet"
       type="text/css"
-      href="<%= stylesheet_path('app.css') %>"
+      href="<%= stylesheetPath('app.css') %>"
     />
   </head>
   <body style="display: none">
@@ -28,7 +30,7 @@
 
     <script
       type="text/javascript"
-      src="<%= script_path('app-noboot.js') %>"
+      src="<%= scriptPath('app-noboot.js') %>"
     ></script>
 
     <script type="text/javascript">

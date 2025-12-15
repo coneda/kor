@@ -1,7 +1,7 @@
 <kor-collection-selector>
   <virtual if={collections}>
     <virtual if={collections.length == 1}
-      <input 
+      <input
         ref="input"
         type="hidden"
         value={collections[0].id}

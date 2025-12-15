@@ -67,8 +67,8 @@
   // Handle form submission for create or update
   tag.submit = function(event) {
     event.preventDefault()
-    var p = tag.opts.id ? update() : create()
-    p.done(function(data) {
+    var p = (tag.opts.id ? update() : create())
+    p.then(function(data) {
       tag.errors = {}
       var id = values()['parent_id']
       if (id) {
@@ -77,11 +77,11 @@
         wApp.routing.path('/groups/categories')
       }
     })
-    p.fail(function(xhr) {
-      tag.errors = JSON.parse(xhr.responseText).errors
+    p.catch(response => {
+      tag.errors = response.data.errors
       wApp.utils.scrollToTop()
     })
-    p.always(function() {
+    p.finally(function() {
       tag.update()
     })
   }
@@ -142,7 +142,6 @@
     })
   }
 
-  // Collect form values for submission
   var values = function() {
     var results = {}
     var fields = wApp.utils.toArray(tag.refs.fields)

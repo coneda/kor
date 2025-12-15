@@ -75,6 +75,10 @@ class RelationsController < JsonController
 
   protected
 
+    def per_page
+      Relation.count
+    end
+
     def relation_params
       params.require(:relation).permit!
     end

@@ -60,24 +60,26 @@
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
 
+    window.t = tag
+
     tag.inGroupsOf = wApp.utils.inGroupsOf
 
     tag.primaries = (entity) => {
-      results = [...entity.primary_entities]
-      return wApp.utils.uniqRecords(results).sort(compare)
+      results = entity.primary_entities
+
+      return wApp.utils.uniq(results, e => e['id']).sort(compare)
     }
 
     tag.secondaries = (entity) => {
       const results = []
-      for (var i = 0; i < entity.primary_entities.length; i++) {
-        const p = entity.primary_entities[i]
-        for (var j = 0; j < p.secondary_entities.length; j++) {
-          const s = p.secondary_entities[j]
+
+      for (const p of entity.primary_entities) {
+        for (const s of p.secondary_entities) {
           results.push(s)
         }
       }
 
-      return wApp.utils.uniqRecords(results).sort(compare)
+      return wApp.utils.uniq(results, e => e['id']).sort(compare)
     }
 
     var compare = (a, b) => {

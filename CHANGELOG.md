@@ -5,6 +5,16 @@ and other major modifications are listed here in order to give a short overview
 of every version. For earlier versions and more detail, please consult the
 commit history and the closed issues on GitHub.
 
+## Version 5.1.0
+
+This is a feature release. For details on the bugfixes and new features, please
+have a look at the
+[milestone summary](https://github.com/coneda/kor/issues?q=is%3Aissue+milestone%3Av5.1.0).
+
+Here are a few highlights:
+
+* static mode is now available
+
 ## Version 5.0.1
 
 This is just a bugfix release, for details see the

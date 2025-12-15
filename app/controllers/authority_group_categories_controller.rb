@@ -8,7 +8,9 @@ class AuthorityGroupCategoriesController < JsonController
   end
 
   def index
-    @records = if params[:parent_id].present?
+    @records = if params[:all].present?
+      records.all
+    elsif params[:parent_id].present?
       records.find(params[:parent_id]).children
     else
       records.roots

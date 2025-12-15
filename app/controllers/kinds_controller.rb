@@ -54,6 +54,10 @@ class KindsController < JsonController
 
   protected
 
+    def per_page
+      Kind.count
+    end
+
     def kind_params
       params.require(:kind).permit(
         :schema, :name, :plural_name, :description,

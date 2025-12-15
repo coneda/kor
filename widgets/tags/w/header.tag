@@ -8,11 +8,12 @@
     
     <span>
       <strong>ConedaKOR</strong>
+      <span if={isStatic()}>(static mode)</span>
       {t('nouns.version')}
       {info().version}
     </span>
 
-    <span if={currentUser()}>
+    <span if={currentUser() && !isStatic()}>
       <img src="images/vertical_dots.gif" />
       {t('logged_in_as')}:
       <strong>{currentUser().display_name}</strong>
@@ -26,7 +27,6 @@
         <kor-logout />
       </span>
     </span>
-
   </div>
 
   <div class="clearfix"></div>

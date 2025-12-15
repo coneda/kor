@@ -1,6 +1,6 @@
 <w-app>
   <kor-header />
-  
+
   <div>
     <kor-menu />
     <div class="w-content" />
@@ -78,208 +78,208 @@
   };
 
   // Handle routing paths
- tag.routeHandler = function(parts) {
-  var tagName = 'kor-loading';
-  var opts = {
-    query: parts['hash_query']
-  };
+  tag.routeHandler = function(parts) {
+    var tagName = 'kor-loading';
+    var opts = {
+      query: parts['hash_query']
+    };
 
-  var path = parts['hash_path'];
-  switch (path) {
-    case undefined:
-    case '':
-    case '/':
-      tagName = 'kor-welcome';
-      break;
-    case '/login':
-      if (tag.currentUser() && !tag.isGuest()) {
-        redirectTo('/search');
-      } else {
-        tagName = 'kor-login';
-      }
-      break;
-    case '/statistics':
-      tagName = 'kor-statistics';
-      break;
-    case '/legal':
-      tagName = 'kor-legal';
-      break;
-    case '/about':
-      tagName = 'kor-about';
-      break;
-    default:
-      if (tag.currentUser()) {
-        if (!tag.isGuest() && !tag.currentUser().terms_accepted && path !== '/legal') {
-          redirectTo('/legal');
+    var path = parts['hash_path'];
+    switch (path) {
+      case undefined:
+      case '':
+      case '/':
+        tagName = 'kor-welcome';
+        break;
+      case '/login':
+        if (tag.currentUser() && !tag.isGuest()) {
+          redirectTo('/search');
         } else {
-          var m;
-          if ((m = path.match(/^\/users\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-user-editor';
-          } else if ((m = path.match(/^\/entities\/([0-9]+)$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-entity-page';
-          } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit\/fields\/new$/))) {
-            opts['id'] = parseInt(m[1]);
-            opts['newField'] = true;
-            tagName = 'kor-kind-editor';
-          } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit\/fields\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            opts['fieldId'] = parseInt(m[2]);
-            tagName = 'kor-kind-editor';
-          } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit\/generators\/new$/))) {
-            opts['id'] = parseInt(m[1]);
-            opts['newGenerator'] = true;
-            tagName = 'kor-kind-editor';
-          } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit\/generators\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            opts['generatorId'] = parseInt(m[2]);
-            tagName = 'kor-kind-editor';
-          } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-kind-editor';
-          } else if ((m = path.match(/^\/entities\/new$/))) {
-            opts['kindId'] = parts['hash_query']['kind_id'];
-            opts['cloneId'] = parts['hash_query']['clone_id'];
-            tagName = 'kor-entity-editor';
-          } else if ((m = path.match(/^\/entities\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-entity-editor';
-          } else if ((m = path.match(/^\/credentials\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-credential-editor';
-          } else if ((m = path.match(/^\/collections\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-collection-editor';
-          } else if ((m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/new$/))) {
-            opts['parentId'] = parseInt(m[1]);
-            tagName = 'kor-admin-group-category-editor';
-          } else if ((m = path.match(/^\/groups\/categories\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-admin-group-category-editor';
-          } else if ((m = path.match(/^\/groups\/categories(?:\/([0-9]+))?$/))) {
-            if (m[1]) {
-              opts['parentId'] = parseInt(m[1]);
-            }
-            tagName = 'kor-admin-group-categories';
-          } else if ((m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/admin\/([0-9]+)\/edit$/))) {
-            opts['categoryId'] = parseInt(m[1]);
-            opts['id'] = parseInt(m[2]);
-            tagName = 'kor-admin-group-editor';
-          } else if ((m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/admin\/new$/))) {
-            opts['categoryId'] = parseInt(m[1]);
-            tagName = 'kor-admin-group-editor';
-          } else if ((m = path.match(/^\/groups\/admin\/([0-9]+)$/))) {
-            opts['id'] = parseInt(m[1]);
-            opts['type'] = 'authority';
-            tagName = 'kor-entity-group';
-          } else if ((m = path.match(/^\/groups\/user\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-user-group-editor';
-          } else if ((m = path.match(/^\/groups\/user\/([0-9]+)$/))) {
-            opts['id'] = parseInt(m[1]);
-            opts['type'] = 'user';
-            tagName = 'kor-entity-group';
-          } else if ((m = path.match(/^\/relations\/([0-9]+)\/edit$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-relation-editor';
-          } else if ((m = path.match(/^\/media\/([0-9]+)$/))) {
-            opts['id'] = parseInt(m[1]);
-            tagName = 'kor-medium-page';
-          } else if ((m = path.match(/^\/pub\/([0-9]+)\/([0-9a-f]+)$/))) {
-            opts['userId'] = parseInt(m[1]);
-            opts['uuid'] = m[2];
-            tagName = 'kor-publishment';
+          tagName = 'kor-login';
+        }
+        break;
+      case '/statistics':
+        tagName = 'kor-statistics';
+        break;
+      case '/legal':
+        tagName = 'kor-legal';
+        break;
+      case '/about':
+        tagName = 'kor-about';
+        break;
+      default:
+        if (tag.currentUser()) {
+          if (!tag.isGuest() && !tag.currentUser().terms_accepted && path !== '/legal') {
+            redirectTo('/legal');
           } else {
-            switch (path) {
-              case '/clipboard':
-                tagName = 'kor-clipboard';
-                break;
-              case '/profile':
-                tagName = 'kor-profile';
-                break;
-              case '/new-media':
-                tagName = 'kor-new-media';
-                break;
-              case '/users/new':
-                tagName = 'kor-user-editor';
-                break;
-              case '/users':
-                tagName = 'kor-users';
-                break;
-              case '/entities/invalid':
-                tagName = 'kor-invalid-entities';
-                break;
-              case '/entities/recent':
-                tagName = 'kor-recent-entities';
-                break;
-              case '/entities/isolated':
-                tagName = 'kor-isolated-entities';
-                break;
-              case '/search':
-                tagName = 'kor-search';
-                break;
-              case '/kinds':
-                tagName = 'kor-kinds';
-                break;
-              case '/kinds/new':
-                tagName = 'kor-kind-editor';
-                break;
-              case '/credentials':
-                tagName = 'kor-credentials';
-                break;
-              case '/credentials/new':
-                tagName = 'kor-credential-editor';
-                break;
-              case '/collections':
-                tagName = 'kor-collections';
-                break;
-              case '/collections/new':
-                tagName = 'kor-collection-editor';
-                break;
-              case '/upload':
-                tagName = 'kor-upload';
-                break;
-              case '/groups/user/new':
-                tagName = 'kor-user-group-editor';
-                break;
-              case '/groups/user':
-                tagName = 'kor-user-groups';
-                break;
-              case '/groups/shared':
-                opts['type'] = 'shared';
-                tagName = 'kor-user-groups';
-                break;
-              case '/relations/new':
-                tagName = 'kor-relation-editor';
-                break;
-              case '/relations':
-                tagName = 'kor-relations';
-                break;
-              case '/settings':
-                tagName = 'kor-settings-editor';
-                break;
-              case '/password-recovery':
-                tagName = 'kor-password-recovery';
-                break;
-              case '/groups/published':
-                tagName = 'kor-publishments';
-                break;
-              case '/groups/published/new':
-                tagName = 'kor-publishment-editor';
-                break;
-              default:
-                tagName = 'kor-search';
+            var m;
+            if ((m = path.match(/^\/users\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-user-editor';
+            } else if ((m = path.match(/^\/entities\/([0-9]+)$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-entity-page';
+            } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit\/fields\/new$/))) {
+              opts['id'] = parseInt(m[1]);
+              opts['newField'] = true;
+              tagName = 'kor-kind-editor';
+            } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit\/fields\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              opts['fieldId'] = parseInt(m[2]);
+              tagName = 'kor-kind-editor';
+            } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit\/generators\/new$/))) {
+              opts['id'] = parseInt(m[1]);
+              opts['newGenerator'] = true;
+              tagName = 'kor-kind-editor';
+            } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit\/generators\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              opts['generatorId'] = parseInt(m[2]);
+              tagName = 'kor-kind-editor';
+            } else if ((m = path.match(/^\/kinds\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-kind-editor';
+            } else if ((m = path.match(/^\/entities\/new$/))) {
+              opts['kindId'] = parts['hash_query']['kind_id'];
+              opts['cloneId'] = parts['hash_query']['clone_id'];
+              tagName = 'kor-entity-editor';
+            } else if ((m = path.match(/^\/entities\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-entity-editor';
+            } else if ((m = path.match(/^\/credentials\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-credential-editor';
+            } else if ((m = path.match(/^\/collections\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-collection-editor';
+            } else if ((m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/new$/))) {
+              opts['parentId'] = parseInt(m[1]);
+              tagName = 'kor-admin-group-category-editor';
+            } else if ((m = path.match(/^\/groups\/categories\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-admin-group-category-editor';
+            } else if ((m = path.match(/^\/groups\/categories(?:\/([0-9]+))?$/))) {
+              if (m[1]) {
+                opts['parentId'] = parseInt(m[1]);
+              }
+              tagName = 'kor-admin-group-categories';
+            } else if ((m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/admin\/([0-9]+)\/edit$/))) {
+              opts['categoryId'] = parseInt(m[1]);
+              opts['id'] = parseInt(m[2]);
+              tagName = 'kor-admin-group-editor';
+            } else if ((m = path.match(/^\/groups\/categories(?:\/([0-9]+))?\/admin\/new$/))) {
+              opts['categoryId'] = parseInt(m[1]);
+              tagName = 'kor-admin-group-editor';
+            } else if ((m = path.match(/^\/groups\/admin\/([0-9]+)$/))) {
+              opts['id'] = parseInt(m[1]);
+              opts['type'] = 'authority';
+              tagName = 'kor-entity-group';
+            } else if ((m = path.match(/^\/groups\/user\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-user-group-editor';
+            } else if ((m = path.match(/^\/groups\/user\/([0-9]+)$/))) {
+              opts['id'] = parseInt(m[1]);
+              opts['type'] = 'user';
+              tagName = 'kor-entity-group';
+            } else if ((m = path.match(/^\/relations\/([0-9]+)\/edit$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-relation-editor';
+            } else if ((m = path.match(/^\/media\/([0-9]+)$/))) {
+              opts['id'] = parseInt(m[1]);
+              tagName = 'kor-medium-page';
+            } else if ((m = path.match(/^\/pub\/([0-9]+)\/([0-9a-f]+)$/))) {
+              opts['userId'] = parseInt(m[1]);
+              opts['uuid'] = m[2];
+              tagName = 'kor-publishment';
+            } else {
+              switch (path) {
+                case '/clipboard':
+                  tagName = 'kor-clipboard';
+                  break;
+                case '/profile':
+                  tagName = 'kor-profile';
+                  break;
+                case '/new-media':
+                  tagName = 'kor-new-media';
+                  break;
+                case '/users/new':
+                  tagName = 'kor-user-editor';
+                  break;
+                case '/users':
+                  tagName = 'kor-users';
+                  break;
+                case '/entities/invalid':
+                  tagName = 'kor-invalid-entities';
+                  break;
+                case '/entities/recent':
+                  tagName = 'kor-recent-entities';
+                  break;
+                case '/entities/isolated':
+                  tagName = 'kor-isolated-entities';
+                  break;
+                case '/search':
+                  tagName = 'kor-search';
+                  break;
+                case '/kinds':
+                  tagName = 'kor-kinds';
+                  break;
+                case '/kinds/new':
+                  tagName = 'kor-kind-editor';
+                  break;
+                case '/credentials':
+                  tagName = 'kor-credentials';
+                  break;
+                case '/credentials/new':
+                  tagName = 'kor-credential-editor';
+                  break;
+                case '/collections':
+                  tagName = 'kor-collections';
+                  break;
+                case '/collections/new':
+                  tagName = 'kor-collection-editor';
+                  break;
+                case '/upload':
+                  tagName = 'kor-upload';
+                  break;
+                case '/groups/user/new':
+                  tagName = 'kor-user-group-editor';
+                  break;
+                case '/groups/user':
+                  tagName = 'kor-user-groups';
+                  break;
+                case '/groups/shared':
+                  opts['type'] = 'shared';
+                  tagName = 'kor-user-groups';
+                  break;
+                case '/relations/new':
+                  tagName = 'kor-relation-editor';
+                  break;
+                case '/relations':
+                  tagName = 'kor-relations';
+                  break;
+                case '/settings':
+                  tagName = 'kor-settings-editor';
+                  break;
+                case '/password-recovery':
+                  tagName = 'kor-password-recovery';
+                  break;
+                case '/groups/published':
+                  tagName = 'kor-publishments';
+                  break;
+                case '/groups/published/new':
+                  tagName = 'kor-publishment-editor';
+                  break;
+                default:
+                  tagName = 'kor-search';
+              }
             }
           }
+        } else {
+          tagName = 'kor-login';
         }
-      } else {
-        tagName = 'kor-login';
-      }
-  }
+    }
 
-  tag.closeModal();
-  tag.mountTagAndAnimate(tagName, opts);
+    tag.closeModal();
+    tag.mountTagAndAnimate(tagName, opts);
   };
 
   // Handle query updates

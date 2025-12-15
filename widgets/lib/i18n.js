@@ -1,8 +1,11 @@
- wApp.i18n = {
+wApp.i18n = {
   setup: function() {
     return Zepto.ajax({
       url: '/translations',
-      success: (data) => wApp.i18n.translations = data.translations
+      success: (data) => {
+        wApp.i18n.translations = data.translations
+        console.log('i18n loaded')
+      }
     })
   },
   locales: function() {
@@ -93,6 +96,8 @@
     return ""
   }
 }
+
+
 wApp.mixins.i18n = {
   t: function(input, options = {}) {
     return wApp.i18n.translate(this.locale(), input, options)
@@ -108,4 +113,6 @@ wApp.mixins.i18n = {
     return wApp.i18n.humanSize(input)
   }
 }
+
 wApp.i18n.t = wApp.i18n.translate
+

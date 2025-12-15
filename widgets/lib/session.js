@@ -6,12 +6,14 @@ wApp.session = {
         url: '/session',
         success: function (data) {
           wApp.session.current = data.session
-          riot.update()
+          console.log('SESSION loaded')
         }
       })
     }
 
-    wApp.bus.on('reload-session', reload)
+    wApp.bus.on('reload-session', () => {
+      reload().then(data => riot.update())
+    })
 
     return reload()
   },
@@ -36,5 +38,8 @@ wApp.mixins.sessionAware = {
   },
   isLoggedIn: function () {
     return this.currentUser() && !this.isGuest()
+  },
+  isStatic: function() {
+    return wApp.info.data.static
   }
 }

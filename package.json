@@ -1,10 +1,14 @@
 {
   "name": "kor-frontend",
+  "type": "module",
   "version": "1.0.0",
   "description": "ConedaKOR frontend",
   "main": "index.js",
   "devDependencies": {
-    "coffee-script": "^1.12.3",
+    "@rollup/plugin-commonjs": "^28.0.5",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@wendig/lib": "../../js-lib/src",
     "ejs": "^3.1.5",
     "font-awesome": "^4.6.3",
     "lockr": "^0.8.5",
@@ -17,6 +21,8 @@
     "plupload": "2.3.6",
     "riot": "< 4",
     "riot-route": "^3.1.4",
+    "rollup": "^4.43.0",
+    "rollup-plugin-dotenv": "^0.5.1",
     "sortablejs": "^1.14.0",
     "strftime": "^0.10.0",
     "uglify-js": "^3.12.3",
@@ -32,12 +38,11 @@
     "watch:css": "widgets/build.sh watch_css",
     "watch:html": "widgets/build.sh watch_html",
     "watch:images": "widgets/build.sh watch_images",
-    "server": "widgets/build.sh server",
+    "server": "bin/dev server",
     "clean": "widgets/build.sh clean",
     "tocs": "widgets/build.sh tocs",
     "index": "bin/dev index",
-    "db": "bin/dev db",
-    "server": "bin/dev server"
+    "db": "bin/dev db"
   },
   "repository": {
     "type": "git",

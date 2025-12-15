@@ -10,7 +10,7 @@
   </ul>
 
   <ul>
-    <li if={isLoggedIn()}>
+    <li if={isLoggedIn() && !isStatic()}>
       <a href="#/clipboard">{tcap('nouns.clipboard')}</a>
     </li>
 
@@ -27,21 +27,23 @@
         {tcap('activerecord.models.authority_group.other')}
       </a>
     </li>
-    <li if={isLoggedIn()}>
-      <a href="#/groups/user">
-        {tcap('activerecord.models.user_group.other')}
-      </a>
-    </li>
-    <li if={isLoggedIn()}>
-      <a href="#/groups/shared">
-        {tcap('activerecord.attributes.user_group.shared', {count: 'other'})}
-      </a>
-    </li>
-    <li if={isLoggedIn()}>
-      <a href="#/groups/published">
-        {tcap('activerecord.attributes.user_group.published', {count: 'other'})}
-      </a>
-    </li>
+    <virtual if={!isStatic()}>
+      <li if={isLoggedIn()}>
+        <a href="#/groups/user">
+          {tcap('activerecord.models.user_group.other')}
+        </a>
+      </li>
+      <li if={isLoggedIn()}>
+        <a href="#/groups/shared">
+          {tcap('activerecord.attributes.user_group.shared', {count: 'other'})}
+        </a>
+      </li>
+      <li if={isLoggedIn()}>
+        <a href="#/groups/published">
+          {tcap('activerecord.attributes.user_group.published', {count: 'other'})}
+        </a>
+      </li>
+    </virtual>
   </ul>
 
   <virtual if={isLoggedIn() && (allowedTo('create'))}>

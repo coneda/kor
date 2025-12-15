@@ -314,4 +314,8 @@ class Kor::Tasks
       puts "| #{row.join(' | ')} |"
     end
   end
+
+  def self.build_static(opts)
+    Kor::Static.new(opts).activate
+  end
 end
