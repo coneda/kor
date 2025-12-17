@@ -6,7 +6,7 @@
   />
 
   <script type="text/javascript">
-    var tag = this;
+    let tag = this;
 
     tag.checked = function() {
       return wApp.clipboard.subSelected(tag.opts.entity.id);

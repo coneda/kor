@@ -7,7 +7,7 @@
   </div>
 
   <script type="text/javascript">
-    var tag = this
+    let tag = this
 
     var reloadApp = function() {
       console.log('remounting app ...')

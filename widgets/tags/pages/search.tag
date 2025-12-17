@@ -214,12 +214,13 @@
   <div class="clearfix"></div>
 
   <script type="text/javascript">
-    var tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.mixin(wApp.mixins.config);
-    tag.mixin(wApp.mixins.page);
+    let tag = this
+    window.ta = tag
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.config)
+    tag.mixin(wApp.mixins.page)
 
     tag.on('before-mount', function() {
       fetchMimeTypes();
@@ -227,8 +228,8 @@
     })
 
     tag.on('mount', function() {
-      tag.title(tag.t('nouns.search'));
-      tag.on('routing:query', queryUpdate);
+      tag.title(tag.t('nouns.search'))
+      tag.on('routing:query', queryUpdate)
       queryUpdate();
     })
 
@@ -237,19 +238,19 @@
     })
 
     var queryUpdate = function() {
-      tag.criteria = urlParams();
-      tag.update();
+      tag.criteria = urlParams()
+      tag.update()
 
       if (tag.criteria['kind_id']) {
-        fetchKind(tag.criteria['kind_id']);
+        fetchKind(tag.criteria['kind_id'])
       }
-      tag.tags['kor-collection-selector'].reset();
-      fetch();
+      tag.tags['kor-collection-selector'].reset()
+      fetch()
     }
 
     tag.submit = function(event) {
-      event.preventDefault();
-      wApp.routing.query(params(), true);
+      event.preventDefault()
+      wApp.routing.query(params(), true)
     }
 
     tag.reset = function(event) {
@@ -262,11 +263,11 @@
     }
 
     tag.page = function(newPage) {
-      wApp.routing.query({page: newPage});
+      wApp.routing.query({page: newPage})
     }
 
     tag.selectKind = function(event) {
-      var id = Zepto(event.target).val();
+      var id = Zepto(event.target).val()
       if (!id || id == '0') {
         id = null
       }
@@ -279,35 +280,35 @@
     }
 
     tag.elastic = function() {
-      return wApp.info.data.elastic;
+      return wApp.info.data.elastic
     }
 
     tag.isMedia = function(kind) {
-      if (!kind) {return false;}
+      if (!kind) {return false}
 
       return kind.id === wApp.info.data.medium_kind_id;
     }
 
     var params = function() {
-      var results = {page: 1};
+      var results = {page: 1}
       for (var i = 0; i < tag.refs.fields.length; i++) {
-        var f = tag.refs.fields[i];
-        var v = f.value();
+        var f = tag.refs.fields[i]
+        var v = f.value()
         if (v != '' && v != [] && v != undefined) {
           if (Zepto.isArray(v)) {
-            results[f.name()] = v.join(',');
+            results[f.name()] = v.join(',')
           } else {
-            results[f.name()] = v;
+            results[f.name()] = v
           }
         }
       }
-      return results;
+      return results
     }
 
     var urlParams = function() {
-      var results = wApp.routing.query();
-      results['collection_id'] = wApp.utils.toIdArray(results['collection_id']);
-      return results;
+      var results = wApp.routing.query()
+      results['collection_id'] = wApp.utils.toIdArray(results['collection_id'])
+      return results
     }
 
     var fetchKind = function(id) {
@@ -315,8 +316,8 @@
         url: '/kinds/' + id,
         data: {include: 'fields'},
         success: function(data) {
-          tag.kind = data;
-          tag.update();
+          tag.kind = data
+          tag.update()
         }
       })
     }
@@ -325,25 +326,25 @@
       Zepto.ajax({
         url: '/statistics',
         success: function(data) {
-          tag.mime_types = Object.keys(data.mime_counts).sort();
-          tag.update();
+          tag.mime_types = Object.keys(data.mime_counts).sort()
+          tag.update()
         }
       })
     }
 
     var fetch = function() {
-      var params = Zepto.extend({}, tag.criteria, {
+      var params = Object.assign({}, tag.criteria, {
         include: 'related',
         related_kind_id: wApp.info.data.medium_kind_id,
         related_per_page: 4
-      });
+      })
 
       Zepto.ajax({
         url: '/entities',
         data: params,
         success: function(data) {
-          tag.data = data;
-          tag.update();
+          tag.data = data
+          tag.update()
         }
       })
     }

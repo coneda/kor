@@ -5,7 +5,6 @@ class AddSortNameToEntities < ActiveRecord::Migration[7.0]
     end
 
     Entity.reset_column_information
-    db = Entity.connection
 
     attrs = [
       :id, :distinct_name, :kind_id, :medium_id, :no_name_statement, :name

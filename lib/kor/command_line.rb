@@ -64,7 +64,7 @@ class Kor::CommandLine
       @parser.on('-e ENTITY', 'the id of an entity to limit the result list to'){ |v| @config[:entity_id] = v }
       @parser.on('-u USER', 'the id of a user to limit the result list to'){ |v| @config[:user_id] = v }
     when 'static-mode'
-      @parser.on('--page-limit=PAGES', "process only so many pages, default: false"){ |v| @config[:page_limit] = v.to_i}
+      @parser.on('--page-limit=PAGES', "process only so many pages, default: false"){ |v| @config[:page_limit] = v.to_i }
       @parser.on("--user USERAME", "the user to act as, default: admin"){ |v| @config[:user] = User.find_by!(name: v) }
       @parser.on("--pretty", "output pretty json (with indentation), default: false"){ @config[:pretty] = true }
       @parser.on("--media-override=URL", "use this url for all media, default: false"){ |v| @config[:media_override] = v }

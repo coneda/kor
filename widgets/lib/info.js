@@ -6,20 +6,19 @@ export default class Info {
   static setup() {
     // we use raw fetch here because the result tells us if ConedaKOR is in static mode
     // we also try to load a static file first
-    const promise = new Promise(resolve => {
-      fetch(`${config.env.ROOT_URL}/static/info.json`).then(r => r.json()).then(data => {
+    const promise = new Promise(async resolve => {
+      const staticResponse = await fetch(`/static/info.json`)
+      if (staticResponse.ok) {
+        const data = await staticResponse.json()
         instance = new Info(data.info)
-        console.log('INFO loaded')
+      } else {
+        const apiResponse = await fetch(`/info.json`)
+        const data = await apiResponse.json()
+        instance = new Info(data.info)
+      }
 
-        resolve(instance)
-      }).catch(error => {
-        fetch(`${config.env.ROOT_URL}/info.json`).then(r => r.json()).then(data => {
-          instance = new Info(data.info)
-          console.log('INFO loaded')
-
-          resolve(instance)
-        })
-      })
+      console.log('INFO loaded')
+      resolve(instance)
     })
 
     return promise

@@ -65,7 +65,7 @@ class EntitiesController < JsonController
 
     if params[:file_size].present?
       regex = /^([+\-])?(\d+)\s*(kb|mb|gb|tb)?$/
-      x, sign, size, unit = params[:file_size].downcase.match(regex).to_a
+      x, sign, size, unit = params[:file_size].downcase.strip.match(regex).to_a
       if size
         if unit
           exp = {'kb' => 1, 'mb' => 2, 'gb' => 3, 'tb' => 3}[unit] || 0

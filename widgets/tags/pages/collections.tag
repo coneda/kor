@@ -49,10 +49,10 @@
   </div>
 
   <script type="text/javascript">
-    var tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.page);
+    let tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.page)
 
     tag.on('mount', function() {
       tag.title(tag.t('activerecord.models.collection', {count: 'other'}))
@@ -65,35 +65,37 @@
     })
 
     tag.onDeleteClicked = function(event) {
-      event.preventDefault();
-      if (wApp.utils.confirm())
-        destroy(event.item.collection.id);
+      event.preventDefault()
+      if (wApp.utils.confirm()) {
+        destroy(event.item.collection.id)
+      }
     }
 
     tag.pageUpdate = function(newPage) {
       wApp.bus.trigger('query-update', {page: newPage})
     }
 
-    var destroy = function(id) {
-      Zepto.ajax({
+    const destroy = function(id) {
+      const p = Zepto.ajax({
         type: 'DELETE',
-        url: '/collections/' + id,
-        success: fetch,
-        error: function(xhr) {
-          tag.errors = JSON.parse(xhr.responseText).errors
-          wApp.utils.scrollToTop()
-        }
+        url: '/collections/' + id
+      })
+
+      p.then(response => fetch())
+      p.catch(response => {
+        tag.errors = response.data.errors
+        wApp.utils.scrollToTop()
       })
     }
 
-    fetch = function() {
+    const fetch = function() {
       var page = wApp.routing.query()['page'] || 1
       Zepto.ajax({
         url: '/collections',
         data: {include: 'counts,owner', page: page},
         success: function(data) {
-          tag.data = data;
-          tag.update();
+          tag.data = data
+          tag.update()
         }
       })
     }

@@ -21,7 +21,7 @@
   </a>
 
 <script type="text/javascript">
-  var tag = this;
+  let tag = this;
   tag.authorized = true;
 
   // On mount, fetch entity data if ID is provided

@@ -20,7 +20,7 @@ RSpec.describe Kor::CommandLine do
 
   it 'should start zipping a group' do
     expect(Kor::Tasks).to receive(:group_to_zip).with(
-      hash_including(
+      a_hash_including(
         group_id: 123,
         class_name: 'UserGroup'
       )
@@ -50,7 +50,7 @@ RSpec.describe Kor::CommandLine do
 
   it 'should start collecting exif stats' do
     expect(Kor::Tasks).to receive(:exif_stats).with(
-      hash_including(
+      a_hash_including(
         from: '2016-12-01',
         to: '2016-12-31'
       )
@@ -80,7 +80,7 @@ RSpec.describe Kor::CommandLine do
 
   it 'should start listing permissions' do
     expect(Kor::Tasks).to receive(:list_permissions).with(
-      hash_including(
+      a_hash_including(
         entity_id: "123",
         user_id: "456"
       )
@@ -102,7 +102,7 @@ RSpec.describe Kor::CommandLine do
     export = double('export')
     expect(Kor::Export::Excel).to receive(:new).and_return(export).with(
       '/some/dir',
-      hash_including(
+      a_hash_including(
         format: 'excel',
         collection_id: [3, 6, 9],
         kind_id: [1, 6],
@@ -117,7 +117,7 @@ RSpec.describe Kor::CommandLine do
     import = double('import')
     expect(Kor::Import::Excel).to receive(:new).and_return(import).with(
       '/some/dir',
-      hash_including(
+      a_hash_including(
         format: 'excel',
         username: 'jdoe',
         ignore_stale: true,

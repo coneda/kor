@@ -14,6 +14,7 @@ have a look at the
 Here are a few highlights:
 
 * static mode is now available
+* coffeescript is no longer a dependency
 
 ## Version 5.0.1
 

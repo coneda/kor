@@ -39,7 +39,7 @@
   </virtual>
 
   <script type="text/javascript">
-    var tag = this;
+    let tag = this;
 
     tag.errorsFor = function(field) {
       if (tag.opts.errors) {

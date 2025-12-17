@@ -54,7 +54,7 @@ Given 'the search api expects to receive the params' do |table|
 
   expect(Kor::Search).to receive(:new).with(
     instance_of(User),
-    hash_including(values)
+    a_hash_including(values)
   ).and_call_original
 end
 

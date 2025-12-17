@@ -104,7 +104,7 @@
 
 
 <script type="text/javascript">
-  var tag = this;
+  let tag = this;
   tag.mixin(wApp.mixins.sessionAware);
   tag.mixin(wApp.mixins.i18n);
   tag.mixin(wApp.mixins.auth);
@@ -127,20 +127,20 @@
 
   // Handle form submission for updating profile
   tag.submit = function(event) {
-    event.preventDefault();
-    var p = update();
-    p.done(function(data) {
-      tag.errors = {};
-      window.history.back();
-      wApp.bus.trigger('reload-session');
-    });
-    p.fail(function(xhr) {
-      tag.errors = JSON.parse(xhr.responseText).errors;
-      wApp.utils.scrollToTop();
-    });
-    p.always(function() {
-      tag.update();
-    });
+    event.preventDefault()
+    var p = update()
+    p.then(function(response) {
+      tag.errors = {}
+      window.history.back()
+      wApp.bus.trigger('reload-session')
+    })
+    p.catch(function(response) {
+      tag.errors = response.data.errors
+      wApp.utils.scrollToTop()
+    })
+    p.finally(function() {
+      tag.update()
+    })
   };
 
   // Set expiration date for the profile

@@ -35,7 +35,7 @@
   <div class="clearfix"></div>
 
 <script type="text/javascript">
-  var tag = this
+  let tag = this
   tag.mixin(wApp.mixins.sessionAware)
   tag.mixin(wApp.mixins.i18n)
   tag.mixin(wApp.mixins.page)
@@ -51,16 +51,15 @@
   tag.submit = function(event) {
     event.preventDefault()
     var p = create()
-    p.done(function(data) {
+    p.then(function(response) {
       tag.errors = {}
-      var id = tag.opts.id || data.id
       wApp.routing.path('/groups/published')
     })
-    p.fail(function(xhr) {
-      tag.errors = JSON.parse(xhr.responseText).errors
+    p.catch(function(response) {
+      tag.errors = response.data.errors
       wApp.utils.scrollToTop()
     })
-    p.always(function() {
+    p.finally(function() {
       tag.update()
     })
   }

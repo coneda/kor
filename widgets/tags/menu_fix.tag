@@ -1,7 +1,7 @@
 <kor-menu-fix>
 
 <script type="text/javascript">
-  var tag = this;
+  let tag = this;
 
   // On mount, listen for 'kinds-changed' event to fix the menu
   tag.on('mount', function() {

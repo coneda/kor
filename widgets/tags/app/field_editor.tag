@@ -102,7 +102,7 @@
   </form>
 
 <script type="text/javascript">
-  var tag = this;
+  let tag = this;
   tag.mixin(wApp.mixins.sessionAware);
   tag.mixin(wApp.mixins.i18n);
   tag.errors = {};
@@ -133,7 +133,7 @@
   tag.submit = function(event) {
     event.preventDefault();
     var p = tag.opts.id ? update() : create();
-    p.then(function(data) {
+    p.then(function(response) {
       tag.errors = {};
       tag.opts.notify.trigger('refresh');
       route("/kinds/" + tag.opts.kindId + "/edit");

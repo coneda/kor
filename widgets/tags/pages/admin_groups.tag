@@ -40,29 +40,30 @@
   </div>
 
   <script type="text/javascript">
-    var tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.mixin(wApp.mixins.auth);
-    tag.mixin(wApp.mixins.page);
+    let tag = this
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
+    tag.mixin(wApp.mixins.auth)
+    tag.mixin(wApp.mixins.page)
 
     tag.on('mount', function() {
       tag.title(tag.tcap('activerecord.models.authority_group', {count: 'other'}))
-      fetch();
+      fetch()
     })
 
     tag.baseUrl = function() {
       if (tag.opts.categoryId) {
-        return '#/groups/categories/' + tag.opts.categoryId + '/admin';
+        return '#/groups/categories/' + tag.opts.categoryId + '/admin'
       }
 
-      return '#/groups/categories/admin';
+      return '#/groups/categories/admin'
     }
 
     tag.onDeleteClicked = function(event) {
-      event.preventDefault();
-      if (wApp.utils.confirm())
-        destroy(event.item.group.id);
+      event.preventDefault()
+      if (wApp.utils.confirm()) {
+        destroy(event.item.group.id)
+      }
     }
 
     var destroy = function(id) {
@@ -81,8 +82,8 @@
           per_page: 'max'
         },
         success: function(data) {
-          tag.data = data;
-          tag.update();
+          tag.data = data
+          tag.update()
         }
       })
     }

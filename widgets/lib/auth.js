@@ -53,11 +53,12 @@ class AuthMixin {
   }
 
   hasAnyRole() {
-    return 
+    return (
       this.isAdmin() ||
       this.isAuthorityGroupAdmin() ||
       this.isRelationAdmin() ||
       this.isKindAdmin()
+    )
   }
 
   allowedTo(policy, collections = [], requireAll = true) {
@@ -79,5 +80,4 @@ class AuthMixin {
   }
 }
 
-wApp.mixins.auth = new AuthMixin()
-
+wApp.mixins.auth = Object.getPrototypeOf(new AuthMixin())

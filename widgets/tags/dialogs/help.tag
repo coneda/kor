@@ -3,7 +3,7 @@
   <div class="kor-content-box" ref="target"></div>
 
   <script type="text/javascript">
-    var tag = this;
+    let tag = this;
 
     tag.on('mount', function() {
       var help = wApp.config.helpFor(tag.opts.key);

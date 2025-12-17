@@ -1,5 +1,6 @@
 class KorController < JsonController
   skip_before_action :legal
+  skip_before_action :auth, only: ['static_info']
 
   def index
     # just a dummy
@@ -7,6 +8,10 @@ class KorController < JsonController
   end
 
   def info
+  end
+
+  def static_info
+    render plain: '{}', status: 404
   end
 
   def statistics

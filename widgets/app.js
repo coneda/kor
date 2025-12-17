@@ -22,11 +22,9 @@ window.wApp = {
         wApp.info = Info.instance()
 
         // now hook up the request fork
-        if (wApp.info.data.static) {
-          const api = new Api()
-          wApp.api = api
-          Zepto.ajax = api.request
-        }
+        const api = new Api(wApp.info.data)
+        wApp.api = api
+        Zepto.ajax = api.request
 
         // continue with the rest of the init code
 

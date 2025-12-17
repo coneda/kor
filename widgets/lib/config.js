@@ -8,8 +8,6 @@ export default class Config {
         instance = new Config(data)
       }
     })
-
-    instance = new Config()
   }
 
   static mixins() {
@@ -24,17 +22,13 @@ export default class Config {
     return instance
   }
 
-  static env = {
-    ROOT_URL: process.env.ROOT_URL,
-    RAILS_ENV: process.env.RAILS_ENV
-  }
-
   constructor(data) {
     this.data = data
   }
 
   refresh() {
-    wApp.config.setup().then(function () {
+    Config.setup().then(function () {
+      wApp.config = instance
       riot.update()
     })
   }

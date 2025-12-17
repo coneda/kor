@@ -18,5 +18,12 @@
   <kor:properties><% record.properties.each do |property| %>
     <kor:property><%= property %></kor:property>
   <% end %></kor:properties>
+  <kor:datings><% record.datings.each do |dating| %>
+    <kor:dating
+      event="<%= dating.label %>"
+      from-day="<%= dating.from_day %>"
+      to-day="<%= dating.to_day %>"
+    ><%= dating.dating_string %></kor:dating>
+  <% end %></kor:datings>
 </kor:relationship>
 <% end %>

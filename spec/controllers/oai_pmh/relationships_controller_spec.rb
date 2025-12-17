@@ -214,11 +214,12 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
     expect(doc.xpath("//xmlns:metadata").count).to eq(0)
   end
 
-  it 'should include properties' do
+  it 'should include properties and datings' do
     admin = User.admin
     rel = Relationship.last
 
     rel.update properties: ['by wikidata', 'A559']
+    rel.update datings: [RelationshipDating.new(label: 'year', dating_string: '1855')]
 
     get '/oai-pmh/relationships.xml', params: {
       verb: 'GetRecord',
@@ -232,5 +233,14 @@ RSpec.describe OaiPmh::RelationshipsController, type: :request do
     expect(properties.count).to eq(2)
     expect(properties.first.text).to eq('by wikidata')
     expect(properties.last.text).to eq('A559')
+
+    datings = doc.xpath("//kor:relationship/kor:datings/kor:dating")
+    expect(datings.count).to eq(1)
+    expect(datings.first['event']).to eq('year')
+    expect(datings.first.text).to eq('1855')
+  end
+
+  it 'should include datings' do
+    admin
   end
 end

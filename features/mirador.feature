@@ -20,4 +20,4 @@ Scenario: alternate launch page
   When I go to the mirador page
   Then I should see page title "An alternative mirador integration page"
 
-# http://localhost:3000/mirador?manifest=http://localhost:3000/mirador/13629
+# http://127.0.0.1:3000/mirador?manifest=http://localhost:3000/mirador/13629

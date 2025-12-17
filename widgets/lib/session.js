@@ -1,6 +1,6 @@
 wApp.session = {
   setup: function () {
-    var reload = function () {
+    const reload = function () {
       return Zepto.ajax({
         method: 'get',
         url: '/session',
@@ -13,6 +13,12 @@ wApp.session = {
 
     wApp.bus.on('reload-session', () => {
       reload().then(data => riot.update())
+    })
+
+    wApp.bus.on('request-complete', response => {
+      if (response.status == 401 || response.status == 403) {
+        reload().then(data => riot.update())
+      }
     })
 
     return reload()

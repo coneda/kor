@@ -26,13 +26,9 @@ class IndexRenderer {
     return hash.update(this.read(filename)).digest('hex').slice(0,9)
   }
 
-  rootUrl() {
-    return config.env.ROOT_URL
-  }
-
   stylesheetPath(filename) {
     const file = filename + '?' + this.digest('public/' + filename)
-    return `${this.rootUrl()}/${file}`
+    return `/${file}`
   }
 
   scriptPath(filename) {

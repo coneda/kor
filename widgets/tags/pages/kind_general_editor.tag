@@ -105,72 +105,71 @@
   </div>
 
  <script type="text/javascript">
-  var tag = this;
-  tag.mixin(wApp.mixins.sessionAware);
-  tag.mixin(wApp.mixins.i18n);
-  tag.mixin(wApp.mixins.page);
+  let tag = this
+  tag.mixin(wApp.mixins.sessionAware)
+  tag.mixin(wApp.mixins.i18n)
+  tag.mixin(wApp.mixins.page)
 
   // On mount, initialize errors and fetch data
   tag.on('mount', function() {
-    tag.errors = {};
-    fetch();
-  });
+    tag.errors = {}
+    fetch()
+  })
 
   // Check if the kind is media
   tag.isMedia = function() {
-    return tag.opts.id && (tag.opts.id === wApp.info.data.medium_kind_id);
-  };
+    return tag.opts.id && (tag.opts.id === wApp.info.data.medium_kind_id)
+  }
 
   // Check if it's a new record
   tag.new_record = function() {
-    return !(tag.data || {}).id;
-  };
+    return !(tag.data || {}).id
+  }
 
   // Collect values from input fields
   tag.values = function() {
-    var result = {};
+    var result = {}
     tag.tags['kor-input'].forEach(function(field) {
-      result[field.name()] = field.value();
-    });
-    return result;
-  };
+      result[field.name()] = field.value()
+    })
+    return result
+  }
 
   // Handle successful submission
   function success(data) {
-    route("/kinds/" + data.id + "/edit");
-    wApp.bus.trigger('reload-kinds');
-    tag.errors = {};
-    tag.update();
+    route("/kinds/" + data.id + "/edit")
+    wApp.bus.trigger('reload-kinds')
+    tag.errors = {}
+    tag.update()
   }
 
   // Handle errors during submission
   function error(response) {
-    var data = JSON.parse(response.response);
-    tag.errors = data.errors;
-    tag.update();
+    tag.errors = response.data.errors
+    tag.update()
   }
 
   // Handle form submission
   tag.submit = function(event) {
-    event.preventDefault();
+    event.preventDefault()
     if (tag.new_record()) {
       Zepto.ajax({
         type: 'POST',
         url: '/kinds',
-        data: JSON.stringify({ kind: tag.values() }),
+        data: { kind: tag.values() },
         success: success,
         error: error
-      });
+      })
     } else {
       Zepto.ajax({
         type: 'PATCH',
         url: "/kinds/" + tag.data.id,
-        data: JSON.stringify({ kind: tag.values() }),
+        data: {kind: tag.values()},
         success: success,
         error: error
-      });
+      })
     }
-  };
+  }
 
   // TODO: fetch new action if there was no id to get a formal empty attribute
   // set from the server
@@ -182,35 +181,35 @@
         url: "/kinds/" + tag.opts.id,
         data: { include: 'all' },
         success: function(data) {
-          tag.data = data;
-          tag.update();
-          fetchPossibleParents();
+          tag.data = data
+          tag.update()
+          fetchPossibleParents()
         }
-      });
+      })
     } else {
-      tag.data = {};
-      fetchPossibleParents();
+      tag.data = {}
+      fetchPossibleParents()
     }
-  };
+  }
 
   // Fetch possible parent kinds
   var fetchPossibleParents = function() {
     Zepto.ajax({
       url: '/kinds',
       success: function(data) {
-        tag.possibleParents = [];
+        tag.possibleParents = []
         data.records.forEach(function(kind) {
           if (!tag.data || (tag.data.id !== kind.id && tag.data.id !== 1)) {
             tag.possibleParents.push({
               label: kind.name,
               value: kind.id
-            });
+            })
           }
-        });
-        tag.update();
+        })
+        tag.update()
       }
-    });
-  };
+    })
+  }
 </script>
 
 </kor-kind-general-editor>

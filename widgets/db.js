@@ -1,12 +1,12 @@
 import {util, Database} from '@wendig/lib'
-import config from './lib/config'
+// import config from './lib/config'
 
 const request = (url, opts = {}) => {
-  url = `${config.env.ROOT_URL}${url}`
+  // url = `${config.env.ROOT_URL}${url}`
 
-  if (config.env == 'development') {
-    opts['cache'] = 'no-store'
-  }
+  // if (config.env == 'development') {
+  //   opts['cache'] = 'no-store'
+  // }
 
   return fetch(url, opts)
 }

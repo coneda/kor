@@ -1,6 +1,6 @@
 <kor-generator>
 <script type="text/javascript">
-  var tag = this;
+  let tag = this;
 
   // Update the DOM with rendered template
   var update = function() {

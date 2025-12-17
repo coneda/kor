@@ -66,45 +66,45 @@
   <div class="clearfix"></div>
 
 <script type="text/javascript">
-  var tag = this;
-  tag.notify = riot.observable();
+  let tag = this
+  tag.notify = riot.observable()
   // TODO: make sure this works again
   // tag.requireRoles = ['kind_admin']
-  tag.mixin(wApp.mixins.sessionAware);
-  tag.mixin(wApp.mixins.i18n);
-  tag.mixin(wApp.mixins.auth);
-  tag.mixin(wApp.mixins.page);
+  tag.mixin(wApp.mixins.sessionAware)
+  tag.mixin(wApp.mixins.i18n)
+  tag.mixin(wApp.mixins.auth)
+  tag.mixin(wApp.mixins.page)
 
   // Before mounting, check if the user has kind admin privileges
   tag.on('before-mount', function() {
     if (!tag.isKindAdmin()) {
-      wApp.bus.trigger('access-denied');
+      wApp.bus.trigger('access-denied')
     }
-  });
+  })
 
   // On mount, fetch data if an ID is provided
   tag.on('mount', function() {
     if (tag.opts.id) {
-      fetch();
+      fetch()
     }
-    tag.notify.on('refresh', fetch);
-  });
+    tag.notify.on('refresh', fetch)
+  })
 
   // On unmount, remove event listeners
   tag.on('unmount', function() {
-    tag.notify.off('refresh', fetch);
-  });
+    tag.notify.off('refresh', fetch)
+  })
 
   // Fetch kind data
-  var fetch = function() {
+  const fetch = function() {
     Zepto.ajax({
       url: "/kinds/" + tag.opts.id,
       data: { include: 'settings,fields,generators,inheritance' },
       success: function(data) {
-        tag.data = data;
-        tag.update();
+        tag.data = data
+        tag.update()
       }
-    });
-  };
+    })
+  }
 </script>
 </kor-kind-editor>

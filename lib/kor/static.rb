@@ -36,7 +36,6 @@ class Kor::Static
     recreate target
   end
 
-
   protected
 
     def recreate(dir)
@@ -126,7 +125,7 @@ class Kor::Static
         @entity_ids << entity['id']
       end
 
-      all = all.sort_by{|e| e['name']}
+      all = all.sort_by{ |e| e['name'] }
       File.write "#{target}/entities.json", to_json(all)
 
       Kor.settings['max_included_results_per_result'] = irpr
@@ -139,8 +138,8 @@ class Kor::Static
 
       pg = Kor.progress_bar 'relationships', @entity_ids.size
 
-      @entity_ids.in_groups_of(10).each.with_index do |ids, batch_id|
-        id_list = ids.map{|id| id.to_s}.join(',')
+      @entity_ids.in_groups_of(10).each.with_index do |ids, _batch_id|
+        id_list = ids.map{ |id| id.to_s }.join(',')
 
         params = {
           include: 'all',
@@ -229,13 +228,13 @@ class Kor::Static
 
     def translations
       puts "translations"
-      
+
       data = request('/translations')
 
       File.write "#{target}/translations.json", to_json(data)
     end
 
-    def with_all(url, params, opts = {}, &block)
+    def with_all(url, params, opts = {})
       opts.reverse_merge!(
         page_limit: @opts[:page_limit],
         per_page: @opts[:per_page],
@@ -243,7 +242,7 @@ class Kor::Static
         progress: true
       )
 
-      data = request("#{url}", params.merge(per_page: 1))
+      data = request(url.to_s, params.merge(per_page: 1))
       pages = (data['total'] / opts[:per_page]).ceil + 1
       pages = [pages, opts[:page_limit]].min if opts[:page_limit]
       pg = Kor.progress_bar(opts[:label], data['total']) if opts[:progress]
@@ -265,7 +264,7 @@ class Kor::Static
     end
 
     def to_result(records)
-      return {
+      {
         records: records,
         total: records.size,
         per_page: records.size,
@@ -277,7 +276,7 @@ class Kor::Static
       return unless entity['medium']
       return unless @opts[:media_override]
 
-      entity['medium']['url'].keys.each do |style|
+      entity['medium']['url'].each_key do |style|
         path = entity['medium']['url'][style]
         entity['medium']['url'][style] = @opts[:media_override] + path
       end
@@ -297,7 +296,7 @@ class Kor::Static
       symlinks.each do |s|
         url = entity['medium']['url'][s]
         path = url.split('?')[0]
-        source = @opts[:media_override] || "#{ENV['DATA_DIR']}#{path}"
+        source = @opts[:media_override] || "#{ENV.fetch('DATA_DIR', nil)}#{path}"
         dest = "#{target}#{path}"
         dir = File.dirname(dest)
 
@@ -314,7 +313,7 @@ class Kor::Static
 
     def request(path, params = nil)
       @http ||= Faraday.new(
-        ENV['ROOT_URL'],
+        ENV.fetch('ROOT_URL', nil),
         request: {timeout: 30},
         headers: {
           'accept' => 'application/json',
@@ -333,7 +332,7 @@ class Kor::Static
     end
 
     def delete_keys(hash, keys = [])
-      keys = [keys] if !keys.is_a?(Array)
+      keys = [keys] unless keys.is_a?(Array)
       keys.each do |k|
         hash.delete(k)
       end

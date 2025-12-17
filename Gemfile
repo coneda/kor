@@ -6,8 +6,8 @@ gem 'awesome_nested_set', '~> 3.5.0'
 gem 'colorize'
 gem 'dotenv'
 gem 'exifr', '1.1.1'
-gem 'faraday'
 gem 'factory_bot_rails'
+gem 'faraday'
 gem 'hirb'
 gem 'httpclient'
 gem 'jbuilder'
@@ -34,7 +34,6 @@ group :test do
   gem 'selenium-webdriver'
   gem 'simplecov', require: false
   gem 'vcr'
-  # gem 'webdrivers'
   gem 'webmock'
 end
 

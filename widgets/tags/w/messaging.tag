@@ -42,12 +42,12 @@
     try {
       var data = response.data;
 
-      if (data.message && !request.noMessaging) {
-        var type = (request.status >= 200 && request.status < 300) ? 'notice' : 'error';
+      if (data.message && !response.noMessaging) {
+        var type = (response.status >= 200 && response.status < 300) ? 'notice' : 'error';
         wApp.bus.trigger('message', type, data.message);
       }
 
-      if (data.notice && !request.noMessaging) {
+      if (data.notice && !response.noMessaging) {
         wApp.bus.trigger('message', 'notice', data.notice);
       }
 
@@ -57,7 +57,7 @@
 
     } catch (e) {
       // TODO: should this be console.error?
-      console.log(e, request);
+      console.log(e, response);
     }
   };
 

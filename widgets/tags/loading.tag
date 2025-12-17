@@ -1,9 +1,8 @@
 <kor-loading>
-
   <img show={ajaxInProgress()} src="images/loading.gif">
 
   <script type="text/javascript">
-    var tag = this;
+    let tag = this;
 
     tag.on('mount', function() {
       wApp.bus.on('ajax-state-changed', tag.update)
@@ -17,5 +16,4 @@
       return wApp.state.requests.length > 0
     }
   </script>
-
 </kor-loading>

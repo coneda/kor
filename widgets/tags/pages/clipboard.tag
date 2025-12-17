@@ -77,7 +77,7 @@
   <div class="clearfix"></div>
   
   <script type="text/javascript">
-    var tag = this
+    let tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.auth)

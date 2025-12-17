@@ -3,7 +3,7 @@
   <div class="receiver" ref="receiver"></div>
 
 <script type="text/javascript">
-  var tag = this;
+  let tag = this;
   tag.active = false;
   tag.mountedTag = null;
 

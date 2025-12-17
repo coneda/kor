@@ -23,48 +23,48 @@
   </div>
 
   <script type="text/javascript">
-    var tag = this;
-    tag.mixin(wApp.mixins.sessionAware);
-    tag.mixin(wApp.mixins.i18n);
-    tag.relations = {};
-    tag.target = null;
+    let tag = this;
+    tag.mixin(wApp.mixins.sessionAware)
+    tag.mixin(wApp.mixins.i18n)
+    tag.relations = {}
+    tag.target = null
 
     tag.reset = function() {
-      tag.relations = {};
-      tag.target = null;
+      tag.relations = {}
+      tag.target = null
     }
 
     tag.addRelation = function(relation) {
-      tag.relations[relation.id] = relation;
-      tag.update();
+      tag.relations[relation.id] = relation
+      tag.update()
     }
 
     tag.removeRelation = function(event) {
-      event.preventDefault();
-      var id = event.item.relation.id;
-      delete tag.relations[id];
+      event.preventDefault()
+      var id = event.item.relation.id
+      delete tag.relations[id]
       if (tag.target == id) {
-        tag.target = null;
+        tag.target = null
       }
-      tag.update();
+      tag.update()
     }
 
     tag.setAsTarget = function(event) {
-      event.preventDefault();
-      var id = event.item.relation.id;
-      tag.target = id;
-      tag.update();
+      event.preventDefault()
+      var id = event.item.relation.id
+      tag.target = id
+      tag.update()
     }
 
     tag.ids = function(includeTarget) {
-      var results = [];
+      var results = []
       Zepto.each(tag.relations, function(k, v) {
-        k = parseInt(k);
+        k = parseInt(k)
         if (includeTarget || k != tag.target) {
-          results.push(k);
+          results.push(k)
         }
       });
-      return results;
+      return results
     }
 
     tag.valid = function() {
@@ -74,19 +74,19 @@
     tag.check = function() {submit(true)}
     tag.merge = function() {
       if (window.confirm(tag.t('confirm.long_time_warning'))) {
-        submit(false);
+        submit(false)
       }
     }
 
     var done = function() {
-      var h = tag.opts.onDone;
+      var h = tag.opts.onDone
       if (h) {h()}
     }
 
     var submit = function(check_only) {
-      var params = {other_id: tag.ids()};
+      var params = {other_id: tag.ids()}
       if (check_only != false) {
-        params['check_only'] = true;
+        params['check_only'] = true
       }
 
       Zepto.ajax({
@@ -95,12 +95,12 @@
         data: JSON.stringify(params),
         success: function(data) {
           if (check_only == false) {
-            done();
+            done()
           }
         },
         error: function() {
           // TODO: use console.error?
-          console.log(arguments);
+          console.log(arguments)
         }
       });
     }

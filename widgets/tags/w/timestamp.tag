@@ -2,7 +2,7 @@
   <span>{formatted()}</span>
 
   <script type="text/javascript">
-    var tag = this;
+    let tag = this;
 
     tag.formatted = function() {
       if (tag.opts.value) {

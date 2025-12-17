@@ -12,7 +12,7 @@
   </ul>
 
 <script type="text/javascript">
-  var tag = this;
+  let tag = this;
   tag.messages = [];
   tag.history = [];
 

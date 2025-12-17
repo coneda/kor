@@ -436,91 +436,101 @@
 
   <div class="clearfix"></div>
 
-  <script type="text/coffee">
-    tag = this
+  <script>
+    let tag = this
     tag.mixin(wApp.mixins.sessionAware)
     tag.mixin(wApp.mixins.i18n)
     tag.mixin(wApp.mixins.page)
     
     tag.errors = {}
 
-    tag.on 'mount', ->
+    tag.on('mount', () => {
       tag.title(tag.t('activerecord.models.setting', {count: 'other'}))
+      
       fetch()
       fetchGroups()
       fetchRelations()
+    })
 
-    tag.valueWithDefaults = (key) ->
-      tag.values[key]
+    tag.valueWithDefaults = (key) => {
+      return tag.values[key]
+    }
 
-    tag.nameFor = (key) ->
-      tag.tcap("settings.values.#{key}")
+    tag.nameFor = (key) => {
+      return tag.tcap(`settings.values.${key}`)
+    }
 
-    tag.newMediaLabels = () ->
+    tag.newMediaLabels = () => {
       return [
         {value: 'pages.new_media', label: tag.tcap('pages.new_media')},
         {value: 'pages.new_entries', label: tag.tcap('pages.new_entries')}
       ]
+    }
 
-    tag.submit = (event) ->
+    tag.submit = (event) => {
       event.preventDefault()
-      p = update()
-      p.done (data) ->
-        tag.errors = {}
-      p.fail (xhr) ->
-        tag.errors = JSON.parse(xhr.responseText).errors
-      p.always ->
-        tag.update()
-        wApp.utils.scrollToTop()
+      let p = update()
+      p.then(response => tag.errors = {})
+      p.catch(response => tag.errors = response.data.errors)
+      p.finally(() => tag.update())
+    }
 
-    update = ->
-      Zepto.ajax(
-        type: 'PATCH'
-        url: "/settings"
-        data: JSON.stringify(
-          settings: values()
+    const values = () => {
+      // TODO: add lock version functionality to all forms
+      let result = {}
+      for (const field of tag.refs['fields']) {
+        result[field.name()] = field.value()
+      }
+      return result
+    }
+
+    const update = () => {
+      return Zepto.ajax({
+        type: 'PATCH',
+        url: "/settings",
+        data: JSON.stringify({
+          settings: values(),
           mtime: tag.mtime
-        )
-        success: (data) ->
+        }),
+        success: (data) => {
           wApp.bus.trigger('config-updated')
           fetch()
-      )
+        }
+      })
+    }
 
-    values = ->
-      # TODO: add lock version functionality to all forms
-      result = {}
-      for field in tag.refs['fields']
-        result[field.name()] = field.value()
-      result
-
-    fetch = ->
-      Zepto.ajax(
-        url: "/settings"
-        success: (data) ->
+    const fetch = () => {
+      return Zepto.ajax({
+        url: "/settings",
+        success: (data) => {
           tag.values = data.values
           tag.defaults = data.defaults
           tag.mtime = data.mtime
           tag.update()
-      )
+        }
+      })
+    }
 
-    fetchGroups = ->
-      Zepto.ajax(
-        url: "/credentials"
-        success: (data) ->
+    const fetchGroups = () => {
+      return Zepto.ajax({
+        url: "/credentials",
+        success: (data) => {
           tag.groups = data.records
           tag.update()
-        error: ->
-          wApp.bus.trigger('access-denied')
-      )
+        },
+        error: () => wApp.bus.trigger('access-denied')
+      })
+    }
 
-    fetchRelations = ->
-      Zepto.ajax(
-        url: "/relations/names"
-        success: (data) ->
+    const fetchRelations = () => {
+      return Zepto.ajax({
+        url: "/relations/names",
+        success: (data) => {
           tag.relations = data
           tag.update()
-      )
-
+        }
+      })
+    }
   </script>
 
 </kor-settings-editor>

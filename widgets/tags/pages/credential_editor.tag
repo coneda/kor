@@ -36,7 +36,7 @@
   <div class="clearfix"></div>
 
 <script type="text/javascript">
-  var tag = this
+  let tag = this
   tag.mixin(wApp.mixins.sessionAware)
   tag.mixin(wApp.mixins.i18n)
   tag.mixin(wApp.mixins.page)
@@ -58,7 +58,7 @@
   tag.submit = function(event) {
     event.preventDefault()
     var p = tag.opts.id ? update() : create()
-    p.then(function(data) {
+    p.then(function(response) {
       tag.errors = {}
       window.history.back()
     })
@@ -72,7 +72,7 @@
   }
 
   // Fetch credential data from the server
-  var fetch = function() {
+  const fetch = function() {
     Zepto.ajax({
       url: '/credentials/' + tag.opts.id,
       success: function(data) {
@@ -83,25 +83,25 @@
   }
 
   // Create a new credential
-  var create = function() {
+  const create = function() {
     return Zepto.ajax({
       type: 'POST',
       url: '/credentials',
-      data: JSON.stringify({ credential: values() })
+      data: {credential: values()}
     })
   }
 
   // Update an existing credential
-  var update = function() {
+  const update = function() {
     return Zepto.ajax({
       type: 'PATCH',
       url: '/credentials/' + tag.opts.id,
-      data: JSON.stringify({ credential: values() })
+      data: {credential: values()}
     })
   }
 
   // Collect form values for submission
-  var values = function() {
+  const values = function() {
     var results = {}
     for (var i = 0; i < tag.refs.fields.length; i++) {
       var f = tag.refs.fields[i]

@@ -42,6 +42,7 @@ Rails.application.routes.draw do
     scope controller: 'kor' do
       get 'translations', action: 'translations'
       get 'info', action: 'info'
+      get 'static/info.json', action: 'static_info'
       get 'statistics', action: 'statistics'
     end
 

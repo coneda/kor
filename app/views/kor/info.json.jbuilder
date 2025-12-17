@@ -7,7 +7,7 @@ json.info do
   json.legal_html Kor.settings['legal_html']
   # TODO: imeplement this:
   # json.federation_auth Kor.federation_auth?
-  json.url root_url
+  json.url root_url.gsub(/\/$/, '')
   json.uuid Kor.repository_uuid
   json.source_code_url Kor.source_code_url
   json.locales I18n.available_locales

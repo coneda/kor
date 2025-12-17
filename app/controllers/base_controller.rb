@@ -57,7 +57,7 @@ class BaseController < ApplicationController
 
     def static_mode?
       path = "#{Rails.root}/public/static"
-      
+
       File.directory?(path)
     end
 

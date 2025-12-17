@@ -38,7 +38,7 @@
   </div>
 
   <script type="text/javascript">
-    var tag = this;
+    let tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
     tag.mixin(wApp.mixins.auth);
@@ -60,19 +60,19 @@
         destroy(event.item.credential.id);
     }
 
-    var destroy = function(id) {
-      Zepto.ajax({
+    const destroy = function(id) {
+      const p = Zepto.ajax({
         type: 'DELETE',
-        url: '/credentials/' + id,
-        success: fetch,
-        error: function(xhr) {
-          tag.errors = JSON.parse(xhr.responseText).errors
-          wApp.utils.scrollToTop()
-        }
+        url: '/credentials/' + id
+      })
+      p.then(response => fetch())
+      p.catch(response => {
+        tag.errors = response.data.errors
+        wApp.utils.scrollToTop()
       })
     }
 
-    fetch = function() {
+    const fetch = function() {
       Zepto.ajax({
         url: '/credentials',
         data: {include: 'counts'},
@@ -82,6 +82,5 @@
         }
       })
     }
-
   </script>
 </kor-credentials>

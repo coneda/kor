@@ -75,7 +75,7 @@
   </div>
 
 <script type="text/javascript">
-  var tag = this;
+  let tag = this;
   tag.mixin(wApp.mixins.sessionAware);
   tag.mixin(wApp.mixins.i18n);
 
@@ -88,7 +88,7 @@
       wApp.wikidata.setup(tag);
     }
   });
-
+  
   // Get the name of the input
   tag.name = function() {
     return tag.opts.name;

@@ -6,7 +6,7 @@
   </div>
 
 <script type="text/javascript">
-  var tag = this;
+  let tag = this;
 
   // Check if the submenu is visible based on stored toggles
   tag.visible = function() {
