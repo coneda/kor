@@ -11,7 +11,7 @@
           ><i class="fa fa-pencil"></i></a>
         </virtual>
         <a
-          if={!data.medium && allowedTo('create')}
+          if={allowedTo('create')}
           href="#/entities/new?kind_id={data.kind_id}&clone_id={data.id}"
           title={t('verbs.clone')}
         ><i class="fa fa-copy"></i></a>

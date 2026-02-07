@@ -13902,6 +13902,12 @@ class Api {
         }
         this.request = this.request.bind(this);
     }
+    formatBody(data) {
+        if (typeof data === "string") return data;
+        if (data instanceof String) return data;
+        if (data instanceof FormData) return data;
+        return JSON.stringify(data);
+    }
     http(url, init) {
         delete init["url"];
         if (!url.startsWith("http")) url = `${this.rootUrl}${url}`;
@@ -13914,7 +13920,8 @@ class Api {
         if ([ "POST", "PATCH", "PUT", "DELETE" ].includes(init["method"])) {
             init["headers"]["X-CSRF-Token"] = wApp.session.csrfToken();
             if (init["data"]) {
-                init["body"] = typeof init["data"] === "string" || init["data"] instanceof String ? init["data"] : JSON.stringify(init["data"]);
+                init["body"] = this.formatBody(init["data"]);
+                if (init["body"] instanceof FormData) delete init["headers"]["Content-Type"];
                 delete init["data"];
             }
         } else {
@@ -14277,6 +14284,33 @@ wApp.utils = {
     isoToDate(str) {
         const parts = str.split("-").map(i => parseInt(i));
         return new Date(parts[0], parts[1] - 1, parts[2]);
+    },
+    isObject(v) {
+        if (typeof v !== "object") return false;
+        if (Array.isArray(v)) return false;
+        if (v === null) return false;
+        if (v instanceof Blob) return false;
+        return true;
+    },
+    toFormData(values, formData = null, prefix = null) {
+        let fd = formData || new FormData();
+        for (const [ k, v ] of Object.entries(values)) {
+            let key = prefix ? `${prefix}[${k}]` : k;
+            if (wApp.utils.isObject(v)) {
+                fd = wApp.utils.toFormData(v, fd, key);
+            } else {
+                fd.set(key, v);
+            }
+        }
+        return fd;
+    },
+    deleteNull(object) {
+        Object.keys(object).forEach(key => {
+            if (object[key] === null) {
+                delete object[key];
+            }
+        });
+        return object;
     }
 };
 
@@ -16113,7 +16147,8 @@ riot.tag2("kor-input", '<label if="{opts.type != \'radio\' && opts.type != \'sub
         var result;
         if (tag.opts.type === "checkbox") {
             return Zepto(tag.root).find("input").prop("checked");
-        } else if (tag.opts.type === "radio") {
+        }
+        if (tag.opts.type === "radio") {
             var inputs = Zepto(tag.root).find("input");
             for (var i = 0; i < inputs.length; i++) {
                 var input = $(inputs[i]);
@@ -16121,12 +16156,15 @@ riot.tag2("kor-input", '<label if="{opts.type != \'radio\' && opts.type != \'sub
                     return input.attr("value");
                 }
             }
-        } else if (tag.opts.type === "submit") {
-            return null;
-        } else {
-            result = Zepto(tag.root).find("input, select, textarea").val();
-            return result === "0" && tag.opts.type === "select" ? undefined : result;
         }
+        if (tag.opts.type === "submit") return null;
+        if (tag.opts.type === "file") {
+            var files = tag.input()[0].files;
+            if (files.length == 0) return null;
+            return files[0];
+        }
+        result = Zepto(tag.root).find("input, select, textarea").val();
+        return result === "0" && tag.opts.type === "select" ? undefined : result;
     };
     tag.valueFromParent = function() {
         return tag.opts.type === "checkbox" ? 1 : tag.opts.riotValue;
@@ -17090,7 +17128,7 @@ riot.tag2("kor-credentials", '<div class="kor-content-box"> <a href="#/credentia
     };
 });
 
-riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <div class="hr"></div> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.naming_options\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}" help="{tcap(\'help.no_name_input\')}"></kor-input> <kor-input if="{hasName()}" label="{nameLabel()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}" wikidata="{config().wikidata_integration}"></kor-input> <kor-input if="{hasName()}" label="{distinctNameLabel()}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <div class="hr"></div> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.tag_list\')}" name="tag_list" ref="fields" riot-value="{data.tags.join(\', \')}" errors="{errors.tag_list}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields" errors="{errors.dataset}"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <div class="hr"></div> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <div class="hr"></div> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}" default-dating-label="{kind.dating_label}"></kor-datings-editor> <div class="hr"></div> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" errors="{errors.properties}" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <div class="hr"></div> <div class="buttons"> <kor-input type="submit"></kor-input> </div> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <div class="kor-content-box"> <h1 if="{opts.id}"> {tcap(\'objects.edit\', {interpolations: {o: \'activerecord.models.entity\'}})} </h1> <h1 if="{!opts.id && kind}"> {tcap(\'objects.create\', {interpolations: {o: kind.name}})} </h1> <form onsubmit="{submit}" if="{data}"> <kor-input name="lock_version" riot-value="{data.lock_version || 0}" ref="fields" type="hidden"></kor-input> <kor-input if="{collections}" label="{tcap(\'activerecord.attributes.entity.collection_id\')}" name="collection_id" type="select" options="{collections}" ref="fields" riot-value="{data.collection_id}" errors="{errors.collection_id}"></kor-input> <div class="hr"></div> <virtual if="{!isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.entity.naming_options\')}" name="no_name_statement" type="radio" ref="fields.no_name_statement" riot-value="{data.no_name_statement}" options="{noNameStatements}" onchange="{update}" errors="{errors.no_name_statement}" help="{tcap(\'help.no_name_input\')}"></kor-input> <kor-input if="{hasName()}" label="{nameLabel()}" name="name" ref="fields" riot-value="{data.name}" errors="{errors.name}" wikidata="{config().wikidata_integration}"></kor-input> <kor-input if="{hasName()}" label="{distinctNameLabel()}" name="distinct_name" ref="fields" riot-value="{data.distinct_name}" errors="{errors.distinct_name}"></kor-input> <div class="hr"></div> </virtual> <virtual if="{isMedium()}"> <kor-input label="{tcap(\'activerecord.attributes.medium.document\')}" name="medium_attributes[document]" type="file" name="document" ref="fields.medium.document" errors="{errors.medium}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.medium.image\')}" name="medium_attributes[image]" type="file" name="image" ref="fields.medium.image" errors="{errors.medium}"></kor-input> </virtual> <kor-input label="{tcap(\'activerecord.attributes.entity.subtype\')}" name="subtype" ref="fields" riot-value="{data.subtype}" errors="{errors.subtype}"></kor-input> <kor-input label="{tcap(\'activerecord.attributes.entity.tag_list\')}" name="tag_list" ref="fields" riot-value="{data.tags.join(\', \')}" errors="{errors.tag_list}"></kor-input> <kor-dataset-fields if="{kind}" name="dataset" fields="{kind.fields}" values="{data.dataset}" ref="fields" errors="{errors.dataset}"></kor-dataset-fields> <kor-input label="{tcap(\'activerecord.attributes.entity.comment\')}" name="comment" ref="fields" type="textarea" riot-value="{data.comment}" errors="{errors.comment}"></kor-input> <div class="hr"></div> <kor-synonyms-editor label="{tcap(\'activerecord.attributes.entity.synonyms\')}" name="synonyms" ref="fields" riot-value="{data.synonyms}"></kor-synonyms-editor> <div class="hr"></div> <kor-datings-editor if="{kind}" label="{tcap(\'activerecord.models.entity_dating\', {count: \'other\'})}" name="datings_attributes" ref="fields" riot-value="{data.datings}" errors="{errors.datings}" for="entity" kind="{kind}" default-dating-label="{kind.dating_label}"></kor-datings-editor> <div class="hr"></div> <kor-entity-properties-editor label="{tcap(\'activerecord.attributes.entity.properties\')}" name="properties" errors="{errors.properties}" ref="fields" riot-value="{data.properties}"></kor-entity-properties-editor> <div class="hr"></div> <div class="buttons"> <kor-input type="submit"></kor-input> </div> </form> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     let tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);
@@ -17238,31 +17276,42 @@ riot.tag2("kor-entity-editor", '<div class="kor-layout-left kor-layout-large"> <
         return Zepto.ajax({
             type: "POST",
             url: "/entities",
-            data: JSON.stringify({
-                entity: values()
-            })
+            data: toRequestBody(values())
         });
     };
     const update = function() {
         return Zepto.ajax({
             type: "PATCH",
             url: "/entities/" + tag.opts.id,
-            data: JSON.stringify({
-                entity: values()
-            })
+            data: toRequestBody(values())
         });
     };
     const values = function() {
         var results = {};
-        if (!tag.isMedium()) {
-            results.no_name_statement = tag.refs["fields.no_name_statement"].value();
-        }
         results.kind_id = tag.data.kind_id || tag.opts.kindId;
         for (var i = 0; i < tag.refs.fields.length; i++) {
             var f = tag.refs.fields[i];
             results[f.name()] = f.value();
         }
+        if (tag.isMedium()) {
+            const document = tag.refs["fields.medium.document"].value();
+            const image = tag.refs["fields.medium.image"].value();
+            if (document || image) {
+                const ma = wApp.utils.deleteNull({
+                    document: document,
+                    image: image
+                });
+                results["medium_attributes"] = ma;
+            }
+        } else {
+            results.no_name_statement = tag.refs["fields.no_name_statement"].value();
+        }
         return results;
+    };
+    const toRequestBody = data => {
+        return data["medium_attributes"] ? wApp.utils.toFormData(data, null, "entity") : JSON.stringify({
+            entity: data
+        });
     };
     const wikidataItemSelected = function(item) {
         inputByName("name").set(item.name);
@@ -17359,7 +17408,7 @@ riot.tag2("kor-entity-group", '<div class="kor-content-box"> <div class="kor-tex
     };
 });
 
-riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands page-commands"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <a href="#/entities/{data.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> </virtual> <a if="{!data.medium && allowedTo(\'create\')}" href="#/entities/new?kind_id={data.kind_id}&clone_id={data.id}" title="{t(\'verbs.clone\')}"><i class="fa fa-copy"></i></a> <a href="{reportUrl()}" title="{tcap(\'objects.report\', {interpolations: {o: \'activerecord.models.entity\'}})}"><i class="fa fa-exclamation"></i></a> <a if="{allowedTo(\'delete\', data.collection_id)}" href="#/entities/{data.id}" onclick="{delete}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium && allowedTo(\'download_originals\', data.collection_id)}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}" field="synonyms"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}" dating-label="{dating.label}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in fields()}" field-name="{field.name}"> <virtual if="{field.value}"> <span class="field">{field.show_label}:</span> <span class="value">{fieldValue(field.value)}</span> </virtual> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div field="properties"> <div each="{property in data.properties}"> <a if="{property.url}" href="{property.value}" rel="noopener" target="_blank">» {property.label}</a> <virtual if="{!property.url}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </virtual> </div> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment" field="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <div each="{generator in data.generators}" generator-name="{generator.name}"> <kor-generator generator="{generator}" entity="{data}"></kor-generator> </div> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box relations"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a href="#" onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" ref="relations"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom .meta" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.created_at}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span if="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updated_at}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span if="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}" class="groups"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <ul> <li each="{group in data.groups}" class="value"> <virtual if="{group.directory}"> <span each="{dir in group.directory.ancestors}"> <a href="#/groups/categories/{dir.id}">{dir.name}</a> / </span> <a href="#/groups/categories/{group.directory.id}">{group.directory.name}</a> / </virtual> <a href="#/groups/admin/{group.id}">{group.name}</a> </li> </ul> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> <div class="hr"></div> <div class="kor-text-right kor-api-links"> <a href="{jsonUrl()}" target="_blank"><i class="fa fa-file-text"></i>{t(\'show_json\')}</a><br> <a if="{!isStatic()}" href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank"><i class="fa fa-code"></i>{t(\'show_oai_pmh\')}</a> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}" title="{t(\'larger\')}"> <img riot-src="{data.medium.url.preview}"> </a> <div if="{allowedTo(\'edit\', data.collection_id)}" class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}" title="{t(\'image_transformations.\' + op)}"><i class="fa fa-{opIcon(op)}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="{data.medium.url.normal}" target="_blank">{t(\'verbs.maximize\')}</a> </span> | <a href="{rootUrl()}/mirador?id={data.id}&manifest={rootUrl()}/mirador/{data.id}" onclick="{openMirador}">{t(\'nouns.mirador\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="{data.medium.url.original.replace(/\\/images\\//, \'/download/\')}">{t(\'nouns.original\')} |</a> <a href="{data.medium.url.normal.replace(/\\/images\\//, \'/download/\')}"> {t(\'nouns.enlargement\')} </a> <virtual if="{!isStatic()}"> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </virtual> </div> </div> </div> <div class="kor-content-box" if="{anyMediaRelations()}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="#/upload?relate_with={data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
+riot.tag2("kor-entity-page", '<div class="kor-layout-left kor-layout-large" if="{data}"> <div class="kor-content-box"> <div class="kor-layout-commands page-commands"> <kor-clipboard-control entity="{data}"></kor-clipboard-control> <virtual if="{allowedTo(\'edit\', data.collection_id)}"> <a href="#/entities/{data.id}/edit" title="{t(\'verbs.edit\')}"><i class="fa fa-pencil"></i></a> </virtual> <a if="{allowedTo(\'create\')}" href="#/entities/new?kind_id={data.kind_id}&clone_id={data.id}" title="{t(\'verbs.clone\')}"><i class="fa fa-copy"></i></a> <a href="{reportUrl()}" title="{tcap(\'objects.report\', {interpolations: {o: \'activerecord.models.entity\'}})}"><i class="fa fa-exclamation"></i></a> <a if="{allowedTo(\'delete\', data.collection_id)}" href="#/entities/{data.id}" onclick="{delete}" title="{t(\'verbs.delete\')}"><i class="fa fa-trash"></i></a> </div> <h1> {data.display_name} <div class="subtitle"> <virtual if="{data.medium && allowedTo(\'download_originals\', data.collection_id)}"> <span class="field"> {tcap(\'activerecord.attributes.medium.original_extension\')}: </span> <span class="value">{data.medium.content_type}</span> </virtual> <span if="{!data.medium}">{data.kind.name}</span> <span if="{data.subtype}">({data.subtype})</span> </div> </h1> <div if="{data.medium}"> <span class="field"> {tcap(\'activerecord.attributes.medium.file_size\')}: </span> <span class="value">{hs(data.medium.file_size)}</span> </div> <div if="{data.synonyms.length > 0}" field="synonyms"> <span class="field">{tcap(\'nouns.synonym\', {count: \'other\'})}:</span> <span class="value">{data.synonyms.join(\' | \')}</span> </div> <div each="{dating in data.datings}" dating-label="{dating.label}"> <span class="field">{dating.label}:</span> <span class="value">{dating.dating_string}</span> </div> <div each="{field in fields()}" field-name="{field.name}"> <virtual if="{field.value}"> <span class="field">{field.show_label}:</span> <span class="value">{fieldValue(field.value)}</span> </virtual> </div> <div show="{visibleFields().length > 0}" class="hr silent"></div> <div field="properties"> <div each="{property in data.properties}"> <a if="{property.url}" href="{property.value}" rel="noopener" target="_blank">» {property.label}</a> <virtual if="{!property.url}"> <span class="field">{property.label}:</span> <span class="value">{property.value}</span> </virtual> </div> </div> <div class="hr silent"></div> <div if="{data.comment}" class="comment" field="comment"> <div class="field"> {tcap(\'activerecord.attributes.entity.comment\')}: </div> <div class="value"><pre>{data.comment}</pre></div> </div> <div each="{generator in data.generators}" generator-name="{generator.name}"> <kor-generator generator="{generator}" entity="{data}"></kor-generator> </div> <div class="hr silent"></div> <kor-inplace-tags entity="{data}" enable-editor="{showTagging()}" handlers="{inplaceTagHandlers}"></kor-inplace-tags> </div> <div class="kor-layout-bottom"> <div class="kor-content-box relations"> <div class="kor-layout-commands" if="{allowedTo(\'edit\')}"> <a href="#" onclick="{addRelationship}" title="{t(\'objects.add\', {interpolations: {o: \'activerecord.models.relationship\'}})}"><i class="fa fa-plus-square"></i></a> </div> <h1>{tcap(\'activerecord.models.relationship\', {count: \'other\'})}</h1> <div each="{count, name in data.relations}"> <kor-relation entity="{data}" name="{name}" total="{count}" ref="relations"></kor-relation> </div> </div> </div> <div class="kor-layout-bottom .meta" if="{allowedTo(\'view_meta\', data.collection_id)}"> <div class="kor-content-box"> <h1> {t(\'activerecord.attributes.entity.master_data\', {capitalize: true})} </h1> <div> <span class="field">{t(\'activerecord.attributes.entity.uuid\')}:</span> <span class="value">{data.uuid}</span> </div> <div if="{data.created_at}"> <span class="field">{t(\'activerecord.attributes.entity.created_at\')}:</span> <span class="value"> {l(data.created_at)} <span if="{data.creator}"> {t(\'by\')} {data.creator.full_name || data.creator.name} </span> </span> </div> <div if="{data.updated_at}"> <span class="field">{t(\'activerecord.attributes.entity.updated_at\')}:</span> <span class="value"> {l(data.updated_at)} <span if="{data.updater}"> {t(\'by\')} {data.updater.full_name || data.updater.name} </span> </span> </div> <div if="{data.groups.length}" class="groups"> <span class="field">{t(\'activerecord.models.authority_group.other\')}:</span> <ul> <li each="{group in data.groups}" class="value"> <virtual if="{group.directory}"> <span each="{dir in group.directory.ancestors}"> <a href="#/groups/categories/{dir.id}">{dir.name}</a> / </span> <a href="#/groups/categories/{group.directory.id}">{group.directory.name}</a> / </virtual> <a href="#/groups/admin/{group.id}">{group.name}</a> </li> </ul> </div> <div> <span class="field">{t(\'activerecord.models.collection\')}:</span> <span class="value">{data.collection.name}</span> </div> <div> <span class="field">{t(\'activerecord.attributes.entity.degree\')}:</span> <span class="value">{data.degree}</span> </div> <div class="hr"></div> <div class="kor-text-right kor-api-links"> <a href="{jsonUrl()}" target="_blank"><i class="fa fa-file-text"></i>{t(\'show_json\')}</a><br> <a if="{!isStatic()}" href="/oai-pmh/entities.xml?verb=GetRecord&metadataPrefix=kor&identifier={data.uuid}" target="_blank"><i class="fa fa-code"></i>{t(\'show_oai_pmh\')}</a> </div> </div> </div> </div> <div class="kor-layout-right kor-layout-small"> <div class="kor-content-box" if="{data && data.medium_id}"> <div class="viewer"> <h1>{t(\'activerecord.models.medium\', {capitalize: true})}</h1> <a href="#/media/{data.id}" title="{t(\'larger\')}"> <img riot-src="{data.medium.url.preview}"> </a> <div if="{allowedTo(\'edit\', data.collection_id)}" class="commands"> <a each="{op in [\'flip\', \'flop\', \'rotate_cw\', \'rotate_ccw\', \'rotate_180\']}" href="#/media/{data.medium_id}/{op}" onclick="{transform(op)}" title="{t(\'image_transformations.\' + op)}"><i class="fa fa-{opIcon(op)}"></i></a> </div> <div class="formats"> <a href="#/media/{data.id}">{t(\'verbs.enlarge\')}</a> <span if="{!data.medium.video && !data.medium.audio}"> | <a href="{data.medium.url.normal}" target="_blank">{t(\'verbs.maximize\')}</a> </span> | <a href="{rootUrl()}/mirador?id={data.id}&manifest={rootUrl()}/mirador/{data.id}" onclick="{openMirador}">{t(\'nouns.mirador\')}</a> <br> {t(\'verbs.download\')}:<br> <a if="{allowedTo(\'download_originals\', data.collection_id)}" href="{data.medium.url.original.replace(/\\/images\\//, \'/download/\')}">{t(\'nouns.original\')} |</a> <a href="{data.medium.url.normal.replace(/\\/images\\//, \'/download/\')}"> {t(\'nouns.enlargement\')} </a> <virtual if="{!isStatic()}"> | <a href="/entities/{data.id}/metadata">{t(\'nouns.metadata\')}</a> </virtual> </div> </div> </div> <div class="kor-content-box" if="{anyMediaRelations()}"> <div class="related_images"> <h1> {t(\'nouns.related_medium\', {count: \'other\', capitalize: true})} <div class="subtitle"> <a if="{allowedTo(\'create\')}" href="#/upload?relate_with={data.id}"> » {t(\'objects.add\', {interpolations: {o: \'activerecord.models.medium.other\'} } )} </a> </div> </h1> <div each="{count, name in data.media_relations}"> <kor-media-relation entity="{data}" name="{name}" total="{count}" on-updated="{reload}"></kor-media-relation> </div> </div> </div> </div> <div class="clearfix"></div>', "", "", function(opts) {
     let tag = this;
     tag.mixin(wApp.mixins.sessionAware);
     tag.mixin(wApp.mixins.i18n);

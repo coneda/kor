@@ -64,6 +64,26 @@
           <div class="hr"></div>
         </virtual>
 
+        <virtual if={isMedium()}>
+          <kor-input
+            label={tcap('activerecord.attributes.medium.document')}
+            name="medium_attributes[document]"
+            type="file"
+            name="document"
+            ref="fields.medium.document"
+            errors={errors.medium}
+          />
+
+          <kor-input
+            label={tcap('activerecord.attributes.medium.image')}
+            name="medium_attributes[image]"
+            type="file"
+            name="image"
+            ref="fields.medium.image"
+            errors={errors.medium}
+          />
+        </virtual>
+
         <kor-input
           label={tcap('activerecord.attributes.entity.subtype')}
           name="subtype"
@@ -314,7 +334,7 @@
       return Zepto.ajax({
         type: 'POST',
         url: '/entities',
-        data: JSON.stringify({ entity: values() })
+        data: toRequestBody(values())
       })
     }
 
@@ -323,16 +343,13 @@
       return Zepto.ajax({
         type: 'PATCH',
         url: "/entities/" + tag.opts.id,
-        data: JSON.stringify({ entity: values() })
+        data: toRequestBody(values())
       })
     }
 
     // Collect form values for submission
     const values = function() {
       var results = {}
-      if (!tag.isMedium()) {
-        results.no_name_statement = tag.refs['fields.no_name_statement'].value()
-      }
       results.kind_id = tag.data.kind_id || tag.opts.kindId
 
       for (var i = 0; i < tag.refs.fields.length; i++) {
@@ -340,7 +357,27 @@
         results[f.name()] = f.value()
       }
 
+      if (tag.isMedium()) {
+        const document = tag.refs['fields.medium.document'].value()
+        const image = tag.refs['fields.medium.image'].value()
+
+        if (document || image) {
+          const ma = wApp.utils.deleteNull({document, image})
+          results['medium_attributes'] = ma
+        }
+      } else {
+        results.no_name_statement = tag.refs['fields.no_name_statement'].value()
+      }
+
       return results
+    }
+
+    const toRequestBody = (data) => {
+      return (
+        data['medium_attributes'] ?
+        wApp.utils.toFormData(data, null, 'entity') :
+        JSON.stringify({entity: data})
+      )
     }
 
     // Handle Wikidata item selection

@@ -23,6 +23,14 @@ export default class Api {
     this.request = this.request.bind(this)
   }
 
+  formatBody(data) {
+    if (typeof data === 'string') return data
+    if (data instanceof String) return data
+    if (data instanceof FormData) return data
+
+    return JSON.stringify(data)
+  }
+
   http(url, init) {
     delete init['url']
 
@@ -41,12 +49,8 @@ export default class Api {
       init['headers']['X-CSRF-Token'] = wApp.session.csrfToken()
 
       if (init['data']) {
-        init['body'] = (
-          (typeof init['data'] === 'string' || init['data'] instanceof String) ?
-          init['data'] :
-          JSON.stringify(init['data'])
-        )
-
+        init['body'] = this.formatBody(init['data'])
+        if (init['body'] instanceof FormData) delete init['headers']['Content-Type']
         delete init['data']
       }
     } else {

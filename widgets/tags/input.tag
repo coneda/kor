@@ -96,24 +96,34 @@
 
   // Get the value of the input
   tag.value = function() {
-    var result;
+    var result
+
     if (tag.opts.type === 'checkbox') {
-      return Zepto(tag.root).find('input').prop('checked');
-    } else if (tag.opts.type === 'radio') {
-      var inputs = Zepto(tag.root).find('input');
+      return Zepto(tag.root).find('input').prop('checked')
+    }
+    
+    if (tag.opts.type === 'radio') {
+      var inputs = Zepto(tag.root).find('input')
       for (var i = 0; i < inputs.length; i++) {
-        var input = $(inputs[i]);
+        var input = $(inputs[i])
         if (input.prop('checked')) {
-          return input.attr('value');
+          return input.attr('value')
         }
       }
-    } else if (tag.opts.type === 'submit') {
-      return null;
-    } else {
-      result = Zepto(tag.root).find('input, select, textarea').val();
-      return result === "0" && tag.opts.type === 'select' ? undefined : result;
     }
-  };
+    
+    if (tag.opts.type === 'submit') return null
+    
+    if (tag.opts.type === 'file') {
+      var files = tag.input()[0].files
+      if (files.length == 0) return null
+
+      return files[0]
+    }
+
+    result = Zepto(tag.root).find('input, select, textarea').val()
+    return result === "0" && tag.opts.type === 'select' ? undefined : result
+  }
 
   // Get the value from the parent
   tag.valueFromParent = function() {

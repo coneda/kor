@@ -82,5 +82,37 @@ wApp.utils = {
   isoToDate(str) {
     const parts = str.split('-').map(i => parseInt(i));
     return new Date(parts[0], parts[1] - 1, parts[2]);
+  },
+  isObject(v) {
+    if (typeof v !== 'object') return false
+    if (Array.isArray(v)) return false
+    if (v === null) return false
+    if (v instanceof Blob) return false
+
+    return true
+  },
+  toFormData(values, formData = null, prefix = null) {
+    let fd = formData || new FormData()
+
+    for (const [k, v] of Object.entries(values)) {
+      let key = (prefix ? `${prefix}[${k}]` : k)
+
+      if (wApp.utils.isObject(v)) {
+        fd = wApp.utils.toFormData(v, fd, key)
+      } else {
+        fd.set(key, v)
+      }
+    }
+
+    return fd
+  },
+  deleteNull(object) {
+    Object.keys(object).forEach(key => {
+      if (object[key] === null) {
+        delete object[key]
+      }
+    })
+
+    return object
   }
-};
+}
