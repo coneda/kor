@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   get '/empty', to: 'kor#index' # dummy for testing
 
   get '/downloads/:uuid', to: 'downloads#show'
-  get '/resolve(/:kind)/:id', to: 'identifiers#resolve'
+  get '/resolve(/:kind)/:id', to: 'identifiers#resolve', constraints: {id: /[a-zA-Z0-9_\-\.\/:]+/}
   get '/env_auth', to: 'session#env_auth'
 
   scope '/media', controller: 'media', defaults: {format: 'json'} do
